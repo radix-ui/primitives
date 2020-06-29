@@ -1,0 +1,39 @@
+{
+  "include": ["packages", "types", "scripts"],
+  "compilerOptions": {
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": false,
+    "importHelpers": true,
+    "jsx": "react",
+    "lib": ["dom", "esnext"],
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "pretty": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "stripInternal": true,
+    "target": "es2018",
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "paths": {
+      "*": ["node_modules/*"],
+      "@interop-ui/react-button": ["packages/react-button/src"],
+      "@interop-ui/react-input": ["packages/react-input/src"],
+      "@interop-ui/utils": ["packages/utils/src"],
+      "$test/*": ["test/*"]
+    }
+  }
+}
