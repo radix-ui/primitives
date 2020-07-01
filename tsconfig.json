@@ -30,8 +30,10 @@
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
       "*": ["node_modules/*"],
-      "@interop-ui/react-button": ["packages/react-button/src"],
-      "@interop-ui/react-input": ["packages/react-input/src"],
+      "@interop-ui/button": ["packages/component-button/src"],
+      "@interop-ui/input": ["packages/component-input/src"],
+      "@interop-ui/tabs": ["packages/component-tabs/src"],
+      "@interop-ui/react-hooks": ["packages/react-hooks/src"],
       "@interop-ui/utils": ["packages/utils/src"],
       "$test/*": ["test/*"]
     }

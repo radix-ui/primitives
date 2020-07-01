@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { log } from '@interop-ui/utils';
 
 type ButtonProps = React.ComponentPropsWithRef<'button'>;
