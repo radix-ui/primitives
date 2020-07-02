@@ -1,17 +1,17 @@
 {
-  "name": "@interop-ui/button",
+  "name": "@interop-ui/primitive-tabs",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "module": "dist/button.esm.min.js",
+  "module": "dist/primitive-tabs.esm.min.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "src",
     "dist"
   ],
   "scripts": {
-    "test": "cross-env CI=true ts-node ../../scripts/test --passWithNoTests",
+    "test": "cross-env CI=true ts-node ../../../scripts/test --passWithNoTests",
     "test:watch": "npm run test -- --watchAll",
-    "build": "ts-node ../../scripts/build",
+    "build": "ts-node ../../../scripts/build",
     "prepublish": "npm run build"
   },
   "dependencies": {

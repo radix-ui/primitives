@@ -8,7 +8,9 @@
     "storybook": "start-storybook -p 9009 -c ./storybook --ci"
   },
   "workspaces": [
-    "packages/*"
+    "packages/core/*",
+    "packages/primitives/*",
+    "packages/react/*"
   ],
   "prettier": {
     "printWidth": 100,
@@ -33,7 +35,7 @@
   },
   "eslintIgnore": [
     "node_modules",
-    "packages/*/dist"
+    "dist"
   ],
   "husky": {
     "hooks": {

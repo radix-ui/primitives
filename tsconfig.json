@@ -30,11 +30,14 @@
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
       "*": ["node_modules/*"],
-      "@interop-ui/button": ["packages/component-button/src"],
-      "@interop-ui/input": ["packages/component-input/src"],
-      "@interop-ui/tabs": ["packages/component-tabs/src"],
-      "@interop-ui/react-hooks": ["packages/react-hooks/src"],
-      "@interop-ui/utils": ["packages/utils/src"],
+      "@interop-ui/utils": ["packages/core/utils/src"],
+      "@interop-ui/primitive-button": ["packages/primitives/button/src"],
+      "@interop-ui/primitive-input": ["packages/primitives/input/src"],
+      "@interop-ui/primitive-tabs": ["packages/primitives/tabs/src"],
+      "@interop-ui/react-button": ["packages/react/button/src"],
+      "@interop-ui/react-input": ["packages/react/input/src"],
+      "@interop-ui/react-tabs": ["packages/react/tabs/src"],
+      "@interop-ui/react-utils": ["packages/react/utils/src"],
       "$test/*": ["test/*"]
     }
   }

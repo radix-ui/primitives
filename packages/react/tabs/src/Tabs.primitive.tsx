@@ -1,3 +1,13 @@
+// Eventually, when we have our dream of cross-framework bliss, this file would
+// construct a working primitive React component from our definition and state
+// chart in @interop-ui/primitives
+
+// We could potentially abstract this into an interpreter package, something
+// like React DOM interprets React for the DOM. This seems like it would get
+// pretty complex and may not be a worthwhile goal in the end. But having the
+// state and props centrally defined and consumed by all of our framework
+// packages could still be achieved in this manner.
+
 import * as React from 'react';
 import {
   RovingTabIndexProvider,
@@ -5,13 +15,8 @@ import {
   useControlledState,
   useId,
   useRovingTabIndex,
-} from '@interop-ui/react-hooks';
-import {
-  composeEventHandlers,
-  cssReset,
-  getFocusableResetStyles,
-  useComposedRefs,
-} from '@interop-ui/utils';
+} from '@interop-ui/react-utils';
+import { composeEventHandlers, useComposedRefs } from '@interop-ui/utils';
 
 type TabsDOMProps = Omit<React.ComponentPropsWithRef<'div'>, 'onSelect'>;
 type TabsOwnProps = {
@@ -52,7 +57,7 @@ const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function TabList(
   forwardedRef
 ) {
   const { orientation, shouldLoop } = React.useContext(TabsContext);
-  let { style, ...otherProps } = props;
+  let { ...otherProps } = props;
 
   return (
     <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
@@ -63,13 +68,6 @@ const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function TabList(
         aria-orientation={orientation}
         // other props
         ref={forwardedRef}
-        style={{
-          ...cssReset('div'),
-          flexShrink: 0,
-          display: 'flex',
-          flexDirection: props['aria-orientation'] === 'vertical' ? 'column' : 'row',
-          ...style,
-        }}
         {...otherProps}
       />
     </RovingTabIndexProvider>
@@ -90,7 +88,6 @@ const Tab = React.forwardRef<HTMLDivElement, TabProps>(function Tab(props, forwa
     onMouseDown: originalOnMouseDown,
     onKeyDown: originalOnKeyDown,
     onFocus: originalOnFocus,
-    style,
     ...tabProps
   } = props;
 
@@ -145,22 +142,6 @@ const Tab = React.forwardRef<HTMLDivElement, TabProps>(function Tab(props, forwa
       })}
       // other props
       ref={composedRef}
-      style={{
-        // reset styles
-        ...cssReset('div'),
-        ...getFocusableResetStyles(),
-        flexShrink: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        lineHeight: '1',
-        cursor: 'default',
-        whiteSpace: 'nowrap',
-
-        // enable overlapping adjacent tabs via z-index
-        position: 'relative',
-        ...style,
-      }}
     />
   );
 });
@@ -173,7 +154,7 @@ const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(function TabPan
   props,
   forwardedRef
 ) {
-  const { id, style, ...tabPanelProps } = props;
+  const { id, ...tabPanelProps } = props;
   const { tabsId, selectedId } = React.useContext(TabsContext);
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabPanelId(tabsId, id);
@@ -190,13 +171,6 @@ const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(function TabPan
       hidden={!isSelected}
       // other props
       ref={forwardedRef}
-      style={{
-        ...cssReset('div'),
-        ...getFocusableResetStyles(),
-        display: isSelected ? undefined : 'none',
-        flexGrow: 1,
-        ...style,
-      }}
     />
   );
 });
@@ -213,7 +187,6 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(props, fo
     orientation = 'horizontal',
     activationMode = 'automatic',
     shouldLoop = true,
-    style,
     ...tabsProps
   } = props;
 
@@ -237,17 +210,7 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(props, fo
         shouldLoop,
       }}
     >
-      <div
-        {...tabsProps}
-        ref={forwardedRef}
-        id={tabsId}
-        style={{
-          ...cssReset('div'),
-          display: 'flex',
-          flexDirection: orientation === 'vertical' ? 'row' : 'column',
-          ...style,
-        }}
-      >
+      <div {...tabsProps} ref={forwardedRef} id={tabsId}>
         {children}
       </div>
     </TabsContext.Provider>
@@ -259,8 +222,8 @@ Tabs.Tab = Tab;
 Tabs.TabList = TabList;
 Tabs.displayName = 'Tabs';
 
-export { Tabs };
-export type { TabsProps, TabListProps, TabProps, TabPanelProps };
+export { Tabs, TabsContext };
+export type { TabsProps, TabListProps, TabProps, TabPanelProps, ITabs };
 
 function makeTabId(tabsId: string, tabId: string) {
   return `${tabsId}-tab-${tabId}`;
