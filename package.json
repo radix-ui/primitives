@@ -5,10 +5,12 @@
     "lint": "eslint --ext .js,.ts,.tsx .",
     "test": "cross-env CI=true ts-node ./scripts/test packages",
     "build": "lerna run build --stream",
-    "storybook": "start-storybook -p 9009 -c ./storybook --ci"
+    "storybook": "start-storybook -p 9009 -c ./storybook --ci",
+    "docs:dev": "lerna exec --scope @interop/docs -- yarn dev"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "docs"
   ],
   "prettier": {
     "printWidth": 100,
