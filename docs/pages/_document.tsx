@@ -1,5 +1,5 @@
 import React from 'react';
-import NextDocument, { Main, NextScript, DocumentContext } from 'next/document';
+import NextDocument, { Head, Main, NextScript, DocumentContext } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
 export default class Document extends NextDocument {
@@ -30,6 +30,9 @@ export default class Document extends NextDocument {
   render() {
     return (
       <html lang="en">
+        <Head>
+          <title>Docs</title>
+        </Head>
         <body>
           <Main />
           <NextScript />

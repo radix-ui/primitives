@@ -2276,12 +2276,12 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
-"@modulz/primitives@0.0.1-39":
-  version "0.0.1-39"
-  resolved "https://registry.yarnpkg.com/@modulz/primitives/-/primitives-0.0.1-39.tgz#ede664332b89de2bbe66d025e071a0a95c6fa442"
-  integrity sha512-3NI3HN41titTuj0NjkNab1o9tybzgGtm73f1FIKhnQ06zAZNMqLGGVyBfob6dYuMytbUexotq4dpPcJFgDYQug==
+"@modulz/primitives@0.0.1-40":
+  version "0.0.1-40"
+  resolved "https://registry.yarnpkg.com/@modulz/primitives/-/primitives-0.0.1-40.tgz#a113956fe7006a9b4d12ea53be5f279cf598f3fe"
+  integrity sha512-BtRaBRDm0hUX4La7lzWZrORYTwwDx/BDZpriWWeMKo3Z8Uy7upQLmgq55uwX1ZyedsjG3ZsALQrsN73jWQLWJw==
   dependencies:
-    "@modulz/radix-icons" "2.1.0"
+    "@modulz/radix-icons" "2.4.0"
     "@modulz/radix-system" "0.0.1-alpha.11"
     aria-hidden "^1.1.1"
     body-scroll-lock "^2.6.4"
@@ -2294,12 +2294,7 @@
     resize-observer-polyfill "^1.5.1"
     tabbable "^4.0.0"
 
-"@modulz/radix-icons@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@modulz/radix-icons/-/radix-icons-2.1.0.tgz#214142d956a1bf88326ade7b7ae628fedf5d6dad"
-  integrity sha512-eTSt5odB+n52LG8GFRNbJLSjKIf9Q/gUa61Nch/TQQKjU27Txxjo4eEilhvL/R1/FYyHjslyMJaKQ2IHLnrUBg==
-
-"@modulz/radix-icons@^2.4.0":
+"@modulz/radix-icons@2.4.0", "@modulz/radix-icons@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@modulz/radix-icons/-/radix-icons-2.4.0.tgz#62bb73265d39aa990a3adfb089f00cecbaf791c5"
   integrity sha512-19pLQSJtzVtlOon86QC3gigjoigumIvAch79wXl3/yyaWsip6n2CgPHKu/5hKhjK2qYCr84b0VmZkmj1krAl/w==
@@ -2326,12 +2321,12 @@
     "@types/styled-system__css" "^5.0.5"
     csstype "^2.6.7"
 
-"@modulz/radix@0.0.1-beta.41":
-  version "0.0.1-beta.41"
-  resolved "https://registry.yarnpkg.com/@modulz/radix/-/radix-0.0.1-beta.41.tgz#a170585d7b58a26715936d571ccec92c6c37c63b"
-  integrity sha512-+aRd4CJVI6xnKXonG3cCHu3a7G8MUFK9MtPtSY+kMkspASSstkyz8GFg01wjUTTluLlSPq5SfRLTaBB81zkraQ==
+"@modulz/radix@0.0.1-beta.43":
+  version "0.0.1-beta.43"
+  resolved "https://registry.yarnpkg.com/@modulz/radix/-/radix-0.0.1-beta.43.tgz#6412fb0a8fd61618ff77e1ca02b5f735337db706"
+  integrity sha512-CNXRFuFoFqb3kb4hbg1WY3PynHCW25r/+TllDnZSPQCBG4i6emJJHw1AfREfxt/JXubCjoriI/rluVdTz1arCA==
   dependencies:
-    "@modulz/primitives" "0.0.1-39"
+    "@modulz/primitives" "0.0.1-40"
     "@modulz/radix-system" "^0.0.1-alpha.13"
     "@styled-system/css" "5.1.4"
     "@styled-system/theme-get" "^5.1.2"
@@ -13828,7 +13823,7 @@ style-loader@1.2.1, style-loader@^1.0.0:
     loader-utils "^2.0.0"
     schema-utils "^2.6.6"
 
-styled-components@^5.0.1, styled-components@^5.1.0:
+styled-components@^5.0.1, styled-components@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-5.1.1.tgz#96dfb02a8025794960863b9e8e365e3b6be5518d"
   integrity sha512-1ps8ZAYu2Husx+Vz8D+MvXwEwvMwFv+hqqUwhNlDN5ybg6A+3xyW1ECrAgywhvXapNfXiz79jJyU0x22z0FFTg==
