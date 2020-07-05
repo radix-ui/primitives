@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, List, ListItem, Heading, Divider } from '@modulz/radix';
+import { Text, List, ListItem, Badge, Heading, Divider } from '@modulz/radix';
 
 export const Navigation = () => {
   return (
@@ -136,75 +136,27 @@ export const Navigation = () => {
       >
         Components
       </Text>
+      <Text
+        as="h4"
+        size={2}
+        pt={2}
+        pb={1}
+        px={4}
+        weight="medium"
+        sx={{
+          lineHeight: 1,
+          px: 6,
+        }}
+      >
+        Layout
+      </Text>
       <List>
         <ListItem
           as="a"
           href=""
           sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Arrow</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Accordion</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Alert</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Autocomplete</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Avatar</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Badge</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Blockquote</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Box</Text>
@@ -213,52 +165,8 @@ export const Navigation = () => {
           as="a"
           href=""
           sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Button</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Card</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Checkbox</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Code</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Collapsible</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Container</Text>
@@ -267,25 +175,8 @@ export const Navigation = () => {
           as="a"
           href=""
           sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Dialog</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Divider</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Flex</Text>
@@ -294,7 +185,8 @@ export const Navigation = () => {
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Grid</Text>
@@ -303,43 +195,76 @@ export const Navigation = () => {
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
-          <Text size={2}>Header</Text>
+          <Text size={2}>Section</Text>
+        </ListItem>
+      </List>
+      <Text
+        as="h4"
+        size={2}
+        pt={2}
+        pb={1}
+        px={4}
+        weight="medium"
+        sx={{
+          lineHeight: 1,
+          px: 6,
+        }}
+      >
+        Input
+      </Text>
+      <List>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Autocomplete</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
         </ListItem>
         <ListItem
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
-          <Text size={2}>HoverCard</Text>
+          <Text size={2}>ComboBox</Text>
         </ListItem>
         <ListItem
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
-          <Text size={2}>IconButton</Text>
+          <Text size={2}>Checkbox</Text>
         </ListItem>
         <ListItem
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
-          <Text size={2}>Image</Text>
+          <Text size={2}>DatePicker</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
         </ListItem>
         <ListItem
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Input</Text>
@@ -348,52 +273,19 @@ export const Navigation = () => {
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
-          <Text size={2}>Link</Text>
+          <Text size={2}>MultiSelect</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
         </ListItem>
         <ListItem
           as="a"
           href=""
           sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Menu</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Overlay</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Popover</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Progress</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Radio</Text>
@@ -402,16 +294,19 @@ export const Navigation = () => {
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Slider</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
         </ListItem>
         <ListItem
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Select</Text>
@@ -420,7 +315,8 @@ export const Navigation = () => {
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Switch</Text>
@@ -429,7 +325,393 @@ export const Navigation = () => {
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Textarea</Text>
+        </ListItem>
+      </List>
+      <Text
+        as="h4"
+        size={2}
+        pt={2}
+        pb={1}
+        px={4}
+        weight="medium"
+        sx={{
+          lineHeight: 1,
+          px: 6,
+        }}
+      >
+        Feedback
+      </Text>
+      <List>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Alert</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>AlertDialog</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Badge</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Dialog</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Meter</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Progress</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Toast</Text>
+        </ListItem>
+      </List>
+      <Text
+        as="h4"
+        size={2}
+        pt={2}
+        pb={1}
+        px={4}
+        weight="medium"
+        sx={{
+          lineHeight: 1,
+          px: 6,
+        }}
+      >
+        Text
+      </Text>
+      <List>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Blockquote</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Code</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Text</Text>
+        </ListItem>
+      </List>
+      <Text
+        as="h4"
+        size={2}
+        pt={2}
+        pb={1}
+        px={4}
+        weight="medium"
+        sx={{
+          lineHeight: 1,
+          px: 6,
+        }}
+      >
+        Utilities
+      </Text>
+      <List>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>HoverZone</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Portal</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>ToolBar</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>VisuallyHidden</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
+        </ListItem>
+      </List>
+      <Text
+        as="h4"
+        size={2}
+        pt={2}
+        pb={1}
+        px={4}
+        weight="medium"
+        sx={{
+          lineHeight: 1,
+          px: 6,
+        }}
+      >
+        Contextual
+      </Text>
+      <List>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>HoverCard</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Menu</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Overlay</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Popover</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Tooltip</Text>
+        </ListItem>
+      </List>
+      <Text
+        as="h4"
+        size={2}
+        pt={2}
+        pb={1}
+        px={4}
+        weight="medium"
+        sx={{
+          lineHeight: 1,
+          px: 6,
+        }}
+      >
+        Undecided
+      </Text>
+      <List>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Arrow</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Accordion</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Avatar</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Button</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Card</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Collapsible</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Divider</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Header</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Image</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Link</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Tab</Text>
@@ -438,37 +720,11 @@ export const Navigation = () => {
           as="a"
           href=""
           sx={{
-            px: 6,
+            pl: 8,
+            pr: 3,
           }}
         >
           <Text size={2}>Table</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Text</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Textarea</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Tooltip</Text>
         </ListItem>
       </List>
       <Divider />
@@ -493,25 +749,7 @@ export const Navigation = () => {
             px: 6,
           }}
         >
-          <Text size={2}>Icons</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
           <Text size={2}>Layouts</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Design System</Text>
         </ListItem>
         <ListItem
           as="a"
