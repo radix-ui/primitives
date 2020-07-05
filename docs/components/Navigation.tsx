@@ -736,6 +736,16 @@ export const Navigation = () => {
         >
           <Text size={2}>Table</Text>
         </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>ToggleButton</Text>
+        </ListItem>
       </List>
       <Divider />
       <Text
