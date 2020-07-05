@@ -588,6 +588,16 @@ export const Navigation = () => {
             pr: 3,
           }}
         >
+          <Text size={2}>RightClickMenu</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
           <Text size={2}>Tooltip</Text>
         </ListItem>
       </List>
