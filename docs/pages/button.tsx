@@ -16,9 +16,8 @@ import {
   Link,
 } from '@modulz/radix';
 import { Navigation } from '../components/Navigation';
-import { PlusIcon } from '@modulz/radix-icons';
 
-export default function DemoPage() {
+export default function ButtonPage() {
   return (
     <div>
       <Box
