@@ -619,30 +619,6 @@ export default function Home() {
             </Grid>
           </Container>
         </Box>
-
-        <Divider mx="auto" mb={9} size={2} />
-
-        <Box>
-          <Container size={1}>
-            <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
-              Most of us share similar definitions for common UI patterns like accordion, checkbox, combobox, dialog,
-              dropdown, select, slider, and tooltip. These UI patterns are documented by WAI-ARIA and generally
-              understood by the community.
-            </Text>
-            <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
-              However, the implementations provided to us by the web platform are inadequate. They're either completely
-              missing, lacking in functionality, or cannot be customised sufficiently.
-            </Text>
-            <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
-              Developers are forced to build custom components for each product. As a result, most components on the web
-              are inaccessible, non-performant, and lacking important features.
-            </Text>
-            <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
-              Our goal is to create a well-funded, open-source library of white-label components that the community can
-              use to build accessible design systems.
-            </Text>
-          </Container>
-        </Box>
       </Box>
     </Box>
   );

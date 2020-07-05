@@ -31,12 +31,23 @@ export default function DemoPage() {
         <Container size={2} pt={2}>
           <Heading
             as="h1"
-            size={5}
+            size={4}
             sx={{
               lineHeight: 9,
             }}
           >
-            What is components?
+            Components
+          </Heading>
+          <Heading
+            as="h2"
+            size={2}
+            weight="normal"
+            sx={{
+              color: 'gray700',
+              lineHeight: '4',
+            }}
+          >
+            An open-source component library for building accessible design systems.
           </Heading>
 
           <Box
@@ -44,47 +55,32 @@ export default function DemoPage() {
               my: 9,
             }}
           >
-            <Text
-              as="p"
-              size={5}
-              sx={{
-                lineHeight: 3,
-              }}
-            >
-              All components are accessible out of the box, strictly following WAI-ARIA standards. All components are
-              tested rigorously for screenreader support and keyboard interactions.
+            <Heading as="h3" size={3} mb={3} sx={{ fontWeight: 500 }}>
+              Vision
+            </Heading>
+            <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
+              Most of us share similar definitions for common UI patterns like accordion, checkbox, combobox, dialog,
+              dropdown, select, slider, and tooltip. These UI patterns are{' '}
+              <Link href="https://www.w3.org/TR/wai-aria-practices/#aria_ex">documented by WAI-ARIA</Link> and generally
+              understood by the community.
             </Text>
-            <Text
-              as="p"
-              size={5}
-              sx={{
-                lineHeight: 3,
-                mb: 4,
-              }}
-            >
-              All components are accessible out of the box.
+            <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
+              However, the implementations provided to us by the web platform are inadequate. They're either
+              non-existent, lacking in functionality, or cannot be customised sufficiently.
             </Text>
-            <Text
-              as="p"
-              size={5}
-              sx={{
-                lineHeight: 3,
-              }}
-            >
-              All components are accessible out of the box, strictly following WAI-ARIA standards. All components are
-              tested rigorously for screenreader support and keyboard interactions.
+            <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
+              So, developers are forced to build custom components—an incredibly difficult task. As a result, most
+              components on the web are inaccessible, non-performant, and lacking important features.
             </Text>
-            <Text
-              as="p"
-              size={5}
-              sx={{
-                lineHeight: 3,
-              }}
-            >
-              All components are accessible out of the box, strictly following WAI-ARIA standards.
+            <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
+              Our goal is to create a well-funded, open-source component library that the community can use to build
+              accessible design systems.
             </Text>
           </Box>
 
+          <Heading as="h3" size={3} mb={7} sx={{ fontWeight: 500 }}>
+            Principles
+          </Heading>
           <Grid sx={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 7 }}>
             <Box>
               <Heading as="h3" size={1} mb={3} sx={{ fontWeight: 500 }}>
@@ -153,6 +149,9 @@ export default function DemoPage() {
           </Flex>
 
           <Box>
+            <Heading as="h3" size={3} mb={7} sx={{ fontWeight: 500 }}>
+              Quick links
+            </Heading>
             <Grid sx={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 7 }}>
               <Box>
                 <CardLink variant="shadow">
@@ -269,6 +268,9 @@ export default function DemoPage() {
           </Flex>
 
           <Box>
+            <Heading as="h3" size={3} mb={7} sx={{ fontWeight: 500 }}>
+              Frequently asked questions
+            </Heading>
             <Grid sx={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 7 }}>
               <Box>
                 <Heading
