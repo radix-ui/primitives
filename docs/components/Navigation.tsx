@@ -488,6 +488,16 @@ export const Navigation = () => {
             pr: 3,
           }}
         >
+          <Text size={2}>AspectRatio</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
           <Text size={2}>HoverZone</Text>
           <Badge sx={{ ml: 1 }}>WIP</Badge>
         </ListItem>
@@ -549,16 +559,6 @@ export const Navigation = () => {
         >
           <Text size={2}>HoverCard</Text>
           <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Menu</Text>
         </ListItem>
         <ListItem
           as="a"
@@ -684,6 +684,17 @@ export const Navigation = () => {
             pr: 3,
           }}
         >
+          <Text size={2}>Carousel</Text>
+          <Badge sx={{ ml: 1 }}>WIP</Badge>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
           <Text size={2}>Collapsible</Text>
         </ListItem>
         <ListItem
@@ -725,6 +736,26 @@ export const Navigation = () => {
           }}
         >
           <Text size={2}>Link</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>Menu</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            pl: 8,
+            pr: 3,
+          }}
+        >
+          <Text size={2}>MenuItem</Text>
         </ListItem>
         <ListItem
           as="a"
