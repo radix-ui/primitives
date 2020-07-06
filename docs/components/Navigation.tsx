@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, List, Box, ListItem, Badge, Heading, Divider } from '@modulz/radix';
+import { Text, Flex, List, Box, ListItem, Badge, Heading, Divider } from '@modulz/radix';
 
 export const Navigation = () => {
   return (
@@ -26,19 +26,47 @@ export const Navigation = () => {
         </svg>
       </Box>
       <Divider />
-      <Text
-        as="h3"
-        size={3}
-        pt={3}
-        pb={1}
-        px={4}
-        weight="medium"
+      <Flex
         sx={{
-          lineHeight: 1,
+          pt: 3,
+          pb: 1,
+          px: 4,
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        Overview
-      </Text>
+        <Text
+          as="h3"
+          size={3}
+          weight="medium"
+          sx={{
+            lineHeight: 1,
+          }}
+        >
+          Overview
+        </Text>
+        <Box
+          sx={{
+            mr: -2,
+          }}
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 15 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ lineHeight: 1 }}
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M8 3C8 2.72386 7.77614 2.5 7.5 2.5C7.22386 2.5 7 2.72386 7 3V7H3C2.72386 7 2.5 7.22386 2.5 7.5C2.5 7.77614 2.72386 8 3 8H7V12C7 12.2761 7.22386 12.5 7.5 12.5C7.77614 12.5 8 12.2761 8 12V8H12C12.2761 8 12.5 7.77614 12.5 7.5C12.5 7.22386 12.2761 7 12 7H8V3Z"
+              fill="#282B2E"
+            />
+          </svg>
+        </Box>
+      </Flex>
       <List>
         <ListItem
           as="a"
@@ -72,19 +100,47 @@ export const Navigation = () => {
         </ListItem>
       </List>
       <Divider />
-      <Text
-        as="h3"
-        size={3}
-        pt={3}
-        pb={1}
-        px={4}
-        weight="medium"
+      <Flex
         sx={{
-          lineHeight: 1,
+          pt: 3,
+          pb: 1,
+          px: 4,
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        Docs
-      </Text>
+        <Text
+          as="h3"
+          size={3}
+          weight="medium"
+          sx={{
+            lineHeight: 1,
+          }}
+        >
+          Docs
+        </Text>
+        <Box
+          sx={{
+            mr: -2,
+          }}
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 15 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ lineHeight: 1 }}
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M8 3C8 2.72386 7.77614 2.5 7.5 2.5C7.22386 2.5 7 2.72386 7 3V7H3C2.72386 7 2.5 7.22386 2.5 7.5C2.5 7.77614 2.72386 8 3 8H7V12C7 12.2761 7.22386 12.5 7.5 12.5C7.77614 12.5 8 12.2761 8 12V8H12C12.2761 8 12.5 7.77614 12.5 7.5C12.5 7.22386 12.2761 7 12 7H8V3Z"
+              fill="#282B2E"
+            />
+          </svg>
+        </Box>
+      </Flex>
       <List>
         <ListItem
           as="a"
@@ -93,7 +149,7 @@ export const Navigation = () => {
             px: 6,
           }}
         >
-          <Text size={2}>Styling</Text>
+          <Text size={2}>Styling with Interop</Text>
         </ListItem>
         <ListItem
           as="a"
@@ -102,7 +158,7 @@ export const Navigation = () => {
             px: 6,
           }}
         >
-          <Text size={2}>Theming</Text>
+          <Text size={2}>Styling with Styled Components</Text>
         </ListItem>
         <ListItem
           as="a"
@@ -111,7 +167,7 @@ export const Navigation = () => {
             px: 6,
           }}
         >
-          <Text size={2}>Using the SX prop</Text>
+          <Text size={2}>Styling with Emotion</Text>
         </ListItem>
         <ListItem
           as="a"
@@ -120,7 +176,7 @@ export const Navigation = () => {
             px: 6,
           }}
         >
-          <Text size={2}>Responsive props</Text>
+          <Text size={2}>Styling with Treat</Text>
         </ListItem>
         <ListItem
           as="a"
@@ -129,23 +185,69 @@ export const Navigation = () => {
             px: 6,
           }}
         >
-          <Text size={2}>Server-side rendering</Text>
+          <Text size={2}>Styling with Stitches</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            px: 6,
+          }}
+        >
+          <Text size={2}>Styling with CSS</Text>
+        </ListItem>
+        <ListItem
+          as="a"
+          href=""
+          sx={{
+            px: 6,
+          }}
+        >
+          <Text size={2}>Animation</Text>
         </ListItem>
       </List>
       <Divider />
-      <Text
-        as="h3"
-        size={3}
-        pt={3}
-        pb={1}
-        px={4}
-        weight="medium"
+      <Flex
         sx={{
-          lineHeight: 1,
+          pt: 3,
+          pb: 1,
+          px: 4,
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        Components
-      </Text>
+        <Text
+          as="h3"
+          size={3}
+          weight="medium"
+          sx={{
+            lineHeight: 1,
+          }}
+        >
+          Components
+        </Text>
+        <Box
+          sx={{
+            mr: -2,
+          }}
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 15 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ lineHeight: 1 }}
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M8 3C8 2.72386 7.77614 2.5 7.5 2.5C7.22386 2.5 7 2.72386 7 3V7H3C2.72386 7 2.5 7.22386 2.5 7.5C2.5 7.77614 2.72386 8 3 8H7V12C7 12.2761 7.22386 12.5 7.5 12.5C7.77614 12.5 8 12.2761 8 12V8H12C12.2761 8 12.5 7.77614 12.5 7.5C12.5 7.22386 12.2761 7 12 7H8V3Z"
+              fill="#282B2E"
+            />
+          </svg>
+        </Box>
+      </Flex>
       <Text
         as="h4"
         size={2}
@@ -799,19 +901,47 @@ export const Navigation = () => {
         </ListItem>
       </List>
       <Divider />
-      <Text
-        as="h3"
-        size={3}
-        pt={3}
-        pb={1}
-        px={4}
-        weight="medium"
+      <Flex
         sx={{
-          lineHeight: 1,
+          pt: 3,
+          pb: 1,
+          px: 4,
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        Resources
-      </Text>
+        <Text
+          as="h3"
+          size={3}
+          weight="medium"
+          sx={{
+            lineHeight: 1,
+          }}
+        >
+          Resources
+        </Text>
+        <Box
+          sx={{
+            mr: -2,
+          }}
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 15 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ lineHeight: 1 }}
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M8 3C8 2.72386 7.77614 2.5 7.5 2.5C7.22386 2.5 7 2.72386 7 3V7H3C2.72386 7 2.5 7.22386 2.5 7.5C2.5 7.77614 2.72386 8 3 8H7V12C7 12.2761 7.22386 12.5 7.5 12.5C7.77614 12.5 8 12.2761 8 12V8H12C12.2761 8 12.5 7.77614 12.5 7.5C12.5 7.22386 12.2761 7 12 7H8V3Z"
+              fill="#282B2E"
+            />
+          </svg>
+        </Box>
+      </Flex>
       <List>
         <ListItem
           as="a"
