@@ -71,8 +71,8 @@ export default function ButtonPage() {
               mb: 6,
             }}
           >
-            A button enables users to trigger an event, such as submitting a form, opening a dialog, canceling an
-            action, or performing a delete operation.
+            A button enables users to trigger an event, such as submitting a form, opening a dialog,
+            canceling an action, or performing a delete operation.
           </Heading>
 
           <Box sx={{ my: 7, mx: -9 }}>
@@ -121,7 +121,9 @@ export default function ButtonPage() {
             }}
           >
             <pre style={{ margin: '0' }}>
-              <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>npm install @componentsorg/button</code>
+              <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                npm install @componentsorg/button
+              </code>
             </pre>
           </Box>
           <Text as="p" size={3} sx={{ lineHeight: 2, my: 4 }}>
@@ -222,7 +224,9 @@ export default function ButtonPage() {
               }}
             >
               <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>&lt;Button&gt;Button&lt;/Button&gt;</code>
+                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                  &lt;Button&gt;Button&lt;/Button&gt;
+                </code>
               </pre>
             </Box>
           </Box>
@@ -290,7 +294,9 @@ export default function ButtonPage() {
               }}
             >
               <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>&lt;Button&gt;Button&lt;/Button&gt;</code>
+                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                  &lt;Button&gt;Button&lt;/Button&gt;
+                </code>
               </pre>
             </Box>
           </Box>
@@ -358,7 +364,9 @@ export default function ButtonPage() {
               }}
             >
               <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>&lt;Button&gt;Button&lt;/Button&gt;</code>
+                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                  &lt;Button&gt;Button&lt;/Button&gt;
+                </code>
               </pre>
             </Box>
           </Box>
@@ -450,7 +458,9 @@ export default function ButtonPage() {
               }}
             >
               <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>&lt;Button&gt;Button&lt;/Button&gt;</code>
+                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                  &lt;Button&gt;Button&lt;/Button&gt;
+                </code>
               </pre>
             </Box>
           </Box>
@@ -496,7 +506,9 @@ export default function ButtonPage() {
               }}
             >
               <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>&lt;Button&gt;Button&lt;/Button&gt;</code>
+                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                  &lt;Button&gt;Button&lt;/Button&gt;
+                </code>
               </pre>
             </Box>
           </Box>
@@ -547,7 +559,9 @@ export default function ButtonPage() {
               }}
             >
               <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>&lt;Button&gt;Button&lt;/Button&gt;</code>
+                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                  &lt;Button&gt;Button&lt;/Button&gt;
+                </code>
               </pre>
             </Box>
           </Box>
@@ -589,7 +603,9 @@ export default function ButtonPage() {
               }}
             >
               <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>&lt;Button&gt;Button&lt;/Button&gt;</code>
+                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                  &lt;Button&gt;Button&lt;/Button&gt;
+                </code>
               </pre>
             </Box>
           </Box>
@@ -657,7 +673,9 @@ export default function ButtonPage() {
               }}
             >
               <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>&lt;Button&gt;Button&lt;/Button&gt;</code>
+                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                  &lt;Button&gt;Button&lt;/Button&gt;
+                </code>
               </pre>
             </Box>
           </Box>

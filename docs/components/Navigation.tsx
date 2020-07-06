@@ -1,5 +1,7 @@
 import React from 'react';
 import { Text, Flex, List, Box, ListItem, Badge, Heading, Divider } from '@modulz/radix';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { ScrollArea } from './ScrollArea';
 
 export const Navigation = () => {
@@ -69,36 +71,9 @@ export const Navigation = () => {
         </Box>
       </Flex>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          variant="active"
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2} sx={{ color: 'white' }}>
-            Introduction
-          </Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Getting started</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Roadmap</Text>
-        </ListItem>
+        <PageLink href="/introduction">Introduction</PageLink>
+        <PageLink href="/getting-started">Getting started</PageLink>
+        <PageLink href="/roadmap">Roadmap</PageLink>
       </List>
       <Divider />
       <Flex
@@ -143,69 +118,13 @@ export const Navigation = () => {
         </Box>
       </Flex>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Styling with Interop</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Styling with Styled Components</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Styling with Emotion</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Styling with Treat</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Styling with Stitches</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Styling with CSS</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Animation</Text>
-        </ListItem>
+        <PageLink href="/styling-with-interop">Styling with Interop</PageLink>
+        <PageLink href="/styling-with-styled-components">Styling with Styled Components</PageLink>
+        <PageLink href="/styling-with-emotion">Styling with Emotion</PageLink>
+        <PageLink href="/styling-with-treat">Styling with Treat</PageLink>
+        <PageLink href="/styling-with-stitches">Styling with Stitches</PageLink>
+        <PageLink href="/styling-with-css">Styling with CSS</PageLink>
+        <PageLink href="/animation">Animation</PageLink>
       </List>
       <Divider />
       <Flex
@@ -264,56 +183,21 @@ export const Navigation = () => {
         Layout
       </Text>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Box</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Container</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Flex</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Grid</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Section</Text>
-        </ListItem>
+        <PageLink href="/box" isNested>
+          Box
+        </PageLink>
+        <PageLink href="/container" isNested>
+          Container
+        </PageLink>
+        <PageLink href="/flex" isNested>
+          Flex
+        </PageLink>
+        <PageLink href="/grid" isNested>
+          Grid
+        </PageLink>
+        <PageLink href="/section" isNested>
+          Section
+        </PageLink>
       </List>
       <Text
         as="h4"
@@ -330,120 +214,39 @@ export const Navigation = () => {
         Input
       </Text>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Autocomplete</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>ComboBox</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Checkbox</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>DatePicker</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Input</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>MultiSelect</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Radio</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Slider</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Select</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Switch</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Textarea</Text>
-        </ListItem>
+        <PageLink href="/autocomplete" isNested>
+          Autocomplete<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
+        <PageLink href="/combobox" isNested>
+          ComboBox
+        </PageLink>
+        <PageLink href="/checkbox" isNested>
+          Checkbox
+        </PageLink>
+        <PageLink href="/datepicker" isNested>
+          DatePicker<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
+        <PageLink href="/input" isNested>
+          Input
+        </PageLink>
+        <PageLink href="/multi-select" isNested>
+          MultiSelect<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
+        <PageLink href="/radio" isNested>
+          Radio
+        </PageLink>
+        <PageLink href="/slider" isNested>
+          Slider<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
+        <PageLink href="/select" isNested>
+          Select
+        </PageLink>
+        <PageLink href="/switch" isNested>
+          Switch
+        </PageLink>
+        <PageLink href="/textarea" isNested>
+          Textarea
+        </PageLink>
       </List>
       <Text
         as="h4"
@@ -460,77 +263,27 @@ export const Navigation = () => {
         Feedback
       </Text>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Alert</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>AlertDialog</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Badge</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Dialog</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Meter</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Progress</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Toast</Text>
-        </ListItem>
+        <PageLink href="/alert" isNested>
+          Alert
+        </PageLink>
+        <PageLink href="/alert-dialog" isNested>
+          AlertDialog
+        </PageLink>
+        <PageLink href="/badge" isNested>
+          Badge
+        </PageLink>
+        <PageLink href="/dialog" isNested>
+          Dialog
+        </PageLink>
+        <PageLink href="/meter" isNested>
+          Meter<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
+        <PageLink href="/progres" isNested>
+          Progress
+        </PageLink>
+        <PageLink href="/toast" isNested>
+          Toast
+        </PageLink>
       </List>
       <Text
         as="h4"
@@ -547,36 +300,15 @@ export const Navigation = () => {
         Text
       </Text>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Blockquote</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Code</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Text</Text>
-        </ListItem>
+        <PageLink href="/blockquote" isNested>
+          Blockquote
+        </PageLink>
+        <PageLink href="/code" isNested>
+          Code
+        </PageLink>
+        <PageLink href="/text" isNested>
+          Text
+        </PageLink>
       </List>
       <Text
         as="h4"
@@ -593,59 +325,21 @@ export const Navigation = () => {
         Utilities
       </Text>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>AspectRatio</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>HoverZone</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Portal</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>ToolBar</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>VisuallyHidden</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
+        <PageLink href="/aspect-ratio" isNested>
+          AspectRatio
+        </PageLink>
+        <PageLink href="/hover-zone" isNested>
+          HoverZone<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
+        <PageLink href="/portal" isNested>
+          Portal
+        </PageLink>
+        <PageLink href="/toolbar" isNested>
+          Toolbar<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
+        <PageLink href="/visually-hidden" isNested>
+          VisuallyHidden<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
       </List>
       <Text
         as="h4"
@@ -662,67 +356,24 @@ export const Navigation = () => {
         Contextual
       </Text>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>HoverCard</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Overlay</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Popover</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>RightClickMenu</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Sheet</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Tooltip</Text>
-        </ListItem>
+        <PageLink href="/hover-card" isNested>
+          HoverCard<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
+        <PageLink href="/overlay" isNested>
+          Overlay
+        </PageLink>
+        <PageLink href="/popover" isNested>
+          Popover
+        </PageLink>
+        <PageLink href="/right-click-menu" isNested>
+          RightClickMenu
+        </PageLink>
+        <PageLink href="/sheet" isNested>
+          Sheet
+        </PageLink>
+        <PageLink href="/tooltip" isNested>
+          tooltip
+        </PageLink>
       </List>
       <Text
         as="h4"
@@ -739,167 +390,54 @@ export const Navigation = () => {
         Undecided
       </Text>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Arrow</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Accordion</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Avatar</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Button</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Card</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Carousel</Text>
-          <Badge sx={{ ml: 1 }}>WIP</Badge>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Collapsible</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Divider</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Header</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Image</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Link</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Menu</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>MenuItem</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Tab</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>Table</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            pl: 8,
-            pr: 3,
-          }}
-        >
-          <Text size={2}>ToggleButton</Text>
-        </ListItem>
+        <PageLink href="/arrow" isNested>
+          Arrow
+        </PageLink>
+        <PageLink href="/accordion" isNested>
+          Accordion
+        </PageLink>
+        <PageLink href="/avatar" isNested>
+          Avatar
+        </PageLink>
+        <PageLink href="/button" isNested>
+          Button
+        </PageLink>
+        <PageLink href="/card" isNested>
+          Card
+        </PageLink>
+        <PageLink href="/carrousel" isNested>
+          Carrousel<Badge sx={{ ml: 1 }}>WIP</Badge>
+        </PageLink>
+        <PageLink href="/collapsible" isNested>
+          Collapsible
+        </PageLink>
+        <PageLink href="/divider" isNested>
+          Divider
+        </PageLink>
+        <PageLink href="/header" isNested>
+          Header
+        </PageLink>
+        <PageLink href="/image" isNested>
+          Image
+        </PageLink>
+        <PageLink href="/link" isNested>
+          Link
+        </PageLink>
+        <PageLink href="/menu" isNested>
+          Menu
+        </PageLink>
+        <PageLink href="/menu-item" isNested>
+          MenuItem
+        </PageLink>
+        <PageLink href="/tab" isNested>
+          Tab
+        </PageLink>
+        <PageLink href="/table" isNested>
+          Table
+        </PageLink>
+        <PageLink href="/toggle-button" isNested>
+          ToggleButton
+        </PageLink>
       </List>
       <Divider />
       <Flex
@@ -944,34 +482,31 @@ export const Navigation = () => {
         </Box>
       </Flex>
       <List>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Layouts</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Tutorials</Text>
-        </ListItem>
-        <ListItem
-          as="a"
-          href=""
-          sx={{
-            px: 6,
-          }}
-        >
-          <Text size={2}>Showcase</Text>
-        </ListItem>
+        <PageLink href="/layouts">Layouts</PageLink>
+        <PageLink href="/tutorials">Tutorials</PageLink>
+        <PageLink href="/showcase">Showcase</PageLink>
       </List>
     </ScrollArea>
+  );
+};
+
+const PageLink = ({ children, isNested = false, ...props }) => {
+  const router = useRouter();
+  const isActive = router.pathname === props.href;
+
+  return (
+    <Link {...props} passHref>
+      <ListItem
+        as="a"
+        sx={{
+          pl: isNested ? 8 : 6,
+        }}
+        variant={isActive ? 'active' : undefined}
+      >
+        <Text size={2} sx={{ color: isActive ? 'white' : undefined }}>
+          {children}
+        </Text>
+      </ListItem>
+    </Link>
   );
 };

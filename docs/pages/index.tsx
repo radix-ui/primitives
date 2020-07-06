@@ -1,5 +1,16 @@
 import React from 'react';
-import { Container, Box, Text, Flex, Link, Grid, Divider, Badge, Heading, Button } from '@modulz/radix';
+import {
+  Container,
+  Box,
+  Text,
+  Flex,
+  Link,
+  Grid,
+  Divider,
+  Badge,
+  Heading,
+  Button,
+} from '@modulz/radix';
 import { DatePicker } from '../components/DatePicker';
 
 export default function Home() {
@@ -115,12 +126,22 @@ export default function Home() {
       </Box>
       <Box mt={6} mb={8}>
         <Container size={2}>
-          <Heading size={5} mb={4} sx={{ textAlign: 'center', fontWeight: 500, letterSpacing: '-.052em' }}>
+          <Heading
+            size={5}
+            mb={4}
+            sx={{ textAlign: 'center', fontWeight: 500, letterSpacing: '-.052em' }}
+          >
             White-label components for building design systems.
           </Heading>
 
-          <Heading as="h2" size={2} weight="normal" sx={{ textAlign: 'center', color: 'gray700', lineHeight: '4' }}>
-            An free and open-source component library for building accessible, React-based design systems.
+          <Heading
+            as="h2"
+            size={2}
+            weight="normal"
+            sx={{ textAlign: 'center', color: 'gray700', lineHeight: '4' }}
+          >
+            An free and open-source component library for building accessible, React-based design
+            systems.
           </Heading>
 
           <Flex
@@ -136,7 +157,12 @@ export default function Home() {
                     alignItems: 'center',
                   }}
                 >
-                  <Text as="span" size={5} sx={{ color: 'inherit', mr: 1 }} style={{ lineHeight: 1 }}>
+                  <Text
+                    as="span"
+                    size={5}
+                    sx={{ color: 'inherit', mr: 1 }}
+                    style={{ lineHeight: 1 }}
+                  >
                     Documentation
                   </Text>
                   <svg
@@ -264,7 +290,8 @@ export default function Home() {
                   position: 'relative',
                   py: '2',
                   mr: '8',
-                  boxShadow: '0 10px 38px -10px rgba(22,23,24,0.35), 0 10px 20px -15px rgba(22,23,24,0.2)',
+                  boxShadow:
+                    '0 10px 38px -10px rgba(22,23,24,0.35), 0 10px 20px -15px rgba(22,23,24,0.2)',
                 }}
               >
                 <Box
@@ -404,7 +431,13 @@ export default function Home() {
                   mr: '8',
                 }}
               >
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     fill-rule="evenodd"
                     clip-rule="evenodd"
@@ -460,7 +493,8 @@ export default function Home() {
                   padding: '2',
                   fontSize: '2',
                   borderRadius: '2',
-                  boxShadow: '0 10px 38px -10px rgba(22,23,24,0.35), 0 10px 20px -15px rgba(22,23,24,0.2)',
+                  boxShadow:
+                    '0 10px 38px -10px rgba(22,23,24,0.35), 0 10px 20px -15px rgba(22,23,24,0.2)',
                   mr: '8',
                 }}
               >
@@ -477,7 +511,13 @@ export default function Home() {
                       color: 'gray700',
                     }}
                   >
-                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path
                         fill-rule="evenodd"
                         clip-rule="evenodd"
@@ -605,7 +645,8 @@ export default function Home() {
                   position: 'relative',
                   p: '4',
                   mr: '8',
-                  boxShadow: '0 10px 38px -10px rgba(22,23,24,0.35), 0 10px 20px -15px rgba(22,23,24,0.2)',
+                  boxShadow:
+                    '0 10px 38px -10px rgba(22,23,24,0.35), 0 10px 20px -15px rgba(22,23,24,0.2)',
                   fontFeatureSettings: "'tnum'",
                   width: '400px',
                 }}
@@ -627,8 +668,8 @@ export default function Home() {
                     mb: 3,
                   }}
                 >
-                  Thanks for subscribing on my channel! I will be posting exclusive content on Youtube soon! Help me to
-                  spread the word!
+                  Thanks for subscribing on my channel! I will be posting exclusive content on
+                  Youtube soon! Help me to spread the word!
                 </Text>
                 <Flex
                   sx={{
@@ -692,8 +733,8 @@ export default function Home() {
                   Accessible
                 </Heading>
                 <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Primitives adhere to WAI-ARIA guidelines and are tested regularly in a wide selection of modern
-                  browsers and assistive technologies.
+                  Primitives adhere to WAI-ARIA guidelines and are tested regularly in a wide
+                  selection of modern browsers and assistive technologies.
                 </Text>
               </Box>
               <Box>
@@ -701,8 +742,9 @@ export default function Home() {
                   Functional
                 </Heading>
                 <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Primitives are feature-rich, with support for keyboard interaction, collision detection, focus
-                  trapping, dynamic resizing, scroll locking, native fallbacks, and more.
+                  Primitives are feature-rich, with support for keyboard interaction, collision
+                  detection, focus trapping, dynamic resizing, scroll locking, native fallbacks, and
+                  more.
                 </Text>
               </Box>
               <Box>
@@ -710,7 +752,8 @@ export default function Home() {
                   Interoperable
                 </Heading>
                 <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Fully interoperable with Modulz Editor and compatible with Modulz design tool plugins.
+                  Fully interoperable with Modulz Editor and compatible with Modulz design tool
+                  plugins.
                 </Text>
               </Box>
               <Box>
@@ -718,8 +761,8 @@ export default function Home() {
                   Themeable
                 </Heading>
                 <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Primitives are built to be themed. No need to override opinionated styles—Primitives ship with zero
-                  presentational styles.
+                  Primitives are built to be themed. No need to override opinionated
+                  styles—Primitives ship with zero presentational styles.
                 </Text>
               </Box>
               <Box>

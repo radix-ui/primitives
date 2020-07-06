@@ -1,5 +1,17 @@
 import React from 'react';
-import { Container, Box, Text, Heading, List, ListItem, Divider, Grid, Flex, CardLink, Link } from '@modulz/radix';
+import {
+  Container,
+  Box,
+  Text,
+  Heading,
+  List,
+  ListItem,
+  Divider,
+  Grid,
+  Flex,
+  CardLink,
+  Link,
+} from '@modulz/radix';
 import { Navigation } from '../components/Navigation';
 
 export default function IntroductionPage() {
@@ -59,22 +71,26 @@ export default function IntroductionPage() {
               Vision
             </Heading>
             <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
-              Most of us share similar definitions for common UI patterns like accordion, checkbox, combobox, dialog,
-              dropdown, select, slider, and tooltip. These UI patterns are{' '}
-              <Link href="https://www.w3.org/TR/wai-aria-practices/#aria_ex">documented by WAI-ARIA</Link> and generally
-              understood by the community.
+              Most of us share similar definitions for common UI patterns like accordion, checkbox,
+              combobox, dialog, dropdown, select, slider, and tooltip. These UI patterns are{' '}
+              <Link href="https://www.w3.org/TR/wai-aria-practices/#aria_ex">
+                documented by WAI-ARIA
+              </Link>{' '}
+              and generally understood by the community.
             </Text>
             <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
-              However, the implementations provided to us by the web platform are inadequate. They're either
-              non-existent, lacking in functionality, or cannot be customised sufficiently.
+              However, the implementations provided to us by the web platform are inadequate.
+              They're either non-existent, lacking in functionality, or cannot be customised
+              sufficiently.
             </Text>
             <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
-              So, developers are forced to build custom components—an incredibly difficult task. As a result, most
-              components on the web are inaccessible, non-performant, and lacking important features.
+              So, developers are forced to build custom components—an incredibly difficult task. As
+              a result, most components on the web are inaccessible, non-performant, and lacking
+              important features.
             </Text>
             <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
-              Our goal is to create a well-funded, open-source component library that the community can use to build
-              accessible design systems.
+              Our goal is to create a well-funded, open-source component library that the community
+              can use to build accessible design systems.
             </Text>
           </Box>
 
@@ -87,8 +103,8 @@ export default function IntroductionPage() {
                 Accessible
               </Heading>
               <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                Primitives adhere to WAI-ARIA guidelines and are tested regularly in a wide selection of modern browsers
-                and assistive technologies.
+                Primitives adhere to WAI-ARIA guidelines and are tested regularly in a wide
+                selection of modern browsers and assistive technologies.
               </Text>
             </Box>
             <Box>
@@ -96,8 +112,9 @@ export default function IntroductionPage() {
                 Functional
               </Heading>
               <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                Primitives are feature-rich, with support for keyboard interaction, collision detection, focus trapping,
-                dynamic resizing, scroll locking, native fallbacks, and more.
+                Primitives are feature-rich, with support for keyboard interaction, collision
+                detection, focus trapping, dynamic resizing, scroll locking, native fallbacks, and
+                more.
               </Text>
             </Box>
             <Box>
@@ -105,7 +122,8 @@ export default function IntroductionPage() {
                 Interoperable
               </Heading>
               <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                Fully interoperable with Modulz Editor and compatible with Modulz design tool plugins.
+                Fully interoperable with Modulz Editor and compatible with Modulz design tool
+                plugins.
               </Text>
             </Box>
             <Box>
@@ -113,8 +131,8 @@ export default function IntroductionPage() {
                 Themeable
               </Heading>
               <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                Primitives are built to be themed. No need to override opinionated styles—Primitives ship with zero
-                presentational styles.
+                Primitives are built to be themed. No need to override opinionated styles—Primitives
+                ship with zero presentational styles.
               </Text>
             </Box>
             <Box>
@@ -290,9 +308,9 @@ export default function IntroductionPage() {
                     lineHeight: 3,
                   }}
                 >
-                  I hope you're enjoying the first days of summer albeit probably mostly in quarantine! Saw your
-                  exciting post the other day, congrats on this and the clearly great response from the industry per the
-                  conversation here.
+                  I hope you're enjoying the first days of summer albeit probably mostly in
+                  quarantine! Saw your exciting post the other day, congrats on this and the clearly
+                  great response from the industry per the conversation here.
                 </Text>
               </Box>
               <Box>
@@ -313,9 +331,9 @@ export default function IntroductionPage() {
                     lineHeight: 3,
                   }}
                 >
-                  I hope you're enjoying the first days of summer albeit probably mostly in quarantine! Saw your
-                  exciting post the other day, congrats on this and the clearly great response from the industry per the
-                  conversation here.
+                  I hope you're enjoying the first days of summer albeit probably mostly in
+                  quarantine! Saw your exciting post the other day, congrats on this and the clearly
+                  great response from the industry per the conversation here.
                 </Text>
               </Box>
               <Box>
@@ -336,7 +354,8 @@ export default function IntroductionPage() {
                     lineHeight: 3,
                   }}
                 >
-                  I hope you're enjoying the first days of summer albeit probably mostly in quarantine!
+                  I hope you're enjoying the first days of summer albeit probably mostly in
+                  quarantine!
                 </Text>
               </Box>
               <Box>
@@ -357,9 +376,9 @@ export default function IntroductionPage() {
                     lineHeight: 3,
                   }}
                 >
-                  I hope you're enjoying the first days of summer albeit probably mostly in quarantine! Saw your
-                  exciting post the other day, congrats on this and the clearly great response from the industry per the
-                  conversation here.
+                  I hope you're enjoying the first days of summer albeit probably mostly in
+                  quarantine! Saw your exciting post the other day, congrats on this and the clearly
+                  great response from the industry per the conversation here.
                 </Text>
               </Box>
               <Box>
@@ -380,7 +399,8 @@ export default function IntroductionPage() {
                     lineHeight: 3,
                   }}
                 >
-                  I hope you're enjoying the first days of summer albeit probably mostly in quarantine!
+                  I hope you're enjoying the first days of summer albeit probably mostly in
+                  quarantine!
                 </Text>
               </Box>
               <Box>
@@ -401,7 +421,8 @@ export default function IntroductionPage() {
                     lineHeight: 3,
                   }}
                 >
-                  I hope you're enjoying the first days of summer albeit probably mostly in quarantine!
+                  I hope you're enjoying the first days of summer albeit probably mostly in
+                  quarantine!
                 </Text>
               </Box>
             </Grid>

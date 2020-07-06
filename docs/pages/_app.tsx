@@ -14,7 +14,9 @@ const GlobalStyles = createGlobalStyle`
 
 function App({ Component, pageProps }: AppProps) {
   const isDarkMode =
-    typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    typeof window !== 'undefined' &&
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   return (
     <Radix.RadixProvider>

@@ -64,7 +64,8 @@ export default function DemoPage() {
               mb: 6,
             }}
           >
-            An alert displays a brief, important message to attract the user's attention without interrupting them.
+            An alert displays a brief, important message to attract the user's attention without
+            interrupting them.
           </Heading>
 
           <Box
@@ -116,7 +117,8 @@ export default function DemoPage() {
             >
               <pre style={{ margin: '0' }}>
                 <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check something.&lt;/Text&gt;&lt;/Alert&gt;
+                  &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check
+                  something.&lt;/Text&gt;&lt;/Alert&gt;
                 </code>
               </pre>
             </Box>
@@ -187,7 +189,8 @@ export default function DemoPage() {
             >
               <pre style={{ margin: '0' }}>
                 <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check something.&lt;/Text&gt;&lt;/Alert&gt;
+                  &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check
+                  something.&lt;/Text&gt;&lt;/Alert&gt;
                 </code>
               </pre>
             </Box>
@@ -316,7 +319,13 @@ export default function DemoPage() {
                       display: 'inline-flex',
                     }}
                   >
-                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path
                         fill-rule="evenodd"
                         clip-rule="evenodd"
@@ -336,7 +345,8 @@ export default function DemoPage() {
             >
               <pre style={{ margin: '0' }}>
                 <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check something.&lt;/Text&gt;&lt;/Alert&gt;
+                  &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check
+                  something.&lt;/Text&gt;&lt;/Alert&gt;
                 </code>
               </pre>
             </Box>
@@ -402,8 +412,9 @@ export default function DemoPage() {
                       lineHeight: 1,
                     }}
                   >
-                    Draw attention to information such as a company message, a new feature highlight, a prompt to take
-                    action on something, a reminder to complete a task, or something similar.
+                    Draw attention to information such as a company message, a new feature
+                    highlight, a prompt to take action on something, a reminder to complete a task,
+                    or something similar.
                   </Text>
                 </Box>
               </Box>
@@ -416,7 +427,8 @@ export default function DemoPage() {
             >
               <pre style={{ margin: '0' }}>
                 <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check something.&lt;/Text&gt;&lt;/Alert&gt;
+                  &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check
+                  something.&lt;/Text&gt;&lt;/Alert&gt;
                 </code>
               </pre>
             </Box>

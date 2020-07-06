@@ -63,8 +63,8 @@ export default function InputPage() {
               mb: 6,
             }}
           >
-            A button enables users to trigger an event, such as submitting a form, opening a dialog, canceling an
-            action, or performing a delete operation.
+            A button enables users to trigger an event, such as submitting a form, opening a dialog,
+            canceling an action, or performing a delete operation.
           </Heading>
 
           <Box
@@ -104,7 +104,9 @@ export default function InputPage() {
               }}
             >
               <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>&lt;Button&gt;Button&lt;/Button&gt;</code>
+                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                  &lt;Button&gt;Button&lt;/Button&gt;
+                </code>
               </pre>
             </Box>
           </Box>
