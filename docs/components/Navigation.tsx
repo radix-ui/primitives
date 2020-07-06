@@ -1,20 +1,30 @@
 import React from 'react';
-import { Text, List, ListItem, Badge, Heading, Divider } from '@modulz/radix';
+import { Text, List, Box, ListItem, Badge, Heading, Divider } from '@modulz/radix';
 
 export const Navigation = () => {
   return (
     <div>
-      <List>
-        <ListItem
-          as="a"
-          href="/"
-          sx={{
-            px: 4,
-          }}
+      <Box
+        as="a"
+        href="/"
+        sx={{
+          display: 'inline-flex',
+          m: 3,
+        }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="35"
+          height="35"
+          viewBox="0 0 35 35"
+          fill="none"
+          style={{ verticalAlign: 'middle' }}
         >
-          <Text size={2}>Back to home</Text>
-        </ListItem>
-      </List>
+          <circle cx="12.5" cy="22.5" r="8" stroke="black" />
+          <circle cx="22.5" cy="22.5" r="8" stroke="black" />
+          <circle cx="17.5" cy="12.5" r="8" stroke="black" />
+        </svg>
+      </Box>
       <Divider />
       <Text
         as="h3"
