@@ -1,9 +1,10 @@
 import React from 'react';
 import { Text, Flex, List, Box, ListItem, Badge, Heading, Divider } from '@modulz/radix';
+import { ScrollArea } from './ScrollArea';
 
 export const Navigation = () => {
   return (
-    <div>
+    <ScrollArea>
       <Box
         as="a"
         href="/"
@@ -971,6 +972,6 @@ export const Navigation = () => {
           <Text size={2}>Showcase</Text>
         </ListItem>
       </List>
-    </div>
+    </ScrollArea>
   );
 };
