@@ -130,7 +130,7 @@ export default function Home() {
             }}
           >
             <Box>
-              <Link href="/demo-page">
+              <Link href="/introduction">
                 <Flex
                   sx={{
                     alignItems: 'center',

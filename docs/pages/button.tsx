@@ -3,6 +3,8 @@ import {
   Container,
   Box,
   Text,
+  AspectRatio,
+  Code,
   Button,
   Heading,
   List,
@@ -10,6 +12,12 @@ import {
   ListItem,
   Divider,
   Pipe,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Td,
+  Tbody,
   Grid,
   Flex,
   CardLink,
@@ -66,6 +74,116 @@ export default function ButtonPage() {
             A button enables users to trigger an event, such as submitting a form, opening a dialog, canceling an
             action, or performing a delete operation.
           </Heading>
+
+          <Box sx={{ my: 7, mx: -9 }}>
+            <AspectRatio ratio="3:1">
+              <Flex
+                sx={{
+                  border: '1px solid gainsboro',
+                  borderRadius: '2',
+                  height: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Box sx={{}}>
+                  <Button>Button</Button>
+                </Box>
+              </Flex>
+            </AspectRatio>
+          </Box>
+
+          <Box
+            sx={{
+              mt: 7,
+              mb: 5,
+            }}
+          >
+            <Heading
+              as="h4"
+              size={1}
+              sx={{
+                lineHeight: 2,
+                mb: 1,
+              }}
+            >
+              Installation
+            </Heading>
+            <Text size={3} sx={{ lineHeight: 2 }}>
+              Install the component from your command line:
+            </Text>
+          </Box>
+          <Box
+            sx={{
+              border: '1px solid gainsboro',
+              borderRadius: '2',
+              p: 3,
+            }}
+          >
+            <pre style={{ margin: '0' }}>
+              <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>npm install @componentsorg/button</code>
+            </pre>
+          </Box>
+          <Text as="p" size={3} sx={{ lineHeight: 2, my: 4 }}>
+            Then import the component:
+          </Text>
+          <Box
+            sx={{
+              border: '1px solid gainsboro',
+              borderRadius: '2',
+              p: 3,
+            }}
+          >
+            <pre style={{ margin: '0' }}>
+              <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
+                import Button from "@componentsorg/button";
+              </code>
+            </pre>
+          </Box>
+
+          <Box
+            sx={{
+              mt: 7,
+              mb: 5,
+            }}
+          >
+            <Heading
+              as="h4"
+              size={1}
+              sx={{
+                lineHeight: 2,
+              }}
+            >
+              Keyboard interaction
+            </Heading>
+          </Box>
+
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>Interaction</Th>
+                <Th>Result</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              <Tr>
+                <Td>
+                  <Code as="kbd">Space</Code>
+                </Td>
+                <Td>
+                  <Text>Activates the button.</Text>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>
+                  <Code as="kbd">Enter</Code>
+                </Td>
+                <Td>
+                  <Text>Activates the button.</Text>
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
 
           <Box
             sx={{
@@ -543,6 +661,55 @@ export default function ButtonPage() {
               </pre>
             </Box>
           </Box>
+
+          <Box
+            sx={{
+              pt: 9,
+            }}
+          >
+            <Divider />
+          </Box>
+
+          <Box
+            sx={{
+              py: 9,
+            }}
+          >
+            <Box
+              sx={{
+                mb: 5,
+              }}
+            >
+              <Heading
+                as="h4"
+                size={1}
+                sx={{
+                  lineHeight: 2,
+                }}
+              >
+                Related components
+              </Heading>
+              <ul>
+                <li>
+                  <Link>
+                    <Text size={3}>MenuButton</Text>
+                  </Link>
+                </li>
+                <li>
+                  <Link>
+                    <Text size={3}>ToggleButton</Text>
+                  </Link>
+                </li>
+                <li>
+                  <Link>
+                    <Text size={3}>ToolBar</Text>
+                  </Link>
+                </li>
+              </ul>
+            </Box>
+          </Box>
+
+          <Divider />
 
           <Flex
             sx={{
