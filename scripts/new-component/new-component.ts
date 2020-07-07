@@ -68,7 +68,7 @@ function createComponent() {
 
   // Our index template is super straightforward, so we'll just inline it for now.
   const indexTemplate = prettify(`\
-export { ${componentName} } from './${componentName}';
+export * from './${componentName}';
 `);
 
   logIntro({
