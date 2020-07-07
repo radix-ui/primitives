@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type OverlayDOMProps = React.ComponentPropsWithRef<'div'>;
+type OverlayDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type OverlayOwnProps = {};
 type OverlayProps = OverlayDOMProps & OverlayOwnProps;
 

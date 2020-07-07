@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type BadgeDOMProps = React.ComponentPropsWithRef<'div'>;
+type BadgeDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type BadgeOwnProps = {};
 type BadgeProps = BadgeDOMProps & BadgeOwnProps;
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type ToggleButtonDOMProps = React.ComponentPropsWithRef<'div'>;
+type ToggleButtonDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type ToggleButtonOwnProps = {};
 type ToggleButtonProps = ToggleButtonDOMProps & ToggleButtonOwnProps;
 

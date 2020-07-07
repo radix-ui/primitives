@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type CodeDOMProps = React.ComponentPropsWithRef<'div'>;
+type CodeDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type CodeOwnProps = {};
 type CodeProps = CodeDOMProps & CodeOwnProps;
 

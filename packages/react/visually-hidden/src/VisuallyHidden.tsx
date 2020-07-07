@@ -1,9 +1,14 @@
 import * as React from 'react';
+import { forwardRef } from '@interop-ui/react-utils';
 
-export type VisuallyHiddenProps = React.ComponentPropsWithRef<'span'>;
+const DEFAULT_TAG = 'span';
 
-export const VisuallyHidden = React.forwardRef<HTMLSpanElement, VisuallyHiddenProps>(
-  (props, forwardedRef) => (
+type VisuallyHiddenOwnProps = {};
+type VisuallyHiddenDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
+type VisuallyHiddenProps = VisuallyHiddenOwnProps & VisuallyHiddenDOMProps;
+
+const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
+  ({ as: Comp = DEFAULT_TAG, ...props }, forwardedRef) => (
     <span
       {...props}
       style={{
@@ -25,3 +30,6 @@ export const VisuallyHidden = React.forwardRef<HTMLSpanElement, VisuallyHiddenPr
 );
 
 VisuallyHidden.displayName = 'VisuallyHidden';
+
+export { VisuallyHidden };
+export type { VisuallyHiddenProps };

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type FlexDOMProps = React.ComponentPropsWithRef<'div'>;
+type FlexDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type FlexOwnProps = {};
 type FlexProps = FlexDOMProps & FlexOwnProps;
 

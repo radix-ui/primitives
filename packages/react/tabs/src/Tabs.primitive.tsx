@@ -18,7 +18,7 @@ import {
 } from '@interop-ui/react-utils';
 import { composeEventHandlers, useComposedRefs } from '@interop-ui/utils';
 
-type TabsDOMProps = Omit<React.ComponentPropsWithRef<'div'>, 'onSelect'>;
+type TabsDOMProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'onSelect'>;
 type TabsOwnProps = {
   /** The id of the selected tab, if controlled */
   selectedId?: string;
@@ -50,7 +50,7 @@ const TabsContext = React.createContext<{
   tabsId: '',
 });
 
-type TabListProps = React.ComponentPropsWithRef<'div'>;
+type TabListProps = React.ComponentPropsWithoutRef<'div'>;
 
 const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function TabList(
   props,
@@ -76,7 +76,7 @@ const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function TabList(
 
 TabList.displayName = 'Tabs.TabList';
 
-type TabProps = React.ComponentPropsWithRef<'div'> & {
+type TabProps = React.ComponentPropsWithoutRef<'div'> & {
   id: string;
   disabled?: boolean;
 };
@@ -148,7 +148,7 @@ const Tab = React.forwardRef<HTMLDivElement, TabProps>(function Tab(props, forwa
 
 Tab.displayName = 'Tabs.Tab';
 
-type TabPanelProps = React.ComponentPropsWithRef<'div'> & { id: string };
+type TabPanelProps = React.ComponentPropsWithoutRef<'div'> & { id: string };
 
 const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(function TabPanel(
   props,

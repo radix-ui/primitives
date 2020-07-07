@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type CollapsibleDOMProps = React.ComponentPropsWithRef<'div'>;
+type CollapsibleDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type CollapsibleOwnProps = {};
 type CollapsibleProps = CollapsibleDOMProps & CollapsibleOwnProps;
 

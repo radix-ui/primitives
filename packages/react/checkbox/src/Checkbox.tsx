@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type CheckboxDOMProps = React.ComponentPropsWithRef<'div'>;
+type CheckboxDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type CheckboxOwnProps = {};
 type CheckboxProps = CheckboxDOMProps & CheckboxOwnProps;
 

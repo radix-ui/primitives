@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type ToggletipDOMProps = React.ComponentPropsWithRef<'div'>;
+type ToggletipDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type ToggletipOwnProps = {};
 type ToggletipProps = ToggletipDOMProps & ToggletipOwnProps;
 

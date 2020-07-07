@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type DialogDOMProps = React.ComponentPropsWithRef<'div'>;
+type DialogDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type DialogOwnProps = {};
 type DialogProps = DialogDOMProps & DialogOwnProps;
 

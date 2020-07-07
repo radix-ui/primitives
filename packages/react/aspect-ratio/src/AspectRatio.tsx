@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type AspectRatioDOMProps = React.ComponentPropsWithRef<'div'>;
+type AspectRatioDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type AspectRatioOwnProps = {};
 type AspectRatioProps = AspectRatioDOMProps & AspectRatioOwnProps;
 

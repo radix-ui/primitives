@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type DebugContextDOMProps = React.ComponentPropsWithRef<'div'>;
+type DebugContextDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type DebugContextOwnProps = {};
 type DebugContextProps = DebugContextDOMProps & DebugContextOwnProps;
 

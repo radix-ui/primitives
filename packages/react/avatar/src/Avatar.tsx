@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type AvatarDOMProps = React.ComponentPropsWithRef<'div'>;
+type AvatarDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type AvatarOwnProps = {};
 type AvatarProps = AvatarDOMProps & AvatarOwnProps;
 

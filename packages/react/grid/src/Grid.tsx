@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type GridDOMProps = React.ComponentPropsWithRef<'div'>;
+type GridDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type GridOwnProps = {};
 type GridProps = GridDOMProps & GridOwnProps;
 

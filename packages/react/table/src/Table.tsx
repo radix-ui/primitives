@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type TableDOMProps = React.ComponentPropsWithRef<'div'>;
+type TableDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type TableOwnProps = {};
 type TableProps = TableDOMProps & TableOwnProps;
 

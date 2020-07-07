@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type PortalDOMProps = React.ComponentPropsWithRef<'div'>;
+type PortalDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type PortalOwnProps = {};
 type PortalProps = PortalDOMProps & PortalOwnProps;
 

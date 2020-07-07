@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type AlertDOMProps = React.ComponentPropsWithRef<'div'>;
+type AlertDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type AlertOwnProps = {};
 type AlertProps = AlertDOMProps & AlertOwnProps;
 

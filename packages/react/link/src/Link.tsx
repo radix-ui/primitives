@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type LinkDOMProps = React.ComponentPropsWithRef<'div'>;
+type LinkDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type LinkOwnProps = {};
 type LinkProps = LinkDOMProps & LinkOwnProps;
 

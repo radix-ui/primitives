@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type ImageDOMProps = React.ComponentPropsWithRef<'div'>;
+type ImageDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type ImageOwnProps = {};
 type ImageProps = ImageDOMProps & ImageOwnProps;
 

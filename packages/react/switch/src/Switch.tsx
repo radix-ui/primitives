@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type SwitchDOMProps = React.ComponentPropsWithRef<'div'>;
+type SwitchDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type SwitchOwnProps = {};
 type SwitchProps = SwitchDOMProps & SwitchOwnProps;
 

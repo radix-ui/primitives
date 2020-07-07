@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type PopoverDOMProps = React.ComponentPropsWithRef<'div'>;
+type PopoverDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type PopoverOwnProps = {};
 type PopoverProps = PopoverDOMProps & PopoverOwnProps;
 

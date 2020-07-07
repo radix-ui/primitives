@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type LockDOMProps = React.ComponentPropsWithRef<'div'>;
+type LockDOMProps = React.ComponentPropsWithoutRef<'div'>;
 type LockOwnProps = {};
 type LockProps = LockDOMProps & LockOwnProps;
 
