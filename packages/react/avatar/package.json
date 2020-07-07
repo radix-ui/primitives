@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@interop-ui/utils": "1.0.0",
-    "@interop-ui/react-utils": "1.0.0"
+    "@interop-ui/react-utils": "1.0.0",
+    "@modulz/radix-icons": "^2.4.0"
   }
 }
