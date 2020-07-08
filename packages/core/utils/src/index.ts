@@ -6,3 +6,5 @@ export * from './log';
 export * from './number';
 export * from './observeElementRect';
 export * from './refUtils';
+
+export * from './types';

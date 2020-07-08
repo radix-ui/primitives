@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ElementTagNameMap } from '@interop-ui/utils';
 
 // The following types help us deal with the `as` prop.
 // We probably want to write some tests for these!
@@ -104,8 +105,5 @@ export interface ForwardRefWithAsRenderFunction<ComponentType extends As, Compon
    */
   propTypes?: never;
 }
-
-type ElementTagNameMap = HTMLElementTagNameMap &
-  Pick<SVGElementTagNameMap, Exclude<keyof SVGElementTagNameMap, keyof HTMLElementTagNameMap>>;
 
 type ElementByTag<TagName extends keyof ElementTagNameMap> = ElementTagNameMap[TagName];

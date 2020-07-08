@@ -32,6 +32,7 @@
     "paths": {
       "*": ["node_modules/*"],
       "@interop-ui/utils": ["packages/core/utils/src"],
+      "@interop-ui/css": ["packages/core/css/src"],
       "@interop-ui/primitive-button": ["packages/primitives/button/src"],
       "@interop-ui/primitive-input": ["packages/primitives/input/src"],
       "@interop-ui/primitive-tabs": ["packages/primitives/tabs/src"],
@@ -70,6 +71,7 @@
       "@interop-ui/react-select": ["packages/react/select/src"],
       "@interop-ui/react-sheet": ["packages/react/sheet/src"],
       "@interop-ui/react-slider": ["packages/react/slider/src"],
+      "@interop-ui/react-style": ["packages/react/style/src"],
       "@interop-ui/react-switch": ["packages/react/switch/src"],
       "@interop-ui/react-table": ["packages/react/table/src"],
       "@interop-ui/react-tabs": ["packages/react/tabs/src"],

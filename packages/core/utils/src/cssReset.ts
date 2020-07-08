@@ -1,47 +1,20 @@
-// TODO:
+import { ElementTagNameMap } from './types';
 type CSSObject = any;
 
-export type CssResetTagName =
-  | 'a'
-  | 'blockquote'
-  | 'button'
-  | 'code'
-  | 'div'
-  | 'h1'
-  | 'h2'
-  | 'h3'
-  | 'h4'
-  | 'h5'
-  | 'h6'
-  | 'header'
-  | 'hr'
-  | 'img'
-  | 'input'
-  | 'p'
-  | 'select'
-  | 'span'
-  | 'svg'
-  | 'table'
-  | 'thead'
-  | 'tfoot'
-  | 'tbody'
-  | 'tr'
-  | 'td'
-  | 'th'
-  | 'textarea';
+export type CssResetTagName = keyof ElementTagNameMap;
 
 /**
  * Get css reset for a given tag.
  * We could eventually make this available as a library.
  */
-export function cssResetForTag(tagName: CssResetTagName) {
+export function cssResetForTag(tagName: CssResetTagName | null) {
   const sharedResetStyles: CSSObject = {
     boxSizing: 'border-box',
   };
 
   const resetStyles: CSSObject = {
     ...sharedResetStyles,
-    ...RESET_TAG_MAP[tagName],
+    ...((tagName && RESET_TAG_MAP[tagName]) || {}),
   };
 
   return resetStyles;
@@ -50,14 +23,14 @@ export function cssResetForTag(tagName: CssResetTagName) {
 /**
  * Top-level util to apply the right reset based on `as` prop or default tag name.
  */
-export function cssReset(defaultTagName: CssResetTagName) {
+export function cssReset(defaultTagName: CssResetTagName | null) {
   return function (props: any) {
     const tagName: CssResetTagName = props.as || defaultTagName;
     return cssResetForTag(tagName);
   };
 }
 
-const RESET_TAG_MAP: Record<CssResetTagName, CSSObject> = {
+const RESET_TAG_MAP: { [key in CssResetTagName]?: CSSObject } = {
   a: {
     ...getFocusableResetStyles(),
     color: 'inherit',

@@ -1,3 +1,36 @@
+export enum PrimitivePartTypes {
+  /**
+   * The top-level root of a primitive component's tree.
+   */
+  Root = 'ROOT',
+  /**
+   * A part that keeps track of an indexed collection of sub-part.
+   */
+  IndexedCollection = 'INDEXED_COLLECTION',
+  /**
+   * A sub-part of an indexed collection part.
+   */
+  IndexedDescendant = 'INDEXED_DESCENDANT',
+  /**
+   * A part only responsible for cloning a component passed by a consumer, typically designed to
+   * pass along data.
+   */
+  Cloner = 'CLONER',
+}
+
+export interface PartDefinition<Props> {
+  type?: PrimitivePartTypes;
+  displayName: string;
+  defaultTagName: keyof ElementTagNameMap | null;
+  defaultProps?: Partial<Props>;
+  attrs?: {
+    [key: string]: any;
+  };
+  events?: {
+    [key: string]: any;
+  };
+}
+
 /**
  * Type can be either a single `ValueType` or an array of `ValueType`
  */
@@ -44,3 +77,10 @@ export type DistributiveOmit<BaseType, Key extends PropertyKey> = BaseType exten
  * type Thing = ThenArg<ReturnType<typeof getThing>>; // number
  */
 export type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
+
+/**
+ * This type is included in the DOM lib but is deprecated. It's still quite useful, so we want to
+ * include it here and reference it when possible to avoid any issues when updating TS.
+ */
+export type ElementTagNameMap = HTMLElementTagNameMap &
+  Pick<SVGElementTagNameMap, Exclude<keyof SVGElementTagNameMap, keyof HTMLElementTagNameMap>>;

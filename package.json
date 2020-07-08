@@ -11,7 +11,9 @@
     "docs:dev": "lerna exec --scope @interop/docs -- yarn dev"
   },
   "workspaces": [
-    "packages/*",
+    "packages/core/*",
+    "packages/primitives/*",
+    "packages/react/*",
     "docs"
   ],
   "prettier": {
@@ -60,6 +62,7 @@
     "@testing-library/jest-dom": "^5.11.0",
     "@types/babel__core": "^7.1.9",
     "@types/fs-extra": "^9.0.1",
+    "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^26.0.4",
     "@types/lodash": "^4.14.157",
     "@types/mri": "^1.1.0",
