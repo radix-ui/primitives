@@ -1,16 +1,5 @@
 import React from 'react';
-import {
-  Container,
-  Box,
-  Text,
-  Flex,
-  Link,
-  Grid,
-  Divider,
-  Badge,
-  Heading,
-  Button,
-} from '@modulz/radix';
+import { Container, Box, Text, Flex, Link, Grid, Heading } from '@modulz/radix';
 import { DatePicker } from '../components/DatePicker';
 
 export default function Home() {

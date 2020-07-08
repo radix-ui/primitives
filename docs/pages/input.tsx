@@ -1,20 +1,5 @@
 import React from 'react';
-import {
-  Container,
-  Box,
-  Text,
-  Button,
-  Heading,
-  List,
-  Badge,
-  ListItem,
-  Divider,
-  Pipe,
-  Grid,
-  Flex,
-  CardLink,
-  Link,
-} from '@modulz/radix';
+import { Container, Box, Button, Heading } from '@modulz/radix';
 import { Navigation } from '../components/Navigation';
 
 export default function InputPage() {

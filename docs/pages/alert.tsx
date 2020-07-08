@@ -1,22 +1,6 @@
 import React from 'react';
-import {
-  Container,
-  Box,
-  Text,
-  Button,
-  Heading,
-  List,
-  Badge,
-  ListItem,
-  Divider,
-  Pipe,
-  Grid,
-  Flex,
-  CardLink,
-  Link,
-} from '@modulz/radix';
+import { Container, Box, Text, Heading, Pipe, Flex, Link } from '@modulz/radix';
 import { Navigation } from '../components/Navigation';
-import { PlusIcon } from '@modulz/radix-icons';
 
 export default function DemoPage() {
   return (

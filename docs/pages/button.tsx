@@ -7,9 +7,7 @@ import {
   Code,
   Button,
   Heading,
-  List,
   Badge,
-  ListItem,
   Divider,
   Pipe,
   Table,
@@ -18,12 +16,11 @@ import {
   Th,
   Td,
   Tbody,
-  Grid,
   Flex,
-  CardLink,
   Link,
 } from '@modulz/radix';
 import { Navigation } from '../components/Navigation';
+import { CodeBlock } from '../components/CodeBlock';
 
 export default function ButtonPage() {
   return (
@@ -113,35 +110,11 @@ export default function ButtonPage() {
               Install the component from your command line:
             </Text>
           </Box>
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-              p: 3,
-            }}
-          >
-            <pre style={{ margin: '0' }}>
-              <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                npm install @componentsorg/button
-              </code>
-            </pre>
-          </Box>
+          <CodeBlock>npm install @componentsorg/button</CodeBlock>
           <Text as="p" size={3} sx={{ lineHeight: 2, my: 4 }}>
             Then import the component:
           </Text>
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-              p: 3,
-            }}
-          >
-            <pre style={{ margin: '0' }}>
-              <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                import Button from "@componentsorg/button";
-              </code>
-            </pre>
-          </Box>
+          <CodeBlock>import Button from "@componentsorg/button";</CodeBlock>
 
           <Box
             sx={{
@@ -187,49 +160,11 @@ export default function ButtonPage() {
             </Tbody>
           </Table>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              Simple button
-            </Heading>
-          </Box>
+          <Heading as="h4" size={1} sx={{ mt: 7, mb: 5, lineHeight: 2 }}>
+            Simple button
+          </Heading>
 
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
-            <Box
-              sx={{
-                p: 3,
-              }}
-            >
-              <Button>Button</Button>
-            </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
-              <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Button&gt;Button&lt;/Button&gt;
-                </code>
-              </pre>
-            </Box>
-          </Box>
+          <CodeBlock live>{`<Button>Button</Button>`}</CodeBlock>
 
           <Box
             sx={{
