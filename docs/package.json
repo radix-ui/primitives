@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@modulz/radix": "0.0.1-beta.43",
+    "@modulz/radix": "0.0.1-beta.44",
     "@modulz/radix-icons": "^2.4.0",
     "next": "9.4.4",
     "react": "16.13.1",

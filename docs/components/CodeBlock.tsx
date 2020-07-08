@@ -114,7 +114,6 @@ export function CodeBlock({ children, live = false, removeFragment = false }: Co
             fontSize: radixTheme.fontSizes[2],
             fontFamily: radixTheme.fonts.mono,
             fontWeight: 400,
-            letterSpacing: '-0.0175em',
             lineHeight: 1.5,
             borderRadius: radixTheme.radii[2],
             border: `1px solid ${radixTheme.colors.gray300}`,
