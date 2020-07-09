@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import * as React from 'react';
 import * as CSS from 'csstype';
 import hoist from 'hoist-non-react-statics';
 import { css } from '@interop-ui/css';
@@ -83,7 +83,7 @@ const useResolvePropsIntoVariantClasses = (
 };
 
 /** Main export */
-export const styled = function <
+export const style = function <
   VariantsAndValues extends IVariantsAndValue,
   // TODO: find a way to make this optional without breaking things
   C extends JSXTags
@@ -166,10 +166,13 @@ export const styled = function <
   };
 
   // forcing the type because we're hoisting below
-  const forwardedRef = (forwardRef(InteropElm) as any) as BaseInterop<C, VariantsAndValues>;
+  const forwardedRef = (React.forwardRef(InteropElm) as any) as BaseInterop<C, VariantsAndValues>;
 
   // hoist our static properties to the top
   // we need to do this because we're forwarding refs above ^
+  if (typeof tag !== 'string') {
+    hoist(InteropElm, tag);
+  }
   hoist(forwardedRef, InteropElm);
 
   return forwardedRef;
@@ -214,4 +217,4 @@ interface BaseInterop<C extends JSXTags, VariantsAndValues extends IVariantsAndV
   ) => BaseInterop<C, VariantsAndValues>;
 }
 
-export default styled;
+export default style;
