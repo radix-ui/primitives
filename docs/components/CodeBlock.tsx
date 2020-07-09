@@ -1,5 +1,5 @@
 import React from 'react';
-import { LiveProvider, LiveProviderProps, LiveEditor, LiveError, LivePreview } from 'react-live';
+import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live';
 import { PrismTheme } from 'prism-react-renderer';
 import { Box, theme as radixTheme } from '@modulz/radix';
 import * as RC from '@modulz/radix';
@@ -117,7 +117,6 @@ export function CodeBlock({ children, live = false, removeFragment = false }: Co
             border: `1px solid ${radixTheme.colors.gray300}`,
             ...(live ? { borderTop: 'none', borderTopLeftRadius: 0, borderTopRightRadius: 0 } : {}),
           }}
-          css={{ textarea: { outline: 0 } }}
         />
 
         {live ? <LiveError /> : null}

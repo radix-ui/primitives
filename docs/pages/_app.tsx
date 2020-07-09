@@ -11,8 +11,12 @@ const GlobalStyles = createGlobalStyle`
 	}
 
 	/* reset selection for live code blocks */
-	.react-live-code-block textarea::selection {
-		background-color: ${Radix.theme.colors.blue300};
+	.react-live-code-block textarea {
+		outline: none;
+
+		&::selection {
+			background-color: ${Radix.theme.colors.blue300};
+		}
 	}
 `;
 
