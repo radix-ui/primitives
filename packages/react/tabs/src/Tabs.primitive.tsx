@@ -10,14 +10,14 @@
 
 import * as React from 'react';
 import {
+  forwardRef,
   RovingTabIndexProvider,
   useAccessibleMouseDown,
   useControlledState,
   useId,
   useRovingTabIndex,
 } from '@interop-ui/react-utils';
-import { composeEventHandlers, useComposedRefs } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { composeEventHandlers, useComposedRefs, cssReset } from '@interop-ui/utils';
 
 type TabsDOMProps = Omit<React.ComponentProps<'div'>, 'onSelect'>;
 type TabsOwnProps = {
@@ -182,11 +182,11 @@ const TabPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabPanelProps>(functio
 
 TabPanel.displayName = 'Tabs.Panel';
 
-const TABSL_DEFAULT_TAG = 'div';
+const TABS_DEFAULT_TAG = 'div';
 
-const Tabs = forwardRef<typeof TABSL_DEFAULT_TAG, TabsProps>(function Tabs(props, forwardedRef) {
+const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props, forwardedRef) {
   const {
-    as: Comp = TABSL_DEFAULT_TAG,
+    as: Comp = TABS_DEFAULT_TAG,
     children,
     id,
     selectedId: selectedIdProp,
@@ -230,7 +230,37 @@ Tabs.Tab = Tab;
 Tabs.TabList = TabList;
 Tabs.displayName = 'Tabs';
 
-export { Tabs, TabsContext };
+const styles = {
+  tabList: {
+    ...cssReset(TABLIST_DEFAULT_TAG),
+    flexShrink: 0,
+    display: 'flex',
+  },
+  tab: {
+    // reset styles
+    ...cssReset(TAB_DEFAULT_TAG),
+    display: 'flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    lineHeight: '1',
+    cursor: 'default',
+    whiteSpace: 'nowrap',
+
+    // enable overlapping adjacent tabs via z-index
+    position: 'relative',
+  },
+  tabPanel: {
+    ...cssReset(TAB_PANEL_DEFAULT_TAG),
+    flexGrow: 1,
+  },
+  tabs: {
+    ...cssReset(TABS_DEFAULT_TAG),
+    display: 'flex',
+  },
+};
+
+export { Tabs, styles };
 export type { TabsProps, TabListProps, TabProps, TabPanelProps, ITabs };
 
 function makeTabId(tabsId: string, tabId: string) {
