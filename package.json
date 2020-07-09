@@ -1,15 +1,19 @@
 {
   "private": true,
   "name": "interop-ui",
+  "version": "1.0.0",
   "scripts": {
     "lint": "eslint --ext .js,.ts,.tsx .",
     "test": "cross-env CI=true ts-node ./scripts/test packages",
     "build": "lerna run build --stream",
+    "new-component": "cross-env CI=true ts-node ./scripts/new-component",
     "storybook": "start-storybook -p 9009 -c ./storybook --ci",
     "docs:dev": "lerna exec --scope @interop/docs -- yarn dev"
   },
   "workspaces": [
-    "packages/*",
+    "packages/core/*",
+    "packages/primitives/*",
+    "packages/react/*",
     "docs"
   ],
   "prettier": {
@@ -35,7 +39,7 @@
   },
   "eslintIgnore": [
     "node_modules",
-    "packages/*/dist"
+    "dist"
   ],
   "husky": {
     "hooks": {
@@ -43,11 +47,11 @@
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.10.3",
-    "@babel/plugin-proposal-class-properties": "^7.10.1",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.1",
-    "@babel/plugin-proposal-optional-chaining": "^7.10.3",
-    "@babel/preset-env": "^7.10.3",
+    "@babel/core": "^7.10.4",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
     "@rollup/plugin-babel": "^5.0.4",
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-json": "^4.1.0",
@@ -58,13 +62,15 @@
     "@testing-library/jest-dom": "^5.11.0",
     "@types/babel__core": "^7.1.9",
     "@types/fs-extra": "^9.0.1",
-    "@types/jest": "^26.0.3",
+    "@types/hoist-non-react-statics": "^3.3.1",
+    "@types/jest": "^26.0.4",
     "@types/lodash": "^4.14.157",
     "@types/mri": "^1.1.0",
-    "@types/node": "^14.0.14",
+    "@types/node": "^14.0.19",
+    "@types/shelljs": "^0.8.8",
     "@types/react": "^16.9.41",
-    "@typescript-eslint/eslint-plugin": "2.x",
-    "@typescript-eslint/parser": "2.x",
+    "@typescript-eslint/eslint-plugin": "3.x",
+    "@typescript-eslint/parser": "3.x",
     "babel-eslint": "10.x",
     "babel-jest": "^26.1.0",
     "babel-loader": "^8.1.0",
@@ -72,6 +78,7 @@
     "babel-plugin-dev-expression": "^0.2.2",
     "babel-plugin-macros": "^2.8.0",
     "chalk": "^4.1.0",
+    "commander": "^5.1.0",
     "cross-env": "^7.0.2",
     "eslint": "6.x",
     "eslint-config-react-app": "^5.2.1",
@@ -86,18 +93,22 @@
     "jest-watch-typeahead": "^0.6.0",
     "lerna": "^3.22.1",
     "lodash": "^4.17.15",
+    "lodash-es": "^4.17.15",
     "mri": "^1.1.5",
+    "os": "^0.1.1",
+    "pascal-case": "^3.1.1",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
-    "progress-estimator": "^0.2.2",
-    "rollup": "^2.18.1",
+    "progress-estimator": "^0.3.0",
+    "rollup": "^2.21.0",
     "rollup-plugin-sourcemaps": "^0.6.2",
     "rollup-plugin-terser": "^6.1.0",
     "rollup-plugin-typescript2": "^0.27.1",
+    "shelljs": "^0.8.4",
     "tiny-glob": "^0.2.6",
     "ts-jest": "^26.1.1",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.6"
   },
   "dependencies": {
     "react": "^16.13.1",

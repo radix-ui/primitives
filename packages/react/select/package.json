@@ -1,0 +1,21 @@
+{
+  "name": "@interop-ui/react-select",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "module": "dist/react-select.esm.min.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "test": "cross-env CI=true ts-node ../../../scripts/test --passWithNoTests",
+    "test:watch": "npm run test -- --watchAll",
+    "build": "ts-node ../../../scripts/build",
+    "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "@interop-ui/utils": "1.0.0",
+    "@interop-ui/react-utils": "1.0.0"
+  }
+}

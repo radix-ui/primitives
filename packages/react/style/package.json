@@ -1,0 +1,26 @@
+{
+  "name": "@interop-ui/react-style",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "module": "dist/react-style.esm.min.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "test": "cross-env CI=true ts-node ../../../scripts/test --passWithNoTests",
+    "test:watch": "npm run test -- --watchAll",
+    "build": "ts-node ../../../scripts/build",
+    "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "@interop-ui/css": "1.0.0",
+    "@interop-ui/utils": "1.0.0",
+    "hoist-non-react-statics": "^3.3.2",
+    "lodash.merge": "^4.6.2"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0"
+  }
+}
