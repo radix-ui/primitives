@@ -8,11 +8,12 @@
     "start": "next start"
   },
   "dependencies": {
-    "@modulz/radix": "0.0.1-beta.43",
+    "@modulz/radix": "0.0.1-beta.44",
     "@modulz/radix-icons": "^2.4.0",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-live": "^2.2.2",
     "styled-components": "^5.1.1"
   },
   "devDependencies": {
