@@ -65,7 +65,7 @@ const TabList = forwardRef<typeof TABLIST_DEFAULT_TAG, TabListProps>(function Ta
   return (
     <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
       <Comp
-        data-part-tabs-tab-list=""
+        data-interop-part-tabs-tab-list=""
         role="tablist"
         aria-orientation={orientation}
         ref={forwardedRef}
@@ -128,6 +128,7 @@ const Tab = forwardRef<typeof TAB_DEFAULT_TAG, TabProps>(function Tab(props, for
 
   return (
     <Comp
+      data-interop-part-tabs-tab=""
       id={tabId}
       role="tab"
       aria-selected={isSelected}
@@ -166,6 +167,7 @@ const TabPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabPanelProps>(functio
 
   return (
     <Comp
+      data-interop-part-tabs-tab-panel=""
       id={tabPanelId}
       role="tabpanel"
       aria-labelledby={tabId}
@@ -216,7 +218,7 @@ const Tabs = forwardRef<typeof TABSL_DEFAULT_TAG, TabsProps>(function Tabs(props
         shouldLoop,
       }}
     >
-      <Comp ref={forwardedRef} id={tabsId} {...tabsProps}>
+      <Comp data-interop-part-tabs="" ref={forwardedRef} id={tabsId} {...tabsProps}>
         {children}
       </Comp>
     </TabsContext.Provider>

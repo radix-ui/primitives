@@ -21,7 +21,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
 
   return (
     <Comp
-      data-part-accessible-icon=""
+      data-interop-part-accessible-icon=""
       aria-hidden={!childIsValidElement || undefined}
       ref={forwardedRef}
       {...iconProps}
