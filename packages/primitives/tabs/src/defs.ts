@@ -1,3 +1,5 @@
+import { ElementTagNameMap } from '@interop-ui/utils';
+
 enum TabsParts {
   Container = 'Tabs',
   TabList = 'Tabs.List',
@@ -110,7 +112,7 @@ export type { TabsProps, TabListProps, TabProps, TabPanelProps };
 interface PartDefinition<Props> {
   type?: PartTypes;
   displayName: string;
-  tagName: keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap | null;
+  tagName: keyof ElementTagNameMap | null;
   defaultProps?: Partial<Props>;
   attrs?: {
     [key: string]: any;

@@ -20,7 +20,12 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
   const childIsValidElement = React.isValidElement(child);
 
   return (
-    <Comp aria-hidden={!childIsValidElement || undefined} ref={forwardedRef} {...iconProps}>
+    <Comp
+      data-part-accessible-icon=""
+      aria-hidden={!childIsValidElement || undefined}
+      ref={forwardedRef}
+      {...iconProps}
+    >
       {childIsValidElement
         ? React.cloneElement(child as React.ReactElement, {
             // accessibility
@@ -35,9 +40,11 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
 
 AccessibleIcon.displayName = 'AccessibleIcon';
 
-const accessibleIconStyles = {
-  ...cssReset(DEFAULT_TAG),
+const styles = {
+  accessibleIcon: {
+    ...cssReset(DEFAULT_TAG),
+  },
 };
 
-export { accessibleIconStyles, AccessibleIcon };
+export { styles, AccessibleIcon };
 export type { AccessibleIconProps };
