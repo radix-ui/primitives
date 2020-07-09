@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@interop-ui/css": "1.0.0",
+    "@interop-ui/react-utils": "1.0.0",
     "@interop-ui/utils": "1.0.0",
     "hoist-non-react-statics": "^3.3.2",
     "lodash.merge": "^4.6.2"

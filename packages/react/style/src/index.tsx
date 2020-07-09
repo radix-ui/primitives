@@ -5,45 +5,16 @@ import { css } from '@interop-ui/css';
 import merge from 'lodash.merge';
 import { ResponsiveContext, _matchValuesAgainstBreakPoints } from './InteropProvider';
 import { themeValuesMiddleware } from './themeValuesMiddleware';
+import { FunctionComponentWithAs, ExoticComponentWithAs, PropsFromAs } from '../../utils/src/types';
 
 let currentCount = 0;
-
-const requestElmId = () => {
-  const elmId = `intrp_${currentCount}`;
-  currentCount = currentCount + 1;
-  return elmId;
-};
-
-/** utils: */
-export const compose = function <T extends BaseInterop<JSXTags>>(
-  part: T,
-  variants: ExtractVariants<T>
-) {
-  // we dont want to expose _compose externally so we're casting
-  // it when working with library internals
-  const internallyTyped = (part as any) as T & {
-    _compose: (variants: ExtractVariants<T>) => CSSDeclaration;
-  };
-
-  return internallyTyped._compose(variants);
-};
-
-type IVariantsAndValue = {
-  [p: string]: string | undefined;
-};
-
 const cachedClasskey = Symbol('variant cached class property key');
-type InternalVariants = {
-  [p: string]: {
-    [p: string]: CSSDeclaration & { [cachedClasskey]?: string };
-  };
-};
 
-const useResolvePropsIntoVariantClasses = (
+function useResolvePropsIntoVariantClasses(
   props: any,
   internalVariants: InternalVariants,
   scope: string
-) => {
+) {
   const variantKeys = Object.keys(internalVariants);
   const breakPointMatches = React.useContext(ResponsiveContext);
   const classes = [];
@@ -80,26 +51,27 @@ const useResolvePropsIntoVariantClasses = (
   }
 
   return classes.join(' ');
-};
+}
 
 /** Main export */
-export const style = function <
-  VariantsAndValues extends IVariantsAndValue,
-  // TODO: find a way to make this optional without breaking things
-  C extends JSXTags
->(tag: C) {
+function style<VariantsAndValues extends IVariantsAndValue, ComponentType>(tag: ComponentType) {
   const _styles = {};
   const _variants: InternalVariants = {};
   const elmId = requestElmId();
   let _styledClass: string | undefined = undefined;
 
-  function InteropElm(
-    props: React.ComponentPropsWithRef<C> & VariantsAndValues & { as?: never; className?: string },
-    ref: any
-  ): any;
+  type Props = ComponentType extends FunctionComponentWithAs<any, infer P>
+    ? PropsFromAs<ComponentType, P>
+    : ComponentType extends ExoticComponentWithAs<any, infer P>
+    ? PropsFromAs<ComponentType, P>
+    : ComponentType extends JSXTags
+    ? any // React.ComponentPropsWithRef<ComponentType> TODO: Not sure why this causes problems
+    : any;
 
-  function InteropElm<AS extends keyof JSX.IntrinsicElements = C>(
-    props: React.ComponentPropsWithRef<C> & VariantsAndValues & { as?: AS; className?: string },
+  function InteropElm(props: Props & VariantsAndValues & { className?: string }, ref: any): any;
+
+  function InteropElm(
+    props: Props & VariantsAndValues & { className?: string },
     // TODO: type me
     ref: any
   ) {
@@ -166,17 +138,21 @@ export const style = function <
   };
 
   // forcing the type because we're hoisting below
-  const forwardedRef = (React.forwardRef(InteropElm) as any) as BaseInterop<C, VariantsAndValues>;
+  const forwardedRef = (React.forwardRef(InteropElm as any) as any) as BaseInterop<
+    any,
+    VariantsAndValues
+  >;
 
-  // hoist our static properties to the top
-  // we need to do this because we're forwarding refs above ^
-  if (typeof tag !== 'string') {
-    hoist(InteropElm, tag);
+  // Hoist our static properties to the top.
+  // We need to do this because we're forwarding refs above, and because the `tag` might be a React
+  // component with its own static properties.
+  if (tag && typeof tag !== 'string') {
+    hoist(InteropElm, tag as any);
   }
   hoist(forwardedRef, InteropElm);
 
   return forwardedRef;
-};
+}
 
 /**
  * types:
@@ -217,4 +193,32 @@ interface BaseInterop<C extends JSXTags, VariantsAndValues extends IVariantsAndV
   ) => BaseInterop<C, VariantsAndValues>;
 }
 
+/** utils: */
+function compose<T extends BaseInterop<JSXTags>>(part: T, variants: ExtractVariants<T>) {
+  // we dont want to expose _compose externally so we're casting
+  // it when working with library internals
+  const internallyTyped = (part as any) as T & {
+    _compose: (variants: ExtractVariants<T>) => CSSDeclaration;
+  };
+
+  return internallyTyped._compose(variants);
+}
+
+type IVariantsAndValue = {
+  [p: string]: string | undefined;
+};
+
+type InternalVariants = {
+  [p: string]: {
+    [p: string]: CSSDeclaration & { [cachedClasskey]?: string };
+  };
+};
+
+export { style, compose };
 export default style;
+
+function requestElmId() {
+  const elmId = `intrp_${currentCount}`;
+  currentCount = currentCount + 1;
+  return elmId;
+}
