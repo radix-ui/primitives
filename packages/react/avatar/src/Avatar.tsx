@@ -51,14 +51,16 @@ const AvatarContainer = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(
       whatToRender = 'ICON';
     }
 
+    const ctx = React.useMemo(() => {
+      return {
+        alt,
+        src,
+        whatToRender,
+      };
+    }, [alt, src, whatToRender]);
+
     return (
-      <AvatarContext.Provider
-        value={{
-          alt,
-          src,
-          whatToRender,
-        }}
-      >
+      <AvatarContext.Provider value={ctx}>
         <Comp data-interop-part-avatar-container="" {...avatarProps} ref={forwardedRef}>
           {whatToRender === 'FALLBACK' ? (renderFallback as Function)() : children}
         </Comp>
