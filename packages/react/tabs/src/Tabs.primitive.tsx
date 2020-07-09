@@ -17,8 +17,9 @@ import {
   useRovingTabIndex,
 } from '@interop-ui/react-utils';
 import { composeEventHandlers, useComposedRefs } from '@interop-ui/utils';
+import { forwardRef } from '@interop-ui/react-utils';
 
-type TabsDOMProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'onSelect'>;
+type TabsDOMProps = Omit<React.ComponentProps<'div'>, 'onSelect'>;
 type TabsOwnProps = {
   /** The id of the selected tab, if controlled */
   selectedId?: string;
@@ -37,7 +38,7 @@ type TabsOwnProps = {
   /** Whether tab navigation loops around or not (default: true) */
   shouldLoop?: boolean;
 };
-type TabsProps = TabsDOMProps & TabsOwnProps & { as?: React.ElementType<any> };
+type TabsProps = TabsDOMProps & TabsOwnProps;
 
 const TabsContext = React.createContext<{
   tabsId: string;
@@ -50,23 +51,23 @@ const TabsContext = React.createContext<{
   tabsId: '',
 });
 
-type TabListProps = React.ComponentPropsWithoutRef<'div'>;
+type TabListProps = React.ComponentProps<'div'>;
 
-const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function TabList(
+const TABLIST_DEFAULT_TAG = 'div';
+
+const TabList = forwardRef<typeof TABLIST_DEFAULT_TAG, TabListProps>(function TabList(
   props,
   forwardedRef
 ) {
   const { orientation, shouldLoop } = React.useContext(TabsContext);
-  let { ...otherProps } = props;
+  let { as: Comp = TABLIST_DEFAULT_TAG, ...otherProps } = props;
 
   return (
     <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
-      <div
-        {...props}
-        // accessibility
+      <Comp
+        data-part-tabs-tab-list=""
         role="tablist"
         aria-orientation={orientation}
-        // other props
         ref={forwardedRef}
         {...otherProps}
       />
@@ -76,13 +77,16 @@ const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function TabList(
 
 TabList.displayName = 'Tabs.TabList';
 
-type TabProps = React.ComponentPropsWithoutRef<'div'> & {
+type TabProps = React.ComponentProps<'div'> & {
   id: string;
   disabled?: boolean;
 };
 
-const Tab = React.forwardRef<HTMLDivElement, TabProps>(function Tab(props, forwardedRef) {
+const TAB_DEFAULT_TAG = 'div';
+
+const Tab = forwardRef<typeof TAB_DEFAULT_TAG, TabProps>(function Tab(props, forwardedRef) {
   const {
+    as: Comp = TAB_DEFAULT_TAG,
     id,
     disabled,
     onMouseDown: originalOnMouseDown,
@@ -123,9 +127,7 @@ const Tab = React.forwardRef<HTMLDivElement, TabProps>(function Tab(props, forwa
   }
 
   return (
-    <div
-      {...tabProps}
-      // accessibility
+    <Comp
       id={tabId}
       role="tab"
       aria-selected={isSelected}
@@ -140,30 +142,30 @@ const Tab = React.forwardRef<HTMLDivElement, TabProps>(function Tab(props, forwa
         onMouseDown: originalOnMouseDown,
         onKeyDown: rovingTabIndexKeyDownHandler,
       })}
-      // other props
       ref={composedRef}
+      {...tabProps}
     />
   );
 });
 
 Tab.displayName = 'Tabs.Tab';
 
-type TabPanelProps = React.ComponentPropsWithoutRef<'div'> & { id: string };
+type TabPanelProps = React.ComponentProps<'div'> & { id: string };
 
-const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(function TabPanel(
+const TAB_PANEL_DEFAULT_TAG = 'div';
+
+const TabPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabPanelProps>(function TabPanel(
   props,
   forwardedRef
 ) {
-  const { id, ...tabPanelProps } = props;
+  const { as: Comp = TAB_PANEL_DEFAULT_TAG, id, ...tabPanelProps } = props;
   const { tabsId, selectedId } = React.useContext(TabsContext);
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabPanelId(tabsId, id);
   const isSelected = id === selectedId;
 
   return (
-    <div
-      {...tabPanelProps}
-      // accessibility
+    <Comp
       id={tabPanelId}
       role="tabpanel"
       aria-labelledby={tabId}
@@ -171,14 +173,18 @@ const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(function TabPan
       hidden={!isSelected}
       // other props
       ref={forwardedRef}
+      {...tabPanelProps}
     />
   );
 });
 
 TabPanel.displayName = 'Tabs.Panel';
 
-const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(props, forwardedRef) {
+const TABSL_DEFAULT_TAG = 'div';
+
+const Tabs = forwardRef<typeof TABSL_DEFAULT_TAG, TabsProps>(function Tabs(props, forwardedRef) {
   const {
+    as: Comp = TABSL_DEFAULT_TAG,
     children,
     id,
     selectedId: selectedIdProp,
@@ -210,9 +216,9 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(props, fo
         shouldLoop,
       }}
     >
-      <div {...tabsProps} ref={forwardedRef} id={tabsId}>
+      <Comp ref={forwardedRef} id={tabsId} {...tabsProps}>
         {children}
-      </div>
+      </Comp>
     </TabsContext.Provider>
   );
 }) as ITabs;
