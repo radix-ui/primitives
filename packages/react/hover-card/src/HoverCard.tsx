@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type HoverCardDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type HoverCardDOMProps = React.ComponentProps<'div'>;
 type HoverCardOwnProps = {};
 type HoverCardProps = HoverCardDOMProps & HoverCardOwnProps;
 

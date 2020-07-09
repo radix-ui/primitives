@@ -5,7 +5,7 @@ import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
 
-type AccessibleIconDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
+type AccessibleIconDOMProps = React.ComponentProps<typeof DEFAULT_TAG>;
 type AccessibleIconOwnProps = {
   label: string;
 };

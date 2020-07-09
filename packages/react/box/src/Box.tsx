@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type BoxDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type BoxDOMProps = React.ComponentProps<'div'>;
 type BoxOwnProps = {};
 type BoxProps = BoxDOMProps & BoxOwnProps;
 

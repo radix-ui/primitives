@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type HeaderDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type HeaderDOMProps = React.ComponentProps<'div'>;
 type HeaderOwnProps = {};
 type HeaderProps = HeaderDOMProps & HeaderOwnProps;
 

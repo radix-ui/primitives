@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type BlockquoteDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type BlockquoteDOMProps = React.ComponentProps<'div'>;
 type BlockquoteOwnProps = {};
 type BlockquoteProps = BlockquoteDOMProps & BlockquoteOwnProps;
 

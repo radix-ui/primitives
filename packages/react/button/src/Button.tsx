@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { log } from '@interop-ui/utils';
 
-type ButtonProps = React.ComponentPropsWithoutRef<'button'>;
+type ButtonProps = React.ComponentProps<'button'>;
 
 function Button(props: ButtonProps) {
   log('button');

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type DividerDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type DividerDOMProps = React.ComponentProps<'div'>;
 type DividerOwnProps = {};
 type DividerProps = DividerDOMProps & DividerOwnProps;
 

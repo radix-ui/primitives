@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type TooltipDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type TooltipDOMProps = React.ComponentProps<'div'>;
 type TooltipOwnProps = {};
 type TooltipProps = TooltipDOMProps & TooltipOwnProps;
 

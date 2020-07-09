@@ -7,23 +7,18 @@ type ImageOwnProps = {};
 type ImageProps = ImageOwnProps & ImageDOMProps;
 
 const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Image(props, forwardedRef) {
-  const { style, ...imageProps } = props;
-
-  return (
-    <img
-      style={{
-        ...cssReset('img'),
-        display: 'block',
-        maxWidth: '100%',
-        ...style,
-      }}
-      {...imageProps}
-      ref={forwardedRef}
-    />
-  );
+  return <img data-interop-part-image="" {...props} ref={forwardedRef} />;
 });
 
 Image.displayName = 'Image';
 
+const styles = {
+  image: {
+    ...cssReset('img'),
+    display: 'block',
+    maxWidth: '100%',
+  },
+};
+
 export type { ImageProps };
-export { Image };
+export { Image, styles };

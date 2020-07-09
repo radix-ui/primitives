@@ -1,7 +1,7 @@
 import React from 'react';
 import { log } from '@interop-ui/utils';
 
-type InputProps = React.ComponentPropsWithoutRef<'input'>;
+type InputProps = React.ComponentProps<'input'>;
 
 function Input(props: InputProps) {
   log('input');

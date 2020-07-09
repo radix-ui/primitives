@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type SliderDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type SliderDOMProps = React.ComponentProps<'div'>;
 type SliderOwnProps = {};
 type SliderProps = SliderDOMProps & SliderOwnProps;
 

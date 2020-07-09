@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type MenuDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type MenuDOMProps = React.ComponentProps<'div'>;
 type MenuOwnProps = {};
 type MenuProps = MenuDOMProps & MenuOwnProps;
 

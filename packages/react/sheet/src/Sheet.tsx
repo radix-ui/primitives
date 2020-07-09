@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type SheetDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type SheetDOMProps = React.ComponentProps<'div'>;
 type SheetOwnProps = {};
 type SheetProps = SheetDOMProps & SheetOwnProps;
 

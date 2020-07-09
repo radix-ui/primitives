@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type TextDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type TextDOMProps = React.ComponentProps<'div'>;
 type TextOwnProps = {};
 type TextProps = TextDOMProps & TextOwnProps;
 

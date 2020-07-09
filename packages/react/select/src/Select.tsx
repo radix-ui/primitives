@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type SelectDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type SelectDOMProps = React.ComponentProps<'div'>;
 type SelectOwnProps = {};
 type SelectProps = SelectDOMProps & SelectOwnProps;
 

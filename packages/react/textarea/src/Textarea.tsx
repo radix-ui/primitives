@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type TextareaDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type TextareaDOMProps = React.ComponentProps<'div'>;
 type TextareaOwnProps = {};
 type TextareaProps = TextareaDOMProps & TextareaOwnProps;
 

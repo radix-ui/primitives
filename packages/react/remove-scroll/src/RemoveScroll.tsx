@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type RemoveScrollDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type RemoveScrollDOMProps = React.ComponentProps<'div'>;
 type RemoveScrollOwnProps = {};
 type RemoveScrollProps = RemoveScrollDOMProps & RemoveScrollOwnProps;
 

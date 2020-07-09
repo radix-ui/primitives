@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type PipeDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type PipeDOMProps = React.ComponentProps<'div'>;
 type PipeOwnProps = {};
 type PipeProps = PipeDOMProps & PipeOwnProps;
 

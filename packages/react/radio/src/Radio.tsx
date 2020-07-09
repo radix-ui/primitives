@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type RadioDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type RadioDOMProps = React.ComponentProps<'div'>;
 type RadioOwnProps = {};
 type RadioProps = RadioDOMProps & RadioOwnProps;
 

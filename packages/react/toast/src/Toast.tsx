@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type ToastDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type ToastDOMProps = React.ComponentProps<'div'>;
 type ToastOwnProps = {};
 type ToastProps = ToastDOMProps & ToastOwnProps;
 

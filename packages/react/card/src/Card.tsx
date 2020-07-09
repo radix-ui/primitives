@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type CardDOMProps = React.ComponentPropsWithoutRef<'div'>;
+type CardDOMProps = React.ComponentProps<'div'>;
 type CardOwnProps = {};
 type CardProps = CardDOMProps & CardOwnProps;
 
