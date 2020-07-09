@@ -86,16 +86,14 @@ type CodeBlockProps = {
 };
 
 export function CodeBlock({ children, live = false, removeFragment = false }: CodeBlockProps) {
-  const liveProviderProps: LiveProviderProps = {
-    code: children.trim(),
-    transformCode: (code) => (removeFragment ? code : `<>${code}</>`),
-    scope: { ...RC },
-    theme,
-  };
-
   return (
     <Box mt={4}>
-      <LiveProvider {...liveProviderProps}>
+      <LiveProvider
+        scope={{ ...RC }}
+        theme={theme}
+        code={children.trim()}
+        transformCode={(code) => (removeFragment ? code : `<>${code}</>`)}
+      >
         {live ? (
           <LivePreview
             style={{
