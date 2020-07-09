@@ -3,7 +3,7 @@ import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'div';
 
-type COMPONENT_NAMEDOMProps = React.ComponentPropsWithRef<typeof DEFAULT_TAG>;
+type COMPONENT_NAMEDOMProps = React.ComponentProps<typeof DEFAULT_TAG>;
 type COMPONENT_NAMEOwnProps = {};
 type COMPONENT_NAMEProps = COMPONENT_NAMEDOMProps & COMPONENT_NAMEOwnProps;
 
