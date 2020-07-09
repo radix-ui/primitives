@@ -5,18 +5,13 @@ type ArrowDOMProps = React.ComponentPropsWithRef<'svg'>;
 type ArrowProps = ArrowDOMProps;
 
 const Arrow = React.forwardRef<SVGSVGElement, ArrowProps>(function Arrow(props, forwardedRef) {
-  const { style, ...arrowProps } = props;
-
   return (
     <svg
-      {...arrowProps}
+      data-interop-part-arrow=""
+      {...props}
       ref={forwardedRef}
       viewBox="0 0 30 10"
       preserveAspectRatio="none"
-      style={{
-        ...cssReset('svg'),
-        ...style,
-      }}
     >
       <polygon points="0,0 30,0 15,10" />
     </svg>
@@ -29,5 +24,11 @@ Arrow.defaultProps = {
   height: 5,
 };
 
-export { Arrow };
+const style = {
+  arrow: {
+    ...cssReset('svg'),
+  },
+};
+
+export { Arrow, style };
 export type { ArrowProps };
