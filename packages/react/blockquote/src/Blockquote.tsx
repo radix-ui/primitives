@@ -4,7 +4,7 @@ import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'blockquote';
 
-type BlockquoteDOMProps = React.ComponentProps<typeof DEFAULT_TAG>;
+type BlockquoteDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type BlockquoteOwnProps = {};
 type BlockquoteProps = BlockquoteDOMProps & BlockquoteOwnProps;
 

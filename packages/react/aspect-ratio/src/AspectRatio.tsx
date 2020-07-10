@@ -4,7 +4,7 @@ import { forwardRef } from '@interop-ui/react-utils';
 
 const WRAPPER_DEFAULT_TAG = 'div';
 
-type AspectRatioDOMProps = React.ComponentProps<typeof WRAPPER_DEFAULT_TAG>;
+type AspectRatioDOMProps = React.ComponentPropsWithoutRef<typeof WRAPPER_DEFAULT_TAG>;
 type AspectRatioOwnProps = { ratio?: string };
 type AspectRatioProps = AspectRatioDOMProps & AspectRatioOwnProps;
 
@@ -32,7 +32,7 @@ AspectRatioContainer.displayName = 'AspectRatio.Container';
 
 const INNER_DEFAULT_TAG = 'div';
 
-type AspectRatioInnerDOMProps = React.ComponentProps<typeof WRAPPER_DEFAULT_TAG>;
+type AspectRatioInnerDOMProps = React.ComponentPropsWithoutRef<typeof WRAPPER_DEFAULT_TAG>;
 type AspectRatioInnerOwnProps = {};
 type AspectRatioInnerProps = AspectRatioInnerDOMProps & AspectRatioInnerOwnProps;
 

@@ -4,7 +4,7 @@ import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
 
-type BadgeDOMProps = React.ComponentProps<typeof DEFAULT_TAG>;
+type BadgeDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type BadgeOwnProps = {};
 type BadgeProps = BadgeDOMProps & BadgeOwnProps;
 

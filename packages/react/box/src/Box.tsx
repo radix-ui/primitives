@@ -4,7 +4,7 @@ import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
 
-type BoxDOMProps = React.ComponentProps<typeof DEFAULT_TAG>;
+type BoxDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type BoxOwnProps = {};
 type BoxProps = BoxDOMProps & BoxOwnProps;
 

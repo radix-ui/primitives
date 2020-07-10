@@ -6,7 +6,7 @@ import { forwardRef } from '@interop-ui/react-utils';
 
 const CONTAINER_DEFAULT_TAG = 'span';
 
-type AvatarDOMProps = React.ComponentProps<typeof CONTAINER_DEFAULT_TAG>;
+type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof CONTAINER_DEFAULT_TAG>;
 type AvatarOwnProps = {
   src?: string;
   alt?: string;
@@ -98,7 +98,7 @@ AvatarImage.displayName = 'Avatar.Image';
 
 const ICON_DEFAULT_TAG = 'svg';
 
-type AvatarIconDOMProps = React.ComponentProps<typeof ICON_DEFAULT_TAG>;
+type AvatarIconDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
 type AvatarIconOwnProps = {};
 type AvatarIconProps = AvatarIconDOMProps & AvatarIconOwnProps;
 
@@ -117,7 +117,7 @@ AvatarIcon.displayName = 'Avatar.Icon';
 
 const ABBR_DEFAULT_TAG = 'span';
 
-type AvatarAbbrDOMProps = React.ComponentProps<typeof ABBR_DEFAULT_TAG>;
+type AvatarAbbrDOMProps = React.ComponentPropsWithoutRef<typeof ABBR_DEFAULT_TAG>;
 type AvatarAbbrOwnProps = {};
 type AvatarAbbrProps = AvatarAbbrDOMProps & AvatarAbbrOwnProps;
 

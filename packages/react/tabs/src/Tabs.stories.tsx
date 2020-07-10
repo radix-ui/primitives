@@ -3,7 +3,7 @@ import { Tabs } from './Tabs';
 
 export default { title: 'Tabs' };
 
-export const basic = () => (
+export const Basic = () => (
   <Tabs defaultSelectedId="tab1">
     <Tabs.TabList aria-label="tabs example">
       <Tabs.Tab id="tab1">Tab 1</Tabs.Tab>

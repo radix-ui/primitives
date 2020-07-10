@@ -3,4 +3,6 @@ import { Button } from './Button';
 
 export default { title: 'Button' };
 
-export const basic = () => <Button>Hello Button</Button>;
+export const Basic = () => {
+  return <Button as="div">Hello Button</Button>;
+};

@@ -4,7 +4,7 @@ import { forwardRef } from '@interop-ui/react-utils';
 const DEFAULT_TAG = 'span';
 
 type VisuallyHiddenOwnProps = {};
-type VisuallyHiddenDOMProps = React.ComponentProps<typeof DEFAULT_TAG>;
+type VisuallyHiddenDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type VisuallyHiddenProps = VisuallyHiddenOwnProps & VisuallyHiddenDOMProps;
 
 const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(

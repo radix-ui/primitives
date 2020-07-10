@@ -3,4 +3,4 @@ import { Input } from './Input';
 
 export default { title: 'Input' };
 
-export const basic = () => <Input defaultValue="hello" />;
+export const Basic = () => <Input defaultValue="hello" />;
