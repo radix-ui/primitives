@@ -1,14 +1,40 @@
 import * as React from 'react';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { forwardRef } from '@interop-ui/react-utils';
 
-type HeaderDOMProps = React.ComponentProps<'div'>;
-type HeaderOwnProps = {};
+const DEFAULT_TAG = 'header';
+
+type HeaderDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
+type HeaderOwnProps = { isSticky?: boolean };
 type HeaderProps = HeaderDOMProps & HeaderOwnProps;
 
-const Header = React.forwardRef<HTMLDivElement, HeaderProps>(function Header(props, forwardedRef) {
-  return <div ref={forwardedRef} />;
+const Header = forwardRef<typeof DEFAULT_TAG, HeaderProps>(function Header(props, forwardedRef) {
+  const { as: Comp = DEFAULT_TAG, isSticky = false, style, ...headerProps } = props;
+  return (
+    <Comp
+      {...interopDataAttrObj('Header')}
+      style={{
+        ...style,
+        ...(isSticky
+          ? {
+              position: 'sticky',
+              top: 0,
+            }
+          : {}),
+      }}
+      ref={forwardedRef}
+      {...headerProps}
+    />
+  );
 });
 
 Header.displayName = 'Header';
 
-export { Header };
+const styles = {
+  header: {
+    ...cssReset(DEFAULT_TAG),
+  },
+};
+
+export { Header, styles };
 export type { HeaderProps };
