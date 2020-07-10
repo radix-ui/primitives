@@ -1,14 +1,25 @@
 import * as React from 'react';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef } from '@interop-ui/react-utils';
 
-type CardDOMProps = React.ComponentProps<'div'>;
+const DEFAULT_TAG = 'div';
+
+type CardDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type CardOwnProps = {};
 type CardProps = CardDOMProps & CardOwnProps;
 
-const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(props, forwardedRef) {
-  return <div ref={forwardedRef} />;
+const Card = forwardRef<typeof DEFAULT_TAG, CardProps>(function Card(props, forwardedRef) {
+  const { as: Comp = DEFAULT_TAG, ...cardProps } = props;
+  return <Comp data-interop-part-card="" ref={forwardedRef} {...cardProps} />;
 });
 
 Card.displayName = 'Card';
 
-export { Card };
+const styles = {
+  card: {
+    ...cssReset(DEFAULT_TAG),
+  },
+};
+
+export { Card, styles };
 export type { CardProps };
