@@ -39,7 +39,7 @@ export interface FunctionComponentWithAs<ComponentType extends As, ComponentProp
   defaultProps?: Partial<PropsWithAs<ComponentType, ComponentProps>>;
 }
 
-interface ExoticComponentWithAs<ComponentType extends As, ComponentProps> {
+export interface ExoticComponentWithAs<ComponentType extends As, ComponentProps> {
   /**
    * **NOTE**: Exotic components are not callable.
    * Inherited from React.ExoticComponent with modifications to support `as`
