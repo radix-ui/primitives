@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 
 type ArrowDOMProps = React.ComponentPropsWithRef<'svg'>;
 type ArrowProps = ArrowDOMProps;
@@ -7,7 +7,7 @@ type ArrowProps = ArrowDOMProps;
 const Arrow = React.forwardRef<SVGSVGElement, ArrowProps>(function Arrow(props, forwardedRef) {
   return (
     <svg
-      data-interop-part-arrow=""
+      {...interopDataAttrObj('Arrow')}
       {...props}
       ref={forwardedRef}
       viewBox="0 0 30 10"

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
@@ -10,7 +10,7 @@ type BoxProps = BoxDOMProps & BoxOwnProps;
 
 const Box = forwardRef<typeof DEFAULT_TAG, BoxProps>(function Box(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...boxProps } = props;
-  return <Comp data-interop-part-box="" ref={forwardedRef} {...boxProps} />;
+  return <Comp {...interopDataAttrObj('Box')} ref={forwardedRef} {...boxProps} />;
 });
 
 Box.displayName = 'Box';

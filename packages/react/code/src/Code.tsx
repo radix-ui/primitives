@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'code';
@@ -10,7 +10,7 @@ type CodeProps = CodeDOMProps & CodeOwnProps;
 
 const Code = forwardRef<typeof DEFAULT_TAG, CodeProps>(function Code(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...codeProps } = props;
-  return <Comp data-interop-part-code="" ref={forwardedRef} {...codeProps} />;
+  return <Comp {...interopDataAttrObj('Code')} ref={forwardedRef} {...codeProps} />;
 });
 
 Code.displayName = 'Code';

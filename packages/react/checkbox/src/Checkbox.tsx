@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, isFunction, warningOnce } from '@interop-ui/utils';
+import { cssReset, isFunction, warningOnce, interopDataAttrObj } from '@interop-ui/utils';
 import {
   forwardRef,
   useComposedRefs,
@@ -119,7 +119,7 @@ const CheckboxContainer = forwardRef<typeof CONTAINER_DEFAULT_TAG, CheckboxConta
     return (
       <CheckboxContext.Provider value={context}>
         <Comp
-          data-interop-part-checkbox-container=""
+          {...interopDataAttrObj('CheckboxContainer')}
           ref={forwardedRef}
           {...checkboxContainerProps}
         >
@@ -176,7 +176,7 @@ const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
 
     return (
       <Comp
-        data-interop-part-checkbox-input=""
+        {...interopDataAttrObj('CheckboxInput')}
         ref={ref}
         {...checkboxInputProps}
         type="checkbox"
@@ -211,7 +211,7 @@ const CheckboxBox = forwardRef<typeof BOX_DEFAULT_TAG, CheckboxBoxProps>(functio
 ) {
   const { as: Comp = BOX_DEFAULT_TAG, ...checkboxBoxProps } = props;
 
-  return <Comp data-interop-part-checkbox-box="" ref={forwardedRef} {...checkboxBoxProps} />;
+  return <Comp {...interopDataAttrObj('CheckboBox')} ref={forwardedRef} {...checkboxBoxProps} />;
 });
 CheckboxBox.displayName = 'Checkbox.Box';
 
@@ -235,7 +235,7 @@ const CheckboxIcon = forwardRef<typeof ICON_DEFAULT_TAG, CheckboxIconProps>(func
   let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
   let { checked } = React.useContext(CheckboxContext);
   return (
-    <Comp data-interop-part-checkbox-icon="" ref={forwardedRef} {...checkboxBoxProps}>
+    <Comp {...interopDataAttrObj('CheckboxIcon')} ref={forwardedRef} {...checkboxBoxProps}>
       {isFunction(children) ? children({ checked }) : children}
     </Comp>
   );

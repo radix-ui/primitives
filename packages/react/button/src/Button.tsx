@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'button';
@@ -10,7 +10,7 @@ type ButtonProps = ButtonDOMProps & ButtonOwnProps;
 
 const Button = forwardRef<typeof DEFAULT_TAG, ButtonProps>(function Button(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...buttonProps } = props;
-  return <Comp data-interop-part-button="" ref={forwardedRef} {...buttonProps} />;
+  return <Comp {...interopDataAttrObj('Button')} ref={forwardedRef} {...buttonProps} />;
 });
 
 Button.displayName = 'Button';

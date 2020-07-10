@@ -7,6 +7,11 @@ declare module 'lodash.merge' {
   export default merge;
 }
 
+declare module 'lodash.kebabcase' {
+  import { kebabCase } from 'lodash';
+  export default kebabCase;
+}
+
 declare module 'lodash.omit' {
   import { omit } from 'lodash';
   export default omit;

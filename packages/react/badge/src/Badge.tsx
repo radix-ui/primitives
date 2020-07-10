@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
@@ -10,7 +10,7 @@ type BadgeProps = BadgeDOMProps & BadgeOwnProps;
 
 const Badge = forwardRef<typeof DEFAULT_TAG, BadgeProps>(function Badge(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...badgeProps } = props;
-  return <Comp data-interop-part-badge="" ref={forwardedRef} {...badgeProps} />;
+  return <Comp {...interopDataAttrObj('Badge')} ref={forwardedRef} {...badgeProps} />;
 });
 
 Badge.displayName = 'Badge';

@@ -13,5 +13,8 @@
     "test:watch": "npm run test -- --watchAll",
     "build": "ts-node ../../../scripts/build",
     "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "lodash.kebabcase": "^4.1.1"
   }
 }

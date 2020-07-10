@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef, ForwardRefExoticComponentWithAs } from '@interop-ui/react-utils';
 
 const CONTAINER_DEFAULT_TAG = 'span';
@@ -61,7 +61,7 @@ const AvatarContainer = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(
 
     return (
       <AvatarContext.Provider value={ctx}>
-        <Comp data-interop-part-avatar-container="" {...avatarProps} ref={forwardedRef}>
+        <Comp {...interopDataAttrObj('AvatarContainer')} {...avatarProps} ref={forwardedRef}>
           {whatToRender === 'FALLBACK' ? (renderFallback as Function)() : children}
         </Comp>
       </AvatarContext.Provider>
@@ -85,7 +85,7 @@ const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(funct
   let { src, alt, whatToRender } = React.useContext(AvatarContext);
   return whatToRender === 'IMAGE' ? (
     <Comp
-      data-interop-part-avatar-image=""
+      {...interopDataAttrObj('AvatarImage')}
       ref={forwardedRef}
       src={src}
       alt={alt}
@@ -109,7 +109,7 @@ const AvatarIcon = forwardRef<typeof ICON_DEFAULT_TAG, AvatarIconProps>(function
   let { as: Comp = RadixIcon as any, ...iconProps } = props;
   let { whatToRender } = React.useContext(AvatarContext);
   return whatToRender === 'ICON' ? (
-    <Comp data-interop-part-avatar-icon="" ref={forwardedRef} {...iconProps} />
+    <Comp {...interopDataAttrObj('AvatarIcon')} ref={forwardedRef} {...iconProps} />
   ) : null;
 });
 
@@ -128,7 +128,7 @@ const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function
   let { as: Comp = 'span', children, ...abbrProps } = props;
   let { alt, whatToRender } = React.useContext(AvatarContext);
   return alt && whatToRender === 'ALT_ABBR' ? (
-    <Comp data-interop-part-avatar-abbr="" aria-hidden ref={forwardedRef} {...abbrProps}>
+    <Comp {...interopDataAttrObj('AvatarAbbr')} aria-hidden ref={forwardedRef} {...abbrProps}>
       {alt[0]}
     </Comp>
   ) : null;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
@@ -21,7 +21,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
 
   return (
     <Comp
-      data-interop-part-accessible-icon=""
+      {...interopDataAttrObj('AccessibleIcon')}
       aria-hidden={!childIsValidElement || undefined}
       ref={forwardedRef}
       {...iconProps}

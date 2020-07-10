@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'div';
@@ -10,7 +10,7 @@ type CardProps = CardDOMProps & CardOwnProps;
 
 const Card = forwardRef<typeof DEFAULT_TAG, CardProps>(function Card(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...cardProps } = props;
-  return <Comp data-interop-part-card="" ref={forwardedRef} {...cardProps} />;
+  return <Comp {...interopDataAttrObj('Card')} ref={forwardedRef} {...cardProps} />;
 });
 
 Card.displayName = 'Card';

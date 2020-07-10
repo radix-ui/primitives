@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'blockquote';
@@ -13,7 +13,7 @@ const Blockquote = forwardRef<typeof DEFAULT_TAG, BlockquoteProps>(function Bloc
   forwardedRef
 ) {
   const { as: Comp = DEFAULT_TAG, ...blockquoteProps } = props;
-  return <Comp data-interop-part-blockquote="" ref={forwardedRef} {...blockquoteProps} />;
+  return <Comp {...interopDataAttrObj('Blockquote')} ref={forwardedRef} {...blockquoteProps} />;
 });
 
 Blockquote.displayName = 'Blockquote';

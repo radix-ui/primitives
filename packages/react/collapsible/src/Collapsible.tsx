@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import {
   forwardRef,
   useId,
@@ -47,6 +47,7 @@ const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButto
 
     return (
       <Comp
+        {...interopDataAttrObj('CollapsibleButton')}
         ref={forwardedRef}
         aria-controls={context.contentId}
         aria-expanded={context.isOpen || false}
@@ -82,7 +83,13 @@ const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleCon
     }, [id, setContentId]);
 
     return (
-      <Comp ref={forwardedRef} {...contentProps} id={id} hidden={!isOpen}>
+      <Comp
+        {...interopDataAttrObj('CollapsibleContent')}
+        ref={forwardedRef}
+        {...contentProps}
+        id={id}
+        hidden={!isOpen}
+      >
         {isOpen && children}
       </Comp>
     );
@@ -147,7 +154,7 @@ const Collapsible = forwardRef<typeof COLLAPSIBLE_DEFAULT_TAG, CollapsibleProps>
 
     return (
       <CollapsibleContext.Provider value={context}>
-        <Comp {...collapsibleProps} ref={forwardedRef}>
+        <Comp {...interopDataAttrObj('Collapsible')} {...collapsibleProps} ref={forwardedRef}>
           {children}
         </Comp>
       </CollapsibleContext.Provider>
