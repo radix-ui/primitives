@@ -1,17 +1,31 @@
 import * as React from 'react';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { forwardRef } from '@interop-ui/react-utils';
 
-type ContainerDOMProps = React.ComponentProps<'div'>;
+const DEFAULT_TAG = 'span';
+
+type ContainerDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type ContainerOwnProps = {};
 type ContainerProps = ContainerDOMProps & ContainerOwnProps;
 
-const Container = React.forwardRef<HTMLDivElement, ContainerProps>(function Container(
+const Container = forwardRef<typeof DEFAULT_TAG, ContainerProps>(function Container(
   props,
   forwardedRef
 ) {
-  return <div ref={forwardedRef} />;
+  const { as: Comp = DEFAULT_TAG, ...containerProps } = props;
+  return <Comp {...interopDataAttrObj('Container')} ref={forwardedRef} {...containerProps} />;
 });
 
 Container.displayName = 'Container';
 
-export { Container };
+const styles = {
+  container: {
+    ...cssReset(DEFAULT_TAG),
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    flex: 1, // make sure the element is always full-width
+  },
+};
+
+export { Container, styles };
 export type { ContainerProps };
