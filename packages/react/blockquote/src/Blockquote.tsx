@@ -1,17 +1,28 @@
 import * as React from 'react';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef } from '@interop-ui/react-utils';
 
-type BlockquoteDOMProps = React.ComponentProps<'div'>;
+const DEFAULT_TAG = 'blockquote';
+
+type BlockquoteDOMProps = React.ComponentProps<typeof DEFAULT_TAG>;
 type BlockquoteOwnProps = {};
 type BlockquoteProps = BlockquoteDOMProps & BlockquoteOwnProps;
 
-const Blockquote = React.forwardRef<HTMLDivElement, BlockquoteProps>(function Blockquote(
+const Blockquote = forwardRef<typeof DEFAULT_TAG, BlockquoteProps>(function Blockquote(
   props,
   forwardedRef
 ) {
-  return <div ref={forwardedRef} />;
+  const { as: Comp = DEFAULT_TAG, ...badgeProps } = props;
+  return <Comp data-interop-part-blockquote="" ref={forwardedRef} {...badgeProps} />;
 });
 
 Blockquote.displayName = 'Blockquote';
 
-export { Blockquote };
+const styles = {
+  blockquote: {
+    ...cssReset(DEFAULT_TAG),
+  },
+};
+
+export { Blockquote, styles };
 export type { BlockquoteProps };

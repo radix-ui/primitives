@@ -10,7 +10,7 @@ type BadgeProps = BadgeDOMProps & BadgeOwnProps;
 
 const Badge = forwardRef<typeof DEFAULT_TAG, BadgeProps>(function Badge(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...badgeProps } = props;
-  return <Comp ref={forwardedRef} {...badgeProps} />;
+  return <Comp data-interop-part-badge="" ref={forwardedRef} {...badgeProps} />;
 });
 
 Badge.displayName = 'Badge';
