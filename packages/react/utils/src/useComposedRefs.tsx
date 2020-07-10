@@ -1,6 +1,5 @@
 import * as React from 'react';
-
-type PossibleRef<T> = React.Ref<T> | undefined;
+import { PossibleRef } from './types';
 
 /**
  * Set a given ref to a given value
@@ -18,7 +17,7 @@ function setRef<T>(ref: PossibleRef<T>, value: T) {
  * A utility to compose multiple refs together
  * Accepts callback refs and RefObject(s)
  */
-export function composeRefs<T>(...refs: PossibleRef<T>[]) {
+function composeRefs<T>(...refs: PossibleRef<T>[]) {
   return (node: T) => refs.forEach((ref) => setRef(ref, node));
 }
 
@@ -28,21 +27,4 @@ export function composeRefs<T>(...refs: PossibleRef<T>[]) {
  */
 export function useComposedRefs<T>(...refs: PossibleRef<T>[]) {
   return React.useCallback(composeRefs(...refs), refs);
-}
-
-/**
- * A custom hook that converts a callback to a ref
- * to avoid triggering re-renders when passed as a prop
- * or avoid re-executing effects when passed as a dependency
- */
-export function useCallbackRef<T>(callback: (...args: T[]) => void) {
-  const callbackRef = React.useRef(callback);
-
-  React.useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
-
-  return React.useCallback((...args) => {
-    callbackRef.current(...args);
-  }, []);
 }

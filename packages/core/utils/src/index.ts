@@ -5,6 +5,6 @@ export * from './geometry';
 export * from './log';
 export * from './number';
 export * from './observeElementRect';
-export * from './refUtils';
+export * from './typeUtils';
 
 export * from './types';
