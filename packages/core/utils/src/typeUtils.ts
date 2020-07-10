@@ -3,7 +3,7 @@
  *
  * @param value
  */
-function isBoolean(value: any): value is boolean {
+export function isBoolean(value: any): value is boolean {
   return typeof value === 'boolean';
 }
 
@@ -12,7 +12,7 @@ function isBoolean(value: any): value is boolean {
  *
  * @param value
  */
-function isFunction(value: any): value is Function {
+export function isFunction(value: any): value is Function {
   return !!(value && {}.toString.call(value) === '[object Function]');
 }
 
@@ -21,7 +21,7 @@ function isFunction(value: any): value is Function {
  *
  * @param value
  */
-function isNumber(value: any): value is number {
+export function isNumber(value: any): value is number {
   return typeof value === 'number' && !isNaN(value);
 }
 
@@ -30,8 +30,15 @@ function isNumber(value: any): value is number {
  *
  * @param value
  */
-function isString(value: any): value is string {
+export function isString(value: any): value is string {
   return typeof value === 'string';
 }
 
-export { isBoolean, isFunction, isNumber, isString };
+/**
+ * Checks whether or not a value is undefined.
+ *
+ * @param value
+ */
+export function isUndefined(value: any): value is undefined {
+  return typeof value === 'undefined';
+}
