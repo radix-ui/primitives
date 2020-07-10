@@ -1,1 +1,1 @@
-export { DebugContext } from './DebugContext';
+export * from './DebugContext';

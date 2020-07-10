@@ -1,17 +1,27 @@
 import * as React from 'react';
 
-type DebugContextDOMProps = React.ComponentProps<'div'>;
-type DebugContextOwnProps = {};
-type DebugContextProps = DebugContextDOMProps & DebugContextOwnProps;
+type DebugContextType = {
+  portalContainerRef?: React.RefObject<HTMLElement>;
+  disableCollisionChecking?: boolean;
+  disableLock?: boolean;
+  viewportGap?: number;
+};
 
-const DebugContext = React.forwardRef<HTMLDivElement, DebugContextProps>(function DebugContext(
-  props,
-  forwardedRef
-) {
-  return <div ref={forwardedRef} />;
+const DebugContext = React.createContext<DebugContextType>({
+  portalContainerRef: undefined,
+  disableCollisionChecking: false,
+  disableLock: false,
+  viewportGap: undefined,
 });
 
-DebugContext.displayName = 'DebugContext';
+type DebugContextProviderProps = DebugContextType & {
+  children: React.ReactNode;
+};
 
-export { DebugContext };
-export type { DebugContextProps };
+export function DebugContextProvider({ children, ...debugContext }: DebugContextProviderProps) {
+  return <DebugContext.Provider value={debugContext}>{children}</DebugContext.Provider>;
+}
+
+export function useDebugContext() {
+  return React.useContext(DebugContext);
+}
