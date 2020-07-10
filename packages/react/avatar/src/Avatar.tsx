@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
 import { cssReset } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, ForwardRefExoticComponentWithAs } from '@interop-ui/react-utils';
 
 const CONTAINER_DEFAULT_TAG = 'span';
 
@@ -158,7 +158,8 @@ Avatar.Icon = AvatarIcon;
 
 Avatar.displayName = 'Avatar';
 
-interface IAvatar extends React.ForwardRefExoticComponent<AvatarProps> {
+interface IAvatar
+  extends ForwardRefExoticComponentWithAs<typeof CONTAINER_DEFAULT_TAG, AvatarProps> {
   Container: typeof AvatarContainer;
   Image: typeof AvatarImage;
   Abbr: typeof AvatarAbbr;

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { arrayInsert, clamp, composeEventHandlers } from '@interop-ui/utils';
+import { arrayInsert, clamp } from '@interop-ui/utils';
+import { composeEventHandlers } from './composeEventHandlers';
 
 type TabStop = {
   id: string;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, ForwardRefExoticComponentWithAs } from '@interop-ui/react-utils';
 
 const WRAPPER_DEFAULT_TAG = 'div';
 
@@ -64,7 +64,8 @@ AspectRatio.displayName = 'AspectRatio';
 AspectRatio.Container = AspectRatioContainer;
 AspectRatio.Inner = AspectRatioInner;
 
-interface IAspectRatio extends React.ForwardRefExoticComponent<AspectRatioProps> {
+interface IAspectRatio
+  extends ForwardRefExoticComponentWithAs<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps> {
   Container: typeof AspectRatioContainer;
   Inner: typeof AspectRatioInner;
 }

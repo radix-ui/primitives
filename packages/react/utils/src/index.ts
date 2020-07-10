@@ -1,3 +1,4 @@
+export * from './composeEventHandlers';
 export * from './forwardRef';
 export * from './memo';
 export * from './useAccessibleMouseDown';

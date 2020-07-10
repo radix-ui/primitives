@@ -1,5 +1,4 @@
 export * from './arrayUtils';
-export * from './composeEventHandlers';
 export * from './cssReset';
 export * from './geometry';
 export * from './logging';

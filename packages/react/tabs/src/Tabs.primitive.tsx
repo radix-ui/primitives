@@ -16,8 +16,10 @@ import {
   useControlledState,
   useId,
   useRovingTabIndex,
+  ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
-import { composeEventHandlers, useComposedRefs, cssReset } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
+import { composeEventHandlers, useComposedRefs } from '@interop-ui/react-utils';
 
 type TabsDOMProps = Omit<React.ComponentProps<'div'>, 'onSelect'>;
 type TabsOwnProps = {
@@ -271,7 +273,7 @@ function makeTabPanelId(tabsId: string, tabId: string) {
   return `${tabsId}-tabPanel-${tabId}`;
 }
 
-interface ITabs extends React.ForwardRefExoticComponent<TabsProps> {
+interface ITabs extends ForwardRefExoticComponentWithAs<typeof TABS_DEFAULT_TAG, TabsProps> {
   TabList: typeof TabList;
   Tab: typeof Tab;
   Panel: typeof TabPanel;

@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { cssReset, isFunction, warningOnce } from '@interop-ui/utils';
-import { forwardRef, useComposedRefs, useCallbackRef } from '@interop-ui/react-utils';
+import {
+  forwardRef,
+  useComposedRefs,
+  useCallbackRef,
+  ForwardRefExoticComponentWithAs,
+} from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level container rather than the input when using the
 // composed API so that we can share data via context.
@@ -242,7 +247,8 @@ CheckboxIcon.displayName = 'Checkbox.Icon';
  * Checkbox
  * -----------------------------------------------------------------------------------------------*/
 
-interface ICheckbox extends React.ForwardRefExoticComponent<CheckboxInputProps> {
+interface ICheckbox
+  extends ForwardRefExoticComponentWithAs<typeof CONTAINER_DEFAULT_TAG, CheckboxInputProps> {
   Container: typeof CheckboxContainer;
   Input: typeof CheckboxInput;
   Icon: typeof CheckboxIcon;

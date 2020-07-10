@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@interop-ui/utils';
+import { composeEventHandlers } from './composeEventHandlers';
 
 type UseAccessibleMouseDownOptions<T extends HTMLElement> = {
   /** Whether the target is currently disabled or not */
