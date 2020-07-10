@@ -1,14 +1,25 @@
 import * as React from 'react';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef } from '@interop-ui/react-utils';
 
-type BoxDOMProps = React.ComponentProps<'div'>;
+const DEFAULT_TAG = 'span';
+
+type BoxDOMProps = React.ComponentProps<typeof DEFAULT_TAG>;
 type BoxOwnProps = {};
 type BoxProps = BoxDOMProps & BoxOwnProps;
 
-const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(props, forwardedRef) {
-  return <div ref={forwardedRef} />;
+const Box = forwardRef<typeof DEFAULT_TAG, BoxProps>(function Box(props, forwardedRef) {
+  const { as: Comp = DEFAULT_TAG, ...boxProps } = props;
+  return <Comp data-interop-part-box="" ref={forwardedRef} {...boxProps} />;
 });
 
 Box.displayName = 'Box';
 
-export { Box };
+const styles = {
+  box: {
+    ...cssReset(DEFAULT_TAG),
+  },
+};
+
+export { Box, styles };
 export type { BoxProps };

@@ -12,8 +12,8 @@ const Blockquote = forwardRef<typeof DEFAULT_TAG, BlockquoteProps>(function Bloc
   props,
   forwardedRef
 ) {
-  const { as: Comp = DEFAULT_TAG, ...badgeProps } = props;
-  return <Comp data-interop-part-blockquote="" ref={forwardedRef} {...badgeProps} />;
+  const { as: Comp = DEFAULT_TAG, ...blockquoteProps } = props;
+  return <Comp data-interop-part-blockquote="" ref={forwardedRef} {...blockquoteProps} />;
 });
 
 Blockquote.displayName = 'Blockquote';
