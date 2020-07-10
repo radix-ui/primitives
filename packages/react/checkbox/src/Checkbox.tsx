@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, isFunction } from '@interop-ui/utils';
+import { cssReset, isFunction, warningOnce } from '@interop-ui/utils';
 import { forwardRef, useComposedRefs, useCallbackRef } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level container rather than the input when using the
@@ -113,7 +113,11 @@ const CheckboxContainer = forwardRef<typeof CONTAINER_DEFAULT_TAG, CheckboxConta
 
     return (
       <CheckboxContext.Provider value={context}>
-        <Comp ref={forwardedRef} {...checkboxContainerProps}>
+        <Comp
+          data-interop-part-checkbox-container=""
+          ref={forwardedRef}
+          {...checkboxContainerProps}
+        >
           {isFunction(children) ? children({ checked }) : children}
         </Comp>
       </CheckboxContext.Provider>
@@ -155,10 +159,22 @@ const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
 
     const ref = useComposedRefs(forwardedRef, inputRef);
 
+    React.useEffect(() => {
+      for (let prop of inputPropsForContainer) {
+        warningOnce(
+          prop,
+          !Object.hasOwnProperty.call(checkboxInputProps, prop),
+          `The ${prop} prop was passed to the Checkbox.Input component. This was likely a mistake. Instead, pass ${prop} to Checkbox.Container instead so that its data is available to the entire Checkbox component.`
+        );
+      }
+    });
+
     return (
       <Comp
-        type="checkbox"
+        data-interop-part-checkbox-input=""
         ref={ref}
+        {...checkboxInputProps}
+        type="checkbox"
         checked={checked}
         onChange={onChange}
         autoComplete={autoComplete}
@@ -168,7 +184,6 @@ const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
         readOnly={readOnly}
         required={required}
         value={value}
-        {...checkboxInputProps}
       />
     );
   }
@@ -191,7 +206,7 @@ const CheckboxBox = forwardRef<typeof BOX_DEFAULT_TAG, CheckboxBoxProps>(functio
 ) {
   const { as: Comp = BOX_DEFAULT_TAG, ...checkboxBoxProps } = props;
 
-  return <Comp ref={forwardedRef} {...checkboxBoxProps} />;
+  return <Comp data-interop-part-checkbox-box="" ref={forwardedRef} {...checkboxBoxProps} />;
 });
 CheckboxBox.displayName = 'Checkbox.Box';
 
@@ -215,7 +230,7 @@ const CheckboxIcon = forwardRef<typeof ICON_DEFAULT_TAG, CheckboxIconProps>(func
   let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
   let { checked } = React.useContext(CheckboxContext);
   return (
-    <Comp ref={forwardedRef} {...checkboxBoxProps}>
+    <Comp data-interop-part-checkbox-icon="" ref={forwardedRef} {...checkboxBoxProps}>
       {isFunction(children) ? children({ checked }) : children}
     </Comp>
   );
