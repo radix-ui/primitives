@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@interop-ui/utils": "1.0.0",
-    "@interop-ui/react-utils": "1.0.0"
+    "@interop-ui/react-portal": "1.0.0",
+    "@interop-ui/react-utils": "1.0.0",
+    "@interop-ui/react-visually-hidden": "1.0.0"
   }
 }
