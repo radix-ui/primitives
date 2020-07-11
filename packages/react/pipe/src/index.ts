@@ -1,1 +1,0 @@
-export { Pipe } from './Pipe';
