@@ -5,18 +5,8 @@ import { DatePicker } from '../components/DatePicker';
 export default function Home() {
   return (
     <Box>
-      <Box
-        as="header"
-        sx={{
-          mb: 8,
-          p: 3,
-        }}
-      >
-        <Flex
-          sx={{
-            justifyContent: 'space-between',
-          }}
-        >
+      <Box as="header" sx={{ mb: 8, p: 3 }}>
+        <Flex sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Box>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -33,12 +23,8 @@ export default function Home() {
           </Box>
           <Flex as="nav">
             <Link href="/demo-page" variant="fade" sx={{ ml: 5 }}>
-              <Flex
-                sx={{
-                  alignItems: 'center',
-                }}
-              >
-                <Text as="span" size={3} sx={{ color: 'inherit', mr: 1 }} style={{ lineHeight: 1 }}>
+              <Flex sx={{ alignItems: 'center' }}>
+                <Text as="span" size={3} sx={{ color: 'inherit', mr: 1, lineHeight: '1' }}>
                   Github
                 </Text>
                 <svg
@@ -59,12 +45,8 @@ export default function Home() {
               </Flex>
             </Link>
             <Link href="/demo-page" variant="fade" sx={{ ml: 5 }}>
-              <Flex
-                sx={{
-                  alignItems: 'center',
-                }}
-              >
-                <Text as="span" size={3} sx={{ color: 'inherit', mr: 1 }} style={{ lineHeight: 1 }}>
+              <Flex sx={{ alignItems: 'center' }}>
+                <Text as="span" size={3} sx={{ color: 'inherit', mr: 1, lineHeight: '1' }}>
                   Twitter
                 </Text>
                 <svg
@@ -85,12 +67,8 @@ export default function Home() {
               </Flex>
             </Link>
             <Link href="/demo-page" variant="fade" sx={{ ml: 5 }}>
-              <Flex
-                sx={{
-                  alignItems: 'center',
-                }}
-              >
-                <Text as="span" size={3} sx={{ color: 'inherit', mr: 1 }} style={{ lineHeight: 1 }}>
+              <Flex sx={{ alignItems: 'center' }}>
+                <Text as="span" size={3} sx={{ color: 'inherit', mr: 1, lineHeight: '1' }}>
                   Spectrum
                 </Text>
                 <svg
@@ -133,25 +111,11 @@ export default function Home() {
             systems.
           </Heading>
 
-          <Flex
-            sx={{
-              py: 8,
-              justifyContent: 'center',
-            }}
-          >
+          <Flex sx={{ py: 8, justifyContent: 'center' }}>
             <Box>
               <Link href="/introduction">
-                <Flex
-                  sx={{
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text
-                    as="span"
-                    size={5}
-                    sx={{ color: 'inherit', mr: 1 }}
-                    style={{ lineHeight: 1 }}
-                  >
+                <Flex sx={{ alignItems: 'center' }}>
+                  <Text as="span" size={5} sx={{ color: 'inherit', mr: 1, lineHeight: '1' }}>
                     Documentation
                   </Text>
                   <svg

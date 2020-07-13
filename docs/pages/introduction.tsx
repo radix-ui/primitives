@@ -21,40 +21,16 @@ export default function IntroductionPage() {
       >
         <Navigation />
       </Box>
-      <Box
-        sx={{
-          flexGrow: 1,
-          pl: '245px',
-          py: 9,
-        }}
-      >
+      <Box sx={{ flexGrow: 1, pl: '245px', py: 9 }}>
         <Container size={2} pt={2}>
-          <Heading
-            as="h1"
-            size={4}
-            sx={{
-              lineHeight: 9,
-            }}
-          >
+          <Heading as="h1" size={4} sx={{ lineHeight: 9 }}>
             Components
           </Heading>
-          <Heading
-            as="h2"
-            size={2}
-            weight="normal"
-            sx={{
-              color: 'gray700',
-              lineHeight: '4',
-            }}
-          >
+          <Heading as="h2" size={2} weight="normal" sx={{ color: 'gray700', lineHeight: '4' }}>
             An open-source component library for building accessible design systems.
           </Heading>
 
-          <Box
-            sx={{
-              my: 9,
-            }}
-          >
+          <Box sx={{ my: 9 }}>
             <Heading as="h3" size={3} mb={3} sx={{ fontWeight: 500 }}>
               Vision
             </Heading>
@@ -141,17 +117,8 @@ export default function IntroductionPage() {
             </Box>
           </Grid>
 
-          <Flex
-            sx={{
-              py: 9,
-              justifyContent: 'center',
-            }}
-          >
-            <Divider
-              sx={{
-                width: '65px',
-              }}
-            />
+          <Flex sx={{ py: 9, justifyContent: 'center' }}>
+            <Divider sx={{ width: '65px' }} />
           </Flex>
 
           <Box>
@@ -161,72 +128,30 @@ export default function IntroductionPage() {
             <Grid sx={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 7 }}>
               <Box>
                 <CardLink variant="shadow">
-                  <Heading
-                    as="h4"
-                    size={1}
-                    sx={{
-                      lineHeight: 2,
-                      mb: 1,
-                    }}
-                  >
+                  <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                     Icons
                   </Heading>
-                  <Text
-                    as="p"
-                    size={3}
-                    sx={{
-                      lineHeight: 2,
-                      color: 'gray700',
-                    }}
-                  >
+                  <Text as="p" size={3} sx={{ lineHeight: 2, color: 'gray700' }}>
                     Short description for this link.
                   </Text>
                 </CardLink>
               </Box>
               <Box>
                 <CardLink variant="shadow">
-                  <Heading
-                    as="h4"
-                    size={1}
-                    sx={{
-                      lineHeight: 2,
-                      mb: 1,
-                    }}
-                  >
+                  <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                     Layouts
                   </Heading>
-                  <Text
-                    as="p"
-                    size={3}
-                    sx={{
-                      lineHeight: 2,
-                      color: 'gray700',
-                    }}
-                  >
+                  <Text as="p" size={3} sx={{ lineHeight: 2, color: 'gray700' }}>
                     Short description for this link.
                   </Text>
                 </CardLink>
               </Box>
               <Box>
                 <CardLink variant="shadow">
-                  <Heading
-                    as="h4"
-                    size={1}
-                    sx={{
-                      lineHeight: 2,
-                      mb: 1,
-                    }}
-                  >
+                  <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                     Tutorials
                   </Heading>
-                  <Text
-                    as="p"
-                    size={3}
-                    sx={{
-                      lineHeight: 2,
-                      color: 'gray700',
-                    }}
-                  >
+                  <Text as="p" size={3} sx={{ lineHeight: 2, color: 'gray700' }}>
                     Short description for this link.
                   </Text>
                 </CardLink>
@@ -234,24 +159,10 @@ export default function IntroductionPage() {
               <Box>
                 <Link>
                   <CardLink variant="shadow" as="a">
-                    <Heading
-                      as="h4"
-                      size={1}
-                      sx={{
-                        lineHeight: 2,
-                        mb: 1,
-                      }}
-                    >
+                    <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                       Showcase
                     </Heading>
-                    <Text
-                      as="p"
-                      size={3}
-                      sx={{
-                        lineHeight: 2,
-                        color: 'gray700',
-                      }}
-                    >
+                    <Text as="p" size={3} sx={{ lineHeight: 2, color: 'gray700' }}>
                       Short description for this link.
                     </Text>
                   </CardLink>
@@ -260,17 +171,8 @@ export default function IntroductionPage() {
             </Grid>
           </Box>
 
-          <Flex
-            sx={{
-              py: 9,
-              justifyContent: 'center',
-            }}
-          >
-            <Divider
-              sx={{
-                width: '65px',
-              }}
-            />
+          <Flex sx={{ py: 9, justifyContent: 'center' }}>
+            <Divider sx={{ width: '65px' }} />
           </Flex>
 
           <Box>
@@ -279,136 +181,58 @@ export default function IntroductionPage() {
             </Heading>
             <Grid sx={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 7 }}>
               <Box>
-                <Heading
-                  as="p"
-                  size={1}
-                  sx={{
-                    lineHeight: 2,
-                    mb: 1,
-                  }}
-                >
+                <Heading as="p" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                   Frequently asked question?
                 </Heading>
-                <Text
-                  as="p"
-                  size={4}
-                  sx={{
-                    lineHeight: 3,
-                  }}
-                >
+                <Text as="p" size={4} sx={{ lineHeight: 3 }}>
                   I hope you're enjoying the first days of summer albeit probably mostly in
                   quarantine! Saw your exciting post the other day, congrats on this and the clearly
                   great response from the industry per the conversation here.
                 </Text>
               </Box>
               <Box>
-                <Heading
-                  as="h4"
-                  size={1}
-                  sx={{
-                    lineHeight: 2,
-                    mb: 1,
-                  }}
-                >
+                <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                   Frequently asked question?
                 </Heading>
-                <Text
-                  as="p"
-                  size={4}
-                  sx={{
-                    lineHeight: 3,
-                  }}
-                >
+                <Text as="p" size={4} sx={{ lineHeight: 3 }}>
                   I hope you're enjoying the first days of summer albeit probably mostly in
                   quarantine! Saw your exciting post the other day, congrats on this and the clearly
                   great response from the industry per the conversation here.
                 </Text>
               </Box>
               <Box>
-                <Heading
-                  as="h4"
-                  size={1}
-                  sx={{
-                    lineHeight: 2,
-                    mb: 1,
-                  }}
-                >
+                <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                   Frequently asked question?
                 </Heading>
-                <Text
-                  as="p"
-                  size={4}
-                  sx={{
-                    lineHeight: 3,
-                  }}
-                >
+                <Text as="p" size={4} sx={{ lineHeight: 3 }}>
                   I hope you're enjoying the first days of summer albeit probably mostly in
                   quarantine!
                 </Text>
               </Box>
               <Box>
-                <Heading
-                  as="h4"
-                  size={1}
-                  sx={{
-                    lineHeight: 2,
-                    mb: 1,
-                  }}
-                >
+                <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                   Frequently asked question?
                 </Heading>
-                <Text
-                  as="p"
-                  size={4}
-                  sx={{
-                    lineHeight: 3,
-                  }}
-                >
+                <Text as="p" size={4} sx={{ lineHeight: 3 }}>
                   I hope you're enjoying the first days of summer albeit probably mostly in
                   quarantine! Saw your exciting post the other day, congrats on this and the clearly
                   great response from the industry per the conversation here.
                 </Text>
               </Box>
               <Box>
-                <Heading
-                  as="h4"
-                  size={1}
-                  sx={{
-                    lineHeight: 2,
-                    mb: 1,
-                  }}
-                >
+                <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                   Frequently asked question?
                 </Heading>
-                <Text
-                  as="p"
-                  size={4}
-                  sx={{
-                    lineHeight: 3,
-                  }}
-                >
+                <Text as="p" size={4} sx={{ lineHeight: 3 }}>
                   I hope you're enjoying the first days of summer albeit probably mostly in
                   quarantine!
                 </Text>
               </Box>
               <Box>
-                <Heading
-                  as="h4"
-                  size={1}
-                  sx={{
-                    lineHeight: 2,
-                    mb: 1,
-                  }}
-                >
+                <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
                   Frequently asked question?
                 </Heading>
-                <Text
-                  as="p"
-                  size={4}
-                  sx={{
-                    lineHeight: 3,
-                  }}
-                >
+                <Text as="p" size={4} sx={{ lineHeight: 3 }}>
                   I hope you're enjoying the first days of summer albeit probably mostly in
                   quarantine!
                 </Text>

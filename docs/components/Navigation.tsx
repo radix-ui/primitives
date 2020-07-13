@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Flex, List, Box, ListItem, Badge, Heading, Divider } from '@modulz/radix';
+import { Text, Flex, List, Box, ListItem, Badge, Divider } from '@modulz/radix';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ScrollArea } from './ScrollArea';
@@ -7,14 +7,7 @@ import { ScrollArea } from './ScrollArea';
 export const Navigation = () => {
   return (
     <ScrollArea>
-      <Box
-        as="a"
-        href="/"
-        sx={{
-          display: 'inline-flex',
-          m: 3,
-        }}
-      >
+      <Box as="a" href="/" sx={{ display: 'inline-flex', m: 3 }}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="35"
@@ -29,30 +22,11 @@ export const Navigation = () => {
         </svg>
       </Box>
       <Divider />
-      <Flex
-        sx={{
-          pt: 3,
-          pb: 1,
-          px: 4,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text
-          as="h3"
-          size={3}
-          weight="medium"
-          sx={{
-            lineHeight: 1,
-          }}
-        >
+      <Flex sx={{ pt: 3, pb: 1, px: 4, alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text as="h3" size={3} weight="medium" sx={{ lineHeight: 1 }}>
           Overview
         </Text>
-        <Box
-          sx={{
-            mr: -2,
-          }}
-        >
+        <Box sx={{ mr: -2 }}>
           <svg
             width="15"
             height="15"
@@ -76,30 +50,11 @@ export const Navigation = () => {
         <PageLink href="/roadmap">Roadmap</PageLink>
       </List>
       <Divider />
-      <Flex
-        sx={{
-          pt: 3,
-          pb: 1,
-          px: 4,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text
-          as="h3"
-          size={3}
-          weight="medium"
-          sx={{
-            lineHeight: 1,
-          }}
-        >
+      <Flex sx={{ pt: 3, pb: 1, px: 4, alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text as="h3" size={3} weight="medium" sx={{ lineHeight: 1 }}>
           Docs
         </Text>
-        <Box
-          sx={{
-            mr: -2,
-          }}
-        >
+        <Box sx={{ mr: -2 }}>
           <svg
             width="15"
             height="15"
@@ -127,30 +82,11 @@ export const Navigation = () => {
         <PageLink href="/animation">Animation</PageLink>
       </List>
       <Divider />
-      <Flex
-        sx={{
-          pt: 3,
-          pb: 1,
-          px: 4,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text
-          as="h3"
-          size={3}
-          weight="medium"
-          sx={{
-            lineHeight: 1,
-          }}
-        >
+      <Flex sx={{ pt: 3, pb: 1, px: 4, alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text as="h3" size={3} weight="medium" sx={{ lineHeight: 1 }}>
           Components
         </Text>
-        <Box
-          sx={{
-            mr: -2,
-          }}
-        >
+        <Box sx={{ mr: -2 }}>
           <svg
             width="15"
             height="15"
@@ -168,18 +104,7 @@ export const Navigation = () => {
           </svg>
         </Box>
       </Flex>
-      <Text
-        as="h4"
-        size={2}
-        pt={2}
-        pb={1}
-        px={4}
-        weight="medium"
-        sx={{
-          lineHeight: 1,
-          px: 6,
-        }}
-      >
+      <Text as="h4" size={2} pt={2} pb={1} px={4} weight="medium" sx={{ lineHeight: 1, px: 6 }}>
         Layout
       </Text>
       <List>
@@ -199,18 +124,7 @@ export const Navigation = () => {
           Section
         </PageLink>
       </List>
-      <Text
-        as="h4"
-        size={2}
-        pt={2}
-        pb={1}
-        px={4}
-        weight="medium"
-        sx={{
-          lineHeight: 1,
-          px: 6,
-        }}
-      >
+      <Text as="h4" size={2} pt={2} pb={1} px={4} weight="medium" sx={{ lineHeight: 1, px: 6 }}>
         Input
       </Text>
       <List>
@@ -248,18 +162,7 @@ export const Navigation = () => {
           Textarea
         </PageLink>
       </List>
-      <Text
-        as="h4"
-        size={2}
-        pt={2}
-        pb={1}
-        px={4}
-        weight="medium"
-        sx={{
-          lineHeight: 1,
-          px: 6,
-        }}
-      >
+      <Text as="h4" size={2} pt={2} pb={1} px={4} weight="medium" sx={{ lineHeight: 1, px: 6 }}>
         Feedback
       </Text>
       <List>
@@ -285,18 +188,7 @@ export const Navigation = () => {
           Toast
         </PageLink>
       </List>
-      <Text
-        as="h4"
-        size={2}
-        pt={2}
-        pb={1}
-        px={4}
-        weight="medium"
-        sx={{
-          lineHeight: 1,
-          px: 6,
-        }}
-      >
+      <Text as="h4" size={2} pt={2} pb={1} px={4} weight="medium" sx={{ lineHeight: 1, px: 6 }}>
         Text
       </Text>
       <List>
@@ -310,18 +202,7 @@ export const Navigation = () => {
           Text
         </PageLink>
       </List>
-      <Text
-        as="h4"
-        size={2}
-        pt={2}
-        pb={1}
-        px={4}
-        weight="medium"
-        sx={{
-          lineHeight: 1,
-          px: 6,
-        }}
-      >
+      <Text as="h4" size={2} pt={2} pb={1} px={4} weight="medium" sx={{ lineHeight: 1, px: 6 }}>
         Utilities
       </Text>
       <List>
@@ -341,18 +222,7 @@ export const Navigation = () => {
           VisuallyHidden<Badge sx={{ ml: 1 }}>WIP</Badge>
         </PageLink>
       </List>
-      <Text
-        as="h4"
-        size={2}
-        pt={2}
-        pb={1}
-        px={4}
-        weight="medium"
-        sx={{
-          lineHeight: 1,
-          px: 6,
-        }}
-      >
+      <Text as="h4" size={2} pt={2} pb={1} px={4} weight="medium" sx={{ lineHeight: 1, px: 6 }}>
         Contextual
       </Text>
       <List>
@@ -375,18 +245,7 @@ export const Navigation = () => {
           tooltip
         </PageLink>
       </List>
-      <Text
-        as="h4"
-        size={2}
-        pt={2}
-        pb={1}
-        px={4}
-        weight="medium"
-        sx={{
-          lineHeight: 1,
-          px: 6,
-        }}
-      >
+      <Text as="h4" size={2} pt={2} pb={1} px={4} weight="medium" sx={{ lineHeight: 1, px: 6 }}>
         Undecided
       </Text>
       <List>
@@ -440,30 +299,11 @@ export const Navigation = () => {
         </PageLink>
       </List>
       <Divider />
-      <Flex
-        sx={{
-          pt: 3,
-          pb: 1,
-          px: 4,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text
-          as="h3"
-          size={3}
-          weight="medium"
-          sx={{
-            lineHeight: 1,
-          }}
-        >
+      <Flex sx={{ pt: 3, pb: 1, px: 4, alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text as="h3" size={3} weight="medium" sx={{ lineHeight: 1 }}>
           Resources
         </Text>
-        <Box
-          sx={{
-            mr: -2,
-          }}
-        >
+        <Box sx={{ mr: -2 }}>
           <svg
             width="15"
             height="15"
@@ -496,13 +336,7 @@ const PageLink = ({ children, isNested = false, ...props }) => {
 
   return (
     <Link {...props} passHref>
-      <ListItem
-        as="a"
-        sx={{
-          pl: isNested ? 8 : 6,
-        }}
-        variant={isActive ? 'active' : undefined}
-      >
+      <ListItem as="a" sx={{ pl: isNested ? 8 : 6 }} variant={isActive ? 'active' : undefined}>
         <Text size={2} sx={{ color: isActive ? 'white' : undefined }}>
           {children}
         </Text>

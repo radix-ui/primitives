@@ -21,60 +21,23 @@ export default function DemoPage() {
       >
         <Navigation />
       </Box>
-      <Box
-        sx={{
-          flexGrow: 1,
-          pl: '245px',
-          py: 9,
-        }}
-      >
+      <Box sx={{ flexGrow: 1, pl: '245px', py: 9 }}>
         <Container size={2}>
-          <Heading
-            as="h1"
-            size={4}
-            sx={{
-              lineHeight: 9,
-            }}
-          >
+          <Heading as="h1" size={4} sx={{ lineHeight: 9 }}>
             Alert
           </Heading>
-          <Heading
-            as="h2"
-            size={2}
-            weight="normal"
-            sx={{
-              lineHeight: 3,
-              color: 'gray700',
-              mb: 6,
-            }}
-          >
+          <Heading as="h2" size={2} weight="normal" sx={{ lineHeight: 3, color: 'gray700', mb: 6 }}>
             An alert displays a brief, important message to attract the user's attention without
             interrupting them.
           </Heading>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
+          <Box sx={{ mt: 7, mb: 5 }}>
+            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
               Simple alert
             </Heading>
           </Box>
 
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
+          <Box sx={{ border: '1px solid gainsboro', borderRadius: '2' }}>
             <Box
               sx={{
                 p: 3,
@@ -93,12 +56,7 @@ export default function DemoPage() {
                 <Text size={3}>You might want to check something.</Text>
               </Box>
             </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
+            <Box sx={{ borderTop: '1px solid gainsboro', p: 3 }}>
               <pre style={{ margin: '0' }}>
                 <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
                   &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check
@@ -108,29 +66,13 @@ export default function DemoPage() {
             </Box>
           </Box>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
+          <Box sx={{ mt: 7, mb: 5 }}>
+            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
               Alert with title
             </Heading>
           </Box>
 
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
+          <Box sx={{ border: '1px solid gainsboro', borderRadius: '2' }}>
             <Box
               sx={{
                 p: 3,
@@ -146,31 +88,15 @@ export default function DemoPage() {
                   borderRadius: '2',
                 }}
               >
-                <Text
-                  size={3}
-                  weight="medium"
-                  sx={{
-                    mr: 1,
-                  }}
-                >
+                <Text size={3} weight="medium" sx={{ mr: 1 }}>
                   Attention!
                 </Text>
-                <Text
-                  size={3}
-                  sx={{
-                    color: 'gray700',
-                  }}
-                >
+                <Text size={3} sx={{ color: 'gray700' }}>
                   You might want to check something.
                 </Text>
               </Box>
             </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
+            <Box sx={{ borderTop: '1px solid gainsboro', p: 3 }}>
               <pre style={{ margin: '0' }}>
                 <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
                   &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check
@@ -180,90 +106,30 @@ export default function DemoPage() {
             </Box>
           </Box>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
+          <Box sx={{ mt: 7, mb: 5 }}>
+            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
               Alert with title
             </Heading>
           </Box>
 
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
+          <Box sx={{ border: '1px solid gainsboro', borderRadius: '2' }}>
             <Box
               sx={{
                 p: 3,
               }}
             >
-              <Box
-                sx={{
-                  backgroundColor: 'gray900',
-                  py: 1,
-                  px: 4,
-                  position: 'relative',
-                }}
-              >
-                <Flex
-                  sx={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text
-                    size={3}
-                    sx={{
-                      color: 'white',
-                    }}
-                  >
+              <Box sx={{ backgroundColor: 'gray900', py: 1, px: 4, position: 'relative' }}>
+                <Flex sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                  <Text size={3} sx={{ color: 'white' }}>
                     An important or exciting message from the company.
                   </Text>
-                  <Pipe
-                    sx={{
-                      backgroundColor: 'gray800',
-                      mx: 3,
-                    }}
-                  />
-                  <Link
-                    href="#"
-                    sx={{
-                      color: 'white',
-                    }}
-                  >
-                    <Flex
-                      sx={{
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Text
-                        size={3}
-                        weight="medium"
-                        sx={{
-                          color: 'inherit',
-                        }}
-                      >
+                  <Pipe sx={{ backgroundColor: 'gray800', mx: 3 }} />
+                  <Link href="#" sx={{ color: 'white' }}>
+                    <Flex sx={{ alignItems: 'center' }}>
+                      <Text size={3} weight="medium" sx={{ color: 'inherit' }}>
                         Read more
                       </Text>
-                      <Box
-                        sx={{
-                          ml: 1,
-                        }}
-                        style={{
-                          lineHeight: 1,
-                        }}
-                      >
+                      <Box sx={{ ml: 1, lineHeight: '1' }}>
                         <svg
                           width="15"
                           height="15"
@@ -321,12 +187,7 @@ export default function DemoPage() {
                 </Flex>
               </Box>
             </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
+            <Box sx={{ borderTop: '1px solid gainsboro', p: 3 }}>
               <pre style={{ margin: '0' }}>
                 <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
                   &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check
@@ -336,39 +197,15 @@ export default function DemoPage() {
             </Box>
           </Box>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
+          <Box sx={{ mt: 7, mb: 5 }}>
+            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
               Simple alert
             </Heading>
           </Box>
 
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
-            <Box
-              sx={{
-                p: 3,
-              }}
-            >
-              <Box
-                sx={{
-                  maxWidth: '250px',
-                }}
-              >
+          <Box sx={{ border: '1px solid gainsboro', borderRadius: '2' }}>
+            <Box sx={{ p: 3 }}>
+              <Box sx={{ maxWidth: '250px' }}>
                 <Box
                   sx={{
                     backgroundColor: 'gray100',
@@ -379,23 +216,12 @@ export default function DemoPage() {
                     borderRadius: '2',
                   }}
                 >
-                  <Box
-                    sx={{
-                      backgroundColor: 'gray100',
-                      mb: 1,
-                    }}
-                  >
+                  <Box sx={{ backgroundColor: 'gray100', mb: 1 }}>
                     <Text size={3} weight="medium">
                       Heading
                     </Text>
                   </Box>
-                  <Text
-                    size={2}
-                    sx={{
-                      color: 'gray700',
-                      lineHeight: 1,
-                    }}
-                  >
+                  <Text size={2} sx={{ color: 'gray700', lineHeight: 1 }}>
                     Draw attention to information such as a company message, a new feature
                     highlight, a prompt to take action on something, a reminder to complete a task,
                     or something similar.
@@ -403,12 +229,7 @@ export default function DemoPage() {
                 </Box>
               </Box>
             </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
+            <Box sx={{ borderTop: '1px solid gainsboro', p: 3 }}>
               <pre style={{ margin: '0' }}>
                 <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
                   &lt;Alert&gt;&lt;Text&gt;Attention! You might want to check

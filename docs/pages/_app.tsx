@@ -31,13 +31,10 @@ function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Modulz</title>
         <link rel="icon" href={isDarkMode ? '/favicon-light.png' : '/favicon-dark.png'} />
-
         <link rel="stylesheet" href="https://develop.modulz.app/fonts/fonts.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-
       <GlobalStyles />
-
       <Component {...pageProps} />
     </Radix.RadixProvider>
   );
