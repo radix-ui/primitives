@@ -33,6 +33,7 @@
       "*": ["node_modules/*"],
       "@interop-ui/utils": ["packages/core/utils/src"],
       "@interop-ui/css": ["packages/core/css/src"],
+      "@interop-ui/tabbable": ["packages/core/tabbable/src"],
       "@interop-ui/primitive-button": ["packages/primitives/button/src"],
       "@interop-ui/primitive-input": ["packages/primitives/input/src"],
       "@interop-ui/primitive-tabs": ["packages/primitives/tabs/src"],

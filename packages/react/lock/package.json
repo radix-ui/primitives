@@ -1,8 +1,8 @@
 {
-  "name": "@interop-ui/react-dialog",
+  "name": "@interop-ui/react-lock",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "module": "dist/react-dialog.esm.min.js",
+  "module": "dist/react-lock.esm.min.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "src",
@@ -15,8 +15,9 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
+    "@interop-ui/tabbable": "1.0.0",
     "@interop-ui/utils": "1.0.0",
     "@interop-ui/react-utils": "1.0.0",
-    "react-remove-scroll": "^2.3.0"
+    "aria-hidden": "^1.1.1"
   }
 }
