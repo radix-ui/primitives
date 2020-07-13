@@ -1,11 +1,6 @@
 import * as React from 'react';
 import { cssReset, isFunction, warningOnce, interopDataAttrObj } from '@interop-ui/utils';
-import {
-  forwardRef,
-  useComposedRefs,
-  useCallbackRef,
-  ForwardRefExoticComponentWithAs,
-} from '@interop-ui/react-utils';
+import { forwardRef, useComposedRefs, useCallbackRef } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level container rather than the input when using the
 // composed API so that we can share data via context.
@@ -247,8 +242,7 @@ CheckboxIcon.displayName = 'Checkbox.Icon';
  * Checkbox
  * -----------------------------------------------------------------------------------------------*/
 
-interface ICheckbox
-  extends ForwardRefExoticComponentWithAs<typeof CONTAINER_DEFAULT_TAG, CheckboxInputProps> {
+interface CheckboxStaticProps {
   Container: typeof CheckboxContainer;
   Input: typeof CheckboxInput;
   Icon: typeof CheckboxIcon;
@@ -261,23 +255,22 @@ type CheckboxDOMProps = CheckboxContainerDOMProps;
 type CheckboxOwnProps = CheckboxContainerOwnProps;
 type CheckboxProps = CheckboxDOMProps & CheckboxOwnProps;
 
-const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxInputProps>(function Checkbox(
-  props,
-  forwardedRef
-) {
-  const { children, ...cotainerProps } = props;
-  return (
-    <CheckboxContainer {...cotainerProps}>
-      {({ checked }) => (
-        <CheckboxInput ref={forwardedRef}>
-          <CheckboxBox>
-            <CheckboxIcon>{isFunction(children) ? children({ checked }) : children}</CheckboxIcon>
-          </CheckboxBox>
-        </CheckboxInput>
-      )}
-    </CheckboxContainer>
-  );
-}) as ICheckbox;
+const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxInputProps, CheckboxStaticProps>(
+  function Checkbox(props, forwardedRef) {
+    const { children, ...cotainerProps } = props;
+    return (
+      <CheckboxContainer {...cotainerProps}>
+        {({ checked }) => (
+          <CheckboxInput ref={forwardedRef}>
+            <CheckboxBox>
+              <CheckboxIcon>{isFunction(children) ? children({ checked }) : children}</CheckboxIcon>
+            </CheckboxBox>
+          </CheckboxInput>
+        )}
+      </CheckboxContainer>
+    );
+  }
+);
 Checkbox.Container = CheckboxContainer;
 Checkbox.Input = CheckboxInput;
 Checkbox.Box = CheckboxBox;

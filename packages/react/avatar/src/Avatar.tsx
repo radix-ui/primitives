@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, ForwardRefExoticComponentWithAs } from '@interop-ui/react-utils';
+import { forwardRef } from '@interop-ui/react-utils';
 
 const CONTAINER_DEFAULT_TAG = 'span';
 
@@ -136,20 +136,19 @@ const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function
 
 AvatarAbbr.displayName = 'Avatar.Abbr';
 
-const Avatar = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(function Avatar(
-  props,
-  forwardedRef
-) {
-  const { children, ...avatarProps } = props;
+const Avatar = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
+  function Avatar(props, forwardedRef) {
+    const { children, ...avatarProps } = props;
 
-  return (
-    <AvatarContainer ref={forwardedRef} {...avatarProps}>
-      <AvatarImage />
-      <AvatarIcon />
-      <AvatarAbbr />
-    </AvatarContainer>
-  );
-}) as IAvatar;
+    return (
+      <AvatarContainer ref={forwardedRef} {...avatarProps}>
+        <AvatarImage />
+        <AvatarIcon />
+        <AvatarAbbr />
+      </AvatarContainer>
+    );
+  }
+);
 
 Avatar.Container = AvatarContainer;
 Avatar.Image = AvatarImage;
@@ -158,8 +157,7 @@ Avatar.Icon = AvatarIcon;
 
 Avatar.displayName = 'Avatar';
 
-interface IAvatar
-  extends ForwardRefExoticComponentWithAs<typeof CONTAINER_DEFAULT_TAG, AvatarProps> {
+interface AvatarStaticProps {
   Container: typeof AvatarContainer;
   Image: typeof AvatarImage;
   Abbr: typeof AvatarAbbr;

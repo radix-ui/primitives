@@ -5,7 +5,6 @@ import {
   useId,
   composeEventHandlers,
   useControlledState,
-  ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -116,51 +115,52 @@ type CollapsibleOwnProps = {
 };
 type CollapsibleProps = CollapsibleDOMProps & CollapsibleOwnProps;
 
-interface ICollapsible
-  extends ForwardRefExoticComponentWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, CollapsibleProps> {
+interface CollapsibleStaticProps {
   Button: typeof CollapsibleButton;
   Content: typeof CollapsibleContent;
 }
 
-const Collapsible = forwardRef<typeof COLLAPSIBLE_DEFAULT_TAG, CollapsibleProps>(
-  (props, forwardedRef) => {
-    let {
-      as: Comp = COLLAPSIBLE_DEFAULT_TAG,
-      id: idProp,
-      children,
-      isOpen: isOpenProp,
-      defaultIsOpen,
-      disabled: isDisabled,
-      onToggle,
-      ...collapsibleProps
-    } = props;
+const Collapsible = forwardRef<
+  typeof COLLAPSIBLE_DEFAULT_TAG,
+  CollapsibleProps,
+  CollapsibleStaticProps
+>((props, forwardedRef) => {
+  let {
+    as: Comp = COLLAPSIBLE_DEFAULT_TAG,
+    id: idProp,
+    children,
+    isOpen: isOpenProp,
+    defaultIsOpen,
+    disabled: isDisabled,
+    onToggle,
+    ...collapsibleProps
+  } = props;
 
-    let [isOpen, setIsOpen] = useControlledState({
-      prop: isOpenProp,
-      defaultProp: defaultIsOpen,
-      onChange: onToggle,
-    });
-    let [contentId, setContentId] = React.useState<string>();
-    let context = React.useMemo(
-      () => ({
-        contentId,
-        isOpen,
-        isDisabled,
-        toggle: () => setIsOpen((prevIsOpen) => !prevIsOpen),
-        setContentId,
-      }),
-      [contentId, isDisabled, isOpen, setIsOpen]
-    );
+  let [isOpen, setIsOpen] = useControlledState({
+    prop: isOpenProp,
+    defaultProp: defaultIsOpen,
+    onChange: onToggle,
+  });
+  let [contentId, setContentId] = React.useState<string>();
+  let context = React.useMemo(
+    () => ({
+      contentId,
+      isOpen,
+      isDisabled,
+      toggle: () => setIsOpen((prevIsOpen) => !prevIsOpen),
+      setContentId,
+    }),
+    [contentId, isDisabled, isOpen, setIsOpen]
+  );
 
-    return (
-      <CollapsibleContext.Provider value={context}>
-        <Comp {...interopDataAttrObj('Collapsible')} {...collapsibleProps} ref={forwardedRef}>
-          {children}
-        </Comp>
-      </CollapsibleContext.Provider>
-    );
-  }
-) as ICollapsible;
+  return (
+    <CollapsibleContext.Provider value={context}>
+      <Comp {...interopDataAttrObj('Collapsible')} {...collapsibleProps} ref={forwardedRef}>
+        {children}
+      </Comp>
+    </CollapsibleContext.Provider>
+  );
+});
 
 Collapsible.Button = CollapsibleButton;
 Collapsible.Content = CollapsibleContent;
