@@ -267,13 +267,17 @@ function createAllFormats(opts: NormalizedOpts, input: string): [ScriptOpts, ...
 
 async function moveDeclarationFilesToDistTypes(packageName: string) {
   try {
-    const misplacedDeclarationFilesRoot = path.resolve(
+    const packageRelativePath = path.relative(paths.packages, paths.packageRoot);
+    const misplacedDeclarationFilesRoot = path.join(
       paths.packageDistTypes,
-      `${packageName}/src/`
+      packageRelativePath,
+      'src'
     );
     const distTypes = paths.packageDistTypes;
     await fs.copy(misplacedDeclarationFilesRoot, distTypes);
+
     // delete leftover folder
-    await fs.remove(path.resolve(paths.packageDistTypes, packageName));
+    const relativeDirToDelete = packageRelativePath.replace(packageName, '');
+    await fs.remove(path.resolve(paths.packageDistTypes, relativeDirToDelete));
   } catch (e) {}
 }

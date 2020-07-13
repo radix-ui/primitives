@@ -5,6 +5,7 @@ const projectRoot = path.resolve(__dirname, '../');
 
 export const paths = {
   projectRoot,
+  packages: path.join(projectRoot, 'packages'),
   packageRoot: resolvePackage('.'),
   packageDist: resolvePackage('dist'),
   packageDistTypes: resolvePackage('dist/types'),
