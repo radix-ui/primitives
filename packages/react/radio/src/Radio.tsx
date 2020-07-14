@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { cssReset, isFunction, warningOnce, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, useComposedRefs, useCallbackRef } from '@interop-ui/react-utils';
+import { cssReset, interopDataAttrObj, isFunction, warningOnce } from '@interop-ui/utils';
+import { forwardRef, useCallbackRef, useComposedRefs } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
 // composed API so that we can share data via context.
@@ -18,13 +18,13 @@ const inputPropsForRoot = [
   'value',
 ] as const;
 
-type CheckboxInputAttributes = typeof inputPropsForRoot[number];
+type RadioInputAttributes = typeof inputPropsForRoot[number];
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
 
-type CheckboxContextValue = {
+type RadioContextValue = {
   checked: boolean;
   onChange(event: React.ChangeEvent<HTMLInputElement>): void;
   inputRef: React.RefObject<HTMLInputElement | null>;
@@ -37,30 +37,24 @@ type CheckboxContextValue = {
   value: React.ComponentProps<'input'>['value'];
 };
 
-const CheckboxContext = React.createContext<CheckboxContextValue>({} as CheckboxContextValue);
-CheckboxContext.displayName = 'CheckboxContext';
+const RadioContext = React.createContext({} as RadioContextValue);
 
 /* -------------------------------------------------------------------------------------------------
- * CheckboxRoot
+ * RadioRoot
  * -----------------------------------------------------------------------------------------------*/
 
 const ROOT_DEFAULT_TAG = 'span';
 
-type CheckboxRootDOMProps = Omit<
+type RadioRootDOMProps = Omit<
   React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>,
-  CheckboxInputAttributes
+  RadioInputAttributes
 >;
-type CheckboxRootOwnProps = Pick<
-  React.ComponentPropsWithoutRef<'input'>,
-  CheckboxInputAttributes
-> & {
-  isIndeterminate?: boolean;
+type RadioRootOwnProps = Pick<React.ComponentPropsWithoutRef<'input'>, RadioInputAttributes> & {
   children?: React.ReactElement | ((props: { checked: boolean }) => React.ReactElement);
 };
+type RadioRootProps = RadioRootDOMProps & RadioRootOwnProps;
 
-type CheckboxRootProps = CheckboxRootDOMProps & CheckboxRootOwnProps;
-
-const CheckboxRoot = forwardRef<typeof ROOT_DEFAULT_TAG, CheckboxRootProps>(function CheckboxRoot(
+const RadioRoot = forwardRef<typeof ROOT_DEFAULT_TAG, RadioRootProps>(function RadioRoot(
   props,
   forwardedRef
 ) {
@@ -80,7 +74,7 @@ const CheckboxRoot = forwardRef<typeof ROOT_DEFAULT_TAG, CheckboxRootProps>(func
     readOnly,
     required,
     value,
-    ...checkboxRootProps
+    ...radioProps
   } = props;
 
   let isControlled = React.useRef(checkedProp != null);
@@ -97,7 +91,7 @@ const CheckboxRoot = forwardRef<typeof ROOT_DEFAULT_TAG, CheckboxRootProps>(func
     }
   });
 
-  let context: CheckboxContextValue = React.useMemo(
+  let ctx: RadioContextValue = React.useMemo(
     () => ({
       onChange,
       checked,
@@ -114,90 +108,91 @@ const CheckboxRoot = forwardRef<typeof ROOT_DEFAULT_TAG, CheckboxRootProps>(func
   );
 
   return (
-    <CheckboxContext.Provider value={context}>
-      <Comp {...interopDataAttrObj('CheckboxRoot')} ref={forwardedRef} {...checkboxRootProps}>
+    <RadioContext.Provider value={ctx}>
+      <Comp {...interopDataAttrObj('RadioRoot')} ref={forwardedRef} {...radioProps}>
         {isFunction(children) ? children({ checked }) : children}
       </Comp>
-    </CheckboxContext.Provider>
+    </RadioContext.Provider>
   );
 });
 
-CheckboxRoot.displayName = 'Checkbox.Root';
+RadioRoot.displayName = 'Radio.Root';
 
 /* -------------------------------------------------------------------------------------------------
- * CheckboxInput
+ * RadioInput
  * -----------------------------------------------------------------------------------------------*/
 
 const INPUT_DEFAULT_TAG = 'input';
 
-type CheckboxInputDOMProps = Omit<
+type RadioInputDOMProps = Omit<
   React.ComponentPropsWithoutRef<typeof INPUT_DEFAULT_TAG>,
-  CheckboxInputAttributes
+  RadioInputAttributes
 >;
-type CheckboxInputOwnProps = {};
-type CheckboxInputProps = CheckboxInputDOMProps & CheckboxInputOwnProps;
+type RadioInputOwnProps = {};
+type RadioInputProps = RadioInputDOMProps & RadioInputOwnProps;
 
-const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
-  function CheckboxInput(props, forwardedRef) {
-    const { as: Comp = INPUT_DEFAULT_TAG, children, ...checkboxInputProps } = props;
+const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(function RadioInput(
+  props,
+  forwardedRef
+) {
+  const { as: Comp = INPUT_DEFAULT_TAG, children, ...checkboxInputProps } = props;
 
-    let {
-      inputRef,
-      checked,
-      onChange,
-      autoComplete,
-      disabled,
-      form,
-      name,
-      readOnly,
-      required,
-      value,
-    } = React.useContext(CheckboxContext);
+  let {
+    inputRef,
+    checked,
+    onChange,
+    autoComplete,
+    disabled,
+    form,
+    name,
+    readOnly,
+    required,
+    value,
+  } = React.useContext(RadioContext);
 
-    const ref = useComposedRefs(forwardedRef, inputRef);
+  const ref = useComposedRefs(forwardedRef, inputRef);
 
-    React.useEffect(() => {
-      for (let prop of inputPropsForRoot) {
-        warningOnce(
-          prop,
-          !Object.hasOwnProperty.call(checkboxInputProps, prop),
-          `The ${prop} prop was passed to the Checkbox.Input component. This was likely a mistake. Instead, pass ${prop} to Checkbox.Root instead so that its data is available to the entire Checkbox component.`
-        );
-      }
-    });
+  React.useEffect(() => {
+    for (let prop of inputPropsForRoot) {
+      warningOnce(
+        prop,
+        !Object.hasOwnProperty.call(checkboxInputProps, prop),
+        `The ${prop} prop was passed to the Radio.Input component. This was likely a mistake. Instead, pass ${prop} to Radio.Root instead so that its data is available to the entire Radio component.`
+      );
+    }
+  });
 
-    return (
-      <Comp
-        {...interopDataAttrObj('CheckboxInput')}
-        ref={ref}
-        {...checkboxInputProps}
-        type="checkbox"
-        checked={checked}
-        onChange={onChange}
-        autoComplete={autoComplete}
-        disabled={disabled}
-        form={form}
-        name={name}
-        readOnly={readOnly}
-        required={required}
-        value={value}
-      />
-    );
-  }
-);
-CheckboxInput.displayName = 'Checkbox.Input';
+  return (
+    <Comp
+      {...interopDataAttrObj('RadioInput')}
+      ref={ref}
+      {...checkboxInputProps}
+      type="radio"
+      checked={checked}
+      onChange={onChange}
+      autoComplete={autoComplete}
+      disabled={disabled}
+      form={form}
+      name={name}
+      readOnly={readOnly}
+      required={required}
+      value={value}
+    />
+  );
+});
+RadioInput.displayName = 'Radio.Input';
 
 /* -------------------------------------------------------------------------------------------------
- * CheckboxBox
+ * RadioBox
  * -----------------------------------------------------------------------------------------------*/
 
 const BOX_DEFAULT_TAG = 'span';
 
-type CheckboxBoxDOMProps = React.ComponentPropsWithoutRef<typeof BOX_DEFAULT_TAG>;
-type CheckboxBoxOwnProps = {};
-type CheckboxBoxProps = CheckboxBoxDOMProps & CheckboxBoxOwnProps;
+type RadioBoxDOMProps = React.ComponentPropsWithoutRef<typeof BOX_DEFAULT_TAG>;
+type RadioBoxOwnProps = {};
+type RadioBoxProps = RadioBoxDOMProps & RadioBoxOwnProps;
 
-const CheckboxBox = forwardRef<typeof BOX_DEFAULT_TAG, CheckboxBoxProps>(function CheckboxBox(
+const RadioBox = forwardRef<typeof BOX_DEFAULT_TAG, RadioBoxProps>(function RadioBox(
   props,
   forwardedRef
 ) {
@@ -205,72 +200,62 @@ const CheckboxBox = forwardRef<typeof BOX_DEFAULT_TAG, CheckboxBoxProps>(functio
 
   return <Comp {...interopDataAttrObj('CheckboBox')} ref={forwardedRef} {...checkboxBoxProps} />;
 });
-CheckboxBox.displayName = 'Checkbox.Box';
+RadioBox.displayName = 'Radio.Box';
 
 /* -------------------------------------------------------------------------------------------------
- * CheckboxIcon
+ * RadioIcon
  * -----------------------------------------------------------------------------------------------*/
 
 const ICON_DEFAULT_TAG = 'span';
 
-type CheckboxIconDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
-type CheckboxIconOwnProps = {
+type RadioIconDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
+type RadioIconOwnProps = {
   children?: React.ReactElement | ((props: { checked: boolean }) => React.ReactElement);
 };
-type CheckboxIconProps = CheckboxIconDOMProps & CheckboxIconOwnProps;
+type RadioIconProps = RadioIconDOMProps & RadioIconOwnProps;
 
-const CheckboxIcon = forwardRef<typeof ICON_DEFAULT_TAG, CheckboxIconProps>(function CheckboxIcon(
+const RadioIcon = forwardRef<typeof ICON_DEFAULT_TAG, RadioIconProps>(function RadioIcon(
   props,
   forwardedRef
 ) {
   let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
-  let { checked } = React.useContext(CheckboxContext);
+  let { checked } = React.useContext(RadioContext);
   return (
-    <Comp {...interopDataAttrObj('CheckboxIcon')} ref={forwardedRef} {...checkboxBoxProps}>
+    <Comp {...interopDataAttrObj('RadioIcon')} ref={forwardedRef} {...checkboxBoxProps}>
       {isFunction(children) ? children({ checked }) : children}
     </Comp>
   );
 });
 
-CheckboxIcon.displayName = 'Checkbox.Icon';
+RadioIcon.displayName = 'Radio.Icon';
 
 /* -------------------------------------------------------------------------------------------------
- * Checkbox
+ * Radio
  * -----------------------------------------------------------------------------------------------*/
 
-interface CheckboxStaticProps {
-  Root: typeof CheckboxRoot;
-  Input: typeof CheckboxInput;
-  Icon: typeof CheckboxIcon;
-  Box: typeof CheckboxBox;
+type RadioDOMProps = React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>;
+type RadioOwnProps = RadioRootOwnProps;
+type RadioProps = RadioDOMProps & RadioOwnProps;
+
+const Radio = forwardRef<typeof ROOT_DEFAULT_TAG, RadioProps, RadioStaticProps>(function Radio(
+  props,
+  forwardedRef
+) {
+  let { ...radioProps } = props;
+  return (
+    <RadioRoot {...interopDataAttrObj('Radio')} ref={forwardedRef} {...radioProps}></RadioRoot>
+  );
+});
+
+Radio.displayName = 'Radio';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+Radio.Root = RadioRoot;
+
+interface RadioStaticProps {
+  Root: typeof RadioRoot;
 }
-
-const CHECKBOX_DEFAULT_TAG = 'input';
-
-type CheckboxDOMProps = CheckboxRootDOMProps;
-type CheckboxOwnProps = CheckboxRootOwnProps;
-type CheckboxProps = CheckboxDOMProps & CheckboxOwnProps;
-
-const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxInputProps, CheckboxStaticProps>(
-  function Checkbox(props, forwardedRef) {
-    const { children, ...cotainerProps } = props;
-    return (
-      <CheckboxRoot {...cotainerProps}>
-        {({ checked }) => (
-          <CheckboxInput ref={forwardedRef}>
-            <CheckboxBox>
-              <CheckboxIcon>{isFunction(children) ? children({ checked }) : children}</CheckboxIcon>
-            </CheckboxBox>
-          </CheckboxInput>
-        )}
-      </CheckboxRoot>
-    );
-  }
-);
-Checkbox.Root = CheckboxRoot;
-Checkbox.Input = CheckboxInput;
-Checkbox.Box = CheckboxBox;
-Checkbox.Icon = CheckboxIcon;
 
 const styles = {
   root: {
@@ -302,6 +287,7 @@ const styles = {
     left: 0,
     zIndex: 0,
     border: '1px solid #000',
+    borderRadius: 9999999,
   },
   icon: {
     ...cssReset(ICON_DEFAULT_TAG),
@@ -312,17 +298,12 @@ const styles = {
     pointerEvents: 'none',
     userSelect: 'none',
     opacity: 0,
+    borderRadius: 9999999,
   },
   'root.state.checked[icon]': {
     opacity: 1,
   },
 };
 
-export type {
-  CheckboxRootProps,
-  CheckboxInputProps,
-  CheckboxBoxProps,
-  CheckboxIconProps,
-  CheckboxProps,
-};
-export { Checkbox, styles };
+export { Radio, styles };
+export type { RadioProps };
