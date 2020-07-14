@@ -1,0 +1,26 @@
+{
+  "name": "@interop-ui/react-sheet",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "module": "dist/react-sheet.esm.min.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "test": "cross-env CI=true ts-node ../../../scripts/test --passWithNoTests",
+    "test:watch": "npm run test -- --watchAll",
+    "build": "ts-node ../../../scripts/build",
+    "clean": "ts-node ../../../scripts/clean",
+    "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "@interop-ui/react-debug-context": "1.0.0",
+    "@interop-ui/react-lock": "1.0.0",
+    "@interop-ui/react-portal": "1.0.0",
+    "@interop-ui/react-utils": "1.0.0",
+    "@interop-ui/utils": "1.0.0",
+    "react-remove-scroll": "^2.3.0"
+  }
+}

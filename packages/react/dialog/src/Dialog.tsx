@@ -184,7 +184,7 @@ type DialogContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAU
 type DialogContentOwnProps = {};
 type DialogContentProps = DialogContentDOMProps & DialogContentOwnProps;
 
-const DialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogOverlayProps>(
+const DialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentProps>(
   function DialogContent(props, forwardedRef) {
     let { as: Comp = CONTENT_DEFAULT_TAG, children, ...contentProps } = props;
     let { lockContainerRef } = useLockContext();
@@ -284,4 +284,10 @@ const styles = {
 };
 
 export { Dialog, styles };
-export type { DialogProps };
+export type {
+  DialogProps,
+  DialogRootProps,
+  DialogOverlayProps,
+  DialogContentProps,
+  DialogInnerProps,
+};

@@ -298,7 +298,7 @@ Tabs.List = TabsList;
 export { Tabs, styles };
 export type { TabsProps, TabsListProps, TabsTabProps, TabsPanelProps, ITabs };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+/* ---------------------------------------------------------------------------------------------- */
 
 function makeTabId(tabsId: string, tabId: string) {
   return `${tabsId}-tab-${tabId}`;

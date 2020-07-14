@@ -1,6 +1,6 @@
 import * as React from 'react';
 import omit from 'lodash.omit';
-import { Size, cssReset, clamp } from '@interop-ui/utils';
+import { Size, cssReset, clamp, interopDataAttrObj } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   forwardRef,
@@ -337,6 +337,7 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
     return (
       <SliderContext.Provider value={context}>
         <Comp
+          {...interopDataAttrObj('SliderRoot')}
           {...sliderProps}
           ref={composedRefs}
           onKeyDown={isDisabled ? undefined : handleKeyDown}
@@ -400,7 +401,7 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
     }
   }, [context, prevSize, size]);
 
-  return <Comp {...trackProps} ref={composedRefs} />;
+  return <Comp {...interopDataAttrObj('SliderTrack')} {...trackProps} ref={composedRefs} />;
 });
 
 SliderTrack.displayName = 'Slider.Track';
@@ -418,7 +419,7 @@ type SliderTrackMaskProps = SliderTrackMaskDOMProps & SliderTrackMaskOwnProps;
 const SliderTrackMask = forwardRef<typeof MASK_DEFAULT_TAG, SliderTrackMaskProps>(
   function SliderTrackMask(props, forwardedRef) {
     let { as: Comp = MASK_DEFAULT_TAG, ...maskProps } = props;
-    return <Comp {...maskProps} ref={forwardedRef} />;
+    return <Comp {...interopDataAttrObj('SliderTrackMask')} {...maskProps} ref={forwardedRef} />;
   }
 );
 
@@ -447,6 +448,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
 
   return (
     <Comp
+      {...interopDataAttrObj('SliderRange')}
       {...rangeProps}
       ref={composedRefs}
       style={{ left: left + '%', right: right + '%', ...style }}
@@ -470,7 +472,7 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
   props,
   forwardedRef
 ) {
-  let { as: Comp = THUMB_DEFAULT_TAG, ...thumbProps } = props;
+  let { as: Comp = THUMB_DEFAULT_TAG, onFocus, style, ...thumbProps } = props;
   let context = useSliderContext('SliderThumb');
 
   // destructure for references so that we don't need `context` as effect dependency
@@ -496,9 +498,9 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
     return undefined;
   }
 
-  const handleFocus = composeEventHandlers(props.onFocus, (event) => {
+  function handleFocus(event: React.FocusEvent<any>) {
     context.selectThumb(event.currentTarget);
-  });
+  }
 
   React.useLayoutEffect(() => {
     const node = ref.current as HTMLSpanElement;
@@ -514,17 +516,18 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
 
   return (
     <Comp
-      {...thumbProps}
-      ref={composedRefs}
-      role="slider"
-      tabIndex={0}
+      {...interopDataAttrObj('SliderThumb')}
       aria-label={props['aria-label'] || label}
       aria-valuemin={context.min}
       aria-valuenow={value}
       aria-valuemax={context.max}
       aria-orientation="horizontal"
-      style={{ left: `calc(${left}% + ${xOffset}px)` }}
-      onFocus={handleFocus}
+      role="slider"
+      tabIndex={0}
+      {...thumbProps}
+      ref={composedRefs}
+      style={{ left: `calc(${left}% + ${xOffset}px)`, ...style }}
+      onFocus={composeEventHandlers(onFocus, handleFocus)}
     />
   );
 });

@@ -233,28 +233,42 @@ RadioIcon.displayName = 'Radio.Icon';
  * Radio
  * -----------------------------------------------------------------------------------------------*/
 
-type RadioDOMProps = React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>;
+const RADIO_DEFAULT_TAG = 'input';
+
+type RadioDOMProps = RadioRootDOMProps;
 type RadioOwnProps = RadioRootOwnProps;
 type RadioProps = RadioDOMProps & RadioOwnProps;
 
-const Radio = forwardRef<typeof ROOT_DEFAULT_TAG, RadioProps, RadioStaticProps>(function Radio(
-  props,
-  forwardedRef
-) {
-  let { ...radioProps } = props;
-  return (
-    <RadioRoot {...interopDataAttrObj('Radio')} ref={forwardedRef} {...radioProps}></RadioRoot>
-  );
-});
+const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioInputProps, RadioStaticProps>(
+  function Radio(props, forwardedRef) {
+    const { as, children, ...cotainerProps } = props;
+    return (
+      <RadioRoot {...cotainerProps}>
+        {({ checked }) => (
+          <RadioBox>
+            <RadioInput as={as} ref={forwardedRef} />
+            <RadioIcon>{isFunction(children) ? children({ checked }) : children}</RadioIcon>
+          </RadioBox>
+        )}
+      </RadioRoot>
+    );
+  }
+);
 
 Radio.displayName = 'Radio';
 
 /* ---------------------------------------------------------------------------------------------- */
 
 Radio.Root = RadioRoot;
+Radio.Input = RadioInput;
+Radio.Box = RadioBox;
+Radio.Icon = RadioIcon;
 
 interface RadioStaticProps {
   Root: typeof RadioRoot;
+  Input: typeof RadioInput;
+  Box: typeof RadioBox;
+  Icon: typeof RadioIcon;
 }
 
 const styles = {
@@ -306,4 +320,4 @@ const styles = {
 };
 
 export { Radio, styles };
-export type { RadioProps };
+export type { RadioRootProps, RadioInputProps, RadioBoxProps, RadioIconProps, RadioProps };
