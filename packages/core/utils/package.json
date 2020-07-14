@@ -12,6 +12,7 @@
     "test": "cross-env CI=true ts-node ../../../scripts/test --passWithNoTests",
     "test:watch": "npm run test -- --watchAll",
     "build": "ts-node ../../../scripts/build",
+    "clean": "ts-node ../../../scripts/clean",
     "prepublish": "npm run build"
   },
   "dependencies": {
