@@ -321,13 +321,13 @@ Switch.displayName = 'Switch';
 Switch.Root = SwitchRoot;
 Switch.Input = SwitchInput;
 Switch.Box = SwitchBox;
-Switch.Icon = SwitchThumb;
+Switch.Thumb = SwitchThumb;
 
 interface SwitchStaticProps {
   Root: typeof SwitchRoot;
   Input: typeof SwitchInput;
   Box: typeof SwitchBox;
-  Icon: typeof SwitchThumb;
+  Thumb: typeof SwitchThumb;
 }
 
 const styles = {
