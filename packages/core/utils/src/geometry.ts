@@ -79,3 +79,22 @@ export function isInsideRect(rect: ClientRect, point: Point, { inclusive = true 
     );
   }
 }
+
+export type Collisions = Record<Side, boolean>;
+
+/**
+ * Gets collisions for each side of a rect (top, right, bottom, left)
+ */
+export function getCollisions(
+  /** The rect to test collisions against */
+  rect: ClientRect,
+  /** An optional tolerance if you want the collisions to trigger a bit before/after */
+  tolerance = 0
+): Collisions {
+  return {
+    top: rect.top < tolerance,
+    right: rect.right > window.innerWidth - tolerance,
+    bottom: rect.bottom > window.innerHeight - tolerance,
+    left: rect.left < tolerance,
+  };
+}
