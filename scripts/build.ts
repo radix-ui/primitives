@@ -206,8 +206,6 @@ async function build() {
 
 build();
 
-////////////////////////////////////////////////////////////////////////////////
-
 export function writeCjsEntryFile(name: string) {
   const contents = `'use strict';
 

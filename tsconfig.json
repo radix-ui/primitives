@@ -81,6 +81,7 @@
       "@interop-ui/react-toggle-button": ["packages/react/toggle-button/src"],
       "@interop-ui/react-toggletip": ["packages/react/toggletip/src"],
       "@interop-ui/react-tooltip": ["packages/react/tooltip/src"],
+      "@interop-ui/react-use-size": ["packages/react/use-size/src"],
       "@interop-ui/react-utils": ["packages/react/utils/src"],
       "@interop-ui/react-visually-hidden": ["packages/react/visually-hidden/src"],
       "$test/*": ["test/*"]

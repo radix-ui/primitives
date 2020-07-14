@@ -257,16 +257,20 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxInputProps, Che
     return (
       <CheckboxRoot {...cotainerProps}>
         {({ checked }) => (
-          <CheckboxInput ref={forwardedRef}>
-            <CheckboxBox>
-              <CheckboxIcon>{isFunction(children) ? children({ checked }) : children}</CheckboxIcon>
-            </CheckboxBox>
-          </CheckboxInput>
+          <CheckboxBox>
+            <CheckboxInput ref={forwardedRef} />
+            <CheckboxIcon>{isFunction(children) ? children({ checked }) : children}</CheckboxIcon>
+          </CheckboxBox>
         )}
       </CheckboxRoot>
     );
   }
 );
+
+Checkbox.displayName = 'Checkbox';
+
+/* ---------------------------------------------------------------------------------------------- */
+
 Checkbox.Root = CheckboxRoot;
 Checkbox.Input = CheckboxInput;
 Checkbox.Box = CheckboxBox;
