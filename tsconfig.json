@@ -68,7 +68,6 @@
       "@interop-ui/react-popover": ["packages/react/popover/src"],
       "@interop-ui/react-portal": ["packages/react/portal/src"],
       "@interop-ui/react-radio": ["packages/react/radio/src"],
-      "@interop-ui/react-remove-scroll": ["packages/react/remove-scroll/src"],
       "@interop-ui/react-select": ["packages/react/select/src"],
       "@interop-ui/react-sheet": ["packages/react/sheet/src"],
       "@interop-ui/react-slider": ["packages/react/slider/src"],
