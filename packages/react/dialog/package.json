@@ -17,6 +17,9 @@
   },
   "dependencies": {
     "@interop-ui/utils": "1.0.0",
+    "@interop-ui/react-debug-context": "1.0.0",
+    "@interop-ui/react-lock": "1.0.0",
+    "@interop-ui/react-portal": "1.0.0",
     "@interop-ui/react-utils": "1.0.0",
     "react-remove-scroll": "^2.3.0"
   }
