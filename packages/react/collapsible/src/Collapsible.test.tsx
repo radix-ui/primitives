@@ -1,4 +1,5 @@
 import React from 'react';
+import { axe } from 'jest-axe';
 import { render, fireEvent } from '@testing-library/react';
 import { Collapsible } from './Collapsible';
 
@@ -13,12 +14,16 @@ const CollapsibleTest = (props: React.ComponentProps<typeof Collapsible>) => (
 );
 
 describe('given a default Collapsible', () => {
-  let query: ReturnType<typeof render>;
+  let rendered: ReturnType<typeof render>;
   let button: HTMLElement;
 
   beforeEach(() => {
-    query = render(<CollapsibleTest />);
-    button = query.getByText(BUTTON_TEXT);
+    rendered = render(<CollapsibleTest />);
+    button = rendered.getByText(BUTTON_TEXT);
+  });
+
+  it('should have no accessibility violations', async () => {
+    expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
   it('should render a button', () => {
@@ -30,7 +35,7 @@ describe('given a default Collapsible', () => {
 
     beforeEach(() => {
       fireEvent.click(button);
-      content = query.getByText(CONTENT_TEXT);
+      content = rendered.getByText(CONTENT_TEXT);
     });
 
     it('should open the content', () => {
@@ -50,26 +55,26 @@ describe('given a default Collapsible', () => {
 });
 
 describe('given a disabled Collapsible', () => {
-  let query: ReturnType<typeof render>;
+  let rendered: ReturnType<typeof render>;
 
   beforeEach(() => {
-    query = render(<CollapsibleTest disabled />);
+    rendered = render(<CollapsibleTest disabled />);
   });
 
   it('should render a disabled button', () => {
-    const button = query.getByText(BUTTON_TEXT);
+    const button = rendered.getByText(BUTTON_TEXT);
     expect(button).toBeDisabled();
   });
 });
 
 describe('given an open uncontrolled Collapsible', () => {
-  let query: ReturnType<typeof render>;
+  let rendered: ReturnType<typeof render>;
   let content: HTMLElement;
   const onToggle = jest.fn();
 
   beforeEach(() => {
-    query = render(<CollapsibleTest defaultIsOpen={true} onToggle={onToggle} />);
-    content = query.getByText(CONTENT_TEXT);
+    rendered = render(<CollapsibleTest defaultIsOpen={true} onToggle={onToggle} />);
+    content = rendered.getByText(CONTENT_TEXT);
   });
 
   it('should render with open content', () => {
@@ -78,7 +83,7 @@ describe('given an open uncontrolled Collapsible', () => {
 
   describe('when clicking the button', () => {
     beforeEach(() => {
-      const button = query.getByText(BUTTON_TEXT);
+      const button = rendered.getByText(BUTTON_TEXT);
       fireEvent.click(button);
     });
 
@@ -93,13 +98,13 @@ describe('given an open uncontrolled Collapsible', () => {
 });
 
 describe('given an open controlled Collapsible', () => {
-  let query: ReturnType<typeof render>;
+  let rendered: ReturnType<typeof render>;
   let content: HTMLElement;
   const onToggle = jest.fn();
 
   beforeEach(() => {
-    query = render(<CollapsibleTest isOpen={true} onToggle={onToggle} />);
-    content = query.getByText(CONTENT_TEXT);
+    rendered = render(<CollapsibleTest isOpen={true} onToggle={onToggle} />);
+    content = rendered.getByText(CONTENT_TEXT);
   });
 
   it('should render with open content', () => {
@@ -108,7 +113,7 @@ describe('given an open controlled Collapsible', () => {
 
   describe('when clicking the button', () => {
     beforeEach(() => {
-      const button = query.getByText(BUTTON_TEXT);
+      const button = rendered.getByText(BUTTON_TEXT);
       fireEvent.click(button);
     });
 
