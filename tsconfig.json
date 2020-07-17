@@ -32,6 +32,7 @@
     "paths": {
       "*": ["node_modules/*"],
       "@interop-ui/css": ["packages/core/css/src"],
+      "@interop-ui/machine": ["packages/core/machine/src"],
       "@interop-ui/popper": ["packages/core/popper/src"],
       "@interop-ui/tabbable": ["packages/core/tabbable/src"],
       "@interop-ui/utils": ["packages/core/utils/src"],
@@ -40,6 +41,7 @@
       "@interop-ui/primitive-tabs": ["packages/primitives/tabs/src"],
       "@interop-ui/primitive-tooltip": ["packages/primitives/tooltip/src"],
       "@interop-ui/react-accessible-icon": ["packages/react/accessible-icon/src"],
+      "@interop-ui/react-accordion": ["packages/react/accordion/src"],
       "@interop-ui/react-alert": ["packages/react/alert/src"],
       "@interop-ui/react-arrow": ["packages/react/arrow/src"],
       "@interop-ui/react-aspect-ratio": ["packages/react/aspect-ratio/src"],
