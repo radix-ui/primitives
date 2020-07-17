@@ -126,3 +126,31 @@ describe('given an open controlled Collapsible', () => {
     });
   });
 });
+
+describe('given styled parts', () => {
+  let rendered: ReturnType<typeof render>;
+
+  beforeEach(() => {
+    rendered = render(
+      <Collapsible className="container-class" isOpen={true}>
+        <Collapsible.Button className="button-class">{BUTTON_TEXT}</Collapsible.Button>
+        <Collapsible.Content className="content-class">{CONTENT_TEXT}</Collapsible.Content>
+      </Collapsible>
+    );
+  });
+
+  it('should pass the className to the container', () => {
+    const container = rendered.container.firstChild;
+    expect(container).toHaveClass('container-class');
+  });
+
+  it('should pass the className to the button', () => {
+    const button = rendered.getByText(BUTTON_TEXT);
+    expect(button).toHaveClass('button-class');
+  });
+
+  it('should pass the className to the content', () => {
+    const content = rendered.getByText(CONTENT_TEXT);
+    expect(content).toHaveClass('content-class');
+  });
+});
