@@ -1,6 +1,7 @@
 {
   "name": "@interop-ui/react-divider",
   "version": "1.0.0",
+  "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/react-divider.esm.min.js",
   "types": "dist/types/index.d.ts",
@@ -9,9 +10,9 @@
     "dist"
   ],
   "scripts": {
-    "test": "cross-env CI=true ts-node ../../../scripts/test --passWithNoTests",
+    "test": "cross-env CI=true ts-node --transpile-only ../../../scripts/test --passWithNoTests",
     "test:watch": "npm run test -- --watchAll",
-    "build": "ts-node ../../../scripts/build",
+    "build": "ts-node --transpile-only ../../../scripts/build",
     "clean": "ts-node ../../../scripts/clean",
     "prepublish": "npm run build"
   },

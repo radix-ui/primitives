@@ -2,9 +2,10 @@
   "private": true,
   "name": "interop-ui",
   "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "lint": "eslint --ext .js,.ts,.tsx .",
-    "test": "cross-env CI=true ts-node ./scripts/test packages",
+    "test": "cross-env CI=true ts-node --transpile-only ./scripts/test packages",
     "build": "lerna run build --stream --ignore @interop-ui/docs",
     "clean": "lerna run clean --stream",
     "new-component": "cross-env CI=true ts-node ./scripts/new-component",
