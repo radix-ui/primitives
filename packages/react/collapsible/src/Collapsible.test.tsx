@@ -17,7 +17,7 @@ const CollapsibleTest = (props: React.ComponentProps<typeof Collapsible>) => (
 describe('given a default Collapsible', () => {
   let rendered: RenderResult;
   let button: HTMLElement;
-  let content: HTMLElement;
+  let content: HTMLElement | null;
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest />);
