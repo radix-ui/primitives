@@ -1,6 +1,6 @@
 import React from 'react';
 import { axe } from 'jest-axe';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, RenderResult } from '@testing-library/react';
 import { interopDataAttr } from '@interop-ui/utils';
 import { Collapsible } from './Collapsible';
 
@@ -15,7 +15,7 @@ const CollapsibleTest = (props: React.ComponentProps<typeof Collapsible>) => (
 );
 
 describe('given a default Collapsible', () => {
-  let rendered: ReturnType<typeof render>;
+  let rendered: RenderResult;
   let button: HTMLElement;
   let content: HTMLElement;
 
@@ -76,7 +76,7 @@ describe('given a default Collapsible', () => {
 });
 
 describe('given a disabled Collapsible', () => {
-  let rendered: ReturnType<typeof render>;
+  let rendered: RenderResult;
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest disabled />);
@@ -89,7 +89,7 @@ describe('given a disabled Collapsible', () => {
 });
 
 describe('given an open uncontrolled Collapsible', () => {
-  let rendered: ReturnType<typeof render>;
+  let rendered: RenderResult;
   let content: HTMLElement;
   const onToggle = jest.fn();
 
@@ -119,7 +119,7 @@ describe('given an open uncontrolled Collapsible', () => {
 });
 
 describe('given an open controlled Collapsible', () => {
-  let rendered: ReturnType<typeof render>;
+  let rendered: RenderResult;
   let content: HTMLElement;
   const onToggle = jest.fn();
 
@@ -149,7 +149,7 @@ describe('given an open controlled Collapsible', () => {
 });
 
 describe('given styled parts', () => {
-  let rendered: ReturnType<typeof render>;
+  let rendered: RenderResult;
 
   beforeEach(() => {
     rendered = render(
