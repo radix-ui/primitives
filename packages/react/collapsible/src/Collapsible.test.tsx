@@ -1,6 +1,7 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import { render, fireEvent } from '@testing-library/react';
+import { interopDataAttr } from '@interop-ui/utils';
 import { Collapsible } from './Collapsible';
 
 const BUTTON_TEXT = 'Button';
@@ -16,23 +17,38 @@ const CollapsibleTest = (props: React.ComponentProps<typeof Collapsible>) => (
 describe('given a default Collapsible', () => {
   let rendered: ReturnType<typeof render>;
   let button: HTMLElement;
+  let content: HTMLElement;
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest />);
     button = rendered.getByText(BUTTON_TEXT);
+    content = rendered.queryByText(CONTENT_TEXT);
   });
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
+  it('should have an interop attribute on the container', () => {
+    const collapsible = rendered.container.firstChild;
+    const interopAttr = interopDataAttr('Collapsible');
+    expect(collapsible).toHaveAttribute(interopAttr);
+  });
+
   it('should render a button', () => {
-    expect(button).toBeInTheDocument();
+    expect(button).toBeVisible();
+  });
+
+  it('should have an interop attribute on the button', () => {
+    const interopAttr = interopDataAttr('CollapsibleButton');
+    expect(button).toHaveAttribute(interopAttr);
+  });
+
+  it('should not render content', () => {
+    expect(content).toBe(null);
   });
 
   describe('when clicking the button', () => {
-    let content: HTMLElement;
-
     beforeEach(() => {
       fireEvent.click(button);
       content = rendered.getByText(CONTENT_TEXT);
@@ -40,6 +56,11 @@ describe('given a default Collapsible', () => {
 
     it('should open the content', () => {
       expect(content).toBeVisible();
+    });
+
+    it('should have an interop attribute on the content', () => {
+      const interopAttr = interopDataAttr('CollapsibleContent');
+      expect(content).toHaveAttribute(interopAttr);
     });
 
     describe('and clicking the button again', () => {
