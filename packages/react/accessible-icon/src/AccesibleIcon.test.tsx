@@ -1,6 +1,7 @@
 import React from 'react';
 import { axe } from 'jest-axe';
-import { render, RenderResult } from '@testing-library/react';
+import type { RenderResult } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { interopDataAttr } from '@interop-ui/utils';
 import { AccessibleIcon } from './AccessibleIcon';
 
