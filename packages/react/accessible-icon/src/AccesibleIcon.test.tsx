@@ -48,7 +48,7 @@ describe('given a default AccessibleIcon', () => {
     expect(label).toBeInTheDocument();
   });
 
-  it('should add a hidden aria attribute to the child', () => {
+  it('should add an aria-hidden attribute to the child', () => {
     const svg = rendered.getByTestId('icon');
     expect(svg.getAttribute('aria-hidden')).toBe('true');
   });
