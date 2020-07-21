@@ -1,35 +1,67 @@
-// Forked and simplified from https://github.com/jaredpalmer/tsdx
-import path from 'path';
-import * as fs from 'fs-extra';
-import { DEFAULT_EXTENSIONS } from '@babel/core';
-import { rollup, RollupOptions, OutputOptions } from 'rollup';
-import commonjs from '@rollup/plugin-commonjs';
-import json from '@rollup/plugin-json';
-import replace from '@rollup/plugin-replace';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import { babel } from '@rollup/plugin-babel';
-import sourceMaps from 'rollup-plugin-sourcemaps';
-import { terser } from 'rollup-plugin-terser';
-import typescript from 'rollup-plugin-typescript2';
-import { paths } from './constants';
-import {
-  external,
-  normalizeOpts,
-  logBuildStepCompletion,
-  logError,
-  cleanDistFolder,
-  parseArgs,
-} from './utils';
-import { ScriptOpts, NormalizedOpts } from './types';
-import babelConfig from './config/babel';
+// TODO: This file is temporary while we figure out how to speed up the build while using ts-node
+const chalk = require('chalk');
+const path = require('path');
+const glob = require('tiny-glob/sync');
+const mri = require('mri');
+const fs = require('fs-extra');
+const { DEFAULT_EXTENSIONS, createConfigItem } = require('@babel/core');
+const { rollup } = require('rollup');
+const commonjs = require('@rollup/plugin-commonjs');
+const json = require('@rollup/plugin-json');
+const replace = require('@rollup/plugin-replace');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const { babel } = require('@rollup/plugin-babel');
+const sourceMaps = require('rollup-plugin-sourcemaps');
+const { terser } = require('rollup-plugin-terser');
+const typescript = require('rollup-plugin-typescript2');
+
+const projectRoot = path.resolve(__dirname, '../');
+
+// Make sure any symlinks in a package folder are resolved:
+// https://github.com/facebookincubator/create-react-app/issues/637
+const packageDirectory = fs.realpathSync(process.cwd());
+
+const paths = {
+  projectRoot,
+  packages: path.join(projectRoot, 'packages'),
+  packageRoot: resolvePackage('.'),
+  packageDist: resolvePackage('dist'),
+  packageDistTypes: resolvePackage('dist/types'),
+  projectCache: path.join(projectRoot, '.cache'),
+  progressEstimatorCache: path.join(projectRoot, 'node_modules/.cache/.progress-estimator'),
+};
+
+let plugins = createConfigItems('plugin', [
+  { name: 'babel-plugin-annotate-pure-calls' },
+  { name: 'babel-plugin-dev-expression' },
+  {
+    name: '@babel/plugin-proposal-class-properties',
+    loose: true,
+  },
+  { name: '@babel/plugin-proposal-optional-chaining' },
+  { name: '@babel/plugin-proposal-nullish-coalescing-operator' },
+  { name: 'babel-plugin-macros' },
+]);
+
+let presets = createConfigItems('preset', [
+  {
+    name: '@babel/preset-env',
+    modules: false,
+    loose: true,
+    exclude: ['transform-async-to-generator', 'transform-regenerator'],
+  },
+]);
+
+const babelConfig = {
+  exclude: ['node_modules/**'],
+  presets,
+  plugins,
+};
 
 // shebang cache map thing because the transform only gets run once
-let shebang: any = {};
+let shebang = {};
 
-export async function createRollupConfig(
-  opts: ScriptOpts,
-  buildCount: number
-): Promise<RollupOptions> {
+async function createRollupConfig(opts, buildCount) {
   const shouldMinify = opts.minify !== undefined ? opts.minify : opts.env === 'production';
 
   const outputName = [
@@ -42,7 +74,7 @@ export async function createRollupConfig(
     .filter(Boolean)
     .join('.');
 
-  let tsconfig: string | undefined;
+  let tsconfig;
   let tsconfigJSON;
   try {
     tsconfig = opts.tsconfig || path.join(paths.projectRoot, 'tsconfig.json');
@@ -55,7 +87,7 @@ export async function createRollupConfig(
     // Tell Rollup the entry point to the package
     input: opts.input,
     // Tell Rollup which packages to ignore
-    external: (id: string) => external(id),
+    external: (id) => external(id),
     // Establish Rollup output
     output: {
       // Set filenames of the consumer's package
@@ -76,7 +108,7 @@ export async function createRollupConfig(
       nodeResolve({
         mainFields: ['module', 'main', opts.target !== 'node' ? 'browser' : undefined].filter(
           Boolean
-        ) as string[],
+        ),
       }),
       opts.format === 'umd' &&
         commonjs({
@@ -89,7 +121,7 @@ export async function createRollupConfig(
         // own private version of `acorn` and I don't know a way to patch in the option
         // `allowHashBang` to acorn. Taken from microbundle. See:
         // https://github.com/Rich-Harris/buble/pull/165
-        transform(code: string) {
+        transform(code) {
           let reg = /^#!(.*)/;
           let match = code.match(reg);
 
@@ -141,8 +173,6 @@ export async function createRollupConfig(
       babel({
         babelHelpers: 'bundled',
         extensions: [...DEFAULT_EXTENSIONS, 'ts', 'tsx'],
-        // https://babeljs.io/docs/en/options#passperpreset
-        // @ts-ignore
         passPerPreset: true,
         ...babelConfig,
       }),
@@ -163,7 +193,7 @@ export async function createRollupConfig(
           toplevel: opts.format === 'cjs',
           warnings: true,
         }),
-    ] as Plugin[],
+    ],
   };
 }
 
@@ -181,7 +211,7 @@ async function build() {
     Promise.all(
       buildConfigs.map(async (inputOptions) => {
         let bundle = await rollup(inputOptions);
-        await bundle.write(inputOptions.output as OutputOptions);
+        await bundle.write(inputOptions.output);
       })
     ).then(() => logBuildStepCompletion(opts.name, 'Built modules')),
 
@@ -201,7 +231,7 @@ async function build() {
 
 build();
 
-export function writeCjsEntryFile(name: string) {
+function writeCjsEntryFile(name) {
   const contents = `'use strict';
 
 if (process.env.NODE_ENV === 'production') {
@@ -212,9 +242,9 @@ if (process.env.NODE_ENV === 'production') {
   return fs.outputFile(path.join(paths.packageDist, 'index.js'), contents);
 }
 
-export async function createBuildConfigs(opts: NormalizedOpts): Promise<RollupOptions[]> {
-  const allInputs = opts.input.flatMap((input: string) =>
-    createAllFormats(opts, input).map((options: ScriptOpts, index: number) => ({
+async function createBuildConfigs(opts) {
+  const allInputs = opts.input.flatMap((input) =>
+    createAllFormats(opts, input).map((options, index) => ({
       ...options,
       // We want to know if this is the first run for each entryfile
       // for certain plugins (e.g. css)
@@ -223,13 +253,13 @@ export async function createBuildConfigs(opts: NormalizedOpts): Promise<RollupOp
   );
 
   return await Promise.all(
-    allInputs.map(async (options: ScriptOpts, index) => {
+    allInputs.map(async (options, index) => {
       return await createRollupConfig(options, index);
     })
   );
 }
 
-function createAllFormats(opts: NormalizedOpts, input: string): [ScriptOpts, ...ScriptOpts[]] {
+function createAllFormats(opts, input) {
   return [
     {
       ...opts,
@@ -255,10 +285,10 @@ function createAllFormats(opts: NormalizedOpts, input: string): [ScriptOpts, ...
       env: 'production',
       input,
     },
-  ].filter(Boolean) as [ScriptOpts, ...ScriptOpts[]];
+  ].filter(Boolean);
 }
 
-async function moveDeclarationFilesToDistTypes(packageName: string) {
+async function moveDeclarationFilesToDistTypes(packageName) {
   try {
     const packageRelativePath = path.relative(paths.packages, paths.packageRoot);
     const misplacedDeclarationFilesRoot = path.join(
@@ -273,4 +303,114 @@ async function moveDeclarationFilesToDistTypes(packageName: string) {
     const relativeDirToDelete = packageRelativePath.replace(packageName, '');
     await fs.remove(path.resolve(paths.packageDistTypes, relativeDirToDelete));
   } catch (e) {}
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const stderr = console.error.bind(console);
+
+function createConfigItems(type, items) {
+  return items.map(({ name, ...options }) => {
+    return createConfigItem([require.resolve(name), options], { type });
+  });
+}
+
+async function cleanDistFolder() {
+  await fs.remove(paths.packageDist);
+}
+
+function external(id) {
+  return !id.startsWith('.') && !path.isAbsolute(id);
+}
+
+function logBuildStepCompletion(name, message, emoji = '💯') {
+  console.log(`[${chalk.bold(name)}]: ${message} ${emoji}`);
+}
+
+function logError(err) {
+  const error = err.error || err;
+  const description = `${error.name ? error.name + ': ' : ''}${error.message || error}`;
+  const message = error.plugin
+    ? error.plugin === 'rpt2'
+      ? `(typescript) ${description}`
+      : `(${error.plugin} plugin) ${description}`
+    : description;
+
+  stderr(chalk.bold.red(message));
+
+  if (error.loc) {
+    stderr();
+    stderr(`at ${error.loc.file}:${error.loc.line}:${error.loc.column}`);
+  }
+
+  if (error.frame) {
+    stderr();
+    stderr(chalk.dim(error.frame));
+  } else if (err.stack) {
+    const headlessStack = error.stack.replace(message, '');
+    stderr(chalk.dim(headlessStack));
+  }
+
+  stderr();
+}
+
+function getPackageName(opts) {
+  return opts.name || path.basename(paths.packageRoot);
+}
+
+async function normalizeOpts(opts) {
+  return {
+    ...opts,
+    name: getPackageName(opts),
+    input: await getInputs(opts.entry),
+  };
+}
+
+async function getInputs(entries) {
+  return []
+    .concat(
+      entries && entries.length
+        ? entries
+        : (await isDir(resolvePackage('src'))) && (await jsOrTs('src/index'))
+    )
+    .flatMap((file) => glob(file));
+}
+
+async function isDir(name) {
+  try {
+    const stats = await fs.stat(name);
+    return stats.isDirectory();
+  } catch (e) {
+    return false;
+  }
+}
+
+async function jsOrTs(filename) {
+  const extension = (await isFile(resolvePackage(filename + '.ts')))
+    ? '.ts'
+    : (await isFile(resolvePackage(filename + '.tsx')))
+    ? '.tsx'
+    : (await isFile(resolvePackage(filename + '.jsx')))
+    ? '.jsx'
+    : '.js';
+
+  return resolvePackage(`${filename}${extension}`);
+}
+
+function parseArgs() {
+  let { _, ...args } = mri(process.argv.slice(2));
+  return args;
+}
+
+async function isFile(name) {
+  try {
+    const stats = await fs.stat(name);
+    return stats.isFile();
+  } catch (e) {
+    return false;
+  }
+}
+
+function resolvePackage(relativePath) {
+  return path.resolve(packageDirectory, relativePath);
 }

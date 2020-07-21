@@ -1,5 +1,5 @@
 {
-  "packages": ["packages/core/*", "packages/primitives/*", "packages/react/*", "docs"],
+  "lerna": "3.0.0",
   "useWorkspaces": true,
   "version": "independent",
   "npmClient": "yarn"

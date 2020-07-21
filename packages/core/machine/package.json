@@ -12,11 +12,11 @@
   "scripts": {
     "test": "cross-env CI=true ts-node --transpile-only ../../../scripts/test --passWithNoTests",
     "test:watch": "npm run test -- --watchAll",
-    "build": "ts-node --transpile-only ../../../scripts/build",
+    "build": "node ../../../scripts/build",
     "clean": "ts-node ../../../scripts/clean",
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "@interop-ui/utils": "^4.1.1"
+    "@interop-ui/utils": "^1.0.0"
   }
 }

@@ -115,6 +115,10 @@ export function logError(err: any) {
   stderr();
 }
 
+export function logBuildStepCompletion(name: string, message: string, emoji = '💯') {
+  console.log(`[${chalk.bold(name)}]: ${message} ${emoji}`);
+}
+
 export async function cleanDistFolder() {
   await fs.remove(paths.packageDist);
 }
