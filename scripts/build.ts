@@ -255,7 +255,7 @@ function createAllFormats(opts: NormalizedOpts, input: string): [ScriptOpts, ...
       env: 'production',
       input,
     },
-  ].filter(Boolean) as [ScriptOpts, ...ScriptOpts[]];
+  ] as [ScriptOpts, ...ScriptOpts[]];
 }
 
 async function moveDeclarationFilesToDistTypes(packageName: string) {

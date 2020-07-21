@@ -285,7 +285,7 @@ function createAllFormats(opts, input) {
       env: 'production',
       input,
     },
-  ].filter(Boolean);
+  ];
 }
 
 async function moveDeclarationFilesToDistTypes(packageName) {
