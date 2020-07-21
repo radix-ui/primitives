@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj, isFunction, warningOnce } from '@interop-ui/utils';
-import { forwardRef, useCallbackRef, useComposedRefs } from '@interop-ui/react-utils';
+import {
+  createContext,
+  forwardRef,
+  useCallbackRef,
+  useComposedRefs,
+} from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
 // composed API so that we can share data via context.
@@ -37,7 +42,10 @@ type RadioContextValue = {
   value: React.ComponentProps<'input'>['value'];
 };
 
-const RadioContext = React.createContext({} as RadioContextValue);
+const [RadioContext, useRadioContext] = createContext<RadioContextValue>(
+  'RadioContext',
+  'Radio.Root'
+);
 
 /* -------------------------------------------------------------------------------------------------
  * RadioRoot
@@ -148,7 +156,7 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
     readOnly,
     required,
     value,
-  } = React.useContext(RadioContext);
+  } = useRadioContext('Radio.Input');
 
   const ref = useComposedRefs(forwardedRef, inputRef);
 
@@ -219,7 +227,7 @@ const RadioIcon = forwardRef<typeof ICON_DEFAULT_TAG, RadioIconProps>(function R
   forwardedRef
 ) {
   let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
-  let { checked } = React.useContext(RadioContext);
+  let { checked } = useRadioContext('Radio.Icon');
   return (
     <Comp {...interopDataAttrObj('RadioIcon')} ref={forwardedRef} {...checkboxBoxProps}>
       {isFunction(children) ? children({ checked }) : children}

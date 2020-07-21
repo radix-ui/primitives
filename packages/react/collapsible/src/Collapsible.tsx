@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import {
+  createContext,
   forwardRef,
   useId,
   composeEventHandlers,
@@ -19,15 +20,10 @@ type CollapsibleContextValue = {
   toggle(): void;
 };
 
-const CollapsibleContext = React.createContext<CollapsibleContextValue>(null as any);
-
-function useCollapsibleContext(componentName: string) {
-  let context = React.useContext(CollapsibleContext);
-  if (context === null) {
-    throw new Error(`\`${componentName}\` must be used within \`Collapsible\``);
-  }
-  return context;
-}
+const [CollapsibleContext, useCollapsibleContext] = createContext<CollapsibleContextValue>(
+  'CollapsibleContext',
+  'Collapsible'
+);
 
 /* -------------------------------------------------------------------------------------------------
  * CollapsibleButton
@@ -42,7 +38,7 @@ type CollapsibleButtonProps = CollapsibleButtonDOMProps & CollapsibleButtonOwnPr
 const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButtonProps>(
   (props, forwardedRef) => {
     let { as: Comp = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
-    let context = useCollapsibleContext('CollapsibleButton');
+    let context = useCollapsibleContext('Collapsible.Button');
 
     return (
       <Comp
@@ -73,7 +69,7 @@ type CollapsibleContentProps = CollapsibleContentOwnProps & CollapsibleContentDO
 const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleContentProps>(
   (props, forwardedRef) => {
     const { as: Comp = CONTENT_DEFAULT_TAG, id: idProp, children, ...contentProps } = props;
-    const { setContentId, isOpen } = useCollapsibleContext('CollapsibleContent');
+    const { setContentId, isOpen } = useCollapsibleContext('Collapsible.Content');
     const generatedId = `collapsible-${useId()}`;
     const id = idProp || generatedId;
 

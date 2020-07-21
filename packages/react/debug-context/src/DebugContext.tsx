@@ -13,6 +13,7 @@ const DebugContext = React.createContext<DebugContextType>({
   disableLock: false,
   viewportGap: undefined,
 });
+DebugContext.displayName = 'DebugContext';
 
 type DebugContextProviderProps = DebugContextType & {
   children: React.ReactNode;

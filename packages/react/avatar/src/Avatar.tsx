@@ -22,7 +22,10 @@ interface AvatarContextValue {
   whatToRender: AvatarRenderType;
 }
 
-const [AvatarContext] = createContext<AvatarContextValue>('AvatarContext', 'Avatar.Root');
+const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
+  'AvatarContext',
+  'Avatar.Root'
+);
 
 const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(function AvatarRoot(
   props,
@@ -83,7 +86,7 @@ const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(funct
   forwardedRef
 ) {
   let { as: Comp = ImagePrimitive, children: _, ...imageProps } = props;
-  let { src, alt, whatToRender } = React.useContext(AvatarContext);
+  let { src, alt, whatToRender } = useAvatarContext('Avatar.Image');
   return whatToRender === 'IMAGE' ? (
     <Comp
       {...interopDataAttrObj('AvatarImage')}
@@ -108,7 +111,7 @@ const AvatarIcon = forwardRef<typeof ICON_DEFAULT_TAG, AvatarIconProps>(function
   forwardedRef
 ) {
   let { as: Comp = RadixIcon as any, ...iconProps } = props;
-  let { whatToRender } = React.useContext(AvatarContext);
+  let { whatToRender } = useAvatarContext('Avatar.Icon');
   return whatToRender === 'ICON' ? (
     <Comp {...interopDataAttrObj('AvatarIcon')} ref={forwardedRef} {...iconProps} />
   ) : null;
@@ -127,7 +130,7 @@ const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function
   forwardedRef
 ) {
   let { as: Comp = 'span', children, ...abbrProps } = props;
-  let { alt, whatToRender } = React.useContext(AvatarContext);
+  let { alt, whatToRender } = useAvatarContext('Avatar.Abbr');
   return alt && whatToRender === 'ALT_ABBR' ? (
     <Comp {...interopDataAttrObj('AvatarAbbr')} aria-hidden ref={forwardedRef} {...abbrProps}>
       {alt[0]}

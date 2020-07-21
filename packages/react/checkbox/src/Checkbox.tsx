@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { cssReset, isFunction, warningOnce, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, useComposedRefs, useCallbackRef } from '@interop-ui/react-utils';
+import {
+  createContext,
+  forwardRef,
+  useComposedRefs,
+  useCallbackRef,
+} from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
 // composed API so that we can share data via context.
@@ -37,7 +42,10 @@ type CheckboxContextValue = {
   value: React.ComponentProps<'input'>['value'];
 };
 
-const CheckboxContext = React.createContext<CheckboxContextValue>({} as CheckboxContextValue);
+const [CheckboxContext, useCheckboxContext] = createContext<CheckboxContextValue>(
+  'CheckboxContext',
+  'Checkbox.Root'
+);
 CheckboxContext.displayName = 'CheckboxContext';
 
 /* -------------------------------------------------------------------------------------------------
@@ -152,7 +160,7 @@ const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
       readOnly,
       required,
       value,
-    } = React.useContext(CheckboxContext);
+    } = useCheckboxContext('Checkbox.Input');
 
     const ref = useComposedRefs(forwardedRef, inputRef);
 
@@ -224,7 +232,7 @@ const CheckboxIcon = forwardRef<typeof ICON_DEFAULT_TAG, CheckboxIconProps>(func
   forwardedRef
 ) {
   let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
-  let { checked } = React.useContext(CheckboxContext);
+  let { checked } = useCheckboxContext('Checkbox.Icon');
   return (
     <Comp {...interopDataAttrObj('CheckboxIcon')} ref={forwardedRef} {...checkboxBoxProps}>
       {isFunction(children) ? children({ checked }) : children}

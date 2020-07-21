@@ -10,6 +10,7 @@
 
 import * as React from 'react';
 import {
+  createContext,
   forwardRef,
   RovingTabIndexProvider,
   useAccessibleMouseDown,
@@ -34,7 +35,7 @@ type TabsContextValue = {
   shouldLoop?: boolean;
 };
 
-const TabsContext = React.createContext({} as TabsContextValue);
+const [TabsContext, useTabsContext] = createContext<TabsContextValue>('TabsContext', 'Tabs');
 
 /* -------------------------------------------------------------------------------------------------
  * Tabs
@@ -121,7 +122,7 @@ const TabsList = forwardRef<typeof TABLIST_DEFAULT_TAG, TabsListProps>(function 
   props,
   forwardedRef
 ) {
-  const { orientation, shouldLoop } = React.useContext(TabsContext);
+  const { orientation, shouldLoop } = useTabsContext('Tabs.List');
   let { as: Comp = TABLIST_DEFAULT_TAG, ...otherProps } = props;
 
   return (
@@ -166,7 +167,7 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
     ...tabProps
   } = props;
 
-  const { tabsId, selectedId, setSelectedId, activationMode } = React.useContext(TabsContext);
+  const { tabsId, selectedId, setSelectedId, activationMode } = useTabsContext('Tabs.Tab');
 
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabsPanelId(tabsId, id);
@@ -235,7 +236,7 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
   forwardedRef
 ) {
   const { as: Comp = TAB_PANEL_DEFAULT_TAG, id, ...tabPanelProps } = props;
-  const { tabsId, selectedId } = React.useContext(TabsContext);
+  const { tabsId, selectedId } = useTabsContext('Tabs.Panel');
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabsPanelId(tabsId, id);
   const isSelected = id === selectedId;

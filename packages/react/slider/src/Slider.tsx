@@ -3,9 +3,10 @@ import omit from 'lodash.omit';
 import { Size, cssReset, clamp, interopDataAttrObj } from '@interop-ui/utils';
 import {
   composeEventHandlers,
+  createContext,
   forwardRef,
-  useComposedRefs,
   useCallbackRef,
+  useComposedRefs,
   usePrevious,
 } from '@interop-ui/react-utils';
 import { useSize } from '@interop-ui/react-use-size';
@@ -39,16 +40,10 @@ type SliderContextValue = {
   selectThumb: (node: React.ElementRef<typeof SliderThumb>) => void;
 };
 
-const SliderContext = React.createContext<SliderContextValue | null>(null);
-
-function useSliderContext(componentName: string): SliderContextValue {
-  let context = React.useContext(SliderContext);
-
-  if (context === null) {
-    throw new Error(`\`${componentName}\` must be used within \`Slider\``);
-  }
-  return context;
-}
+const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
+  'SliderContext',
+  'Slider.Root'
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SliderRoot
@@ -389,7 +384,7 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   forwardedRef
 ) {
   let { as: Comp = TRACK_DEFAULT_TAG, ...trackProps } = props;
-  let context = useSliderContext('SliderTrack');
+  let context = useSliderContext('Slider.Track');
   let ref = React.useRef<HTMLSpanElement>(null);
   let composedRefs = useComposedRefs(forwardedRef, ref);
   let size = useSize({ refToObserve: ref, isObserving: true });
@@ -438,7 +433,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
   forwardedRef
 ) {
   let { as: Comp = RANGE_DEFAULT_TAG, style, ...rangeProps } = props;
-  let context = useSliderContext('SliderRange');
+  let context = useSliderContext('Slider.Range');
   let ref = React.useRef<HTMLSpanElement>(null);
   let composedRefs = useComposedRefs(forwardedRef, ref);
   let valuesCount = context.values.length;
@@ -473,7 +468,7 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
   forwardedRef
 ) {
   let { as: Comp = THUMB_DEFAULT_TAG, onFocus, style, ...thumbProps } = props;
-  let context = useSliderContext('SliderThumb');
+  let context = useSliderContext('Slider.Thumb');
 
   // destructure for references so that we don't need `context` as effect dependency
   let { updateSize, addThumb, removeThumb, thumbNodes, values } = context;

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { arrayInsert, clamp } from '@interop-ui/utils';
 import { composeEventHandlers } from './composeEventHandlers';
+import { createContext } from './createContext';
 
 type TabStop = {
   id: string;
@@ -15,15 +16,15 @@ type UseRovingTabIndexOptions<T> = {
   onKeyDown?: React.KeyboardEventHandler<T>;
 };
 
-export function useRovingTabIndex<T extends HTMLElement>({
+function useRovingTabIndex<T extends HTMLElement>({
   id,
   isSelected,
   elementRef,
   onFocus: originalOnFocus,
   onKeyDown: originalOnKeyDown,
 }: UseRovingTabIndexOptions<T>) {
-  const { orientation, currentTabStopId } = useRovingTabIndexStateContext();
-  const dispatch = useRovingTabIndexDispatchContext();
+  const { orientation, currentTabStopId } = useStateContext('useRovingTabIndex');
+  const dispatch = useDispatchContext('useRovingTabIndex');
 
   const shouldBeFocused = currentTabStopId === id;
   const isTabbable = isSelected;
@@ -103,7 +104,7 @@ type RovingTabIndexProviderProps = {
   shouldLoop?: boolean;
 };
 
-export function RovingTabIndexProvider({
+function RovingTabIndexProvider({
   children,
   orientation,
   shouldLoop = true,
@@ -126,11 +127,9 @@ export function RovingTabIndexProvider({
   }, [shouldLoop, dispatch]);
 
   return (
-    <RovingTabIndexStateContext.Provider value={state}>
-      <RovingTabIndexDispatchContext.Provider value={dispatch}>
-        {children}
-      </RovingTabIndexDispatchContext.Provider>
-    </RovingTabIndexStateContext.Provider>
+    <StateContext.Provider value={state}>
+      <DispatchContext.Provider value={dispatch}>{children}</DispatchContext.Provider>
+    </StateContext.Provider>
   );
 }
 
@@ -252,25 +251,13 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-const RovingTabIndexStateContext = React.createContext<State | undefined>(undefined);
-const RovingTabIndexDispatchContext = React.createContext<React.Dispatch<Action> | undefined>(
-  undefined
+const [StateContext, useStateContext] = createContext<State>(
+  'RovingTabIndexStateContext',
+  'RovingTabIndexProvider'
+);
+const [DispatchContext, useDispatchContext] = createContext<React.Dispatch<Action>>(
+  'RovingTabIndexStateContext',
+  'RovingTabIndexProvider'
 );
 
-function useRovingTabIndexStateContext() {
-  const context = React.useContext(RovingTabIndexStateContext);
-  if (context === undefined) {
-    throw new Error('`useRovingTabIndexStateContext` must be used within a RovingTabIndexProvider');
-  }
-  return context;
-}
-
-function useRovingTabIndexDispatchContext() {
-  const context = React.useContext(RovingTabIndexDispatchContext);
-  if (context === undefined) {
-    throw new Error(
-      '`useRovingTabIndexDispatchContext` must be used within a RovingTabIndexProvider'
-    );
-  }
-  return context;
-}
+export { useRovingTabIndex, RovingTabIndexProvider };

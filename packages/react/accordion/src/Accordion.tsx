@@ -65,7 +65,7 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
       onToggle,
       ...accordionItemProps
     } = props;
-    const accordionContext = useAccordionContext('AccordionItem');
+    const accordionContext = useAccordionContext('Accordion.Item');
 
     const generatedButtonId = `accordion-button-${useId()}`;
     const buttonId = props.id || generatedButtonId;
@@ -129,8 +129,8 @@ type AccordionButtonProps = CollapsibleButtonProps &
 const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonProps>(
   function AccordionButton(props, forwardedRef) {
     const { ...buttonProps } = props;
-    const { buttonNodesRef } = useAccordionContext('AccordionHeader');
-    const itemContext = useAccordionItemContext('AccordionHeader');
+    const { buttonNodesRef } = useAccordionContext('Accordion.Header');
+    const itemContext = useAccordionItemContext('Accordion.Header');
 
     const ref = React.useRef<ElementByTag<typeof BUTTON_DEFAULT_TAG> | null>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -203,7 +203,7 @@ type AccordionPanelProps = CollapsibleContentProps &
 
 const AccordionPanel = forwardRef<typeof PANEL_DEFAULT_TAG, AccordionPanelProps>(
   function AccordionPanel(props, forwardedRef) {
-    const itemContext = useAccordionItemContext('AccordionPanel');
+    const itemContext = useAccordionItemContext('Accordion.Panel');
     return (
       <Collapsible.Content
         {...props}

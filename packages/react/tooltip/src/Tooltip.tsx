@@ -2,13 +2,14 @@ import * as React from 'react';
 import { Portal } from '@interop-ui/react-portal';
 import { cssReset, interopDataAttrObj, Side, Align, isFunction } from '@interop-ui/utils';
 import {
+  composeEventHandlers,
+  createContext,
+  forwardRef,
   useComposedRefs,
   useControlledState,
+  useId,
   usePrevious,
   useRect,
-  useId,
-  composeEventHandlers,
-  forwardRef,
 } from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { createStateMachine, stateChart } from './machine';
@@ -38,7 +39,10 @@ interface TooltipContextValue {
   tooltipId: string;
 }
 
-const TooltipContext = React.createContext({} as TooltipContextValue);
+const [TooltipContext, useTooltipContext] = createContext<TooltipContextValue>(
+  'TooltipContext',
+  'Tooltip.Root'
+);
 
 /* -------------------------------------------------------------------------------------------------
  * State machine
@@ -181,7 +185,7 @@ type TooltipTargetOwnProps = {};
 type TooltipTargetProps = TooltipTargetOwnProps;
 
 const TooltipTarget: React.FC<TooltipTargetProps> = function TooltipTarget(props) {
-  let { targetRef, tooltipId } = React.useContext(TooltipContext);
+  let { targetRef, tooltipId } = useTooltipContext('Tooltip.Target');
   let { children } = props;
 
   let child = React.Children.only(children);
@@ -246,7 +250,8 @@ type TooltipPopperProps = TooltipPopperDOMProps & TooltipPopperOwnProps;
 
 const TooltipArrowContext = React.createContext<{
   arrowStyles: React.CSSProperties;
-}>({} as any);
+}>({ arrowStyles: {} });
+TooltipArrowContext.displayName = 'TooltipArrowContext';
 
 const TooltipPopper = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperProps>(
   function TooltipPopper(props, forwardedRef) {
@@ -264,7 +269,7 @@ const TooltipPopper = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperProps>(
       sideOffset,
       targetRect,
       tooltipId,
-    } = React.useContext(TooltipContext);
+    } = useTooltipContext('Tooltip.Popper');
 
     const popperSize = useSize({
       refToObserve: popperRef,
@@ -340,7 +345,7 @@ type TooltipContentProps = TooltipContentDOMProps & TooltipContentOwnProps;
 const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
   function TooltipContent(props, forwardedRef) {
     const { as: Comp = CONTENT_DEFAULT_TAG, children, ...otherProps } = props;
-    const { label } = React.useContext(TooltipContext);
+    const { label } = useTooltipContext('Tooltip.Content');
     return (
       <Comp ref={forwardedRef} {...otherProps}>
         {isFunction(children) ? children({ label }) : label}
@@ -365,7 +370,7 @@ const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(fun
   forwardedRef
 ) {
   let { as: Comp = ARROW_DEFAULT_TAG, style, children, ...otherProps } = props;
-  let { arrowRef } = React.useContext(TooltipContext);
+  let { arrowRef } = useTooltipContext('Tooltip.Arrow');
   let ref = useComposedRefs(forwardedRef, arrowRef);
   let { arrowStyles } = React.useContext(TooltipArrowContext);
   return (

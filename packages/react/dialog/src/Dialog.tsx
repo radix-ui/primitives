@@ -3,7 +3,12 @@ import { Portal } from '@interop-ui/react-portal';
 import { Lock, useLockContext } from '@interop-ui/react-lock';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { RemoveScroll } from 'react-remove-scroll';
-import { forwardRef, useCallbackRef, useComposedRefs } from '@interop-ui/react-utils';
+import {
+  createContext,
+  forwardRef,
+  useCallbackRef,
+  useComposedRefs,
+} from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -19,7 +24,10 @@ type DialogContextValue = {
   shouldCloseOnOutsideClick: DialogRootProps['shouldCloseOnOutsideClick'];
 };
 
-const DialogContext = React.createContext({} as DialogContextValue);
+const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
+  'DialogContext',
+  'Dialog.Root'
+);
 
 /* -------------------------------------------------------------------------------------------------
  * DialogRoot
@@ -152,7 +160,7 @@ const DialogInner = forwardRef<typeof INNER_DEFAULT_TAG, DialogInnerProps>(funct
     refToFocusOnClose,
     shouldCloseOnEscape,
     shouldCloseOnOutsideClick,
-  } = React.useContext(DialogContext);
+  } = useDialogContext('Dialog.Inner');
   return (
     <Comp {...interopDataAttrObj('DialogInner')} ref={forwardedRef} {...innerProps}>
       <RemoveScroll>

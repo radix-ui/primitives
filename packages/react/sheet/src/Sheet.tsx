@@ -3,7 +3,12 @@ import { Portal } from '@interop-ui/react-portal';
 import { Lock, useLockContext } from '@interop-ui/react-lock';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { RemoveScroll } from 'react-remove-scroll';
-import { forwardRef, useCallbackRef, useComposedRefs } from '@interop-ui/react-utils';
+import {
+  createContext,
+  forwardRef,
+  useCallbackRef,
+  useComposedRefs,
+} from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -20,7 +25,10 @@ type SheetContextValue = {
   side: NonNullable<SheetRootOwnProps['side']>;
 };
 
-const SheetContext = React.createContext({} as SheetContextValue);
+const [SheetContext, useSheetContext] = createContext<SheetContextValue>(
+  'SheetContext',
+  'Sheet.Root'
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SheetRoot
@@ -163,7 +171,7 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
     refToFocusOnClose,
     shouldCloseOnEscape,
     shouldCloseOnOutsideClick,
-  } = React.useContext(SheetContext);
+  } = useSheetContext('Sheet.Inner');
   return (
     <Comp {...interopDataAttrObj('SheetInner')} ref={forwardedRef} {...innerProps}>
       <RemoveScroll>
@@ -198,7 +206,7 @@ type SheetContentProps = SheetContentDOMProps & SheetContentOwnProps;
 const SheetContent = forwardRef<typeof CONTENT_DEFAULT_TAG, SheetContentProps>(
   function SheetContent(props, forwardedRef) {
     let { as: Comp = CONTENT_DEFAULT_TAG, children, style, ...contentProps } = props;
-    let { side } = React.useContext(SheetContext);
+    let { side } = useSheetContext('SheetContent');
     let { lockContainerRef } = useLockContext();
     return (
       <Comp

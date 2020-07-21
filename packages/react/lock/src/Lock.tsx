@@ -9,6 +9,7 @@ interface LockContextValue {
 }
 
 const LockContext = React.createContext({} as LockContextValue);
+LockContext.displayName = 'LockContext';
 
 type LockProps = {
   children: React.ReactNode | ((ref: React.RefObject<HTMLElement | undefined>) => React.ReactNode);

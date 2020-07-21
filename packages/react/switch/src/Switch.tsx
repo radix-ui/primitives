@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj, isFunction, warningOnce } from '@interop-ui/utils';
 import { useSize } from '@interop-ui/react-use-size';
-import { forwardRef, useCallbackRef, useComposedRefs } from '@interop-ui/react-utils';
+import {
+  createContext,
+  forwardRef,
+  useCallbackRef,
+  useComposedRefs,
+} from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
 // composed API so that we can share data via context.
@@ -42,7 +47,10 @@ type SwitchContextValue = {
   thumbWidth: number;
 };
 
-const SwitchContext = React.createContext({} as SwitchContextValue);
+const [SwitchContext, useSwitchContext] = createContext<SwitchContextValue>(
+  'SwitchContext',
+  'Switch.Root'
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SwitchRoot
@@ -195,7 +203,7 @@ const SwitchInput = forwardRef<typeof INPUT_DEFAULT_TAG, SwitchInputProps>(funct
     readOnly,
     required,
     value,
-  } = React.useContext(SwitchContext);
+  } = useSwitchContext('Switch.Input');
 
   const ref = useComposedRefs(forwardedRef, inputRef);
 
@@ -244,7 +252,7 @@ const SwitchBox = forwardRef<typeof BOX_DEFAULT_TAG, SwitchBoxProps>(function Sw
   forwardedRef
 ) {
   let { as: Comp = BOX_DEFAULT_TAG, ...checkboxBoxProps } = props;
-  let { boxPartRef } = React.useContext(SwitchContext);
+  let { boxPartRef } = useSwitchContext('Switch.Box');
   let ref = useComposedRefs(boxPartRef, forwardedRef);
 
   return <Comp {...interopDataAttrObj('CheckboBox')} ref={ref} {...checkboxBoxProps} />;
@@ -268,7 +276,7 @@ const SwitchThumb = forwardRef<typeof ICON_DEFAULT_TAG, SwitchThumbProps>(functi
   forwardedRef
 ) {
   let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
-  let { checked, switchWidth, thumbPartRef, thumbWidth } = React.useContext(SwitchContext);
+  let { checked, switchWidth, thumbPartRef, thumbWidth } = useSwitchContext('Switch.Thumb');
   let checkedOffset = switchWidth - thumbWidth;
   let ref = useComposedRefs(thumbPartRef, forwardedRef);
   return (
