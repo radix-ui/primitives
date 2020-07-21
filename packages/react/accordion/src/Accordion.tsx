@@ -2,6 +2,7 @@ import React from 'react';
 import { cssReset } from '@interop-ui/utils';
 import {
   composeEventHandlers,
+  createContext,
   forwardRef,
   useComposedRefs,
   useControlledState,
@@ -27,17 +28,10 @@ type AccordionContextValue = {
   setValue(value: string): void;
 };
 
-const AccordionContext = React.createContext<AccordionContextValue | null>(null);
-
-function useAccordionContext(displayName: string) {
-  const context = React.useContext(AccordionContext);
-
-  if (context === null) {
-    throw new Error(`\`${displayName}\` must be used within \`Accordion\``);
-  }
-
-  return context;
-}
+const [AccordionContext, useAccordionContext] = createContext<AccordionContextValue>(
+  'AccordionContext',
+  'Accordion'
+);
 
 /* -------------------------------------------------------------------------------------------------
  * AccordionItem
@@ -56,17 +50,10 @@ type AccordionItemContextValue = {
   buttonId: string;
 };
 
-const AccordionItemContext = React.createContext<AccordionItemContextValue | null>(null);
-
-function useAccordionItemContext(displayName: string) {
-  const context = React.useContext(AccordionItemContext);
-
-  if (context === null) {
-    throw new Error(`\`${displayName}\` must be used within \`AccordionItem\``);
-  }
-
-  return context;
-}
+const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionItemContextValue>(
+  'AccordionItemContext',
+  'Accordion.Item'
+);
 
 const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
   function AccordionItem(props, forwardedRef) {

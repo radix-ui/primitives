@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { createContext, forwardRef } from '@interop-ui/react-utils';
 
 const CONTAINER_DEFAULT_TAG = 'span';
 
@@ -22,54 +22,55 @@ interface AvatarContextValue {
   whatToRender: AvatarRenderType;
 }
 
-const AvatarContext = React.createContext({} as AvatarContextValue);
+const [AvatarContext] = createContext<AvatarContextValue>('AvatarContext', 'Avatar.Root');
 
-const AvatarContainer = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(
-  function AvatarContainer(props, forwardedRef) {
-    const {
-      alt,
-      as: Comp = CONTAINER_DEFAULT_TAG,
-      children,
-      renderFallback,
-      src,
-      style,
-      ...avatarProps
-    } = props;
+const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(function AvatarRoot(
+  props,
+  forwardedRef
+) {
+  const {
+    alt,
+    as: Comp = CONTAINER_DEFAULT_TAG,
+    children,
+    renderFallback,
+    src,
+    style,
+    ...avatarProps
+  } = props;
 
-    let imageLoadingStatus = useImageLoadingStatus(src);
-    let hasImage = Boolean(src);
-    let hasWorkingImage = hasImage && imageLoadingStatus !== 'error';
+  let imageLoadingStatus = useImageLoadingStatus(src);
+  let hasImage = Boolean(src);
+  let hasWorkingImage = hasImage && imageLoadingStatus !== 'error';
 
-    let whatToRender: AvatarRenderType = 'ICON';
-    if (hasWorkingImage) {
-      whatToRender = 'IMAGE';
-    } else if (typeof renderFallback === 'function') {
-      whatToRender = 'FALLBACK';
-    } else if (hasImage && alt !== undefined) {
-      whatToRender = 'ALT_ABBR';
-    } else {
-      whatToRender = 'ICON';
-    }
-
-    const ctx = React.useMemo(() => {
-      return {
-        alt,
-        src,
-        whatToRender,
-      };
-    }, [alt, src, whatToRender]);
-
-    return (
-      <AvatarContext.Provider value={ctx}>
-        <Comp {...interopDataAttrObj('AvatarContainer')} {...avatarProps} ref={forwardedRef}>
-          {whatToRender === 'FALLBACK' ? (renderFallback as Function)() : children}
-        </Comp>
-      </AvatarContext.Provider>
-    );
+  let whatToRender: AvatarRenderType = 'ICON';
+  if (hasWorkingImage) {
+    whatToRender = 'IMAGE';
+  } else if (typeof renderFallback === 'function') {
+    whatToRender = 'FALLBACK';
+  } else if (hasImage && alt !== undefined) {
+    whatToRender = 'ALT_ABBR';
+  } else {
+    whatToRender = 'ICON';
   }
-);
 
-AvatarContainer.displayName = 'Avatar.Container';
+  const ctx = React.useMemo(() => {
+    return {
+      alt,
+      src,
+      whatToRender,
+    };
+  }, [alt, src, whatToRender]);
+
+  return (
+    <AvatarContext.Provider value={ctx}>
+      <Comp {...interopDataAttrObj('AvatarRoot')} {...avatarProps} ref={forwardedRef}>
+        {whatToRender === 'FALLBACK' ? (renderFallback as Function)() : children}
+      </Comp>
+    </AvatarContext.Provider>
+  );
+});
+
+AvatarRoot.displayName = 'Avatar.Root';
 
 type AvatarImageDOMProps = React.ComponentPropsWithRef<'img'>;
 type AvatarImageOwnProps = {};
@@ -141,16 +142,16 @@ const Avatar = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps, AvatarStati
     const { children, ...avatarProps } = props;
 
     return (
-      <AvatarContainer ref={forwardedRef} {...avatarProps}>
+      <AvatarRoot ref={forwardedRef} {...avatarProps}>
         <AvatarImage />
         <AvatarIcon />
         <AvatarAbbr />
-      </AvatarContainer>
+      </AvatarRoot>
     );
   }
 );
 
-Avatar.Container = AvatarContainer;
+Avatar.Root = AvatarRoot;
 Avatar.Image = AvatarImage;
 Avatar.Abbr = AvatarAbbr;
 Avatar.Icon = AvatarIcon;
@@ -158,7 +159,7 @@ Avatar.Icon = AvatarIcon;
 Avatar.displayName = 'Avatar';
 
 interface AvatarStaticProps {
-  Container: typeof AvatarContainer;
+  Root: typeof AvatarRoot;
   Image: typeof AvatarImage;
   Abbr: typeof AvatarAbbr;
   Icon: typeof AvatarIcon;
@@ -197,7 +198,7 @@ function useImageLoadingStatus(src?: string) {
 }
 
 const styles = {
-  container: {
+  root: {
     ...cssReset(CONTAINER_DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',

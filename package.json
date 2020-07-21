@@ -9,6 +9,7 @@
     "build": "lerna run build --stream --ignore @interop-ui/docs",
     "clean": "lerna run clean --stream",
     "new-component": "cross-env CI=true ts-node ./scripts/new-component",
+    "nc": "yarn new-component",
     "storybook": "start-storybook -p 9009 -c ./storybook --ci",
     "docs:dev": "lerna exec --scope @interop-ui/docs -- yarn dev",
     "docs:build": "lerna exec --scope @interop-ui/docs -- yarn build"
