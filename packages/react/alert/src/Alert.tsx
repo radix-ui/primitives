@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
+import { cssReset, interopDataAttr } from '@interop-ui/utils';
 import { forwardRef } from '@interop-ui/react-utils';
-import { interopDataAttr } from '@interop-ui/utils';
 
 type RegionType = 'polite' | 'assertive';
 
@@ -48,13 +48,13 @@ const useLiveRegion = (type: RegionType) => {
  * Alert
  * -----------------------------------------------------------------------------------------------*/
 
-const DEFAULT_TAG = 'div';
+const ALERT_DEFAULT_TAG = 'div';
 
-type AlertDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
+type AlertDOMProps = React.ComponentPropsWithoutRef<typeof ALERT_DEFAULT_TAG>;
 type AlertOwnProps = { type?: RegionType };
 type AlertProps = AlertDOMProps & AlertOwnProps;
 
-const Alert = forwardRef<typeof DEFAULT_TAG, AlertProps>(function Alert(props, forwardedRef) {
+const Alert = forwardRef<typeof ALERT_DEFAULT_TAG, AlertProps>(function Alert(props, forwardedRef) {
   const { type = 'polite', children, ...alertProps } = props;
   const region = useLiveRegion(type);
 
@@ -83,5 +83,11 @@ const Alert = forwardRef<typeof DEFAULT_TAG, AlertProps>(function Alert(props, f
 
 Alert.displayName = 'Alert';
 
-export { Alert };
+const styles = {
+  alert: {
+    ...cssReset(ALERT_DEFAULT_TAG),
+  },
+};
+
+export { Alert, styles };
 export type { AlertProps };
