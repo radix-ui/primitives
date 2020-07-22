@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { forwardRef } from '@interop-ui/react-utils';
+import { interopDataAttr } from '@interop-ui/utils';
 
 type RegionType = 'polite' | 'assertive';
 
@@ -13,10 +14,12 @@ const useLiveRegion = (type: RegionType) => {
   const [region, setRegion] = React.useState<HTMLElement>();
 
   React.useLayoutEffect(() => {
-    let element = document.querySelector(`[aria-live=${type}]`);
+    const interopAttr = interopDataAttr('AlertRegion');
+    let element = document.querySelector(`[${interopAttr}][aria-live=${type}]`);
 
     if (!element) {
       element = document.createElement('div');
+      element.setAttribute(interopAttr, '');
       element.setAttribute('aria-live', type);
       element.setAttribute('aria-atomic', 'false');
       element.setAttribute('role', ROLES[type]);
