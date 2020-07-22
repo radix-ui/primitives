@@ -1,9 +1,9 @@
 {
-  "name": "@interop-ui/react-tooltip",
+  "name": "@interop-ui/react-popover",
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/index.js",
-  "module": "dist/react-tooltip.esm.min.js",
+  "module": "dist/react-popover.esm.min.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "src",
@@ -19,9 +19,11 @@
   "dependencies": {
     "@interop-ui/popper": "1.0.0",
     "@interop-ui/react-arrow": "1.0.0",
-    "@interop-ui/react-popover": "1.0.0",
+    "@interop-ui/react-debug-context": "1.0.0",
+    "@interop-ui/react-portal": "1.0.0",
+    "@interop-ui/react-use-size": "1.0.0",
     "@interop-ui/react-utils": "1.0.0",
-    "@interop-ui/react-visually-hidden": "1.0.0",
-    "@interop-ui/utils": "1.0.0"
+    "@interop-ui/utils": "1.0.0",
+    "csstype": "^2.6.11"
   }
 }

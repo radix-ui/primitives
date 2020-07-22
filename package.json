@@ -66,6 +66,7 @@
     "@testing-library/jest-dom": "^5.11.1",
     "@types/babel__core": "^7.1.9",
     "@types/fs-extra": "^9.0.1",
+    "@types/highlight-words-core": "^1.2.0",
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^26.0.5",
     "@types/lodash": "^4.14.157",
