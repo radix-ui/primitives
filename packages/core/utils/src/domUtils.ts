@@ -21,3 +21,16 @@ export function getOwnerDocument<T extends Element = HTMLElement>(element: T | n
 export function canUseDOM() {
   return !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 }
+
+export function isElementPreceding({
+  element,
+  referenceElement,
+}: {
+  element: Element;
+  referenceElement: Element;
+}) {
+  return Boolean(
+    // See: https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition
+    referenceElement.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_PRECEDING
+  );
+}
