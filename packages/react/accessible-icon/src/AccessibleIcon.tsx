@@ -17,22 +17,14 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
 ) {
   const { as: Comp = DEFAULT_TAG, children, label, ...iconProps } = props;
   const child = React.Children.only(children);
-  const childIsValidElement = React.isValidElement(child);
 
   return (
-    <Comp
-      {...interopDataAttrObj('AccessibleIcon')}
-      aria-hidden={!childIsValidElement || undefined}
-      ref={forwardedRef}
-      {...iconProps}
-    >
-      {childIsValidElement
-        ? React.cloneElement(child as React.ReactElement, {
-            // accessibility
-            'aria-hidden': true,
-            focusable: 'false', // See: https://allyjs.io/tutorials/focusing-in-svg.html#making-svg-elements-focusable
-          })
-        : child}
+    <Comp {...interopDataAttrObj('AccessibleIcon')} ref={forwardedRef} {...iconProps}>
+      {React.cloneElement(child as React.ReactElement, {
+        // accessibility
+        'aria-hidden': true,
+        focusable: 'false', // See: https://allyjs.io/tutorials/focusing-in-svg.html#making-svg-elements-focusable
+      })}
       <VisuallyHidden>{label}</VisuallyHidden>
     </Comp>
   );

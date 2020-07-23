@@ -17,7 +17,7 @@ function setRef<T>(ref: PossibleRef<T>, value: T) {
  * A utility to compose multiple refs together
  * Accepts callback refs and RefObject(s)
  */
-function composeRefs<T>(...refs: PossibleRef<T>[]) {
+export function composeRefs<T>(...refs: PossibleRef<T>[]) {
   return (node: T) => refs.forEach((ref) => setRef(ref, node));
 }
 

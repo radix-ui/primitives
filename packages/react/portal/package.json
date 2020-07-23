@@ -19,6 +19,7 @@
   "dependencies": {
     "@interop-ui/utils": "1.0.0",
     "@interop-ui/react-debug-context": "1.0.0",
-    "@interop-ui/react-utils": "1.0.0"
+    "@interop-ui/react-utils": "1.0.0",
+    "tslib": "^2.0.0"
   }
 }
