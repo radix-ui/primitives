@@ -20,6 +20,7 @@
     "@interop-ui/machine": "1.0.0",
     "@interop-ui/utils": "1.0.0",
     "@interop-ui/react-utils": "1.0.0",
-    "@xstate/fsm": "1.4.0"
+    "@xstate/fsm": "1.4.0",
+    "tslib": "^2.0.0"
   }
 }

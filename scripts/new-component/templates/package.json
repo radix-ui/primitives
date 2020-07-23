@@ -17,6 +17,8 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "@interop-ui/utils": "CURRENT_VERSION"
+    "@interop-ui/react-utils": "CURRENT_VERSION",
+    "@interop-ui/utils": "CURRENT_VERSION",
+    "tslib": "^2.0.0"
   }
 }

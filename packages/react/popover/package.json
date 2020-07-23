@@ -24,6 +24,7 @@
     "@interop-ui/react-use-size": "1.0.0",
     "@interop-ui/react-utils": "1.0.0",
     "@interop-ui/utils": "1.0.0",
-    "csstype": "^2.6.11"
+    "csstype": "^2.6.11",
+    "tslib": "^2.0.0"
   }
 }

@@ -19,6 +19,7 @@
   "dependencies": {
     "@interop-ui/utils": "1.0.0",
     "@interop-ui/react-utils": "1.0.0",
-    "resize-observer-polyfill": "^1.5.1"
+    "resize-observer-polyfill": "^1.5.1",
+    "tslib": "^2.0.0"
   }
 }

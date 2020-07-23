@@ -17,6 +17,7 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "stylis": "^4.0.2"
+    "stylis": "^4.0.2",
+    "tslib": "^2.0.0"
   }
 }
