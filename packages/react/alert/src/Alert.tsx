@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { cssReset, interopDataAttr } from '@interop-ui/utils';
+import { cssReset, interopDataAttr, interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef } from '@interop-ui/react-utils';
 
 type RegionType = 'polite' | 'assertive';
@@ -60,14 +60,14 @@ const Alert = forwardRef<typeof ALERT_DEFAULT_TAG, AlertProps>(function Alert(pr
 
   return (
     <>
-      <div {...alertProps} ref={forwardedRef}>
+      <div {...alertProps} {...interopDataAttrObj('Alert')} ref={forwardedRef}>
         {children}
       </div>
 
       {/* portal into live region for screen reader announcements */}
       {region &&
         ReactDOM.createPortal(
-          <div>
+          <div {...interopDataAttrObj('AlertMirror')}>
             {/* remove elements from tab order */}
             {React.Children.map(children, (child) => {
               return React.isValidElement(child)
