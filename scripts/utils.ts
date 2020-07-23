@@ -115,12 +115,16 @@ export function logError(err: any) {
   stderr();
 }
 
+export function warn(name: string, message: string) {
+  console.log(chalk.yellow(`[${chalk.bold(name)}]: ${message}`));
+}
+
 export function logBuildStepCompletion(name: string, message: string, emoji = '💯') {
   console.log(`[${chalk.bold(name)}]: ${message} ${emoji}`);
 }
 
 export async function cleanDistFolder() {
-  await fs.remove(paths.packageDist);
+  await fs.emptyDir(paths.packageDist);
 }
 
 export function parseArgs() {
