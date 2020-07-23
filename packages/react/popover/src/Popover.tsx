@@ -39,11 +39,18 @@ type PopoverOwnProps = {
   collisionTolerance?: number;
 
   /**
+   * By default the popover will only render when open. Some components using popover may work
+   * better by hiding the popover visually using CSS rather than conditionally rendering, so this
+   * prop povides an opt-out for those cases.
+   * (default: `true`)
+   */
+  renderOnlyWhileOpen?: boolean;
+
+  /**
    * Whether or not to portal the contents of the popover.
    * (default: `true`)
    */
   shouldPortal?: boolean;
-
   positionOverride?(props: {
     targetRect: ClientRect | undefined;
     popperRect: ClientRect | undefined;
@@ -62,6 +69,7 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
       collisionTolerance = 0,
       isOpen,
       positionOverride,
+      renderOnlyWhileOpen = true,
       shouldPortal = true,
       side = 'bottom',
       sideOffset = -5,
@@ -72,17 +80,18 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
 
     let debugContext = useDebugContext();
 
+    let shouldRender = renderOnlyWhileOpen ? isOpen : true;
+
     let popperRef = React.useRef<HTMLDivElement>(null);
+    let arrowRef = React.useRef<HTMLSpanElement>(null);
     let targetRect = useRect({ refToObserve: targetRef, isObserving: isOpen });
     let popperRect = useRect({ refToObserve: popperRef, isObserving: isOpen });
+    let arrowSize = useSize({ refToObserve: arrowRef, isObserving: isOpen });
 
     let popperSize =
       popperRect?.height && popperRect?.width
         ? { height: popperRect.height, width: popperRect.width }
         : undefined;
-
-    let arrowRef = React.useRef<HTMLSpanElement>(null);
-    let arrowSize = useSize({ refToObserve: arrowRef, isObserving: isOpen });
 
     let shouldUseOverride = isFunction(positionOverride);
 
@@ -112,7 +121,7 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
 
     return (
       <PopoverArrowContext.Provider value={{ arrowStyles, arrowRef }}>
-        {isOpen ? (
+        {shouldRender ? (
           <Wrapper>
             <Comp
               ref={forwardedRef}

@@ -1,0 +1,28 @@
+{
+  "name": "@interop-ui/react-combobox",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/react-combobox.esm.min.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "test": "cross-env CI=true ts-node --transpile-only ../../../scripts/test --passWithNoTests",
+    "test:watch": "npm run test -- --watchAll",
+    "build": "node ../../../scripts/build",
+    "clean": "ts-node ../../../scripts/clean",
+    "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "@interop-ui/primitive-combobox": "1.0.0",
+    "@interop-ui/react-popover": "1.0.0",
+    "@interop-ui/react-use-machine": "1.0.0",
+    "@interop-ui/react-utils": "1.0.0",
+    "@interop-ui/utils": "1.0.0",
+    "highlight-words-core": "^1.2.2",
+    "lodash.kebabcase": "^4.1.1"
+  }
+}
