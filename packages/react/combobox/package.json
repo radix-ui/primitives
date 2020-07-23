@@ -23,6 +23,7 @@
     "@interop-ui/react-utils": "1.0.0",
     "@interop-ui/utils": "1.0.0",
     "highlight-words-core": "^1.2.2",
-    "lodash.kebabcase": "^4.1.1"
+    "lodash.kebabcase": "^4.1.1",
+    "tslib": "^2.0.0"
   }
 }

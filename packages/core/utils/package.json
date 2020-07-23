@@ -17,6 +17,7 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "lodash.kebabcase": "^4.1.1"
+    "lodash.kebabcase": "^4.1.1",
+    "tslib": "^2.0.0"
   }
 }
