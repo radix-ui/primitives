@@ -8,7 +8,6 @@ import { tsModule } from './tsproxy';
 import tsTypes from 'typescript';
 import { blue, yellow, green } from 'colors/safe';
 import { emptyDirSync, pathExistsSync, readdirSync, removeSync, statSync } from 'fs-extra';
-import { formatHost } from './diagnostics-format-host';
 import { NoCache } from './nocache';
 
 export interface ICode {
@@ -21,15 +20,6 @@ export interface ICode {
 
 interface INodeLabel {
   dirty: boolean;
-}
-
-export interface IDiagnostics {
-  flatMessage: string;
-  formatted: string;
-  fileLine?: string;
-  category: tsTypes.DiagnosticCategory;
-  code: number;
-  type: string;
 }
 
 interface ITypeSnapshot {
@@ -72,25 +62,6 @@ export function getAllReferences(
     .filter(Boolean);
 }
 
-export function convertDiagnostic(type: string, data: tsTypes.Diagnostic[]): IDiagnostics[] {
-  return data.map((diagnostic) => {
-    const entry: IDiagnostics = {
-      flatMessage: tsModule.flattenDiagnosticMessageText(diagnostic.messageText, '\n'),
-      formatted: tsModule.formatDiagnosticsWithColorAndContext(data, formatHost),
-      category: diagnostic.category,
-      code: diagnostic.code,
-      type,
-    };
-
-    if (diagnostic.file && diagnostic.start !== undefined) {
-      const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-      entry.fileLine = `${diagnostic.file.fileName}(${line + 1},${character + 1})`;
-    }
-
-    return entry;
-  });
-}
-
 export class TsCache {
   private cacheVersion = '9';
   private cachePrefix = 'rpt2_';
@@ -100,8 +71,6 @@ export class TsCache {
   private cacheDir: string | undefined;
   private codeCache!: ICache<ICode | undefined>;
   private typesCache!: ICache<string>;
-  private semanticDiagnosticsCache!: ICache<IDiagnostics[]>;
-  private syntacticDiagnosticsCache!: ICache<IDiagnostics[]>;
   private hashOptions = { algorithm: 'sha1', ignoreUnknown: false };
 
   constructor(
@@ -192,8 +161,6 @@ export class TsCache {
   public done() {
     this.context.info(blue('rolling caches'));
     this.codeCache.roll();
-    this.semanticDiagnosticsCache.roll();
-    this.syntacticDiagnosticsCache.roll();
     this.typesCache.roll();
   }
 
@@ -230,22 +197,6 @@ export class TsCache {
     return transformedData;
   }
 
-  public getSyntacticDiagnostics(
-    id: string,
-    snapshot: tsTypes.IScriptSnapshot,
-    check: () => tsTypes.Diagnostic[]
-  ): IDiagnostics[] {
-    return this.getDiagnostics('syntax', this.syntacticDiagnosticsCache, id, snapshot, check);
-  }
-
-  public getSemanticDiagnostics(
-    id: string,
-    snapshot: tsTypes.IScriptSnapshot,
-    check: () => tsTypes.Diagnostic[]
-  ): IDiagnostics[] {
-    return this.getDiagnostics('semantic', this.semanticDiagnosticsCache, id, snapshot, check);
-  }
-
   private checkAmbientTypes(): void {
     if (this.noCache) {
       this.ambientTypesDirty = true;
@@ -268,58 +219,14 @@ export class TsCache {
     each(typeNames, (name) => this.typesCache.touch(name));
   }
 
-  private getDiagnostics(
-    type: string,
-    cache: ICache<IDiagnostics[]>,
-    id: string,
-    snapshot: tsTypes.IScriptSnapshot,
-    check: () => tsTypes.Diagnostic[]
-  ): IDiagnostics[] {
-    if (this.noCache) {
-      this.markAsDirty(id);
-      return convertDiagnostic(type, check());
-    }
-
-    const name = this.makeName(id, snapshot);
-
-    this.context.debug(`    cache: '${cache.path(name)}'`);
-
-    if (cache.exists(name) && !this.isDirty(id, true)) {
-      this.context.debug(green('    cache hit'));
-
-      const data = cache.read(name);
-      if (data) {
-        cache.write(name, data);
-        return data;
-      } else this.context.warn(yellow('    cache broken, discarding'));
-    }
-
-    this.context.debug(yellow('    cache miss'));
-
-    const convertedData = convertDiagnostic(type, check());
-    cache.write(name, convertedData);
-    this.markAsDirty(id);
-    return convertedData;
-  }
-
   private init() {
     if (this.noCache) {
       this.codeCache = new NoCache<ICode>();
       this.typesCache = new NoCache<string>();
-      this.syntacticDiagnosticsCache = new NoCache<IDiagnostics[]>();
-      this.semanticDiagnosticsCache = new NoCache<IDiagnostics[]>();
     } else {
       if (this.cacheDir === undefined) throw new Error(`this.cacheDir undefined`);
       this.codeCache = new RollingCache<ICode>(`${this.cacheDir}/code`, true);
       this.typesCache = new RollingCache<string>(`${this.cacheDir}/types`, true);
-      this.syntacticDiagnosticsCache = new RollingCache<IDiagnostics[]>(
-        `${this.cacheDir}/syntacticDiagnostics`,
-        true
-      );
-      this.semanticDiagnosticsCache = new RollingCache<IDiagnostics[]>(
-        `${this.cacheDir}/semanticDiagnostics`,
-        true
-      );
     }
   }
 

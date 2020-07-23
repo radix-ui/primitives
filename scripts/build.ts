@@ -10,7 +10,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
 import sourceMaps from 'rollup-plugin-sourcemaps';
 import { terser } from 'rollup-plugin-terser';
-import typescript from './rollup-plugin-typescript2';
+import typescript from 'rollup-plugin-typescript2';
 import { paths } from './constants';
 import {
   external,
@@ -127,7 +127,7 @@ export async function createRollupConfig(
           },
         },
         useTsconfigDeclarationDir: true,
-        check: !opts.transpileOnly,
+        check: opts.transpileOnly ?? false,
       }),
       babel({
         babelHelpers: 'bundled',
@@ -161,8 +161,6 @@ export async function createRollupConfig(
 async function build() {
   const opts = await normalizeOpts(parseArgs());
   const buildConfigs = await createBuildConfigs(opts);
-
-  console.log({ opts });
 
   try {
     await cleanDistFolder();

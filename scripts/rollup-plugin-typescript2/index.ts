@@ -1,20 +1,17 @@
 import { RollupContext } from './rollupcontext';
 import { ConsoleContext, VerbosityLevel } from './context';
 import { LanguageServiceHost } from './host';
-import { TsCache, convertDiagnostic, convertEmitOutput, getAllReferences } from './tscache';
-import { tsModule, setTypescriptModule } from './tsproxy';
+import { TsCache, convertEmitOutput, getAllReferences } from './tscache';
 import tsTypes from 'typescript';
 import resolve from 'resolve';
-import { each, concat, defaults as objectDefault, has as objectHas, isFunction } from 'lodash';
+import { each, has as objectHas, isFunction } from 'lodash';
 import { IOptions } from './ioptions';
 import { parseTsConfig } from './parse-tsconfig';
-import { printDiagnostics } from './print-diagnostics';
 import { TSLIB, TSLIB_VIRTUAL, tslibSource, tslibVersion } from './tslib';
 import { blue, red, yellow, green } from 'colors/safe';
 import { relative } from 'path';
 import { normalize } from './normalize';
 import { satisfies } from 'semver';
-import findCacheDir from 'find-cache-dir';
 import {
   PluginImpl,
   PluginContext,
@@ -24,8 +21,9 @@ import {
   Plugin,
 } from 'rollup';
 import { createFilter } from './get-options-overrides';
+import { tsModule } from './tsproxy';
 
-type RPT2Options = Partial<IOptions>;
+type RPT2Options = Partial<IOptions> & Required<Pick<IOptions, 'cacheRoot'>>;
 
 export { RPT2Options };
 
@@ -61,13 +59,10 @@ const typescript: PluginImpl<RPT2Options> = (options) => {
     return _cache;
   };
 
-  const pluginOptions = { ...options } as IOptions;
-
-  objectDefault(pluginOptions, {
-    check: true,
+  const pluginOptions = {
+    check: false,
     verbosity: VerbosityLevel.Warning,
     clean: false,
-    cacheRoot: findCacheDir({ name: 'rollup-plugin-typescript2' }),
     include: ['*.ts+(|x)', '**/*.ts+(|x)'],
     exclude: ['*.d.ts', '**/*.d.ts'],
     abortOnError: true,
@@ -79,13 +74,8 @@ const typescript: PluginImpl<RPT2Options> = (options) => {
     tsconfigDefaults: {},
     objectHashIgnoreUnknownHack: false,
     cwd: process.cwd(),
-  });
-
-  if (!pluginOptions.typescript) {
-    pluginOptions.typescript = require('typescript');
-  }
-
-  setTypescriptModule(pluginOptions.typescript);
+    ...options,
+  } as IOptions;
 
   const self: Plugin & { _ongenerate: Function; _onwrite: Function } = {
     name: 'rpt2',
@@ -109,12 +99,12 @@ const typescript: PluginImpl<RPT2Options> = (options) => {
         context.info(`tslib version: ${tslibVersion}`);
         if (this.meta) context.info(`rollup version: ${this.meta.rollupVersion}`);
 
-        if (!satisfies(tsModule.version, '$TS_VERSION_RANGE', { includePrerelease: true } as any))
+        if (!satisfies(tsModule.version, '>=2.4.0', { includePrerelease: true } as any))
           throw new Error(
-            `Installed typescript version '${tsModule.version}' is outside of supported range '$TS_VERSION_RANGE'`
+            `Installed typescript version '${tsModule.version}' is outside of supported range '>=2.4.0'`
           );
 
-        context.info(`rollup-plugin-typescript2 version: $RPT2_VERSION`);
+        context.info(`rollup-plugin-typescript2 version: 0.27.2`);
         context.debug(
           () =>
             `plugin options:\n${JSON.stringify(
@@ -149,15 +139,9 @@ const typescript: PluginImpl<RPT2Options> = (options) => {
       service = tsModule.createLanguageService(servicesHost, tsModule.createDocumentRegistry());
       servicesHost.setLanguageService(service);
 
-      // printing compiler option errors
-      if (pluginOptions.check)
-        printDiagnostics(
-          context,
-          convertDiagnostic('options', service.getCompilerOptionsDiagnostics()),
-          parsedConfig.options.pretty === true
-        );
-
-      if (pluginOptions.clean) cache().clean();
+      if (pluginOptions.clean) {
+        cache().clean();
+      }
 
       return config;
     },
@@ -213,18 +197,13 @@ const typescript: PluginImpl<RPT2Options> = (options) => {
     },
 
     transform(code, id) {
-      generateRound = 0; // in watch mode transform call resets generate count (used to avoid printing too many copies of the same error messages)
+      // in watch mode transform call resets generate count (used to avoid printing too many copies
+      // of the same error messages)
+      generateRound = 0;
 
       if (!filter(id)) return undefined;
 
       allImportedFiles.add(normalize(id));
-
-      const contextWrapper = new RollupContext(
-        pluginOptions.verbosity,
-        pluginOptions.abortOnError,
-        this,
-        'rpt2: '
-      );
 
       const snapshot = servicesHost.setSnapshot(id, code);
 
@@ -234,17 +213,6 @@ const typescript: PluginImpl<RPT2Options> = (options) => {
 
         if (output.emitSkipped) {
           noErrors = false;
-
-          // always checking on fatal errors, even if options.check is set to false
-          const diagnostics = concat(
-            cache().getSyntacticDiagnostics(id, snapshot, () => {
-              return service.getSyntacticDiagnostics(id);
-            }),
-            cache().getSemanticDiagnostics(id, snapshot, () => {
-              return service.getSemanticDiagnostics(id);
-            })
-          );
-          printDiagnostics(contextWrapper, diagnostics, parsedConfig.options.pretty === true);
 
           // since no output was generated, aborting compilation
           cache().done();
@@ -258,21 +226,6 @@ const typescript: PluginImpl<RPT2Options> = (options) => {
         );
         return convertEmitOutput(output, references as any);
       });
-
-      if (pluginOptions.check) {
-        const diagnostics = concat(
-          cache().getSyntacticDiagnostics(id, snapshot, () => {
-            return service.getSyntacticDiagnostics(id);
-          }),
-          cache().getSemanticDiagnostics(id, snapshot, () => {
-            return service.getSemanticDiagnostics(id);
-          })
-        );
-
-        if (diagnostics.length > 0) noErrors = false;
-
-        printDiagnostics(contextWrapper, diagnostics, parsedConfig.options.pretty === true);
-      }
 
       if (result) {
         if (result.references)
@@ -313,26 +266,6 @@ const typescript: PluginImpl<RPT2Options> = (options) => {
     _ongenerate(): void {
       context.debug(() => `generating target ${generateRound + 1}`);
 
-      if (pluginOptions.check && watchMode && generateRound === 0) {
-        cache().walkTree((id) => {
-          if (!filter(id)) return;
-
-          const snapshot = servicesHost.getScriptSnapshot(id);
-          if (!snapshot) return;
-
-          const diagnostics = concat(
-            cache().getSyntacticDiagnostics(id, snapshot, () => {
-              return service.getSyntacticDiagnostics(id);
-            }),
-            cache().getSemanticDiagnostics(id, snapshot, () => {
-              return service.getSemanticDiagnostics(id);
-            })
-          );
-
-          printDiagnostics(context, diagnostics, parsedConfig.options.pretty === true);
-        });
-      }
-
       if (!watchMode && !noErrors) context.info(yellow('there were errors or warnings.'));
 
       cache().done();
@@ -357,41 +290,46 @@ const typescript: PluginImpl<RPT2Options> = (options) => {
         if (out.dts) declarations[key] = { type: out.dts, map: out.dtsmap };
       });
 
-      const emitDeclaration = (key: string, extension: string, entry?: tsTypes.OutputFile) => {
-        if (!entry) return;
-
-        let fileName = entry.name;
-        if (fileName.includes('?'))
-          // HACK for rollup-plugin-vue, it creates virtual modules in form 'file.vue?rollup-plugin-vue=script.ts'
-          fileName = fileName.split('?', 1) + extension;
-
-        // If 'useTsconfigDeclarationDir' is given in the
-        // plugin options, directly write to the path provided
-        // by Typescript's LanguageService (which may not be
-        // under Rollup's output directory, and thus can't be
-        // emitted as an asset).
-        if (pluginOptions.useTsconfigDeclarationDir) {
-          context.debug(() => `${blue('emitting declarations')} for '${key}' to '${fileName}'`);
-          tsModule.sys.writeFile(fileName, entry.text, entry.writeByteOrderMark);
-        } else {
-          const relativePath = relative(pluginOptions.cwd, fileName);
-          context.debug(() => `${blue('emitting declarations')} for '${key}' to '${relativePath}'`);
-          this.emitFile({
-            type: 'asset',
-            source: entry.text,
-            fileName: relativePath,
-          });
-        }
-      };
-
       each(declarations, ({ type, map }, key) => {
-        emitDeclaration(key, '.d.ts', type);
-        emitDeclaration(key, '.d.ts.map', map);
+        emitDeclaration(key, '.d.ts', pluginOptions, context, this, type);
+        emitDeclaration(key, '.d.ts.map', pluginOptions, context, this, map);
       });
     },
   };
 
   return self;
 };
+
+function emitDeclaration(
+  key: string,
+  extension: string,
+  pluginOptions: any,
+  context: any,
+  self: any,
+  entry?: tsTypes.OutputFile
+) {
+  if (!entry) return;
+
+  let fileName = entry.name;
+  if (fileName.includes('?'))
+    // HACK for rollup-plugin-vue, it creates virtual modules in form 'file.vue?rollup-plugin-vue=script.ts'
+    fileName = fileName.split('?', 1) + extension;
+
+  // If 'useTsconfigDeclarationDir' is given in the plugin options, directly write to the path
+  // provided by Typescript's LanguageService (which may not be under Rollup's output directory, and
+  // thus can't be emitted as an asset).
+  if (pluginOptions.useTsconfigDeclarationDir) {
+    context.debug(() => `${blue('emitting declarations')} for '${key}' to '${fileName}'`);
+    tsModule.sys.writeFile(fileName, entry.text, entry.writeByteOrderMark);
+  } else {
+    const relativePath = relative(pluginOptions.cwd, fileName);
+    context.debug(() => `${blue('emitting declarations')} for '${key}' to '${relativePath}'`);
+    self.emitFile({
+      type: 'asset',
+      source: entry.text,
+      fileName: relativePath,
+    });
+  }
+}
 
 export default typescript;

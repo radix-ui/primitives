@@ -1,7 +1,3 @@
-import tsTypes from 'typescript';
+import tsModule from 'typescript';
 
-export let tsModule: typeof tsTypes;
-
-export function setTypescriptModule(override: typeof tsTypes) {
-  tsModule = override;
-}
+export { tsModule };

@@ -1,11 +1,9 @@
 import { tsModule } from './tsproxy';
 import { IContext } from './context';
 import { dirname } from 'path';
-import { printDiagnostics } from './print-diagnostics';
-import { convertDiagnostic } from './tscache';
 import { getOptionsOverrides } from './get-options-overrides';
 import { IOptions } from './ioptions';
-import { get, merge } from 'lodash';
+import { merge } from 'lodash';
 import { checkTsConfig } from './check-tsconfig';
 
 export function parseTsConfig(context: IContext, pluginOptions: IOptions) {
@@ -22,16 +20,13 @@ export function parseTsConfig(context: IContext, pluginOptions: IOptions) {
   let loadedConfig: any = {};
   let baseDir = pluginOptions.cwd;
   let configFileName;
-  let pretty = false;
   if (fileName) {
     const text = tsModule.sys.readFile(fileName);
     if (text === undefined) throw new Error(`failed to read '${fileName}'`);
 
     const result = tsModule.parseConfigFileTextToJson(fileName, text);
-    pretty = get(result.config, 'pretty', pretty);
 
     if (result.error !== undefined) {
-      printDiagnostics(context, convertDiagnostic('config', [result.error]), pretty);
       throw new Error(`failed to parse '${fileName}'`);
     }
 
@@ -60,7 +55,6 @@ export function parseTsConfig(context: IContext, pluginOptions: IOptions) {
   );
 
   checkTsConfig(parsedTsConfig);
-  printDiagnostics(context, convertDiagnostic('config', parsedTsConfig.errors), pretty);
 
   context.debug(
     `built-in options overrides: ${JSON.stringify(compilerOptionsOverride, undefined, 4)}`
