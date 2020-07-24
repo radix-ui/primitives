@@ -19,7 +19,7 @@ import {
   useRovingTabIndex,
   ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, makeId } from '@interop-ui/utils';
 import { composeEventHandlers, useComposedRefs } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ export type { TabsProps, TabsListProps, TabsTabProps, TabsPanelProps, ITabs };
 /* ---------------------------------------------------------------------------------------------- */
 
 function makeTabId(tabsId: string, tabId: string) {
-  return `${tabsId}-tab-${tabId}`;
+  return makeId(tabsId, 'tab', tabId);
 }
 
 function makeTabsPanelId(tabsId: string, tabId: string) {

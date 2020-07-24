@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Portal } from '@interop-ui/react-portal';
 import { cssReset, interopDataAttrObj, Side, Align, isFunction } from '@interop-ui/utils';
 import {
   composeEventHandlers,
@@ -11,12 +10,9 @@ import {
   usePrevious,
   useRect,
 } from '@interop-ui/react-utils';
-import { useDebugContext } from '@interop-ui/react-debug-context';
 import { createStateMachine, stateChart } from './machine';
-import { useSize } from '@interop-ui/react-use-size';
-import { getPlacementData } from '@interop-ui/popper';
+import { Popover, PopoverProps, PopoverArrowProps } from '@interop-ui/react-popover';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
-import { Arrow } from '@interop-ui/react-arrow';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -27,11 +23,10 @@ interface TooltipContextValue {
   alignOffset: number;
   ariaLabel: string;
   arrowOffset: number;
-  arrowRef: React.RefObject<any>;
   collisionTolerance: number;
   isOpen: boolean;
   label: TooltipRootProps['label'];
-  popperRef: React.RefObject<any>;
+  popoverRef: React.RefObject<any>;
   side: Side;
   sideOffset: number;
   targetRect: ClientRect | undefined;
@@ -125,8 +120,7 @@ const TooltipRoot: React.FC<TooltipRootProps> = function TooltipRoot(props) {
   const targetTop = targetRect?.top;
   const previousTargetTop = usePrevious(targetTop);
 
-  const popperRef = React.useRef<HTMLDivElement>(null);
-  const arrowRef = React.useRef<HTMLSpanElement>(null);
+  const popoverRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const unsubscribe = stateMachine.subscribe((state, context) => {
@@ -158,11 +152,10 @@ const TooltipRoot: React.FC<TooltipRootProps> = function TooltipRoot(props) {
         alignOffset,
         ariaLabel,
         arrowOffset,
-        arrowRef,
         collisionTolerance,
         isOpen,
         label,
-        popperRef,
+        popoverRef,
         side,
         sideOffset,
         targetRect,
@@ -239,96 +232,66 @@ const TooltipTarget: React.FC<TooltipTargetProps> = function TooltipTarget(props
 TooltipTarget.displayName = 'Tooltip.Target';
 
 /* -------------------------------------------------------------------------------------------------
- * TooltipPopper
+ * TooltipPopover
  * -----------------------------------------------------------------------------------------------*/
 
 const POPPER_DEFAULT_TAG = 'div';
 
-type TooltipPopperDOMProps = React.ComponentPropsWithRef<typeof POPPER_DEFAULT_TAG>;
-type TooltipPopperOwnProps = {};
-type TooltipPopperProps = TooltipPopperDOMProps & TooltipPopperOwnProps;
+type TooltipPopoverOwnProps = {};
+type TooltipPopoverProps = Omit<
+  PopoverProps,
+  | 'align'
+  | 'alignOffset'
+  | 'arrowOffset'
+  | 'collisionTolerance'
+  | 'isOpen'
+  | 'side'
+  | 'sideOffset'
+  | 'targetRef'
+> &
+  TooltipPopoverOwnProps;
 
-const TooltipArrowContext = React.createContext<{
-  arrowStyles: React.CSSProperties;
-}>({ arrowStyles: {} });
-TooltipArrowContext.displayName = 'TooltipArrowContext';
-
-const TooltipPopper = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperProps>(
-  function TooltipPopper(props, forwardedRef) {
-    let { as: Comp = POPPER_DEFAULT_TAG, style, children, ...otherProps } = props;
+const TooltipPopover = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopoverProps>(
+  function TooltipPopover(props, forwardedRef) {
+    let { as = POPPER_DEFAULT_TAG, children, ...otherProps } = props;
     let {
       align,
       alignOffset,
       ariaLabel,
       arrowOffset,
-      arrowRef,
       collisionTolerance,
       isOpen,
-      popperRef,
       side,
       sideOffset,
-      targetRect,
+      targetRef,
       tooltipId,
-    } = useTooltipContext('Tooltip.Popper');
-
-    const popperSize = useSize({
-      refToObserve: popperRef,
-      isObserving: isOpen,
-    });
-
-    const arrowSize = useSize({ refToObserve: arrowRef, isObserving: isOpen });
-    const debugContext = useDebugContext();
-
-    const { popperStyles, arrowStyles } = getPlacementData({
-      popperSize,
-      targetRect,
-      arrowSize,
-      arrowOffset,
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      collisionTolerance,
-      shouldAvoidCollisions: !debugContext.disableCollisionChecking,
-    });
+    } = useTooltipContext('Tooltip.Popover');
 
     return (
-      <TooltipArrowContext.Provider value={{ arrowStyles }}>
-        {isOpen ? (
-          <Portal>
-            <Comp
-              ref={forwardedRef}
-              style={{
-                ...popperStyles,
-                ...style,
-              }}
-              {...otherProps}
-            >
-              {/*
-              we put the `popperRef` on a div around the content
-              and not on the content element itself.
-
-              This is because the size measured by `useSize`
-              doesn't account for padding/border (ResizeObserver limitations)
-              so there would be some calculations issues if padding/border
-              styles are passed to `<Content />` via css
-
-              See: https://github.com/que-etc/resize-observer-polyfill/issues/11
-            */}
-              <div ref={popperRef}>{children}</div>
-
-              <VisuallyHidden id={tooltipId} role="tooltip">
-                {ariaLabel}
-              </VisuallyHidden>
-            </Comp>
-          </Portal>
-        ) : null}
-      </TooltipArrowContext.Provider>
+      <Popover
+        as={as}
+        ref={forwardedRef}
+        {...otherProps}
+        align={align}
+        alignOffset={alignOffset}
+        arrowOffset={arrowOffset}
+        collisionTolerance={collisionTolerance}
+        isOpen={isOpen}
+        side={side}
+        sideOffset={sideOffset}
+        targetRef={targetRef}
+        {...interopDataAttrObj('TooltipPopover')}
+      >
+        {children}
+        <VisuallyHidden id={tooltipId} role="tooltip">
+          {ariaLabel}
+        </VisuallyHidden>
+      </Popover>
     );
   }
 );
 
-TooltipPopper.displayName = 'Tooltip.Popper';
+TooltipPopover.displayName = 'Tooltip.Popover';
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipContent
@@ -347,7 +310,7 @@ const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProp
     const { as: Comp = CONTENT_DEFAULT_TAG, children, ...otherProps } = props;
     const { label } = useTooltipContext('Tooltip.Content');
     return (
-      <Comp ref={forwardedRef} {...otherProps}>
+      <Comp ref={forwardedRef} {...interopDataAttrObj('TooltipContent')} {...otherProps}>
         {isFunction(children) ? children({ label }) : label}
       </Comp>
     );
@@ -355,40 +318,28 @@ const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProp
 );
 
 TooltipContent.displayName = 'Tooltip.Content';
+
 /* -------------------------------------------------------------------------------------------------
- * TooltipContent
+ * TooltipArrow
  * -----------------------------------------------------------------------------------------------*/
 
 const ARROW_DEFAULT_TAG = 'span';
 
-type TooltipArrowDOMProps = React.ComponentPropsWithRef<typeof ARROW_DEFAULT_TAG>;
 type TooltipArrowOwnProps = {};
-type TooltipArrowProps = TooltipArrowDOMProps & TooltipArrowOwnProps;
+type TooltipArrowProps = PopoverArrowProps & TooltipArrowOwnProps;
 
 const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(function TooltipArrow(
   props,
   forwardedRef
 ) {
-  let { as: Comp = ARROW_DEFAULT_TAG, style, children, ...otherProps } = props;
-  let { arrowRef } = useTooltipContext('Tooltip.Arrow');
-  let ref = useComposedRefs(forwardedRef, arrowRef);
-  let { arrowStyles } = React.useContext(TooltipArrowContext);
+  let { as = ARROW_DEFAULT_TAG, ...otherProps } = props;
   return (
-    <Comp
-      style={{
-        ...arrowStyles,
-        ...style,
-      }}
+    <Popover.Arrow
+      as={as}
+      ref={forwardedRef}
+      {...interopDataAttrObj('TooltipArrow')}
       {...otherProps}
-    >
-      <span
-        // we use an extra wrapper because `useSize` doesn't play well with
-        // the SVG arrow which is sized via CSS
-        ref={ref}
-      >
-        <Arrow />
-      </span>
-    </Comp>
+    />
   );
 });
 
@@ -432,10 +383,10 @@ const Tooltip = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipProps, TooltipStat
         collisionTolerance={collisionTolerance}
       >
         <TooltipTarget>{children}</TooltipTarget>
-        <TooltipPopper>
+        <TooltipPopover>
           <TooltipContent {...contentProps} />
           <TooltipArrow />
-        </TooltipPopper>
+        </TooltipPopover>
       </TooltipRoot>
     );
   }
@@ -447,13 +398,13 @@ Tooltip.displayName = 'Tooltip';
 
 Tooltip.Root = TooltipRoot;
 Tooltip.Target = TooltipTarget;
-Tooltip.Popper = TooltipPopper;
+Tooltip.Popover = TooltipPopover;
 Tooltip.Content = TooltipContent;
 
 const styles = {
   root: null,
   target: null,
-  popper: {
+  popover: {
     ...cssReset(POPPER_DEFAULT_TAG),
     zIndex: 99999,
     pointerEvents: 'none',
@@ -475,7 +426,7 @@ export type {
   TooltipProps,
   TooltipRootProps,
   TooltipTargetProps,
-  TooltipPopperProps,
+  TooltipPopoverProps,
   TooltipArrowProps,
   TooltipContentProps,
 };
@@ -483,7 +434,7 @@ export type {
 interface TooltipStaticProps {
   Root: typeof TooltipRoot;
   Target: typeof TooltipTarget;
-  Popper: typeof TooltipPopper;
+  Popover: typeof TooltipPopover;
   Arrow: typeof TooltipArrow;
   Content: typeof TooltipContent;
 }

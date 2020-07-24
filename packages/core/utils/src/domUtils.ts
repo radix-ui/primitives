@@ -21,3 +21,7 @@ export function getOwnerDocument<T extends Element = HTMLElement>(element: T | n
 export function canUseDOM() {
   return !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 }
+
+export function makeId(...args: (string | number | null | undefined)[]) {
+  return args.filter((val) => val != null).join('-');
+}
