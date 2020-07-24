@@ -10,6 +10,7 @@ function createCollection<Item extends BaseItem>(name: string) {
     items: Item[];
     addItem: (item: Item, explicitIndex?: number) => void;
     removeItem: (ref: Item['ref']) => void;
+    ssrSyncUseCollectionItemCountRef: React.MutableRefObject<number>;
   };
   const [CollectionContext, useCollectionContext] = createContext<CollectionContextValue>(
     name + 'CollectionContext',
@@ -18,6 +19,7 @@ function createCollection<Item extends BaseItem>(name: string) {
 
   function CollectionProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = React.useState<Item[]>([]);
+    const ssrSyncUseCollectionItemCountRef = React.useRef(0);
 
     const addItem = React.useCallback(
       function addItem(item: Item) {
@@ -41,9 +43,14 @@ function createCollection<Item extends BaseItem>(name: string) {
       setItems([]);
     }, [children]);
 
+    ssrSyncUseCollectionItemCountRef.current = 0;
+
     return (
       <CollectionContext.Provider
-        value={React.useMemo(() => ({ items, addItem, removeItem }), [items, addItem, removeItem])}
+        value={React.useMemo(
+          () => ({ items, addItem, removeItem, ssrSyncUseCollectionItemCountRef }),
+          [items, addItem, removeItem]
+        )}
       >
         {children}
       </CollectionContext.Provider>
@@ -65,12 +72,15 @@ function createCollection<Item extends BaseItem>(name: string) {
   }
 
   function useCollectionItem(item: Item) {
-    const { items, addItem, removeItem } = useCollectionContext('useCollectionItem');
+    const { items, addItem, removeItem, ssrSyncUseCollectionItemCountRef } = useCollectionContext(
+      'useCollectionItem'
+    );
 
     const existingIndex = items.findIndex(({ ref }) => item.ref.current === ref.current);
-    const index = existingIndex !== -1 ? existingIndex : items.length;
+    const index = existingIndex !== -1 ? existingIndex : ssrSyncUseCollectionItemCountRef.current;
+    ssrSyncUseCollectionItemCountRef.current = ssrSyncUseCollectionItemCountRef.current + 1;
 
-    useIsomorphicLayoutEffect(() => {
+    React.useLayoutEffect(() => {
       addItem(item);
     });
 
