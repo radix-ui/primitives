@@ -182,24 +182,17 @@ describe('given a collection with explicit indexes', () => {
 
 type ListItemType = BaseItem & { disabled: boolean };
 
-const {
-  useCollectionState,
-  CollectionProvider,
-  useCollectionItem,
-  useCollectionItems,
-} = createCollection<ListItemType>('List');
+const { createCollectionComponent, useCollectionItem, useCollectionItems } = createCollection<
+  ListItemType
+>('List');
 
 type ListProps = {
   children: React.ReactNode;
 };
 
-function List({ children }: ListProps) {
-  return (
-    <CollectionProvider collectionState={useCollectionState()}>
-      <ul>{children}</ul>
-    </CollectionProvider>
-  );
-}
+const List = createCollectionComponent(function List({ children }: ListProps) {
+  return <ul>{children}</ul>;
+});
 
 type ItemProps = {
   children: React.ReactNode;
@@ -209,7 +202,7 @@ type ItemProps = {
 
 function Item({ children, disabled = false, index: explicitIndex }: ItemProps) {
   const ref = React.useRef(null);
-  const index = useCollectionItem({ element: ref.current, disabled }, explicitIndex);
+  const index = useCollectionItem({ ref, disabled });
   return (
     <li ref={ref} data-disabled={disabled}>
       {children}({index})
@@ -219,8 +212,8 @@ function Item({ children, disabled = false, index: explicitIndex }: ItemProps) {
 
 function ItemsLog() {
   const items = useCollectionItems();
-  const loggableItems = items.map(({ element, ...rest }) => ({
-    element: `<li>${element?.textContent?.split('(')[0]}</li>`,
+  const loggableItems = items.map(({ ref, ...rest }) => ({
+    element: `<li>${ref.current?.textContent?.split('(')[0]}</li>`,
     ...rest,
   }));
   return <pre data-testid="log">{JSON.stringify(loggableItems, null, 2)}</pre>;

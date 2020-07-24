@@ -101,27 +101,24 @@ export const WithChangingItem = () => {
 
 type ListItemType = BaseItem & { disabled: boolean };
 
-const {
-  useCollectionState,
-  CollectionProvider,
-  useCollectionItem,
-  useCollectionItems,
-} = createCollection<ListItemType>('List');
+const { createCollectionComponent, useCollectionItem, useCollectionItems } = createCollection<
+  ListItemType
+>('List');
 
 type ListProps = {
   children: React.ReactNode;
 };
 
-function List({ children }: ListProps) {
+const List = createCollectionComponent(function List({ children }: ListProps) {
+  const items = useCollectionItems();
+  console.log({ items });
   return (
-    <CollectionProvider collectionState={useCollectionState()}>
-      <div style={{ display: 'flex' }}>
-        <ul style={{ width: 200 }}>{children}</ul>
-        <ItemsLog />
-      </div>
-    </CollectionProvider>
+    <div style={{ display: 'flex' }}>
+      <ul style={{ width: 200 }}>{children}</ul>
+      <ItemsLog />
+    </div>
   );
-}
+});
 
 type ItemProps = React.ComponentPropsWithRef<'li'> & {
   children: React.ReactNode;
@@ -131,7 +128,8 @@ type ItemProps = React.ComponentPropsWithRef<'li'> & {
 
 function Item({ children, disabled = false, index: explicitIndex, ...props }: ItemProps) {
   const ref = React.useRef(null);
-  const index = useCollectionItem({ element: ref.current, disabled }, explicitIndex);
+  const index = useCollectionItem({ ref, disabled });
+
   return (
     <li ref={ref} {...props} style={{ ...props.style, opacity: disabled ? 0.3 : undefined }}>
       {index} — {children}
@@ -141,11 +139,10 @@ function Item({ children, disabled = false, index: explicitIndex, ...props }: It
 
 function ItemsLog() {
   const items = useCollectionItems();
-  const loggableItems = items.map(({ element, ...rest }) => ({
-    element: `<li>${element?.textContent?.split('—')[1].trim()}</li>`,
+  const loggableItems = items.map(({ ref, ...rest }) => ({
+    element: `<li>${ref.current?.textContent?.split('—')[1].trim()}</li>`,
     ...rest,
   }));
-  console.log({ items });
   return (
     <div>
       <p>Internal data structure ↓</p>
