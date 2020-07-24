@@ -68,7 +68,7 @@ function createCollection<Item extends BaseItem>(name: string) {
     const { items, addItem, removeItem } = useCollectionContext('useCollectionItem');
 
     const existingIndex = items.findIndex(({ ref }) => item.ref.current === ref.current);
-    const index = existingIndex ?? items.length;
+    const index = existingIndex !== -1 ? existingIndex : items.length;
 
     useIsomorphicLayoutEffect(() => {
       addItem(item);
