@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import type { BaseItem } from './collection';
 import { createCollection } from './collection';
 
 describe('given a collection', () => {
@@ -172,18 +171,13 @@ describe('given a collection', () => {
   });
 });
 
-describe('given a collection with explicit indexes', () => {
-  it.todo('should have the correct indexes on first render (for SSR)');
-});
-
 /* -------------------------------------------------------------------------------------------------
- * Implementation
+ * List implementation
  * -----------------------------------------------------------------------------------------------*/
 
-type ListItemType = BaseItem & { disabled: boolean };
-
 const { createCollectionComponent, useCollectionItem, useCollectionItems } = createCollection<
-  ListItemType
+  HTMLLIElement,
+  { disabled: boolean }
 >('List');
 
 type ListProps = {
@@ -200,9 +194,8 @@ type ItemProps = {
   index?: number;
 };
 
-function Item({ children, disabled = false, index: explicitIndex }: ItemProps) {
-  const ref = React.useRef(null);
-  const index = useCollectionItem({ ref, disabled });
+function Item({ children, disabled = false }: ItemProps) {
+  const { ref, index } = useCollectionItem({ disabled });
   return (
     <li ref={ref} data-disabled={disabled}>
       {children}({index})

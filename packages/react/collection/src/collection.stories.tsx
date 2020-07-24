@@ -1,5 +1,4 @@
 import * as React from 'react';
-import type { BaseItem } from './collection';
 import { createCollection } from './collection';
 
 export default { title: 'Collection' };
@@ -46,16 +45,6 @@ export const WithFragment = () => {
   return <List>{countries}</List>;
 };
 
-export const WithExplicitIndexes = () => (
-  <List>
-    <Item index={0}>Red</Item>
-    <Item index={1} disabled>
-      Green
-    </Item>
-    <Item index={2}>Blue</Item>
-  </List>
-);
-
 export const DynamicInsertion = () => {
   const [hasTomato, setHasTomato] = React.useState(false);
   const [, forceUpdate] = React.useState();
@@ -95,14 +84,28 @@ export const WithChangingItem = () => {
   );
 };
 
+export const BasicTabs = () => {
+  return (
+    <Tabs>
+      <TabList>
+        <Tab>One</Tab>
+        <Tab>Two</Tab>
+      </TabList>
+      <TabPanels>
+        <Panel>Panel One</Panel>
+        <Panel>Panel Two</Panel>
+      </TabPanels>
+    </Tabs>
+  );
+};
+
 /* -------------------------------------------------------------------------------------------------
- * Implementation
+ * List implementation
  * -----------------------------------------------------------------------------------------------*/
 
-type ListItemType = BaseItem & { disabled: boolean };
-
 const { createCollectionComponent, useCollectionItem, useCollectionItems } = createCollection<
-  ListItemType
+  HTMLLIElement,
+  { disabled: boolean }
 >('List');
 
 type ListProps = {
@@ -123,13 +126,10 @@ const List = createCollectionComponent(function List({ children }: ListProps) {
 type ItemProps = React.ComponentPropsWithRef<'li'> & {
   children: React.ReactNode;
   disabled?: boolean;
-  index?: number;
 };
 
-function Item({ children, disabled = false, index: explicitIndex, ...props }: ItemProps) {
-  const ref = React.useRef(null);
-  const index = useCollectionItem({ ref, disabled });
-
+function Item({ children, disabled = false, ...props }: ItemProps) {
+  const { ref, index } = useCollectionItem({ disabled });
   return (
     <li ref={ref} {...props} style={{ ...props.style, opacity: disabled ? 0.3 : undefined }}>
       {index} — {children}
@@ -149,6 +149,68 @@ function ItemsLog() {
       <pre style={{ backgroundColor: '#f0f0f0', padding: 10, borderRadius: 5 }}>
         {JSON.stringify(loggableItems, null, 2)}
       </pre>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Tabs implementation
+ * -----------------------------------------------------------------------------------------------*/
+
+const {
+  createCollectionComponent: createTabsCollectionComponent,
+  useCollectionItem: useTab,
+  useCollectionItems: useTabs,
+} = createCollection('Tabs');
+
+const {
+  createCollectionComponent: createPanelsCollectionComponent,
+  useCollectionItem: usePanel,
+  useCollectionItems: usePanels,
+} = createCollection('Panels');
+
+const TabsContext = React.createContext({
+  selectedIndex: 0,
+  setSelectedIndex: (index: number) => {},
+});
+
+const Tabs = createTabsCollectionComponent(function Tabs({ children }) {
+  const tabs = useTabs();
+  console.log({ tabs });
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  return (
+    <TabsContext.Provider value={{ selectedIndex, setSelectedIndex }}>
+      <div>{children}</div>
+    </TabsContext.Provider>
+  );
+});
+
+function TabList({ children }: any) {
+  return <ul>{children}</ul>;
+}
+function Tab({ children }: any) {
+  const { setSelectedIndex } = React.useContext(TabsContext);
+  const { ref, index } = useTab();
+  return (
+    <li ref={ref}>
+      {index} — <button onClick={() => setSelectedIndex(index)}>{children}</button>
+    </li>
+  );
+}
+
+const TabPanels = createPanelsCollectionComponent(function TabPanels({ children }: any) {
+  const panels = usePanels();
+  console.log({ panels });
+  return children;
+});
+
+function Panel({ children }: any) {
+  const { selectedIndex } = React.useContext(TabsContext);
+  const { ref, index } = usePanel();
+  if (index !== selectedIndex) return null;
+  return (
+    <div ref={ref}>
+      {index} — {children}
     </div>
   );
 }
