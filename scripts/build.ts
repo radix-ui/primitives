@@ -11,6 +11,7 @@ import { babel } from '@rollup/plugin-babel';
 import sourceMaps from 'rollup-plugin-sourcemaps';
 import { terser } from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
+import { CompilerOptions } from 'typescript';
 import { paths } from './constants';
 import {
   external,
@@ -23,11 +24,39 @@ import {
 } from './utils';
 import { ScriptOpts, NormalizedOpts } from './types';
 import babelConfig from './config/babel';
+import { execSync, spawn, spawnSync } from 'child_process';
+
+let rootTsConfig: TSConfigJSON = fs.readJSONSync(path.join(paths.projectRoot, 'tsconfig.json'));
+
+// `lerna run` will set off a new node process for each package, which is pretty dang slow. Instead
+// we can use leverage the --toposort flag to get a list of all packages in the order we want them
+// built and just run the script once.
+let std = execSync(`yarn lerna ls --toposort`, {
+  // stdio: 'inherit'
+});
+
+let topoPackageMap: Record<string, string> = {};
+try {
+  topoPackageMap = std
+    .toString()
+    .split('\n')
+    .filter((line) => line.startsWith('@interop-ui'))
+    .reduce((acc, cur) => {
+      if (rootTsConfig.compilerOptions.paths![cur]) {
+        return {
+          ...acc,
+          [cur]: rootTsConfig.compilerOptions.paths![cur][0],
+        };
+      }
+      return acc;
+    }, {});
+} catch (err) {
+  console.warn('Something went wrong when looking for packages to build.');
+  process.exit(1);
+}
 
 // https://github.com/formium/tsdx/blob/3c65bdf90860c45a619b8a23720e41f8e251a4ef/src/createRollupConfig.ts#L24
 let shebang: any = {};
-
-let rootTsConfig = fs.readJSONSync(path.join(paths.projectRoot, 'tsconfig.json'));
 
 export async function createRollupConfig(
   opts: ScriptOpts,
@@ -73,7 +102,7 @@ export async function createRollupConfig(
       // namespaceImportObject from...) that are accessed dynamically.
       freeze: false,
       // Respect tsconfig esModuleInterop when setting __esModule.
-      esModule: (tsconfigJSON && tsconfigJSON.esModuleInterop) || false,
+      esModule: (tsconfigJSON && tsconfigJSON.compilerOptions.esModuleInterop) || false,
     },
     plugins: [
       nodeResolve({ mainFields }),
@@ -158,8 +187,8 @@ export async function createRollupConfig(
   };
 }
 
-async function build() {
-  const opts = await normalizeOpts(parseArgs());
+async function build(opts: NormalizedOpts) {
+  //const opts = await normalizeOpts(parseArgs());
   const buildConfigs = await createBuildConfigs(opts);
 
   try {
@@ -190,7 +219,31 @@ async function build() {
   }
 }
 
-build();
+async function buildAll() {
+  let execs: (() => any)[] = [];
+  for (let packageName in topoPackageMap) {
+    let inputDir = path.join(paths.projectRoot, topoPackageMap[packageName]);
+    let input = [
+      fs.existsSync(path.join(inputDir, 'index.ts'))
+        ? path.join(inputDir, 'index.ts')
+        : path.join(inputDir, 'index.tss'),
+    ];
+    let name = packageName.split('/')[1];
+    console.log({ input, name });
+    execs.push(() => build({ name, input }));
+  }
+  serial(...execs);
+}
+
+function serial<T extends ((...args: any[]) => any)[]>(...funcs: T) {
+  return funcs.reduce(
+    (promise: Promise<any>, func) =>
+      promise.then((result) => func().then(Array.prototype.concat.bind(result))),
+    Promise.resolve([])
+  );
+}
+
+buildAll();
 
 export function writeCjsEntryFile(name: string) {
   const contents = `'use strict';
@@ -265,3 +318,38 @@ async function moveDeclarationFilesToDistTypes(packageName: string) {
     await fs.remove(path.resolve(paths.packageDistTypes, relativeDirToDelete));
   } catch (e) {}
 }
+
+type TSConfigJSON = {
+  /**
+   * If no 'files' or 'include' property is present in a tsconfig.json, the compiler defaults to
+   * including all files in the containing directory and subdirectories except those specified by
+   * 'exclude'. When a 'files' property is specified, only those files and those specified by
+   * 'include' are included.,
+   */
+  files?: string[];
+  /**
+   * Specifies a list of files to be excluded from compilation. The 'exclude' property only affects
+   * the files included via the 'include' property and not the 'files' property. Glob patterns
+   * require TypeScript version 2.0 or later.
+   */
+  exclude?: string[];
+  /**
+   * Specifies a list of glob patterns that match files to be included in compilation. If no
+   * 'files' or 'include' property is present in a tsconfig.json, the compiler defaults to
+   * including all files in the containing directory and subdirectories except those specified by
+   * 'exclude'. Requires TypeScript version 2.0 or later.
+   */
+  include?: string[];
+  /**
+   * Enable Compile-on-Save for this project.
+   */
+  compileOnSave?: boolean;
+  /**
+   * Path to base configuration file to inherit from. Requires TypeScript version 2.1 or later.
+   */
+  extends?: string;
+  /**
+   * Instructs the TypeScript compiler how to compile .ts files.
+   */
+  compilerOptions: CompilerOptions;
+};

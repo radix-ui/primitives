@@ -24,10 +24,11 @@ export interface WatchOpts extends BuildOpts {
   onFailure?: string;
 }
 
-export interface NormalizedOpts extends Omit<WatchOpts, 'name' | 'input' | 'format'> {
+export interface NormalizedOpts extends Omit<WatchOpts, 'name' | 'input' | 'format' | 'target'> {
   name: string;
   input: string[];
-  format: [ModuleFormat, ...ModuleFormat[]];
+  target?: 'browser';
+  // format: [ModuleFormat, ...ModuleFormat[]];
 }
 
 export interface ScriptOpts extends SharedOpts {
