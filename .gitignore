@@ -6,3 +6,4 @@ dist
 test-output.*
 .cache
 TODO.md
+report.*.json

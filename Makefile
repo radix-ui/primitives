@@ -1,8 +1,10 @@
 YARN := yarn --silent
 NODE := $(YARN) node
+TS_NODE := $(YARN) ts-node
 
-build:
-	$(YARN) lerna run build --stream --ignore @interop-ui/docs
+bootstrap: clean-all
+	$(YARN) --ignore-engines
+	$(YARN) lerna bootstrap --ignore-engines
 
 clean:
 	rm -rf packages/*/*/dist
@@ -13,13 +15,3 @@ clean-all:
 	rm -rf yarn.lock
 	rm -rf .cache
 	$(MAKE) clean
-
-lerna-bootstrap: clean-all
-	$(YARN) --ignore-engines
-
-lerna-bootstrap: clean-all
-	$(YARN) --ignore-engines
-	$(YARN) lerna bootstrap -- -- --ignore-engines
-
-bootstrap: lerna-bootstrap
-	$(MAKE) build

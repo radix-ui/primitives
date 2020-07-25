@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import ms from 'pretty-ms';
 import path from 'path';
 import mri from 'mri';
-import glob from 'tiny-glob/sync';
-import createLogger from 'progress-estimator';
 import { paths } from './constants';
-import { NormalizedOpts } from './types';
+import { NormalizedOpts, Falsey } from './types';
+import { exec } from 'child_process';
 
 const stderr = console.error.bind(console);
 
@@ -17,81 +17,26 @@ export function external(id: string) {
 // https://github.com/facebookincubator/create-react-app/issues/637
 export const packageDirectory = fs.realpathSync(process.cwd());
 
-export function resolvePackage(relativePath: string) {
-  return path.resolve(packageDirectory, relativePath);
-}
+export function normalizeOpts(opts: any): NormalizedOpts {
+  let { name } = opts;
+  let packageSrc = path.join(opts.packageRoot, 'src');
+  let packageDist = path.join(opts.packageRoot, 'dist');
+  let packageDistTypes = path.join(packageDist, 'types');
 
-// Taken from Create React App, react-dev-utils/clearConsole
-// @see https://github.com/facebook/create-react-app/blob/master/packages/react-dev-utils/clearConsole.js
-export function clearConsole() {
-  process.stdout.write(process.platform === 'win32' ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H');
-}
-
-export async function isDir(name: string) {
-  try {
-    const stats = await fs.stat(name);
-    return stats.isDirectory();
-  } catch (e) {
-    return false;
-  }
-}
-
-export async function isFile(name: string) {
-  try {
-    const stats = await fs.stat(name);
-    return stats.isFile();
-  } catch (e) {
-    return false;
-  }
-}
-
-export async function jsOrTs(filename: string) {
-  const extension = (await isFile(resolvePackage(filename + '.ts')))
-    ? '.ts'
-    : (await isFile(resolvePackage(filename + '.tsx')))
-    ? '.tsx'
-    : (await isFile(resolvePackage(filename + '.jsx')))
-    ? '.jsx'
-    : '.js';
-
-  return resolvePackage(`${filename}${extension}`);
-}
-
-export async function getInputs(entries?: string | string[]): Promise<string[]> {
-  return ([] as any[])
-    .concat(
-      entries && entries.length
-        ? entries
-        : (await isDir(resolvePackage('src'))) && (await jsOrTs('src/index'))
-    )
-    .flatMap((file) => glob(file));
-}
-
-export function getPackageName(opts: any) {
-  return opts.name || path.basename(paths.packageRoot);
-}
-
-export async function normalizeOpts(opts: any): Promise<NormalizedOpts> {
   return {
     ...opts,
-    name: getPackageName(opts),
-    input: await getInputs(opts.entry),
+    name,
+    input: Array.isArray(opts.input) ? opts.input : [opts.input],
+    packageSrc,
+    packageDist,
+    packageDistTypes,
   };
 }
 
-export async function createProgressEstimator() {
-  await fs.ensureDir(paths.progressEstimatorCache);
-  return createLogger({
-    // All configuration keys are optional, but it's recommended to specify a
-    // storage location.
-    storagePath: paths.progressEstimatorCache,
-  });
-}
-
 export function logError(err: any) {
-  const error = err.error || err;
-  const description = `${error.name ? error.name + ': ' : ''}${error.message || error}`;
-  const message = error.plugin
+  let error = err.error || err;
+  let description = `${error.name ? error.name + ': ' : ''}${error.message || error}`;
+  let message = error.plugin
     ? error.plugin === 'rpt2'
       ? `(typescript) ${description}`
       : `(${error.plugin} plugin) ${description}`
@@ -123,11 +68,36 @@ export function logBuildStepCompletion(name: string, message: string, emoji = 'ð
   console.log(`[${chalk.bold(name)}]: ${message} ${emoji}`);
 }
 
-export async function cleanDistFolder() {
-  await fs.emptyDir(paths.packageDist);
+export async function cleanDistDirectories() {
+  return await new Promise((res, reject) => {
+    exec(`rm -rf ${path.join(paths.projectRoot, 'packages', '*', '*', 'dist')}`, (err) =>
+      err ? reject(err.message) : res('hell yeah pew pew deleted!')
+    );
+  });
 }
 
 export function parseArgs() {
   let { _, ...args } = mri(process.argv.slice(2));
   return args;
+}
+
+export function buildDelineatedFilename(pathname: string, ...args: (string | Falsey)[]) {
+  return path.join(pathname, args.filter(Boolean).join('.'));
+}
+
+export function timeFromStart(start: number) {
+  return ms(Date.now() - start);
+}
+
+/** Just a helpful lil async util for creating space between processes â° */
+export function waaaaitJustAMinute(howLongsItGonnaBe = 1) {
+  return new Promise((res) => setTimeout(res, howLongsItGonnaBe * 1000));
+}
+
+/** Resolve a bunch of promises sequentially before moving on */
+export function serialResolve(...promises: Promise<any>[]) {
+  return promises.reduce(
+    (promise, cur) => promise.then((result) => cur.then(Array.prototype.concat.bind(result))),
+    Promise.resolve([])
+  );
 }
