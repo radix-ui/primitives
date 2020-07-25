@@ -150,11 +150,9 @@ const Collapsible = forwardRef<
   );
 
   return (
-    <CollapsibleContext.Provider value={context}>
-      <Comp {...interopDataAttrObj('Collapsible')} {...collapsibleProps} ref={forwardedRef}>
-        {children}
-      </Comp>
-    </CollapsibleContext.Provider>
+    <Comp {...interopDataAttrObj('Collapsible')} {...collapsibleProps} ref={forwardedRef}>
+      <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
+    </Comp>
   );
 });
 

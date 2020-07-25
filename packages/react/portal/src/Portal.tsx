@@ -14,15 +14,6 @@ const Portal: React.FC<PortalProps> = ({ children, containerRef }) => {
   // This is to make sure we don't recreate a new DOM element on each render
   const [hostElement] = React.useState(getHostElement);
 
-  function getHostElement() {
-    if (typeof document !== 'undefined') {
-      return document.createElement('radix-portal');
-    }
-
-    // bail out of ssr
-    return null;
-  }
-
   // We append the host element and remove it when necessary
   React.useEffect(() => {
     if (!hostElement) {
@@ -58,3 +49,12 @@ const Portal: React.FC<PortalProps> = ({ children, containerRef }) => {
 
 export { Portal };
 export type { PortalProps };
+
+function getHostElement() {
+  if (typeof document !== 'undefined') {
+    return document.createElement('interop-portal');
+  }
+
+  // bail out of ssr
+  return null;
+}
