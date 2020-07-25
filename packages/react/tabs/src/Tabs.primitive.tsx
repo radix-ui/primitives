@@ -10,17 +10,18 @@
 
 import * as React from 'react';
 import {
+  composeEventHandlers,
   createContext,
   forwardRef,
   RovingTabIndexProvider,
   useAccessibleMouseDown,
+  useComposedRefs,
   useControlledState,
   useId,
   useRovingTabIndex,
   ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
 import { cssReset, interopDataAttrObj, makeId } from '@interop-ui/utils';
-import { composeEventHandlers, useComposedRefs } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
