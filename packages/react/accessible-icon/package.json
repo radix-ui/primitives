@@ -14,6 +14,7 @@
     "test:watch": "npm run test -- --watchAll",
     "build": "node ../../../scripts/build",
     "clean": "ts-node ../../../scripts/clean",
+    "clean": "ts-node ../../../scripts/clean",
     "prepublish": "npm run build"
   },
   "dependencies": {
