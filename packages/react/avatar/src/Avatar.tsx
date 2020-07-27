@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, isFunction } from '@interop-ui/utils';
 import { createContext, forwardRef } from '@interop-ui/react-utils';
 
 const CONTAINER_DEFAULT_TAG = 'span';
@@ -11,10 +11,11 @@ type AvatarOwnProps = {
   src?: string;
   alt?: string;
   renderFallback?: React.ReactNode;
+  renderLoading?: React.ReactNode;
 };
 type AvatarProps = AvatarDOMProps & AvatarOwnProps;
 
-type AvatarRenderType = 'ICON' | 'IMAGE' | 'FALLBACK' | 'ALT_ABBR';
+type AvatarRenderType = 'LOADING' | 'ICON' | 'IMAGE' | 'FALLBACK' | 'ALT_ABBR';
 
 interface AvatarContextValue {
   src: string | undefined;
@@ -36,6 +37,7 @@ const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(functio
     as: Comp = CONTAINER_DEFAULT_TAG,
     children,
     renderFallback,
+    renderLoading,
     src,
     style,
     ...avatarProps
@@ -43,18 +45,25 @@ const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(functio
 
   let imageLoadingStatus = useImageLoadingStatus(src);
   let hasImage = Boolean(src);
-  let hasWorkingImage = hasImage && imageLoadingStatus !== 'error';
 
   let whatToRender: AvatarRenderType = 'ICON';
-  if (hasWorkingImage) {
-    whatToRender = 'IMAGE';
-  } else if (typeof renderFallback === 'function') {
-    whatToRender = 'FALLBACK';
-  } else if (hasImage && alt !== undefined) {
-    whatToRender = 'ALT_ABBR';
+  if (hasImage) {
+    if (imageLoadingStatus === 'loading') {
+      whatToRender = isFunction(renderLoading) ? 'LOADING' : 'IMAGE';
+    } else if (imageLoadingStatus === 'error') {
+      whatToRender = isFunction(renderFallback)
+        ? 'FALLBACK'
+        : alt !== undefined
+        ? 'ALT_ABBR'
+        : 'ICON';
+    } else {
+      whatToRender = 'IMAGE';
+    }
   } else {
-    whatToRender = 'ICON';
+    whatToRender = isFunction(renderFallback) ? 'FALLBACK' : 'ICON';
   }
+
+  console.log(whatToRender);
 
   const ctx = React.useMemo(() => {
     return {
@@ -67,7 +76,11 @@ const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(functio
   return (
     <AvatarContext.Provider value={ctx}>
       <Comp {...interopDataAttrObj('AvatarRoot')} {...avatarProps} ref={forwardedRef}>
-        {whatToRender === 'FALLBACK' ? (renderFallback as Function)() : children}
+        {whatToRender === 'FALLBACK'
+          ? (renderFallback as Function)()
+          : whatToRender === 'LOADING'
+          ? (renderLoading as Function)()
+          : children}
       </Comp>
     </AvatarContext.Provider>
   );
@@ -191,16 +204,21 @@ function useImageLoadingStatus(src?: string) {
       if (!isMounted) return;
       setLoadingStatus('error');
     };
+    image.oninvalid = () => {
+      console.log('inavlid');
+    };
 
     return () => {
       isMounted = false;
     };
   }, [src]);
 
+  console.log(loadingStatus);
+
   return loadingStatus;
 }
 
-const styles = {
+const styles: { [part: string]: React.CSSProperties } = {
   root: {
     ...cssReset(CONTAINER_DEFAULT_TAG),
     display: 'inline-flex',
