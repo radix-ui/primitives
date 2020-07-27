@@ -153,7 +153,7 @@ const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonPro
         {...buttonProps}
         data-part-id="header"
         ref={composedRefs}
-        aria-disabled={itemContext.isOpen}
+        aria-disabled={itemContext.isOpen || undefined}
         id={itemContext.buttonId}
       />
     );
