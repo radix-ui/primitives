@@ -24,11 +24,11 @@ Arrow.defaultProps = {
   height: 5,
 };
 
-const style = {
+const styles = {
   arrow: {
     ...cssReset('svg'),
   },
 };
 
-export { Arrow, style };
+export { Arrow, styles };
 export type { ArrowProps };
