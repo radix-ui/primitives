@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
 
@@ -22,7 +22,7 @@ const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
 
 VisuallyHidden.displayName = 'VisuallyHidden';
 
-const styles: { [part in VisuallyHiddenParts]?: React.CSSProperties } = {
+const styles: PrimitiveStyles = {
   visuallyHidden: {
     // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
     position: 'absolute',

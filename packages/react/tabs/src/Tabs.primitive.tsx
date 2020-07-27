@@ -20,6 +20,7 @@ import {
   useId,
   useRovingTabIndex,
   ForwardRefExoticComponentWithAs,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { cssReset, interopDataAttrObj, makeId } from '@interop-ui/utils';
 
@@ -263,7 +264,7 @@ TabsPanel.displayName = 'Tabs.Panel';
  * Styles
  * -----------------------------------------------------------------------------------------------*/
 
-const styles = {
+const styles: PrimitiveStyles = {
   tabList: {
     ...cssReset(TABLIST_DEFAULT_TAG),
     flexShrink: 0,

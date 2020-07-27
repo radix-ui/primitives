@@ -6,9 +6,13 @@ export default { title: 'Avatar' };
 export function Basic() {
   return (
     <div>
-      <Avatar.Root alt="John Smith" src="https://picsum.photos/400/400" style={avatarStyles.root}>
-        <Avatar.Image style={avatarStyles.image} />
-        <Avatar.Abbr style={avatarStyles.abbr} />
+      <Avatar.Root
+        alt="John Smith"
+        src="https://picsum.photos/400/400"
+        style={avatarStyles.root || {}}
+      >
+        <Avatar.Image style={avatarStyles.image || {}} />
+        <Avatar.Abbr style={avatarStyles.abbr || {}} />
       </Avatar.Root>
     </div>
   );
@@ -20,11 +24,11 @@ export function BrokenLink() {
       <Avatar.Root
         alt="John Smith"
         src="https://broken.link.com/broken-pic.jpg"
-        style={avatarStyles.root}
+        style={avatarStyles.root || {}}
         renderLoading={() => <span style={{ color: 'red' }}>Loading lalalala</span>}
       >
-        <Avatar.Image style={avatarStyles.image} />
-        <Avatar.Abbr style={avatarStyles.abbr} />
+        <Avatar.Image style={avatarStyles.image || {}} />
+        <Avatar.Abbr style={avatarStyles.abbr || {}} />
       </Avatar.Root>
     </div>
   );

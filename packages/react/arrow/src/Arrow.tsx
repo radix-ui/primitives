@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { PrimitiveStyles } from '@interop-ui/react-utils';
 
 type ArrowDOMProps = React.ComponentPropsWithRef<'svg'>;
 type ArrowProps = ArrowDOMProps;
@@ -24,7 +25,7 @@ Arrow.defaultProps = {
   height: 5,
 };
 
-const styles = {
+const styles: PrimitiveStyles = {
   arrow: {
     ...cssReset('svg'),
   },

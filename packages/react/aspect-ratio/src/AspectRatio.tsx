@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const WRAPPER_DEFAULT_TAG = 'div';
 
@@ -70,7 +70,7 @@ interface AspectRatioStaticProps {
   Inner: typeof AspectRatioInner;
 }
 
-const styles: { [part: string]: React.CSSProperties } = {
+const styles: PrimitiveStyles = {
   root: {
     ...cssReset(WRAPPER_DEFAULT_TAG),
     position: 'relative',

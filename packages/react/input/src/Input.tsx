@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'input';
 
@@ -15,7 +15,7 @@ const Input = forwardRef<typeof DEFAULT_TAG, InputProps>(function Input(props, f
 
 Input.displayName = 'Input';
 
-const styles = {
+const styles: PrimitiveStyles = {
   input: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',

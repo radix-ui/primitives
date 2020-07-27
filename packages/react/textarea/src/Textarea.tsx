@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'textarea';
 
@@ -18,7 +18,7 @@ const Textarea = forwardRef<typeof DEFAULT_TAG, TextareaProps>(function Textarea
 
 Textarea.displayName = 'Textarea';
 
-const styles = {
+const styles: PrimitiveStyles = {
   box: {
     ...cssReset(DEFAULT_TAG),
     width: '100%',

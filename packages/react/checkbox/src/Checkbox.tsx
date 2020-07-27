@@ -5,6 +5,7 @@ import {
   forwardRef,
   useComposedRefs,
   useCallbackRef,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
@@ -284,7 +285,7 @@ Checkbox.Input = CheckboxInput;
 Checkbox.Box = CheckboxBox;
 Checkbox.Icon = CheckboxIcon;
 
-const styles = {
+const styles: PrimitiveStyles = {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-block',

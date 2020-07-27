@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'div';
 
@@ -15,7 +15,7 @@ const Card = forwardRef<typeof DEFAULT_TAG, CardProps>(function Card(props, forw
 
 Card.displayName = 'Card';
 
-const styles = {
+const styles: PrimitiveStyles = {
   card: {
     ...cssReset(DEFAULT_TAG),
   },

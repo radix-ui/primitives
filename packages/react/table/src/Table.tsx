@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Table
@@ -159,7 +159,7 @@ Table.Row = TableRow;
 Table.SummaryCell = TableSummaryCell;
 Table.Cell = TableCell;
 
-const styles = {
+const styles: PrimitiveStyles = {
   table: {
     ...cssReset(TABLE_DEFAULT_TAG),
     borderCollapse: 'collapse',

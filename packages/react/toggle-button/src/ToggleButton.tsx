@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, useControlledState, composeEventHandlers } from '@interop-ui/react-utils';
+import {
+  forwardRef,
+  useControlledState,
+  composeEventHandlers,
+  PrimitiveStyles,
+} from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'button';
 
@@ -51,7 +56,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
 ToggleButton.displayName = 'ToggleButton';
 
-const styles = {
+const styles: PrimitiveStyles = {
   toggleButton: {
     ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',

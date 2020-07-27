@@ -7,6 +7,7 @@ import {
   useComposedRefs,
   useControlledState,
   useId,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { Collapsible, styles as collapsibleStyles } from '@interop-ui/react-collapsible';
 
@@ -335,7 +336,7 @@ interface AccordionStaticProps {
   Panel: typeof AccordionPanel;
 }
 
-const styles = {
+const styles: PrimitiveStyles = {
   accordion: {
     ...cssReset(ACCORDION_DEFAULT_TAG),
   },

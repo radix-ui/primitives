@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
 import { cssReset, interopDataAttrObj, isFunction } from '@interop-ui/utils';
-import { createContext, forwardRef } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const CONTAINER_DEFAULT_TAG = 'span';
 
@@ -218,7 +218,7 @@ function useImageLoadingStatus(src?: string) {
   return loadingStatus;
 }
 
-const styles: { [part: string]: React.CSSProperties } = {
+const styles: PrimitiveStyles = {
   root: {
     ...cssReset(CONTAINER_DEFAULT_TAG),
     display: 'inline-flex',

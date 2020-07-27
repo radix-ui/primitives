@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { cssReset, interopDataAttr, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 type RegionType = 'polite' | 'assertive';
 
@@ -67,7 +67,7 @@ const Alert = forwardRef<typeof ALERT_DEFAULT_TAG, AlertProps>(function Alert(pr
 
 Alert.displayName = 'Alert';
 
-const styles = {
+const styles: PrimitiveStyles = {
   alert: {
     ...cssReset(ALERT_DEFAULT_TAG),
   },

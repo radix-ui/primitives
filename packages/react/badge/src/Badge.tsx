@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
 
@@ -15,7 +15,7 @@ const Badge = forwardRef<typeof DEFAULT_TAG, BadgeProps>(function Badge(props, f
 
 Badge.displayName = 'Badge';
 
-const styles = {
+const styles: PrimitiveStyles = {
   badge: {
     ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',

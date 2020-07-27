@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
 
@@ -32,7 +32,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
 
 AccessibleIcon.displayName = 'AccessibleIcon';
 
-const styles = {
+const styles: PrimitiveStyles = {
   accessibleIcon: {
     ...cssReset(DEFAULT_TAG),
   },
