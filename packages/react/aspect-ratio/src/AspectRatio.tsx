@@ -8,8 +8,8 @@ type AspectRatioDOMProps = React.ComponentPropsWithoutRef<typeof WRAPPER_DEFAULT
 type AspectRatioOwnProps = { ratio?: string };
 type AspectRatioProps = AspectRatioDOMProps & AspectRatioOwnProps;
 
-const AspectRatioContainer = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps>(
-  function AspectRatioContainer(props, forwardedRef) {
+const AspectRatioRoot = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps>(
+  function AspectRatioRoot(props, forwardedRef) {
     const { as: Comp = WRAPPER_DEFAULT_TAG, ratio = '1:1', style, ...aspectRatioProps } = props;
 
     const [n1, n2] = ratio.split(':');
@@ -28,7 +28,7 @@ const AspectRatioContainer = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioP
   }
 );
 
-AspectRatioContainer.displayName = 'AspectRatio.Container';
+AspectRatioRoot.displayName = 'AspectRatio.Root';
 
 const INNER_DEFAULT_TAG = 'div';
 
@@ -54,24 +54,24 @@ const AspectRatio = forwardRef<
   const { children, ...aspectRatioProps } = props;
 
   return (
-    <AspectRatioContainer {...aspectRatioProps} ref={forwardedRef}>
+    <AspectRatioRoot {...aspectRatioProps} ref={forwardedRef}>
       <AspectRatioInner>{children}</AspectRatioInner>
-    </AspectRatioContainer>
+    </AspectRatioRoot>
   );
 });
 
 AspectRatio.displayName = 'AspectRatio';
 
-AspectRatio.Container = AspectRatioContainer;
+AspectRatio.Root = AspectRatioRoot;
 AspectRatio.Inner = AspectRatioInner;
 
 interface AspectRatioStaticProps {
-  Container: typeof AspectRatioContainer;
+  Root: typeof AspectRatioRoot;
   Inner: typeof AspectRatioInner;
 }
 
-const styles = {
-  container: {
+const styles: { [part: string]: React.CSSProperties } = {
+  root: {
     ...cssReset(WRAPPER_DEFAULT_TAG),
     position: 'relative',
     width: '100%',
