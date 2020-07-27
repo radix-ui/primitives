@@ -58,14 +58,26 @@ export const DynamicInsertion = () => {
       </button>
 
       <List>
-        <Item>Red</Item>
-        {hasTomato ? <Tomato /> : null}
-        <Item disabled>Green</Item>
-        <Item>Blue</Item>
+        <MemoItems hasTomato={hasTomato} />
       </List>
     </>
   );
 };
+
+function WrappedItems({ hasTomato }: any) {
+  return (
+    <>
+      <MemoItem>Red</MemoItem>
+      {hasTomato ? <Tomato /> : null}
+      <MemoItem disabled>Green</MemoItem>
+      <MemoItem>Blue</MemoItem>
+    </>
+  );
+}
+
+// Ensure that our implementation doesn't break if the item list/item is memoized
+const MemoItem = React.memo(Item);
+const MemoItems = React.memo(WrappedItems);
 
 export const WithChangingItem = () => {
   const [isDisabled, setIsDisabled] = React.useState(false);
