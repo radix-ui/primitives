@@ -20,17 +20,16 @@ const useLiveRegion = ({ type, isAtomic }: { type: RegionType; isAtomic: boolean
     if (!element) {
       element = document.createElement('div');
       element.setAttribute(interopAttr, '');
-      element.setAttribute('aria-live', type);
-      element.setAttribute('aria-atomic', String(isAtomic));
-      element.setAttribute('role', ROLES[type]);
-
       element.setAttribute(
         'style',
         'position: absolute; top: -1px; width: 1px; height: 1px; overflow: hidden;'
       );
-
       document.body.appendChild(element);
     }
+
+    element.setAttribute('aria-live', type);
+    element.setAttribute('aria-atomic', String(isAtomic));
+    element.setAttribute('role', ROLES[type]);
 
     const regionElement = element as HTMLElement;
     setRegion(regionElement);
