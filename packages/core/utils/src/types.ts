@@ -84,3 +84,7 @@ export type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
  */
 export type ElementTagNameMap = HTMLElementTagNameMap &
   Pick<SVGElementTagNameMap, Exclude<keyof SVGElementTagNameMap, keyof HTMLElementTagNameMap>>;
+
+export type ValueOf<T> = T[keyof T];
+
+export type PointerType = 'mouse' | 'pen' | 'touch';

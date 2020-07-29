@@ -8,6 +8,7 @@ import {
   useCallbackRef,
   useComposedRefs,
   usePrevious,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { useSize } from '@interop-ui/react-use-size';
 
@@ -570,7 +571,7 @@ interface SliderStaticProps {
   Thumb: typeof SliderThumb;
 }
 
-const styles = {
+const styles: PrimitiveStyles = {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     position: 'relative',
@@ -616,16 +617,16 @@ const styles = {
     outline: 'none',
 
     // Add recommended target size regardless of styled size
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      zIndex: -1,
-      width: 44,
-      height: 44,
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-    },
+    // '&::before': {
+    //   content: '""',
+    //   position: 'absolute',
+    //   zIndex: -1,
+    //   width: 44,
+    //   height: 44,
+    //   top: '50%',
+    //   left: '50%',
+    //   transform: 'translate(-50%, -50%)',
+    // },
   },
 };
 

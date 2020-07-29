@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { PrimitiveStyles } from '@interop-ui/react-utils';
 
 type ImageDOMProps = React.ComponentPropsWithRef<'img'>;
 type ImageOwnProps = {};
@@ -12,7 +13,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Image(prop
 
 Image.displayName = 'Image';
 
-const styles = {
+const styles: PrimitiveStyles = {
   image: {
     ...cssReset('img'),
     display: 'block',

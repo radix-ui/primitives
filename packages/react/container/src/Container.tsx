@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
 
@@ -18,7 +18,7 @@ const Container = forwardRef<typeof DEFAULT_TAG, ContainerProps>(function Contai
 
 Container.displayName = 'Container';
 
-const styles = {
+const styles: PrimitiveStyles = {
   container: {
     ...cssReset(DEFAULT_TAG),
     marginLeft: 'auto',

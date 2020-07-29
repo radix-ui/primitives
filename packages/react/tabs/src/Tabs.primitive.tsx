@@ -10,17 +10,19 @@
 
 import * as React from 'react';
 import {
+  composeEventHandlers,
   createContext,
   forwardRef,
   RovingTabIndexProvider,
   useAccessibleMouseDown,
+  useComposedRefs,
   useControlledState,
   useId,
   useRovingTabIndex,
   ForwardRefExoticComponentWithAs,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { cssReset, interopDataAttrObj, makeId } from '@interop-ui/utils';
-import { composeEventHandlers, useComposedRefs } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -262,7 +264,7 @@ TabsPanel.displayName = 'Tabs.Panel';
  * Styles
  * -----------------------------------------------------------------------------------------------*/
 
-const styles = {
+const styles: PrimitiveStyles = {
   tabList: {
     ...cssReset(TABLIST_DEFAULT_TAG),
     flexShrink: 0,

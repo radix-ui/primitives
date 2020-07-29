@@ -6,6 +6,7 @@ import {
   useId,
   composeEventHandlers,
   useControlledState,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -161,7 +162,7 @@ Collapsible.Content = CollapsibleContent;
 
 Collapsible.displayName = 'Collapsible';
 
-const styles = {
+const styles: PrimitiveStyles = {
   collapsible: {
     ...cssReset(COLLAPSIBLE_DEFAULT_TAG),
   },

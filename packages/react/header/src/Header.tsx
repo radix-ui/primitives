@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'header';
 
@@ -30,7 +30,7 @@ const Header = forwardRef<typeof DEFAULT_TAG, HeaderProps>(function Header(props
 
 Header.displayName = 'Header';
 
-const styles = {
+const styles: PrimitiveStyles = {
   header: {
     ...cssReset(DEFAULT_TAG),
   },

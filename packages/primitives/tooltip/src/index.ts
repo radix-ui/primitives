@@ -1,2 +1,2 @@
-export * from './defs';
+export * from './dict';
 export * from './state';

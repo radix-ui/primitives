@@ -7,6 +7,7 @@ import {
   useComposedRefs,
   useControlledState,
   useId,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { Collapsible, styles as collapsibleStyles } from '@interop-ui/react-collapsible';
 
@@ -153,7 +154,7 @@ const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonPro
         {...buttonProps}
         data-part-id="header"
         ref={composedRefs}
-        aria-disabled={itemContext.isOpen}
+        aria-disabled={itemContext.isOpen || undefined}
         id={itemContext.buttonId}
       />
     );
@@ -335,7 +336,7 @@ interface AccordionStaticProps {
   Panel: typeof AccordionPanel;
 }
 
-const styles = {
+const styles: PrimitiveStyles = {
   accordion: {
     ...cssReset(ACCORDION_DEFAULT_TAG),
   },

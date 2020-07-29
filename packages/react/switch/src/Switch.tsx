@@ -6,6 +6,7 @@ import {
   forwardRef,
   useCallbackRef,
   useComposedRefs,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
@@ -338,7 +339,7 @@ interface SwitchStaticProps {
   Thumb: typeof SwitchThumb;
 }
 
-const styles = {
+const styles: PrimitiveStyles = {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-flex',

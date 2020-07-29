@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'div';
 
@@ -15,7 +15,7 @@ const Pipe = forwardRef<typeof DEFAULT_TAG, PipeProps>(function Pipe(props, forw
 
 Pipe.displayName = 'Pipe';
 
-const styles = {
+const styles: PrimitiveStyles = {
   pipe: {
     ...cssReset(DEFAULT_TAG),
   },

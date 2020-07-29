@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
 
@@ -15,7 +15,7 @@ const Box = forwardRef<typeof DEFAULT_TAG, BoxProps>(function Box(props, forward
 
 Box.displayName = 'Box';
 
-const styles = {
+const styles: PrimitiveStyles = {
   box: {
     ...cssReset(DEFAULT_TAG),
   },
