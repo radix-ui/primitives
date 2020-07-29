@@ -74,3 +74,24 @@ export function getLocale() {
         'en-US'
     : 'en-US';
 }
+
+export let cache = new Map<string, Intl.Collator>();
+
+/**
+ * @see https://github.com/adobe/react-spectrum/blob/c833eea05d531c7e42e645a8daa1945c350170b0/packages/%40react-aria/i18n/src/useCollator.ts
+ */
+export function getCollator(locale: string, options?: Intl.CollatorOptions) {
+  let optString = options
+    ? Object.entries(options)
+        .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+        .join()
+    : '';
+  let cacheKey = locale + optString;
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)!;
+  }
+
+  let formatter = new Intl.Collator(locale, options);
+  cache.set(cacheKey, formatter);
+  return formatter;
+}

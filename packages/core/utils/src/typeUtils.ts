@@ -16,6 +16,10 @@ export function isFunction(value: any): value is Function {
   return !!(value && {}.toString.call(value) === '[object Function]');
 }
 
+export function isNull(value: any): value is null {
+  return value === null;
+}
+
 /**
  * Checks whether or not a value is a number.
  *
