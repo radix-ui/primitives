@@ -55,6 +55,7 @@
       "@interop-ui/react-checkbox": ["packages/react/checkbox/src"],
       "@interop-ui/react-code": ["packages/react/code/src"],
       "@interop-ui/react-collapsible": ["packages/react/collapsible/src"],
+      "@interop-ui/react-collection": ["packages/react/collection/src"],
       "@interop-ui/react-combobox": ["packages/react/combobox/src"],
       "@interop-ui/react-container": ["packages/react/container/src"],
       "@interop-ui/react-debug-context": ["packages/react/debug-context/src"],
