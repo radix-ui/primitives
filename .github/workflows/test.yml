@@ -1,4 +1,4 @@
-name: Coverage
+name: Test
 
 on: [push, pull_request]
 

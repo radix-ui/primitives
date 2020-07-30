@@ -12,9 +12,6 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
     '\\$test(.*)$': '<rootDir>/test/$1',
-    '@interop-ui/react-(.*)': '<rootDir>/packages/react/$1/src',
-    '@interop-ui/primitive-(.*)': '<rootDir>/packages/primitives/$1/src',
-    '@interop-ui/(.*)': '<rootDir>/packages/core/$1/src',
   },
   setupFilesAfterEnv: ['<rootDir>/test/setupTests.ts'],
   testMatch: ['<rootDir>/**/*.(spec|test).{ts,tsx,js,jsx}'],
