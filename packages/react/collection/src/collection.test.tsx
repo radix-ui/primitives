@@ -1,213 +1,160 @@
 import * as React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { act, create } from 'react-test-renderer';
 import { createCollection } from './collection';
 
-describe('given a collection', () => {
-  it('should index collection items properly', () => {
-    const CollectionTest = () => (
-      <List>
-        <Item>Red</Item>
-        <Item>Green</Item>
-        <Item>Blue</Item>
-      </List>
-    );
-    const rendered = render(<CollectionTest />);
+const defaultItems = [{ itemRef: 'one' }, { itemRef: 'two', disabled: true }, { itemRef: 'three' }];
 
-    expect(rendered.getByRole('list').textContent).toBe('Red(0)Green(1)Blue(2)');
+describe('given collection items', () => {
+  let collection: ReturnType<typeof setup>;
+
+  beforeAll(() => {
+    collection = setup(defaultItems);
   });
 
-  it('should not be disturbed by arbitrary elements', () => {
-    const CollectionTest = () => (
-      <List>
-        <li>test</li>
-        <Item>Red</Item>
-        <li>test</li>
-        <Item>Green</Item>
-        <li>test</li>
-        <Item>Blue</Item>
-        <li>test</li>
-      </List>
-    );
-    const rendered = render(<CollectionTest />);
-
-    expect(rendered.getByRole('list').textContent?.replace(/test/g, '')).toBe(
-      'Red(0)Green(1)Blue(2)'
-    );
+  it('should have the correct number of items in the collection context', () => {
+    expect(collection.context.length).toBe(defaultItems.length);
   });
 
-  it('should support arbitrary wrapped items', () => {
-    const Tomato = () => <Item>Tomato</Item>;
-    const CollectionTest = () => (
-      <List>
-        <Item>Red</Item>
-        <Item>Green</Item>
-        <Item>Blue</Item>
-        <Tomato />
-      </List>
-    );
-    const rendered = render(<CollectionTest />);
-
-    expect(rendered.getByRole('list').textContent).toBe('Red(0)Green(1)Blue(2)Tomato(3)');
+  it('should have the correct indexes in each item context', () => {
+    const isPass = hasCorrectIndexesForItems(defaultItems, collection.itemContexts);
+    expect(isPass).toBe(true);
   });
 
-  it('should support items in a Fragment', () => {
-    const CollectionTest = () => {
-      const countries = (
-        <>
-          <Item>France</Item>
-          <Item>UK</Item>
-          <Item>Spain</Item>
-        </>
-      );
-      return <List>{countries}</List>;
-    };
-    const rendered = render(<CollectionTest />);
-
-    expect(rendered.getByRole('list').textContent).toBe('France(0)UK(1)Spain(2)');
+  it('should maintain item state in the collection context', () => {
+    expect(collection.context[1].disabled).toBe(true);
   });
 
-  it('should update when items are added', () => {
-    const Tomato = () => <Item>Tomato</Item>;
-    const CollectionTest = () => {
-      const [hasTomato, setHasTomato] = React.useState(false);
-      return (
-        <>
-          <button onClick={() => setHasTomato(true)}>Add Tomato</button>
+  describe('when updating item state', () => {
+    beforeAll(() => {
+      const items = [...defaultItems];
+      items[1].disabled = false;
+      collection.update(items);
+    });
 
-          <List>
-            <Item>Red</Item>
-            {hasTomato ? <Tomato /> : null}
-            <Item>Green</Item>
-            <Item>Blue</Item>
-          </List>
-        </>
-      );
-    };
-    const rendered = render(<CollectionTest />);
-
-    expect(rendered.getByRole('list').textContent).toBe('Red(0)Green(1)Blue(2)');
-
-    fireEvent.click(rendered.getByText('Add Tomato'));
-
-    expect(rendered.getByRole('list').textContent).toBe('Red(0)Tomato(1)Green(2)Blue(3)');
+    it('should reflect the update in the collection context', () => {
+      expect(collection.context[1].disabled).toBe(false);
+    });
   });
 
-  it('should update when items are removed', () => {
-    const Tomato = () => <Item>Tomato</Item>;
-    const CollectionTest = () => {
-      const [hasTomato, setHasTomato] = React.useState(true);
-      return (
-        <>
-          <button onClick={() => setHasTomato(false)}>Remove Tomato</button>
+  describe('when unmounting an item', () => {
+    let itemsWithoutOne = defaultItems.filter((item) => item.itemRef !== 'one');
 
-          <List>
-            <Item>Red</Item>
-            {hasTomato ? <Tomato /> : null}
-            <Item>Green</Item>
-            <Item>Blue</Item>
-          </List>
-        </>
-      );
-    };
-    const rendered = render(<CollectionTest />);
+    beforeAll(() => {
+      collection.update(itemsWithoutOne);
+    });
 
-    expect(rendered.getByRole('list').textContent).toBe('Red(0)Tomato(1)Green(2)Blue(3)');
+    it('should remove the item from the collection context', () => {
+      const hasOne = collection.context.some((item) => item.ref.current === 'one');
+      expect(hasOne).toBe(false);
+    });
 
-    fireEvent.click(rendered.getByText('Remove Tomato'));
-
-    expect(rendered.getByRole('list').textContent).toBe('Red(0)Green(1)Blue(2)');
+    it('should update indexes to reflect the removal', () => {
+      const isPass = hasCorrectIndexesForItems(itemsWithoutOne, collection.itemContexts);
+      expect(isPass).toBe(true);
+    });
   });
 
-  it('should update when items are changing', () => {
-    const CollectionTest = () => {
-      const [isDisabled, setIsDisabled] = React.useState(true);
-      return (
-        <>
-          <button onClick={() => setIsDisabled(false)}>Enable Green</button>
+  describe('when mounting an item', () => {
+    let itemsWithNew = [{ itemRef: 'new' }, ...defaultItems];
 
-          <List>
-            <Item>Red</Item>
-            <Item disabled={isDisabled}>Green</Item>
-            <Item>Blue</Item>
+    beforeAll(() => {
+      collection.update(itemsWithNew);
+    });
 
-            <ItemsLog />
-          </List>
-        </>
-      );
-    };
-    const rendered = render(<CollectionTest />);
+    it('should add the item to the collection context', () => {
+      const hasNew = collection.context.some((item) => item.ref.current === 'new');
+      expect(hasNew).toBe(true);
+    });
 
-    expect(rendered.getByTestId('log').textContent).toBe(`[
-  {
-    "element": "<li>Red</li>",
-    "disabled": false
-  },
-  {
-    "element": "<li>Green</li>",
-    "disabled": true
-  },
-  {
-    "element": "<li>Blue</li>",
-    "disabled": false
-  }
-]`);
-
-    fireEvent.click(rendered.getByText('Enable Green'));
-
-    expect(rendered.getByTestId('log').textContent).toBe(`[
-  {
-    "element": "<li>Red</li>",
-    "disabled": false
-  },
-  {
-    "element": "<li>Green</li>",
-    "disabled": false
-  },
-  {
-    "element": "<li>Blue</li>",
-    "disabled": false
-  }
-]`);
+    it('should update indexes to reflect the addition', () => {
+      const isPass = hasCorrectIndexesForItems(itemsWithNew, collection.itemContexts);
+      expect(isPass).toBe(true);
+    });
   });
 });
 
-/* -------------------------------------------------------------------------------------------------
- * List implementation
- * -----------------------------------------------------------------------------------------------*/
+describe("given children that aren't collection items", () => {
+  let collection: ReturnType<typeof setup>;
+
+  beforeAll(() => {
+    const items = defaultItems.reduce(
+      (acc, item) => [...acc, item, { itemRef: null }],
+      [] as TestItem[]
+    );
+
+    collection = setup(items);
+  });
+
+  it('should only maintain collection items in collection context', () => {
+    expect(collection.context.length).toBe(defaultItems.length);
+  });
+
+  it('should have the correct indexes in each item context', () => {
+    const isPass = hasCorrectIndexesForItems(defaultItems, collection.itemContexts);
+    expect(isPass).toBe(true);
+  });
+});
+
+type ElementRef = string;
+type ItemState = { disabled?: boolean };
 
 const { createCollectionComponent, useCollectionItem, useCollectionItems } = createCollection<
-  HTMLLIElement,
-  { disabled: boolean }
->('List');
+  ElementRef,
+  ItemState
+>('Collection');
 
-type ListProps = {
-  children: React.ReactNode;
-};
+type TestItem = { itemRef: ElementRef | null } & ItemState;
+type CollectionItemContext = ReturnType<typeof useCollectionItem>;
 
-const List = createCollectionComponent(function List({ children }: ListProps) {
-  return <ul>{children}</ul>;
-});
+function setup(items: TestItem[]) {
+  let testRenderer: ReturnType<typeof create>;
+  let context: ReturnType<typeof useCollectionItems> = [];
+  let itemContexts: CollectionItemContext[] = [];
 
-type ItemProps = {
-  children: React.ReactNode;
-  disabled?: boolean;
-  index?: number;
-};
+  const List = createCollectionComponent(({ items }: { items: TestItem[] }) => {
+    context = useCollectionItems();
+    itemContexts = [];
+    return (
+      <>
+        {items.map(({ itemRef, ...props }, index) => {
+          return itemRef ? <Item key={itemRef} itemRef={itemRef} {...props} /> : <i key={index} />;
+        })}
+      </>
+    );
+  });
 
-function Item({ children, disabled = false }: ItemProps) {
-  const { ref, index } = useCollectionItem({ disabled });
-  return (
-    <li ref={ref} data-disabled={disabled}>
-      {children}({index})
-    </li>
-  );
+  const Item = ({ itemRef, disabled }: { itemRef: ElementRef } & ItemState) => {
+    const item = useCollectionItem({ disabled });
+    item.ref.current = itemRef;
+    itemContexts = [...itemContexts, item];
+    return null;
+  };
+
+  act(() => {
+    testRenderer = create(<List items={items} />);
+  });
+
+  const update = (items: TestItem[]) => {
+    act(() => testRenderer.update(<List items={items} />));
+  };
+
+  return {
+    update,
+    get context() {
+      return context;
+    },
+    get itemContexts() {
+      return itemContexts;
+    },
+  };
 }
 
-function ItemsLog() {
-  const items = useCollectionItems();
-  const loggableItems = items.map(({ ref, ...rest }) => ({
-    element: `<li>${ref.current?.textContent?.split('(')[0]}</li>`,
-    ...rest,
-  }));
-  return <pre data-testid="log">{JSON.stringify(loggableItems, null, 2)}</pre>;
-}
+const hasCorrectIndexesForItems = (
+  testItems: TestItem[],
+  itemContexts: CollectionItemContext[]
+) => {
+  return testItems.every((testItem, index) => {
+    const item = itemContexts[index];
+    return item.index === index && item.ref.current === testItem.itemRef;
+  });
+};

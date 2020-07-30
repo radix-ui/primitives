@@ -130,7 +130,6 @@ const List = createCollectionComponent(function List({ children }: ListProps) {
   return (
     <div style={{ display: 'flex' }}>
       <ul style={{ width: 200 }}>{children}</ul>
-      <ItemsLog />
     </div>
   );
 });
@@ -146,22 +145,6 @@ function Item({ children, disabled = false, ...props }: ItemProps) {
     <li ref={ref} {...props} style={{ ...props.style, opacity: disabled ? 0.3 : undefined }}>
       {index} — {children}
     </li>
-  );
-}
-
-function ItemsLog() {
-  const items = useCollectionItems();
-  const loggableItems = items.map(({ ref, ...rest }) => ({
-    element: `<li>${ref.current?.textContent?.split('—')[1].trim()}</li>`,
-    ...rest,
-  }));
-  return (
-    <div>
-      <p>Internal data structure ↓</p>
-      <pre style={{ backgroundColor: '#f0f0f0', padding: 10, borderRadius: 5 }}>
-        {JSON.stringify(loggableItems, null, 2)}
-      </pre>
-    </div>
   );
 }
 
@@ -200,6 +183,7 @@ const Tabs = createTabsCollectionComponent(function Tabs({ children }) {
 function TabList({ children }: any) {
   return <ul>{children}</ul>;
 }
+
 function Tab({ children }: any) {
   const { setSelectedIndex } = React.useContext(TabsContext);
   const { ref, index } = useTab();

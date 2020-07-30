@@ -8,7 +8,7 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
   type Item<EE = E> = { ref: React.RefObject<EE> } & S;
 
   // if no element type was provided, fallback to the same type as React.useRef(null)
-  type ItemElementRef = E extends void ? React.MutableRefObject<null> : React.RefObject<E>;
+  type ItemElementRef = React.MutableRefObject<E extends void ? null : E>;
 
   type CollectionContextValue = {
     items: Item[];
