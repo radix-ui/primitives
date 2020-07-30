@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint --ext .js,.ts,.tsx .",
-    "test": "cross-env CI=true ts-node --transpile-only ./scripts/test packages",
+    "test": "cross-env ts-node --transpile-only ./scripts/test packages",
+    "test:ci": "CI=true yarn test",
     "build": "lerna run build --stream --ignore @interop-ui/docs",
     "clean": "lerna run clean --stream",
     "new-component": "cross-env CI=true ts-node ./scripts/new-component",
