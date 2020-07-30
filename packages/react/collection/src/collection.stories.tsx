@@ -115,7 +115,7 @@ export const BasicTabs = () => {
  * List implementation
  * -----------------------------------------------------------------------------------------------*/
 
-const { createCollectionComponent, useCollectionItem, useCollectionItems } = createCollection<
+const [createListCollection, useListItem, useList] = createCollection<
   HTMLLIElement,
   { disabled: boolean }
 >('List');
@@ -124,8 +124,8 @@ type ListProps = {
   children: React.ReactNode;
 };
 
-const List = createCollectionComponent(function List({ children }: ListProps) {
-  const items = useCollectionItems();
+const List = createListCollection(function List({ children }: ListProps) {
+  const items = useList();
   console.log({ items });
   return (
     <div style={{ display: 'flex' }}>
@@ -140,7 +140,7 @@ type ItemProps = React.ComponentPropsWithRef<'li'> & {
 };
 
 function Item({ children, disabled = false, ...props }: ItemProps) {
-  const { ref, index } = useCollectionItem({ disabled });
+  const { ref, index } = useListItem({ disabled });
   return (
     <li ref={ref} {...props} style={{ ...props.style, opacity: disabled ? 0.3 : undefined }}>
       {index} — {children}
@@ -152,24 +152,15 @@ function Item({ children, disabled = false, ...props }: ItemProps) {
  * Tabs implementation
  * -----------------------------------------------------------------------------------------------*/
 
-const {
-  createCollectionComponent: createTabsCollectionComponent,
-  useCollectionItem: useTab,
-  useCollectionItems: useTabs,
-} = createCollection('Tabs');
-
-const {
-  createCollectionComponent: createPanelsCollectionComponent,
-  useCollectionItem: usePanel,
-  useCollectionItems: usePanels,
-} = createCollection('Panels');
+const [createTabsCollection, useTabsItem, useTabs] = createCollection('Tabs');
+const [createPanelsCollection, usePanelsItem, usePanels] = createCollection('Panels');
 
 const TabsContext = React.createContext({
   selectedIndex: 0,
   setSelectedIndex: (index: number) => {},
 });
 
-const Tabs = createTabsCollectionComponent(function Tabs({ children }) {
+const Tabs = createTabsCollection(function Tabs({ children }) {
   const tabs = useTabs();
   console.log({ tabs });
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -186,7 +177,7 @@ function TabList({ children }: any) {
 
 function Tab({ children }: any) {
   const { setSelectedIndex } = React.useContext(TabsContext);
-  const { ref, index } = useTab();
+  const { ref, index } = useTabsItem();
   return (
     <li ref={ref}>
       {index} — <button onClick={() => setSelectedIndex(index)}>{children}</button>
@@ -194,7 +185,7 @@ function Tab({ children }: any) {
   );
 }
 
-const TabPanels = createPanelsCollectionComponent(function TabPanels({ children }: any) {
+const TabPanels = createPanelsCollection(function TabPanels({ children }: any) {
   const panels = usePanels();
   console.log({ panels });
   return children;
@@ -202,7 +193,7 @@ const TabPanels = createPanelsCollectionComponent(function TabPanels({ children 
 
 function Panel({ children }: any) {
   const { selectedIndex } = React.useContext(TabsContext);
-  const { ref, index } = usePanel();
+  const { ref, index } = usePanelsItem();
   if (index !== selectedIndex) return null;
   return (
     <div ref={ref}>

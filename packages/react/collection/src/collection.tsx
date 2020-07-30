@@ -117,7 +117,11 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
     return (useCollectionContext('useCollectionItems').items as unknown) as Item<FallbackElement>[];
   }
 
-  return { createCollectionComponent, useCollectionItem, useCollectionItems };
+  return [createCollectionComponent, useCollectionItem, useCollectionItems] as [
+    typeof createCollectionComponent,
+    typeof useCollectionItem,
+    typeof useCollectionItems
+  ];
 }
 
 export { createCollection };
