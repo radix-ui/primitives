@@ -4,9 +4,10 @@ import { useSize } from '@interop-ui/react-use-size';
 import {
   createContext,
   forwardRef,
+  PrimitiveStyles,
   useCallbackRef,
   useComposedRefs,
-  PrimitiveStyles,
+  useHasContext,
 } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
@@ -339,6 +340,8 @@ interface SwitchStaticProps {
   Thumb: typeof SwitchThumb;
 }
 
+const useHasSwitchContext = () => useHasContext(SwitchContext);
+
 const styles: PrimitiveStyles = {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
@@ -369,5 +372,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Switch, styles };
+export { Switch, styles, useHasSwitchContext };
 export type { SwitchRootProps, SwitchInputProps, SwitchBoxProps, SwitchThumbProps, SwitchProps };

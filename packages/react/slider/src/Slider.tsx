@@ -5,10 +5,11 @@ import {
   composeEventHandlers,
   createContext,
   forwardRef,
+  PrimitiveStyles,
   useCallbackRef,
   useComposedRefs,
+  useHasContext,
   usePrevious,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { useSize } from '@interop-ui/react-use-size';
 
@@ -571,6 +572,8 @@ interface SliderStaticProps {
   Thumb: typeof SliderThumb;
 }
 
+const useHasSliderContext = () => useHasContext(SliderContext);
+
 const styles: PrimitiveStyles = {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
@@ -630,6 +633,7 @@ const styles: PrimitiveStyles = {
   },
 };
 
+export { Slider, styles, useHasSliderContext };
 export type {
   SliderRootProps,
   SliderRangeProps,
@@ -638,7 +642,6 @@ export type {
   SliderThumbProps,
   SliderProps,
 };
-export { Slider, styles };
 
 /* -----------------------------------------------------------------------------------------------*/
 

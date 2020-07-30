@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type ButtonContextValue = {};
+const [ButtonContext] = createContext<ButtonContextValue>('ButtonContext', 'Button');
+
+/* -------------------------------------------------------------------------------------------------
+ * Button
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'button';
 
@@ -10,10 +21,18 @@ type ButtonProps = ButtonDOMProps & ButtonOwnProps;
 
 const Button = forwardRef<typeof DEFAULT_TAG, ButtonProps>(function Button(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...buttonProps } = props;
-  return <Comp {...interopDataAttrObj('Button')} ref={forwardedRef} {...buttonProps} />;
+  return (
+    <ButtonContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Button')} ref={forwardedRef} {...buttonProps} />
+    </ButtonContext.Provider>
+  );
 });
 
 Button.displayName = 'Button';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasButtonContext = () => useHasContext(ButtonContext);
 
 const styles: PrimitiveStyles = {
   button: {
@@ -26,5 +45,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Button, styles };
+export { Button, styles, useHasButtonContext };
 export type { ButtonProps };

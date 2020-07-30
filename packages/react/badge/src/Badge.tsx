@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type BadgeContextValue = {};
+const [BadgeContext] = createContext<BadgeContextValue>('BadgeContext', 'Badge');
+
+/* -------------------------------------------------------------------------------------------------
+ * Badge
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'span';
 
@@ -10,10 +21,18 @@ type BadgeProps = BadgeDOMProps & BadgeOwnProps;
 
 const Badge = forwardRef<typeof DEFAULT_TAG, BadgeProps>(function Badge(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...badgeProps } = props;
-  return <Comp {...interopDataAttrObj('Badge')} ref={forwardedRef} {...badgeProps} />;
+  return (
+    <BadgeContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Badge')} ref={forwardedRef} {...badgeProps} />
+    </BadgeContext.Provider>
+  );
 });
 
 Badge.displayName = 'Badge';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasBadgeContext = () => useHasContext(BadgeContext);
 
 const styles: PrimitiveStyles = {
   badge: {
@@ -27,5 +46,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Badge, styles };
+export { Badge, styles, useHasBadgeContext };
 export type { BadgeProps };

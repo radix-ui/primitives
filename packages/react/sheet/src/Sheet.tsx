@@ -6,9 +6,10 @@ import { RemoveScroll } from 'react-remove-scroll';
 import {
   createContext,
   forwardRef,
+  PrimitiveStyles,
   useCallbackRef,
   useComposedRefs,
-  PrimitiveStyles,
+  useHasContext,
 } from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
@@ -289,6 +290,8 @@ interface SheetStaticProps {
   Content: typeof SheetContent;
 }
 
+const useHasSheetContext = () => useHasContext(SheetContext);
+
 const styles: PrimitiveStyles = {
   root: null,
   overlay: {
@@ -317,5 +320,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Sheet, styles };
+export { Sheet, styles, useHasSheetContext };
 export type { SheetProps, SheetRootProps, SheetOverlayProps, SheetContentProps, SheetInnerProps };

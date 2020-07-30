@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type LinkContextValue = {};
+const [LinkContext] = createContext<LinkContextValue>('LinkContext', 'Link');
+
+/* -------------------------------------------------------------------------------------------------
+ * Link
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'a';
 
@@ -10,10 +21,18 @@ type LinkProps = LinkDOMProps & LinkOwnProps;
 
 const Link = forwardRef<typeof DEFAULT_TAG, LinkProps>(function Link(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...linkProps } = props;
-  return <Comp {...interopDataAttrObj('Link')} ref={forwardedRef} {...linkProps} />;
+  return (
+    <LinkContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Link')} ref={forwardedRef} {...linkProps} />;
+    </LinkContext.Provider>
+  );
 });
 
 Link.displayName = 'Link';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasLinkContext = () => useHasContext(LinkContext);
 
 const styles: PrimitiveStyles = {
   link: {
@@ -24,5 +43,5 @@ const styles: PrimitiveStyles = {
   'link.state.active': {},
 };
 
-export { Link, styles };
+export { Link, styles, useHasLinkContext };
 export type { LinkProps };

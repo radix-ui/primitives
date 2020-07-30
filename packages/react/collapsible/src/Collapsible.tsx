@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import {
+  composeEventHandlers,
   createContext,
   forwardRef,
-  useId,
-  composeEventHandlers,
-  useControlledState,
   PrimitiveStyles,
+  useControlledState,
+  useHasContext,
+  useId,
 } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -162,6 +163,8 @@ Collapsible.Content = CollapsibleContent;
 
 Collapsible.displayName = 'Collapsible';
 
+const useHasCollapsibleContext = () => useHasContext(CollapsibleContext);
+
 const styles: PrimitiveStyles = {
   collapsible: {
     ...cssReset(COLLAPSIBLE_DEFAULT_TAG),
@@ -181,5 +184,10 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export type { CollapsibleProps, CollapsibleButtonProps, CollapsibleContentProps };
+export type {
+  CollapsibleProps,
+  CollapsibleButtonProps,
+  CollapsibleContentProps,
+  useHasCollapsibleContext,
+};
 export { Collapsible, styles };

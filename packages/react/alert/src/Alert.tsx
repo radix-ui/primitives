@@ -1,16 +1,65 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { cssReset, interopDataAttr, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
-
-type RegionType = 'polite' | 'assertive';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 const ROLES: { [key in RegionType]: string } = {
   polite: 'status',
   assertive: 'alert',
 };
 
-const useLiveRegion = ({ type, isAtomic }: { type: RegionType; isAtomic: boolean }) => {
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type AlertContextValue = {};
+const [AlertContext] = createContext<AlertContextValue>('AlertContext', 'Alert');
+
+/* -------------------------------------------------------------------------------------------------
+ * Alert
+ * -----------------------------------------------------------------------------------------------*/
+
+const ALERT_DEFAULT_TAG = 'div';
+
+type AlertDOMProps = React.ComponentPropsWithoutRef<typeof ALERT_DEFAULT_TAG>;
+type AlertOwnProps = { type?: RegionType; isAtomic?: boolean };
+type AlertProps = AlertDOMProps & AlertOwnProps;
+
+const Alert = forwardRef<typeof ALERT_DEFAULT_TAG, AlertProps>(function Alert(props, forwardedRef) {
+  const { type = 'polite', isAtomic = false, children, ...alertProps } = props;
+  const region = useLiveRegion({ type, isAtomic });
+
+  return (
+    <AlertContext.Provider value={React.useMemo(() => ({}), [])}>
+      <div {...alertProps} {...interopDataAttrObj('Alert')} ref={forwardedRef}>
+        {children}
+      </div>
+
+      {/* portal into live region for screen reader announcements */}
+      {region &&
+        ReactDOM.createPortal(<div {...interopDataAttrObj('AlertMirror')}>{children}</div>, region)}
+    </AlertContext.Provider>
+  );
+});
+
+Alert.displayName = 'Alert';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasAlertContext = () => useHasContext(AlertContext);
+
+const styles: PrimitiveStyles = {
+  alert: {
+    ...cssReset(ALERT_DEFAULT_TAG),
+  },
+};
+
+export { Alert, styles, useHasAlertContext };
+export type { AlertProps };
+
+type RegionType = 'polite' | 'assertive';
+
+function useLiveRegion({ type, isAtomic }: { type: RegionType; isAtomic: boolean }) {
   const [region, setRegion] = React.useState<HTMLElement>();
 
   React.useLayoutEffect(() => {
@@ -36,42 +85,4 @@ const useLiveRegion = ({ type, isAtomic }: { type: RegionType; isAtomic: boolean
   }, [type, isAtomic]);
 
   return region;
-};
-
-/* -------------------------------------------------------------------------------------------------
- * Alert
- * -----------------------------------------------------------------------------------------------*/
-
-const ALERT_DEFAULT_TAG = 'div';
-
-type AlertDOMProps = React.ComponentPropsWithoutRef<typeof ALERT_DEFAULT_TAG>;
-type AlertOwnProps = { type?: RegionType; isAtomic?: boolean };
-type AlertProps = AlertDOMProps & AlertOwnProps;
-
-const Alert = forwardRef<typeof ALERT_DEFAULT_TAG, AlertProps>(function Alert(props, forwardedRef) {
-  const { type = 'polite', isAtomic = false, children, ...alertProps } = props;
-  const region = useLiveRegion({ type, isAtomic });
-
-  return (
-    <>
-      <div {...alertProps} {...interopDataAttrObj('Alert')} ref={forwardedRef}>
-        {children}
-      </div>
-
-      {/* portal into live region for screen reader announcements */}
-      {region &&
-        ReactDOM.createPortal(<div {...interopDataAttrObj('AlertMirror')}>{children}</div>, region)}
-    </>
-  );
-});
-
-Alert.displayName = 'Alert';
-
-const styles: PrimitiveStyles = {
-  alert: {
-    ...cssReset(ALERT_DEFAULT_TAG),
-  },
-};
-
-export { Alert, styles };
-export type { AlertProps };
+}

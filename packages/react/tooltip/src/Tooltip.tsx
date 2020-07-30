@@ -4,12 +4,13 @@ import {
   composeEventHandlers,
   createContext,
   forwardRef,
+  PrimitiveStyles,
   useComposedRefs,
   useControlledState,
+  useHasContext,
   useId,
   usePrevious,
   useRect,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { createStateMachine, stateChart } from './machine';
 import { Popover, PopoverProps, PopoverArrowProps } from '@interop-ui/react-popover';
@@ -402,6 +403,8 @@ Tooltip.Target = TooltipTarget;
 Tooltip.Popover = TooltipPopover;
 Tooltip.Content = TooltipContent;
 
+const useHasTooltipContext = () => useHasContext(TooltipContext);
+
 const styles: PrimitiveStyles = {
   root: null,
   target: null,
@@ -422,7 +425,7 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Tooltip, styles };
+export { Tooltip, styles, useHasTooltipContext };
 export type {
   TooltipProps,
   TooltipRootProps,

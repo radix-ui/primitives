@@ -3,20 +3,21 @@ import { cssReset } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
+  ElementByTag,
   forwardRef,
   useComposedRefs,
   useControlledState,
+  useHasContext,
   useId,
   PrimitiveStyles,
 } from '@interop-ui/react-utils';
-import { Collapsible, styles as collapsibleStyles } from '@interop-ui/react-collapsible';
-
-import type {
+import {
+  Collapsible,
+  styles as collapsibleStyles,
   CollapsibleProps,
   CollapsibleButtonProps,
   CollapsibleContentProps,
 } from '@interop-ui/react-collapsible';
-import type { ElementByTag } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -360,7 +361,10 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Accordion, styles };
+const useHasAccordionContext = () => useHasContext(AccordionContext);
+const useHasAccordionItemContext = () => useHasContext(AccordionItemContext);
+
+export { Accordion, styles, useHasAccordionContext, useHasAccordionItemContext };
 export type {
   AccordionProps,
   AccordionButtonProps,

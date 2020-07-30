@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type InputContextValue = {};
+const [InputContext] = createContext<InputContextValue>('InputContext', 'Input');
+
+/* -------------------------------------------------------------------------------------------------
+ * Input
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'input';
 
@@ -10,10 +21,18 @@ type InputProps = InputDOMProps & InputOwnProps;
 
 const Input = forwardRef<typeof DEFAULT_TAG, InputProps>(function Input(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...inputProps } = props;
-  return <Comp {...interopDataAttrObj('Input')} ref={forwardedRef} {...inputProps} />;
+  return (
+    <InputContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Input')} ref={forwardedRef} {...inputProps} />;
+    </InputContext.Provider>
+  );
 });
 
 Input.displayName = 'Input';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasInputContext = () => useHasContext(InputContext);
 
 const styles: PrimitiveStyles = {
   input: {
@@ -25,5 +44,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Input, styles };
+export { Input, styles, useHasInputContext };
 export type { InputProps };

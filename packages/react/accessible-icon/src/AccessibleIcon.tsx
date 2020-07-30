@@ -1,7 +1,21 @@
 import * as React from 'react';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, useHasContext, forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type AccessibleIconContextValue = {};
+const [AccessibleIconContext] = createContext<AccessibleIconContextValue>(
+  'AccessibleIconContext',
+  'AccessibleIcon'
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * AccessibleIcon
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'span';
 
@@ -19,18 +33,24 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
   const child = React.Children.only(children);
 
   return (
-    <Comp {...interopDataAttrObj('AccessibleIcon')} ref={forwardedRef} {...iconProps}>
-      {React.cloneElement(child as React.ReactElement, {
-        // accessibility
-        'aria-hidden': true,
-        focusable: 'false', // See: https://allyjs.io/tutorials/focusing-in-svg.html#making-svg-elements-focusable
-      })}
-      <VisuallyHidden>{label}</VisuallyHidden>
-    </Comp>
+    <AccessibleIconContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('AccessibleIcon')} ref={forwardedRef} {...iconProps}>
+        {React.cloneElement(child as React.ReactElement, {
+          // accessibility
+          'aria-hidden': true,
+          focusable: 'false', // See: https://allyjs.io/tutorials/focusing-in-svg.html#making-svg-elements-focusable
+        })}
+        <VisuallyHidden>{label}</VisuallyHidden>
+      </Comp>
+    </AccessibleIconContext.Provider>
   );
 });
 
 AccessibleIcon.displayName = 'AccessibleIcon';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasAccessibleIconContext = () => useHasContext(AccessibleIconContext);
 
 const styles: PrimitiveStyles = {
   accessibleIcon: {
@@ -38,5 +58,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { styles, AccessibleIcon };
+export { styles, useHasAccessibleIconContext, AccessibleIcon };
 export type { AccessibleIconProps };

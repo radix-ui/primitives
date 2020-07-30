@@ -1,11 +1,27 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import {
-  forwardRef,
-  useControlledState,
   composeEventHandlers,
+  createContext,
+  forwardRef,
   PrimitiveStyles,
+  useControlledState,
+  useHasContext,
 } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type ToggleButtonContextValue = {};
+const [ToggleButtonContext] = createContext<ToggleButtonContextValue>(
+  'ToggleButtonContext',
+  'ToggleButton'
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * ToggleButton
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'button';
 
@@ -43,18 +59,24 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
   });
 
   return (
-    <Comp
-      {...interopDataAttrObj('ToggleButton')}
-      type="button"
-      aria-pressed={Boolean(isToggled)}
-      ref={forwardedRef}
-      onClick={composeEventHandlers(onClick, () => setIsToggled(!isToggled))}
-      {...buttonProps}
-    />
+    <ToggleButtonContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp
+        {...interopDataAttrObj('ToggleButton')}
+        type="button"
+        aria-pressed={Boolean(isToggled)}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(onClick, () => setIsToggled(!isToggled))}
+        {...buttonProps}
+      />
+    </ToggleButtonContext.Provider>
   );
 });
 
 ToggleButton.displayName = 'ToggleButton';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasToggleButtonContext = () => useHasContext(ToggleButtonContext);
 
 const styles: PrimitiveStyles = {
   toggleButton: {
@@ -75,5 +97,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { ToggleButton, styles };
+export { ToggleButton, styles, useHasToggleButtonContext };
 export type { ToggleButtonProps };

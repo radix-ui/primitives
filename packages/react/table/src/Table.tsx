@@ -1,6 +1,13 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type TableContextValue = {};
+const [TableContext] = createContext<TableContextValue>('TableContext', 'Table');
 
 /* -------------------------------------------------------------------------------------------------
  * Table
@@ -17,7 +24,11 @@ const Table = forwardRef<typeof TABLE_DEFAULT_TAG, TableProps, TableStaticProps>
   forwardedRef
 ) {
   const { as: Comp = TABLE_DEFAULT_TAG, ...tableProps } = props;
-  return <Comp {...interopDataAttrObj('Table')} ref={forwardedRef} {...tableProps} />;
+  return (
+    <TableContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Table')} ref={forwardedRef} {...tableProps} />;
+    </TableContext.Provider>
+  );
 });
 
 Table.displayName = 'Table';
@@ -185,7 +196,9 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Table, styles };
+const useHasTableContext = () => useHasContext(TableContext);
+
+export { Table, styles, useHasTableContext };
 export type {
   TableProps,
   TableHeaderProps,

@@ -3,9 +3,10 @@ import { cssReset, isFunction, warningOnce, interopDataAttrObj } from '@interop-
 import {
   createContext,
   forwardRef,
+  PrimitiveStyles,
   useComposedRefs,
   useCallbackRef,
-  PrimitiveStyles,
+  useHasContext,
 } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
@@ -285,6 +286,8 @@ Checkbox.Input = CheckboxInput;
 Checkbox.Box = CheckboxBox;
 Checkbox.Icon = CheckboxIcon;
 
+const useHasCheckboxContext = () => useHasContext(CheckboxContext);
+
 const styles: PrimitiveStyles = {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
@@ -331,6 +334,7 @@ const styles: PrimitiveStyles = {
   },
 };
 
+export { Checkbox, styles, useHasCheckboxContext };
 export type {
   CheckboxRootProps,
   CheckboxInputProps,
@@ -338,4 +342,3 @@ export type {
   CheckboxIconProps,
   CheckboxProps,
 };
-export { Checkbox, styles };

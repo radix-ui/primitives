@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type GridContextValue = {};
+const [GridContext] = createContext<GridContextValue>('GridContext', 'Grid');
+
+/* -------------------------------------------------------------------------------------------------
+ * Grid
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'div';
 
@@ -10,10 +21,18 @@ type GridProps = GridDOMProps & GridOwnProps;
 
 const Grid = forwardRef<typeof DEFAULT_TAG, GridProps>(function Grid(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...gridProps } = props;
-  return <Comp {...interopDataAttrObj('Grid')} ref={forwardedRef} {...gridProps} />;
+  return (
+    <GridContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Grid')} ref={forwardedRef} {...gridProps} />
+    </GridContext.Provider>
+  );
 });
 
 Grid.displayName = 'Grid';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasGridContext = () => useHasContext(GridContext);
 
 const styles: PrimitiveStyles = {
   grid: {
@@ -22,5 +41,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Grid, styles };
+export { Grid, styles, useHasGridContext };
 export type { GridProps };

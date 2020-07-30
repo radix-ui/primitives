@@ -13,14 +13,15 @@ import {
   composeEventHandlers,
   createContext,
   forwardRef,
+  ForwardRefExoticComponentWithAs,
+  PrimitiveStyles,
   RovingTabIndexProvider,
   useAccessibleMouseDown,
   useComposedRefs,
   useControlledState,
+  useHasContext,
   useId,
   useRovingTabIndex,
-  ForwardRefExoticComponentWithAs,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { cssReset, interopDataAttrObj, makeId } from '@interop-ui/utils';
 
@@ -264,6 +265,8 @@ TabsPanel.displayName = 'Tabs.Panel';
  * Styles
  * -----------------------------------------------------------------------------------------------*/
 
+const useHasTabsContext = () => useHasContext(TabsContext);
+
 const styles: PrimitiveStyles = {
   tabList: {
     ...cssReset(TABLIST_DEFAULT_TAG),
@@ -298,7 +301,7 @@ Tabs.Panel = TabsPanel;
 Tabs.Tab = TabsTab;
 Tabs.List = TabsList;
 
-export { Tabs, styles };
+export { Tabs, styles, useHasTabsContext };
 export type { TabsProps, TabsListProps, TabsTabProps, TabsPanelProps, ITabs };
 
 /* ---------------------------------------------------------------------------------------------- */

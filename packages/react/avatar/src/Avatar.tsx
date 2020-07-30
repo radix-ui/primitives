@@ -2,20 +2,11 @@ import * as React from 'react';
 import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
 import { cssReset, interopDataAttrObj, isFunction } from '@interop-ui/utils';
-import { createContext, forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
-const CONTAINER_DEFAULT_TAG = 'span';
-
-type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof CONTAINER_DEFAULT_TAG>;
-type AvatarOwnProps = {
-  src?: string;
-  alt?: string;
-  renderFallback?: React.ReactNode;
-  renderLoading?: React.ReactNode;
-};
-type AvatarProps = AvatarDOMProps & AvatarOwnProps;
-
-type AvatarRenderType = 'LOADING' | 'ICON' | 'IMAGE' | 'FALLBACK' | 'ALT_ABBR';
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
 
 interface AvatarContextValue {
   src: string | undefined;
@@ -27,6 +18,21 @@ const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
   'AvatarContext',
   'Avatar.Root'
 );
+
+/* -------------------------------------------------------------------------------------------------
+ * AvatarRoot
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONTAINER_DEFAULT_TAG = 'span';
+
+type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof CONTAINER_DEFAULT_TAG>;
+type AvatarOwnProps = {
+  src?: string;
+  alt?: string;
+  renderFallback?: React.ReactNode;
+  renderLoading?: React.ReactNode;
+};
+type AvatarProps = AvatarDOMProps & AvatarOwnProps;
 
 const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(function AvatarRoot(
   props,
@@ -63,8 +69,6 @@ const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(functio
     whatToRender = isFunction(renderFallback) ? 'FALLBACK' : 'ICON';
   }
 
-  console.log(whatToRender);
-
   const ctx = React.useMemo(() => {
     return {
       alt,
@@ -87,6 +91,10 @@ const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(functio
 });
 
 AvatarRoot.displayName = 'Avatar.Root';
+
+/* -------------------------------------------------------------------------------------------------
+ * AvatarImage
+ * -----------------------------------------------------------------------------------------------*/
 
 type AvatarImageDOMProps = React.ComponentPropsWithRef<'img'>;
 type AvatarImageOwnProps = {};
@@ -113,6 +121,10 @@ const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(funct
 
 AvatarImage.displayName = 'Avatar.Image';
 
+/* -------------------------------------------------------------------------------------------------
+ * AvatarIcon
+ * -----------------------------------------------------------------------------------------------*/
+
 const ICON_DEFAULT_TAG = 'svg';
 
 type AvatarIconDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
@@ -131,6 +143,10 @@ const AvatarIcon = forwardRef<typeof ICON_DEFAULT_TAG, AvatarIconProps>(function
 });
 
 AvatarIcon.displayName = 'Avatar.Icon';
+
+/* -------------------------------------------------------------------------------------------------
+ * AvatarAbbr
+ * -----------------------------------------------------------------------------------------------*/
 
 const ABBR_DEFAULT_TAG = 'span';
 
@@ -153,6 +169,10 @@ const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function
 
 AvatarAbbr.displayName = 'Avatar.Abbr';
 
+/* -------------------------------------------------------------------------------------------------
+ * Avatar
+ * -----------------------------------------------------------------------------------------------*/
+
 const Avatar = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
   function Avatar(props, forwardedRef) {
     const { children, ...avatarProps } = props;
@@ -167,12 +187,55 @@ const Avatar = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps, AvatarStati
   }
 );
 
+/* ---------------------------------------------------------------------------------------------- */
+
 Avatar.Root = AvatarRoot;
 Avatar.Image = AvatarImage;
 Avatar.Abbr = AvatarAbbr;
 Avatar.Icon = AvatarIcon;
-
 Avatar.displayName = 'Avatar';
+
+const styles: PrimitiveStyles = {
+  root: {
+    ...cssReset(CONTAINER_DEFAULT_TAG),
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    verticalAlign: 'middle',
+    overflow: 'hidden',
+    userSelect: 'none',
+  },
+  image: {
+    ...cssReset(IMAGE_DEFAULT_TAG),
+    width: '100%',
+    height: '100%',
+    // Make sure images are not distorted
+    objectFit: 'cover',
+    // Remove alt text (appears in some browsers when image doesn't load)
+    color: 'transparent',
+    // Hide the image broken icon (Chrome only)
+    textIndent: 10000,
+  },
+  abbr: {
+    ...cssReset(ABBR_DEFAULT_TAG),
+  },
+  icon: {
+    ...cssReset(ICON_DEFAULT_TAG),
+  },
+};
+
+const useHasAvatarContext = () => useHasContext(AvatarContext);
+
+export type {
+  AvatarProps,
+  AvatarImageProps,
+  AvatarIconProps,
+  AvatarAbbrProps,
+  useHasAvatarContext,
+};
+export { Avatar, styles };
+
+type AvatarRenderType = 'LOADING' | 'ICON' | 'IMAGE' | 'FALLBACK' | 'ALT_ABBR';
 
 interface AvatarStaticProps {
   Root: typeof AvatarRoot;
@@ -217,35 +280,3 @@ function useImageLoadingStatus(src?: string) {
 
   return loadingStatus;
 }
-
-const styles: PrimitiveStyles = {
-  root: {
-    ...cssReset(CONTAINER_DEFAULT_TAG),
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    verticalAlign: 'middle',
-    overflow: 'hidden',
-    userSelect: 'none',
-  },
-  image: {
-    ...cssReset(IMAGE_DEFAULT_TAG),
-    width: '100%',
-    height: '100%',
-    // Make sure images are not distorted
-    objectFit: 'cover',
-    // Remove alt text (appears in some browsers when image doesn't load)
-    color: 'transparent',
-    // Hide the image broken icon (Chrome only)
-    textIndent: 10000,
-  },
-  abbr: {
-    ...cssReset(ABBR_DEFAULT_TAG),
-  },
-  icon: {
-    ...cssReset(ICON_DEFAULT_TAG),
-  },
-};
-
-export type { AvatarProps, AvatarImageProps, AvatarIconProps, AvatarAbbrProps };
-export { Avatar, styles };

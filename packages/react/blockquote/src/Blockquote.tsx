@@ -1,6 +1,20 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type BlockquoteContextValue = {};
+const [BlockquoteContext] = createContext<BlockquoteContextValue>(
+  'BlockquoteContext',
+  'Blockquote'
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * Blockquote
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'blockquote';
 
@@ -13,10 +27,18 @@ const Blockquote = forwardRef<typeof DEFAULT_TAG, BlockquoteProps>(function Bloc
   forwardedRef
 ) {
   const { as: Comp = DEFAULT_TAG, ...blockquoteProps } = props;
-  return <Comp {...interopDataAttrObj('Blockquote')} ref={forwardedRef} {...blockquoteProps} />;
+  return (
+    <BlockquoteContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Blockquote')} ref={forwardedRef} {...blockquoteProps} />;
+    </BlockquoteContext.Provider>
+  );
 });
 
 Blockquote.displayName = 'Blockquote';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasBlockquoteContext = () => useHasContext(BlockquoteContext);
 
 const styles: PrimitiveStyles = {
   blockquote: {
@@ -24,5 +46,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Blockquote, styles };
+export { Blockquote, styles, useHasBlockquoteContext };
 export type { BlockquoteProps };

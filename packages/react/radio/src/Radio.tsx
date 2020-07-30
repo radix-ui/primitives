@@ -3,9 +3,10 @@ import { cssReset, interopDataAttrObj, isFunction, warningOnce } from '@interop-
 import {
   createContext,
   forwardRef,
+  PrimitiveStyles,
   useCallbackRef,
   useComposedRefs,
-  PrimitiveStyles,
+  useHasContext,
 } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
@@ -280,6 +281,8 @@ interface RadioStaticProps {
   Icon: typeof RadioIcon;
 }
 
+const useHasRadioContext = () => useHasContext(RadioContext);
+
 const styles: PrimitiveStyles = {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
@@ -328,5 +331,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Radio, styles };
+export { Radio, styles, useHasRadioContext };
 export type { RadioRootProps, RadioInputProps, RadioBoxProps, RadioIconProps, RadioProps };

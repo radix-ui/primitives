@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type OverlayContextValue = {};
+const [OverlayContext] = createContext<OverlayContextValue>('OverlayContext', 'Overlay');
+
+/* -------------------------------------------------------------------------------------------------
+ * Overlay
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'div';
 
@@ -10,10 +21,18 @@ type OverlayProps = OverlayDOMProps & OverlayOwnProps;
 
 const Overlay = forwardRef<typeof DEFAULT_TAG, OverlayProps>(function Overlay(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...overlayProps } = props;
-  return <Comp {...interopDataAttrObj('Overlay')} ref={forwardedRef} {...overlayProps} />;
+  return (
+    <OverlayContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Overlay')} ref={forwardedRef} {...overlayProps} />;
+    </OverlayContext.Provider>
+  );
 });
 
 Overlay.displayName = 'Overlay';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasOverlayContext = () => useHasContext(OverlayContext);
 
 const styles: PrimitiveStyles = {
   overlay: {
@@ -26,5 +45,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Overlay, styles };
+export { Overlay, styles, useHasOverlayContext };
 export type { OverlayProps };

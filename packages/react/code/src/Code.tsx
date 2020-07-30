@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type CodeContextValue = {};
+const [CodeContext] = createContext<CodeContextValue>('CodeContext', 'Code');
+
+/* -------------------------------------------------------------------------------------------------
+ * Code
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'code';
 
@@ -10,10 +21,18 @@ type CodeProps = CodeDOMProps & CodeOwnProps;
 
 const Code = forwardRef<typeof DEFAULT_TAG, CodeProps>(function Code(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...codeProps } = props;
-  return <Comp {...interopDataAttrObj('Code')} ref={forwardedRef} {...codeProps} />;
+  return (
+    <CodeContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Code')} ref={forwardedRef} {...codeProps} />
+    </CodeContext.Provider>
+  );
 });
 
 Code.displayName = 'Code';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasCodeContext = () => useHasContext(CodeContext);
 
 const styles: PrimitiveStyles = {
   code: {
@@ -22,5 +41,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Code, styles };
+export { Code, styles, useHasCodeContext };
 export type { CodeProps };

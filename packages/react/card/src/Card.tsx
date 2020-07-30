@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type CardContextValue = {};
+const [CardContext] = createContext<CardContextValue>('CardContext', 'Card');
+
+/* -------------------------------------------------------------------------------------------------
+ * Card
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'div';
 
@@ -10,10 +21,18 @@ type CardProps = CardDOMProps & CardOwnProps;
 
 const Card = forwardRef<typeof DEFAULT_TAG, CardProps>(function Card(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...cardProps } = props;
-  return <Comp {...interopDataAttrObj('Card')} ref={forwardedRef} {...cardProps} />;
+  return (
+    <CardContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Card')} ref={forwardedRef} {...cardProps} />
+    </CardContext.Provider>
+  );
 });
 
 Card.displayName = 'Card';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasCardContext = () => useHasContext(CardContext);
 
 const styles: PrimitiveStyles = {
   card: {
@@ -21,5 +40,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Card, styles };
+export { Card, styles, useHasCardContext };
 export type { CardProps };

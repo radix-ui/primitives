@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type ContainerContextValue = {};
+const [ContainerContext] = createContext<ContainerContextValue>('ContainerContext', 'Container');
+
+/* -------------------------------------------------------------------------------------------------
+ * Container
+ * -----------------------------------------------------------------------------------------------*/
 
 const DEFAULT_TAG = 'span';
 
@@ -13,10 +24,18 @@ const Container = forwardRef<typeof DEFAULT_TAG, ContainerProps>(function Contai
   forwardedRef
 ) {
   const { as: Comp = DEFAULT_TAG, ...containerProps } = props;
-  return <Comp {...interopDataAttrObj('Container')} ref={forwardedRef} {...containerProps} />;
+  return (
+    <ContainerContext.Provider value={React.useMemo(() => ({}), [])}>
+      <Comp {...interopDataAttrObj('Container')} ref={forwardedRef} {...containerProps} />
+    </ContainerContext.Provider>
+  );
 });
 
 Container.displayName = 'Container';
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const useHasContainerContext = () => useHasContext(ContainerContext);
 
 const styles: PrimitiveStyles = {
   container: {
@@ -27,5 +46,5 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Container, styles };
+export { Container, styles, useHasContainerContext };
 export type { ContainerProps };

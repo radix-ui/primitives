@@ -1,5 +1,12 @@
 import React from 'react';
-import { forwardRef, useRect, useComposedRefs, PrimitiveStyles } from '@interop-ui/react-utils';
+import {
+  createContext,
+  forwardRef,
+  PrimitiveStyles,
+  useComposedRefs,
+  useHasContext,
+  useRect,
+} from '@interop-ui/react-utils';
 import { useSize } from '@interop-ui/react-use-size';
 import { Portal } from '@interop-ui/react-portal';
 import { useDebugContext } from '@interop-ui/react-debug-context';
@@ -12,6 +19,8 @@ import * as CSS from 'csstype';
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
 
+type PopoverContextValue = {};
+const [PopoverContext] = createContext<PopoverContextValue>('PopoverContext', 'Popover');
 const PopoverArrowContext = React.createContext<{
   arrowStyles: React.CSSProperties;
   arrowRef: React.RefObject<HTMLElement | null>;
@@ -120,19 +129,20 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
     let Wrapper = shouldPortal ? Portal : React.Fragment;
 
     return (
-      <PopoverArrowContext.Provider value={{ arrowStyles, arrowRef }}>
-        {shouldRender ? (
-          <Wrapper>
-            <Comp
-              ref={forwardedRef}
-              style={{
-                ...popperStyles,
-                ...style,
-              }}
-              {...interopDataAttrObj('Popover')}
-              {...contentProps}
-            >
-              {/*
+      <PopoverContext.Provider value={React.useMemo(() => ({}), [])}>
+        <PopoverArrowContext.Provider value={{ arrowStyles, arrowRef }}>
+          {shouldRender ? (
+            <Wrapper>
+              <Comp
+                ref={forwardedRef}
+                style={{
+                  ...popperStyles,
+                  ...style,
+                }}
+                {...interopDataAttrObj('Popover')}
+                {...contentProps}
+              >
+                {/*
               We put the `popperRef` on a div around the content and not on the content element
               itself. This is because the size measured by `useSize` doesn't account for
               padding/border (ResizeObserver limitations) so there would be some calculations issues
@@ -140,11 +150,12 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
 
               See: https://github.com/que-etc/resize-observer-polyfill/issues/11
             */}
-              <div ref={popperRef}>{children}</div>
-            </Comp>
-          </Wrapper>
-        ) : null}
-      </PopoverArrowContext.Provider>
+                <div ref={popperRef}>{children}</div>
+              </Comp>
+            </Wrapper>
+          ) : null}
+        </PopoverArrowContext.Provider>
+      </PopoverContext.Provider>
     );
   }
 );
@@ -196,6 +207,8 @@ PopoverArrow.displayName = 'Popover.Arrow';
 
 Popover.Arrow = PopoverArrow;
 
+const useHasPopoverContext = () => useHasContext(PopoverContext);
+
 const styles: PrimitiveStyles = {
   popover: {
     ...cssReset(POPOVER_DEFAULT_TAG),
@@ -208,7 +221,7 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Popover, styles };
+export { Popover, styles, useHasPopoverContext };
 export type { PopoverProps, PopoverArrowProps };
 
 interface PopoverStaticProps {

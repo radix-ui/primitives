@@ -1,6 +1,20 @@
 import * as React from 'react';
 import { cssReset } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type AspectRatioContextValue = {};
+const [AspectRatioContext] = createContext<AspectRatioContextValue>(
+  'AspectRatioContext',
+  'AspectRatio'
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * AspectRatioRoot
+ * -----------------------------------------------------------------------------------------------*/
 
 const WRAPPER_DEFAULT_TAG = 'div';
 
@@ -16,19 +30,25 @@ const AspectRatioRoot = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps>
     const paddingBottom = 100 / (Number(n1) / Number(n2));
 
     return (
-      <Comp
-        {...aspectRatioProps}
-        ref={forwardedRef}
-        style={{
-          paddingBottom: `${paddingBottom}%`,
-          ...style,
-        }}
-      />
+      <AspectRatioContext.Provider value={React.useMemo(() => ({}), [])}>
+        <Comp
+          {...aspectRatioProps}
+          ref={forwardedRef}
+          style={{
+            paddingBottom: `${paddingBottom}%`,
+            ...style,
+          }}
+        />
+      </AspectRatioContext.Provider>
     );
   }
 );
 
 AspectRatioRoot.displayName = 'AspectRatio.Root';
+
+/* -------------------------------------------------------------------------------------------------
+ * AspectRatioInner
+ * -----------------------------------------------------------------------------------------------*/
 
 const INNER_DEFAULT_TAG = 'div';
 
@@ -46,6 +66,10 @@ const AspectRatioInner = forwardRef<typeof INNER_DEFAULT_TAG, AspectRatioInnerPr
 
 AspectRatioInner.displayName = 'AspectRatio.Inner';
 
+/* -------------------------------------------------------------------------------------------------
+ * AspectRatio
+ * -----------------------------------------------------------------------------------------------*/
+
 const AspectRatio = forwardRef<
   typeof WRAPPER_DEFAULT_TAG,
   AspectRatioProps,
@@ -61,6 +85,8 @@ const AspectRatio = forwardRef<
 });
 
 AspectRatio.displayName = 'AspectRatio';
+
+/* ---------------------------------------------------------------------------------------------- */
 
 AspectRatio.Root = AspectRatioRoot;
 AspectRatio.Inner = AspectRatioInner;
@@ -86,5 +112,7 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { AspectRatio, styles };
+const useHasAspectRatioContext = () => useHasContext(AspectRatioContext);
+
+export { AspectRatio, styles, useHasAspectRatioContext };
 export type { AspectRatioProps, AspectRatioInnerProps };

@@ -17,10 +17,11 @@ import {
   createContext,
   forwardRef,
   memo,
-  useComposedRefs,
-  useCallbackRef,
-  useId,
   PrimitiveStyles,
+  useCallbackRef,
+  useComposedRefs,
+  useHasContext,
+  useId,
 } from '@interop-ui/react-utils';
 import { Popover, PopoverProps } from '@interop-ui/react-popover';
 import {
@@ -677,6 +678,8 @@ Combobox.OptionText = ComboboxOptionText;
 Combobox.Group = ComboboxGroup;
 Combobox.Button = ComboboxButton;
 
+const useHasComboboxContext = () => useHasContext(ComboboxContext);
+
 const styles: PrimitiveStyles = {
   combobox: {
     ...cssReset(COMBOBOX_DEFAULT_TAG),
@@ -709,7 +712,7 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Combobox, styles };
+export { Combobox, styles, useHasComboboxContext };
 export type {
   ComboboxProps,
   ComboboxInputProps,
