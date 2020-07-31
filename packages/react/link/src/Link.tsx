@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'a';
 
@@ -15,7 +15,7 @@ const Link = forwardRef<typeof DEFAULT_TAG, LinkProps>(function Link(props, forw
 
 Link.displayName = 'Link';
 
-const styles = {
+const styles: PrimitiveStyles = {
   link: {
     ...cssReset(DEFAULT_TAG),
   },

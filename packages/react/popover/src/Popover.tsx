@@ -1,5 +1,5 @@
 import React from 'react';
-import { forwardRef, useRect, useComposedRefs } from '@interop-ui/react-utils';
+import { forwardRef, useRect, useComposedRefs, PrimitiveStyles } from '@interop-ui/react-utils';
 import { useSize } from '@interop-ui/react-use-size';
 import { Portal } from '@interop-ui/react-portal';
 import { useDebugContext } from '@interop-ui/react-debug-context';
@@ -196,7 +196,7 @@ PopoverArrow.displayName = 'Popover.Arrow';
 
 Popover.Arrow = PopoverArrow;
 
-const styles = {
+const styles: PrimitiveStyles = {
   popover: {
     ...cssReset(POPOVER_DEFAULT_TAG),
     position: 'absolute',

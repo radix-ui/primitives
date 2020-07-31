@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'code';
 
@@ -15,7 +15,7 @@ const Code = forwardRef<typeof DEFAULT_TAG, CodeProps>(function Code(props, forw
 
 Code.displayName = 'Code';
 
-const styles = {
+const styles: PrimitiveStyles = {
   code: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',

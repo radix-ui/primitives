@@ -17,4 +17,13 @@ declare global {
     ) => RequestIdleCallbackHandle;
     cancelIdleCallback: (handle: RequestIdleCallbackHandle) => void;
   }
+
+  namespace Intl {
+    export class Locale {
+      // this could be more specific
+      constructor(tag: string, options?: Record<string, string>);
+      maximize(): Locale;
+      script: string;
+    }
+  }
 }

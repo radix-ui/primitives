@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'hr';
 
@@ -15,7 +15,7 @@ const Divider = forwardRef<typeof DEFAULT_TAG, DividerProps>(function Divider(pr
 
 Divider.displayName = 'Divider';
 
-const styles = {
+const styles: PrimitiveStyles = {
   divider: {
     ...cssReset(DEFAULT_TAG),
   },

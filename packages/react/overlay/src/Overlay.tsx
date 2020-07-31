@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'div';
 
@@ -15,7 +15,7 @@ const Overlay = forwardRef<typeof DEFAULT_TAG, OverlayProps>(function Overlay(pr
 
 Overlay.displayName = 'Overlay';
 
-const styles = {
+const styles: PrimitiveStyles = {
   overlay: {
     ...cssReset(DEFAULT_TAG),
     position: 'fixed',

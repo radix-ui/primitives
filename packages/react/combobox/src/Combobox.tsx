@@ -20,6 +20,7 @@ import {
   useComposedRefs,
   useCallbackRef,
   useId,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { Popover, PopoverProps } from '@interop-ui/react-popover';
 import {
@@ -676,7 +677,7 @@ Combobox.OptionText = ComboboxOptionText;
 Combobox.Group = ComboboxGroup;
 Combobox.Button = ComboboxButton;
 
-const styles = {
+const styles: PrimitiveStyles = {
   combobox: {
     ...cssReset(COMBOBOX_DEFAULT_TAG),
     position: 'relative',

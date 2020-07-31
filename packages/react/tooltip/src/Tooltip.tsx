@@ -9,6 +9,7 @@ import {
   useId,
   usePrevious,
   useRect,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { createStateMachine, stateChart } from './machine';
 import { Popover, PopoverProps, PopoverArrowProps } from '@interop-ui/react-popover';
@@ -401,7 +402,7 @@ Tooltip.Target = TooltipTarget;
 Tooltip.Popover = TooltipPopover;
 Tooltip.Content = TooltipContent;
 
-const styles = {
+const styles: PrimitiveStyles = {
   root: null,
   target: null,
   popover: {

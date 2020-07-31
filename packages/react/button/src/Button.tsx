@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'button';
 
@@ -15,7 +15,7 @@ const Button = forwardRef<typeof DEFAULT_TAG, ButtonProps>(function Button(props
 
 Button.displayName = 'Button';
 
-const styles = {
+const styles: PrimitiveStyles = {
   button: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',

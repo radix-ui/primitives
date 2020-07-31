@@ -8,6 +8,7 @@ import {
   forwardRef,
   useCallbackRef,
   useComposedRefs,
+  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
@@ -288,7 +289,7 @@ interface SheetStaticProps {
   Content: typeof SheetContent;
 }
 
-const styles = {
+const styles: PrimitiveStyles = {
   root: null,
   overlay: {
     ...cssReset(OVERLAY_DEFAULT_TAG),

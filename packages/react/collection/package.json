@@ -1,9 +1,9 @@
 {
-  "name": "@interop-ui/react-pipe",
+  "name": "@interop-ui/react-collection",
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/index.js",
-  "module": "dist/react-pipe.esm.min.js",
+  "module": "dist/react-collection.esm.min.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "src",
@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@interop-ui/utils": "1.0.0",
-    "@interop-ui/react-utils": "1.0.0",
-    "tslib": "^2.0.0"
+    "@interop-ui/react-utils": "1.0.0"
   }
 }

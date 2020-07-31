@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'div';
 
@@ -15,7 +15,7 @@ const Grid = forwardRef<typeof DEFAULT_TAG, GridProps>(function Grid(props, forw
 
 Grid.displayName = 'Grid';
 
-const styles = {
+const styles: PrimitiveStyles = {
   grid: {
     ...cssReset(DEFAULT_TAG),
     display: 'grid',

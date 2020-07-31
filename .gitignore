@@ -2,8 +2,11 @@
 .DS_Store
 node_modules
 dist
-.vscode
 test-output.*
 .cache
 TODO.md
 report.*.json
+
+# Editor specific
+.idea
+.vscode
