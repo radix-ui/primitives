@@ -1,6 +1,6 @@
 import { paths } from '../constants';
 
-export default {
+const jestConfig = {
   collectCoverageFrom: ['packages/**/src/**/*.{ts,tsx,js}'],
   globals: {
     __DEV__: 'boolean',
@@ -23,3 +23,5 @@ export default {
     require.resolve('jest-watch-typeahead/testname'),
   ],
 };
+
+export default jestConfig;

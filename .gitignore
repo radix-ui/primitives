@@ -5,6 +5,7 @@ dist
 test-output.*
 .cache
 TODO.md
+report.*.json
 
 # Editor specific
 .idea
