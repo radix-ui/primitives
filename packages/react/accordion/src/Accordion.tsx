@@ -1,5 +1,5 @@
 import React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -80,6 +80,7 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
     return (
       <Collapsible
         {...accordionItemProps}
+        {...interopDataAttrObj('AccordionItem')}
         ref={forwardedRef}
         disabled={accordionContext.isDisabled ?? props.disabled}
         isOpen={isOpen}
@@ -109,7 +110,7 @@ const AccordionHeader = forwardRef<typeof HEADER_DEFAULT_TAG, AccordionHeaderPro
   function AccordionHeader(props, forwardedRef) {
     const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
 
-    return <Comp ref={forwardedRef} {...headerProps} />;
+    return <Comp ref={forwardedRef} {...headerProps} {...interopDataAttrObj('AccordionHeader')} />;
   }
 );
 
@@ -152,7 +153,7 @@ const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonPro
     return (
       <Collapsible.Button
         {...buttonProps}
-        data-part-id="header"
+        {...interopDataAttrObj('AccordionButton')}
         ref={composedRefs}
         aria-disabled={itemContext.isOpen || undefined}
         id={itemContext.buttonId}
@@ -208,6 +209,7 @@ const AccordionPanel = forwardRef<typeof PANEL_DEFAULT_TAG, AccordionPanelProps>
     return (
       <Collapsible.Content
         {...props}
+        {...interopDataAttrObj('AccordionPanel')}
         ref={forwardedRef}
         role="region"
         aria-labelledby={itemContext.buttonId}
@@ -309,6 +311,7 @@ const Accordion = forwardRef<typeof ACCORDION_DEFAULT_TAG, AccordionProps, Accor
     return (
       <Comp
         {...accordionProps}
+        {...interopDataAttrObj('Accordion')}
         ref={composedRefs}
         onKeyDown={isDisabled ? undefined : handleKeyDown}
       >
