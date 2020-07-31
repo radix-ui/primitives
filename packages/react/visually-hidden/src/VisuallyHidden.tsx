@@ -1,12 +1,10 @@
 import * as React from 'react';
+import { interopDataAttrObj } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 const DEFAULT_TAG = 'span';
 
-type VisuallyHiddenParts = 'visuallyHidden';
-type VisuallyHiddenOwnProps = {
-  bypassInlineStyles?: boolean;
-};
+type VisuallyHiddenOwnProps = { bypassInlineStyles?: boolean };
 type VisuallyHiddenDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type VisuallyHiddenProps = VisuallyHiddenOwnProps & VisuallyHiddenDOMProps;
 
@@ -14,6 +12,7 @@ const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
   ({ as: Comp = DEFAULT_TAG, bypassInlineStyles = false, style, ...props }, forwardedRef) => (
     <Comp
       {...props}
+      {...interopDataAttrObj('VisuallyHidden')}
       ref={forwardedRef}
       style={bypassInlineStyles ? style : { ...styles.visuallyHidden, ...style }}
     />
