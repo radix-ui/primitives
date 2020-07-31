@@ -276,6 +276,8 @@ const AlertDialog = forwardRef<
   );
 });
 
+/* ---------------------------------------------------------------------------------------------- */
+
 AlertDialog.displayName = 'AlertDialog';
 AlertDialog.Root = AlertDialogRoot;
 AlertDialog.Overlay = AlertDialogOverlay;
@@ -290,6 +292,14 @@ interface AlertDialogStaticProps {
   Title: typeof AlertDialogTitle;
   Description: typeof AlertDialogDescription;
 }
+
+const useHasAlertDialogContext = () => {
+  try {
+    let ctx = useAlertDialogContext('useHasAlertDialogContext');
+    return !!ctx;
+  } catch (err) {}
+  return false;
+};
 
 const styles: PrimitiveStyles = {
   root: null,
@@ -322,7 +332,7 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { AlertDialog, styles };
+export { AlertDialog, styles, useHasAlertDialogContext };
 export type {
   AlertDialogProps,
   AlertDialogRootProps,
