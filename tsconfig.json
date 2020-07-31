@@ -71,7 +71,6 @@
       "@interop-ui/react-lock": ["packages/react/lock/src"],
       "@interop-ui/react-menu": ["packages/react/menu/src"],
       "@interop-ui/react-overlay": ["packages/react/overlay/src"],
-      "@interop-ui/react-pipe": ["packages/react/pipe/src"],
       "@interop-ui/react-popover": ["packages/react/popover/src"],
       "@interop-ui/react-portal": ["packages/react/portal/src"],
       "@interop-ui/react-radio": ["packages/react/radio/src"],

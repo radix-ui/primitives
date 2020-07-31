@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -33,6 +33,7 @@ const AspectRatioRoot = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps>
       <AspectRatioContext.Provider value={React.useMemo(() => ({}), [])}>
         <Comp
           {...aspectRatioProps}
+          {...interopDataAttrObj('AspectRatioRoot')}
           ref={forwardedRef}
           style={{
             paddingBottom: `${paddingBottom}%`,
@@ -60,7 +61,7 @@ const AspectRatioInner = forwardRef<typeof INNER_DEFAULT_TAG, AspectRatioInnerPr
   function AspectRatioInner(props, forwardedRef) {
     const { as: Comp = INNER_DEFAULT_TAG, ...innerProps } = props;
 
-    return <Comp ref={forwardedRef} {...innerProps} />;
+    return <Comp ref={forwardedRef} {...innerProps} {...interopDataAttrObj('AspectRatioInner')} />;
   }
 );
 
@@ -78,7 +79,11 @@ const AspectRatio = forwardRef<
   const { children, ...aspectRatioProps } = props;
 
   return (
-    <AspectRatioRoot {...aspectRatioProps} ref={forwardedRef}>
+    <AspectRatioRoot
+      {...aspectRatioProps}
+      {...interopDataAttrObj('AspectRatio')}
+      ref={forwardedRef}
+    >
       <AspectRatioInner>{children}</AspectRatioInner>
     </AspectRatioRoot>
   );
