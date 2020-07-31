@@ -25,18 +25,14 @@ const useLiveRegion = ({
   type,
   isAtomic,
   role: roleProp,
-  'aria-relevant': ariaRelevant,
+  ariaRelevant,
 }: {
   type: RegionType;
   isAtomic?: boolean;
   role?: RegionRole;
   // Generally use of aria-relevant is discouraged, but we want to provide support for it in
   // specific cases. We should provide guidance for this via documentation.
-  'aria-relevant'?:
-    | AriaRelevantOptions
-    | AriaRelevantCombinedOptions
-    | AriaRelevantOptions[]
-    | 'all';
+  ariaRelevant?: AriaRelevantOptions | AriaRelevantCombinedOptions | AriaRelevantOptions[] | 'all';
 }) => {
   const [region, setRegion] = React.useState<HTMLElement>();
 
@@ -83,12 +79,28 @@ const useLiveRegion = ({
 const ALERT_DEFAULT_TAG = 'div';
 
 type AlertDOMProps = React.ComponentPropsWithoutRef<typeof ALERT_DEFAULT_TAG>;
-type AlertOwnProps = { type?: RegionType; isAtomic?: boolean };
+type AlertOwnProps = { type?: RegionType; isAtomic?: boolean; role?: RegionRole };
 type AlertProps = AlertDOMProps & AlertOwnProps;
 
 const Alert = forwardRef<typeof ALERT_DEFAULT_TAG, AlertProps>(function Alert(props, forwardedRef) {
-  const { type = 'polite', isAtomic = false, children, ...alertProps } = props;
-  const region = useLiveRegion({ type, isAtomic });
+  const {
+    type = 'polite',
+    'aria-relevant': ariaRelevant,
+    isAtomic = false,
+    role,
+    children,
+    ...alertProps
+  } = props;
+
+  // Support for direct passing of `aria-atomic` or `isAtomic` prop.
+  let ariaAtomic =
+    alertProps['aria-atomic'] != null
+      ? alertProps['aria-atomic'] === 'false'
+        ? false
+        : Boolean(alertProps['aria-atomic'])
+      : isAtomic;
+
+  const region = useLiveRegion({ type, isAtomic: ariaAtomic, ariaRelevant, role });
 
   return (
     <>
