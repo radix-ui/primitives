@@ -47,7 +47,7 @@ export const WithFragment = () => {
 
 export const DynamicInsertion = () => {
   const [hasTomato, setHasTomato] = React.useState(false);
-  const [, forceUpdate] = React.useState();
+  const [, forceUpdate] = React.useState<any>();
   return (
     <>
       <button onClick={() => setHasTomato(!hasTomato)}>
