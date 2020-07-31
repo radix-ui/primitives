@@ -4,18 +4,53 @@ import { cssReset, interopDataAttr, interopDataAttrObj } from '@interop-ui/utils
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 type RegionType = 'polite' | 'assertive';
+type RegionRole = 'status' | 'alert' | 'log';
+type AriaRelevantOptions = 'additions' | 'removals' | 'text';
+type AriaRelevantCombinedOptions =
+  | 'additions removals'
+  | 'additions text'
+  | 'removals additions'
+  | 'removals text'
+  | 'text additions'
+  | 'text removals';
 
-const ROLES: { [key in RegionType]: string } = {
+const ROLES: { [key in RegionType]: RegionRole } = {
   polite: 'status',
   assertive: 'alert',
 };
 
-const useLiveRegion = ({ type, isAtomic }: { type: RegionType; isAtomic: boolean }) => {
+const interopAttr = interopDataAttr('AlertRegion');
+
+const useLiveRegion = ({
+  type,
+  isAtomic,
+  role: roleProp,
+  'aria-relevant': ariaRelevant,
+}: {
+  type: RegionType;
+  isAtomic?: boolean;
+  role?: RegionRole;
+  // Generally use of aria-relevant is discouraged, but we want to provide support for it in
+  // specific cases. We should provide guidance for this via documentation.
+  'aria-relevant'?:
+    | AriaRelevantOptions
+    | AriaRelevantCombinedOptions
+    | AriaRelevantOptions[]
+    | 'all';
+}) => {
   const [region, setRegion] = React.useState<HTMLElement>();
 
+  // Supports an explicit role prop. If none is set, fallback to role based on the alert type.
+  const role = roleProp || ROLES[type];
+
+  const relevant = ariaRelevant
+    ? Array.isArray(ariaRelevant)
+      ? ariaRelevant.join(' ')
+      : ariaRelevant
+    : undefined;
+
   React.useLayoutEffect(() => {
-    const interopAttr = interopDataAttr('AlertRegion');
-    let element = document.querySelector(`[${interopAttr}][aria-live=${type}]`);
+    let element = document.querySelector(buildSelector({ type, role, relevant }));
 
     if (!element) {
       element = document.createElement('div');
@@ -28,12 +63,15 @@ const useLiveRegion = ({ type, isAtomic }: { type: RegionType; isAtomic: boolean
     }
 
     element.setAttribute('aria-live', type);
-    element.setAttribute('aria-atomic', String(isAtomic));
-    element.setAttribute('role', ROLES[type]);
+    element.setAttribute('aria-atomic', String(isAtomic || false));
+    element.setAttribute('role', role);
+    if (relevant) {
+      element.setAttribute('aria-relevant', relevant);
+    }
 
     const regionElement = element as HTMLElement;
     setRegion(regionElement);
-  }, [type, isAtomic]);
+  }, [relevant, type, role, isAtomic]);
 
   return region;
 };
@@ -73,5 +111,24 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export { Alert, styles };
+export { Alert, styles, useLiveRegion };
 export type { AlertProps };
+
+function buildSelector({
+  type,
+  relevant,
+  role,
+}: {
+  type: string;
+  relevant?: string;
+  role: string;
+}) {
+  return `[${interopAttr}]${[
+    ['aria-live', type],
+    ['aria-relevant', relevant],
+    ['role', role],
+  ]
+    .filter(([, val]) => !!val)
+    .map(([attr, val]) => `[${attr}=${val}]`)
+    .join('')}`;
+}
