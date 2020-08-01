@@ -5,7 +5,7 @@ import { createGlobalStyle } from 'styled-components';
 import * as Radix from '@modulz/radix';
 
 const GlobalStyles = createGlobalStyle`
-
+  svg { vertical-align: middle }
 `;
 
 function App({ Component, pageProps }: AppProps) {
