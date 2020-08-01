@@ -36,7 +36,7 @@ export default function IntroductionPage() {
               lineHeight: 9,
             }}
           >
-            Components
+            Radix
           </Heading>
           <Heading
             as="h2"

@@ -197,9 +197,6 @@ export const Navigation = () => {
           Feedback
         </Text>
         <List>
-          <PageLink href="/alert" isNested>
-            Alert
-          </PageLink>
           <PageLink href="/alert-dialog" isNested>
             AlertDialog
           </PageLink>
@@ -262,6 +259,9 @@ export const Navigation = () => {
           <PageLink href="/hover-zone" isNested>
             HoverZone
           </PageLink>
+          <PageLink href="/alert" isNested>
+            LiveRegion
+          </PageLink>
           <PageLink href="/portal" isNested>
             Portal
           </PageLink>
@@ -320,9 +320,6 @@ export const Navigation = () => {
           Undecided
         </Text>
         <List>
-          <PageLink href="/arrow" isNested>
-            Arrow
-          </PageLink>
           <PageLink href="/accordion" isNested>
             Accordion
           </PageLink>
@@ -352,9 +349,6 @@ export const Navigation = () => {
           </PageLink>
           <PageLink href="/menu" isNested>
             Menu
-          </PageLink>
-          <PageLink href="/menu-item" isNested>
-            MenuItem
           </PageLink>
           <PageLink href="/tab" isNested>
             Tab
