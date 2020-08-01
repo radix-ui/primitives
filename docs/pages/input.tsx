@@ -40,7 +40,7 @@ export default function InputPage() {
       <Box
         sx={{
           flexGrow: 1,
-          pl: '245px',
+          px: '245px',
           py: 9,
         }}
       >
@@ -401,6 +401,90 @@ export default function InputPage() {
 `}
           </CodeBlock>
         </Container>
+      </Box>
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: '245px',
+          flexShrink: 0,
+          borderLeftWidth: '1px',
+          borderLeftStyle: 'solid',
+          borderLeftColor: 'gray300',
+        }}
+      >
+        <Heading
+          as="h4"
+          size={1}
+          sx={{
+            lineHeight: 2,
+          }}
+        >
+          Quick nav
+        </Heading>
+        <nav>
+          <ul>
+            <li>
+              <a href="">
+                <Text size={3}>Description</Text>
+              </a>
+            </li>
+            <li>
+              <a href="">
+                <Text size={3}>Installation</Text>
+              </a>
+            </li>
+            <li>
+              <a href="">
+                <Text size={3}>Keyboard Interaction</Text>
+              </a>
+            </li>
+            <li>
+              <a href="">
+                <Text size={3}>Examples</Text>
+              </a>
+              <ul>
+                <li>
+                  <a href="">
+                    <Text size={3}>Simple input</Text>
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    <Text size={3}>Input with placeholder</Text>
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    <Text size={3}>Input with icon</Text>
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    <Text size={3}>Input with right icon</Text>
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    <Text size={3}>Input with icons on both sides</Text>
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    <Text size={3}>Input with interactive content</Text>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a href="">
+                <Text size={3}>Styled Examples</Text>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </Box>
     </div>
   );
