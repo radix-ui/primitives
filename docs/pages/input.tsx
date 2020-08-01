@@ -6,6 +6,7 @@ import {
   Flex,
   Divider,
   Table,
+  Link,
   Thead,
   Tr,
   Th,
@@ -400,8 +401,116 @@ export default function InputPage() {
 <Input placeholder="Placeholder" />
 `}
           </CodeBlock>
+
+          <Flex
+            sx={{
+              justifyContent: 'center',
+              pt: 9,
+            }}
+          >
+            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
+          </Flex>
+
+          <Box
+            sx={{
+              py: 9,
+            }}
+          >
+            <Box
+              sx={{
+                mb: 5,
+              }}
+            >
+              <Heading as="h3" size={3}>
+                Related components
+              </Heading>
+              <ul>
+                <li>
+                  <Link>
+                    <Text size={3}>MenuButton</Text>
+                  </Link>
+                </li>
+                <li>
+                  <Link>
+                    <Text size={3}>ToggleButton</Text>
+                  </Link>
+                </li>
+                <li>
+                  <Link>
+                    <Text size={3}>ToolBar</Text>
+                  </Link>
+                </li>
+              </ul>
+            </Box>
+          </Box>
+
+          <Flex
+            sx={{
+              justifyContent: 'center',
+            }}
+          >
+            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
+          </Flex>
+
+          <Flex
+            sx={{
+              justifyContent: 'space-between',
+              my: 9,
+            }}
+          >
+            <Box>
+              <Link>
+                <Text
+                  size={3}
+                  sx={{
+                    display: 'block',
+                    color: 'gray700',
+                    mb: 1,
+                  }}
+                >
+                  Previous
+                </Text>
+                <Text
+                  size={6}
+                  sx={{
+                    display: 'block',
+                    color: 'inherit',
+                  }}
+                >
+                  Card
+                </Text>
+              </Link>
+            </Box>
+
+            <Box>
+              <Link>
+                <Text
+                  size={3}
+                  sx={{
+                    display: 'block',
+                    color: 'gray700',
+                    textAlign: 'right',
+                    mb: 1,
+                  }}
+                >
+                  Next
+                </Text>
+                <Text
+                  size={6}
+                  sx={{
+                    display: 'block',
+                    textAlign: 'right',
+                    color: 'inherit',
+                  }}
+                >
+                  CardLink
+                </Text>
+              </Link>
+            </Box>
+          </Flex>
         </Container>
       </Box>
+
       <Box
         sx={{
           position: 'fixed',
@@ -536,6 +645,16 @@ export default function InputPage() {
               >
                 <Text size={3} sx={{ color: 'gray700' }}>
                   Styled Examples
+                </Text>
+              </a>
+            </li>
+            <li>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Related components
                 </Text>
               </a>
             </li>
