@@ -21,6 +21,7 @@ import {
 } from '@modulz/radix';
 import { Navigation } from '../components/Navigation';
 import { CodeBlock } from '../components/CodeBlock';
+import { PlusIcon } from '@modulz/radix-icons';
 
 export default function ButtonPage() {
   return (
@@ -107,9 +108,17 @@ export default function ButtonPage() {
           </Text>
           <CodeBlock>import Button from "@componentsorg/button";</CodeBlock>
 
+          <Flex
+            sx={{
+              justifyContent: 'center',
+              py: 9,
+            }}
+          >
+            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
+          </Flex>
+
           <Box
             sx={{
-              mt: 7,
               mb: 5,
             }}
           >
@@ -145,7 +154,16 @@ export default function ButtonPage() {
             </Tbody>
           </Table>
 
-          <Heading as="h3" size={3} mt={7} mb={3}>
+          <Flex
+            sx={{
+              justifyContent: 'center',
+              py: 9,
+            }}
+          >
+            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
+          </Flex>
+
+          <Heading as="h3" size={3} mb={3}>
             Examples
           </Heading>
 
@@ -175,34 +193,10 @@ export default function ButtonPage() {
               Button with icon
             </Heading>
           </Box>
-
           <CodeBlock live>
             {`
 <Button>
-  <Box
-    sx={{
-      mr: 1,
-    }}
-    style={{
-      lineHeight: 1,
-    }}
-  >
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 15 15"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ verticalAlign: 'middle' }}
-    >
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M5.64683 3.14628C5.84209 2.95102 6.15867 2.95102 6.35394 3.14628L10.3539 7.14628C10.4477 7.24005 10.5004 7.36722 10.5004 7.49983C10.5004 7.63244 10.4477 7.75962 10.3539 7.85339L6.35393 11.8534C6.15867 12.0486 5.84209 12.0486 5.64683 11.8534C5.45157 11.6581 5.45157 11.3415 5.64683 11.1463L9.29328 7.49983L5.64683 3.85339C5.45157 3.65812 5.45157 3.34154 5.64683 3.14628Z"
-        fill="#282B2E"
-      />
-    </svg>
-  </Box>
+  <PlusIcon sx={{ mr: 1 }} />
   Button
 </Button>
 `}
@@ -224,59 +218,14 @@ export default function ButtonPage() {
               Button with right icon
             </Heading>
           </Box>
-
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
-            <Box
-              sx={{
-                p: 3,
-              }}
-            >
-              <Button>
-                Button
-                <Box
-                  sx={{
-                    ml: 1,
-                  }}
-                  style={{
-                    lineHeight: 1,
-                  }}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 15 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ verticalAlign: 'middle' }}
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M5.64683 3.14628C5.84209 2.95102 6.15867 2.95102 6.35394 3.14628L10.3539 7.14628C10.4477 7.24005 10.5004 7.36722 10.5004 7.49983C10.5004 7.63244 10.4477 7.75962 10.3539 7.85339L6.35393 11.8534C6.15867 12.0486 5.84209 12.0486 5.64683 11.8534C5.45157 11.6581 5.45157 11.3415 5.64683 11.1463L9.29328 7.49983L5.64683 3.85339C5.45157 3.65812 5.45157 3.34154 5.64683 3.14628Z"
-                      fill="#282B2E"
-                    />
-                  </svg>
-                </Box>
-              </Button>
-            </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
-              <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Button&gt;Button&lt;/Button&gt;
-                </code>
-              </pre>
-            </Box>
-          </Box>
+          <CodeBlock live>
+            {`
+<Button>
+  Button
+  <PlusIcon sx={{ ml: 1 }} /> />
+</Button>
+`}
+          </CodeBlock>
 
           <Box
             sx={{
@@ -294,83 +243,39 @@ export default function ButtonPage() {
               Button with two icons
             </Heading>
           </Box>
+          <CodeBlock live>
+            {`
+<Button>
+  <PlusIcon sx={{ mr: 1 }} />
+  Button
+  <PlusIcon sx={{ ml: 1 }} />
+</Button>
+`}
+          </CodeBlock>
 
           <Box
             sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
+              mt: 7,
+              mb: 5,
             }}
           >
-            <Box
+            <Heading
+              as="h4"
+              size={1}
               sx={{
-                p: 3,
+                lineHeight: 2,
               }}
             >
-              <Button>
-                <Box
-                  sx={{
-                    mr: 1,
-                  }}
-                  style={{
-                    lineHeight: 1,
-                  }}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 15 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ verticalAlign: 'middle' }}
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M5.64683 3.14628C5.84209 2.95102 6.15867 2.95102 6.35394 3.14628L10.3539 7.14628C10.4477 7.24005 10.5004 7.36722 10.5004 7.49983C10.5004 7.63244 10.4477 7.75962 10.3539 7.85339L6.35393 11.8534C6.15867 12.0486 5.84209 12.0486 5.64683 11.8534C5.45157 11.6581 5.45157 11.3415 5.64683 11.1463L9.29328 7.49983L5.64683 3.85339C5.45157 3.65812 5.45157 3.34154 5.64683 3.14628Z"
-                      fill="#282B2E"
-                    />
-                  </svg>
-                </Box>
-                Button
-                <Box
-                  sx={{
-                    ml: 1,
-                  }}
-                  style={{
-                    lineHeight: 1,
-                  }}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 15 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ verticalAlign: 'middle' }}
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M5.64683 3.14628C5.84209 2.95102 6.15867 2.95102 6.35394 3.14628L10.3539 7.14628C10.4477 7.24005 10.5004 7.36722 10.5004 7.49983C10.5004 7.63244 10.4477 7.75962 10.3539 7.85339L6.35393 11.8534C6.15867 12.0486 5.84209 12.0486 5.64683 11.8534C5.45157 11.6581 5.45157 11.3415 5.64683 11.1463L9.29328 7.49983L5.64683 3.85339C5.45157 3.65812 5.45157 3.34154 5.64683 3.14628Z"
-                      fill="#282B2E"
-                    />
-                  </svg>
-                </Box>
-              </Button>
-            </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
-              <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Button&gt;Button&lt;/Button&gt;
-                </code>
-              </pre>
-            </Box>
+              Just the icon
+            </Heading>
           </Box>
+          <CodeBlock live>
+            {`
+<Button aria-label="Follow">
+  <PlusIcon />
+</Button>
+`}
+          </CodeBlock>
 
           <Box
             sx={{
@@ -388,37 +293,15 @@ export default function ButtonPage() {
               Button with count
             </Heading>
           </Box>
-
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
-            <Box
-              sx={{
-                p: 3,
-              }}
-            >
-              <Button>
-                Follow
-                <Pipe sx={{ mx: 2 }} />
-                <Text size={1}>58</Text>
-              </Button>
-            </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
-              <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Button&gt;Button&lt;/Button&gt;
-                </code>
-              </pre>
-            </Box>
-          </Box>
+          <CodeBlock live>
+            {`
+<Button>
+  Follow
+  <Pipe sx={{ mx: 2 }} />
+  <Text>58</Text>
+</Button>
+`}
+          </CodeBlock>
 
           <Box
             sx={{
@@ -437,41 +320,14 @@ export default function ButtonPage() {
             </Heading>
           </Box>
 
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
-            <Box
-              sx={{
-                p: 3,
-              }}
-            >
-              <Button>
-                Follow
-                <Badge
-                  sx={{
-                    ml: 2,
-                  }}
-                >
-                  58
-                </Badge>
-              </Button>
-            </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
-              <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Button&gt;Button&lt;/Button&gt;
-                </code>
-              </pre>
-            </Box>
-          </Box>
+          <CodeBlock live>
+            {`
+<Button>
+  Button
+  <Badge sx={{ ml: 2 }}>58</Badge>
+</Button>
+`}
+          </CodeBlock>
 
           <Box
             sx={{
@@ -489,33 +345,15 @@ export default function ButtonPage() {
               Button with tooltip
             </Heading>
           </Box>
-
-          <Box
-            sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
-            <Box
-              sx={{
-                p: 3,
-              }}
-            >
-              <Button>Button</Button>
-            </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
-              <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Button&gt;Button&lt;/Button&gt;
-                </code>
-              </pre>
-            </Box>
-          </Box>
+          <CodeBlock live>
+            {`
+<Tooltip label="Tooltip label" side="top" align="center">
+  <Button>
+    Hover me
+  </Button>
+</Tooltip>
+`}
+          </CodeBlock>
 
           <Box
             sx={{
@@ -530,70 +368,18 @@ export default function ButtonPage() {
                 lineHeight: 2,
               }}
             >
-              Button with dropdown
+              Notes (mention menubutton)
             </Heading>
           </Box>
 
-          <Box
+          <Flex
             sx={{
-              border: '1px solid gainsboro',
-              borderRadius: '2',
-            }}
-          >
-            <Box
-              sx={{
-                p: 3,
-              }}
-            >
-              <Button>
-                Button
-                <Box
-                  sx={{
-                    ml: 1,
-                  }}
-                  style={{
-                    lineHeight: 1,
-                  }}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 15 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ verticalAlign: 'middle' }}
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M5.64683 3.14628C5.84209 2.95102 6.15867 2.95102 6.35394 3.14628L10.3539 7.14628C10.4477 7.24005 10.5004 7.36722 10.5004 7.49983C10.5004 7.63244 10.4477 7.75962 10.3539 7.85339L6.35393 11.8534C6.15867 12.0486 5.84209 12.0486 5.64683 11.8534C5.45157 11.6581 5.45157 11.3415 5.64683 11.1463L9.29328 7.49983L5.64683 3.85339C5.45157 3.65812 5.45157 3.34154 5.64683 3.14628Z"
-                      fill="#282B2E"
-                    />
-                  </svg>
-                </Box>
-              </Button>
-            </Box>
-            <Box
-              sx={{
-                borderTop: '1px solid gainsboro',
-                p: 3,
-              }}
-            >
-              <pre style={{ margin: '0' }}>
-                <code style={{ fontSize: '13px', fontFamily: 'Söhne Mono' }}>
-                  &lt;Button&gt;Button&lt;/Button&gt;
-                </code>
-              </pre>
-            </Box>
-          </Box>
-
-          <Box
-            sx={{
+              justifyContent: 'center',
               pt: 9,
             }}
           >
-            <Divider />
-          </Box>
+            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
+          </Flex>
 
           <Box
             sx={{
@@ -628,7 +414,13 @@ export default function ButtonPage() {
             </Box>
           </Box>
 
-          <Divider />
+          <Flex
+            sx={{
+              justifyContent: 'center',
+            }}
+          >
+            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
+          </Flex>
 
           <Flex
             sx={{
