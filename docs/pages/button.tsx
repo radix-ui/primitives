@@ -29,14 +29,12 @@ export default function ButtonPage() {
         sx={{
           position: 'fixed',
           top: 0,
-          height: '100%',
+          bottom: 0,
           width: '245px',
           flexShrink: 0,
           borderRightWidth: '1px',
           borderRightStyle: 'solid',
           borderRightColor: 'gray300',
-          overflowY: 'auto',
-          pb: 6,
         }}
       >
         <Navigation />
