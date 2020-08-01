@@ -410,9 +410,8 @@ export default function InputPage() {
           bottom: 0,
           width: '245px',
           flexShrink: 0,
-          borderLeftWidth: '1px',
-          borderLeftStyle: 'solid',
-          borderLeftColor: 'gray300',
+          pt: 9,
+          pr: 4,
         }}
       >
         <Heading
@@ -420,67 +419,124 @@ export default function InputPage() {
           size={1}
           sx={{
             lineHeight: 2,
+            mb: 5,
+            mt: 3,
           }}
         >
           Quick nav
         </Heading>
         <nav>
-          <ul>
+          <ul style={{ margin: '0', padding: '0', listStyle: 'none' }}>
             <li>
-              <a href="">
-                <Text size={3}>Description</Text>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Description
+                </Text>
               </a>
             </li>
             <li>
-              <a href="">
-                <Text size={3}>Installation</Text>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Installation
+                </Text>
               </a>
             </li>
             <li>
-              <a href="">
-                <Text size={3}>Keyboard Interaction</Text>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Keyboard Interaction
+                </Text>
               </a>
             </li>
             <li>
-              <a href="">
-                <Text size={3}>Examples</Text>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Examples
+                </Text>
               </a>
-              <ul>
+              <ul style={{ margin: '0', padding: '0 0 0 25px', listStyle: 'none' }}>
                 <li>
-                  <a href="">
-                    <Text size={3}>Simple input</Text>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Simple input
+                    </Text>
                   </a>
                 </li>
                 <li>
-                  <a href="">
-                    <Text size={3}>Input with placeholder</Text>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with placeholder
+                    </Text>
                   </a>
                 </li>
                 <li>
-                  <a href="">
-                    <Text size={3}>Input with icon</Text>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with icon
+                    </Text>
                   </a>
                 </li>
                 <li>
-                  <a href="">
-                    <Text size={3}>Input with right icon</Text>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with right icon
+                    </Text>
                   </a>
                 </li>
                 <li>
-                  <a href="">
-                    <Text size={3}>Input with icons on both sides</Text>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with icons on both sides
+                    </Text>
                   </a>
                 </li>
                 <li>
-                  <a href="">
-                    <Text size={3}>Input with interactive content</Text>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with interactive content
+                    </Text>
                   </a>
                 </li>
               </ul>
             </li>
             <li>
-              <a href="">
-                <Text size={3}>Styled Examples</Text>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Styled Examples
+                </Text>
               </a>
             </li>
           </ul>
