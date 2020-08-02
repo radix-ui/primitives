@@ -9,6 +9,8 @@ import {
   Heading,
   Badge,
   Divider,
+  Grid,
+  CardLink,
   Pipe,
   Table,
   Thead,
@@ -43,7 +45,7 @@ export default function ButtonPage() {
       <Box
         sx={{
           flexGrow: 1,
-          pl: '245px',
+          px: '245px',
           py: 9,
         }}
       >
@@ -71,11 +73,11 @@ export default function ButtonPage() {
             canceling an action, or performing a delete operation.
           </Heading>
 
-          <Box sx={{ my: 7, mx: -9 }}>
-            <AspectRatio ratio="3:1">
+          <Box sx={{ my: 7 }}>
+            <AspectRatio ratio="2:1">
               <Flex
                 sx={{
-                  border: '1px solid gainsboro',
+                  backgroundColor: 'blue200',
                   borderRadius: '2',
                   height: '100%',
                   alignItems: 'center',
@@ -83,7 +85,18 @@ export default function ButtonPage() {
                 }}
               >
                 <Box sx={{}}>
-                  <Button>Button</Button>
+                  <Button
+                    sx={{
+                      boxShadow: 'none',
+                      padding: '10px 20px',
+                      fontSize: 3,
+                    }}
+                    style={{
+                      lineHeight: 1,
+                    }}
+                  >
+                    Button
+                  </Button>
                 </Box>
               </Flex>
             </AspectRatio>
@@ -391,26 +404,123 @@ export default function ButtonPage() {
                 mb: 5,
               }}
             >
-              <Heading as="h3" size={3}>
+              <Heading as="h3" size={3} sx={{ mb: 7 }}>
                 Related components
               </Heading>
-              <ul>
-                <li>
-                  <Link>
-                    <Text size={3}>MenuButton</Text>
-                  </Link>
-                </li>
-                <li>
-                  <Link>
-                    <Text size={3}>ToggleButton</Text>
-                  </Link>
-                </li>
-                <li>
-                  <Link>
-                    <Text size={3}>ToolBar</Text>
-                  </Link>
-                </li>
-              </ul>
+              <Grid sx={{ gap: 3, gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
+                <CardLink href="/introduction" sx={{ padding: 0 }}>
+                  <AspectRatio ratio="16:9">
+                    <Flex
+                      sx={{
+                        backgroundColor: 'blue100',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderTopLeftRadius: 2,
+                        borderTopRightRadius: 2,
+                      }}
+                    >
+                      <Box sx={{}}>
+                        <Button
+                          sx={{
+                            boxShadow: 'none',
+                            padding: '10px 20px',
+                            fontSize: 3,
+                          }}
+                          style={{
+                            lineHeight: 1,
+                          }}
+                        >
+                          Button
+                        </Button>
+                      </Box>
+                    </Flex>
+                  </AspectRatio>
+                  <Box sx={{ padding: 3 }}>
+                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
+                      Menu Button
+                    </Text>
+                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 1 }}>
+                      A menu button is a button that opens a menu.
+                    </Text>
+                  </Box>
+                </CardLink>
+                <CardLink href="/introduction" sx={{ padding: 0 }}>
+                  <AspectRatio ratio="16:9">
+                    <Flex
+                      sx={{
+                        backgroundColor: 'blue100',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderTopLeftRadius: 2,
+                        borderTopRightRadius: 2,
+                      }}
+                    >
+                      <Box sx={{}}>
+                        <Button
+                          sx={{
+                            boxShadow: 'none',
+                            padding: '10px 20px',
+                            fontSize: 3,
+                          }}
+                          style={{
+                            lineHeight: 1,
+                          }}
+                        >
+                          Button
+                        </Button>
+                      </Box>
+                    </Flex>
+                  </AspectRatio>
+                  <Box sx={{ padding: 3 }}>
+                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
+                      Toggle Button
+                    </Text>
+                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 1 }}>
+                      A two-state button that can be either off or on.
+                    </Text>
+                  </Box>
+                </CardLink>
+                <CardLink href="/introduction" sx={{ padding: 0 }}>
+                  <AspectRatio ratio="16:9">
+                    <Flex
+                      sx={{
+                        backgroundColor: 'blue100',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderTopLeftRadius: 2,
+                        borderTopRightRadius: 2,
+                      }}
+                    >
+                      <Box sx={{}}>
+                        <Button
+                          sx={{
+                            boxShadow: 'none',
+                            padding: '10px 20px',
+                            fontSize: 3,
+                          }}
+                          style={{
+                            lineHeight: 1,
+                          }}
+                        >
+                          Button
+                        </Button>
+                      </Box>
+                    </Flex>
+                  </AspectRatio>
+                  <Box sx={{ padding: 3 }}>
+                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
+                      Tool Bar
+                    </Text>
+                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 1 }}>
+                      A toolbar is a container for grouping a set of controls, such as buttons,
+                      menubuttons, or checkboxes.
+                    </Text>
+                  </Box>
+                </CardLink>
+              </Grid>
             </Box>
           </Box>
 
@@ -479,6 +589,157 @@ export default function ButtonPage() {
             </Box>
           </Flex>
         </Container>
+      </Box>
+
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: '245px',
+          flexShrink: 0,
+          pt: 9,
+          pr: 4,
+        }}
+      >
+        <Heading
+          as="h4"
+          size={1}
+          sx={{
+            lineHeight: 2,
+            mb: 5,
+            mt: 3,
+          }}
+        >
+          Quick nav
+        </Heading>
+        <nav>
+          <ul style={{ margin: '0', padding: '0', listStyle: 'none' }}>
+            <li>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Description
+                </Text>
+              </a>
+            </li>
+            <li>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Installation
+                </Text>
+              </a>
+            </li>
+            <li>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Keyboard Interaction
+                </Text>
+              </a>
+            </li>
+            <li>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Examples
+                </Text>
+              </a>
+              <ul style={{ margin: '0', padding: '0 0 0 25px', listStyle: 'none' }}>
+                <li>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Simple input
+                    </Text>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with placeholder
+                    </Text>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with icon
+                    </Text>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with right icon
+                    </Text>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with icons on both sides
+                    </Text>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href=""
+                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+                  >
+                    <Text size={3} sx={{ color: 'gray700' }}>
+                      Input with interactive content
+                    </Text>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Styled Examples
+                </Text>
+              </a>
+            </li>
+            <li>
+              <a
+                href=""
+                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
+              >
+                <Text size={3} sx={{ color: 'gray700' }}>
+                  Related components
+                </Text>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </Box>
     </div>
   );
