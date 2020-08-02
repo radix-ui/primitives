@@ -46,7 +46,7 @@ export default function ButtonPage() {
         sx={{
           flexGrow: 1,
           px: '245px',
-          py: 9,
+          py: 7,
         }}
       >
         <Container size={2}>
@@ -85,18 +85,27 @@ export default function ButtonPage() {
                 }}
               >
                 <Box sx={{}}>
-                  <Button
+                  <Box
                     sx={{
+                      backgroundColor: 'blue600',
+                      color: 'white',
                       boxShadow: 'none',
-                      padding: '10px 20px',
+                      height: '35px',
+                      px: 3,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       fontSize: 3,
+                      fontWeight: '500',
+                      borderRadius: 1,
+                      userSelect: 'none',
                     }}
                     style={{
                       lineHeight: 1,
                     }}
                   >
                     Button
-                  </Button>
+                  </Box>
                 </Box>
               </Flex>
             </AspectRatio>
@@ -108,30 +117,22 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading as="h3" size={3}>
+            <Heading as="h3" size={3} sx={{ mb: 4 }}>
               Installation
             </Heading>
             <Text size={3} sx={{ lineHeight: 2 }}>
               Install the component from your command line:
             </Text>
           </Box>
-          <CodeBlock>npm install @componentsorg/button</CodeBlock>
+          <CodeBlock>npm install @radixui/react-button</CodeBlock>
           <Text as="p" size={3} sx={{ lineHeight: 2, my: 4 }}>
             Then import the component:
           </Text>
-          <CodeBlock>import Button from "@componentsorg/button";</CodeBlock>
-
-          <Flex
-            sx={{
-              justifyContent: 'center',
-              py: 9,
-            }}
-          >
-            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
-          </Flex>
+          <CodeBlock>import Button from "@radixui/react-button";</CodeBlock>
 
           <Box
             sx={{
+              mt: 8,
               mb: 5,
             }}
           >
@@ -167,18 +168,16 @@ export default function ButtonPage() {
             </Tbody>
           </Table>
 
-          <Flex
+          <Box
             sx={{
-              justifyContent: 'center',
-              py: 9,
+              mt: 8,
+              mb: 5,
             }}
           >
-            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
-          </Flex>
-
-          <Heading as="h3" size={3} mb={3}>
-            Examples
-          </Heading>
+            <Heading as="h3" size={3} mb={3}>
+              Examples
+            </Heading>
+          </Box>
 
           <Heading as="h4" size={1} sx={{ mt: 7, mb: 5, lineHeight: 2 }}>
             Simple button
@@ -374,13 +373,7 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
+            <Heading as="h3" size={3}>
               Notes (mention menubutton)
             </Heading>
           </Box>
@@ -407,12 +400,12 @@ export default function ButtonPage() {
               <Heading as="h3" size={3} sx={{ mb: 7 }}>
                 Related components
               </Heading>
-              <Grid sx={{ gap: 3, gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
+              <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
                 <CardLink href="/introduction" sx={{ padding: 0 }}>
                   <AspectRatio ratio="16:9">
                     <Flex
                       sx={{
-                        backgroundColor: 'blue100',
+                        backgroundColor: 'blue200',
                         height: '100%',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -423,6 +416,8 @@ export default function ButtonPage() {
                       <Box sx={{}}>
                         <Button
                           sx={{
+                            backgroundColor: 'blue600',
+                            color: 'white',
                             boxShadow: 'none',
                             padding: '10px 20px',
                             fontSize: 3,
@@ -436,12 +431,12 @@ export default function ButtonPage() {
                       </Box>
                     </Flex>
                   </AspectRatio>
-                  <Box sx={{ padding: 3 }}>
+                  <Box sx={{ padding: 4 }}>
                     <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
                       Menu Button
                     </Text>
-                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 1 }}>
-                      A menu button is a button that opens a menu.
+                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
+                      A button that opens a menu.
                     </Text>
                   </Box>
                 </CardLink>
@@ -449,7 +444,7 @@ export default function ButtonPage() {
                   <AspectRatio ratio="16:9">
                     <Flex
                       sx={{
-                        backgroundColor: 'blue100',
+                        backgroundColor: 'blue200',
                         height: '100%',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -460,6 +455,8 @@ export default function ButtonPage() {
                       <Box sx={{}}>
                         <Button
                           sx={{
+                            backgroundColor: 'blue600',
+                            color: 'white',
                             boxShadow: 'none',
                             padding: '10px 20px',
                             fontSize: 3,
@@ -473,11 +470,11 @@ export default function ButtonPage() {
                       </Box>
                     </Flex>
                   </AspectRatio>
-                  <Box sx={{ padding: 3 }}>
+                  <Box sx={{ padding: 4 }}>
                     <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
                       Toggle Button
                     </Text>
-                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 1 }}>
+                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
                       A two-state button that can be either off or on.
                     </Text>
                   </Box>
@@ -486,7 +483,7 @@ export default function ButtonPage() {
                   <AspectRatio ratio="16:9">
                     <Flex
                       sx={{
-                        backgroundColor: 'blue100',
+                        backgroundColor: 'blue200',
                         height: '100%',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -497,6 +494,8 @@ export default function ButtonPage() {
                       <Box sx={{}}>
                         <Button
                           sx={{
+                            backgroundColor: 'blue600',
+                            color: 'white',
                             boxShadow: 'none',
                             padding: '10px 20px',
                             fontSize: 3,
@@ -510,13 +509,13 @@ export default function ButtonPage() {
                       </Box>
                     </Flex>
                   </AspectRatio>
-                  <Box sx={{ padding: 3 }}>
+                  <Box sx={{ padding: 4 }}>
                     <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
                       Tool Bar
                     </Text>
-                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 1 }}>
-                      A toolbar is a container for grouping a set of controls, such as buttons,
-                      menubuttons, or checkboxes.
+                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
+                      A container for grouping a set of controls, such as buttons, menubuttons, or
+                      checkboxes.
                     </Text>
                   </Box>
                 </CardLink>
@@ -599,7 +598,7 @@ export default function ButtonPage() {
           bottom: 0,
           width: '245px',
           flexShrink: 0,
-          pt: 9,
+          pt: 7,
           pr: 4,
         }}
       >

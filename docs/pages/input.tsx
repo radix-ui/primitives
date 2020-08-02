@@ -5,8 +5,11 @@ import {
   Button,
   Flex,
   Divider,
+  AspectRatio,
   Table,
   Link,
+  Grid,
+  CardLink,
   Thead,
   Tr,
   Th,
@@ -42,7 +45,7 @@ export default function InputPage() {
         sx={{
           flexGrow: 1,
           px: '245px',
-          py: 9,
+          py: 7,
         }}
       >
         <Container size={2}>
@@ -68,6 +71,33 @@ export default function InputPage() {
             An input is a form control.
           </Heading>
 
+          <Box sx={{ my: 7 }}>
+            <AspectRatio ratio="2:1">
+              <Flex
+                sx={{
+                  backgroundColor: 'blue200',
+                  borderRadius: '2',
+                  height: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Box
+                  sx={{
+                    backgroundColor: 'white',
+                    height: '35px',
+                    width: '75%',
+                    maxWidth: '250px',
+                    flexShrink: 0,
+                    borderRadius: 1,
+                    border: '1px solid',
+                    borderColor: 'blue400',
+                  }}
+                ></Box>
+              </Flex>
+            </AspectRatio>
+          </Box>
+
           <Box
             sx={{
               mt: 7,
@@ -81,11 +111,11 @@ export default function InputPage() {
               Install the component from your command line:
             </Text>
           </Box>
-          <CodeBlock>npm install @radixui/input</CodeBlock>
+          <CodeBlock>npm install @radixui/react-input</CodeBlock>
           <Text as="p" size={3} sx={{ lineHeight: 2, my: 4 }}>
             Then import the component:
           </Text>
-          <CodeBlock>import Button from "@radixui/input";</CodeBlock>
+          <CodeBlock>import Input from "@radixui/react-input";</CodeBlock>
 
           <Flex
             sx={{
@@ -421,26 +451,129 @@ export default function InputPage() {
                 mb: 5,
               }}
             >
-              <Heading as="h3" size={3}>
+              <Heading as="h3" size={3} sx={{ mb: 7 }}>
                 Related components
               </Heading>
-              <ul>
-                <li>
-                  <Link>
-                    <Text size={3}>MenuButton</Text>
-                  </Link>
-                </li>
-                <li>
-                  <Link>
-                    <Text size={3}>ToggleButton</Text>
-                  </Link>
-                </li>
-                <li>
-                  <Link>
-                    <Text size={3}>ToolBar</Text>
-                  </Link>
-                </li>
-              </ul>
+              <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+                <CardLink href="/introduction" sx={{ padding: 0 }}>
+                  <AspectRatio ratio="16:9">
+                    <Flex
+                      sx={{
+                        backgroundColor: 'blue200',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderTopLeftRadius: 2,
+                        borderTopRightRadius: 2,
+                      }}
+                    >
+                      <Box sx={{}}>
+                        <Button
+                          sx={{
+                            backgroundColor: 'blue600',
+                            color: 'white',
+                            boxShadow: 'none',
+                            padding: '10px 20px',
+                            fontSize: 3,
+                          }}
+                          style={{
+                            lineHeight: 1,
+                          }}
+                        >
+                          Button
+                        </Button>
+                      </Box>
+                    </Flex>
+                  </AspectRatio>
+                  <Box sx={{ padding: 4 }}>
+                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
+                      Menu Button
+                    </Text>
+                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
+                      A button that opens a menu.
+                    </Text>
+                  </Box>
+                </CardLink>
+                <CardLink href="/introduction" sx={{ padding: 0 }}>
+                  <AspectRatio ratio="16:9">
+                    <Flex
+                      sx={{
+                        backgroundColor: 'blue200',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderTopLeftRadius: 2,
+                        borderTopRightRadius: 2,
+                      }}
+                    >
+                      <Box sx={{}}>
+                        <Button
+                          sx={{
+                            backgroundColor: 'blue600',
+                            color: 'white',
+                            boxShadow: 'none',
+                            padding: '10px 20px',
+                            fontSize: 3,
+                          }}
+                          style={{
+                            lineHeight: 1,
+                          }}
+                        >
+                          Button
+                        </Button>
+                      </Box>
+                    </Flex>
+                  </AspectRatio>
+                  <Box sx={{ padding: 4 }}>
+                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
+                      Toggle Button
+                    </Text>
+                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
+                      A two-state button that can be either off or on.
+                    </Text>
+                  </Box>
+                </CardLink>
+                <CardLink href="/introduction" sx={{ padding: 0 }}>
+                  <AspectRatio ratio="16:9">
+                    <Flex
+                      sx={{
+                        backgroundColor: 'blue200',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderTopLeftRadius: 2,
+                        borderTopRightRadius: 2,
+                      }}
+                    >
+                      <Box sx={{}}>
+                        <Button
+                          sx={{
+                            backgroundColor: 'blue600',
+                            color: 'white',
+                            boxShadow: 'none',
+                            padding: '10px 20px',
+                            fontSize: 3,
+                          }}
+                          style={{
+                            lineHeight: 1,
+                          }}
+                        >
+                          Button
+                        </Button>
+                      </Box>
+                    </Flex>
+                  </AspectRatio>
+                  <Box sx={{ padding: 4 }}>
+                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
+                      Tool Bar
+                    </Text>
+                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
+                      A container for grouping a set of controls, such as buttons, menubuttons, or
+                      checkboxes.
+                    </Text>
+                  </Box>
+                </CardLink>
+              </Grid>
             </Box>
           </Box>
 
@@ -519,7 +652,7 @@ export default function InputPage() {
           bottom: 0,
           width: '245px',
           flexShrink: 0,
-          pt: 9,
+          pt: 7,
           pr: 4,
         }}
       >
