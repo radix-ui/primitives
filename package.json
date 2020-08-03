@@ -10,7 +10,7 @@
     "bootstrap": "make bootstrap",
     "build": "ts-node --transpile-only scripts/build-all && yarn build:styles",
     "build-package": "ts-node --transpile-only scripts/build-package",
-    "build:styles": "cross-env EXTRACT_CSS=true ts-node ./scripts/extract-styles packages/react",
+    "build:styles": "cross-env EXTRACT_CSS=true ts-node --files ./scripts/extract-styles packages/react",
     "clean": "make clean",
     "new-component": "cross-env CI=true ts-node ./scripts/new-component",
     "nc": "yarn new-component",
