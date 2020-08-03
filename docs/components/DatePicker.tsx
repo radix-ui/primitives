@@ -1,20 +1,5 @@
 import React from 'react';
-import {
-  Container,
-  Box,
-  Text,
-  Link,
-  Flex,
-  Pipe,
-  Popover,
-  Grid,
-  ChromelessButton,
-  Badge,
-  Heading,
-  Divider,
-  VisuallyHidden,
-} from '@modulz/radix';
-import { PlusIcon } from '@modulz/radix-icons';
+import { Box, Text, Flex, Grid } from '@modulz/radix';
 
 export const DatePicker = () => {
   return (
@@ -30,21 +15,8 @@ export const DatePicker = () => {
         fontFeatureSettings: "'tnum'",
       }}
     >
-      <Flex
-        sx={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          mb: 1,
-        }}
-      >
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+      <Flex sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Flex sx={{ width: 6, height: 6, alignItems: 'center', justifyContent: 'center' }}>
           <svg
             width="15"
             height="15"
@@ -60,22 +32,10 @@ export const DatePicker = () => {
             />
           </svg>
         </Flex>
-        <Text
-          weight="medium"
-          sx={{
-            fontSize: 3,
-          }}
-        >
+        <Text weight="medium" sx={{ fontSize: 3 }}>
           July
         </Text>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <Flex sx={{ width: 6, height: 6, alignItems: 'center', justifyContent: 'center' }}>
           <svg
             width="15"
             height="15"
@@ -92,478 +52,39 @@ export const DatePicker = () => {
           </svg>
         </Flex>
       </Flex>
-      <Grid
-        sx={{
-          gridTemplateColumns: ['repeat(1, 1fr)', 'repeat(7, 1fr)'],
-        }}
-      >
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text size={2} sx={{ color: 'gray700' }}>
-            Su
-          </Text>
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text size={2} sx={{ color: 'gray700' }}>
-            Mo
-          </Text>
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text size={2} sx={{ color: 'gray700' }}>
-            Tu
-          </Text>
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text size={2} sx={{ color: 'gray700' }}>
-            We
-          </Text>
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text size={2} sx={{ color: 'gray700' }}>
-            Th
-          </Text>
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text size={2} sx={{ color: 'gray700' }}>
-            Fr
-          </Text>
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text size={2} sx={{ color: 'gray700' }}>
-            Sa
-          </Text>
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        ></Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        ></Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        ></Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          1
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          2
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          3
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          4
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          5
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          6
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          7
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          8
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          9
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          10
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          11
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          12
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          13
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          14
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          15
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-            backgroundColor: 'gray400',
-          }}
-        >
-          16
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-            backgroundColor: 'gray200',
-          }}
-        >
-          17
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-            backgroundColor: 'gray200',
-          }}
-        >
-          18
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-            backgroundColor: 'gray200',
-          }}
-        >
-          19
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-            backgroundColor: 'gray200',
-          }}
-        >
-          20
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-            backgroundColor: 'gray400',
-          }}
-        >
-          21
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          22
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          23
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          24
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          25
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          26
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          27
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          28
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          29
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          30
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        >
-          31
-        </Flex>
-        <Flex
-          sx={{
-            width: 6,
-            height: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 2,
-          }}
-        ></Flex>
+      <Grid sx={{ gridTemplateColumns: ['repeat(1, 1fr)', 'repeat(7, 1fr)'] }}>
+        {/* Days of the week */}
+        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
+          <Flex sx={{ width: 6, height: 6, alignItems: 'center', justifyContent: 'center' }}>
+            <Text size={2} sx={{ color: 'gray700' }}>
+              {day}
+            </Text>
+          </Flex>
+        ))}
+
+        {/* Days */}
+        {Array.from({ length: 35 }, (_, index) => {
+          const startOffset = 3;
+          const day = index - startOffset + 1;
+          const start = 16;
+          const end = 21;
+          const isStartOrEnd = day === start || day === end;
+          const isBetween = day > start && day < end;
+          return (
+            <Flex
+              sx={{
+                width: 6,
+                height: 6,
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 2,
+                backgroundColor: isStartOrEnd ? 'gray400' : isBetween ? 'gray200' : undefined,
+              }}
+            >
+              {day >= 1 && day <= 31 ? day : ''}
+            </Flex>
+          );
+        })}
       </Grid>
     </Box>
   );

@@ -50,25 +50,10 @@ export default function ButtonPage() {
         }}
       >
         <Container size={2}>
-          <Heading
-            as="h1"
-            size={4}
-            sx={{
-              lineHeight: 9,
-            }}
-          >
+          <Heading as="h1" size={4} sx={{ lineHeight: 9 }}>
             Button
           </Heading>
-          <Heading
-            as="h2"
-            size={2}
-            weight="normal"
-            sx={{
-              lineHeight: 3,
-              color: 'gray700',
-              mb: 6,
-            }}
-          >
+          <Heading as="h2" size={2} weight="normal" sx={{ lineHeight: 3, color: 'gray700', mb: 6 }}>
             A button enables users to trigger an event, such as submitting a form, opening a dialog,
             canceling an action, or performing a delete operation.
           </Heading>
@@ -189,19 +174,8 @@ export default function ButtonPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
+          <Box sx={{ mt: 7, mb: 5 }}>
+            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
               Button with icon
             </Heading>
           </Box>
@@ -214,19 +188,8 @@ export default function ButtonPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
+          <Box sx={{ mt: 7, mb: 5 }}>
+            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
               Button with right icon
             </Heading>
           </Box>
@@ -239,19 +202,8 @@ export default function ButtonPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
+          <Box sx={{ mt: 7, mb: 5 }}>
+            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
               Button with two icons
             </Heading>
           </Box>
@@ -531,31 +483,13 @@ export default function ButtonPage() {
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
-          <Flex
-            sx={{
-              justifyContent: 'space-between',
-              my: 9,
-            }}
-          >
+          <Flex sx={{ justifyContent: 'space-between', my: 9 }}>
             <Box>
               <Link>
-                <Text
-                  size={3}
-                  sx={{
-                    display: 'block',
-                    color: 'gray700',
-                    mb: 1,
-                  }}
-                >
+                <Text size={3} sx={{ display: 'block', color: 'gray700', mb: 1 }}>
                   Previous
                 </Text>
-                <Text
-                  size={6}
-                  sx={{
-                    display: 'block',
-                    color: 'inherit',
-                  }}
-                >
+                <Text size={6} sx={{ display: 'block', color: 'inherit' }}>
                   Card
                 </Text>
               </Link>
@@ -565,23 +499,11 @@ export default function ButtonPage() {
               <Link>
                 <Text
                   size={3}
-                  sx={{
-                    display: 'block',
-                    color: 'gray700',
-                    textAlign: 'right',
-                    mb: 1,
-                  }}
+                  sx={{ display: 'block', color: 'gray700', textAlign: 'right', mb: 1 }}
                 >
                   Next
                 </Text>
-                <Text
-                  size={6}
-                  sx={{
-                    display: 'block',
-                    textAlign: 'right',
-                    color: 'inherit',
-                  }}
-                >
+                <Text size={6} sx={{ display: 'block', textAlign: 'right', color: 'inherit' }}>
                   CardLink
                 </Text>
               </Link>

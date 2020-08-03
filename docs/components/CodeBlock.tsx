@@ -1,5 +1,5 @@
 import React from 'react';
-import { LiveProvider, LiveProviderProps, LiveEditor, LiveError, LivePreview } from 'react-live';
+import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live';
 import { PrismTheme } from 'prism-react-renderer';
 import { Box, theme as radixTheme } from '@modulz/radix';
 import * as RC from '@modulz/radix';
@@ -12,28 +12,19 @@ const theme: PrismTheme = {
   styles: [
     {
       types: ['comment', 'prolog', 'doctype', 'cdata'],
-      style: {
-        color: '#999988',
-        fontStyle: 'italic',
-      },
+      style: { color: '#999988', fontStyle: 'italic' },
     },
     {
       types: ['namespace'],
-      style: {
-        opacity: 0.7,
-      },
+      style: { opacity: 0.7 },
     },
     {
       types: ['string', 'attr-value'],
-      style: {
-        color: 'hsl(330, 75%, 45%)',
-      },
+      style: { color: 'hsl(330, 75%, 45%)' },
     },
     {
       types: ['punctuation', 'operator'],
-      style: {
-        color: radixTheme.colors.gray600,
-      },
+      style: { color: radixTheme.colors.gray600 },
     },
     {
       types: [
@@ -48,33 +39,23 @@ const theme: PrismTheme = {
         'regex',
         'inserted',
       ],
-      style: {
-        color: 'hsl(180, 55%, 35%)',
-      },
+      style: { color: 'hsl(180, 55%, 35%)' },
     },
     {
       types: ['atrule', 'keyword', 'attr-name', 'selector'],
-      style: {
-        color: 'hsl(195, 90%, 35%)',
-      },
+      style: { color: 'hsl(195, 90%, 35%)' },
     },
     {
       types: ['function', 'deleted', 'tag'],
-      style: {
-        color: 'hsl(330, 75%, 45%)',
-      },
+      style: { color: 'hsl(330, 75%, 45%)' },
     },
     {
       types: ['function-variable'],
-      style: {
-        color: 'hsl(180, 50%, 35%)',
-      },
+      style: { color: 'hsl(180, 50%, 35%)' },
     },
     {
       types: ['tag', 'selector', 'keyword'],
-      style: {
-        color: radixTheme.colors.blue700,
-      },
+      style: { color: radixTheme.colors.blue700 },
     },
   ],
 };
@@ -86,16 +67,14 @@ type CodeBlockProps = {
 };
 
 export function CodeBlock({ children, live = false, removeFragment = false }: CodeBlockProps) {
-  const liveProviderProps: LiveProviderProps = {
-    code: children.trim(),
-    transformCode: (code) => (removeFragment ? code : `<>${code}</>`),
-    scope: { ...RC },
-    theme,
-  };
-
   return (
     <Box mt={4}>
-      <LiveProvider {...liveProviderProps}>
+      <LiveProvider
+        scope={{ ...RC }}
+        theme={theme}
+        code={children.trim()}
+        transformCode={(code) => (removeFragment ? code : `<>${code}</>`)}
+      >
         {live ? (
           <LivePreview
             style={{
@@ -119,7 +98,6 @@ export function CodeBlock({ children, live = false, removeFragment = false }: Co
             border: `1px solid ${radixTheme.colors.gray300}`,
             ...(live ? { borderTop: 'none', borderTopLeftRadius: 0, borderTopRightRadius: 0 } : {}),
           }}
-          css={{ textarea: { outline: 0 } }}
         />
 
         {live ? <LiveError /> : null}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Flex, List, Box, ListItem, Badge, Heading, Divider } from '@modulz/radix';
+import { Text, Flex, List, Box, ListItem, Badge, Divider } from '@modulz/radix';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ScrollArea } from './ScrollArea';
@@ -436,13 +436,7 @@ const PageLink = ({ children, isNested = false, ...props }) => {
 
   return (
     <Link {...props} passHref>
-      <ListItem
-        as="a"
-        sx={{
-          pl: isNested ? 8 : 6,
-        }}
-        variant={isActive ? 'active' : undefined}
-      >
+      <ListItem as="a" sx={{ pl: isNested ? 8 : 6 }} variant={isActive ? 'active' : undefined}>
         <Text size={2} sx={{ color: isActive ? 'white' : undefined }}>
           {children}
         </Text>
