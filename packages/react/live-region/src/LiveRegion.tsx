@@ -19,24 +19,24 @@ const ROLES: { [key in RegionType]: RegionRole } = {
   assertive: 'alert',
 };
 
-const interopAttr = interopDataAttr('AlertRegion');
+const interopAttr = interopDataAttr('LiveRegionRegion');
 
 const useLiveRegion = ({
-  type,
-  isAtomic,
-  role: roleProp,
+  ariaAtomic,
   ariaRelevant,
+  role: roleProp,
+  type,
 }: {
-  type: RegionType;
-  isAtomic?: boolean;
-  role?: RegionRole;
+  ariaAtomic?: boolean;
   // Generally use of aria-relevant is discouraged, but we want to provide support for it in
   // specific cases. We should provide guidance for this via documentation.
   ariaRelevant?: AriaRelevantOptions | AriaRelevantCombinedOptions | AriaRelevantOptions[] | 'all';
+  role?: RegionRole;
+  type: RegionType;
 }) => {
   const [region, setRegion] = React.useState<HTMLElement>();
 
-  // Supports an explicit role prop. If none is set, fallback to role based on the alert type.
+  // Supports an explicit role prop. If none is set, fallback to role based on the region type.
   const role = roleProp || ROLES[type];
 
   const relevant = ariaRelevant
@@ -59,7 +59,7 @@ const useLiveRegion = ({
     }
 
     element.setAttribute('aria-live', type);
-    element.setAttribute('aria-atomic', String(isAtomic || false));
+    element.setAttribute('aria-atomic', String(ariaAtomic || false));
     element.setAttribute('role', role);
     if (relevant) {
       element.setAttribute('aria-relevant', relevant);
@@ -67,64 +67,63 @@ const useLiveRegion = ({
 
     const regionElement = element as HTMLElement;
     setRegion(regionElement);
-  }, [relevant, type, role, isAtomic]);
+  }, [relevant, type, role, ariaAtomic]);
 
   return region;
 };
 
 /* -------------------------------------------------------------------------------------------------
- * Alert
+ * LiveRegion
  * -----------------------------------------------------------------------------------------------*/
 
 const ALERT_DEFAULT_TAG = 'div';
 
-type AlertDOMProps = React.ComponentPropsWithoutRef<typeof ALERT_DEFAULT_TAG>;
-type AlertOwnProps = { type?: RegionType; isAtomic?: boolean; role?: RegionRole };
-type AlertProps = AlertDOMProps & AlertOwnProps;
+type LiveRegionDOMProps = React.ComponentPropsWithoutRef<typeof ALERT_DEFAULT_TAG>;
+type LiveRegionOwnProps = { type?: RegionType; role?: RegionRole };
+type LiveRegionProps = LiveRegionDOMProps & LiveRegionOwnProps;
 
-const Alert = forwardRef<typeof ALERT_DEFAULT_TAG, AlertProps>(function Alert(props, forwardedRef) {
-  const {
-    type = 'polite',
-    'aria-relevant': ariaRelevant,
-    isAtomic = false,
-    role,
-    children,
-    ...alertProps
-  } = props;
+const LiveRegion = forwardRef<typeof ALERT_DEFAULT_TAG, LiveRegionProps>(function LiveRegion(
+  props,
+  forwardedRef
+) {
+  const { type = 'polite', 'aria-relevant': ariaRelevant, role, children, ...regionProps } = props;
 
-  // Support for direct passing of `aria-atomic` or `isAtomic` prop.
+  // Support for direct passing of `aria-atomic` or `ariaAtomic` prop.
   let ariaAtomic =
-    alertProps['aria-atomic'] != null
-      ? alertProps['aria-atomic'] === 'false'
+    regionProps['aria-atomic'] != null
+      ? regionProps['aria-atomic'] === 'false'
         ? false
-        : Boolean(alertProps['aria-atomic'])
-      : isAtomic;
+        : Boolean(regionProps['aria-atomic'])
+      : false;
 
-  const region = useLiveRegion({ type, isAtomic: ariaAtomic, ariaRelevant, role });
+  const region = useLiveRegion({ type, ariaAtomic, ariaRelevant, role });
 
   return (
     <>
-      <div {...alertProps} {...interopDataAttrObj('Alert')} ref={forwardedRef}>
+      <div {...regionProps} {...interopDataAttrObj('LiveRegion')} ref={forwardedRef}>
         {children}
       </div>
 
       {/* portal into live region for screen reader announcements */}
       {region &&
-        ReactDOM.createPortal(<div {...interopDataAttrObj('AlertMirror')}>{children}</div>, region)}
+        ReactDOM.createPortal(
+          <div {...interopDataAttrObj('LiveRegionMirror')}>{children}</div>,
+          region
+        )}
     </>
   );
 });
 
-Alert.displayName = 'Alert';
+LiveRegion.displayName = 'LiveRegion';
 
 const styles: PrimitiveStyles = {
-  alert: {
+  liveRegion: {
     ...cssReset(ALERT_DEFAULT_TAG),
   },
 };
 
-export { Alert, styles, useLiveRegion };
-export type { AlertProps };
+export { LiveRegion, styles, useLiveRegion };
+export type { LiveRegionProps };
 
 function buildSelector({
   type,

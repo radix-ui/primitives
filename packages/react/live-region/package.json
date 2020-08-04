@@ -1,9 +1,9 @@
 {
-  "name": "@interop-ui/react-alert",
+  "name": "@interop-ui/react-live-region",
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/index.js",
-  "module": "dist/react-alert.esm.min.js",
+  "module": "dist/react-live-region.esm.min.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "src",
