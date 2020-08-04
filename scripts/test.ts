@@ -38,11 +38,23 @@ async function test() {
     argv.push(`packages/(${path.basename(cwd)})`);
   }
 
+  let moduleNameMapper: Record<string, string> = jestConfig.moduleNameMapper;
+
+  if (!process.env.CI) {
+    moduleNameMapper = {
+      ...moduleNameMapper,
+      '@interop-ui/react-(.*)': '<rootDir>/packages/react/$1/src',
+      '@interop-ui/primitive-(.*)': '<rootDir>/packages/primitives/$1/src',
+      '@interop-ui/(.*)': '<rootDir>/packages/core/$1/src',
+    };
+  }
+
   argv.push(
     '--verbose',
     '--config',
     JSON.stringify({
       ...jestConfig,
+      moduleNameMapper,
     })
   );
 
