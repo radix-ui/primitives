@@ -6,13 +6,6 @@ import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 type RegionType = 'polite' | 'assertive';
 type RegionRole = 'status' | 'alert' | 'log';
 type AriaRelevantOptions = 'additions' | 'removals' | 'text';
-type AriaRelevantCombinedOptions =
-  | 'additions removals'
-  | 'additions text'
-  | 'removals additions'
-  | 'removals text'
-  | 'text additions'
-  | 'text removals';
 
 const ROLES: { [key in RegionType]: RegionRole } = {
   polite: 'status',
@@ -30,7 +23,7 @@ const useLiveRegion = ({
   ariaAtomic?: boolean;
   // Generally use of aria-relevant is discouraged, but we want to provide support for it in
   // specific cases. We should provide guidance for this via documentation.
-  ariaRelevant?: AriaRelevantOptions | AriaRelevantCombinedOptions | AriaRelevantOptions[] | 'all';
+  ariaRelevant?: string | AriaRelevantOptions[];
   role?: RegionRole;
   type: RegionType;
 }) => {
@@ -96,7 +89,7 @@ const LiveRegion = forwardRef<typeof ALERT_DEFAULT_TAG, LiveRegionProps>(functio
         : Boolean(regionProps['aria-atomic'])
       : false;
 
-  const region = useLiveRegion({ type, ariaAtomic, ariaRelevant, role });
+  const region = useLiveRegion({ type, ariaAtomic, role, ariaRelevant });
 
   return (
     <>
