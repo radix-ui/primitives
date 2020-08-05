@@ -5,13 +5,10 @@ import {
   Text,
   AspectRatio,
   Code,
-  Button,
   Heading,
-  Badge,
   Divider,
   Grid,
   CardLink,
-  Pipe,
   Table,
   Thead,
   Tr,
@@ -21,9 +18,9 @@ import {
   Flex,
   Link,
 } from '@modulz/radix';
+import { Button } from '@interop-ui/react-button';
 import { Navigation } from '../components/Navigation';
 import { CodeBlock } from '../components/CodeBlock';
-import { PlusIcon } from '@modulz/radix-icons';
 
 export default function ButtonPage() {
   return (
