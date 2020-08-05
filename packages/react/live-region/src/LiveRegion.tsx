@@ -81,14 +81,7 @@ const LiveRegion = forwardRef<typeof ALERT_DEFAULT_TAG, LiveRegionProps>(functio
 ) {
   const { type = 'polite', 'aria-relevant': ariaRelevant, role, children, ...regionProps } = props;
 
-  // Support for direct passing of `aria-atomic` or `ariaAtomic` prop.
-  let ariaAtomic =
-    regionProps['aria-atomic'] != null
-      ? regionProps['aria-atomic'] === 'false'
-        ? false
-        : Boolean(regionProps['aria-atomic'])
-      : false;
-
+  const ariaAtomic = ['true', true].includes(regionProps['aria-atomic'] as any);
   const region = useLiveRegion({ type, ariaAtomic, role, ariaRelevant });
 
   return (
