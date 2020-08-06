@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'Button';
 const DEFAULT_TAG = 'button';
 
 type ButtonDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -10,19 +11,20 @@ type ButtonProps = ButtonDOMProps & ButtonOwnProps;
 
 const Button = forwardRef<typeof DEFAULT_TAG, ButtonProps>(function Button(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...buttonProps } = props;
-  return <Comp {...interopDataAttrObj('Button')} ref={forwardedRef} {...buttonProps} />;
+  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...buttonProps} />;
 });
 
-Button.displayName = 'Button';
+Button.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  button: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',
     userSelect: 'none',
-  },
-  'button.state.disabled': {
-    pointerEvents: 'none',
+
+    '&:disabled': {
+      pointerEvents: 'none',
+    },
   },
 };
 
