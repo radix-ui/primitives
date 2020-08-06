@@ -1,6 +1,6 @@
 declare const __DEV__: boolean;
 
-declare module 'stylis';
+declare module 'json-to-css';
 
 declare module 'lodash.isequal' {
   import { isEqual } from 'lodash';

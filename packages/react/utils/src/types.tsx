@@ -111,5 +111,5 @@ export interface ForwardRefWithAsRenderFunction<ComponentType extends As, Compon
 export type ElementByTag<TagName extends keyof ElementTagNameMap> = ElementTagNameMap[TagName];
 
 export type PrimitiveStyles = {
-  [part: string]: React.CSSProperties | null;
+  [part: string]: React.CSSProperties | null | Record<string, React.CSSProperties>;
 };
