@@ -7,7 +7,7 @@ export type CssResetTagName = keyof ElementTagNameMap;
  * Get css reset for a given tag.
  * We could eventually make this available as a library.
  */
-export function cssResetForTag(tagName: CssResetTagName | null) {
+export function cssReset(tagName: CssResetTagName | null) {
   const sharedResetStyles: CSSObject = {
     boxSizing: 'border-box',
   };
@@ -18,16 +18,6 @@ export function cssResetForTag(tagName: CssResetTagName | null) {
   };
 
   return resetStyles;
-}
-
-/**
- * Top-level util to apply the right reset based on `as` prop or default tag name.
- */
-export function cssReset(defaultTagName: CssResetTagName | null) {
-  return function (props: any) {
-    const tagName: CssResetTagName = props.as || defaultTagName;
-    return cssResetForTag(tagName);
-  };
 }
 
 const RESET_TAG_MAP: { [key in CssResetTagName]?: CSSObject } = {
