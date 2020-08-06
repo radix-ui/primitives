@@ -403,8 +403,6 @@ Tooltip.Popover = TooltipPopover;
 Tooltip.Content = TooltipContent;
 
 const styles: PrimitiveStyles = {
-  root: null,
-  target: null,
   popover: {
     ...cssReset(POPPER_DEFAULT_TAG),
     zIndex: 99999,

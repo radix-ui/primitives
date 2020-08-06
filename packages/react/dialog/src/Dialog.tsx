@@ -268,7 +268,6 @@ interface DialogStaticProps {
 }
 
 const styles: PrimitiveStyles = {
-  root: null,
   overlay: {
     ...cssReset(OVERLAY_DEFAULT_TAG),
     position: 'fixed',
