@@ -1,6 +1,6 @@
 import * as React from 'react';
 import omit from 'lodash.omit';
-import { Size, cssReset, clamp, interopDataAttrObj } from '@interop-ui/utils';
+import { Size, cssReset, clamp, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -50,6 +50,7 @@ const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
  * SliderRoot
  * -----------------------------------------------------------------------------------------------*/
 
+const ROOT_NAME = 'Slider.Root';
 const ROOT_DEFAULT_TAG = 'span';
 
 type SliderRootDOMProps = Omit<
@@ -333,7 +334,7 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
     return (
       <SliderContext.Provider value={context}>
         <Comp
-          {...interopDataAttrObj('SliderRoot')}
+          {...interopDataAttrObj(ROOT_NAME)}
           {...sliderProps}
           ref={composedRefs}
           onKeyDown={isDisabled ? undefined : handleKeyDown}
@@ -368,12 +369,11 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
   }
 );
 
-SliderRoot.displayName = 'Slider.Root';
-
 /* -------------------------------------------------------------------------------------------------
  * SliderTrack
  * -----------------------------------------------------------------------------------------------*/
 
+const TRACK_NAME = 'Slider.Track';
 const TRACK_DEFAULT_TAG = 'span';
 
 type SliderTrackDOMProps = React.ComponentPropsWithoutRef<typeof TRACK_DEFAULT_TAG>;
@@ -385,7 +385,7 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   forwardedRef
 ) {
   let { as: Comp = TRACK_DEFAULT_TAG, ...trackProps } = props;
-  let context = useSliderContext('Slider.Track');
+  let context = useSliderContext(TRACK_NAME);
   let ref = React.useRef<HTMLSpanElement>(null);
   let composedRefs = useComposedRefs(forwardedRef, ref);
   let size = useSize({ refToObserve: ref, isObserving: true });
@@ -397,15 +397,14 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
     }
   }, [context, prevSize, size]);
 
-  return <Comp {...interopDataAttrObj('SliderTrack')} {...trackProps} ref={composedRefs} />;
+  return <Comp {...interopDataAttrObj(TRACK_NAME)} {...trackProps} ref={composedRefs} />;
 });
-
-SliderTrack.displayName = 'Slider.Track';
 
 /* -------------------------------------------------------------------------------------------------
  * SliderTrackMask
  * -----------------------------------------------------------------------------------------------*/
 
+const MASK_NAME = 'Slider.TrackMask';
 const MASK_DEFAULT_TAG = 'span';
 
 type SliderTrackMaskDOMProps = React.ComponentPropsWithoutRef<typeof MASK_DEFAULT_TAG>;
@@ -415,16 +414,15 @@ type SliderTrackMaskProps = SliderTrackMaskDOMProps & SliderTrackMaskOwnProps;
 const SliderTrackMask = forwardRef<typeof MASK_DEFAULT_TAG, SliderTrackMaskProps>(
   function SliderTrackMask(props, forwardedRef) {
     let { as: Comp = MASK_DEFAULT_TAG, ...maskProps } = props;
-    return <Comp {...interopDataAttrObj('SliderTrackMask')} {...maskProps} ref={forwardedRef} />;
+    return <Comp {...interopDataAttrObj(MASK_NAME)} {...maskProps} ref={forwardedRef} />;
   }
 );
-
-SliderTrackMask.displayName = 'Slider.TrackMask';
 
 /* -------------------------------------------------------------------------------------------------
  * SliderRange
  * -----------------------------------------------------------------------------------------------*/
 
+const RANGE_NAME = 'Slider.Range';
 const RANGE_DEFAULT_TAG = 'span';
 
 type SliderRangeProps = Omit<React.ComponentPropsWithoutRef<typeof RANGE_DEFAULT_TAG>, 'children'>;
@@ -434,7 +432,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
   forwardedRef
 ) {
   let { as: Comp = RANGE_DEFAULT_TAG, style, ...rangeProps } = props;
-  let context = useSliderContext('Slider.Range');
+  let context = useSliderContext(RANGE_NAME);
   let ref = React.useRef<HTMLSpanElement>(null);
   let composedRefs = useComposedRefs(forwardedRef, ref);
   let valuesCount = context.values.length;
@@ -444,7 +442,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj('SliderRange')}
+      {...interopDataAttrObj(RANGE_NAME)}
       {...rangeProps}
       ref={composedRefs}
       style={{ left: left + '%', right: right + '%', ...style }}
@@ -452,12 +450,11 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
   );
 });
 
-SliderRange.displayName = 'Slider.Range';
-
 /* -------------------------------------------------------------------------------------------------
  * SliderThumb
  * -----------------------------------------------------------------------------------------------*/
 
+const THUMB_NAME = 'Slider.Thumb';
 const THUMB_DEFAULT_TAG = 'span';
 
 type SliderThumbDOMProps = React.ComponentPropsWithoutRef<typeof THUMB_DEFAULT_TAG>;
@@ -469,7 +466,7 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
   forwardedRef
 ) {
   let { as: Comp = THUMB_DEFAULT_TAG, onFocus, style, ...thumbProps } = props;
-  let context = useSliderContext('Slider.Thumb');
+  let context = useSliderContext(THUMB_NAME);
 
   // destructure for references so that we don't need `context` as effect dependency
   let { updateSize, addThumb, removeThumb, thumbNodes, values } = context;
@@ -512,7 +509,7 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj('SliderThumb')}
+      {...interopDataAttrObj(THUMB_NAME)}
       aria-label={props['aria-label'] || label}
       aria-valuemin={context.min}
       aria-valuenow={value}
@@ -528,11 +525,11 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
   );
 });
 
-SliderThumb.displayName = 'Slider.Thumb';
-
 /* -------------------------------------------------------------------------------------------------
  * Slider
  * -----------------------------------------------------------------------------------------------*/
+
+const SLIDER_NAME = 'Slider';
 
 type SliderProps = SliderRootProps;
 
@@ -553,8 +550,6 @@ const Slider = forwardRef<typeof ROOT_DEFAULT_TAG, SliderProps, SliderStaticProp
   );
 });
 
-Slider.displayName = 'Slider';
-
 /* -----------------------------------------------------------------------------------------------*/
 
 Slider.Root = SliderRoot;
@@ -562,6 +557,13 @@ Slider.Track = SliderTrack;
 Slider.TrackMask = SliderTrackMask;
 Slider.Range = SliderRange;
 Slider.Thumb = SliderThumb;
+
+Slider.displayName = SLIDER_NAME;
+Slider.Root.displayName = ROOT_NAME;
+Slider.Track.displayName = TRACK_NAME;
+Slider.TrackMask.displayName = MASK_NAME;
+Slider.Range.displayName = RANGE_NAME;
+Slider.Thumb.displayName = THUMB_NAME;
 
 interface SliderStaticProps {
   Root: typeof SliderRoot;
@@ -572,7 +574,7 @@ interface SliderStaticProps {
 }
 
 const styles: PrimitiveStyles = {
-  root: {
+  [interopSelector(ROOT_NAME)]: {
     ...cssReset(ROOT_DEFAULT_TAG),
     position: 'relative',
     display: 'inline-flex',
@@ -586,13 +588,13 @@ const styles: PrimitiveStyles = {
   'root.state.disabled': {
     pointerEvents: 'none',
   },
-  track: {
+  [interopSelector(TRACK_NAME)]: {
     ...cssReset(TRACK_DEFAULT_TAG),
     display: 'block',
     position: 'relative',
     flexGrow: 1,
   },
-  trackMask: {
+  [interopSelector(MASK_NAME)]: {
     ...cssReset(MASK_DEFAULT_TAG),
     display: 'block',
     width: '100%',
@@ -601,13 +603,13 @@ const styles: PrimitiveStyles = {
     borderRadius: 'inherit',
     overflow: 'hidden',
   },
-  range: {
+  [interopSelector(RANGE_NAME)]: {
     ...cssReset(RANGE_DEFAULT_TAG),
     display: 'block',
     position: 'absolute',
     height: '100%',
   },
-  thumb: {
+  [interopSelector(THUMB_NAME)]: {
     ...cssReset(THUMB_DEFAULT_TAG),
     display: 'block',
     position: 'absolute',
@@ -617,16 +619,16 @@ const styles: PrimitiveStyles = {
     outline: 'none',
 
     // Add recommended target size regardless of styled size
-    // '&::before': {
-    //   content: '""',
-    //   position: 'absolute',
-    //   zIndex: -1,
-    //   width: 44,
-    //   height: 44,
-    //   top: '50%',
-    //   left: '50%',
-    //   transform: 'translate(-50%, -50%)',
-    // },
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      zIndex: -1,
+      width: 44,
+      height: 44,
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+    },
   },
 };
 
