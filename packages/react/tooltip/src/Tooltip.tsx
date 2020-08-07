@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, Side, Align, isFunction } from '@interop-ui/utils';
+import {
+  cssReset,
+  interopDataAttrObj,
+  Side,
+  Align,
+  isFunction,
+  interopSelector,
+} from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -50,6 +57,8 @@ const stateMachine = createStateMachine(stateChart);
 /* -------------------------------------------------------------------------------------------------
  * TooltipRoot
  * -----------------------------------------------------------------------------------------------*/
+
+const ROOT_NAME = 'Tooltip.Root';
 
 type TooltipRootOwnProps = {
   align?: Align;
@@ -170,17 +179,17 @@ const TooltipRoot: React.FC<TooltipRootProps> = function TooltipRoot(props) {
   );
 };
 
-TooltipRoot.displayName = 'Tooltip.Root';
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipTarget
  * -----------------------------------------------------------------------------------------------*/
+
+const TARGET_NAME = 'Tooltip.Target';
 
 type TooltipTargetOwnProps = {};
 type TooltipTargetProps = TooltipTargetOwnProps;
 
 const TooltipTarget: React.FC<TooltipTargetProps> = function TooltipTarget(props) {
-  let { targetRef, tooltipId } = useTooltipContext('Tooltip.Target');
+  let { targetRef, tooltipId } = useTooltipContext(TARGET_NAME);
   let { children } = props;
 
   let child = React.Children.only(children);
@@ -196,7 +205,7 @@ const TooltipTarget: React.FC<TooltipTargetProps> = function TooltipTarget(props
   ).props;
 
   return React.cloneElement(child, {
-    ...interopDataAttrObj('TooltipTarget'),
+    ...interopDataAttrObj(TARGET_NAME),
     ref,
     'aria-describedby': tooltipId,
     onMouseEnter: composeEventHandlers(onMouseEnter, () =>
@@ -231,13 +240,12 @@ const TooltipTarget: React.FC<TooltipTargetProps> = function TooltipTarget(props
   });
 };
 
-TooltipTarget.displayName = 'Tooltip.Target';
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipPopover
  * -----------------------------------------------------------------------------------------------*/
 
-const POPPER_DEFAULT_TAG = 'div';
+const POPOVER_NAME = 'Tooltip.Popper';
+const POPOVER_DEFAULT_TAG = 'div';
 
 type TooltipPopoverOwnProps = {};
 type TooltipPopoverProps = Omit<
@@ -253,9 +261,9 @@ type TooltipPopoverProps = Omit<
 > &
   TooltipPopoverOwnProps;
 
-const TooltipPopover = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopoverProps>(
+const TooltipPopover = forwardRef<typeof POPOVER_DEFAULT_TAG, TooltipPopoverProps>(
   function TooltipPopover(props, forwardedRef) {
-    let { as = POPPER_DEFAULT_TAG, children, ...otherProps } = props;
+    let { as = POPOVER_DEFAULT_TAG, children, ...otherProps } = props;
     let {
       align,
       alignOffset,
@@ -267,7 +275,7 @@ const TooltipPopover = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopoverProps
       sideOffset,
       targetRef,
       tooltipId,
-    } = useTooltipContext('Tooltip.Popover');
+    } = useTooltipContext(POPOVER_NAME);
 
     return (
       <Popover
@@ -282,7 +290,7 @@ const TooltipPopover = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopoverProps
         side={side}
         sideOffset={sideOffset}
         targetRef={targetRef}
-        {...interopDataAttrObj('TooltipPopover')}
+        {...interopDataAttrObj(POPOVER_NAME)}
       >
         {children}
         <VisuallyHidden id={tooltipId} role="tooltip">
@@ -293,12 +301,11 @@ const TooltipPopover = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopoverProps
   }
 );
 
-TooltipPopover.displayName = 'Tooltip.Popover';
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipContent
  * -----------------------------------------------------------------------------------------------*/
 
+const CONTENT_NAME = 'Tooltip.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
 type TooltipContentDOMProps = React.ComponentPropsWithRef<typeof CONTENT_DEFAULT_TAG>;
@@ -310,21 +317,22 @@ type TooltipContentProps = TooltipContentDOMProps & TooltipContentOwnProps;
 const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
   function TooltipContent(props, forwardedRef) {
     const { as: Comp = CONTENT_DEFAULT_TAG, children, ...otherProps } = props;
-    const { label } = useTooltipContext('Tooltip.Content');
+    const { label } = useTooltipContext(CONTENT_NAME);
     return (
-      <Comp ref={forwardedRef} {...interopDataAttrObj('TooltipContent')} {...otherProps}>
+      <Comp ref={forwardedRef} {...interopDataAttrObj(CONTENT_NAME)} {...otherProps}>
         {isFunction(children) ? children({ label }) : label}
       </Comp>
     );
   }
 );
 
-TooltipContent.displayName = 'Tooltip.Content';
+TooltipContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipArrow
  * -----------------------------------------------------------------------------------------------*/
 
+const ARROW_NAME = 'Tooltip.Arrow';
 const ARROW_DEFAULT_TAG = 'span';
 
 type TooltipArrowOwnProps = {};
@@ -336,20 +344,14 @@ const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(fun
 ) {
   let { as = ARROW_DEFAULT_TAG, ...otherProps } = props;
   return (
-    <Popover.Arrow
-      as={as}
-      ref={forwardedRef}
-      {...interopDataAttrObj('TooltipArrow')}
-      {...otherProps}
-    />
+    <Popover.Arrow as={as} ref={forwardedRef} {...interopDataAttrObj(ARROW_NAME)} {...otherProps} />
   );
 });
-
-TooltipArrow.displayName = 'Tooltip.Arrow';
 
 /* -------------------------------------------------------------------------------------------------
  * Composed Tooltip
  * -----------------------------------------------------------------------------------------------*/
+const TOOLTIP_NAME = 'Tooltip';
 
 type TooltipDOMProps = TooltipContentDOMProps;
 type TooltipOwnProps = TooltipRootOwnProps;
@@ -394,31 +396,35 @@ const Tooltip = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipProps, TooltipStat
   }
 );
 
-Tooltip.displayName = 'Tooltip';
-
 /* -----------------------------------------------------------------------------------------------*/
 
 Tooltip.Root = TooltipRoot;
 Tooltip.Target = TooltipTarget;
 Tooltip.Popover = TooltipPopover;
 Tooltip.Content = TooltipContent;
+Tooltip.Arrow = TooltipArrow;
+
+Tooltip.displayName = TOOLTIP_NAME;
+Tooltip.Root.displayName = ROOT_NAME;
+Tooltip.Target.displayName = TARGET_NAME;
+Tooltip.Popover.displayName = POPOVER_NAME;
+Tooltip.Content.displayName = CONTENT_NAME;
+Tooltip.Arrow.displayName = ARROW_NAME;
 
 const useHasTooltipContext = () => useHasContext(TooltipContext);
 
 const styles: PrimitiveStyles = {
-  root: null,
-  target: null,
-  popover: {
-    ...cssReset(POPPER_DEFAULT_TAG),
+  [interopSelector(POPOVER_NAME)]: {
+    ...cssReset(POPOVER_DEFAULT_TAG),
     zIndex: 99999,
     pointerEvents: 'none',
   },
-  arrow: {
+  [interopSelector(ARROW_NAME)]: {
     ...cssReset(ARROW_DEFAULT_TAG),
     display: 'inline-block',
     verticalAlign: 'top',
   },
-  content: {
+  [interopSelector(CONTENT_NAME)]: {
     ...cssReset(CONTENT_DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',

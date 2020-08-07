@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ const [ContainerContext] = createContext<ContainerContextValue>('ContainerContex
  * Container
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Container';
 const DEFAULT_TAG = 'span';
 
 type ContainerDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -26,19 +27,19 @@ const Container = forwardRef<typeof DEFAULT_TAG, ContainerProps>(function Contai
   const { as: Comp = DEFAULT_TAG, ...containerProps } = props;
   return (
     <ContainerContext.Provider value={React.useMemo(() => ({}), [])}>
-      <Comp {...interopDataAttrObj('Container')} ref={forwardedRef} {...containerProps} />
+      <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...containerProps} />
     </ContainerContext.Provider>
   );
 });
 
-Container.displayName = 'Container';
+Container.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasContainerContext = () => useHasContext(ContainerContext);
 
 const styles: PrimitiveStyles = {
-  container: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     marginLeft: 'auto',
     marginRight: 'auto',

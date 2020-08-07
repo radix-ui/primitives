@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ const [HeaderContext] = createContext<HeaderContextValue>('HeaderContext', 'Head
  * Header
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Header';
 const DEFAULT_TAG = 'header';
 
 type HeaderDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -24,7 +25,7 @@ const Header = forwardRef<typeof DEFAULT_TAG, HeaderProps>(function Header(props
   return (
     <HeaderContext.Provider value={React.useMemo(() => ({}), [])}>
       <Comp
-        {...interopDataAttrObj('Header')}
+        {...interopDataAttrObj(NAME)}
         style={{
           ...style,
           ...(isSticky
@@ -41,14 +42,14 @@ const Header = forwardRef<typeof DEFAULT_TAG, HeaderProps>(function Header(props
   );
 });
 
-Header.displayName = 'Header';
+Header.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasHeaderContext = () => useHasContext(HeaderContext);
 
 const styles: PrimitiveStyles = {
-  header: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },
 };

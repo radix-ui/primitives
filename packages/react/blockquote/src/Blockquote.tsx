@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -16,6 +16,7 @@ const [BlockquoteContext] = createContext<BlockquoteContextValue>(
  * Blockquote
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Blockquote';
 const DEFAULT_TAG = 'blockquote';
 
 type BlockquoteDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -29,19 +30,19 @@ const Blockquote = forwardRef<typeof DEFAULT_TAG, BlockquoteProps>(function Bloc
   const { as: Comp = DEFAULT_TAG, ...blockquoteProps } = props;
   return (
     <BlockquoteContext.Provider value={React.useMemo(() => ({}), [])}>
-      <Comp {...interopDataAttrObj('Blockquote')} ref={forwardedRef} {...blockquoteProps} />;
+      <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...blockquoteProps} />;
     </BlockquoteContext.Provider>
   );
 });
 
-Blockquote.displayName = 'Blockquote';
+Blockquote.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasBlockquoteContext = () => useHasContext(BlockquoteContext);
 
 const styles: PrimitiveStyles = {
-  blockquote: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },
 };

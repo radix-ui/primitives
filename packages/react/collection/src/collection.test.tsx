@@ -98,7 +98,7 @@ describe("given children that aren't collection items", () => {
 type ElementRef = string;
 type ItemState = { disabled?: boolean };
 
-const { createCollectionComponent, useCollectionItem, useCollectionItems } = createCollection<
+const [createCollectionComponent, useCollectionItem, useCollectionItems] = createCollection<
   ElementRef,
   ItemState
 >('Collection');

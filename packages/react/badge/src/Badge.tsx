@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ const [BadgeContext] = createContext<BadgeContextValue>('BadgeContext', 'Badge')
  * Badge
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Badge';
 const DEFAULT_TAG = 'span';
 
 type BadgeDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -23,19 +24,19 @@ const Badge = forwardRef<typeof DEFAULT_TAG, BadgeProps>(function Badge(props, f
   const { as: Comp = DEFAULT_TAG, ...badgeProps } = props;
   return (
     <BadgeContext.Provider value={React.useMemo(() => ({}), [])}>
-      <Comp {...interopDataAttrObj('Badge')} ref={forwardedRef} {...badgeProps} />
+      <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...badgeProps} />
     </BadgeContext.Provider>
   );
 });
 
-Badge.displayName = 'Badge';
+Badge.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasBadgeContext = () => useHasContext(BadgeContext);
 
 const styles: PrimitiveStyles = {
-  badge: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',

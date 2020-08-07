@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ const [OverlayContext] = createContext<OverlayContextValue>('OverlayContext', 'O
  * Overlay
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Overlay';
 const DEFAULT_TAG = 'div';
 
 type OverlayDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -23,19 +24,19 @@ const Overlay = forwardRef<typeof DEFAULT_TAG, OverlayProps>(function Overlay(pr
   const { as: Comp = DEFAULT_TAG, ...overlayProps } = props;
   return (
     <OverlayContext.Provider value={React.useMemo(() => ({}), [])}>
-      <Comp {...interopDataAttrObj('Overlay')} ref={forwardedRef} {...overlayProps} />;
+      <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...overlayProps} />;
     </OverlayContext.Provider>
   );
 });
 
-Overlay.displayName = 'Overlay';
+Overlay.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasOverlayContext = () => useHasContext(OverlayContext);
 
 const styles: PrimitiveStyles = {
-  overlay: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     position: 'fixed',
     top: 0,

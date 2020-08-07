@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -16,6 +16,7 @@ const [AspectRatioContext] = createContext<AspectRatioContextValue>(
  * AspectRatioRoot
  * -----------------------------------------------------------------------------------------------*/
 
+const WRAPPER_NAME = 'AspectRatio.Root';
 const WRAPPER_DEFAULT_TAG = 'div';
 
 type AspectRatioDOMProps = React.ComponentPropsWithoutRef<typeof WRAPPER_DEFAULT_TAG>;
@@ -33,7 +34,7 @@ const AspectRatioRoot = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps>
       <AspectRatioContext.Provider value={React.useMemo(() => ({}), [])}>
         <Comp
           {...aspectRatioProps}
-          {...interopDataAttrObj('AspectRatioRoot')}
+          {...interopDataAttrObj(WRAPPER_NAME)}
           ref={forwardedRef}
           style={{
             paddingBottom: `${paddingBottom}%`,
@@ -45,12 +46,7 @@ const AspectRatioRoot = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps>
   }
 );
 
-AspectRatioRoot.displayName = 'AspectRatio.Root';
-
-/* -------------------------------------------------------------------------------------------------
- * AspectRatioInner
- * -----------------------------------------------------------------------------------------------*/
-
+const INNER_NAME = 'AspectRatio.Inner';
 const INNER_DEFAULT_TAG = 'div';
 
 type AspectRatioInnerDOMProps = React.ComponentPropsWithoutRef<typeof WRAPPER_DEFAULT_TAG>;
@@ -61,11 +57,11 @@ const AspectRatioInner = forwardRef<typeof INNER_DEFAULT_TAG, AspectRatioInnerPr
   function AspectRatioInner(props, forwardedRef) {
     const { as: Comp = INNER_DEFAULT_TAG, ...innerProps } = props;
 
-    return <Comp ref={forwardedRef} {...innerProps} {...interopDataAttrObj('AspectRatioInner')} />;
+    return <Comp ref={forwardedRef} {...innerProps} {...interopDataAttrObj(INNER_NAME)} />;
   }
 );
 
-AspectRatioInner.displayName = 'AspectRatio.Inner';
+const ASPECT_RATIO_NAME = 'AspectRatio';
 
 /* -------------------------------------------------------------------------------------------------
  * AspectRatio
@@ -81,7 +77,7 @@ const AspectRatio = forwardRef<
   return (
     <AspectRatioRoot
       {...aspectRatioProps}
-      {...interopDataAttrObj('AspectRatio')}
+      {...interopDataAttrObj(ASPECT_RATIO_NAME)}
       ref={forwardedRef}
     >
       <AspectRatioInner>{children}</AspectRatioInner>
@@ -89,12 +85,12 @@ const AspectRatio = forwardRef<
   );
 });
 
-AspectRatio.displayName = 'AspectRatio';
-
-/* ---------------------------------------------------------------------------------------------- */
-
 AspectRatio.Root = AspectRatioRoot;
 AspectRatio.Inner = AspectRatioInner;
+
+AspectRatio.displayName = ASPECT_RATIO_NAME;
+AspectRatio.Root.displayName = WRAPPER_NAME;
+AspectRatio.Inner.displayName = INNER_NAME;
 
 interface AspectRatioStaticProps {
   Root: typeof AspectRatioRoot;
@@ -102,12 +98,12 @@ interface AspectRatioStaticProps {
 }
 
 const styles: PrimitiveStyles = {
-  root: {
+  [interopSelector(WRAPPER_NAME)]: {
     ...cssReset(WRAPPER_DEFAULT_TAG),
     position: 'relative',
     width: '100%',
   },
-  inner: {
+  [interopSelector(INNER_NAME)]: {
     ...cssReset(INNER_DEFAULT_TAG),
     position: 'absolute',
     left: 0,

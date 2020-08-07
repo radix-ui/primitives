@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ const [InputContext] = createContext<InputContextValue>('InputContext', 'Input')
  * Input
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Input';
 const DEFAULT_TAG = 'input';
 
 type InputDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -23,24 +24,25 @@ const Input = forwardRef<typeof DEFAULT_TAG, InputProps>(function Input(props, f
   const { as: Comp = DEFAULT_TAG, ...inputProps } = props;
   return (
     <InputContext.Provider value={React.useMemo(() => ({}), [])}>
-      <Comp {...interopDataAttrObj('Input')} ref={forwardedRef} {...inputProps} />;
+      <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...inputProps} />;
     </InputContext.Provider>
   );
 });
 
-Input.displayName = 'Input';
+Input.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasInputContext = () => useHasContext(InputContext);
 
 const styles: PrimitiveStyles = {
-  input: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',
-  },
-  'input.state.disabled': {
-    pointerEvents: 'none',
+
+    '&:disabled': {
+      pointerEvents: 'none',
+    },
   },
 };
 

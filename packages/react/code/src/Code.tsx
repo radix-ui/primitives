@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ const [CodeContext] = createContext<CodeContextValue>('CodeContext', 'Code');
  * Code
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Code';
 const DEFAULT_TAG = 'code';
 
 type CodeDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -23,19 +24,19 @@ const Code = forwardRef<typeof DEFAULT_TAG, CodeProps>(function Code(props, forw
   const { as: Comp = DEFAULT_TAG, ...codeProps } = props;
   return (
     <CodeContext.Provider value={React.useMemo(() => ({}), [])}>
-      <Comp {...interopDataAttrObj('Code')} ref={forwardedRef} {...codeProps} />
+      <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...codeProps} />
     </CodeContext.Provider>
   );
 });
 
-Code.displayName = 'Code';
+Code.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasCodeContext = () => useHasContext(CodeContext);
 
 const styles: PrimitiveStyles = {
-  code: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',
   },

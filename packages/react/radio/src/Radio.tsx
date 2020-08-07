@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, isFunction, warningOnce } from '@interop-ui/utils';
+import {
+  cssReset,
+  interopDataAttrObj,
+  isFunction,
+  warningOnce,
+  interopSelector,
+  interopDataAttrSelector,
+} from '@interop-ui/utils';
 import {
   createContext,
   forwardRef,
@@ -53,6 +60,7 @@ const [RadioContext, useRadioContext] = createContext<RadioContextValue>(
  * RadioRoot
  * -----------------------------------------------------------------------------------------------*/
 
+const ROOT_NAME = 'Radio.Root';
 const ROOT_DEFAULT_TAG = 'span';
 
 type RadioRootDOMProps = Omit<
@@ -119,19 +127,18 @@ const RadioRoot = forwardRef<typeof ROOT_DEFAULT_TAG, RadioRootProps>(function R
 
   return (
     <RadioContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj('RadioRoot')} ref={forwardedRef} {...radioProps}>
+      <Comp {...interopDataAttrObj(ROOT_NAME)} ref={forwardedRef} {...radioProps}>
         {isFunction(children) ? children({ checked }) : children}
       </Comp>
     </RadioContext.Provider>
   );
 });
 
-RadioRoot.displayName = 'Radio.Root';
-
 /* -------------------------------------------------------------------------------------------------
  * RadioInput
  * -----------------------------------------------------------------------------------------------*/
 
+const INPUT_NAME = 'Radio.Input';
 const INPUT_DEFAULT_TAG = 'input';
 
 type RadioInputDOMProps = Omit<
@@ -158,7 +165,7 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
     readOnly,
     required,
     value,
-  } = useRadioContext('Radio.Input');
+  } = useRadioContext(INPUT_NAME);
 
   const ref = useComposedRefs(forwardedRef, inputRef);
 
@@ -174,7 +181,7 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
 
   return (
     <Comp
-      {...interopDataAttrObj('RadioInput')}
+      {...interopDataAttrObj(INPUT_NAME)}
       ref={ref}
       {...checkboxInputProps}
       type="radio"
@@ -190,12 +197,12 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
     />
   );
 });
-RadioInput.displayName = 'Radio.Input';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioBox
  * -----------------------------------------------------------------------------------------------*/
 
+const BOX_NAME = 'Radio.Box';
 const BOX_DEFAULT_TAG = 'span';
 
 type RadioBoxDOMProps = React.ComponentPropsWithoutRef<typeof BOX_DEFAULT_TAG>;
@@ -208,14 +215,14 @@ const RadioBox = forwardRef<typeof BOX_DEFAULT_TAG, RadioBoxProps>(function Radi
 ) {
   const { as: Comp = BOX_DEFAULT_TAG, ...checkboxBoxProps } = props;
 
-  return <Comp {...interopDataAttrObj('CheckboBox')} ref={forwardedRef} {...checkboxBoxProps} />;
+  return <Comp {...interopDataAttrObj(BOX_NAME)} ref={forwardedRef} {...checkboxBoxProps} />;
 });
-RadioBox.displayName = 'Radio.Box';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioIcon
  * -----------------------------------------------------------------------------------------------*/
 
+const ICON_NAME = 'Radio.Icon';
 const ICON_DEFAULT_TAG = 'span';
 
 type RadioIconDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
@@ -229,20 +236,19 @@ const RadioIcon = forwardRef<typeof ICON_DEFAULT_TAG, RadioIconProps>(function R
   forwardedRef
 ) {
   let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
-  let { checked } = useRadioContext('Radio.Icon');
+  let { checked } = useRadioContext(ICON_NAME);
   return (
-    <Comp {...interopDataAttrObj('RadioIcon')} ref={forwardedRef} {...checkboxBoxProps}>
+    <Comp {...interopDataAttrObj(ICON_NAME)} ref={forwardedRef} {...checkboxBoxProps}>
       {isFunction(children) ? children({ checked }) : children}
     </Comp>
   );
 });
 
-RadioIcon.displayName = 'Radio.Icon';
-
 /* -------------------------------------------------------------------------------------------------
  * Radio
  * -----------------------------------------------------------------------------------------------*/
 
+const RADIO_NAME = 'Radio';
 const RADIO_DEFAULT_TAG = 'input';
 
 type RadioDOMProps = RadioRootDOMProps;
@@ -265,14 +271,18 @@ const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioInputProps, RadioStaticP
   }
 );
 
-Radio.displayName = 'Radio';
-
 /* ---------------------------------------------------------------------------------------------- */
 
 Radio.Root = RadioRoot;
 Radio.Input = RadioInput;
 Radio.Box = RadioBox;
 Radio.Icon = RadioIcon;
+
+Radio.displayName = RADIO_NAME;
+Radio.Root.displayName = ROOT_NAME;
+Radio.Input.displayName = INPUT_NAME;
+Radio.Box.displayName = BOX_NAME;
+Radio.Icon.displayName = ICON_NAME;
 
 interface RadioStaticProps {
   Root: typeof RadioRoot;
@@ -284,7 +294,7 @@ interface RadioStaticProps {
 const useHasRadioContext = () => useHasContext(RadioContext);
 
 const styles: PrimitiveStyles = {
-  root: {
+  [interopSelector(ROOT_NAME)]: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-block',
     position: 'relative',
@@ -293,7 +303,7 @@ const styles: PrimitiveStyles = {
     height: 13,
     width: 13,
   },
-  input: {
+  [interopSelector(INPUT_NAME)]: {
     ...cssReset(INPUT_DEFAULT_TAG),
     position: 'absolute',
     top: 0,
@@ -302,8 +312,12 @@ const styles: PrimitiveStyles = {
     left: 0,
     zIndex: 1,
     opacity: 0,
+
+    [`&:checked + ${interopDataAttrSelector(ICON_NAME)}`]: {
+      opacity: 1,
+    },
   },
-  box: {
+  [interopSelector(BOX_NAME)]: {
     ...cssReset(BOX_DEFAULT_TAG),
     display: 'block',
     position: 'absolute',
@@ -315,7 +329,7 @@ const styles: PrimitiveStyles = {
     border: '1px solid #000',
     borderRadius: 9999999,
   },
-  icon: {
+  [interopSelector(ICON_NAME)]: {
     ...cssReset(ICON_DEFAULT_TAG),
     position: 'absolute',
     top: '50%',
@@ -325,9 +339,6 @@ const styles: PrimitiveStyles = {
     userSelect: 'none',
     opacity: 0,
     borderRadius: 9999999,
-  },
-  'root.state.checked[icon]': {
-    opacity: 1,
   },
 };
 

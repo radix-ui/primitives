@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Portal } from '@interop-ui/react-portal';
 import { Lock, useLockContext } from '@interop-ui/react-lock';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { RemoveScroll } from 'react-remove-scroll';
 import {
   createContext,
@@ -17,6 +17,8 @@ import { useDebugContext } from '@interop-ui/react-debug-context';
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
 
+const ROOT_NAME = 'Sheet.Root';
+
 type SheetContextValue = {
   isOpen: SheetRootProps['isOpen'];
   onClose: NonNullable<SheetRootProps['onClose']>;
@@ -27,10 +29,7 @@ type SheetContextValue = {
   side: NonNullable<SheetRootOwnProps['side']>;
 };
 
-const [SheetContext, useSheetContext] = createContext<SheetContextValue>(
-  'SheetContext',
-  'Sheet.Root'
-);
+const [SheetContext, useSheetContext] = createContext<SheetContextValue>('SheetContext', ROOT_NAME);
 
 /* -------------------------------------------------------------------------------------------------
  * SheetRoot
@@ -113,17 +112,16 @@ const SheetRoot: React.FC<SheetRootProps> = (props) => {
 
   return (
     <SheetContext.Provider value={ctx}>
-      <Portal {...interopDataAttrObj('SheetRoot')}>{children}</Portal>
+      <Portal {...interopDataAttrObj(ROOT_NAME)}>{children}</Portal>
     </SheetContext.Provider>
   );
 };
-
-SheetRoot.displayName = 'Sheet.Root';
 
 /* -------------------------------------------------------------------------------------------------
  * SheetOverlay
  * -----------------------------------------------------------------------------------------------*/
 
+const OVERLAY_NAME = 'Sheet.Overlay';
 const OVERLAY_DEFAULT_TAG = 'div';
 
 type SheetOverlayDOMProps = React.ComponentPropsWithoutRef<typeof OVERLAY_DEFAULT_TAG>;
@@ -136,7 +134,7 @@ const SheetOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, SheetOverlayProps>(
     let debugContext = useDebugContext();
     return (
       <Comp
-        {...interopDataAttrObj('SheetOverlay')}
+        {...interopDataAttrObj(OVERLAY_NAME)}
         ref={forwardedRef}
         style={{
           pointerEvents: debugContext.disableLock ? 'none' : undefined,
@@ -148,12 +146,11 @@ const SheetOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, SheetOverlayProps>(
   }
 );
 
-SheetOverlay.displayName = 'Sheet.Overlay';
-
 /* -------------------------------------------------------------------------------------------------
  * SheetInner
  * -----------------------------------------------------------------------------------------------*/
 
+const INNER_NAME = 'Sheet.Inner';
 const INNER_DEFAULT_TAG = 'div';
 
 type SheetInnerDOMProps = React.ComponentPropsWithoutRef<typeof INNER_DEFAULT_TAG>;
@@ -173,9 +170,9 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
     refToFocusOnClose,
     shouldCloseOnEscape,
     shouldCloseOnOutsideClick,
-  } = useSheetContext('Sheet.Inner');
+  } = useSheetContext(INNER_NAME);
   return (
-    <Comp {...interopDataAttrObj('SheetInner')} ref={forwardedRef} {...innerProps}>
+    <Comp {...interopDataAttrObj(INNER_NAME)} ref={forwardedRef} {...innerProps}>
       <RemoveScroll>
         <Lock
           isActive={debugContext.disableLock ? false : isOpen}
@@ -193,12 +190,11 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
   );
 });
 
-SheetInner.displayName = 'Sheet.Inner';
-
 /* -------------------------------------------------------------------------------------------------
  * SheetContent
  * -----------------------------------------------------------------------------------------------*/
 
+const CONTENT_NAME = 'Sheet.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
 type SheetContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
@@ -208,11 +204,11 @@ type SheetContentProps = SheetContentDOMProps & SheetContentOwnProps;
 const SheetContent = forwardRef<typeof CONTENT_DEFAULT_TAG, SheetContentProps>(
   function SheetContent(props, forwardedRef) {
     let { as: Comp = CONTENT_DEFAULT_TAG, children, style, ...contentProps } = props;
-    let { side } = useSheetContext('SheetContent');
+    let { side } = useSheetContext(CONTENT_NAME);
     let { lockContainerRef } = useLockContext();
     return (
       <Comp
-        {...interopDataAttrObj('SheetContent')}
+        {...interopDataAttrObj(CONTENT_NAME)}
         ref={useComposedRefs(forwardedRef, lockContainerRef)}
         role="dialog"
         aria-modal
@@ -228,11 +224,11 @@ const SheetContent = forwardRef<typeof CONTENT_DEFAULT_TAG, SheetContentProps>(
   }
 );
 
-SheetContent.displayName = 'Sheet.Content';
-
 /* -------------------------------------------------------------------------------------------------
  * Composed Sheet
  * -----------------------------------------------------------------------------------------------*/
+
+const SHEET_NAME = 'Sheet';
 
 type SheetDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
 type SheetOwnProps = SheetRootProps;
@@ -274,14 +270,18 @@ const Sheet = forwardRef<typeof CONTENT_DEFAULT_TAG, SheetProps, SheetStaticProp
   );
 });
 
-Sheet.displayName = 'Sheet';
-
 /* -----------------------------------------------------------------------------------------------*/
 
 Sheet.Root = SheetRoot;
 Sheet.Overlay = SheetOverlay;
 Sheet.Inner = SheetInner;
 Sheet.Content = SheetContent;
+
+Sheet.displayName = SHEET_NAME;
+Sheet.Root.displayName = ROOT_NAME;
+Sheet.Overlay.displayName = OVERLAY_NAME;
+Sheet.Inner.displayName = INNER_NAME;
+Sheet.Content.displayName = CONTENT_NAME;
 
 interface SheetStaticProps {
   Root: typeof SheetRoot;
@@ -293,8 +293,7 @@ interface SheetStaticProps {
 const useHasSheetContext = () => useHasContext(SheetContext);
 
 const styles: PrimitiveStyles = {
-  root: null,
-  overlay: {
+  [interopSelector(OVERLAY_NAME)]: {
     ...cssReset(OVERLAY_DEFAULT_TAG),
     position: 'fixed',
     top: 0,
@@ -302,7 +301,7 @@ const styles: PrimitiveStyles = {
     bottom: 0,
     left: 0,
   },
-  inner: {
+  [interopSelector(INNER_NAME)]: {
     ...cssReset(INNER_DEFAULT_TAG),
     position: 'fixed',
     top: 0,
@@ -311,7 +310,7 @@ const styles: PrimitiveStyles = {
     left: 0,
     pointerEvents: 'none',
   },
-  content: {
+  [interopSelector(CONTENT_NAME)]: {
     ...cssReset(CONTENT_DEFAULT_TAG),
     pointerEvents: 'auto',
     position: 'absolute',

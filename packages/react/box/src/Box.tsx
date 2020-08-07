@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ const [BoxContext] = createContext<BoxContextValue>('BoxContext', 'Box');
  * Box
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Box';
 const DEFAULT_TAG = 'span';
 
 type BoxDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -23,19 +24,19 @@ const Box = forwardRef<typeof DEFAULT_TAG, BoxProps>(function Box(props, forward
   const { as: Comp = DEFAULT_TAG, ...boxProps } = props;
   return (
     <BoxContext.Provider value={React.useMemo(() => ({}), [])}>
-      <Comp {...interopDataAttrObj('Box')} ref={forwardedRef} {...boxProps} />
+      <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...boxProps} />
     </BoxContext.Provider>
   );
 });
 
-Box.displayName = 'Box';
+Box.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasBoxContext = () => useHasContext(BoxContext);
 
 const styles: PrimitiveStyles = {
-  box: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },
 };

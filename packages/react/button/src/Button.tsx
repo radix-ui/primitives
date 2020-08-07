@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ const [ButtonContext] = createContext<ButtonContextValue>('ButtonContext', 'Butt
  * Button
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Button';
 const DEFAULT_TAG = 'button';
 
 type ButtonDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -23,25 +24,26 @@ const Button = forwardRef<typeof DEFAULT_TAG, ButtonProps>(function Button(props
   const { as: Comp = DEFAULT_TAG, ...buttonProps } = props;
   return (
     <ButtonContext.Provider value={React.useMemo(() => ({}), [])}>
-      <Comp {...interopDataAttrObj('Button')} ref={forwardedRef} {...buttonProps} />
+      <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...buttonProps} />
     </ButtonContext.Provider>
   );
 });
 
-Button.displayName = 'Button';
+Button.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasButtonContext = () => useHasContext(ButtonContext);
 
 const styles: PrimitiveStyles = {
-  button: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',
     userSelect: 'none',
-  },
-  'button.state.disabled': {
-    pointerEvents: 'none',
+
+    '&:disabled': {
+      pointerEvents: 'none',
+    },
   },
 };
 

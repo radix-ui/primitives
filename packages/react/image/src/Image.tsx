@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -14,6 +14,7 @@ const [ImageContext] = createContext<ImageContextValue>('ImageContext', 'Image')
  * Image
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Image';
 const DEFAULT_TAG = 'img';
 
 type ImageDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -24,20 +25,20 @@ const Image = forwardRef<typeof DEFAULT_TAG, ImageProps>(function Image(props, f
   const { as: Comp = DEFAULT_TAG, ...imgProps } = props;
   return (
     <ImageContext.Provider value={React.useMemo(() => ({}), [])}>
-      <Comp {...interopDataAttrObj('Image')} ref={forwardedRef} {...imgProps} />;
+      <Comp {...interopDataAttrObj(NAME)} {...imgProps} ref={forwardedRef} />;
     </ImageContext.Provider>
   );
 });
 
-Image.displayName = 'Image';
+Image.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasImageContext = () => useHasContext(ImageContext);
 
 const styles: PrimitiveStyles = {
-  image: {
-    ...cssReset('img'),
+  [interopSelector(NAME)]: {
+    ...cssReset(DEFAULT_TAG),
     display: 'block',
     maxWidth: '100%',
   },

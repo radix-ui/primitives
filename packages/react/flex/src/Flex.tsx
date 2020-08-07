@@ -1,6 +1,6 @@
 import * as React from 'react';
 import pick from 'lodash.pick';
-import { cssReset, interopDataAttrObj, isUndefined } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector, isUndefined } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles, useHasContext } from '@interop-ui/react-utils';
 
 // TODO: This probably needs to be revisited
@@ -16,6 +16,8 @@ const [FlexContext] = createContext<FlexContextValue>('FlexContext', 'Flex');
  * Flex
  * -----------------------------------------------------------------------------------------------*/
 
+const NAME = 'Flex';
+const WRAPPER_NAME = 'Flex';
 const DEFAULT_TAG = 'div';
 
 type FlexDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -39,7 +41,7 @@ const Flex = forwardRef<typeof DEFAULT_TAG, FlexProps>(function Flex(props, forw
     <FlexContext.Provider value={React.useMemo(() => ({}), [])}>
       {hasGap ? (
         <div
-          {...interopDataAttrObj('FlexWrapper')}
+          {...interopDataAttrObj(WRAPPER_NAME)}
           style={{
             overflow: 'hidden',
             flexGrow: 1,
@@ -75,20 +77,20 @@ const Flex = forwardRef<typeof DEFAULT_TAG, FlexProps>(function Flex(props, forw
           </Comp>
         </div>
       ) : (
-        <Comp {...interopDataAttrObj('Flex')} style={style} ref={forwardedRef} {...flexProps} />
+        <Comp {...interopDataAttrObj(NAME)} style={style} ref={forwardedRef} {...flexProps} />
       )}
     </FlexContext.Provider>
   );
 });
 
-Flex.displayName = 'Flex';
+Flex.displayName = NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const useHasFlexContext = () => useHasContext(FlexContext);
 
 const styles: PrimitiveStyles = {
-  flex: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     display: 'flex',
   },
