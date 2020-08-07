@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { interopDataAttrObj } from '@interop-ui/utils';
+import { interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'VisuallyHidden';
 const DEFAULT_TAG = 'span';
 
 type VisuallyHiddenOwnProps = { bypassInlineStyles?: boolean };
@@ -12,17 +13,17 @@ const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
   ({ as: Comp = DEFAULT_TAG, bypassInlineStyles = false, style, ...props }, forwardedRef) => (
     <Comp
       {...props}
-      {...interopDataAttrObj('VisuallyHidden')}
+      {...interopDataAttrObj(NAME)}
       ref={forwardedRef}
       style={bypassInlineStyles ? style : { ...styles.visuallyHidden, ...style }}
     />
   )
 );
 
-VisuallyHidden.displayName = 'VisuallyHidden';
+VisuallyHidden.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  visuallyHidden: {
+  [interopSelector(NAME)]: {
     // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
     position: 'absolute',
     border: 0,
