@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'Toast';
 const DEFAULT_TAG = 'div';
 
 type ToastDOMProps = React.ComponentProps<typeof DEFAULT_TAG>;
@@ -10,13 +11,13 @@ type ToastProps = ToastDOMProps & ToastOwnProps;
 
 const Toast = forwardRef<typeof DEFAULT_TAG, ToastProps>(function Toast(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...toastProps } = props;
-  return <Comp {...toastProps} {...interopDataAttrObj('Toast')} ref={forwardedRef} />;
+  return <Comp {...toastProps} {...interopDataAttrObj(NAME)} ref={forwardedRef} />;
 });
 
-Toast.displayName = 'Toast';
+Toast.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  toast: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },
 };
