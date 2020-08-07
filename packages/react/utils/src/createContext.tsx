@@ -36,8 +36,6 @@ export function useContextIfAvailable<ContextValueType>(context: React.Context<C
   }
 }
 
-export function useHasContext<ContextValueType>(
-  context: React.Context<ContextValueType> | null | undefined
-) {
+export function useHasContext<ContextValueType>(context: React.Context<ContextValueType>) {
   return useContextIfAvailable(context as any) ? true : false;
 }

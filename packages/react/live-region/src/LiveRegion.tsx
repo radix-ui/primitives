@@ -1,7 +1,17 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { cssReset, interopDataAttr, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { createContext, forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+const ROOT_NAME = 'LiveRegion';
+const HIDDEN_REGION_NAME = 'LiveRegionRegion';
+
+type LiveRegionContextValue = {};
+const [LiveRegionContext] = createContext<LiveRegionContextValue>('LiveRegionContext', ROOT_NAME);
 
 type RegionType = 'polite' | 'assertive';
 type RegionRole = 'status' | 'alert' | 'log';
@@ -12,7 +22,7 @@ const ROLES: { [key in RegionType]: RegionRole } = {
   assertive: 'alert',
 };
 
-const interopAttr = interopDataAttr('LiveRegionRegion');
+const interopAttr = interopDataAttr(HIDDEN_REGION_NAME);
 
 const useLiveRegion = ({
   ariaAtomic,
@@ -69,7 +79,6 @@ const useLiveRegion = ({
  * LiveRegion
  * -----------------------------------------------------------------------------------------------*/
 
-const REGION_NAME = 'LiveRegion';
 const REGION_DEFAULT_TAG = 'div';
 
 type LiveRegionDOMProps = React.ComponentPropsWithoutRef<typeof REGION_DEFAULT_TAG>;
@@ -86,8 +95,8 @@ const LiveRegion = forwardRef<typeof REGION_DEFAULT_TAG, LiveRegionProps>(functi
   const region = useLiveRegion({ type, ariaAtomic, role, ariaRelevant });
 
   return (
-    <>
-      <div {...regionProps} {...interopDataAttrObj(REGION_NAME)} ref={forwardedRef}>
+    <LiveRegionContext.Provider value={React.useMemo(() => ({}), [])}>
+      <div {...regionProps} {...interopDataAttrObj(ROOT_NAME)} ref={forwardedRef}>
         {children}
       </div>
 
@@ -97,14 +106,14 @@ const LiveRegion = forwardRef<typeof REGION_DEFAULT_TAG, LiveRegionProps>(functi
           <div {...interopDataAttrObj(`LiveRegion.Mirror`)}>{children}</div>,
           region
         )}
-    </>
+    </LiveRegionContext.Provider>
   );
 });
 
-LiveRegion.displayName = REGION_NAME;
+LiveRegion.displayName = ROOT_NAME;
 
 const styles: PrimitiveStyles = {
-  [interopSelector(REGION_NAME)]: {
+  [interopSelector(ROOT_NAME)]: {
     ...cssReset(REGION_DEFAULT_TAG),
   },
 };
