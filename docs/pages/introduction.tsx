@@ -23,8 +23,14 @@ export default function IntroductionPage() {
       </Box>
       <Box sx={{ flexGrow: 1, pl: '245px', py: 9 }}>
         <Container size={2} pt={2}>
-          <Heading as="h1" size={4} sx={{ lineHeight: 9 }}>
-            Components
+          <Heading
+            as="h1"
+            size={4}
+            sx={{
+              lineHeight: 9,
+            }}
+          >
+            Radix
           </Heading>
           <Heading as="h2" size={2} weight="normal" sx={{ color: 'gray700', lineHeight: '4' }}>
             An open-source component library for building accessible design systems.

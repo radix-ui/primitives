@@ -30,9 +30,7 @@ export default class Document extends NextDocument {
   render() {
     return (
       <html lang="en">
-        <Head>
-          <title>Docs</title>
-        </Head>
+        <Head />
         <body>
           <Main />
           <NextScript />
