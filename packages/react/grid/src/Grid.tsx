@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'Grid';
 const DEFAULT_TAG = 'div';
 
 type GridDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -10,13 +11,13 @@ type GridProps = GridDOMProps & GridOwnProps;
 
 const Grid = forwardRef<typeof DEFAULT_TAG, GridProps>(function Grid(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...gridProps } = props;
-  return <Comp {...interopDataAttrObj('Grid')} ref={forwardedRef} {...gridProps} />;
+  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...gridProps} />;
 });
 
-Grid.displayName = 'Grid';
+Grid.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  grid: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     display: 'grid',
   },
