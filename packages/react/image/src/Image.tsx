@@ -1,21 +1,25 @@
 /* eslint-disable jsx-a11y/alt-text */
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
+import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
-type ImageDOMProps = React.ComponentPropsWithRef<'img'>;
+const NAME = 'Image';
+const DEFAULT_TAG = 'img';
+
+type ImageDOMProps = React.ComponentPropsWithRef<typeof DEFAULT_TAG>;
 type ImageOwnProps = {};
 type ImageProps = ImageOwnProps & ImageDOMProps;
 
-const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Image(props, forwardedRef) {
-  return <img {...interopDataAttrObj('Image')} {...props} ref={forwardedRef} />;
+const Image = forwardRef<typeof DEFAULT_TAG, ImageProps>(function Image(props, forwardedRef) {
+  const { as: Comp = DEFAULT_TAG, ...imgProps } = props;
+  return <Comp {...interopDataAttrObj(NAME)} {...imgProps} ref={forwardedRef} />;
 });
 
-Image.displayName = 'Image';
+Image.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  image: {
-    ...cssReset('img'),
+  [interopSelector(NAME)]: {
+    ...cssReset(DEFAULT_TAG),
     display: 'block',
     maxWidth: '100%',
   },
