@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { cssReset, interopDataAttr, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttr, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 type RegionType = 'polite' | 'assertive';
@@ -69,13 +69,14 @@ const useLiveRegion = ({
  * LiveRegion
  * -----------------------------------------------------------------------------------------------*/
 
-const ALERT_DEFAULT_TAG = 'div';
+const REGION_NAME = 'LiveRegion';
+const REGION_DEFAULT_TAG = 'div';
 
-type LiveRegionDOMProps = React.ComponentPropsWithoutRef<typeof ALERT_DEFAULT_TAG>;
+type LiveRegionDOMProps = React.ComponentPropsWithoutRef<typeof REGION_DEFAULT_TAG>;
 type LiveRegionOwnProps = { type?: RegionType; role?: RegionRole };
 type LiveRegionProps = LiveRegionDOMProps & LiveRegionOwnProps;
 
-const LiveRegion = forwardRef<typeof ALERT_DEFAULT_TAG, LiveRegionProps>(function LiveRegion(
+const LiveRegion = forwardRef<typeof REGION_DEFAULT_TAG, LiveRegionProps>(function LiveRegion(
   props,
   forwardedRef
 ) {
@@ -86,25 +87,25 @@ const LiveRegion = forwardRef<typeof ALERT_DEFAULT_TAG, LiveRegionProps>(functio
 
   return (
     <>
-      <div {...regionProps} {...interopDataAttrObj('LiveRegion')} ref={forwardedRef}>
+      <div {...regionProps} {...interopDataAttrObj(REGION_NAME)} ref={forwardedRef}>
         {children}
       </div>
 
       {/* portal into live region for screen reader announcements */}
       {region &&
         ReactDOM.createPortal(
-          <div {...interopDataAttrObj('LiveRegionMirror')}>{children}</div>,
+          <div {...interopDataAttrObj(`LiveRegion.Mirror`)}>{children}</div>,
           region
         )}
     </>
   );
 });
 
-LiveRegion.displayName = 'LiveRegion';
+LiveRegion.displayName = REGION_NAME;
 
 const styles: PrimitiveStyles = {
-  liveRegion: {
-    ...cssReset(ALERT_DEFAULT_TAG),
+  [interopSelector(REGION_NAME)]: {
+    ...cssReset(REGION_DEFAULT_TAG),
   },
 };
 
