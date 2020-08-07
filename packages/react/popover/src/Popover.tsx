@@ -3,7 +3,14 @@ import { forwardRef, useRect, useComposedRefs, PrimitiveStyles } from '@interop-
 import { useSize } from '@interop-ui/react-use-size';
 import { Portal } from '@interop-ui/react-portal';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import { cssReset, Side, Align, isFunction, interopDataAttrObj } from '@interop-ui/utils';
+import {
+  cssReset,
+  Side,
+  Align,
+  isFunction,
+  interopDataAttrObj,
+  interopSelector,
+} from '@interop-ui/utils';
 import { getPlacementData } from '@interop-ui/popper';
 import { Arrow } from '@interop-ui/react-arrow';
 import * as CSS from 'csstype';
@@ -22,6 +29,7 @@ PopoverArrowContext.displayName = 'PopoverArrowContext';
  * Popover
  * -----------------------------------------------------------------------------------------------*/
 
+const POPOVER_NAME = 'Popover';
 const POPOVER_DEFAULT_TAG = 'div';
 
 type PopoverDOMProps = React.ComponentPropsWithRef<typeof POPOVER_DEFAULT_TAG>;
@@ -129,7 +137,7 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
                 ...popperStyles,
                 ...style,
               }}
-              {...interopDataAttrObj('Popover')}
+              {...interopDataAttrObj(POPOVER_NAME)}
               {...contentProps}
             >
               {/*
@@ -149,12 +157,11 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
   }
 );
 
-Popover.displayName = 'Popover';
-
 /* -------------------------------------------------------------------------------------------------
  * PopoverArrow
  * -----------------------------------------------------------------------------------------------*/
 
+const ARROW_NAME = 'Popover.Arrow';
 const ARROW_DEFAULT_TAG = 'span';
 
 type PopoverArrowDOMProps = React.ComponentPropsWithRef<typeof ARROW_DEFAULT_TAG>;
@@ -176,7 +183,7 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
         ...arrowStyles,
         ...style,
       }}
-      {...interopDataAttrObj('PopoverArrow')}
+      {...interopDataAttrObj(ARROW_NAME)}
       {...otherProps}
     >
       <span
@@ -190,18 +197,19 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
   );
 });
 
-PopoverArrow.displayName = 'Popover.Arrow';
-
 /* -----------------------------------------------------------------------------------------------*/
 
 Popover.Arrow = PopoverArrow;
 
+Popover.displayName = POPOVER_NAME;
+Popover.Arrow.displayName = ARROW_NAME;
+
 const styles: PrimitiveStyles = {
-  popover: {
+  [interopSelector(POPOVER_NAME)]: {
     ...cssReset(POPOVER_DEFAULT_TAG),
     position: 'absolute',
   },
-  arrow: {
+  [interopSelector(ARROW_NAME)]: {
     ...cssReset(ARROW_DEFAULT_TAG),
     display: 'inline-block',
     verticalAlign: 'top',
