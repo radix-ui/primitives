@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'Link';
 const DEFAULT_TAG = 'a';
 
 type LinkDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -10,18 +11,15 @@ type LinkProps = LinkDOMProps & LinkOwnProps;
 
 const Link = forwardRef<typeof DEFAULT_TAG, LinkProps>(function Link(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...linkProps } = props;
-  return <Comp {...interopDataAttrObj('Link')} ref={forwardedRef} {...linkProps} />;
+  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...linkProps} />;
 });
 
-Link.displayName = 'Link';
+Link.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  link: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },
-  'link.state.hover': {},
-  'link.state.focus': {},
-  'link.state.active': {},
 };
 
 export { Link, styles };
