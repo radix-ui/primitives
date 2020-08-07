@@ -8,6 +8,7 @@ import {
   makeId,
   DistributiveOmit,
   interopDataAttrObj,
+  interopSelector,
   cssReset,
 } from '@interop-ui/utils';
 import { useMachine, StateMachine, createMachine } from '@interop-ui/react-use-machine';
@@ -48,6 +49,7 @@ const [ComboboxContext, useComboboxContext] = createContext<ComboboxContextValue
  * Combobox
  * -----------------------------------------------------------------------------------------------*/
 
+const COMBOBOX_NAME = 'Combobox';
 const COMBOBOX_DEFAULT_TAG = 'div';
 
 type ComboboxDOMProps = React.ComponentPropsWithoutRef<typeof COMBOBOX_DEFAULT_TAG>;
@@ -209,7 +211,7 @@ const Combobox = forwardRef<typeof COMBOBOX_DEFAULT_TAG, ComboboxProps, Combobox
 
     return (
       <ComboboxContext.Provider value={context}>
-        <Comp {...props} {...interopDataAttrObj('Combobox')} ref={forwardedRef}>
+        <Comp {...props} {...interopDataAttrObj(COMBOBOX_NAME)} ref={forwardedRef}>
           {isFunction(children)
             ? children({ id: comboboxId, isOpen: popoverIsExpanded(state) })
             : children}
@@ -219,12 +221,11 @@ const Combobox = forwardRef<typeof COMBOBOX_DEFAULT_TAG, ComboboxProps, Combobox
   }
 );
 
-Combobox.displayName = 'Combobox';
-
 /* -------------------------------------------------------------------------------------------------
  * ComboboxInput
  * -----------------------------------------------------------------------------------------------*/
 
+const INPUT_NAME = 'Combobox.Input';
 const INPUT_DEFAULT_TAG = 'input';
 
 type ComboboxInputDOMProps = Omit<
@@ -275,11 +276,11 @@ const ComboboxInputImpl = forwardRef<typeof INPUT_DEFAULT_TAG, ComboboxInputProp
       openOnFocus,
       selectInputValueOnClick,
       send,
-    } = useComboboxContext('Combobox.Input');
+    } = useComboboxContext(INPUT_NAME);
 
     let ref = useComposedRefs(inputRef, forwardedRef);
-    let handleKeyDown = useKeyDown('Combobox.Input');
-    let handleBlur = useBlur('Combobox.Input');
+    let handleKeyDown = useKeyDown(INPUT_NAME);
+    let handleBlur = useBlur(INPUT_NAME);
 
     // Because we close the List on blur, we need to track if the blur is caused by clicking inside
     // the list, and if so, don't close the List.
@@ -302,7 +303,7 @@ const ComboboxInputImpl = forwardRef<typeof INPUT_DEFAULT_TAG, ComboboxInputProp
     return (
       <Comp
         ref={ref}
-        {...interopDataAttrObj('ComboboxInput')}
+        {...interopDataAttrObj(INPUT_NAME)}
         aria-activedescendant={
           highlightedValue ? makeItemId(comboboxId, kebabCase(highlightedValue)) : undefined
         }
@@ -326,14 +327,13 @@ const ComboboxInputImpl = forwardRef<typeof INPUT_DEFAULT_TAG, ComboboxInputProp
   }
 );
 
-ComboboxInputImpl.displayName = 'Combobox.Input';
-
 const ComboboxInput = memo(ComboboxInputImpl);
 
 /* -------------------------------------------------------------------------------------------------
  * ComboboxPopover
  * -----------------------------------------------------------------------------------------------*/
 
+const POPOVER_NAME = 'Combobox.Popover';
 const POPOVER_DEFAULT_TAG = 'div';
 
 type ComboboxPopoverDOMProps = React.ComponentPropsWithoutRef<typeof POPOVER_DEFAULT_TAG>;
@@ -354,15 +354,15 @@ const ComboboxPopoverImpl = React.forwardRef<
   ComboboxPopoverProps & Partial<PopoverProps>
 >(function ComboboxPopover(props, forwardedRef: React.Ref<any>) {
   let { shouldPortal = true, onKeyDown, onBlur, ...otherProps } = props;
-  let { popoverRef, inputRef, isOpen } = useComboboxContext('Combobox.Popover');
+  let { popoverRef, inputRef, isOpen } = useComboboxContext(POPOVER_NAME);
   let ref = useComposedRefs(popoverRef, forwardedRef);
-  let handleKeyDown = useKeyDown('Combobox.Popover');
-  let handleBlur = useBlur('Combobox.Popover');
+  let handleKeyDown = useKeyDown(POPOVER_NAME);
+  let handleBlur = useBlur(POPOVER_NAME);
 
   return (
     <Popover
       {...otherProps}
-      {...interopDataAttrObj('ComboboxPopover')}
+      {...interopDataAttrObj(POPOVER_NAME)}
       ref={ref}
       isOpen={isOpen}
       onKeyDown={composeEventHandlers<any>(onKeyDown, handleKeyDown)}
@@ -376,14 +376,13 @@ const ComboboxPopoverImpl = React.forwardRef<
   );
 });
 
-ComboboxPopoverImpl.displayName = 'Combobox.Popover';
-
 const ComboboxPopover = React.memo(ComboboxPopoverImpl);
 
 /* -------------------------------------------------------------------------------------------------
  * ComboboxList
  * -----------------------------------------------------------------------------------------------*/
 
+const LIST_NAME = 'Combobox.List';
 const LIST_DEFAULT_TAG = 'div';
 type ComboboxListDOMProps = React.ComponentPropsWithoutRef<typeof LIST_DEFAULT_TAG>;
 type ComboboxListOwnProps = {};
@@ -393,31 +392,30 @@ const ComboboxList = forwardRef<typeof LIST_DEFAULT_TAG, ComboboxListProps>(func
   { as: Comp = LIST_DEFAULT_TAG, ...props },
   forwardedRef
 ) {
-  let { listboxId } = useComboboxContext('ComboboxList');
+  let { listboxId } = useComboboxContext(LIST_NAME);
   return (
     <Comp
       role="listbox"
       tabIndex={0}
       {...props}
       ref={forwardedRef}
-      {...interopDataAttrObj('ComboboxList')}
+      {...interopDataAttrObj(LIST_NAME)}
       id={listboxId}
     />
   );
 });
 
-ComboboxList.displayName = 'Combobox.List';
-
 /* -------------------------------------------------------------------------------------------------
  * ComboboxOption
  * -----------------------------------------------------------------------------------------------*/
+const OPTION_NAME = 'Combobox.Option';
+const OPTION_DEFAULT_TAG = 'div';
 
 const [OptionContext, useOptionContext] = createContext<ComboboxOptionContextValue>(
   'OptionContext',
-  'Combobox.Option'
+  OPTION_NAME
 );
 
-const OPTION_DEFAULT_TAG = 'div';
 type ComboboxOptionDOMProps = Omit<
   React.ComponentPropsWithoutRef<typeof OPTION_DEFAULT_TAG>,
   'value' | 'onSelect'
@@ -447,7 +445,7 @@ const ComboboxOption = forwardRef<typeof OPTION_DEFAULT_TAG, ComboboxOptionProps
       onValueSelect,
       data: { highlightedValue },
       send,
-    } = useComboboxContext('Combobox.Option');
+    } = useComboboxContext(OPTION_NAME);
 
     let ownRef = React.useRef<HTMLElement | null>(null);
     let ref = useComposedRefs(forwardedRef, ownRef);
@@ -470,7 +468,7 @@ const ComboboxOption = forwardRef<typeof OPTION_DEFAULT_TAG, ComboboxOptionProps
           aria-selected={isActive}
           role="option"
           {...props}
-          {...interopDataAttrObj('ComboboxOption')}
+          {...interopDataAttrObj(OPTION_NAME)}
           ref={ref}
           id={makeItemId(comboboxId, kebabCase(value))}
           data-highlighted={isActive ? '' : undefined}
@@ -487,12 +485,11 @@ const ComboboxOption = forwardRef<typeof OPTION_DEFAULT_TAG, ComboboxOptionProps
   }
 );
 
-ComboboxOption.displayName = 'Combobox.Option';
-
 /* -------------------------------------------------------------------------------------------------
  * ComboboxOptionText
  * -----------------------------------------------------------------------------------------------*/
 
+const TEXT_NAME = 'Combobox.OptionText';
 const TEXT_DEFAULT_TAG = 'span';
 
 type ComboboxOptionTextDOMProps = React.ComponentPropsWithoutRef<typeof TEXT_DEFAULT_TAG>;
@@ -502,10 +499,10 @@ type ComboboxOptionTextProps = ComboboxOptionTextOwnProps & ComboboxOptionTextDO
 const ComboboxOptionText = forwardRef<typeof TEXT_DEFAULT_TAG, ComboboxOptionTextProps>(
   function ComboboxOptionText(props, forwardedRef) {
     let { as: Comp = TEXT_DEFAULT_TAG, ...textProps } = props;
-    let { value } = useOptionContext('Combobox.OptionText');
+    let { value } = useOptionContext(TEXT_NAME);
     let {
       data: { value: contextValue },
-    } = useComboboxContext('Combobox.OptionText');
+    } = useComboboxContext(TEXT_NAME);
 
     let results = React.useMemo(
       () =>
@@ -517,7 +514,7 @@ const ComboboxOptionText = forwardRef<typeof TEXT_DEFAULT_TAG, ComboboxOptionTex
     );
 
     return (
-      <Comp ref={forwardedRef} {...interopDataAttrObj('ComboboxOptionText')} {...textProps}>
+      <Comp ref={forwardedRef} {...interopDataAttrObj(TEXT_NAME)} {...textProps}>
         {results.length
           ? results.map((result, index) => {
               let str = value.slice(result.start, result.end);
@@ -537,22 +534,16 @@ const ComboboxOptionText = forwardRef<typeof TEXT_DEFAULT_TAG, ComboboxOptionTex
   }
 );
 
-ComboboxOptionText.displayName = 'Combobox.OptionText';
-
 /* -------------------------------------------------------------------------------------------------
  * ComboboxGroup
  * -----------------------------------------------------------------------------------------------*/
 
+const GROUP_NAME = 'Combobox.Group';
 const GROUP_DEFAULT_TAG = 'div';
 
 type ComboboxGroupDOMProps = React.ComponentPropsWithoutRef<typeof GROUP_DEFAULT_TAG>;
 type ComboboxGroupOwnProps = { label: string };
 type ComboboxGroupProps = ComboboxGroupDOMProps & ComboboxGroupOwnProps;
-
-type ComboboxGroupType = {
-  label: string;
-  index: number;
-};
 
 interface ComboboxGroupContextValue {
   label?: string;
@@ -570,7 +561,7 @@ const ComboboxGroup = forwardRef<typeof GROUP_DEFAULT_TAG, ComboboxGroupProps>(
       <React.Fragment>{children}</React.Fragment>
     ) : (
       <OptionGroupContext.Provider value={{ label }}>
-        <div {...interopDataAttrObj('ComboboxGroup')} {...rest} ref={forwardedRef} role="none">
+        <div {...interopDataAttrObj(GROUP_NAME)} {...rest} ref={forwardedRef} role="none">
           {children}
         </div>
       </OptionGroupContext.Provider>
@@ -578,12 +569,11 @@ const ComboboxGroup = forwardRef<typeof GROUP_DEFAULT_TAG, ComboboxGroupProps>(
   }
 );
 
-ComboboxGroup.displayName = 'Combobox.Group';
-
 /* -------------------------------------------------------------------------------------------------
  * ComboboxButton
  * -----------------------------------------------------------------------------------------------*/
 
+const BUTTON_NAME = 'Combobox.Button';
 const BUTTON_DEFAULT_TAG = 'button';
 
 type ComboboxButtonDOMProps = React.ComponentPropsWithoutRef<typeof BUTTON_DEFAULT_TAG>;
@@ -596,7 +586,7 @@ const ComboboxButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ComboboxButtonProps
     forwardedRef
   ) {
     let { send, buttonRef, listboxId, isOpen, persistSelection, state } = useComboboxContext(
-      'Combobox.Button'
+      BUTTON_NAME
     );
     let ref = useComposedRefs(buttonRef, forwardedRef);
 
@@ -612,7 +602,7 @@ const ComboboxButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ComboboxButtonProps
       }
     }
 
-    let handleKeyDown = useKeyDown('Combobox.Button');
+    let handleKeyDown = useKeyDown(BUTTON_NAME);
 
     function handleClick() {
       if (!clickStarted.current) {
@@ -644,7 +634,7 @@ const ComboboxButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ComboboxButtonProps
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         {...props}
-        {...interopDataAttrObj('ComboboxButton')}
+        {...interopDataAttrObj(BUTTON_NAME)}
         ref={ref}
         onClick={composeEventHandlers(onClick, handleClick)}
         onKeyDown={composeEventHandlers(onKeyDown, handleKeyDown)}
@@ -654,8 +644,6 @@ const ComboboxButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ComboboxButtonProps
     );
   }
 );
-
-ComboboxButton.displayName = 'Combobox.Button';
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -677,34 +665,43 @@ Combobox.OptionText = ComboboxOptionText;
 Combobox.Group = ComboboxGroup;
 Combobox.Button = ComboboxButton;
 
+Combobox.displayName = COMBOBOX_NAME;
+Combobox.Input.displayName = INPUT_NAME;
+Combobox.Popover.displayName = POPOVER_NAME;
+Combobox.List.displayName = LIST_NAME;
+Combobox.Option.displayName = OPTION_NAME;
+Combobox.OptionText.displayName = TEXT_NAME;
+Combobox.Group.displayName = GROUP_NAME;
+Combobox.Button.displayName = BUTTON_NAME;
+
 const styles: PrimitiveStyles = {
-  combobox: {
+  [interopSelector(COMBOBOX_NAME)]: {
     ...cssReset(COMBOBOX_DEFAULT_TAG),
     position: 'relative',
     display: 'flex',
     width: '100%',
     alignItems: 'center',
   },
-  input: {
+  [interopSelector(INPUT_NAME)]: {
     ...cssReset(INPUT_DEFAULT_TAG),
   },
-  popover: {
+  [interopSelector(POPOVER_NAME)]: {
     ...cssReset(POPOVER_DEFAULT_TAG),
     position: 'absolute',
   },
-  list: {
+  [interopSelector(LIST_NAME)]: {
     ...cssReset(LIST_DEFAULT_TAG),
   },
-  option: {
+  [interopSelector(OPTION_NAME)]: {
     ...cssReset(OPTION_DEFAULT_TAG),
   },
-  optionText: {
+  [interopSelector(TEXT_NAME)]: {
     ...cssReset(TEXT_DEFAULT_TAG),
   },
-  group: {
+  [interopSelector(GROUP_NAME)]: {
     ...cssReset(GROUP_DEFAULT_TAG),
   },
-  button: {
+  [interopSelector(BUTTON_NAME)]: {
     ...cssReset(BUTTON_DEFAULT_TAG),
   },
 };
@@ -727,7 +724,6 @@ function useKeyDown(componentName?: string) {
   let {
     data: { highlightedValue },
     onValueSelect,
-    state,
     send,
     autoCompleteOnHighlight,
     persistSelection,
@@ -886,10 +882,6 @@ function useBlur(componentName?: string) {
     });
   };
 }
-
-type ComboboxDescendant = {
-  value: string;
-};
 
 interface ComboboxOptionContextValue {
   value: string;
