@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'Code';
 const DEFAULT_TAG = 'code';
 
 type CodeDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -10,13 +11,13 @@ type CodeProps = CodeDOMProps & CodeOwnProps;
 
 const Code = forwardRef<typeof DEFAULT_TAG, CodeProps>(function Code(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...codeProps } = props;
-  return <Comp {...interopDataAttrObj('Code')} ref={forwardedRef} {...codeProps} />;
+  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...codeProps} />;
 });
 
-Code.displayName = 'Code';
+Code.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  code: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',
   },

@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'AccessibleIcon';
 const DEFAULT_TAG = 'span';
 
 type AccessibleIconDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
-type AccessibleIconOwnProps = {
-  label: string;
-};
+type AccessibleIconOwnProps = { label: string };
 type AccessibleIconProps = AccessibleIconDOMProps & AccessibleIconOwnProps;
 
 const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(function AccessibleIcon(
@@ -19,7 +18,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
   const child = React.Children.only(children);
 
   return (
-    <Comp {...interopDataAttrObj('AccessibleIcon')} ref={forwardedRef} {...iconProps}>
+    <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...iconProps}>
       {React.cloneElement(child as React.ReactElement, {
         // accessibility
         'aria-hidden': true,
@@ -30,10 +29,10 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
   );
 });
 
-AccessibleIcon.displayName = 'AccessibleIcon';
+AccessibleIcon.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  accessibleIcon: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },
 };

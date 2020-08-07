@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Table
  * -----------------------------------------------------------------------------------------------*/
 
+const TABLE_NAME = 'Table';
 const TABLE_DEFAULT_TAG = 'table';
 
 type TableDOMProps = React.ComponentPropsWithoutRef<typeof TABLE_DEFAULT_TAG>;
@@ -17,15 +18,14 @@ const Table = forwardRef<typeof TABLE_DEFAULT_TAG, TableProps, TableStaticProps>
   forwardedRef
 ) {
   const { as: Comp = TABLE_DEFAULT_TAG, ...tableProps } = props;
-  return <Comp {...interopDataAttrObj('Table')} ref={forwardedRef} {...tableProps} />;
+  return <Comp {...interopDataAttrObj(TABLE_NAME)} ref={forwardedRef} {...tableProps} />;
 });
-
-Table.displayName = 'Table';
 
 /* -------------------------------------------------------------------------------------------------
  * TableHeader
  * -----------------------------------------------------------------------------------------------*/
 
+const HEADER_NAME = 'Table.Header';
 const HEADER_DEFAULT_TAG = 'thead';
 
 type TableHeaderDOMProps = React.ComponentPropsWithoutRef<typeof HEADER_DEFAULT_TAG>;
@@ -37,15 +37,14 @@ const TableHeader = forwardRef<typeof HEADER_DEFAULT_TAG, TableHeaderProps>(func
   forwardedRef
 ) {
   const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
-  return <Comp {...interopDataAttrObj('TableHeader')} ref={forwardedRef} {...headerProps} />;
+  return <Comp {...interopDataAttrObj(HEADER_NAME)} ref={forwardedRef} {...headerProps} />;
 });
-
-TableHeader.displayName = 'Table.Header';
 
 /* -------------------------------------------------------------------------------------------------
  * TableFooter
  * -----------------------------------------------------------------------------------------------*/
 
+const FOOTER_NAME = 'Table.Footer';
 const FOOTER_DEFAULT_TAG = 'tfoot';
 
 type TableFooterDOMProps = React.ComponentPropsWithoutRef<typeof FOOTER_DEFAULT_TAG>;
@@ -57,15 +56,14 @@ const TableFooter = forwardRef<typeof FOOTER_DEFAULT_TAG, TableFooterProps>(func
   forwardedRef
 ) {
   const { as: Comp = FOOTER_DEFAULT_TAG, ...footerProps } = props;
-  return <Comp {...interopDataAttrObj('TableFooter')} ref={forwardedRef} {...footerProps} />;
+  return <Comp {...interopDataAttrObj(FOOTER_NAME)} ref={forwardedRef} {...footerProps} />;
 });
-
-TableFooter.displayName = 'Table.Footer';
 
 /* -------------------------------------------------------------------------------------------------
  * TableBody
  * -----------------------------------------------------------------------------------------------*/
 
+const BODY_NAME = 'Table.Body';
 const BODY_DEFAULT_TAG = 'tbody';
 
 type TableBodyDOMProps = React.ComponentPropsWithoutRef<typeof BODY_DEFAULT_TAG>;
@@ -77,15 +75,14 @@ const TableBody = forwardRef<typeof BODY_DEFAULT_TAG, TableBodyProps>(function T
   forwardedRef
 ) {
   const { as: Comp = BODY_DEFAULT_TAG, ...bodyProps } = props;
-  return <Comp {...interopDataAttrObj('TableBody')} ref={forwardedRef} {...bodyProps} />;
+  return <Comp {...interopDataAttrObj(BODY_NAME)} ref={forwardedRef} {...bodyProps} />;
 });
-
-TableBody.displayName = 'Table.Body';
 
 /* -------------------------------------------------------------------------------------------------
  * TableRow
  * -----------------------------------------------------------------------------------------------*/
 
+const ROW_NAME = 'Table.Row';
 const ROW_DEFAULT_TAG = 'tr';
 
 type TableRowDOMProps = React.ComponentPropsWithoutRef<typeof ROW_DEFAULT_TAG>;
@@ -97,15 +94,14 @@ const TableRow = forwardRef<typeof ROW_DEFAULT_TAG, TableRowProps>(function Tabl
   forwardedRef
 ) {
   const { as: Comp = ROW_DEFAULT_TAG, ...rowProps } = props;
-  return <Comp {...interopDataAttrObj('TableRow')} ref={forwardedRef} {...rowProps} />;
+  return <Comp {...interopDataAttrObj(ROW_NAME)} ref={forwardedRef} {...rowProps} />;
 });
-
-TableRow.displayName = 'Table.Row';
 
 /* -------------------------------------------------------------------------------------------------
  * TableSummaryCell
  * -----------------------------------------------------------------------------------------------*/
 
+const SUMMARY_CELL_NAME = 'Table.SummaryCell';
 const SUMMARY_CELL_DEFAULT_TAG = 'th';
 
 type TableSummaryCellDOMProps = React.ComponentPropsWithoutRef<typeof SUMMARY_CELL_DEFAULT_TAG>;
@@ -115,16 +111,15 @@ type TableSummaryCellProps = TableSummaryCellDOMProps & TableSummaryCellOwnProps
 const TableSummaryCell = forwardRef<typeof SUMMARY_CELL_DEFAULT_TAG, TableSummaryCellProps>(
   function TableSummaryCell(props, forwardedRef) {
     const { as: Comp = SUMMARY_CELL_DEFAULT_TAG, ...cellProps } = props;
-    return <Comp {...interopDataAttrObj('TableSummaryCell')} ref={forwardedRef} {...cellProps} />;
+    return <Comp {...interopDataAttrObj(SUMMARY_CELL_NAME)} ref={forwardedRef} {...cellProps} />;
   }
 );
-
-TableSummaryCell.displayName = 'Table.SummaryCell';
 
 /* -------------------------------------------------------------------------------------------------
  * TableCell
  * -----------------------------------------------------------------------------------------------*/
 
+const CELL_NAME = 'Table.Cell';
 const CELL_DEFAULT_TAG = 'td';
 
 type TableCellDOMProps = React.ComponentPropsWithoutRef<typeof CELL_DEFAULT_TAG>;
@@ -136,10 +131,8 @@ const TableCell = forwardRef<typeof CELL_DEFAULT_TAG, TableCellProps>(function T
   forwardedRef
 ) {
   const { as: Comp = CELL_DEFAULT_TAG, ...cellProps } = props;
-  return <Comp {...interopDataAttrObj('TableCell')} ref={forwardedRef} {...cellProps} />;
+  return <Comp {...interopDataAttrObj(CELL_NAME)} ref={forwardedRef} {...cellProps} />;
 });
-
-TableCell.displayName = 'Table.Cell';
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -159,28 +152,36 @@ Table.Row = TableRow;
 Table.SummaryCell = TableSummaryCell;
 Table.Cell = TableCell;
 
+Table.displayName = TABLE_NAME;
+Table.Header.displayName = HEADER_NAME;
+Table.Footer.displayName = FOOTER_NAME;
+Table.Body.displayName = BODY_NAME;
+Table.Row.displayName = ROW_NAME;
+Table.SummaryCell.displayName = SUMMARY_CELL_NAME;
+Table.Cell.displayName = CELL_NAME;
+
 const styles: PrimitiveStyles = {
-  table: {
+  [interopSelector(TABLE_NAME)]: {
     ...cssReset(TABLE_DEFAULT_TAG),
     borderCollapse: 'collapse',
     width: '100%',
   },
-  header: {
+  [interopSelector(HEADER_NAME)]: {
     ...cssReset(HEADER_DEFAULT_TAG),
   },
-  footer: {
+  [interopSelector(FOOTER_NAME)]: {
     ...cssReset(FOOTER_DEFAULT_TAG),
   },
-  body: {
+  [interopSelector(BODY_NAME)]: {
     ...cssReset(BODY_DEFAULT_TAG),
   },
-  row: {
+  [interopSelector(ROW_NAME)]: {
     ...cssReset(ROW_DEFAULT_TAG),
   },
-  summaryCell: {
+  [interopSelector(SUMMARY_CELL_NAME)]: {
     ...cssReset(SUMMARY_CELL_DEFAULT_TAG),
   },
-  cell: {
+  [interopSelector(CELL_NAME)]: {
     ...cssReset(CELL_DEFAULT_TAG),
   },
 };

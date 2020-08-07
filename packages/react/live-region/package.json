@@ -1,9 +1,9 @@
 {
-  "name": "@interop-ui/css",
+  "name": "@interop-ui/react-live-region",
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/index.js",
-  "module": "dist/css.esm.min.js",
+  "module": "dist/react-live-region.esm.min.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "src",
@@ -17,7 +17,10 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "stylis": "^4.0.2",
+    "@interop-ui/utils": "1.0.0",
+    "@interop-ui/react-portal": "1.0.0",
+    "@interop-ui/react-utils": "1.0.0",
+    "@interop-ui/react-visually-hidden": "1.0.0",
     "tslib": "^2.0.0"
   }
 }

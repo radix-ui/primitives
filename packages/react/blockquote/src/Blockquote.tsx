@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'Blockquote';
 const DEFAULT_TAG = 'blockquote';
 
 type BlockquoteDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -13,13 +14,13 @@ const Blockquote = forwardRef<typeof DEFAULT_TAG, BlockquoteProps>(function Bloc
   forwardedRef
 ) {
   const { as: Comp = DEFAULT_TAG, ...blockquoteProps } = props;
-  return <Comp {...interopDataAttrObj('Blockquote')} ref={forwardedRef} {...blockquoteProps} />;
+  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...blockquoteProps} />;
 });
 
-Blockquote.displayName = 'Blockquote';
+Blockquote.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  blockquote: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },
 };
