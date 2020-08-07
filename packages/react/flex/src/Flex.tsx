@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, isUndefined } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, isUndefined, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 import pick from 'lodash.pick';
 
+const NAME = 'Flex';
 const DEFAULT_TAG = 'div';
 
 type FlexDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -39,7 +40,7 @@ const Flex = forwardRef<typeof DEFAULT_TAG, FlexProps>(function Flex(props, forw
             marginTop: !isUndefined(rowGap) ? -rowGap : undefined,
             marginLeft: !isUndefined(columnGap) ? -columnGap : undefined,
           }}
-          {...interopDataAttrObj('Flex')}
+          {...interopDataAttrObj(NAME)}
           ref={forwardedRef}
           {...flexProps}
         />
@@ -47,13 +48,13 @@ const Flex = forwardRef<typeof DEFAULT_TAG, FlexProps>(function Flex(props, forw
     );
   }
 
-  return <Comp {...interopDataAttrObj('Flex')} style={style} ref={forwardedRef} {...flexProps} />;
+  return <Comp {...interopDataAttrObj(NAME)} style={style} ref={forwardedRef} {...flexProps} />;
 });
 
-Flex.displayName = 'Flex';
+Flex.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  flex: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     display: 'flex',
   },
