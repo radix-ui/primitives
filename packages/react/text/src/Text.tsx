@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'Text';
 const DEFAULT_TAG = 'span';
 
 type TextDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -10,13 +11,13 @@ type TextProps = TextDOMProps & TextOwnProps;
 
 const Text = forwardRef<typeof DEFAULT_TAG, TextProps>(function Text(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...textProps } = props;
-  return <Comp {...interopDataAttrObj('Text')} ref={forwardedRef} {...textProps} />;
+  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...textProps} />;
 });
 
-Text.displayName = 'Text';
+Text.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  text: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },
 };
