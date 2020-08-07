@@ -33,26 +33,38 @@ function build() {
 
 type StyleObject<T = string | number> = Record<string, T>;
 type NestedStyleObject = StyleObject<StyleObject | string | number>;
+type FlattenedStyleObject = Record<string, StyleObject>;
 
 function flattenStyles(
   nestedStyles: NestedStyleObject,
   rootSelector: string[] = []
-): StyleObject<Record<string, StyleObject>> {
+): FlattenedStyleObject {
   return Object.entries(nestedStyles).reduce((acc, [key, value]) => {
-    if (!value || !Object.values(value).length) return acc;
+    // prevent empty rules from being added to the stylesheet
+    if (value == null || (isObject(value) && !Object.values(value).length)) return acc;
+    let flattened: FlattenedStyleObject;
 
-    const flattened = isNestedObject(value)
-      ? flattenStyles(value, [...rootSelector, key])
-      : { [[...rootSelector, key.replace('&', '')].join('')]: value };
+    if (isObject(value)) {
+      const selector = key.replace('&', '');
+      flattened = flattenStyles(value, [...rootSelector, selector]);
+    } else {
+      const selector = rootSelector.join('');
+      const cssProperty = key;
+
+      flattened = {
+        [selector]: {
+          ...acc[selector],
+          [cssProperty]: value,
+        },
+      };
+    }
 
     return Object.assign({}, acc, flattened);
-  }, {});
+  }, {} as any);
 }
 
-const isNestedObject = (value: any): value is NestedStyleObject => {
-  return (
-    typeof value === 'object' && Object.entries(value).some(([, v]) => v && typeof v === 'object')
-  );
-};
+function isObject(value: any): value is Record<string, any> {
+  return typeof value === 'object';
+}
 
 build();

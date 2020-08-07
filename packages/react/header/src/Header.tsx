@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'Header';
 const DEFAULT_TAG = 'header';
 
 type HeaderDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -12,7 +13,7 @@ const Header = forwardRef<typeof DEFAULT_TAG, HeaderProps>(function Header(props
   const { as: Comp = DEFAULT_TAG, isSticky = false, style, ...headerProps } = props;
   return (
     <Comp
-      {...interopDataAttrObj('Header')}
+      {...interopDataAttrObj(NAME)}
       style={{
         ...style,
         ...(isSticky
@@ -28,10 +29,10 @@ const Header = forwardRef<typeof DEFAULT_TAG, HeaderProps>(function Header(props
   );
 });
 
-Header.displayName = 'Header';
+Header.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  header: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },
 };

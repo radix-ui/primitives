@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const NAME = 'Container';
 const DEFAULT_TAG = 'span';
 
 type ContainerDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -13,13 +14,13 @@ const Container = forwardRef<typeof DEFAULT_TAG, ContainerProps>(function Contai
   forwardedRef
 ) {
   const { as: Comp = DEFAULT_TAG, ...containerProps } = props;
-  return <Comp {...interopDataAttrObj('Container')} ref={forwardedRef} {...containerProps} />;
+  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...containerProps} />;
 });
 
-Container.displayName = 'Container';
+Container.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  container: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     marginLeft: 'auto',
     marginRight: 'auto',

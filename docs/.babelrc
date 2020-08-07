@@ -1,4 +1,4 @@
 {
   "presets": ["next/babel"],
-  "plugins": [["styled-components", { "ssr": true, "displayName": true, "preprocess": false }], "import-glob-array"]
+  "plugins": [["styled-components", { "ssr": true, "displayName": true, "preprocess": false }]]
 }

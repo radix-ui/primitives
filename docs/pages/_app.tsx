@@ -5,19 +5,7 @@ import { createGlobalStyle } from 'styled-components';
 import * as Radix from '@modulz/radix';
 
 const GlobalStyles = createGlobalStyle`
-	::selection {
-		background-color: ${Radix.theme.colors.blue600};
-		color: ${Radix.theme.colors.white};
-	}
-
-	/* reset selection for live code blocks */
-	.react-live-code-block textarea {
-		outline: none;
-
-		&::selection {
-			background-color: ${Radix.theme.colors.blue300};
-		}
-	}
+  svg { vertical-align: middle }
 `;
 
 function App({ Component, pageProps }: AppProps) {

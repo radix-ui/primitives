@@ -8,20 +8,22 @@
     "start": "next start"
   },
   "dependencies": {
+    "@interop-ui/react-button": "*",
+    "@interop-ui/react-utils": "*",
     "@modulz/radix": "0.0.1-beta.44",
     "@modulz/radix-icons": "^2.4.0",
-    "next": "9.4.4",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
+    "next": "^9.5.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-live": "^2.2.2",
     "styled-components": "^5.1.1"
   },
   "devDependencies": {
-    "@types/node": "^14.0.14",
-    "@types/react": "^16.9.41",
-    "babel-plugin-import-glob-array": "^0.2.0",
-    "babel-plugin-styled-components": "^1.10.7",
-    "prettier": "^2.0.5",
-    "typescript": "^3.9.6"
+    "@types/next": "^9.0.0",
+    "@types/react": "^16.9.44",
+    "@types/react-dom": "^16.9.8",
+    "babel-plugin-styled-components": "^1.11.1",
+    "next-transpile-modules": "^4.0.2",
+    "typescript": "^3.9.7"
   }
 }
