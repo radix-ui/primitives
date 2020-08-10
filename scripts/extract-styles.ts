@@ -21,9 +21,9 @@ function build() {
 
         fs.writeFile(cssFile, cssStyles, (error) => {
           if (error) {
-            console.log(`Error creating ${cssFile}: `, error);
+            console.log(`❌ Error creating ${cssFile}: `, error);
           } else {
-            console.log('Created file: ', cssFile);
+            console.log('✅ Created file: ', cssFile);
           }
         });
       }
@@ -54,13 +54,17 @@ function flattenStyles(
       flattened = {
         [selector]: {
           ...acc[selector],
-          [cssProperty]: value,
+          [toHyphen(cssProperty)]: value,
         },
       };
     }
 
     return Object.assign({}, acc, flattened);
   }, {} as any);
+}
+
+function toHyphen(cssProperty: string) {
+  return cssProperty.replace(/([A-Z])/g, (char) => `-${char[0].toLowerCase()}`);
 }
 
 function isObject(value: any): value is Record<string, any> {
