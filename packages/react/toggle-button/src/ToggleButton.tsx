@@ -71,6 +71,7 @@ const styles: PrimitiveStyles = {
     // enable overlapping adjacent buttons via z-index
     position: 'relative',
 
+    // prevent hover/focus/active styles when disabled
     '&:disabled': {
       pointerEvents: 'none',
     },
