@@ -11,7 +11,7 @@ import {
   StateMachine,
   Typestate,
 } from '@xstate/fsm';
-import { DistributiveOmit, isString, isFunction } from '@interop-ui/utils';
+import { DistributiveOmit, isString, isFunction, __DEV__ } from '@interop-ui/utils';
 import { useConstant } from '@interop-ui/react-utils';
 
 function getServiceState<

@@ -10,6 +10,7 @@ import {
   interopDataAttrObj,
   interopSelector,
   cssReset,
+  __DEV__,
 } from '@interop-ui/utils';
 import { useMachine, StateMachine, createMachine } from '@interop-ui/react-use-machine';
 import { findAll } from 'highlight-words-core';
@@ -237,7 +238,7 @@ type ComboboxInputProps = ComboboxInputDOMProps & ComboboxInputOwnProps;
 
 const ComboboxInputImpl = forwardRef<typeof INPUT_DEFAULT_TAG, ComboboxInputProps>(
   function ComboboxInput(props, forwardedRef) {
-    if (process.env.NODE_ENV === 'development') {
+    if (__DEV__) {
       if (typeof (props as any).onChange !== 'undefined') {
         // TODO: Dev warning
         console.warn('');

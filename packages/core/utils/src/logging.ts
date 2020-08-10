@@ -1,3 +1,5 @@
+import { __DEV__ } from './index';
+
 const alreadyWarned: Record<string, boolean> = {};
 
 export function invariant(cond: boolean, message: string): void {
