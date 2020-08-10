@@ -147,7 +147,7 @@ const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function
   ) : null;
 });
 
-const AVATAR_NAME = 'AVATAR';
+const AVATAR_NAME = 'Avatar';
 const AVATAR_DEFAULT_TAG = CONTAINER_DEFAULT_TAG;
 
 const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
