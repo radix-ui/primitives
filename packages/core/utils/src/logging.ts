@@ -1,4 +1,4 @@
-import { __DEV__ } from './index';
+import { __DEV__ } from './constants';
 
 const alreadyWarned: Record<string, boolean> = {};
 
