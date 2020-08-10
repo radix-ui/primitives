@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import {
   forwardRef,
   useControlledState,
@@ -7,6 +7,7 @@ import {
   PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
+const NAME = 'ToggleButton';
 const DEFAULT_TAG = 'button';
 
 type ToggleButtonDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -44,7 +45,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
   return (
     <Comp
-      {...interopDataAttrObj('ToggleButton')}
+      {...interopDataAttrObj(NAME)}
       type="button"
       aria-pressed={Boolean(isToggled)}
       ref={forwardedRef}
@@ -54,10 +55,10 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
   );
 });
 
-ToggleButton.displayName = 'ToggleButton';
+ToggleButton.displayName = NAME;
 
 const styles: PrimitiveStyles = {
-  toggleButton: {
+  [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
@@ -69,9 +70,11 @@ const styles: PrimitiveStyles = {
     whiteSpace: 'nowrap',
     // enable overlapping adjacent buttons via z-index
     position: 'relative',
-  },
-  'toggleButton.state.disabled': {
-    pointerEvents: 'none',
+
+    // prevent hover/focus/active styles when disabled
+    '&:disabled': {
+      pointerEvents: 'none',
+    },
   },
 };
 
