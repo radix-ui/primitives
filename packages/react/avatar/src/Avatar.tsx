@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
-import { cssReset, interopDataAttrObj, isFunction } from '@interop-ui/utils';
+import { cssReset, interopDataAttrObj, isFunction, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
+const CONTAINER_NAME = 'Avatar.Root';
 const CONTAINER_DEFAULT_TAG = 'span';
 
 type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof CONTAINER_DEFAULT_TAG>;
@@ -25,7 +26,7 @@ interface AvatarContextValue {
 
 const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
   'AvatarContext',
-  'Avatar.Root'
+  CONTAINER_NAME
 );
 
 const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(function AvatarRoot(
@@ -63,8 +64,6 @@ const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(functio
     whatToRender = isFunction(renderFallback) ? 'FALLBACK' : 'ICON';
   }
 
-  console.log(whatToRender);
-
   const ctx = React.useMemo(() => {
     return {
       alt,
@@ -75,7 +74,7 @@ const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(functio
 
   return (
     <AvatarContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj('AvatarRoot')} {...avatarProps} ref={forwardedRef}>
+      <Comp {...interopDataAttrObj(CONTAINER_NAME)} {...avatarProps} ref={forwardedRef}>
         {whatToRender === 'FALLBACK'
           ? (renderFallback as Function)()
           : whatToRender === 'LOADING'
@@ -86,23 +85,22 @@ const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(functio
   );
 });
 
-AvatarRoot.displayName = 'Avatar.Root';
+const IMAGE_NAME = 'Avatar.Image';
+const IMAGE_DEFAULT_TAG = 'img';
 
-type AvatarImageDOMProps = React.ComponentPropsWithRef<'img'>;
+type AvatarImageDOMProps = React.ComponentPropsWithRef<typeof IMAGE_DEFAULT_TAG>;
 type AvatarImageOwnProps = {};
 type AvatarImageProps = AvatarImageDOMProps & AvatarImageOwnProps;
-
-const IMAGE_DEFAULT_TAG = 'img';
 
 const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(function AvatarImage(
   props,
   forwardedRef
 ) {
   let { as: Comp = ImagePrimitive, children: _, ...imageProps } = props;
-  let { src, alt, whatToRender } = useAvatarContext('Avatar.Image');
+  let { src, alt, whatToRender } = useAvatarContext(IMAGE_NAME);
   return whatToRender === 'IMAGE' ? (
     <Comp
-      {...interopDataAttrObj('AvatarImage')}
+      {...interopDataAttrObj(IMAGE_NAME)}
       ref={forwardedRef}
       src={src}
       alt={alt}
@@ -111,8 +109,7 @@ const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(funct
   ) : null;
 });
 
-AvatarImage.displayName = 'Avatar.Image';
-
+const ICON_NAME = 'Avatar.Icon';
 const ICON_DEFAULT_TAG = 'svg';
 
 type AvatarIconDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
@@ -124,14 +121,13 @@ const AvatarIcon = forwardRef<typeof ICON_DEFAULT_TAG, AvatarIconProps>(function
   forwardedRef
 ) {
   let { as: Comp = RadixIcon as any, ...iconProps } = props;
-  let { whatToRender } = useAvatarContext('Avatar.Icon');
+  let { whatToRender } = useAvatarContext(ICON_NAME);
   return whatToRender === 'ICON' ? (
-    <Comp {...interopDataAttrObj('AvatarIcon')} ref={forwardedRef} {...iconProps} />
+    <Comp {...interopDataAttrObj(ICON_NAME)} ref={forwardedRef} {...iconProps} />
   ) : null;
 });
 
-AvatarIcon.displayName = 'Avatar.Icon';
-
+const ABBR_NAME = 'Avatar.Abbr';
 const ABBR_DEFAULT_TAG = 'span';
 
 type AvatarAbbrDOMProps = React.ComponentPropsWithoutRef<typeof ABBR_DEFAULT_TAG>;
@@ -143,22 +139,23 @@ const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function
   forwardedRef
 ) {
   let { as: Comp = 'span', children, ...abbrProps } = props;
-  let { alt, whatToRender } = useAvatarContext('Avatar.Abbr');
+  let { alt, whatToRender } = useAvatarContext(ABBR_NAME);
   return alt && whatToRender === 'ALT_ABBR' ? (
-    <Comp {...interopDataAttrObj('AvatarAbbr')} aria-hidden ref={forwardedRef} {...abbrProps}>
+    <Comp {...interopDataAttrObj(ABBR_NAME)} aria-hidden ref={forwardedRef} {...abbrProps}>
       {alt[0]}
     </Comp>
   ) : null;
 });
 
-AvatarAbbr.displayName = 'Avatar.Abbr';
+const AVATAR_NAME = 'Avatar';
+const AVATAR_DEFAULT_TAG = CONTAINER_DEFAULT_TAG;
 
-const Avatar = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
+const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
   function Avatar(props, forwardedRef) {
     const { children, ...avatarProps } = props;
 
     return (
-      <AvatarRoot ref={forwardedRef} {...avatarProps}>
+      <AvatarRoot ref={forwardedRef} {...avatarProps} {...interopDataAttrObj(AVATAR_NAME)}>
         <AvatarImage />
         <AvatarIcon />
         <AvatarAbbr />
@@ -169,10 +166,14 @@ const Avatar = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps, AvatarStati
 
 Avatar.Root = AvatarRoot;
 Avatar.Image = AvatarImage;
-Avatar.Abbr = AvatarAbbr;
 Avatar.Icon = AvatarIcon;
+Avatar.Abbr = AvatarAbbr;
 
-Avatar.displayName = 'Avatar';
+Avatar.displayName = AVATAR_NAME;
+Avatar.Root.displayName = CONTAINER_NAME;
+Avatar.Image.displayName = IMAGE_NAME;
+Avatar.Icon.displayName = ICON_NAME;
+Avatar.Abbr.displayName = ABBR_NAME;
 
 interface AvatarStaticProps {
   Root: typeof AvatarRoot;
@@ -205,7 +206,7 @@ function useImageLoadingStatus(src?: string) {
       setLoadingStatus('error');
     };
     image.oninvalid = () => {
-      console.log('inavlid');
+      // TODO
     };
 
     return () => {
@@ -213,13 +214,11 @@ function useImageLoadingStatus(src?: string) {
     };
   }, [src]);
 
-  console.log(loadingStatus);
-
   return loadingStatus;
 }
 
 const styles: PrimitiveStyles = {
-  root: {
+  [interopSelector(CONTAINER_NAME)]: {
     ...cssReset(CONTAINER_DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
@@ -228,7 +227,7 @@ const styles: PrimitiveStyles = {
     overflow: 'hidden',
     userSelect: 'none',
   },
-  image: {
+  [interopSelector(IMAGE_NAME)]: {
     ...cssReset(IMAGE_DEFAULT_TAG),
     width: '100%',
     height: '100%',
@@ -239,10 +238,10 @@ const styles: PrimitiveStyles = {
     // Hide the image broken icon (Chrome only)
     textIndent: 10000,
   },
-  abbr: {
+  [interopSelector(ABBR_NAME)]: {
     ...cssReset(ABBR_DEFAULT_TAG),
   },
-  icon: {
+  [interopSelector(ICON_NAME)]: {
     ...cssReset(ICON_DEFAULT_TAG),
   },
 };
