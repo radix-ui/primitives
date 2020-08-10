@@ -63,7 +63,7 @@ const [SwitchContext, useSwitchContext] = createContext<SwitchContextValue>(
  * SwitchRoot
  * -----------------------------------------------------------------------------------------------*/
 
-const ROOT_NAME = 'Swithc.Root';
+const ROOT_NAME = 'Switch.Root';
 const ROOT_DEFAULT_TAG = 'span';
 
 type SwitchRootDOMProps = Omit<
