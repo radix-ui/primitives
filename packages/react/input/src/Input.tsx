@@ -16,7 +16,7 @@ const Input = forwardRef<typeof DEFAULT_TAG, InputProps>(function Input(props, f
 
 Input.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'input'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',

@@ -19,7 +19,7 @@ const Container = forwardRef<typeof DEFAULT_TAG, ContainerProps>(function Contai
 
 Container.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'container'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     marginLeft: 'auto',

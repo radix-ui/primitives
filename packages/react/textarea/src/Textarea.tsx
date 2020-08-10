@@ -19,7 +19,7 @@ const Textarea = forwardRef<typeof DEFAULT_TAG, TextareaProps>(function Textarea
 
 Textarea.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'textarea'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     width: '100%',

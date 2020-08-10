@@ -31,7 +31,7 @@ const Header = forwardRef<typeof DEFAULT_TAG, HeaderProps>(function Header(props
 
 Header.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'header'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },

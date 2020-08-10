@@ -260,7 +260,7 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
  * Styles
  * -----------------------------------------------------------------------------------------------*/
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'list' | 'tab' | 'panel' | 'tabs'> = {
   [interopSelector(TAB_LIST_NAME)]: {
     ...cssReset(TAB_LIST_DEFAULT_TAG),
     flexShrink: 0,

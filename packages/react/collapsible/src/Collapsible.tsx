@@ -163,7 +163,7 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 Collapsible.Button.displayName = BUTTON_NAME;
 Collapsible.Content.displayName = CONTENT_NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'collapsible' | 'button' | 'content'> = {
   [interopSelector(COLLAPSIBLE_NAME)]: {
     ...cssReset(COLLAPSIBLE_DEFAULT_TAG),
   },

@@ -16,7 +16,7 @@ const Card = forwardRef<typeof DEFAULT_TAG, CardProps>(function Card(props, forw
 
 Card.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'card'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },

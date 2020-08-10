@@ -16,7 +16,7 @@ const Badge = forwardRef<typeof DEFAULT_TAG, BadgeProps>(function Badge(props, f
 
 Badge.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'badge'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',

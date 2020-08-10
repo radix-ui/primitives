@@ -16,7 +16,7 @@ const Box = forwardRef<typeof DEFAULT_TAG, BoxProps>(function Box(props, forward
 
 Box.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'box'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },

@@ -267,7 +267,7 @@ interface DialogStaticProps {
   Content: typeof DialogContent;
 }
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'overlay' | 'inner' | 'content'> = {
   [interopSelector(OVERLAY_NAME)]: {
     ...cssReset(OVERLAY_DEFAULT_TAG),
     position: 'fixed',

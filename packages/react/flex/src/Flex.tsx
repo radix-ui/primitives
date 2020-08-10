@@ -97,7 +97,7 @@ Flex.Item = FlexItem;
 Flex.displayName = FLEX_NAME;
 Flex.Item.displayName = ITEM_NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'flex'> = {
   [interopSelector(FLEX_NAME)]: {
     ...cssReset(FLEX_DEFAULT_TAG),
     display: 'flex',

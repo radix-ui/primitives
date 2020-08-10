@@ -16,7 +16,7 @@ const Code = forwardRef<typeof DEFAULT_TAG, CodeProps>(function Code(props, forw
 
 Code.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'code'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',

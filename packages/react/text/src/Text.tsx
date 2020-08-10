@@ -16,7 +16,7 @@ const Text = forwardRef<typeof DEFAULT_TAG, TextProps>(function Text(props, forw
 
 Text.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'text'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },

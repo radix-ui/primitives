@@ -204,7 +204,7 @@ Popover.Arrow = PopoverArrow;
 Popover.displayName = POPOVER_NAME;
 Popover.Arrow.displayName = ARROW_NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'popover' | 'arrow'> = {
   [interopSelector(POPOVER_NAME)]: {
     ...cssReset(POPOVER_DEFAULT_TAG),
     position: 'absolute',

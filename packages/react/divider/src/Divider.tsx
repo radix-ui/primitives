@@ -16,7 +16,7 @@ const Divider = forwardRef<typeof DEFAULT_TAG, DividerProps>(function Divider(pr
 
 Divider.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'divider'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },

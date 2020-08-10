@@ -4,10 +4,10 @@ import { Image as ImagePrimitive } from '@interop-ui/react-image';
 import { cssReset, interopDataAttrObj, isFunction, interopSelector } from '@interop-ui/utils';
 import { createContext, forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
-const CONTAINER_NAME = 'Avatar.Root';
-const CONTAINER_DEFAULT_TAG = 'span';
+const ROOT_NAME = 'Avatar.Root';
+const ROOT_DEFAULT_TAG = 'span';
 
-type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof CONTAINER_DEFAULT_TAG>;
+type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>;
 type AvatarOwnProps = {
   src?: string;
   alt?: string;
@@ -26,16 +26,16 @@ interface AvatarContextValue {
 
 const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
   'AvatarContext',
-  CONTAINER_NAME
+  ROOT_NAME
 );
 
-const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(function AvatarRoot(
+const AvatarRoot = forwardRef<typeof ROOT_DEFAULT_TAG, AvatarProps>(function AvatarRoot(
   props,
   forwardedRef
 ) {
   const {
     alt,
-    as: Comp = CONTAINER_DEFAULT_TAG,
+    as: Comp = ROOT_DEFAULT_TAG,
     children,
     renderFallback,
     renderLoading,
@@ -74,7 +74,7 @@ const AvatarRoot = forwardRef<typeof CONTAINER_DEFAULT_TAG, AvatarProps>(functio
 
   return (
     <AvatarContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj(CONTAINER_NAME)} {...avatarProps} ref={forwardedRef}>
+      <Comp {...interopDataAttrObj(ROOT_NAME)} {...avatarProps} ref={forwardedRef}>
         {whatToRender === 'FALLBACK'
           ? (renderFallback as Function)()
           : whatToRender === 'LOADING'
@@ -148,7 +148,7 @@ const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function
 });
 
 const AVATAR_NAME = 'Avatar';
-const AVATAR_DEFAULT_TAG = CONTAINER_DEFAULT_TAG;
+const AVATAR_DEFAULT_TAG = ROOT_DEFAULT_TAG;
 
 const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
   function Avatar(props, forwardedRef) {
@@ -170,7 +170,7 @@ Avatar.Icon = AvatarIcon;
 Avatar.Abbr = AvatarAbbr;
 
 Avatar.displayName = AVATAR_NAME;
-Avatar.Root.displayName = CONTAINER_NAME;
+Avatar.Root.displayName = ROOT_NAME;
 Avatar.Image.displayName = IMAGE_NAME;
 Avatar.Icon.displayName = ICON_NAME;
 Avatar.Abbr.displayName = ABBR_NAME;
@@ -217,9 +217,9 @@ function useImageLoadingStatus(src?: string) {
   return loadingStatus;
 }
 
-const styles: PrimitiveStyles = {
-  [interopSelector(CONTAINER_NAME)]: {
-    ...cssReset(CONTAINER_DEFAULT_TAG),
+const styles: PrimitiveStyles<'root' | 'image' | 'abbr' | 'icon'> = {
+  [interopSelector(ROOT_NAME)]: {
+    ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',

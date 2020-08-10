@@ -2,16 +2,16 @@ import * as React from 'react';
 import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
 
-const WRAPPER_NAME = 'AspectRatio.Root';
-const WRAPPER_DEFAULT_TAG = 'div';
+const ROOT_NAME = 'AspectRatio.Root';
+const ROOT_DEFAULT_TAG = 'div';
 
-type AspectRatioDOMProps = React.ComponentPropsWithoutRef<typeof WRAPPER_DEFAULT_TAG>;
+type AspectRatioDOMProps = React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>;
 type AspectRatioOwnProps = { ratio?: string };
 type AspectRatioProps = AspectRatioDOMProps & AspectRatioOwnProps;
 
-const AspectRatioRoot = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps>(
+const AspectRatioRoot = forwardRef<typeof ROOT_DEFAULT_TAG, AspectRatioProps>(
   function AspectRatioRoot(props, forwardedRef) {
-    const { as: Comp = WRAPPER_DEFAULT_TAG, ratio = '1:1', style, ...aspectRatioProps } = props;
+    const { as: Comp = ROOT_DEFAULT_TAG, ratio = '1:1', style, ...aspectRatioProps } = props;
 
     const [n1, n2] = ratio.split(':');
     const paddingBottom = 100 / (Number(n1) / Number(n2));
@@ -19,7 +19,7 @@ const AspectRatioRoot = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps>
     return (
       <Comp
         {...aspectRatioProps}
-        {...interopDataAttrObj(WRAPPER_NAME)}
+        {...interopDataAttrObj(ROOT_NAME)}
         ref={forwardedRef}
         style={{
           paddingBottom: `${paddingBottom}%`,
@@ -33,7 +33,7 @@ const AspectRatioRoot = forwardRef<typeof WRAPPER_DEFAULT_TAG, AspectRatioProps>
 const INNER_NAME = 'AspectRatio.Inner';
 const INNER_DEFAULT_TAG = 'div';
 
-type AspectRatioInnerDOMProps = React.ComponentPropsWithoutRef<typeof WRAPPER_DEFAULT_TAG>;
+type AspectRatioInnerDOMProps = React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>;
 type AspectRatioInnerOwnProps = {};
 type AspectRatioInnerProps = AspectRatioInnerDOMProps & AspectRatioInnerOwnProps;
 
@@ -47,29 +47,27 @@ const AspectRatioInner = forwardRef<typeof INNER_DEFAULT_TAG, AspectRatioInnerPr
 
 const ASPECT_RATIO_NAME = 'AspectRatio';
 
-const AspectRatio = forwardRef<
-  typeof WRAPPER_DEFAULT_TAG,
-  AspectRatioProps,
-  AspectRatioStaticProps
->(function AspectRatio(props, forwardedRef) {
-  const { children, ...aspectRatioProps } = props;
+const AspectRatio = forwardRef<typeof ROOT_DEFAULT_TAG, AspectRatioProps, AspectRatioStaticProps>(
+  function AspectRatio(props, forwardedRef) {
+    const { children, ...aspectRatioProps } = props;
 
-  return (
-    <AspectRatioRoot
-      {...aspectRatioProps}
-      {...interopDataAttrObj(ASPECT_RATIO_NAME)}
-      ref={forwardedRef}
-    >
-      <AspectRatioInner>{children}</AspectRatioInner>
-    </AspectRatioRoot>
-  );
-});
+    return (
+      <AspectRatioRoot
+        {...aspectRatioProps}
+        {...interopDataAttrObj(ASPECT_RATIO_NAME)}
+        ref={forwardedRef}
+      >
+        <AspectRatioInner>{children}</AspectRatioInner>
+      </AspectRatioRoot>
+    );
+  }
+);
 
 AspectRatio.Root = AspectRatioRoot;
 AspectRatio.Inner = AspectRatioInner;
 
 AspectRatio.displayName = ASPECT_RATIO_NAME;
-AspectRatio.Root.displayName = WRAPPER_NAME;
+AspectRatio.Root.displayName = ROOT_NAME;
 AspectRatio.Inner.displayName = INNER_NAME;
 
 interface AspectRatioStaticProps {
@@ -77,9 +75,9 @@ interface AspectRatioStaticProps {
   Inner: typeof AspectRatioInner;
 }
 
-const styles: PrimitiveStyles = {
-  [interopSelector(WRAPPER_NAME)]: {
-    ...cssReset(WRAPPER_DEFAULT_TAG),
+const styles: PrimitiveStyles<'root' | 'inner'> = {
+  [interopSelector(ROOT_NAME)]: {
+    ...cssReset(ROOT_DEFAULT_TAG),
     position: 'relative',
     width: '100%',
   },

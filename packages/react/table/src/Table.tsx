@@ -160,7 +160,9 @@ Table.Row.displayName = ROW_NAME;
 Table.SummaryCell.displayName = SUMMARY_CELL_NAME;
 Table.Cell.displayName = CELL_NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<
+  'table' | 'header' | 'footer' | 'body' | 'row' | 'summary' | 'cell'
+> = {
   [interopSelector(TABLE_NAME)]: {
     ...cssReset(TABLE_DEFAULT_TAG),
     borderCollapse: 'collapse',

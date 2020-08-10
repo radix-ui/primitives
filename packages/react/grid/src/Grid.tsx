@@ -16,7 +16,7 @@ const Grid = forwardRef<typeof DEFAULT_TAG, GridProps>(function Grid(props, forw
 
 Grid.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'grid'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     display: 'grid',

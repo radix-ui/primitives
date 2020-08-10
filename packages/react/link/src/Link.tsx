@@ -16,7 +16,7 @@ const Link = forwardRef<typeof DEFAULT_TAG, LinkProps>(function Link(props, forw
 
 Link.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'link'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },

@@ -103,7 +103,7 @@ const LiveRegion = forwardRef<typeof REGION_DEFAULT_TAG, LiveRegionProps>(functi
 
 LiveRegion.displayName = REGION_NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'liveRegion'> = {
   [interopSelector(REGION_NAME)]: {
     ...cssReset(REGION_DEFAULT_TAG),
   },

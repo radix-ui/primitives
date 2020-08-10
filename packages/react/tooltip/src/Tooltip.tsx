@@ -410,7 +410,7 @@ Tooltip.Popover.displayName = POPOVER_NAME;
 Tooltip.Content.displayName = CONTENT_NAME;
 Tooltip.Arrow.displayName = ARROW_NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'popover' | 'arrow' | 'content'> = {
   [interopSelector(POPOVER_NAME)]: {
     ...cssReset(POPOVER_DEFAULT_TAG),
     zIndex: 99999,

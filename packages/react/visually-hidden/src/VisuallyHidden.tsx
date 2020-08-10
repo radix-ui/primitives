@@ -22,7 +22,7 @@ const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
 
 VisuallyHidden.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'visuallyHidden'> = {
   [interopSelector(NAME)]: {
     // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
     position: 'absolute',

@@ -17,7 +17,7 @@ const Image = forwardRef<typeof DEFAULT_TAG, ImageProps>(function Image(props, f
 
 Image.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'image'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     display: 'block',

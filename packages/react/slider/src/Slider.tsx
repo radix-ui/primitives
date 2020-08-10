@@ -576,7 +576,7 @@ interface SliderStaticProps {
   Thumb: typeof SliderThumb;
 }
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'root' | 'track' | 'mask' | 'range' | 'thumb'> = {
   [interopSelector(ROOT_NAME)]: {
     ...cssReset(ROOT_DEFAULT_TAG),
     position: 'relative',
@@ -587,9 +587,6 @@ const styles: PrimitiveStyles = {
     userSelect: 'none',
     touchAction: 'none', // Prevent parent/window scroll when sliding on touch devices
     zIndex: 0, // create new stacking context
-  },
-  'root.state.disabled': {
-    pointerEvents: 'none',
   },
   [interopSelector(TRACK_NAME)]: {
     ...cssReset(TRACK_DEFAULT_TAG),

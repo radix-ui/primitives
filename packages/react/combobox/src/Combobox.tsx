@@ -675,7 +675,9 @@ Combobox.OptionText.displayName = TEXT_NAME;
 Combobox.Group.displayName = GROUP_NAME;
 Combobox.Button.displayName = BUTTON_NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<
+  'combobox' | 'input' | 'popover' | 'list' | 'option' | 'text' | 'group' | 'button'
+> = {
   [interopSelector(COMBOBOX_NAME)]: {
     ...cssReset(COMBOBOX_DEFAULT_TAG),
     position: 'relative',

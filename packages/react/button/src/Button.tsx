@@ -16,7 +16,7 @@ const Button = forwardRef<typeof DEFAULT_TAG, ButtonProps>(function Button(props
 
 Button.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'button'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',

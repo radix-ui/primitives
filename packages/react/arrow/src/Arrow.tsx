@@ -28,7 +28,7 @@ Arrow.defaultProps = {
   height: 5,
 };
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'arrow'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },

@@ -31,7 +31,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
 
 AccessibleIcon.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'accessibleIcon'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },

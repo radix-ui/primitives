@@ -294,7 +294,7 @@ Checkbox.Input.displayName = INPUT_NAME;
 Checkbox.Box.displayName = BOX_NAME;
 Checkbox.Icon.displayName = ICON_NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'root' | 'input' | 'box' | 'icon'> = {
   [interopSelector(ROOT_NAME)]: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-block',

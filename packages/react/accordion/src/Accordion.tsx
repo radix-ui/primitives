@@ -340,24 +340,24 @@ interface AccordionStaticProps {
   Panel: typeof AccordionPanel;
 }
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'accordion' | 'item' | 'header' | 'button' | 'panel'> = {
   [interopSelector(ACCORDION_NAME)]: {
     ...cssReset(ACCORDION_DEFAULT_TAG),
   },
   [interopSelector(ITEM_NAME)]: {
     ...cssReset(ITEM_DEFAULT_TAG),
-    ...collapsibleStyles[interopSelector(Collapsible.displayName)],
+    ...(collapsibleStyles as any)[interopSelector(Collapsible.displayName)],
   },
   [interopSelector(HEADER_NAME)]: {
     ...cssReset(HEADER_DEFAULT_TAG),
   },
   [interopSelector(BUTTON_NAME)]: {
     ...cssReset(BUTTON_DEFAULT_TAG),
-    ...collapsibleStyles[interopSelector(Collapsible.Button.displayName)],
+    ...(collapsibleStyles as any)[interopSelector(Collapsible.Button.displayName)],
   },
   [interopSelector(PANEL_NAME)]: {
     ...cssReset(PANEL_DEFAULT_TAG),
-    ...collapsibleStyles[interopSelector(Collapsible.Content.displayName)],
+    ...(collapsibleStyles as any)[interopSelector(Collapsible.Content.displayName)],
   },
 };
 

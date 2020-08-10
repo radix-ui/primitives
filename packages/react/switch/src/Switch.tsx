@@ -348,7 +348,7 @@ interface SwitchStaticProps {
   Thumb: typeof SwitchThumb;
 }
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'root' | 'input' | 'box' | 'thumb'> = {
   [interopSelector(ROOT_NAME)]: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-flex',

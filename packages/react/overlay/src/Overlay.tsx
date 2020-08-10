@@ -16,7 +16,7 @@ const Overlay = forwardRef<typeof DEFAULT_TAG, OverlayProps>(function Overlay(pr
 
 Overlay.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'overlay'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     position: 'fixed',

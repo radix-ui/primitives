@@ -290,7 +290,7 @@ interface RadioStaticProps {
   Icon: typeof RadioIcon;
 }
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'root' | 'input' | 'box' | 'icon'> = {
   [interopSelector(ROOT_NAME)]: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-block',

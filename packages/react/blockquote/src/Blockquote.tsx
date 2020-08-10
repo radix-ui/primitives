@@ -19,7 +19,7 @@ const Blockquote = forwardRef<typeof DEFAULT_TAG, BlockquoteProps>(function Bloc
 
 Blockquote.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'blockquote'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
   },

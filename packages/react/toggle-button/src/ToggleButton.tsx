@@ -57,7 +57,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
 ToggleButton.displayName = NAME;
 
-const styles: PrimitiveStyles = {
+const styles: PrimitiveStyles<'toggleButton'> = {
   [interopSelector(NAME)]: {
     ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',
