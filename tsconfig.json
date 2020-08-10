@@ -83,7 +83,6 @@
       "@interop-ui/react-tabs": ["packages/react/tabs/src"],
       "@interop-ui/react-text": ["packages/react/text/src"],
       "@interop-ui/react-textarea": ["packages/react/textarea/src"],
-      "@interop-ui/react-toast": ["packages/react/toast/src"],
       "@interop-ui/react-toggle-button": ["packages/react/toggle-button/src"],
       "@interop-ui/react-toggletip": ["packages/react/toggletip/src"],
       "@interop-ui/react-tooltip": ["packages/react/tooltip/src"],
