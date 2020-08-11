@@ -479,17 +479,17 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
   let context = useSliderContext(THUMB_NAME);
 
   // destructure for references so that we don't need `context` as effect dependency
-  let { updateSize, addThumb, removeThumb, thumbNodes, values } = context;
   let ref = React.useRef<HTMLSpanElement>(null);
   let size = useSize({ refToObserve: ref, isObserving: true });
   let prevSize = usePrevious(size);
   let composedRefs = useComposedRefs(forwardedRef, ref);
 
   let index = [...thumbNodes].findIndex((node) => node === ref.current);
-  let value = values[index];
   let left = getValuePercent(value, context.min, context.max);
   let xOffset = size?.width ? getElementOffset(size.width, left) : 0;
   let label = getLabel();
+  const { updateSize, addThumb, removeThumb, thumbNodes } = context;
+  const value = context.values[index] ?? context.min;
 
   function getLabel() {
     if (context.values.length === 2) {
