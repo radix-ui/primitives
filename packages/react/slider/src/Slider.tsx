@@ -394,12 +394,12 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   props,
   forwardedRef
 ) {
-  let { as: Comp = TRACK_DEFAULT_TAG, ...trackProps } = props;
   let context = useSliderContext(TRACK_NAME);
   let ref = React.useRef<HTMLSpanElement>(null);
   let composedRefs = useComposedRefs(forwardedRef, ref);
   let size = useSize({ refToObserve: ref, isObserving: true });
   let prevSize = usePrevious(size);
+  const { as: Comp = TRACK_DEFAULT_TAG, children, ...trackProps } = props;
 
   React.useLayoutEffect(() => {
     if (size && prevSize !== size) {
@@ -407,26 +407,22 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
     }
   }, [context, prevSize, size]);
 
-  return <Comp {...interopDataAttrObj(TRACK_NAME)} {...trackProps} ref={composedRefs} />;
+  return (
+    <Comp {...interopDataAttrObj(TRACK_NAME)} {...trackProps} ref={composedRefs}>
+      <span
+        style={{
+          display: 'block',
+          height: '100%',
+          position: 'relative',
+          borderRadius: 'inherit',
+          overflow: 'hidden',
+        }}
+      >
+        {children}
+      </span>
+    </Comp>
+  );
 });
-
-/* -------------------------------------------------------------------------------------------------
- * SliderTrackMask
- * -----------------------------------------------------------------------------------------------*/
-
-const MASK_NAME = 'Slider.TrackMask';
-const MASK_DEFAULT_TAG = 'span';
-
-type SliderTrackMaskDOMProps = React.ComponentPropsWithoutRef<typeof MASK_DEFAULT_TAG>;
-type SliderTrackMaskOwnProps = {};
-type SliderTrackMaskProps = SliderTrackMaskDOMProps & SliderTrackMaskOwnProps;
-
-const SliderTrackMask = forwardRef<typeof MASK_DEFAULT_TAG, SliderTrackMaskProps>(
-  function SliderTrackMask(props, forwardedRef) {
-    let { as: Comp = MASK_DEFAULT_TAG, ...maskProps } = props;
-    return <Comp {...interopDataAttrObj(MASK_NAME)} {...maskProps} ref={forwardedRef} />;
-  }
-);
 
 /* -------------------------------------------------------------------------------------------------
  * SliderRange
@@ -551,9 +547,7 @@ const Slider = forwardRef<typeof ROOT_DEFAULT_TAG, SliderProps, SliderStaticProp
   return (
     <SliderRoot ref={forwardedRef} {...rootProps}>
       <SliderTrack>
-        <SliderTrackMask>
-          <SliderRange />
-        </SliderTrackMask>
+        <SliderRange />
         {children}
       </SliderTrack>
     </SliderRoot>
@@ -564,21 +558,18 @@ const Slider = forwardRef<typeof ROOT_DEFAULT_TAG, SliderProps, SliderStaticProp
 
 Slider.Root = SliderRoot;
 Slider.Track = SliderTrack;
-Slider.TrackMask = SliderTrackMask;
 Slider.Range = SliderRange;
 Slider.Thumb = SliderThumb;
 
 Slider.displayName = SLIDER_NAME;
 Slider.Root.displayName = ROOT_NAME;
 Slider.Track.displayName = TRACK_NAME;
-Slider.TrackMask.displayName = MASK_NAME;
 Slider.Range.displayName = RANGE_NAME;
 Slider.Thumb.displayName = THUMB_NAME;
 
 interface SliderStaticProps {
   Root: typeof SliderRoot;
   Track: typeof SliderTrack;
-  TrackMask: typeof SliderTrackMask;
   Range: typeof SliderRange;
   Thumb: typeof SliderThumb;
 }
@@ -603,15 +594,6 @@ const styles: PrimitiveStyles = {
     display: 'block',
     position: 'relative',
     flexGrow: 1,
-  },
-  [interopSelector(MASK_NAME)]: {
-    ...cssReset(MASK_DEFAULT_TAG),
-    display: 'block',
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-    borderRadius: 'inherit',
-    overflow: 'hidden',
   },
   [interopSelector(RANGE_NAME)]: {
     ...cssReset(RANGE_DEFAULT_TAG),
@@ -642,14 +624,7 @@ const styles: PrimitiveStyles = {
   },
 };
 
-export type {
-  SliderRootProps,
-  SliderRangeProps,
-  SliderTrackProps,
-  SliderTrackMaskProps,
-  SliderThumbProps,
-  SliderProps,
-};
+export type { SliderRootProps, SliderRangeProps, SliderTrackProps, SliderThumbProps, SliderProps };
 export { Slider, styles };
 
 /* -----------------------------------------------------------------------------------------------*/
