@@ -85,7 +85,7 @@ type SliderRootProps = SliderRootDOMProps &
 
 const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderStaticProps>(
   function SliderRoot(props, forwardedRef) {
-    let {
+    const {
       as: Comp = ROOT_DEFAULT_TAG,
       children,
       name,
@@ -98,44 +98,44 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
       ...restProps
     } = props;
 
-    let { defaultValue } = props as SliderRootUncontrolledProps | SliderRangeUncontrolledProps;
-    let { value: valueProp } = props as SliderRootControlledProps | SliderRangeControlledProps;
+    const { defaultValue } = props as SliderRootUncontrolledProps | SliderRangeUncontrolledProps;
+    const { value: valueProp } = props as SliderRootControlledProps | SliderRangeControlledProps;
 
-    let sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderRootDOMProps;
-    let sliderRef = React.useRef<HTMLSpanElement>(null);
-    let inputRefs = React.useRef<HTMLInputElement[]>([]);
-    let composedRefs = useComposedRefs(forwardedRef, sliderRef);
+    const sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderRootDOMProps;
+    const sliderRef = React.useRef<HTMLSpanElement>(null);
+    const inputRefs = React.useRef<HTMLInputElement[]>([]);
+    const composedRefs = useComposedRefs(forwardedRef, sliderRef);
 
-    let [partSizes, setPartSizes] = React.useState<{ [part in SliderParts]?: Size }>({});
-    let [thumbNodes, setThumbNodes] = React.useState<SliderContextValue['thumbNodes']>(new Set());
-    let [valuesState, setValuesState] = React.useState<number[]>(() => toArray(defaultValue));
+    const [partSizes, setPartSizes] = React.useState<{ [part in SliderParts]?: Size }>({});
+    const [thumbNodes, setThumbNodes] = React.useState<SliderContextValue['thumbNodes']>(new Set());
+    const [valuesState, setValuesState] = React.useState<number[]>(() => toArray(defaultValue));
 
-    let activeValueIndexRef = React.useRef<number>(0);
-    let isSlidingRef = React.useRef(false);
-    let isControlled = valueProp !== undefined;
-    let isDisabled = disabled;
-    let step = Math.max(stepProp, 1);
-    let values = toArray(isControlled ? valueProp : valuesState);
-    let prevValues = usePrevious(values);
-    let isRange = values.length > 1;
+    const activeValueIndexRef = React.useRef<number>(0);
+    const isSlidingRef = React.useRef(false);
+    const isControlled = valueProp !== undefined;
+    const isDisabled = disabled;
+    const step = Math.max(stepProp, 1);
+    const values = toArray(isControlled ? valueProp : valuesState);
+    const prevValues = usePrevious(values);
+    const isRange = values.length > 1;
 
     // Ensure slider is as tall as its tallest part
-    let partHeights = valuesOf(partSizes).map((size) => size?.height);
-    let partHeightsValues = partHeights.filter(Boolean) as number[];
-    let height = partHeightsValues.length ? Math.max(...partHeightsValues) : undefined;
+    const partHeights = valuesOf(partSizes).map((size) => size?.height);
+    const partHeightsValues = partHeights.filter(Boolean) as number[];
+    const height = partHeightsValues.length ? Math.max(...partHeightsValues) : undefined;
 
     function updateValue(value: number, atIndex = activeValueIndexRef.current) {
-      let sliderBounds = { min, max, step };
-      let nextValue = getSnappedValue(value, sliderBounds);
+      const sliderBounds = { min, max, step };
+      const nextValue = getSnappedValue(value, sliderBounds);
 
       if (isRange) {
-        let nextValues = sort(getUpdatedValues(atIndex, values, nextValue));
-        let onValueRangeChange = onChange as SliderRangeControlledProps['onChange'];
+        const nextValues = sort(getUpdatedValues(atIndex, values, nextValue));
+        const onValueRangeChange = onChange as SliderRangeControlledProps['onChange'];
         if (!isControlled) setValuesState(nextValues);
         activeValueIndexRef.current = nextValues.indexOf(nextValue);
         onValueRangeChange(nextValues);
       } else {
-        let onValueChange = onChange as SliderRootControlledProps['onChange'];
+        const onValueChange = onChange as SliderRootControlledProps['onChange'];
         if (!isControlled) setValuesState([nextValue]);
         activeValueIndexRef.current = atIndex;
         onValueChange(nextValue);
@@ -155,8 +155,8 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
         return;
       }
 
-      let targetValue = getTargetValueFromPx(sliderRef.current!, pointerLeft, { min, max });
-      let closestIndex = getClosestValueIndex(values, targetValue);
+      const targetValue = getTargetValueFromPx(sliderRef.current!, pointerLeft, { min, max });
+      const closestIndex = getClosestValueIndex(values, targetValue);
 
       updateValue(targetValue, closestIndex).then((activeValueIndex) => {
         /**
@@ -175,15 +175,15 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
       });
     }
 
-    let slideMove = useCallbackRef((pointerLeft: number) => {
+    const slideMove = useCallbackRef((pointerLeft: number) => {
       if (!isSlidingRef.current) return;
-      let targetValue = getTargetValueFromPx(sliderRef.current!, pointerLeft, { min, max });
+      const targetValue = getTargetValueFromPx(sliderRef.current!, pointerLeft, { min, max });
       updateValue(targetValue).then(focusThumb.bind(null, thumbNodes));
     });
 
-    let slideEnd = useCallbackRef(() => (isSlidingRef.current = false));
+    const slideEnd = useCallbackRef(() => (isSlidingRef.current = false));
 
-    let handleTouchStart = useCallbackRef(
+    const handleTouchStart = useCallbackRef(
       composeEventHandlers(props.onTouchStart, (event) => {
         document.addEventListener('touchmove', handleTouchMove);
         document.addEventListener('touchend', handleTouchEnd);
@@ -193,7 +193,7 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
       })
     );
 
-    let handleMouseDown = useCallbackRef(
+    const handleMouseDown = useCallbackRef(
       composeEventHandlers(props.onMouseDown, (event) => {
         // Prevent sliding if main mouse button didn't trigger event (e.g. right click)
         if (event.button !== 0) return;
@@ -203,18 +203,18 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
       })
     );
 
-    let handleTouchMove = useCallbackRef((event: TouchEvent) =>
+    const handleTouchMove = useCallbackRef((event: TouchEvent) =>
       slideMove(event.targetTouches[0].clientX)
     );
-    let handleMouseMove = useCallbackRef((event: MouseEvent) => slideMove(event.clientX));
+    const handleMouseMove = useCallbackRef((event: MouseEvent) => slideMove(event.clientX));
 
-    let handleTouchEnd = useCallbackRef(() => {
+    const handleTouchEnd = useCallbackRef(() => {
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('mouseup', handleTouchEnd);
       slideEnd();
     });
 
-    let handleMouseUp = useCallbackRef(() => {
+    const handleMouseUp = useCallbackRef(() => {
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mousemove', handleMouseMove);
       slideEnd();
@@ -225,14 +225,14 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
      * This is to avoid page scrolling/text selection during slide and to cancel the
      * slide interaction if pointer is lifted outside of the current frame.
      */
-    let handlePointerDown = useCallbackRef((event: PointerEvent) => {
+    const handlePointerDown = useCallbackRef((event: PointerEvent) => {
       const slider = sliderRef.current!;
       slider.setPointerCapture(event.pointerId);
       slider.addEventListener('pointerup', handlePointerUp);
     });
 
     // Ensures slide is cancelled if pointer is lifted outside of document
-    let handlePointerUp = (event: PointerEvent) => {
+    const handlePointerUp = (event: PointerEvent) => {
       const slider = sliderRef.current!;
       slider.removeEventListener('pointerdown', handlePointerDown);
       slider.removeEventListener('pointerup', handlePointerUp);
@@ -240,7 +240,7 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
       slideEnd();
     };
 
-    let handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
+    const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
       if (!SLIDER_KEYS.includes(event.key)) return;
       let atIndex;
       let nextValue;
@@ -252,15 +252,15 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
         atIndex = values.length - 1;
         nextValue = max;
       } else {
-        let value = values[activeValueIndexRef.current];
-        let isSkipPageKey = PAGE_KEYS.includes(event.key);
-        let isSkipShiftKey = event.shiftKey && ['ArrowLeft', 'ArrowRight'].includes(event.key);
-        let isSkipSteps = isSkipPageKey || isSkipShiftKey;
-        let isBackKey = BACK_KEYS.includes(event.key);
-        let direction = isBackKey ? -1 : 1;
-        let multiplier = isSkipSteps ? 10 : 1;
-        let stepInDirection = step * multiplier * direction;
-        let toValue = value + stepInDirection;
+        const value = values[activeValueIndexRef.current];
+        const isSkipPageKey = PAGE_KEYS.includes(event.key);
+        const isSkipShiftKey = event.shiftKey && ['ArrowLeft', 'ArrowRight'].includes(event.key);
+        const isSkipSteps = isSkipPageKey || isSkipShiftKey;
+        const isBackKey = BACK_KEYS.includes(event.key);
+        const direction = isBackKey ? -1 : 1;
+        const multiplier = isSkipSteps ? 10 : 1;
+        const stepInDirection = step * multiplier * direction;
+        const toValue = value + stepInDirection;
         nextValue = toValue;
       }
 
@@ -269,7 +269,7 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
 
     React.useEffect(() => {
       if (isDisabled) return;
-      let slider = sliderRef.current!;
+      const slider = sliderRef.current!;
 
       slider.addEventListener('mousedown', handleMouseDown);
       slider.addEventListener('touchstart', handleTouchStart);
@@ -286,47 +286,47 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
 
     // Bubble value change to parents (for uncontrolled forms)
     React.useEffect(() => {
-      let hasValuesChanged = prevValues && prevValues !== values;
+      const hasValuesChanged = prevValues && prevValues !== values;
       // If there is no name, the consumer isn't expecting this field to be part of form data
       if (!hasValuesChanged || !name) return;
 
-      let inputProto = window.HTMLInputElement.prototype;
-      let { set } = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
+      const inputProto = window.HTMLInputElement.prototype;
+      const { set } = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
 
       inputRefs.current.forEach((input, index) => {
         if (set) {
-          let event = new Event('input', { bubbles: true });
+          const event = new Event('input', { bubbles: true });
           set.call(input, values[index]);
           input.dispatchEvent(event);
         }
       });
     }, [name, prevValues, values]);
 
-    let updateSize = React.useCallback((part: SliderParts, size: Size) => {
+    const updateSize = React.useCallback((part: SliderParts, size: Size) => {
       setPartSizes((prevPartSizes) => ({ ...prevPartSizes, [part]: size }));
     }, []);
 
-    let addThumb = React.useCallback((node: React.ElementRef<typeof SliderThumb>) => {
+    const addThumb = React.useCallback((node: React.ElementRef<typeof SliderThumb>) => {
       setThumbNodes((prevNodes) => new Set(prevNodes.add(node)));
     }, []);
 
-    let removeThumb = React.useCallback((node: React.ElementRef<typeof SliderThumb>) => {
+    const removeThumb = React.useCallback((node: React.ElementRef<typeof SliderThumb>) => {
       setThumbNodes((prevNodes) => {
-        let nextNodes = new Set(prevNodes);
+        const nextNodes = new Set(prevNodes);
         nextNodes.delete(node);
         return nextNodes;
       });
     }, []);
 
-    let selectThumb = React.useCallback(
+    const selectThumb = React.useCallback(
       (node: React.ElementRef<typeof SliderThumb>) => {
-        let index = Array.from(thumbNodes).findIndex((thumbNode) => thumbNode === node);
+        const index = Array.from(thumbNodes).findIndex((thumbNode) => thumbNode === node);
         activeValueIndexRef.current = index;
       },
       [thumbNodes]
     );
 
-    let context = React.useMemo(
+    const context = React.useMemo(
       () => ({
         min,
         max,
@@ -394,12 +394,12 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   props,
   forwardedRef
 ) {
-  let context = useSliderContext(TRACK_NAME);
-  let ref = React.useRef<HTMLSpanElement>(null);
-  let composedRefs = useComposedRefs(forwardedRef, ref);
-  let size = useSize({ refToObserve: ref, isObserving: true });
-  let prevSize = usePrevious(size);
   const { as: Comp = TRACK_DEFAULT_TAG, children, ...trackProps } = props;
+  const context = useSliderContext(TRACK_NAME);
+  const ref = React.useRef<HTMLSpanElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+  const size = useSize({ refToObserve: ref, isObserving: true });
+  const prevSize = usePrevious(size);
 
   React.useLayoutEffect(() => {
     if (size && prevSize !== size) {
@@ -437,14 +437,16 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
   props,
   forwardedRef
 ) {
-  let { as: Comp = RANGE_DEFAULT_TAG, style, ...rangeProps } = props;
-  let context = useSliderContext(RANGE_NAME);
-  let ref = React.useRef<HTMLSpanElement>(null);
-  let composedRefs = useComposedRefs(forwardedRef, ref);
-  let valuesCount = context.values.length;
-  let percentages = context.values.map((value) => getValuePercent(value, context.min, context.max));
-  let left = valuesCount > 1 ? Math.min(...percentages) : 0;
-  let right = 100 - Math.max(...percentages);
+  const { as: Comp = RANGE_DEFAULT_TAG, style, ...rangeProps } = props;
+  const context = useSliderContext(RANGE_NAME);
+  const ref = React.useRef<HTMLSpanElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+  const valuesCount = context.values.length;
+  const percentages = context.values.map((value) =>
+    getValuePercent(value, context.min, context.max)
+  );
+  const left = valuesCount > 1 ? Math.min(...percentages) : 0;
+  const right = 100 - Math.max(...percentages);
 
   return (
     <Comp
@@ -471,21 +473,21 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
   props,
   forwardedRef
 ) {
-  let { as: Comp = THUMB_DEFAULT_TAG, onFocus, style, ...thumbProps } = props;
-  let context = useSliderContext(THUMB_NAME);
+  const { as: Comp = THUMB_DEFAULT_TAG, onFocus, style, ...thumbProps } = props;
+  const context = useSliderContext(THUMB_NAME);
 
   // destructure for references so that we don't need `context` as effect dependency
-  let ref = React.useRef<HTMLSpanElement>(null);
-  let size = useSize({ refToObserve: ref, isObserving: true });
-  let prevSize = usePrevious(size);
-  let composedRefs = useComposedRefs(forwardedRef, ref);
-
-  let index = [...thumbNodes].findIndex((node) => node === ref.current);
-  let left = getValuePercent(value, context.min, context.max);
-  let xOffset = size?.width ? getElementOffset(size.width, left) : 0;
-  let label = getLabel();
   const { updateSize, addThumb, removeThumb, thumbNodes } = context;
+  const ref = React.useRef<HTMLSpanElement>(null);
+  const size = useSize({ refToObserve: ref, isObserving: true });
+  const prevSize = usePrevious(size);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+
+  const index = [...thumbNodes].findIndex((node) => node === ref.current);
   const value = context.values[index] ?? context.min;
+  const left = getValuePercent(value, context.min, context.max);
+  const xOffset = size?.width ? getElementOffset(size.width, left) : 0;
+  const label = getLabel();
 
   function getLabel() {
     if (context.values.length === 2) {
@@ -543,7 +545,7 @@ const Slider = forwardRef<typeof ROOT_DEFAULT_TAG, SliderProps, SliderStaticProp
   props,
   forwardedRef
 ) {
-  let { children, ...rootProps } = props;
+  const { children, ...rootProps } = props;
   return (
     <SliderRoot ref={forwardedRef} {...rootProps}>
       <SliderTrack>
