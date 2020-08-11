@@ -1,6 +1,14 @@
 import * as React from 'react';
 import omit from 'lodash.omit';
-import { Size, cssReset, clamp, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
+import {
+  Size,
+  cssReset,
+  clamp,
+  interopDataAttrObj,
+  interopSelector,
+  interopDataAttr,
+  isUndefined,
+} from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -137,10 +145,12 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
     }
 
     function slideStart(target: HTMLElement, pointerLeft: number) {
+      const thumbAttributeName = interopDataAttr(THUMB_NAME);
+      const thumbAttribute = target.getAttribute(thumbAttributeName);
       isSlidingRef.current = true;
 
-      if (target.getAttribute('data-part-id') === 'thumb') {
-        let thumbIndex = Array.from(thumbNodes).findIndex((node) => node.contains(target));
+      if (!isUndefined(thumbAttribute)) {
+        const thumbIndex = Array.from(thumbNodes).findIndex((node) => node.contains(target));
         activeValueIndexRef.current = thumbIndex;
         return;
       }
