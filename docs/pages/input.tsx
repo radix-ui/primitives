@@ -23,6 +23,7 @@ import {
 import { Navigation } from '../components/Navigation';
 import { CodeBlock } from '../components/CodeBlock';
 import { PlusIcon } from '@modulz/radix-icons';
+import { QuickNav, QuickNavItem } from '../components/QuickNav';
 
 export default function InputPage() {
   return (
@@ -56,7 +57,9 @@ export default function InputPage() {
               lineHeight: 9,
             }}
           >
-            Input
+            <QuickNavItem label="Description" slug="description">
+              Input
+            </QuickNavItem>
           </Heading>
           <Heading
             as="h2"
@@ -105,7 +108,7 @@ export default function InputPage() {
             }}
           >
             <Heading as="h3" size={3}>
-              Installation
+              <QuickNavItem>Installation</QuickNavItem>
             </Heading>
             <Text size={3} sx={{ lineHeight: 2 }}>
               Install the component from your command line:
@@ -132,7 +135,7 @@ export default function InputPage() {
             }}
           >
             <Heading as="h3" size={3}>
-              Keyboard interaction
+              <QuickNavItem>Keyboard interaction</QuickNavItem>
             </Heading>
           </Box>
 
@@ -173,7 +176,7 @@ export default function InputPage() {
           </Flex>
 
           <Heading as="h3" size={3} mb={3}>
-            Examples
+            <QuickNavItem>Examples</QuickNavItem>
           </Heading>
 
           <Box
@@ -189,7 +192,7 @@ export default function InputPage() {
                 lineHeight: 2,
               }}
             >
-              Simple input
+              <QuickNavItem level={1}>Simple input</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -211,7 +214,7 @@ export default function InputPage() {
                 lineHeight: 2,
               }}
             >
-              Input with placeholder
+              <QuickNavItem level={1}>Input with placeholder</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -233,7 +236,7 @@ export default function InputPage() {
                 lineHeight: 2,
               }}
             >
-              Input with icon
+              <QuickNavItem level={1}>Input with icon</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -271,7 +274,7 @@ export default function InputPage() {
                 lineHeight: 2,
               }}
             >
-              Input with right icon
+              <QuickNavItem level={1}>Input with right icon</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -310,7 +313,7 @@ export default function InputPage() {
                 lineHeight: 2,
               }}
             >
-              Input with icons on both sides
+              <QuickNavItem level={1}>Input with icons on both sides</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -352,7 +355,7 @@ export default function InputPage() {
                 lineHeight: 2,
               }}
             >
-              Input with interactive content
+              <QuickNavItem level={1}>Input with interactive content</QuickNavItem>
             </Heading>
             <Text
               as="p"
@@ -405,7 +408,7 @@ export default function InputPage() {
           </Flex>
 
           <Heading as="h3" size={3} mb={3}>
-            Styled Examples
+            <QuickNavItem>Styled Examples</QuickNavItem>
           </Heading>
 
           <CodeBlock live>
@@ -452,7 +455,7 @@ export default function InputPage() {
               }}
             >
               <Heading as="h3" size={3} sx={{ mb: 7 }}>
-                Related components
+                <QuickNavItem>Related components</QuickNavItem>
               </Heading>
               <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
                 <CardLink href="/introduction" sx={{ padding: 0 }}>
@@ -644,156 +647,7 @@ export default function InputPage() {
         </Container>
       </Box>
 
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: '245px',
-          flexShrink: 0,
-          pt: 7,
-          pr: 4,
-        }}
-      >
-        <Heading
-          as="h4"
-          size={1}
-          sx={{
-            lineHeight: 2,
-            mb: 5,
-            mt: 3,
-          }}
-        >
-          Quick nav
-        </Heading>
-        <nav>
-          <ul style={{ margin: '0', padding: '0', listStyle: 'none' }}>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Description
-                </Text>
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Installation
-                </Text>
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Keyboard Interaction
-                </Text>
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Examples
-                </Text>
-              </a>
-              <ul style={{ margin: '0', padding: '0 0 0 25px', listStyle: 'none' }}>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Simple input
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with placeholder
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with icon
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with right icon
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with icons on both sides
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with interactive content
-                    </Text>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Styled Examples
-                </Text>
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Related components
-                </Text>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </Box>
+      <QuickNav />
     </div>
   );
 }

@@ -21,6 +21,7 @@ import {
 import { Button } from '@interop-ui/react-button';
 import { Navigation } from '../components/Navigation';
 import { CodeBlock } from '../components/CodeBlock';
+import { QuickNav, QuickNavItem } from '../components/QuickNav';
 
 export default function ButtonPage() {
   return (
@@ -48,7 +49,7 @@ export default function ButtonPage() {
       >
         <Container size={2}>
           <Heading as="h1" size={4} sx={{ lineHeight: 9 }}>
-            Button
+            <QuickNavItem label="Description">Button</QuickNavItem>
           </Heading>
           <Heading as="h2" size={2} weight="normal" sx={{ lineHeight: 3, color: 'gray700', mb: 6 }}>
             A button enables users to trigger an event, such as submitting a form, opening a dialog,
@@ -100,7 +101,7 @@ export default function ButtonPage() {
             }}
           >
             <Heading as="h3" size={3} sx={{ mb: 4 }}>
-              Installation
+              <QuickNavItem>Installation</QuickNavItem>
             </Heading>
             <Text size={3} sx={{ lineHeight: 2 }}>
               Install the component from your command line:
@@ -119,7 +120,7 @@ export default function ButtonPage() {
             }}
           >
             <Heading as="h3" size={3}>
-              Keyboard interaction
+              <QuickNavItem>Keyboard interaction</QuickNavItem>
             </Heading>
           </Box>
 
@@ -157,12 +158,12 @@ export default function ButtonPage() {
             }}
           >
             <Heading as="h3" size={3} mb={3}>
-              Examples
+              <QuickNavItem>Examples</QuickNavItem>
             </Heading>
           </Box>
 
           <Heading as="h4" size={1} sx={{ mt: 7, mb: 5, lineHeight: 2 }}>
-            Simple button
+            <QuickNavItem level={1}>Simple button</QuickNavItem>
           </Heading>
 
           <CodeBlock live>
@@ -173,7 +174,7 @@ export default function ButtonPage() {
 
           <Box sx={{ mt: 7, mb: 5 }}>
             <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
-              Button with icon
+              <QuickNavItem level={1}>Button with icon</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -187,7 +188,7 @@ export default function ButtonPage() {
 
           <Box sx={{ mt: 7, mb: 5 }}>
             <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
-              Button with right icon
+              <QuickNavItem level={1}>Button with right icon</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -201,7 +202,7 @@ export default function ButtonPage() {
 
           <Box sx={{ mt: 7, mb: 5 }}>
             <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
-              Button with two icons
+              <QuickNavItem level={1}>Button with two icons</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -227,7 +228,7 @@ export default function ButtonPage() {
                 lineHeight: 2,
               }}
             >
-              Just the icon
+              <QuickNavItem level={1}>Just the icon</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -251,7 +252,7 @@ export default function ButtonPage() {
                 lineHeight: 2,
               }}
             >
-              Button with count
+              <QuickNavItem level={1}>Button with count</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -277,7 +278,7 @@ export default function ButtonPage() {
                 lineHeight: 2,
               }}
             >
-              Button with Badge
+              <QuickNavItem level={1}>Button with Badge</QuickNavItem>
             </Heading>
           </Box>
 
@@ -303,7 +304,7 @@ export default function ButtonPage() {
                 lineHeight: 2,
               }}
             >
-              Button with tooltip
+              <QuickNavItem level={1}>Button with tooltip</QuickNavItem>
             </Heading>
           </Box>
           <CodeBlock live>
@@ -323,7 +324,7 @@ export default function ButtonPage() {
             }}
           >
             <Heading as="h3" size={3}>
-              Notes (mention menubutton)
+              <QuickNavItem>Notes (mention menubutton)</QuickNavItem>
             </Heading>
           </Box>
 
@@ -347,7 +348,7 @@ export default function ButtonPage() {
               }}
             >
               <Heading as="h3" size={3} sx={{ mb: 7 }}>
-                Related components
+                <QuickNavItem>Related components</QuickNavItem>
               </Heading>
               <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
                 <CardLink href="/introduction" sx={{ padding: 0 }}>
@@ -509,156 +510,7 @@ export default function ButtonPage() {
         </Container>
       </Box>
 
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: '245px',
-          flexShrink: 0,
-          pt: 7,
-          pr: 4,
-        }}
-      >
-        <Heading
-          as="h4"
-          size={1}
-          sx={{
-            lineHeight: 2,
-            mb: 5,
-            mt: 3,
-          }}
-        >
-          Quick nav
-        </Heading>
-        <nav>
-          <ul style={{ margin: '0', padding: '0', listStyle: 'none' }}>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Description
-                </Text>
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Installation
-                </Text>
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Keyboard Interaction
-                </Text>
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Examples
-                </Text>
-              </a>
-              <ul style={{ margin: '0', padding: '0 0 0 25px', listStyle: 'none' }}>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Simple input
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with placeholder
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with icon
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with right icon
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with icons on both sides
-                    </Text>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-                  >
-                    <Text size={3} sx={{ color: 'gray700' }}>
-                      Input with interactive content
-                    </Text>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Styled Examples
-                </Text>
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                style={{ textDecoration: 'none', padding: '5px 0', display: 'inline-flex' }}
-              >
-                <Text size={3} sx={{ color: 'gray700' }}>
-                  Related components
-                </Text>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </Box>
+      <QuickNav />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { createGlobalStyle } from 'styled-components';
 import * as Radix from '@modulz/radix';
+import { QuickNavContextProvider } from '../components/QuickNav';
 
 const GlobalStyles = createGlobalStyle`
   svg { vertical-align: middle }
@@ -23,7 +24,9 @@ function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <GlobalStyles />
-      <Component {...pageProps} />
+      <QuickNavContextProvider>
+        <Component {...pageProps} />
+      </QuickNavContextProvider>
     </Radix.RadixProvider>
   );
 }
