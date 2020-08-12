@@ -5,7 +5,7 @@ export default { title: 'Badge' };
 
 export function Basic() {
   return (
-    <Badge style={badgeStyles.badge}>
+    <Badge style={badgeStyles.root}>
       Cool Badge <span aria-hidden>😎</span>
     </Badge>
   );

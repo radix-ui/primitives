@@ -1,5 +1,6 @@
 export * from './composeEventHandlers';
 export * from './createContext';
+export * from './createStyleObj';
 export * from './forwardRef';
 export * from './memo';
 export * from './useAccessibleMouseDown';

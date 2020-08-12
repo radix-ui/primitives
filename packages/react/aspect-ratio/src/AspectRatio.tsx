@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const ROOT_NAME = 'AspectRatio.Root';
 const ROOT_DEFAULT_TAG = 'div';
@@ -19,7 +19,7 @@ const AspectRatioRoot = forwardRef<typeof ROOT_DEFAULT_TAG, AspectRatioProps>(
     return (
       <Comp
         {...aspectRatioProps}
-        {...interopDataAttrObj(ROOT_NAME)}
+        {...interopDataAttrObj('root')}
         ref={forwardedRef}
         style={{
           paddingBottom: `${paddingBottom}%`,
@@ -41,7 +41,7 @@ const AspectRatioInner = forwardRef<typeof INNER_DEFAULT_TAG, AspectRatioInnerPr
   function AspectRatioInner(props, forwardedRef) {
     const { as: Comp = INNER_DEFAULT_TAG, ...innerProps } = props;
 
-    return <Comp ref={forwardedRef} {...innerProps} {...interopDataAttrObj(INNER_NAME)} />;
+    return <Comp ref={forwardedRef} {...innerProps} {...interopDataAttrObj('inner')} />;
   }
 );
 
@@ -52,11 +52,7 @@ const AspectRatio = forwardRef<typeof ROOT_DEFAULT_TAG, AspectRatioProps, Aspect
     const { children, ...aspectRatioProps } = props;
 
     return (
-      <AspectRatioRoot
-        {...aspectRatioProps}
-        {...interopDataAttrObj(ASPECT_RATIO_NAME)}
-        ref={forwardedRef}
-      >
+      <AspectRatioRoot {...aspectRatioProps} ref={forwardedRef}>
         <AspectRatioInner>{children}</AspectRatioInner>
       </AspectRatioRoot>
     );
@@ -75,13 +71,13 @@ interface AspectRatioStaticProps {
   Inner: typeof AspectRatioInner;
 }
 
-const styles: PrimitiveStyles<'root' | 'inner'> = {
-  [interopSelector(ROOT_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(ASPECT_RATIO_NAME, {
+  root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     position: 'relative',
     width: '100%',
   },
-  [interopSelector(INNER_NAME)]: {
+  inner: {
     ...cssReset(INNER_DEFAULT_TAG),
     position: 'absolute',
     left: 0,
@@ -89,7 +85,7 @@ const styles: PrimitiveStyles<'root' | 'inner'> = {
     width: '100%',
     height: '100%',
   },
-};
+});
 
 export { AspectRatio, styles };
 export type { AspectRatioProps, AspectRatioInnerProps };

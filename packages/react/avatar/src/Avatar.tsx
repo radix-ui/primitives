@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
-import { cssReset, interopDataAttrObj, isFunction, interopSelector } from '@interop-ui/utils';
-import { createContext, forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset, isFunction } from '@interop-ui/utils';
+import { createContext, forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const ROOT_NAME = 'Avatar.Root';
 const ROOT_DEFAULT_TAG = 'span';
@@ -74,7 +74,7 @@ const AvatarRoot = forwardRef<typeof ROOT_DEFAULT_TAG, AvatarProps>(function Ava
 
   return (
     <AvatarContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj(ROOT_NAME)} {...avatarProps} ref={forwardedRef}>
+      <Comp {...interopDataAttrObj('root')} {...avatarProps} ref={forwardedRef}>
         {whatToRender === 'FALLBACK'
           ? (renderFallback as Function)()
           : whatToRender === 'LOADING'
@@ -99,13 +99,7 @@ const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(funct
   let { as: Comp = ImagePrimitive, children: _, ...imageProps } = props;
   let { src, alt, whatToRender } = useAvatarContext(IMAGE_NAME);
   return whatToRender === 'IMAGE' ? (
-    <Comp
-      {...interopDataAttrObj(IMAGE_NAME)}
-      ref={forwardedRef}
-      src={src}
-      alt={alt}
-      {...imageProps}
-    />
+    <Comp {...interopDataAttrObj('image')} ref={forwardedRef} src={src} alt={alt} {...imageProps} />
   ) : null;
 });
 
@@ -123,7 +117,7 @@ const AvatarIcon = forwardRef<typeof ICON_DEFAULT_TAG, AvatarIconProps>(function
   let { as: Comp = RadixIcon as any, ...iconProps } = props;
   let { whatToRender } = useAvatarContext(ICON_NAME);
   return whatToRender === 'ICON' ? (
-    <Comp {...interopDataAttrObj(ICON_NAME)} ref={forwardedRef} {...iconProps} />
+    <Comp {...interopDataAttrObj('icon')} ref={forwardedRef} {...iconProps} />
   ) : null;
 });
 
@@ -141,7 +135,7 @@ const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function
   let { as: Comp = 'span', children, ...abbrProps } = props;
   let { alt, whatToRender } = useAvatarContext(ABBR_NAME);
   return alt && whatToRender === 'ALT_ABBR' ? (
-    <Comp {...interopDataAttrObj(ABBR_NAME)} aria-hidden ref={forwardedRef} {...abbrProps}>
+    <Comp {...interopDataAttrObj('abbr')} aria-hidden ref={forwardedRef} {...abbrProps}>
       {alt[0]}
     </Comp>
   ) : null;
@@ -155,7 +149,7 @@ const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticPr
     const { children, ...avatarProps } = props;
 
     return (
-      <AvatarRoot ref={forwardedRef} {...avatarProps} {...interopDataAttrObj(AVATAR_NAME)}>
+      <AvatarRoot ref={forwardedRef} {...avatarProps}>
         <AvatarImage />
         <AvatarIcon />
         <AvatarAbbr />
@@ -217,8 +211,8 @@ function useImageLoadingStatus(src?: string) {
   return loadingStatus;
 }
 
-const styles: PrimitiveStyles<'root' | 'image' | 'abbr' | 'icon'> = {
-  [interopSelector(ROOT_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(AVATAR_NAME, {
+  root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
@@ -227,7 +221,7 @@ const styles: PrimitiveStyles<'root' | 'image' | 'abbr' | 'icon'> = {
     overflow: 'hidden',
     userSelect: 'none',
   },
-  [interopSelector(IMAGE_NAME)]: {
+  image: {
     ...cssReset(IMAGE_DEFAULT_TAG),
     width: '100%',
     height: '100%',
@@ -238,13 +232,13 @@ const styles: PrimitiveStyles<'root' | 'image' | 'abbr' | 'icon'> = {
     // Hide the image broken icon (Chrome only)
     textIndent: 10000,
   },
-  [interopSelector(ABBR_NAME)]: {
+  abbr: {
     ...cssReset(ABBR_DEFAULT_TAG),
   },
-  [interopSelector(ICON_NAME)]: {
+  icon: {
     ...cssReset(ICON_DEFAULT_TAG),
   },
-};
+});
 
 export type { AvatarProps, AvatarImageProps, AvatarIconProps, AvatarAbbrProps };
 export { Avatar, styles };
