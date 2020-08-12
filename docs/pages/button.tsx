@@ -5,7 +5,6 @@ import {
   Text,
   AspectRatio,
   Code,
-  Heading,
   Divider,
   Grid,
   CardLink,
@@ -21,7 +20,8 @@ import {
 import { Button } from '@interop-ui/react-button';
 import { Navigation } from '../components/Navigation';
 import { CodeBlock } from '../components/CodeBlock';
-import { QuickNav, QuickNavItem } from '../components/QuickNav';
+import { QuickNav } from '../components/QuickNav';
+import { PageTitle, PageDescription, PageHeading, PageSubHeading } from '../components/Typography';
 
 export default function ButtonPage() {
   return (
@@ -48,13 +48,11 @@ export default function ButtonPage() {
         }}
       >
         <Container size={2}>
-          <Heading as="h1" size={4} sx={{ lineHeight: 9 }}>
-            <QuickNavItem label="Description">Button</QuickNavItem>
-          </Heading>
-          <Heading as="h2" size={2} weight="normal" sx={{ lineHeight: 3, color: 'gray700', mb: 6 }}>
+          <PageTitle>Button</PageTitle>
+          <PageDescription>
             A button enables users to trigger an event, such as submitting a form, opening a dialog,
             canceling an action, or performing a delete operation.
-          </Heading>
+          </PageDescription>
 
           <Box sx={{ my: 7 }}>
             <AspectRatio ratio="2:1">
@@ -100,9 +98,7 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading as="h3" size={3} sx={{ mb: 4 }}>
-              <QuickNavItem>Installation</QuickNavItem>
-            </Heading>
+            <PageHeading>Installation</PageHeading>
             <Text size={3} sx={{ lineHeight: 2 }}>
               Install the component from your command line:
             </Text>
@@ -119,9 +115,7 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading as="h3" size={3}>
-              <QuickNavItem>Keyboard interaction</QuickNavItem>
-            </Heading>
+            <PageHeading>Keyboard interaction</PageHeading>
           </Box>
 
           <Table>
@@ -157,14 +151,10 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading as="h3" size={3} mb={3}>
-              <QuickNavItem>Examples</QuickNavItem>
-            </Heading>
+            <PageHeading>Examples</PageHeading>
           </Box>
 
-          <Heading as="h4" size={1} sx={{ mt: 7, mb: 5, lineHeight: 2 }}>
-            <QuickNavItem level={1}>Simple button</QuickNavItem>
-          </Heading>
+          <PageSubHeading>Simple button</PageSubHeading>
 
           <CodeBlock live>
             {`
@@ -173,9 +163,7 @@ export default function ButtonPage() {
           </CodeBlock>
 
           <Box sx={{ mt: 7, mb: 5 }}>
-            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
-              <QuickNavItem level={1}>Button with icon</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Button with icon</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -187,9 +175,7 @@ export default function ButtonPage() {
           </CodeBlock>
 
           <Box sx={{ mt: 7, mb: 5 }}>
-            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
-              <QuickNavItem level={1}>Button with right icon</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Button with right icon</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -201,9 +187,7 @@ export default function ButtonPage() {
           </CodeBlock>
 
           <Box sx={{ mt: 7, mb: 5 }}>
-            <Heading as="h4" size={1} sx={{ lineHeight: 2 }}>
-              <QuickNavItem level={1}>Button with two icons</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Button with two icons</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -221,15 +205,7 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Just the icon</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Just the icon</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -245,15 +221,7 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Button with count</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Button with count</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -271,15 +239,7 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Button with Badge</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Button with Badge</PageSubHeading>
           </Box>
 
           <CodeBlock live>
@@ -297,15 +257,7 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Button with tooltip</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Button with tooltip</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -323,9 +275,7 @@ export default function ButtonPage() {
               mb: 5,
             }}
           >
-            <Heading as="h3" size={3}>
-              <QuickNavItem>Notes (mention menubutton)</QuickNavItem>
-            </Heading>
+            <PageHeading>Notes (mention menubutton)</PageHeading>
           </Box>
 
           <Flex
@@ -347,9 +297,7 @@ export default function ButtonPage() {
                 mb: 5,
               }}
             >
-              <Heading as="h3" size={3} sx={{ mb: 7 }}>
-                <QuickNavItem>Related components</QuickNavItem>
-              </Heading>
+              <PageHeading>Related components</PageHeading>
               <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
                 <CardLink href="/introduction" sx={{ padding: 0 }}>
                   <AspectRatio ratio="16:9">

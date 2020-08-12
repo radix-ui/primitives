@@ -17,13 +17,11 @@ import {
   Td,
   Text,
   Code,
-  Input,
-  Heading,
 } from '@modulz/radix';
 import { Navigation } from '../components/Navigation';
 import { CodeBlock } from '../components/CodeBlock';
-import { PlusIcon } from '@modulz/radix-icons';
-import { QuickNav, QuickNavItem } from '../components/QuickNav';
+import { QuickNav } from '../components/QuickNav';
+import { PageTitle, PageDescription, PageHeading, PageSubHeading } from '../components/Typography';
 
 export default function InputPage() {
   return (
@@ -50,29 +48,8 @@ export default function InputPage() {
         }}
       >
         <Container size={2}>
-          <Heading
-            as="h1"
-            size={4}
-            sx={{
-              lineHeight: 9,
-            }}
-          >
-            <QuickNavItem label="Description" slug="description">
-              Input
-            </QuickNavItem>
-          </Heading>
-          <Heading
-            as="h2"
-            size={2}
-            weight="normal"
-            sx={{
-              lineHeight: 3,
-              color: 'gray700',
-              mb: 6,
-            }}
-          >
-            An input is a form control.
-          </Heading>
+          <PageTitle>Input</PageTitle>
+          <PageDescription>An input is a form control.</PageDescription>
 
           <Box sx={{ my: 7 }}>
             <AspectRatio ratio="2:1">
@@ -107,9 +84,7 @@ export default function InputPage() {
               mb: 5,
             }}
           >
-            <Heading as="h3" size={3}>
-              <QuickNavItem>Installation</QuickNavItem>
-            </Heading>
+            <PageHeading>Installation</PageHeading>
             <Text size={3} sx={{ lineHeight: 2 }}>
               Install the component from your command line:
             </Text>
@@ -134,9 +109,7 @@ export default function InputPage() {
               mb: 5,
             }}
           >
-            <Heading as="h3" size={3}>
-              <QuickNavItem>Keyboard interaction</QuickNavItem>
-            </Heading>
+            <PageHeading>Keyboard interaction</PageHeading>
           </Box>
 
           <Table>
@@ -175,9 +148,7 @@ export default function InputPage() {
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
-          <Heading as="h3" size={3} mb={3}>
-            <QuickNavItem>Examples</QuickNavItem>
-          </Heading>
+          <PageHeading>Examples</PageHeading>
 
           <Box
             sx={{
@@ -185,15 +156,7 @@ export default function InputPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Simple input</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Simple input</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -207,15 +170,7 @@ export default function InputPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Input with placeholder</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Input with placeholder</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -229,15 +184,7 @@ export default function InputPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Input with icon</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Input with icon</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -267,15 +214,7 @@ export default function InputPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Input with right icon</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Input with right icon</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -306,15 +245,7 @@ export default function InputPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Input with icons on both sides</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Input with icons on both sides</PageSubHeading>
           </Box>
           <CodeBlock live>
             {`
@@ -348,15 +279,7 @@ export default function InputPage() {
               mb: 5,
             }}
           >
-            <Heading
-              as="h4"
-              size={1}
-              sx={{
-                lineHeight: 2,
-              }}
-            >
-              <QuickNavItem level={1}>Input with interactive content</QuickNavItem>
-            </Heading>
+            <PageSubHeading>Input with interactive content</PageSubHeading>
             <Text
               as="p"
               size={3}
@@ -407,9 +330,7 @@ export default function InputPage() {
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
-          <Heading as="h3" size={3} mb={3}>
-            <QuickNavItem>Styled Examples</QuickNavItem>
-          </Heading>
+          <PageHeading>Styled Examples</PageHeading>
 
           <CodeBlock live>
             {`
@@ -454,9 +375,7 @@ export default function InputPage() {
                 mb: 5,
               }}
             >
-              <Heading as="h3" size={3} sx={{ mb: 7 }}>
-                <QuickNavItem>Related components</QuickNavItem>
-              </Heading>
+              <PageHeading>Related components</PageHeading>
               <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
                 <CardLink href="/introduction" sx={{ padding: 0 }}>
                   <AspectRatio ratio="16:9">
