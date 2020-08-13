@@ -2,8 +2,11 @@ import React from 'react';
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live';
 import { PrismTheme } from 'prism-react-renderer';
 import { Box, theme as radixTheme } from '@modulz/radix';
-import * as RC from '@modulz/radix';
+import { Button } from '@interop-ui/react-button';
+import { Input } from '@interop-ui/react-input';
 import * as RI from '@modulz/radix-icons';
+
+const componentsExposedToCodeBlock = { Button, Input, ...RI };
 
 const theme: PrismTheme = {
   plain: {
@@ -71,7 +74,7 @@ export function CodeBlock({ children, live = false, removeFragment = false }: Co
   return (
     <Box sx={{ mb: 7 }}>
       <LiveProvider
-        scope={{ ...RC, ...RI }}
+        scope={componentsExposedToCodeBlock}
         theme={theme}
         code={children.trim()}
         transformCode={(code) => (removeFragment ? code : `<>${code}</>`)}
