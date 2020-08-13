@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Box, Text, Heading, Divider, Grid, Flex, CardLink, Link } from '@modulz/radix';
-import { MainNavigation } from '../components/MainNavigation';
+import { MainNavigation } from '../../components/MainNavigation';
 
 export default function IntroductionPage() {
   return (

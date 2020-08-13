@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text, Code, Table, Thead, Tr, Th, Td, Tbody, Flex, Link } from '@modulz/radix';
-import { ComponentPageLayout } from '../components/ComponentPageLayout';
+import { ComponentPageLayout } from '../../components/ComponentPageLayout';
 import {
   Hero,
   Title,
@@ -9,9 +9,9 @@ import {
   SubHeading,
   Paragraph,
   Divider,
-} from '../components/Page';
-import { CodeBlock } from '../components/CodeBlock';
-import { RelatedComponents, RelatedComponentCard } from '../components/RelatedComponentCard';
+} from '../../components/Page';
+import { CodeBlock } from '../../components/CodeBlock';
+import { RelatedComponents, RelatedComponentCard } from '../../components/RelatedComponentCard';
 
 function ButtonPage() {
   return (

@@ -113,7 +113,7 @@ export default function Home() {
 
           <Flex sx={{ py: 8, justifyContent: 'center' }}>
             <Box>
-              <Link href="/introduction">
+              <Link href="/overview/introduction">
                 <Flex sx={{ alignItems: 'center' }}>
                   <Text as="span" size={5} sx={{ color: 'inherit', mr: 1, lineHeight: '1' }}>
                     Documentation

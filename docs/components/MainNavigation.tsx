@@ -9,7 +9,10 @@ import { ScrollArea } from './ScrollArea';
 import type { FlexProps } from '@modulz/radix';
 
 function MainNavigation() {
-  const [openedAccordion, setOpenedAccordion] = React.useState('overview');
+  const router = useRouter();
+  const defaultOpenedAccordion = router.pathname.split('/')[1] ?? 'overview';
+  const [openedAccordion, setOpenedAccordion] = React.useState(defaultOpenedAccordion);
+
   return (
     <ScrollArea>
       <Box sx={{ pb: 7 }}>
@@ -60,11 +63,11 @@ function MainNavigation() {
             </Accordion.Button>
             <Accordion.Panel>
               <List>
-                <PageLink href="/introduction">Introduction</PageLink>
-                <PageLink href="/getting-started">Installation</PageLink>
-                <PageLink href="/getting-started">Styling</PageLink>
-                <PageLink href="/getting-started">Animation</PageLink>
-                <PageLink href="/roadmap">Roadmap</PageLink>
+                <PageLink href="/overview/introduction">Introduction</PageLink>
+                <PageLink href="/overview/getting-started">Installation</PageLink>
+                <PageLink href="/overview/getting-started">Styling</PageLink>
+                <PageLink href="/overview/getting-started">Animation</PageLink>
+                <PageLink href="/overview/roadmap">Roadmap</PageLink>
               </List>
             </Accordion.Panel>
           </Accordion.Item>
@@ -95,10 +98,10 @@ function MainNavigation() {
                 Layout
               </Text>
               <List>
-                <PageLink href="/box" isNested>
+                <PageLink href="/components/box" isNested>
                   Box
                 </PageLink>
-                <PageLink href="/flex" isNested>
+                <PageLink href="/components/flex" isNested>
                   Flex
                 </PageLink>
               </List>
@@ -114,28 +117,28 @@ function MainNavigation() {
                 Input
               </Text>
               <List>
-                <PageLink href="/combobox" isNested>
+                <PageLink href="/components/combobox" isNested>
                   ComboBox
                 </PageLink>
-                <PageLink href="/checkbox" isNested>
+                <PageLink href="/components/checkbox" isNested>
                   Checkbox
                 </PageLink>
-                <PageLink href="/input" isNested>
+                <PageLink href="/components/input" isNested>
                   Input
                 </PageLink>
-                <PageLink href="/radio" isNested>
+                <PageLink href="/components/radio" isNested>
                   Radio
                 </PageLink>
-                <PageLink href="/slider" isNested>
+                <PageLink href="/components/slider" isNested>
                   Slider
                 </PageLink>
-                <PageLink href="/select" isNested>
+                <PageLink href="/components/select" isNested>
                   Select
                 </PageLink>
-                <PageLink href="/switch" isNested>
+                <PageLink href="/components/switch" isNested>
                   Switch
                 </PageLink>
-                <PageLink href="/textarea" isNested>
+                <PageLink href="/components/textarea" isNested>
                   Textarea
                 </PageLink>
               </List>
@@ -151,19 +154,19 @@ function MainNavigation() {
                 Feedback
               </Text>
               <List>
-                <PageLink href="/alert-dialog" isNested>
+                <PageLink href="/components/alert-dialog" isNested>
                   AlertDialog
                 </PageLink>
-                <PageLink href="/badge" isNested>
+                <PageLink href="/components/badge" isNested>
                   Badge
                 </PageLink>
-                <PageLink href="/dialog" isNested>
+                <PageLink href="/components/dialog" isNested>
                   Dialog
                 </PageLink>
-                <PageLink href="/progres" isNested>
+                <PageLink href="/components/progres" isNested>
                   Progress
                 </PageLink>
-                <PageLink href="/toast" isNested>
+                <PageLink href="/components/toast" isNested>
                   Toast
                 </PageLink>
               </List>
@@ -179,13 +182,13 @@ function MainNavigation() {
                 Text
               </Text>
               <List>
-                <PageLink href="/blockquote" isNested>
+                <PageLink href="/components/blockquote" isNested>
                   Blockquote
                 </PageLink>
-                <PageLink href="/code" isNested>
+                <PageLink href="/components/code" isNested>
                   Code
                 </PageLink>
-                <PageLink href="/text" isNested>
+                <PageLink href="/components/text" isNested>
                   Text
                 </PageLink>
               </List>
@@ -201,19 +204,19 @@ function MainNavigation() {
                 Utilities
               </Text>
               <List>
-                <PageLink href="/aspect-ratio" isNested>
+                <PageLink href="/components/aspect-ratio" isNested>
                   AspectRatio
                 </PageLink>
-                <PageLink href="/hover-zone" isNested>
+                <PageLink href="/components/hover-zone" isNested>
                   HoverZone
                 </PageLink>
-                <PageLink href="/alert" isNested>
+                <PageLink href="/components/alert" isNested>
                   LiveRegion
                 </PageLink>
-                <PageLink href="/portal" isNested>
+                <PageLink href="/components/portal" isNested>
                   Portal
                 </PageLink>
-                <PageLink href="/visually-hidden" isNested>
+                <PageLink href="/components/visually-hidden" isNested>
                   <Flex sx={{ alignItems: 'center' }}>
                     VisuallyHidden
                     <Badge variant="blue" sx={{ ml: 1 }}>
@@ -234,19 +237,19 @@ function MainNavigation() {
                 Contextual
               </Text>
               <List>
-                <PageLink href="/overlay" isNested>
+                <PageLink href="/components/overlay" isNested>
                   Overlay
                 </PageLink>
-                <PageLink href="/popover" isNested>
+                <PageLink href="/components/popover" isNested>
                   Popover
                 </PageLink>
-                <PageLink href="/right-click-menu" isNested>
+                <PageLink href="/components/right-click-menu" isNested>
                   ContextMenu
                 </PageLink>
-                <PageLink href="/sheet" isNested>
+                <PageLink href="/components/sheet" isNested>
                   Sheet
                 </PageLink>
-                <PageLink href="/tooltip" isNested>
+                <PageLink href="/components/tooltip" isNested>
                   tooltip
                 </PageLink>
               </List>
@@ -262,43 +265,43 @@ function MainNavigation() {
                 Undecided
               </Text>
               <List>
-                <PageLink href="/accordion" isNested>
+                <PageLink href="/components/accordion" isNested>
                   Accordion
                 </PageLink>
-                <PageLink href="/avatar" isNested>
+                <PageLink href="/components/avatar" isNested>
                   Avatar
                 </PageLink>
-                <PageLink href="/button" isNested>
+                <PageLink href="/components/button" isNested>
                   Button
                 </PageLink>
-                <PageLink href="/card" isNested>
+                <PageLink href="/components/card" isNested>
                   Card
                 </PageLink>
-                <PageLink href="/collapsible" isNested>
+                <PageLink href="/components/collapsible" isNested>
                   Collapsible
                 </PageLink>
-                <PageLink href="/divider" isNested>
+                <PageLink href="/components/divider" isNested>
                   Divider
                 </PageLink>
-                <PageLink href="/header" isNested>
+                <PageLink href="/components/header" isNested>
                   Header
                 </PageLink>
-                <PageLink href="/image" isNested>
+                <PageLink href="/components/image" isNested>
                   Image
                 </PageLink>
-                <PageLink href="/link" isNested>
+                <PageLink href="/components/link" isNested>
                   Link
                 </PageLink>
-                <PageLink href="/menu" isNested>
+                <PageLink href="/components/menu" isNested>
                   Menu
                 </PageLink>
-                <PageLink href="/tab" isNested>
+                <PageLink href="/components/tab" isNested>
                   Tab
                 </PageLink>
-                <PageLink href="/table" isNested>
+                <PageLink href="/components/table" isNested>
                   Table
                 </PageLink>
-                <PageLink href="/toggle-button" isNested>
+                <PageLink href="/components/toggle-button" isNested>
                   ToggleButton
                 </PageLink>
               </List>
@@ -320,11 +323,12 @@ function MainNavigation() {
             </Accordion.Button>
             <Accordion.Panel>
               <List>
-                <PageLink href="/layouts">Github</PageLink>
-                <PageLink href="/layouts">Twitter</PageLink>
-                <PageLink href="/layouts">Spectrum</PageLink>
-                <PageLink href="/tutorials">Tutorials</PageLink>
-                <PageLink href="/showcase">Showcase</PageLink>
+                <ListItem as="a" href="https://www.github.com/modulz" sx={{ pl: 6 }}>
+                  <Text size={2}>Github</Text>
+                </ListItem>
+                <ListItem as="a" href="https://www.twitter.com/modulz" sx={{ pl: 6 }}>
+                  <Text size={2}>Twitter</Text>
+                </ListItem>
               </List>
             </Accordion.Panel>
           </Accordion.Item>
