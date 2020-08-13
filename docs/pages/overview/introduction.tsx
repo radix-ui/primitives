@@ -1,6 +1,5 @@
 import React from 'react';
-import { Container, Box, Text, Heading, Divider, Grid, Flex, CardLink, Link } from '@modulz/radix';
-import { MainNavigation } from '../../components/MainNavigation';
+import { Box, Text, Heading, Divider, Grid, Flex, CardLink, Link } from '@modulz/radix';
 import { DocsPageLayout } from '../../components/DocsPageLayout';
 
 function IntroductionPage() {

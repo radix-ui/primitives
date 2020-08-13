@@ -9,7 +9,7 @@ import {
   SubHeading,
   Paragraph,
   Divider,
-} from '../../components/Page';
+} from '../../components/DocsPage';
 import { CodeBlock } from '../../components/CodeBlock';
 import { RelatedComponents, RelatedComponentCard } from '../../components/RelatedComponentCard';
 
