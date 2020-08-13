@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Box, Text, Heading, Divider, Grid, Flex, CardLink, Link } from '@modulz/radix';
-import { Navigation } from '../components/Navigation';
+import { MainNavigation } from '../components/MainNavigation';
 
 export default function IntroductionPage() {
   return (
@@ -19,7 +19,7 @@ export default function IntroductionPage() {
           pb: 6,
         }}
       >
-        <Navigation />
+        <MainNavigation />
       </Box>
       <Box sx={{ flexGrow: 1, pl: '245px', py: 9 }}>
         <Container size={2} pt={2}>

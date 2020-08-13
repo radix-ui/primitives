@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Container } from '@modulz/radix';
-import { Navigation } from '../components/Navigation';
+import { MainNavigation } from './MainNavigation';
 import { QuickNavContextProvider, QuickNav } from '../components/QuickNav';
 
 function ComponentPageLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ function ComponentPageLayout({ children }: { children: React.ReactNode }) {
           borderRight: (t) => `1px solid ${t.colors.gray300}`,
         }}
       >
-        <Navigation />
+        <MainNavigation />
       </Box>
       <QuickNavContextProvider>
         <Box sx={{ flexGrow: 1, px: '245px', py: 7 }}>
