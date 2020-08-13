@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text, Code, Table, Thead, Tr, Th, Td, Tbody, Flex, Link } from '@modulz/radix';
-import { ComponentPageLayout } from '../../components/ComponentPageLayout';
+import { DocsPageLayout } from '../../components/DocsPageLayout';
 import {
   Hero,
   Title,
@@ -171,7 +171,7 @@ function ButtonPage() {
   );
 }
 
-ButtonPage.layout = ComponentPageLayout;
+ButtonPage.layout = DocsPageLayout;
 
 export default ButtonPage;
 

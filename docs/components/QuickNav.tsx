@@ -50,11 +50,18 @@ function QuickNavItem({
     return () => setItems((items) => items.filter((item) => item.slug !== slug));
   }, [slug, label, level, setItems]);
 
-  return <span id={slug}>{children}</span>;
+  return (
+    <Box as="span" id={slug} sx={{ scrollMargin: 15 }}>
+      {children}
+    </Box>
+  );
 }
 
 function QuickNav() {
   const { items } = useQuickNavContext();
+
+  if (items.length === 0) return null;
+
   const hierarchicalItems = getHierarchicalItems(items);
 
   return (

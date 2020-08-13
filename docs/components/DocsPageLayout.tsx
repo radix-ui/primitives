@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Box, Container } from '@modulz/radix';
 import { MainNavigation } from './MainNavigation';
-import { QuickNavContextProvider, QuickNav } from '../components/QuickNav';
+import { QuickNavContextProvider, QuickNav } from './QuickNav';
 
-function ComponentPageLayout({ children }: { children: React.ReactNode }) {
+function DocsPageLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Box
@@ -27,4 +27,4 @@ function ComponentPageLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export { ComponentPageLayout };
+export { DocsPageLayout };
