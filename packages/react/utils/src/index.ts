@@ -13,5 +13,6 @@ export * from './useIsomorphicLayoutEffect';
 export * from './usePrevious';
 export * from './useRect';
 export * from './useRovingTabIndex';
+export * from './useUpdateEffect';
 
 export * from './types';

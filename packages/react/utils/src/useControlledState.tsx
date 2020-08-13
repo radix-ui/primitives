@@ -12,7 +12,7 @@ type UseControlledStateParams<T> = {
   unstable__isControlled?: boolean;
 };
 
-type SetStateFn<T> = (prevState?: T) => T;
+export type ControlledStateDispatcher<T> = React.Dispatch<React.SetStateAction<T>>;
 
 export function useControlledState<T>({
   prop,
@@ -35,8 +35,10 @@ export function useControlledState<T>({
     onChangeRef.current = onChange;
   });
 
-  const setState = React.useCallback(function setState(nextState?: T | SetStateFn<T>) {
-    const change = (prevState?: T) => {
+  const setState: ControlledStateDispatcher<T | undefined> = React.useCallback(function setState(
+    nextState
+  ) {
+    const change = (prevState: T | undefined) => {
       const update = getNextState(prevState, nextState);
       onChangeRef.current(update!);
       return update;
@@ -47,7 +49,8 @@ export function useControlledState<T>({
     } else {
       _setState(change);
     }
-  }, []);
+  },
+  []);
 
   const resetState = React.useCallback(
     function resetState() {
@@ -59,12 +62,11 @@ export function useControlledState<T>({
   return [state, setState, resetState] as const;
 }
 
-function getNextState<T>(prevState?: T, state?: T | SetStateFn<T>) {
-  let nextState;
+function getNextState<T>(prevState: T, state: React.SetStateAction<T>) {
+  let nextState: T;
 
   if (typeof state === 'function') {
-    const setter = state as SetStateFn<T>;
-    nextState = setter(prevState);
+    nextState = (state as any)(prevState);
   } else {
     nextState = state;
   }
