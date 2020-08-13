@@ -1,263 +1,204 @@
 import React from 'react';
+import { Box, Text, Code, Table, Thead, Tr, Th, Td, Tbody, Flex, Link } from '@modulz/radix';
+import { ComponentPageLayout } from '../components/ComponentPageLayout';
 import {
-  Container,
-  Box,
-  Text,
-  AspectRatio,
-  Code,
+  Hero,
+  Title,
+  Description,
+  Heading,
+  SubHeading,
+  Paragraph,
   Divider,
-  Grid,
-  Table,
-  Thead,
-  Tr,
-  Th,
-  Td,
-  Tbody,
-  Flex,
-  Link,
-} from '@modulz/radix';
-import { Navigation } from '../components/Navigation';
+} from '../components/Page';
 import { CodeBlock } from '../components/CodeBlock';
-import { QuickNav } from '../components/QuickNav';
-import { PageTitle, PageDescription, PageHeading, PageSubHeading } from '../components/Typography';
-import { RelatedComponentCard } from '../components/RelatedComponentCard';
+import { RelatedComponents, RelatedComponentCard } from '../components/RelatedComponentCard';
 
-export default function ButtonPage() {
+function ButtonPage() {
   return (
-    <div>
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 0,
-          bottom: 0,
-          width: '245px',
-          flexShrink: 0,
-          borderRightWidth: '1px',
-          borderRightStyle: 'solid',
-          borderRightColor: 'gray300',
-        }}
-      >
-        <Navigation />
-      </Box>
-      <Box sx={{ flexGrow: 1, px: '245px', py: 7 }}>
-        <Container size={2}>
-          <PageTitle>Button</PageTitle>
-          <PageDescription>
-            A button enables users to trigger an event, such as submitting a form, opening a dialog,
-            canceling an action, or performing a delete operation.
-          </PageDescription>
+    <>
+      <Title>Button</Title>
+      <Description>
+        A button enables users to trigger an event, such as submitting a form, opening a dialog,
+        canceling an action, or performing a delete operation.
+      </Description>
 
-          <AspectRatio ratio="2:1" sx={{ my: 7 }}>
-            <Box sx={{ bg: 'blue200', borderRadius: '2', height: '100%' }} />
-          </AspectRatio>
+      <Hero />
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageHeading>Installation</PageHeading>
-            <Text size={3} sx={{ lineHeight: 2 }}>
-              Install the component from your command line:
-            </Text>
-          </Box>
-          <CodeBlock>npm install @radixui/react-button</CodeBlock>
-          <Text as="p" size={3} sx={{ lineHeight: 2, my: 4 }}>
-            Then import the component:
-          </Text>
-          <CodeBlock>import Button from "@radixui/react-button";</CodeBlock>
+      <Heading>Installation</Heading>
 
-          <Box sx={{ mt: 8, mb: 5 }}>
-            <PageHeading>Keyboard interaction</PageHeading>
-          </Box>
+      <Paragraph>Install the component from your command line:</Paragraph>
+      <CodeBlock>npm install @radixui/react-button</CodeBlock>
+      <Paragraph>Then import the component:</Paragraph>
+      <CodeBlock>import Button from "@radixui/react-button";</CodeBlock>
 
-          <Table>
-            <Thead>
-              <Tr>
-                <Th>Interaction</Th>
-                <Th>Result</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr>
-                <Td>
-                  <Code as="kbd">Space</Code>
-                </Td>
-                <Td>
-                  <Text>Activates the button.</Text>
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>
-                  <Code as="kbd">Enter</Code>
-                </Td>
-                <Td>
-                  <Text>Activates the button.</Text>
-                </Td>
-              </Tr>
-            </Tbody>
-          </Table>
+      <Divider />
 
-          <Box sx={{ mt: 8, mb: 5 }}>
-            <PageHeading>Examples</PageHeading>
-          </Box>
+      <Heading>Keyboard interaction</Heading>
 
-          <PageSubHeading>Simple button</PageSubHeading>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>Interaction</Th>
+            <Th>Result</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          <Tr>
+            <Td>
+              <Code as="kbd">Space</Code>
+            </Td>
+            <Td>
+              <Text>Activates the button.</Text>
+            </Td>
+          </Tr>
+          <Tr>
+            <Td>
+              <Code as="kbd">Enter</Code>
+            </Td>
+            <Td>
+              <Text>Activates the button.</Text>
+            </Td>
+          </Tr>
+        </Tbody>
+      </Table>
 
-          <CodeBlock live>
-            {`
+      <Divider />
+
+      <Heading>Examples</Heading>
+
+      <SubHeading>Simple button</SubHeading>
+      <CodeBlock live>
+        {`
 <Button>Button</Button>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Button with icon</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Button with icon</SubHeading>
+      <CodeBlock live>
+        {`
 <Button>
   <PlusIcon sx={{ mr: 1 }} />
   Button
 </Button>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Button with right icon</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Button with right icon</SubHeading>
+      <CodeBlock live>
+        {`
 <Button>
   Button
-  <PlusIcon sx={{ ml: 1 }} /> />
+  <PlusIcon sx={{ ml: 1 }} />
 </Button>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Button with two icons</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Button with two icons</SubHeading>
+      <CodeBlock live>
+        {`
 <Button>
   <PlusIcon sx={{ mr: 1 }} />
   Button
   <PlusIcon sx={{ ml: 1 }} />
 </Button>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Just the icon</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Just the icon</SubHeading>
+      <CodeBlock live>
+        {`
 <Button aria-label="Follow">
   <PlusIcon />
 </Button>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Button with count</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Button with count</SubHeading>
+      <CodeBlock live>
+        {`
 <Button>
   Follow
   <Pipe sx={{ mx: 2 }} />
   <Text>58</Text>
 </Button>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Button with Badge</PageSubHeading>
-          </Box>
-
-          <CodeBlock live>
-            {`
+      <SubHeading>Button with Badge</SubHeading>
+      <CodeBlock live>
+        {`
 <Button>
   Button
   <Badge sx={{ ml: 2 }}>58</Badge>
 </Button>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Button with tooltip</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Button with tooltip</SubHeading>
+      <CodeBlock live>
+        {`
 <Tooltip label="Tooltip label" side="top" align="center">
   <Button>
     Hover me
   </Button>
 </Tooltip>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageHeading>Notes (mention menubutton)</PageHeading>
-          </Box>
+      <Heading>Notes</Heading>
+      <Paragraph>Mention MenuButton…</Paragraph>
 
-          <Flex sx={{ justifyContent: 'center', pt: 9 }}>
-            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
-          </Flex>
+      <Divider />
 
-          <Box sx={{ py: 9, mb: 5 }}>
-            <PageHeading>Related components</PageHeading>
+      <Heading>Related components</Heading>
+      <RelatedComponents>
+        <RelatedComponentCard
+          href="/menu-button"
+          name="Menu Button"
+          description="A button that opens a menu."
+        />
+        <RelatedComponentCard
+          href="/toggle-button"
+          name="Toggle Button"
+          description="A two-state button that can be either off or on."
+        />
+      </RelatedComponents>
 
-            <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
-              <RelatedComponentCard
-                href="/introduction"
-                name="Menu Button"
-                description="A button that opens a menu."
-              />
-              <RelatedComponentCard
-                href="/introduction"
-                name="Toggle Button"
-                description="A two-state button that can be either off or on."
-              />
-              <RelatedComponentCard
-                href="/introduction"
-                name="Tool Bar"
-                description="A container for grouping a set of controls, such as buttons, menubuttons, or
-                      checkboxes."
-              />
-            </Grid>
-          </Box>
+      <Divider />
 
-          <Flex sx={{ justifyContent: 'center' }}>
-            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
-          </Flex>
+      <Pagination />
+    </>
+  );
+}
 
-          <Flex sx={{ justifyContent: 'space-between', my: 9 }}>
-            <Box>
-              <Link>
-                <Text size={3} sx={{ display: 'block', color: 'gray700', mb: 1 }}>
-                  Previous
-                </Text>
-                <Text size={6} sx={{ display: 'block', color: 'inherit' }}>
-                  Card
-                </Text>
-              </Link>
-            </Box>
+ButtonPage.layout = ComponentPageLayout;
 
-            <Box>
-              <Link>
-                <Text
-                  size={3}
-                  sx={{ display: 'block', color: 'gray700', textAlign: 'right', mb: 1 }}
-                >
-                  Next
-                </Text>
-                <Text size={6} sx={{ display: 'block', textAlign: 'right', color: 'inherit' }}>
-                  CardLink
-                </Text>
-              </Link>
-            </Box>
-          </Flex>
-        </Container>
+export default ButtonPage;
+
+function Pagination() {
+  return (
+    <Flex sx={{ justifyContent: 'space-between', my: 9 }}>
+      <Box>
+        <Link>
+          <Text size={3} sx={{ display: 'block', color: 'gray700', mb: 1 }}>
+            Previous
+          </Text>
+          <Text size={6} sx={{ display: 'block', color: 'inherit' }}>
+            Card
+          </Text>
+        </Link>
       </Box>
 
-      <QuickNav />
-    </div>
+      <Box>
+        <Link>
+          <Text size={3} sx={{ display: 'block', color: 'gray700', textAlign: 'right', mb: 1 }}>
+            Next
+          </Text>
+          <Text size={6} sx={{ display: 'block', textAlign: 'right', color: 'inherit' }}>
+            CardLink
+          </Text>
+        </Link>
+      </Box>
+    </Flex>
   );
 }

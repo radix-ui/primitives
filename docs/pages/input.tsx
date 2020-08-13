@@ -1,130 +1,85 @@
 import React from 'react';
+import { Box, Text, Code, Table, Thead, Tr, Th, Td, Tbody, Flex, Link } from '@modulz/radix';
+import { ComponentPageLayout } from '../components/ComponentPageLayout';
 import {
-  Container,
-  Box,
-  Flex,
+  Hero,
+  Title,
+  Description,
+  Heading,
+  SubHeading,
+  Paragraph,
   Divider,
-  AspectRatio,
-  Table,
-  Link,
-  Grid,
-  Thead,
-  Tr,
-  Th,
-  Tbody,
-  Td,
-  Text,
-  Code,
-} from '@modulz/radix';
-import { Navigation } from '../components/Navigation';
+} from '../components/Page';
 import { CodeBlock } from '../components/CodeBlock';
-import { QuickNav } from '../components/QuickNav';
-import { PageTitle, PageDescription, PageHeading, PageSubHeading } from '../components/Typography';
-import { RelatedComponentCard } from '../components/RelatedComponentCard';
+import { RelatedComponents, RelatedComponentCard } from '../components/RelatedComponentCard';
 
-export default function InputPage() {
+function InputPage() {
   return (
-    <div>
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 0,
-          bottom: 0,
-          width: '245px',
-          flexShrink: 0,
-          borderRightWidth: '1px',
-          borderRightStyle: 'solid',
-          borderRightColor: 'gray300',
-        }}
-      >
-        <Navigation />
-      </Box>
+    <>
+      <Title>Input</Title>
+      <Description>An input is a form control.</Description>
 
-      <Box sx={{ flexGrow: 1, px: '245px', py: 7 }}>
-        <Container size={2}>
-          <PageTitle>Input</PageTitle>
-          <PageDescription>An input is a form control.</PageDescription>
+      <Hero />
 
-          <AspectRatio ratio="2:1" sx={{ my: 7 }}>
-            <Box sx={{ bg: 'blue200', borderRadius: '2', height: '100%' }} />
-          </AspectRatio>
+      <Heading>Installation</Heading>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageHeading>Installation</PageHeading>
-            <Text size={3} sx={{ lineHeight: 2 }}>
-              Install the component from your command line:
-            </Text>
-          </Box>
-          <CodeBlock>npm install @radixui/react-input</CodeBlock>
-          <Text as="p" size={3} sx={{ lineHeight: 2, my: 4 }}>
-            Then import the component:
-          </Text>
-          <CodeBlock>import Input from "@radixui/react-input";</CodeBlock>
+      <Paragraph>Install the component from your command line:</Paragraph>
+      <CodeBlock>npm install @radixui/react-input</CodeBlock>
+      <Paragraph>Then import the component:</Paragraph>
+      <CodeBlock>import Input from "@radixui/react-input";</CodeBlock>
 
-          <Flex sx={{ justifyContent: 'center', py: 9 }}>
-            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
-          </Flex>
+      <Divider />
 
-          <Box sx={{ mb: 5 }}>
-            <PageHeading>Keyboard interaction</PageHeading>
-          </Box>
+      <Heading>Keyboard interaction</Heading>
 
-          <Table>
-            <Thead>
-              <Tr>
-                <Th>Interaction</Th>
-                <Th>Result</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr>
-                <Td>
-                  <Code as="kbd">Space</Code>
-                </Td>
-                <Td>
-                  <Text>Activates the button.</Text>
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>
-                  <Code as="kbd">Enter</Code>
-                </Td>
-                <Td>
-                  <Text>Activates the button.</Text>
-                </Td>
-              </Tr>
-            </Tbody>
-          </Table>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>Interaction</Th>
+            <Th>Result</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          <Tr>
+            <Td>
+              <Code as="kbd">Space</Code>
+            </Td>
+            <Td>
+              <Text>Activates the button.</Text>
+            </Td>
+          </Tr>
+          <Tr>
+            <Td>
+              <Code as="kbd">Enter</Code>
+            </Td>
+            <Td>
+              <Text>Activates the button.</Text>
+            </Td>
+          </Tr>
+        </Tbody>
+      </Table>
 
-          <Flex sx={{ justifyContent: 'center', py: 9 }}>
-            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
-          </Flex>
+      <Divider />
 
-          <PageHeading>Examples</PageHeading>
+      <Heading>Examples</Heading>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Simple input</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Simple input</SubHeading>
+      <CodeBlock live>
+        {`
 <Input />
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Input with placeholder</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Input with placeholder</SubHeading>
+      <CodeBlock live>
+        {`
 <Input placeholder="Placeholder" />
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Input with icon</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Input with icon</SubHeading>
+      <CodeBlock live>
+        {`
 <Box sx={{ position: 'relative' }}>
   <Input placeholder="Placeholder" sx={{ paddingLeft: '25px' }} />
   <Flex sx={{
@@ -143,13 +98,11 @@ export default function InputPage() {
   </Flex>
 </Box>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Input with right icon</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Input with right icon</SubHeading>
+      <CodeBlock live>
+        {`
 <Box sx={{ position: 'relative' }}>
   <Input placeholder="Placeholder" sx={{ paddingRight: '25px' }} />
   <Flex sx={{
@@ -169,13 +122,11 @@ export default function InputPage() {
   </Flex>
 </Box>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Input with icons on both sides</PageSubHeading>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Input with icons on both sides</SubHeading>
+      <CodeBlock live>
+        {`
 <Box sx={{ position: 'relative' }}>
   <Input placeholder="Placeholder" sx={{ px: '25px' }} />
   <Flex sx={{
@@ -198,18 +149,16 @@ export default function InputPage() {
   </Flex>
 </Box>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Box sx={{ mt: 7, mb: 5 }}>
-            <PageSubHeading>Input with interactive content</PageSubHeading>
-            <Text as="p" size={3} sx={{ mt: 2, lineHeight: 2 }}>
-              Does anybody know if it’s possible to make codesandbox use a different version of
-              prettier? I’m suspecting they are not using v2 as formatting seems to stop working
-              with TS the minute I use things like <Code>??</Code> or <Code>??</Code>.
-            </Text>
-          </Box>
-          <CodeBlock live>
-            {`
+      <SubHeading>Input with interactive content</SubHeading>
+      <Paragraph>
+        Does anybody know if it’s possible to make codesandbox use a different version of prettier?
+        I’m suspecting they are not using v2 as formatting seems to stop working with TS the minute
+        I use things like <Code>??</Code> or <Code>??</Code>.
+      </Paragraph>
+      <CodeBlock live>
+        {`
 <Box sx={{ position: 'relative' }}>
   <Input placeholder="Placeholder" sx={{ px: '25px' }} />
   <Flex sx={{
@@ -234,99 +183,87 @@ export default function InputPage() {
   </Flex>
 </Box>
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Flex sx={{ justifyContent: 'center', py: 9 }}>
-            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
-          </Flex>
+      <Divider />
 
-          <PageHeading>Styled Examples</PageHeading>
+      <Heading>Styled Examples</Heading>
 
-          <CodeBlock live>
-            {`
+      <CodeBlock live>
+        {`
 <Input placeholder="Placeholder" />
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <CodeBlock live>
-            {`
+      <CodeBlock live>
+        {`
 <Input placeholder="Placeholder" />
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <CodeBlock live>
-            {`
+      <CodeBlock live>
+        {`
 <Input placeholder="Placeholder" />
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <CodeBlock live>
-            {`
+      <CodeBlock live>
+        {`
 <Input placeholder="Placeholder" />
 `}
-          </CodeBlock>
+      </CodeBlock>
 
-          <Flex sx={{ justifyContent: 'center', pt: 9 }}>
-            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
-          </Flex>
+      <Divider />
 
-          <Box sx={{ py: 9, mb: 5 }}>
-            <PageHeading>Related components</PageHeading>
-
-            <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
-              <RelatedComponentCard
-                href="/introduction"
-                name="Menu Button"
-                description="A button that opens a menu."
-              />
-              <RelatedComponentCard
-                href="/introduction"
-                name="Toggle Button"
-                description="A two-state button that can be either off or on."
-              />
-              <RelatedComponentCard
-                href="/introduction"
-                name="Tool Bar"
-                description="A container for grouping a set of controls, such as buttons, menubuttons, or
+      <Heading>Related components</Heading>
+      <RelatedComponents>
+        <RelatedComponentCard
+          href="/introduction"
+          name="Menu Button"
+          description="A button that opens a menu."
+        />
+        <RelatedComponentCard
+          href="/introduction"
+          name="Toggle Button"
+          description="A two-state button that can be either off or on."
+        />
+        <RelatedComponentCard
+          href="/introduction"
+          name="Tool Bar"
+          description="A container for grouping a set of controls, such as buttons, menubuttons, or
                       checkboxes."
-              />
-            </Grid>
-          </Box>
+        />
+      </RelatedComponents>
 
-          <Flex sx={{ justifyContent: 'center' }}>
-            <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
-          </Flex>
+      <Divider />
 
-          <Flex sx={{ justifyContent: 'space-between', my: 9 }}>
-            <Box>
-              <Link>
-                <Text size={3} sx={{ display: 'block', color: 'gray700', mb: 1 }}>
-                  Previous
-                </Text>
-                <Text size={6} sx={{ display: 'block', color: 'inherit' }}>
-                  Card
-                </Text>
-              </Link>
-            </Box>
+      <Flex sx={{ justifyContent: 'space-between', my: 9 }}>
+        <Box>
+          <Link>
+            <Text size={3} sx={{ display: 'block', color: 'gray700', mb: 1 }}>
+              Previous
+            </Text>
+            <Text size={6} sx={{ display: 'block', color: 'inherit' }}>
+              Card
+            </Text>
+          </Link>
+        </Box>
 
-            <Box>
-              <Link>
-                <Text
-                  size={3}
-                  sx={{ display: 'block', color: 'gray700', textAlign: 'right', mb: 1 }}
-                >
-                  Next
-                </Text>
-                <Text size={6} sx={{ display: 'block', textAlign: 'right', color: 'inherit' }}>
-                  CardLink
-                </Text>
-              </Link>
-            </Box>
-          </Flex>
-        </Container>
-      </Box>
-
-      <QuickNav />
-    </div>
+        <Box>
+          <Link>
+            <Text size={3} sx={{ display: 'block', color: 'gray700', textAlign: 'right', mb: 1 }}>
+              Next
+            </Text>
+            <Text size={6} sx={{ display: 'block', textAlign: 'right', color: 'inherit' }}>
+              CardLink
+            </Text>
+          </Link>
+        </Box>
+      </Flex>
+    </>
   );
 }
+
+InputPage.layout = ComponentPageLayout;
+
+export default InputPage;

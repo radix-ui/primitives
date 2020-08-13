@@ -3,9 +3,22 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { createGlobalStyle } from 'styled-components';
 import * as Radix from '@modulz/radix';
-import { QuickNavContextProvider } from '../components/QuickNav';
 
 const GlobalStyles = createGlobalStyle`
+  ::selection {
+		background-color: ${Radix.theme.colors.blue600};
+		color: ${Radix.theme.colors.white};
+	}
+
+	/* reset selection for live code blocks */
+	.react-live-code-block textarea {
+		outline: none;
+
+		&::selection {
+			background-color: ${Radix.theme.colors.blue300};
+		}
+	}
+
   svg { vertical-align: middle }
 `;
 
@@ -15,6 +28,8 @@ function App({ Component, pageProps }: AppProps) {
     window.matchMedia &&
     window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+  const Layout = Component.layout ?? (({ children }: any) => <>{children}</>);
+
   return (
     <Radix.RadixProvider>
       <Head>
@@ -23,10 +38,12 @@ function App({ Component, pageProps }: AppProps) {
         <link rel="stylesheet" href="https://develop.modulz.app/fonts/fonts.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
+
       <GlobalStyles />
-      <QuickNavContextProvider>
+
+      <Layout>
         <Component {...pageProps} />
-      </QuickNavContextProvider>
+      </Layout>
     </Radix.RadixProvider>
   );
 }

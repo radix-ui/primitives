@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { Box, AspectRatio, CardLink, Text } from '@modulz/radix';
+import { Box, AspectRatio, CardLink, Text, Grid } from '@modulz/radix';
+
+function RelatedComponents({ children }: { children: React.ReactNode }) {
+  return (
+    <Grid sx={{ my: 4, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 5 }}>{children}</Grid>
+  );
+}
 
 type RelatedComponentCardProps = {
   name: string;
@@ -28,4 +34,4 @@ function RelatedComponentCard({ name, description, href }: RelatedComponentCardP
   );
 }
 
-export { RelatedComponentCard };
+export { RelatedComponents, RelatedComponentCard };
