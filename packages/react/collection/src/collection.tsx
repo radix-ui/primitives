@@ -1,18 +1,21 @@
 import * as React from 'react';
-import { createContext, useIsomorphicLayoutEffect } from '@interop-ui/react-utils';
+import { As, createContext, forwardRef, useIsomorphicLayoutEffect } from '@interop-ui/react-utils';
+
+export type Item<E extends React.ElementRef<any> = void, S = {}> = {
+  ref: React.MutableRefObject<E>;
+} & S;
 
 function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: string) {
   const providerName = name + 'CollectionProvider';
 
-  // the internal item type, has a ref and user-defined state
-  type Item<EE = E> = { ref: React.RefObject<EE> } & S;
+  type IntItem = Item<E, S>;
 
   // if no element type was provided, fallback to the same type as React.useRef(null)
   type ItemElementRef = React.MutableRefObject<E extends void ? null : E>;
 
   type CollectionContextValue = {
-    items: Item[];
-    addItem: (item: Item) => void;
+    items: IntItem[];
+    addItem: (item: IntItem) => void;
     removeItem: (ref: ItemElementRef) => void;
     // Tracks how many times `useCollectionItem` is called to get initial indexes for SSR.
     // We increment this synchronously during render in `useCollectionItem`
@@ -28,11 +31,11 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
   );
 
   function CollectionProvider({ children }: { children: React.ReactNode }) {
-    const [items, setItems] = React.useState<Item[]>([]);
+    const [items, setItems] = React.useState<IntItem[]>([]);
     const ssrSyncUseCollectionItemCountRef = React.useRef(0);
 
     const addItem = React.useCallback(
-      function addItem(item: Item) {
+      function addItem(item: IntItem) {
         setItems((previousItems) => {
           const exists = previousItems.find(({ ref }) => item.ref.current === ref.current);
           if (exists) return previousItems;
@@ -72,14 +75,19 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
 
   CollectionProvider.displayName = providerName;
 
-  function createCollectionComponent<P extends object>(Component: React.ComponentType<P>) {
-    function CollectionComponent(props: P) {
-      return (
-        <CollectionProvider>
-          <Component {...props} />
-        </CollectionProvider>
-      );
-    }
+  function createCollectionComponent<ComponentType extends As, Props = {}, StaticProps = {}>(
+    Component: React.ComponentType<Props>
+  ) {
+    const MemoizedConsumer = React.memo(Component);
+    const CollectionComponent = forwardRef<ComponentType, Props, StaticProps>(
+      function CollectionComponent(props: Props, ref: any) {
+        return (
+          <CollectionProvider>
+            <MemoizedConsumer ref={ref} {...(props as any)} />
+          </CollectionProvider>
+        );
+      }
+    );
     CollectionComponent.displayName = name + 'CollectionComponent';
     return CollectionComponent;
   }
@@ -99,7 +107,7 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
 
     // add item on every render, this is fine because we reset the items in the parent everytime
     useIsomorphicLayoutEffect(() => {
-      addItem(({ ...state, ref } as unknown) as Item);
+      addItem(({ ...state, ref } as unknown) as IntItem);
     });
 
     // only remove on unmount
@@ -107,14 +115,17 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
       return () => removeItem(ref);
     }, [removeItem]);
 
-    return { ref, index };
+    return [{ ...state, ref } as Item<E, S>, index] as [Item<E, S>, number];
   }
 
   function useCollectionItems() {
     // if no element type was provided, fallback to HTMLElement so that items' refs
     // have default types for consumers
     type FallbackElement = E extends void ? HTMLElement : E;
-    return (useCollectionContext('useCollectionItems').items as unknown) as Item<FallbackElement>[];
+    return (useCollectionContext('useCollectionItems').items as unknown) as Item<
+      FallbackElement,
+      S
+    >[];
   }
 
   return [createCollectionComponent, useCollectionItem, useCollectionItems] as [

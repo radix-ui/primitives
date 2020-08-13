@@ -124,9 +124,9 @@ function setup(items: TestItem[]) {
   });
 
   const Item = ({ itemRef, disabled }: { itemRef: ElementRef } & ItemState) => {
-    const item = useCollectionItem({ disabled });
+    const [item, index] = useCollectionItem({ disabled });
     item.ref.current = itemRef;
-    itemContexts = [...itemContexts, item];
+    itemContexts = [...itemContexts, [item, index]];
     return null;
   };
 
@@ -154,7 +154,7 @@ const hasCorrectIndexesForItems = (
   itemContexts: CollectionItemContext[]
 ) => {
   return testItems.every((testItem, index) => {
-    const item = itemContexts[index];
-    return item.index === index && item.ref.current === testItem.itemRef;
+    const [item, i] = itemContexts[index];
+    return i === index && item.ref.current === testItem.itemRef;
   });
 };

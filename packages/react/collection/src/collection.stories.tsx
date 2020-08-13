@@ -140,7 +140,7 @@ type ItemProps = React.ComponentPropsWithRef<'li'> & {
 };
 
 function Item({ children, disabled = false, ...props }: ItemProps) {
-  const { ref, index } = useListItem({ disabled });
+  const [{ ref }, index] = useListItem({ disabled });
   return (
     <li ref={ref} {...props} style={{ ...props.style, opacity: disabled ? 0.3 : undefined }}>
       {index} — {children}
@@ -177,9 +177,9 @@ function TabList({ children }: any) {
 
 function Tab({ children }: any) {
   const { setSelectedIndex } = React.useContext(TabsContext);
-  const { ref, index } = useTabsItem();
+  const [{ ref }, index] = useTabsItem();
   return (
-    <li ref={ref}>
+    <li ref={ref as any}>
       {index} — <button onClick={() => setSelectedIndex(index)}>{children}</button>
     </li>
   );
@@ -193,10 +193,10 @@ const TabPanels = createPanelsCollection(function TabPanels({ children }: any) {
 
 function Panel({ children }: any) {
   const { selectedIndex } = React.useContext(TabsContext);
-  const { ref, index } = usePanelsItem();
+  const [{ ref }, index] = usePanelsItem();
   if (index !== selectedIndex) return null;
   return (
-    <div ref={ref}>
+    <div ref={ref as any}>
       {index} — {children}
     </div>
   );
