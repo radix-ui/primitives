@@ -2,14 +2,12 @@ import React from 'react';
 import {
   Container,
   Box,
-  Button,
   Flex,
   Divider,
   AspectRatio,
   Table,
   Link,
   Grid,
-  CardLink,
   Thead,
   Tr,
   Th,
@@ -22,6 +20,7 @@ import { Navigation } from '../components/Navigation';
 import { CodeBlock } from '../components/CodeBlock';
 import { QuickNav } from '../components/QuickNav';
 import { PageTitle, PageDescription, PageHeading, PageSubHeading } from '../components/Typography';
+import { RelatedComponentCard } from '../components/RelatedComponentCard';
 
 export default function InputPage() {
   return (
@@ -40,13 +39,8 @@ export default function InputPage() {
       >
         <Navigation />
       </Box>
-      <Box
-        sx={{
-          flexGrow: 1,
-          px: '245px',
-          py: 7,
-        }}
-      >
+
+      <Box sx={{ flexGrow: 1, px: '245px', py: 7 }}>
         <Container size={2}>
           <PageTitle>Input</PageTitle>
           <PageDescription>An input is a form control.</PageDescription>
@@ -78,12 +72,7 @@ export default function InputPage() {
             </AspectRatio>
           </Box>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageHeading>Installation</PageHeading>
             <Text size={3} sx={{ lineHeight: 2 }}>
               Install the component from your command line:
@@ -95,20 +84,11 @@ export default function InputPage() {
           </Text>
           <CodeBlock>import Input from "@radixui/react-input";</CodeBlock>
 
-          <Flex
-            sx={{
-              justifyContent: 'center',
-              py: 9,
-            }}
-          >
+          <Flex sx={{ justifyContent: 'center', py: 9 }}>
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
-          <Box
-            sx={{
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mb: 5 }}>
             <PageHeading>Keyboard interaction</PageHeading>
           </Box>
 
@@ -139,23 +119,13 @@ export default function InputPage() {
             </Tbody>
           </Table>
 
-          <Flex
-            sx={{
-              justifyContent: 'center',
-              py: 9,
-            }}
-          >
+          <Flex sx={{ justifyContent: 'center', py: 9 }}>
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
           <PageHeading>Examples</PageHeading>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Simple input</PageSubHeading>
           </Box>
           <CodeBlock live>
@@ -164,12 +134,7 @@ export default function InputPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Input with placeholder</PageSubHeading>
           </Box>
           <CodeBlock live>
@@ -178,12 +143,7 @@ export default function InputPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Input with icon</PageSubHeading>
           </Box>
           <CodeBlock live>
@@ -208,12 +168,7 @@ export default function InputPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Input with right icon</PageSubHeading>
           </Box>
           <CodeBlock live>
@@ -239,12 +194,7 @@ export default function InputPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Input with icons on both sides</PageSubHeading>
           </Box>
           <CodeBlock live>
@@ -273,21 +223,9 @@ export default function InputPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Input with interactive content</PageSubHeading>
-            <Text
-              as="p"
-              size={3}
-              sx={{
-                mt: 2,
-                lineHeight: 2,
-              }}
-            >
+            <Text as="p" size={3} sx={{ mt: 2, lineHeight: 2 }}>
               Does anybody know if it’s possible to make codesandbox use a different version of
               prettier? I’m suspecting they are not using v2 as formatting seems to stop working
               with TS the minute I use things like <Code>??</Code> or <Code>??</Code>.
@@ -321,12 +259,7 @@ export default function InputPage() {
 `}
           </CodeBlock>
 
-          <Flex
-            sx={{
-              justifyContent: 'center',
-              py: 9,
-            }}
-          >
+          <Flex sx={{ justifyContent: 'center', py: 9 }}>
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
@@ -356,182 +289,44 @@ export default function InputPage() {
 `}
           </CodeBlock>
 
-          <Flex
-            sx={{
-              justifyContent: 'center',
-              pt: 9,
-            }}
-          >
+          <Flex sx={{ justifyContent: 'center', pt: 9 }}>
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
-          <Box
-            sx={{
-              py: 9,
-            }}
-          >
-            <Box
-              sx={{
-                mb: 5,
-              }}
-            >
-              <PageHeading>Related components</PageHeading>
-              <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
-                <CardLink href="/introduction" sx={{ padding: 0 }}>
-                  <AspectRatio ratio="16:9">
-                    <Flex
-                      sx={{
-                        backgroundColor: 'blue200',
-                        height: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderTopLeftRadius: 2,
-                        borderTopRightRadius: 2,
-                      }}
-                    >
-                      <Box sx={{}}>
-                        <Button
-                          sx={{
-                            backgroundColor: 'blue600',
-                            color: 'white',
-                            boxShadow: 'none',
-                            padding: '10px 20px',
-                            fontSize: 3,
-                          }}
-                          style={{
-                            lineHeight: 1,
-                          }}
-                        >
-                          Button
-                        </Button>
-                      </Box>
-                    </Flex>
-                  </AspectRatio>
-                  <Box sx={{ padding: 4 }}>
-                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
-                      Menu Button
-                    </Text>
-                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
-                      A button that opens a menu.
-                    </Text>
-                  </Box>
-                </CardLink>
-                <CardLink href="/introduction" sx={{ padding: 0 }}>
-                  <AspectRatio ratio="16:9">
-                    <Flex
-                      sx={{
-                        backgroundColor: 'blue200',
-                        height: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderTopLeftRadius: 2,
-                        borderTopRightRadius: 2,
-                      }}
-                    >
-                      <Box sx={{}}>
-                        <Button
-                          sx={{
-                            backgroundColor: 'blue600',
-                            color: 'white',
-                            boxShadow: 'none',
-                            padding: '10px 20px',
-                            fontSize: 3,
-                          }}
-                          style={{
-                            lineHeight: 1,
-                          }}
-                        >
-                          Button
-                        </Button>
-                      </Box>
-                    </Flex>
-                  </AspectRatio>
-                  <Box sx={{ padding: 4 }}>
-                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
-                      Toggle Button
-                    </Text>
-                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
-                      A two-state button that can be either off or on.
-                    </Text>
-                  </Box>
-                </CardLink>
-                <CardLink href="/introduction" sx={{ padding: 0 }}>
-                  <AspectRatio ratio="16:9">
-                    <Flex
-                      sx={{
-                        backgroundColor: 'blue200',
-                        height: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderTopLeftRadius: 2,
-                        borderTopRightRadius: 2,
-                      }}
-                    >
-                      <Box sx={{}}>
-                        <Button
-                          sx={{
-                            backgroundColor: 'blue600',
-                            color: 'white',
-                            boxShadow: 'none',
-                            padding: '10px 20px',
-                            fontSize: 3,
-                          }}
-                          style={{
-                            lineHeight: 1,
-                          }}
-                        >
-                          Button
-                        </Button>
-                      </Box>
-                    </Flex>
-                  </AspectRatio>
-                  <Box sx={{ padding: 4 }}>
-                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
-                      Tool Bar
-                    </Text>
-                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
-                      A container for grouping a set of controls, such as buttons, menubuttons, or
-                      checkboxes.
-                    </Text>
-                  </Box>
-                </CardLink>
-              </Grid>
-            </Box>
+          <Box sx={{ py: 9, mb: 5 }}>
+            <PageHeading>Related components</PageHeading>
+
+            <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+              <RelatedComponentCard
+                href="/introduction"
+                name="Menu Button"
+                description="A button that opens a menu."
+              />
+              <RelatedComponentCard
+                href="/introduction"
+                name="Toggle Button"
+                description="A two-state button that can be either off or on."
+              />
+              <RelatedComponentCard
+                href="/introduction"
+                name="Tool Bar"
+                description="A container for grouping a set of controls, such as buttons, menubuttons, or
+                      checkboxes."
+              />
+            </Grid>
           </Box>
 
-          <Flex
-            sx={{
-              justifyContent: 'center',
-            }}
-          >
+          <Flex sx={{ justifyContent: 'center' }}>
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
-          <Flex
-            sx={{
-              justifyContent: 'space-between',
-              my: 9,
-            }}
-          >
+          <Flex sx={{ justifyContent: 'space-between', my: 9 }}>
             <Box>
               <Link>
-                <Text
-                  size={3}
-                  sx={{
-                    display: 'block',
-                    color: 'gray700',
-                    mb: 1,
-                  }}
-                >
+                <Text size={3} sx={{ display: 'block', color: 'gray700', mb: 1 }}>
                   Previous
                 </Text>
-                <Text
-                  size={6}
-                  sx={{
-                    display: 'block',
-                    color: 'inherit',
-                  }}
-                >
+                <Text size={6} sx={{ display: 'block', color: 'inherit' }}>
                   Card
                 </Text>
               </Link>
@@ -541,23 +336,11 @@ export default function InputPage() {
               <Link>
                 <Text
                   size={3}
-                  sx={{
-                    display: 'block',
-                    color: 'gray700',
-                    textAlign: 'right',
-                    mb: 1,
-                  }}
+                  sx={{ display: 'block', color: 'gray700', textAlign: 'right', mb: 1 }}
                 >
                   Next
                 </Text>
-                <Text
-                  size={6}
-                  sx={{
-                    display: 'block',
-                    textAlign: 'right',
-                    color: 'inherit',
-                  }}
-                >
+                <Text size={6} sx={{ display: 'block', textAlign: 'right', color: 'inherit' }}>
                   CardLink
                 </Text>
               </Link>

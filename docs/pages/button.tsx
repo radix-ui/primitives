@@ -7,7 +7,6 @@ import {
   Code,
   Divider,
   Grid,
-  CardLink,
   Table,
   Thead,
   Tr,
@@ -17,11 +16,11 @@ import {
   Flex,
   Link,
 } from '@modulz/radix';
-import { Button } from '@interop-ui/react-button';
 import { Navigation } from '../components/Navigation';
 import { CodeBlock } from '../components/CodeBlock';
 import { QuickNav } from '../components/QuickNav';
 import { PageTitle, PageDescription, PageHeading, PageSubHeading } from '../components/Typography';
+import { RelatedComponentCard } from '../components/RelatedComponentCard';
 
 export default function ButtonPage() {
   return (
@@ -40,13 +39,7 @@ export default function ButtonPage() {
       >
         <Navigation />
       </Box>
-      <Box
-        sx={{
-          flexGrow: 1,
-          px: '245px',
-          py: 7,
-        }}
-      >
+      <Box sx={{ flexGrow: 1, px: '245px', py: 7 }}>
         <Container size={2}>
           <PageTitle>Button</PageTitle>
           <PageDescription>
@@ -65,7 +58,7 @@ export default function ButtonPage() {
                   justifyContent: 'center',
                 }}
               >
-                <Box sx={{}}>
+                <Box>
                   <Box
                     sx={{
                       backgroundColor: 'blue600',
@@ -92,12 +85,7 @@ export default function ButtonPage() {
             </AspectRatio>
           </Box>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageHeading>Installation</PageHeading>
             <Text size={3} sx={{ lineHeight: 2 }}>
               Install the component from your command line:
@@ -109,12 +97,7 @@ export default function ButtonPage() {
           </Text>
           <CodeBlock>import Button from "@radixui/react-button";</CodeBlock>
 
-          <Box
-            sx={{
-              mt: 8,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 8, mb: 5 }}>
             <PageHeading>Keyboard interaction</PageHeading>
           </Box>
 
@@ -145,12 +128,7 @@ export default function ButtonPage() {
             </Tbody>
           </Table>
 
-          <Box
-            sx={{
-              mt: 8,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 8, mb: 5 }}>
             <PageHeading>Examples</PageHeading>
           </Box>
 
@@ -199,12 +177,7 @@ export default function ButtonPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Just the icon</PageSubHeading>
           </Box>
           <CodeBlock live>
@@ -215,12 +188,7 @@ export default function ButtonPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Button with count</PageSubHeading>
           </Box>
           <CodeBlock live>
@@ -233,12 +201,7 @@ export default function ButtonPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Button with Badge</PageSubHeading>
           </Box>
 
@@ -251,12 +214,7 @@ export default function ButtonPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageSubHeading>Button with tooltip</PageSubHeading>
           </Box>
           <CodeBlock live>
@@ -269,163 +227,38 @@ export default function ButtonPage() {
 `}
           </CodeBlock>
 
-          <Box
-            sx={{
-              mt: 7,
-              mb: 5,
-            }}
-          >
+          <Box sx={{ mt: 7, mb: 5 }}>
             <PageHeading>Notes (mention menubutton)</PageHeading>
           </Box>
 
-          <Flex
-            sx={{
-              justifyContent: 'center',
-              pt: 9,
-            }}
-          >
+          <Flex sx={{ justifyContent: 'center', pt: 9 }}>
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
-          <Box
-            sx={{
-              py: 9,
-            }}
-          >
-            <Box
-              sx={{
-                mb: 5,
-              }}
-            >
-              <PageHeading>Related components</PageHeading>
-              <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
-                <CardLink href="/introduction" sx={{ padding: 0 }}>
-                  <AspectRatio ratio="16:9">
-                    <Flex
-                      sx={{
-                        backgroundColor: 'blue200',
-                        height: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderTopLeftRadius: 2,
-                        borderTopRightRadius: 2,
-                      }}
-                    >
-                      <Box sx={{}}>
-                        <Button
-                          sx={{
-                            backgroundColor: 'blue600',
-                            color: 'white',
-                            boxShadow: 'none',
-                            padding: '10px 20px',
-                            fontSize: 3,
-                          }}
-                          style={{
-                            lineHeight: 1,
-                          }}
-                        >
-                          Button
-                        </Button>
-                      </Box>
-                    </Flex>
-                  </AspectRatio>
-                  <Box sx={{ padding: 4 }}>
-                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
-                      Menu Button
-                    </Text>
-                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
-                      A button that opens a menu.
-                    </Text>
-                  </Box>
-                </CardLink>
-                <CardLink href="/introduction" sx={{ padding: 0 }}>
-                  <AspectRatio ratio="16:9">
-                    <Flex
-                      sx={{
-                        backgroundColor: 'blue200',
-                        height: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderTopLeftRadius: 2,
-                        borderTopRightRadius: 2,
-                      }}
-                    >
-                      <Box sx={{}}>
-                        <Button
-                          sx={{
-                            backgroundColor: 'blue600',
-                            color: 'white',
-                            boxShadow: 'none',
-                            padding: '10px 20px',
-                            fontSize: 3,
-                          }}
-                          style={{
-                            lineHeight: 1,
-                          }}
-                        >
-                          Button
-                        </Button>
-                      </Box>
-                    </Flex>
-                  </AspectRatio>
-                  <Box sx={{ padding: 4 }}>
-                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
-                      Toggle Button
-                    </Text>
-                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
-                      A two-state button that can be either off or on.
-                    </Text>
-                  </Box>
-                </CardLink>
-                <CardLink href="/introduction" sx={{ padding: 0 }}>
-                  <AspectRatio ratio="16:9">
-                    <Flex
-                      sx={{
-                        backgroundColor: 'blue200',
-                        height: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderTopLeftRadius: 2,
-                        borderTopRightRadius: 2,
-                      }}
-                    >
-                      <Box sx={{}}>
-                        <Button
-                          sx={{
-                            backgroundColor: 'blue600',
-                            color: 'white',
-                            boxShadow: 'none',
-                            padding: '10px 20px',
-                            fontSize: 3,
-                          }}
-                          style={{
-                            lineHeight: 1,
-                          }}
-                        >
-                          Button
-                        </Button>
-                      </Box>
-                    </Flex>
-                  </AspectRatio>
-                  <Box sx={{ padding: 4 }}>
-                    <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
-                      Tool Bar
-                    </Text>
-                    <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
-                      A container for grouping a set of controls, such as buttons, menubuttons, or
-                      checkboxes.
-                    </Text>
-                  </Box>
-                </CardLink>
-              </Grid>
-            </Box>
+          <Box sx={{ py: 9, mb: 5 }}>
+            <PageHeading>Related components</PageHeading>
+
+            <Grid sx={{ gap: 5, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+              <RelatedComponentCard
+                href="/introduction"
+                name="Menu Button"
+                description="A button that opens a menu."
+              />
+              <RelatedComponentCard
+                href="/introduction"
+                name="Toggle Button"
+                description="A two-state button that can be either off or on."
+              />
+              <RelatedComponentCard
+                href="/introduction"
+                name="Tool Bar"
+                description="A container for grouping a set of controls, such as buttons, menubuttons, or
+                      checkboxes."
+              />
+            </Grid>
           </Box>
 
-          <Flex
-            sx={{
-              justifyContent: 'center',
-            }}
-          >
+          <Flex sx={{ justifyContent: 'center' }}>
             <Divider size={2} sx={{ flexShrink: 0, width: '65px' }} />
           </Flex>
 
