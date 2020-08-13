@@ -45,32 +45,9 @@ export default function InputPage() {
           <PageTitle>Input</PageTitle>
           <PageDescription>An input is a form control.</PageDescription>
 
-          <Box sx={{ my: 7 }}>
-            <AspectRatio ratio="2:1">
-              <Flex
-                sx={{
-                  backgroundColor: 'blue200',
-                  borderRadius: '2',
-                  height: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Box
-                  sx={{
-                    backgroundColor: 'white',
-                    height: '35px',
-                    width: '75%',
-                    maxWidth: '250px',
-                    flexShrink: 0,
-                    borderRadius: 1,
-                    border: '1px solid',
-                    borderColor: 'blue400',
-                  }}
-                ></Box>
-              </Flex>
-            </AspectRatio>
-          </Box>
+          <AspectRatio ratio="2:1" sx={{ my: 7 }}>
+            <Box sx={{ bg: 'blue200', borderRadius: '2', height: '100%' }} />
+          </AspectRatio>
 
           <Box sx={{ mt: 7, mb: 5 }}>
             <PageHeading>Installation</PageHeading>

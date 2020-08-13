@@ -47,43 +47,9 @@ export default function ButtonPage() {
             canceling an action, or performing a delete operation.
           </PageDescription>
 
-          <Box sx={{ my: 7 }}>
-            <AspectRatio ratio="2:1">
-              <Flex
-                sx={{
-                  backgroundColor: 'blue200',
-                  borderRadius: '2',
-                  height: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Box>
-                  <Box
-                    sx={{
-                      backgroundColor: 'blue600',
-                      color: 'white',
-                      boxShadow: 'none',
-                      height: '35px',
-                      px: 3,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 3,
-                      fontWeight: '500',
-                      borderRadius: 1,
-                      userSelect: 'none',
-                    }}
-                    style={{
-                      lineHeight: 1,
-                    }}
-                  >
-                    Button
-                  </Box>
-                </Box>
-              </Flex>
-            </AspectRatio>
-          </Box>
+          <AspectRatio ratio="2:1" sx={{ my: 7 }}>
+            <Box sx={{ bg: 'blue200', borderRadius: '2', height: '100%' }} />
+          </AspectRatio>
 
           <Box sx={{ mt: 7, mb: 5 }}>
             <PageHeading>Installation</PageHeading>
