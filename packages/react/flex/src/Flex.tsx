@@ -1,64 +1,112 @@
 import * as React from 'react';
+import omit from 'lodash.omit';
 import { cssReset, interopDataAttrObj, isUndefined, interopSelector } from '@interop-ui/utils';
 import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
-import pick from 'lodash.pick';
 
-const NAME = 'Flex';
-const DEFAULT_TAG = 'div';
+/* -------------------------------------------------------------------------------------------------
+ * Flex
+ * -----------------------------------------------------------------------------------------------*/
 
-type FlexDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
-type FlexOwnProps = {
-  rowGap?: number;
-  columnGap?: number;
-  gap?: number;
-};
+const FLEX_NAME = 'Flex';
+const FLEX_DEFAULT_TAG = 'div';
+const GAP_PROP_NAMES = ['rowGap', 'columnGap', 'gap'];
+
+type FlexDOMProps = React.ComponentPropsWithoutRef<typeof FLEX_DEFAULT_TAG>;
+type FlexOwnProps = { rowGap?: number; columnGap?: number; gap?: number };
 type FlexProps = FlexDOMProps & FlexOwnProps;
 
-const gapPropNames = ['columnGap', 'rowGap', 'gap'] as const;
+interface FlexStaticProps {
+  Item: typeof FlexItem;
+}
 
-const Flex = forwardRef<typeof DEFAULT_TAG, FlexProps>(function Flex(props, forwardedRef) {
-  const { as: Comp = DEFAULT_TAG, style, ...flexProps } = props;
-  const gapProps = pick(props, gapPropNames);
-  const columnGap = gapProps.gap ?? gapProps.columnGap;
-  const rowGap = gapProps.gap ?? gapProps.rowGap;
+const FlexContext = React.createContext<{
+  rowGap?: number;
+  columnGap?: number;
+}>(null as any);
+
+const Flex = forwardRef<typeof FLEX_DEFAULT_TAG, FlexProps, FlexStaticProps>(function Flex(
+  props,
+  forwardedRef
+) {
+  const { as: Comp = FLEX_DEFAULT_TAG, style, children, ...restProps } = props;
+  const flexProps = omit(restProps, GAP_PROP_NAMES);
+  const columnGap = props.gap ?? props.columnGap;
+  const rowGap = props.gap ?? props.rowGap;
   const hasGap = !isUndefined(rowGap) || !isUndefined(columnGap);
+  const context = React.useMemo(() => ({ columnGap, rowGap }), [columnGap, rowGap]);
 
   if (hasGap) {
     return (
-      <div
-        {...interopDataAttrObj('FlexWrapper')}
-        style={{
-          overflow: 'hidden',
-          flexGrow: 1,
-          marginTop: !isUndefined(rowGap) ? rowGap : undefined,
-          marginLeft: !isUndefined(columnGap) ? columnGap : undefined,
-        }}
-      >
+      <div style={{ overflow: 'hidden', flexGrow: 1 }}>
         <Comp
+          {...flexProps}
+          {...interopDataAttrObj(FLEX_NAME)}
+          ref={forwardedRef}
           style={{
             ...style,
-            marginTop: !isUndefined(rowGap) ? -rowGap : undefined,
-            marginLeft: !isUndefined(columnGap) ? -columnGap : undefined,
+            marginTop: isUndefined(rowGap) ? undefined : -rowGap,
+            marginLeft: isUndefined(columnGap) ? undefined : -columnGap,
           }}
-          {...interopDataAttrObj(NAME)}
-          ref={forwardedRef}
-          {...flexProps}
-        />
+        >
+          <FlexContext.Provider value={context}>{children}</FlexContext.Provider>
+        </Comp>
       </div>
     );
   }
 
-  return <Comp {...interopDataAttrObj(NAME)} style={style} ref={forwardedRef} {...flexProps} />;
+  return (
+    <Comp {...flexProps} {...interopDataAttrObj(FLEX_NAME)} style={style} ref={forwardedRef}>
+      {children}
+    </Comp>
+  );
 });
 
-Flex.displayName = NAME;
+/* -------------------------------------------------------------------------------------------------
+ * FlexItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const ITEM_NAME = 'Flex.Item';
+const ITEM_DEFAULT_TAG = 'div';
+
+type FlexItemDOMProps = React.ComponentPropsWithoutRef<typeof ITEM_DEFAULT_TAG>;
+type FlexItemOwnProps = { xOffset?: number; yOffset?: number };
+type FlexItemProps = FlexItemDOMProps & FlexItemOwnProps;
+
+const FlexItem = forwardRef<typeof ITEM_DEFAULT_TAG, FlexItemProps>(function FlexItem(
+  props,
+  forwardedRef
+) {
+  const { as: Comp = ITEM_DEFAULT_TAG, style, xOffset = 0, yOffset = 0, ...itemProps } = props;
+  const { rowGap, columnGap } = React.useContext(FlexContext) || {};
+
+  return (
+    <Comp
+      {...itemProps}
+      ref={forwardedRef}
+      style={{
+        ...style,
+        marginTop: isUndefined(rowGap) ? undefined : rowGap + yOffset,
+        marginLeft: isUndefined(columnGap) ? undefined : columnGap + xOffset,
+      }}
+    />
+  );
+});
+
+Flex.Item = FlexItem;
+
+Flex.displayName = FLEX_NAME;
+Flex.Item.displayName = ITEM_NAME;
 
 const styles: PrimitiveStyles = {
-  [interopSelector(NAME)]: {
-    ...cssReset(DEFAULT_TAG),
+  [interopSelector(FLEX_NAME)]: {
+    ...cssReset(FLEX_DEFAULT_TAG),
     display: 'flex',
+  },
+  [interopSelector(ITEM_NAME)]: {
+    ...cssReset(ITEM_DEFAULT_TAG),
+    flex: 1,
   },
 };
 
 export { Flex, styles };
-export type { FlexProps };
+export type { FlexProps, FlexItemProps };
