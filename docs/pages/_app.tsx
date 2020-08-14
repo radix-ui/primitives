@@ -34,7 +34,8 @@ function App({ Component, pageProps, router }: AppProps) {
   return (
     <Radix.RadixProvider>
       <Head>
-        <title>Modulz</title>
+        <title>Radix</title>
+        <meta name="description" content="White-label components for building design systems." />
         <link rel="icon" href={isDarkMode ? '/favicon-light.png' : '/favicon-dark.png'} />
         <link rel="stylesheet" href="https://develop.modulz.app/fonts/fonts.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
