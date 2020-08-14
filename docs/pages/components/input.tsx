@@ -1,22 +1,14 @@
 import React from 'react';
 import { Text, Code, Table, Thead, Tr, Th, Td, Tbody } from '@modulz/radix';
-import {
-  Hero,
-  Title,
-  Description,
-  Heading,
-  SubHeading,
-  Paragraph,
-  Divider,
-} from '../../components/pageComponents';
+import { TitleDescription } from '../../components/TitleDescription';
+import { Hero, Heading, SubHeading, Paragraph, Divider } from '../../components/pageComponents';
 import { CodeBlock } from '../../components/CodeBlock';
 import { RelatedComponents, RelatedComponentCard } from '../../components/RelatedComponentCard';
 
 export default function InputPage() {
   return (
     <>
-      <Title>Input</Title>
-      <Description>An input is a form control.</Description>
+      <TitleDescription />
 
       <Hero />
 
@@ -216,22 +208,8 @@ export default function InputPage() {
 
       <Heading>Related components</Heading>
       <RelatedComponents>
-        <RelatedComponentCard
-          href="/introduction"
-          name="Menu Button"
-          description="A button that opens a menu."
-        />
-        <RelatedComponentCard
-          href="/introduction"
-          name="Toggle Button"
-          description="A two-state button that can be either off or on."
-        />
-        <RelatedComponentCard
-          href="/introduction"
-          name="Tool Bar"
-          description="A container for grouping a set of controls, such as buttons, menubuttons, or
-                      checkboxes."
-        />
+        <RelatedComponentCard id="components/button" />
+        <RelatedComponentCard id="components/button" />
       </RelatedComponents>
     </>
   );

@@ -1,25 +1,14 @@
 import React from 'react';
 import { Text, Code, Table, Thead, Tr, Th, Td, Tbody } from '@modulz/radix';
-import {
-  Hero,
-  Title,
-  Description,
-  Heading,
-  SubHeading,
-  Paragraph,
-  Divider,
-} from '../../components/pageComponents';
+import { TitleDescription } from '../../components/TitleDescription';
+import { Hero, Heading, SubHeading, Paragraph, Divider } from '../../components/pageComponents';
 import { CodeBlock } from '../../components/CodeBlock';
 import { RelatedComponents, RelatedComponentCard } from '../../components/RelatedComponentCard';
 
 export default function ButtonPage() {
   return (
     <>
-      <Title>Button</Title>
-      <Description>
-        A button enables users to trigger an event, such as submitting a form, opening a dialog,
-        canceling an action, or performing a delete operation.
-      </Description>
+      <TitleDescription />
 
       <Hero />
 
@@ -151,16 +140,9 @@ export default function ButtonPage() {
 
       <Heading>Related components</Heading>
       <RelatedComponents>
-        <RelatedComponentCard
-          href="/menu-button"
-          name="Menu Button"
-          description="A button that opens a menu."
-        />
-        <RelatedComponentCard
-          href="/toggle-button"
-          name="Toggle Button"
-          description="A two-state button that can be either off or on."
-        />
+        <RelatedComponentCard id="components/input" />
+        <RelatedComponentCard id="components/input" />
+        <RelatedComponentCard id="components/input" />
       </RelatedComponents>
     </>
   );

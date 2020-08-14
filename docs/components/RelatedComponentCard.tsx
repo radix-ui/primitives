@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Box, AspectRatio, CardLink, Text, Grid } from '@modulz/radix';
+import { componentsPagesById } from '../utils/pages';
 
 function RelatedComponents({ children }: { children: React.ReactNode }) {
   return (
@@ -8,14 +9,13 @@ function RelatedComponents({ children }: { children: React.ReactNode }) {
 }
 
 type RelatedComponentCardProps = {
-  name: string;
-  description: string;
-  href: string;
+  id: string;
 };
 
-function RelatedComponentCard({ name, description, href }: RelatedComponentCardProps) {
+function RelatedComponentCard({ id }: RelatedComponentCardProps) {
+  const component = componentsPagesById[id];
   return (
-    <CardLink href={href} sx={{ padding: 0 }}>
+    <CardLink href={`/${component.id}`} sx={{ padding: 0 }}>
       <AspectRatio ratio="16:9">
         <Box
           sx={{ bg: 'blue200', height: '100%', borderTopLeftRadius: 2, borderTopRightRadius: 2 }}
@@ -24,10 +24,10 @@ function RelatedComponentCard({ name, description, href }: RelatedComponentCardP
 
       <Box sx={{ p: 4 }}>
         <Text as="h6" size={4} sx={{ lineHeight: 1, fontWeight: '500', mb: 2 }}>
-          {name}
+          {component.label}
         </Text>
         <Text as="p" size={3} sx={{ color: 'gray700', lineHeight: 2 }}>
-          {description}
+          {component.description}
         </Text>
       </Box>
     </CardLink>

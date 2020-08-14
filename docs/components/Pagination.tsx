@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Flex, Box, Link as RadixLink, Text } from '@modulz/radix';
 import { allPages } from '../utils/pages';
+import { getPageIdFromUrl } from '../utils/getPageIdFromUrl';
 
 export function Pagination() {
   const router = useRouter();
-  const currentPageId = router.pathname.substr(1);
+  const currentPageId = getPageIdFromUrl(router.pathname);
   const currentPageIndex = allPages.findIndex((page) => page.id === currentPageId);
   const prevPage = allPages[currentPageIndex - 1];
   const nextPage = allPages[currentPageIndex + 1];
