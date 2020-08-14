@@ -1,121 +1,61 @@
 import React from 'react';
-import { Box, Text, Heading, Divider, Grid, Flex, CardLink, Link } from '@modulz/radix';
-import { DocsPageLayout } from '../../components/DocsPageLayout';
+import { Box, Text, Grid, CardLink, Link } from '@modulz/radix';
+import {
+  Title,
+  Description,
+  Heading,
+  SubHeading,
+  Divider,
+  Paragraph,
+} from '../../components/pageComponents';
+import { Principles } from '../../components/Principles';
 
-function IntroductionPage() {
+export default function IntroductionPage() {
   return (
     <>
-      <Heading
-        as="h1"
-        size={4}
-        sx={{
-          lineHeight: 9,
-        }}
-      >
-        Radix
-      </Heading>
-      <Heading as="h2" size={2} weight="normal" sx={{ color: 'gray700', lineHeight: '4' }}>
+      <Title hideInQuickNav>Radix</Title>
+      <Description>
         An open-source component library for building accessible design systems.
-      </Heading>
+      </Description>
 
       <Box sx={{ my: 9 }}>
-        <Heading as="h3" size={3} mb={3} sx={{ fontWeight: 500 }}>
-          Vision
-        </Heading>
-        <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
+        <Heading>Vision</Heading>
+        <Paragraph>
           Most of us share similar definitions for common UI patterns like accordion, checkbox,
           combobox, dialog, dropdown, select, slider, and tooltip. These UI patterns are{' '}
           <Link href="https://www.w3.org/TR/wai-aria-practices/#aria_ex">
             documented by WAI-ARIA
           </Link>{' '}
           and generally understood by the community.
-        </Text>
-        <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
+        </Paragraph>
+        <Paragraph>
           However, the implementations provided to us by the web platform are inadequate. They're
           either non-existent, lacking in functionality, or cannot be customised sufficiently.
-        </Text>
-        <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
+        </Paragraph>
+        <Paragraph>
           So, developers are forced to build custom components—an incredibly difficult task. As a
           result, most components on the web are inaccessible, non-performant, and lacking important
           features.
-        </Text>
-        <Text as="p" size={4} sx={{ lineHeight: '3', mb: 3 }}>
+        </Paragraph>
+        <Paragraph>
           Our goal is to create a well-funded, open-source component library that the community can
           use to build accessible design systems.
-        </Text>
+        </Paragraph>
       </Box>
 
-      <Heading as="h3" size={3} mb={7} sx={{ fontWeight: 500 }}>
-        Principles
-      </Heading>
-      <Grid sx={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 7 }}>
-        <Box>
-          <Heading as="h3" size={1} mb={3} sx={{ fontWeight: 500 }}>
-            Accessible
-          </Heading>
-          <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-            Primitives adhere to WAI-ARIA guidelines and are tested regularly in a wide selection of
-            modern browsers and assistive technologies.
-          </Text>
-        </Box>
-        <Box>
-          <Heading as="h3" size={1} mb={3} sx={{ fontWeight: 500 }}>
-            Functional
-          </Heading>
-          <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-            Primitives are feature-rich, with support for keyboard interaction, collision detection,
-            focus trapping, dynamic resizing, scroll locking, native fallbacks, and more.
-          </Text>
-        </Box>
-        <Box>
-          <Heading as="h3" size={1} mb={3} sx={{ fontWeight: 500 }}>
-            Interoperable
-          </Heading>
-          <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-            Fully interoperable with Modulz Editor and compatible with Modulz design tool plugins.
-          </Text>
-        </Box>
-        <Box>
-          <Heading as="h3" size={1} mb={3} sx={{ fontWeight: 500 }}>
-            Themeable
-          </Heading>
-          <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-            Primitives are built to be themed. No need to override opinionated styles—Primitives
-            ship with zero presentational styles.
-          </Text>
-        </Box>
-        <Box>
-          <Heading as="h3" size={1} mb={3} sx={{ fontWeight: 500 }}>
-            Composable
-          </Heading>
-          <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-            Components were built to be composed.
-          </Text>
-        </Box>
-        <Box>
-          <Heading as="h3" size={1} mb={3} sx={{ fontWeight: 500 }}>
-            Open-source
-          </Heading>
-          <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-            Primitives are free and open-source under the MIT license.
-          </Text>
-        </Box>
-      </Grid>
+      <Divider />
 
-      <Flex sx={{ py: 9, justifyContent: 'center' }}>
-        <Divider sx={{ width: '65px' }} />
-      </Flex>
+      <Heading>Principles</Heading>
+      <Principles />
+
+      <Divider />
 
       <Box>
-        <Heading as="h3" size={3} mb={7} sx={{ fontWeight: 500 }}>
-          Quick links
-        </Heading>
+        <Heading>Quick links</Heading>
         <Grid sx={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 7 }}>
           <Box>
             <CardLink variant="shadow">
-              <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-                Icons
-              </Heading>
+              <SubHeading hideInQuickNav>Icons</SubHeading>
               <Text as="p" size={3} sx={{ lineHeight: 2, color: 'gray700' }}>
                 Short description for this link.
               </Text>
@@ -123,9 +63,7 @@ function IntroductionPage() {
           </Box>
           <Box>
             <CardLink variant="shadow">
-              <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-                Layouts
-              </Heading>
+              <SubHeading hideInQuickNav>Layouts</SubHeading>
               <Text as="p" size={3} sx={{ lineHeight: 2, color: 'gray700' }}>
                 Short description for this link.
               </Text>
@@ -133,9 +71,7 @@ function IntroductionPage() {
           </Box>
           <Box>
             <CardLink variant="shadow">
-              <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-                Tutorials
-              </Heading>
+              <SubHeading hideInQuickNav>Tutorials</SubHeading>
               <Text as="p" size={3} sx={{ lineHeight: 2, color: 'gray700' }}>
                 Short description for this link.
               </Text>
@@ -144,9 +80,7 @@ function IntroductionPage() {
           <Box>
             <Link>
               <CardLink variant="shadow" as="a">
-                <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-                  Showcase
-                </Heading>
+                <SubHeading hideInQuickNav>Showcase</SubHeading>
                 <Text as="p" size={3} sx={{ lineHeight: 2, color: 'gray700' }}>
                   Short description for this link.
                 </Text>
@@ -156,75 +90,55 @@ function IntroductionPage() {
         </Grid>
       </Box>
 
-      <Flex sx={{ py: 9, justifyContent: 'center' }}>
-        <Divider sx={{ width: '65px' }} />
-      </Flex>
+      <Divider />
 
       <Box>
-        <Heading as="h3" size={3} mb={7} sx={{ fontWeight: 500 }}>
-          Frequently asked questions
-        </Heading>
+        <Heading>Frequently asked questions</Heading>
         <Grid sx={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 7 }}>
           <Box>
-            <Heading as="p" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-              Frequently asked question?
-            </Heading>
-            <Text as="p" size={4} sx={{ lineHeight: 3 }}>
+            <SubHeading hideInQuickNav>Frequently asked question?</SubHeading>
+            <Paragraph>
               I hope you're enjoying the first days of summer albeit probably mostly in quarantine!
               Saw your exciting post the other day, congrats on this and the clearly great response
               from the industry per the conversation here.
-            </Text>
+            </Paragraph>
           </Box>
           <Box>
-            <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-              Frequently asked question?
-            </Heading>
-            <Text as="p" size={4} sx={{ lineHeight: 3 }}>
+            <SubHeading hideInQuickNav>Frequently asked question?</SubHeading>
+            <Paragraph>
               I hope you're enjoying the first days of summer albeit probably mostly in quarantine!
               Saw your exciting post the other day, congrats on this and the clearly great response
               from the industry per the conversation here.
-            </Text>
+            </Paragraph>
           </Box>
           <Box>
-            <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-              Frequently asked question?
-            </Heading>
-            <Text as="p" size={4} sx={{ lineHeight: 3 }}>
+            <SubHeading hideInQuickNav>Frequently asked question?</SubHeading>
+            <Paragraph>
               I hope you're enjoying the first days of summer albeit probably mostly in quarantine!
-            </Text>
+            </Paragraph>
           </Box>
           <Box>
-            <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-              Frequently asked question?
-            </Heading>
-            <Text as="p" size={4} sx={{ lineHeight: 3 }}>
+            <SubHeading hideInQuickNav>Frequently asked question?</SubHeading>
+            <Paragraph>
               I hope you're enjoying the first days of summer albeit probably mostly in quarantine!
               Saw your exciting post the other day, congrats on this and the clearly great response
               from the industry per the conversation here.
-            </Text>
+            </Paragraph>
           </Box>
           <Box>
-            <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-              Frequently asked question?
-            </Heading>
-            <Text as="p" size={4} sx={{ lineHeight: 3 }}>
+            <SubHeading hideInQuickNav>Frequently asked question?</SubHeading>
+            <Paragraph>
               I hope you're enjoying the first days of summer albeit probably mostly in quarantine!
-            </Text>
+            </Paragraph>
           </Box>
           <Box>
-            <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 1 }}>
-              Frequently asked question?
-            </Heading>
-            <Text as="p" size={4} sx={{ lineHeight: 3 }}>
+            <SubHeading hideInQuickNav>Frequently asked question?</SubHeading>
+            <Paragraph>
               I hope you're enjoying the first days of summer albeit probably mostly in quarantine!
-            </Text>
+            </Paragraph>
           </Box>
         </Grid>
       </Box>
     </>
   );
 }
-
-IntroductionPage.layout = DocsPageLayout;
-
-export default IntroductionPage;

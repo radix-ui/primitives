@@ -1,7 +1,8 @@
 import React from 'react';
-import { Container, Box, Text, Flex, Link, Grid, Heading } from '@modulz/radix';
+import { Container, Box, Text, Flex, Link, Heading } from '@modulz/radix';
 import { ArrowRightIcon } from '@modulz/radix-icons';
 import { FakeComponents } from '../components/FakeComponents';
+import { Principles } from '../components/Principles';
 
 export default function Home() {
   return (
@@ -31,99 +32,33 @@ export default function Home() {
           </Flex>
         </Flex>
       </Box>
+
       <Box mt={6} mb={8}>
-        <Container size={2}>
-          <Heading
-            size={5}
-            mb={4}
-            sx={{ textAlign: 'center', fontWeight: 500, letterSpacing: '-.052em' }}
-          >
+        <Container size={2} sx={{ textAlign: 'center' }}>
+          <Heading size={5} mb={4} sx={{ fontWeight: 500, letterSpacing: '-.052em' }}>
             White-label components for building design systems.
           </Heading>
 
-          <Heading
-            as="h2"
-            size={2}
-            weight="normal"
-            sx={{ textAlign: 'center', color: 'gray700', lineHeight: '4' }}
-          >
+          <Heading as="h2" size={2} weight="normal" sx={{ color: 'gray700', lineHeight: '4' }}>
             An free and open-source component library for building accessible, React-based design
             systems.
           </Heading>
 
-          <Flex sx={{ py: 8, justifyContent: 'center' }}>
-            <Box>
-              <Link href="/overview/introduction">
-                <Flex sx={{ alignItems: 'center' }}>
-                  <Text as="span" size={5} sx={{ color: 'inherit', mr: 1, lineHeight: '1' }}>
-                    Documentation
-                  </Text>
-                  <ArrowRightIcon />
-                </Flex>
-              </Link>
-            </Box>
-          </Flex>
+          <Box sx={{ py: 8 }}>
+            <Link href="/overview/introduction" sx={{ display: 'inline-block' }}>
+              <Text as="span" size={5} sx={{ color: 'inherit', mr: 1, lineHeight: '1' }}>
+                Documentation
+              </Text>
+              <ArrowRightIcon />
+            </Link>
+          </Box>
         </Container>
 
         <FakeComponents />
 
         <Box sx={{ py: 9 }}>
           <Container size={2}>
-            <Grid sx={{ gridTemplateColumns: ['repeat(1, 1fr)', 'repeat(2, 1fr)'], gap: 7 }}>
-              <Box>
-                <Heading as="h3" size={1} mb={3}>
-                  Accessible
-                </Heading>
-                <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Primitives adhere to WAI-ARIA guidelines and are tested regularly in a wide
-                  selection of modern browsers and assistive technologies.
-                </Text>
-              </Box>
-              <Box>
-                <Heading as="h3" size={1} mb={3}>
-                  Functional
-                </Heading>
-                <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Primitives are feature-rich, with support for keyboard interaction, collision
-                  detection, focus trapping, dynamic resizing, scroll locking, native fallbacks, and
-                  more.
-                </Text>
-              </Box>
-              <Box>
-                <Heading as="h3" size={1} mb={3}>
-                  Interoperable
-                </Heading>
-                <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Fully interoperable with Modulz Editor and compatible with Modulz design tool
-                  plugins.
-                </Text>
-              </Box>
-              <Box>
-                <Heading as="h3" size={1} mb={3}>
-                  Themeable
-                </Heading>
-                <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Primitives are built to be themed. No need to override opinionated
-                  styles—Primitives ship with zero presentational styles.
-                </Text>
-              </Box>
-              <Box>
-                <Heading as="h3" size={1} mb={3}>
-                  Composable
-                </Heading>
-                <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Components were built to be composed.
-                </Text>
-              </Box>
-              <Box>
-                <Heading as="h3" size={1} mb={3}>
-                  Open-source
-                </Heading>
-                <Text as="p" size={4} sx={{ lineHeight: '3' }}>
-                  Primitives are free and open-source under the MIT license.
-                </Text>
-              </Box>
-            </Grid>
+            <Principles />
           </Container>
         </Box>
       </Box>

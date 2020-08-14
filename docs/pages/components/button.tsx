@@ -1,6 +1,5 @@
 import React from 'react';
-import { Box, Text, Code, Table, Thead, Tr, Th, Td, Tbody, Flex, Link } from '@modulz/radix';
-import { DocsPageLayout } from '../../components/DocsPageLayout';
+import { Text, Code, Table, Thead, Tr, Th, Td, Tbody } from '@modulz/radix';
 import {
   Hero,
   Title,
@@ -9,11 +8,11 @@ import {
   SubHeading,
   Paragraph,
   Divider,
-} from '../../components/DocsPage';
+} from '../../components/pageComponents';
 import { CodeBlock } from '../../components/CodeBlock';
 import { RelatedComponents, RelatedComponentCard } from '../../components/RelatedComponentCard';
 
-function ButtonPage() {
+export default function ButtonPage() {
   return (
     <>
       <Title>Button</Title>
@@ -163,42 +162,6 @@ function ButtonPage() {
           description="A two-state button that can be either off or on."
         />
       </RelatedComponents>
-
-      <Divider />
-
-      <Pagination />
     </>
-  );
-}
-
-ButtonPage.layout = DocsPageLayout;
-
-export default ButtonPage;
-
-function Pagination() {
-  return (
-    <Flex sx={{ justifyContent: 'space-between', my: 9 }}>
-      <Box>
-        <Link>
-          <Text size={3} sx={{ display: 'block', color: 'gray700', mb: 1 }}>
-            Previous
-          </Text>
-          <Text size={6} sx={{ display: 'block', color: 'inherit' }}>
-            Card
-          </Text>
-        </Link>
-      </Box>
-
-      <Box>
-        <Link>
-          <Text size={3} sx={{ display: 'block', color: 'gray700', textAlign: 'right', mb: 1 }}>
-            Next
-          </Text>
-          <Text size={6} sx={{ display: 'block', textAlign: 'right', color: 'inherit' }}>
-            CardLink
-          </Text>
-        </Link>
-      </Box>
-    </Flex>
   );
 }

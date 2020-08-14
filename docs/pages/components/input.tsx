@@ -1,6 +1,5 @@
 import React from 'react';
-import { Box, Text, Code, Table, Thead, Tr, Th, Td, Tbody, Flex, Link } from '@modulz/radix';
-import { DocsPageLayout } from '../../components/DocsPageLayout';
+import { Text, Code, Table, Thead, Tr, Th, Td, Tbody } from '@modulz/radix';
 import {
   Hero,
   Title,
@@ -9,11 +8,11 @@ import {
   SubHeading,
   Paragraph,
   Divider,
-} from '../../components/DocsPage';
+} from '../../components/pageComponents';
 import { CodeBlock } from '../../components/CodeBlock';
 import { RelatedComponents, RelatedComponentCard } from '../../components/RelatedComponentCard';
 
-function InputPage() {
+export default function InputPage() {
   return (
     <>
       <Title>Input</Title>
@@ -234,36 +233,6 @@ function InputPage() {
                       checkboxes."
         />
       </RelatedComponents>
-
-      <Divider />
-
-      <Flex sx={{ justifyContent: 'space-between', my: 9 }}>
-        <Box>
-          <Link>
-            <Text size={3} sx={{ display: 'block', color: 'gray700', mb: 1 }}>
-              Previous
-            </Text>
-            <Text size={6} sx={{ display: 'block', color: 'inherit' }}>
-              Card
-            </Text>
-          </Link>
-        </Box>
-
-        <Box>
-          <Link>
-            <Text size={3} sx={{ display: 'block', color: 'gray700', textAlign: 'right', mb: 1 }}>
-              Next
-            </Text>
-            <Text size={6} sx={{ display: 'block', textAlign: 'right', color: 'inherit' }}>
-              CardLink
-            </Text>
-          </Link>
-        </Box>
-      </Flex>
     </>
   );
 }
-
-InputPage.layout = DocsPageLayout;
-
-export default InputPage;

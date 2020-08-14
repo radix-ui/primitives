@@ -18,10 +18,14 @@ function Hero() {
   );
 }
 
-function Title({ children, ...props }: HeadingProps) {
+function Title({
+  children,
+  hideInQuickNav = false,
+  ...props
+}: HeadingProps & { hideInQuickNav?: boolean }) {
   return (
     <RadixHeading as="h1" size={4} sx={{ lineHeight: 9 }} {...props}>
-      <QuickNavItem label="Description">{children}</QuickNavItem>
+      {hideInQuickNav ? children : <QuickNavItem label="Description">{children}</QuickNavItem>}
     </RadixHeading>
   );
 }
@@ -38,24 +42,34 @@ function Description(props: HeadingProps) {
   );
 }
 
-function Heading({ children, sx, ...props }: HeadingProps) {
+function Heading({
+  children,
+  sx,
+  hideInQuickNav = false,
+  ...props
+}: HeadingProps & { hideInQuickNav?: boolean }) {
   return (
     <RadixHeading as="h3" size={3} sx={{ mt: 9, mb: 3, ...sx }} {...props}>
-      <QuickNavItem>{children}</QuickNavItem>
+      {hideInQuickNav ? children : <QuickNavItem>{children}</QuickNavItem>}
     </RadixHeading>
   );
 }
 
-function SubHeading({ children, sx, ...props }: HeadingProps) {
+function SubHeading({
+  children,
+  sx,
+  hideInQuickNav = false,
+  ...props
+}: HeadingProps & { hideInQuickNav?: boolean }) {
   return (
     <RadixHeading as="h4" size={1} sx={{ lineHeight: 2, my: 4, ...sx }} {...props}>
-      <QuickNavItem level={1}>{children}</QuickNavItem>
+      {hideInQuickNav ? children : <QuickNavItem level={1}>{children}</QuickNavItem>}
     </RadixHeading>
   );
 }
 
 function Paragraph({ sx, ...props }: TextProps) {
-  return <Text as="p" size={3} sx={{ lineHeight: 2, my: 3, ...sx }} {...props} />;
+  return <Text as="p" size={4} sx={{ lineHeight: 3, my: 3, ...sx }} {...props} />;
 }
 
 function Divider() {

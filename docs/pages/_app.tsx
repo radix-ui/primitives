@@ -3,6 +3,7 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { createGlobalStyle } from 'styled-components';
 import * as Radix from '@modulz/radix';
+import { DocsPageLayout } from '../components/DocsPageLayout';
 
 const GlobalStyles = createGlobalStyle`
   ::selection {
@@ -22,13 +23,13 @@ const GlobalStyles = createGlobalStyle`
   svg { vertical-align: middle }
 `;
 
-function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps, router }: AppProps) {
   const isDarkMode =
     typeof window !== 'undefined' &&
     window.matchMedia &&
     window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  const Layout = Component.layout ?? (({ children }: any) => <>{children}</>);
+  const isRoot = router.pathname === '/';
 
   return (
     <Radix.RadixProvider>
@@ -41,9 +42,13 @@ function App({ Component, pageProps }: AppProps) {
 
       <GlobalStyles />
 
-      <Layout>
+      {isRoot ? (
         <Component {...pageProps} />
-      </Layout>
+      ) : (
+        <DocsPageLayout>
+          <Component {...pageProps} />
+        </DocsPageLayout>
+      )}
     </Radix.RadixProvider>
   );
 }
