@@ -5,7 +5,7 @@ import { Portal } from '@interop-ui/react-portal';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { cssReset, Side, Align, isFunction } from '@interop-ui/utils';
 import { getPlacementData } from '@interop-ui/popper';
-import { Arrow } from '@interop-ui/react-arrow';
+import { Arrow, styles as arrowStyles } from '@interop-ui/react-arrow';
 import * as CSS from 'csstype';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,9 +13,9 @@ import * as CSS from 'csstype';
  * -----------------------------------------------------------------------------------------------*/
 
 const PopoverArrowContext = React.createContext<{
-  arrowStyles: React.CSSProperties;
+  arrowPlacementStyles: React.CSSProperties;
   arrowRef: React.RefObject<HTMLElement | null>;
-}>({ arrowStyles: {}, arrowRef: { current: null } });
+}>({ arrowPlacementStyles: {}, arrowRef: { current: null } });
 PopoverArrowContext.displayName = 'PopoverArrowContext';
 
 /* -------------------------------------------------------------------------------------------------
@@ -96,10 +96,10 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
 
     let shouldUseOverride = isFunction(positionOverride);
 
-    let popperStyles: CSS.Properties = {};
-    let arrowStyles: CSS.Properties = {};
+    let popperPlacementStyles: CSS.Properties = {};
+    let arrowPlacementStyles: CSS.Properties = {};
     if (shouldUseOverride) {
-      popperStyles = positionOverride!({ targetRect, popperRect });
+      popperPlacementStyles = positionOverride!({ targetRect, popperRect });
     } else {
       let placementData = getPlacementData({
         popperSize,
@@ -114,20 +114,20 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
         shouldAvoidCollisions: !debugContext.disableCollisionChecking,
       });
 
-      popperStyles = placementData.popperStyles;
-      arrowStyles = placementData.arrowStyles;
+      popperPlacementStyles = placementData.popperStyles;
+      arrowPlacementStyles = placementData.arrowStyles;
     }
 
     let Wrapper = shouldPortal ? Portal : React.Fragment;
 
     return (
-      <PopoverArrowContext.Provider value={{ arrowStyles, arrowRef }}>
+      <PopoverArrowContext.Provider value={{ arrowPlacementStyles, arrowRef }}>
         {shouldRender ? (
           <Wrapper>
             <Comp
               ref={forwardedRef}
               style={{
-                ...popperStyles,
+                ...popperPlacementStyles,
                 ...style,
               }}
               {...interopDataAttrObj('root')}
@@ -158,35 +158,23 @@ const ARROW_NAME = 'Popover.Arrow';
 const ARROW_DEFAULT_TAG = 'span';
 
 type PopoverArrowDOMProps = React.ComponentPropsWithRef<typeof ARROW_DEFAULT_TAG>;
-type PopoverArrowOwnProps = {
-  arrowElement?: React.ReactElement<any>;
-};
+type PopoverArrowOwnProps = React.ComponentProps<typeof Arrow>;
 type PopoverArrowProps = PopoverArrowDOMProps & PopoverArrowOwnProps;
 
 const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(function PopoverArrow(
   props,
   forwardedRef
 ) {
-  let { as: Comp = ARROW_DEFAULT_TAG, arrowElement, style, children, ...otherProps } = props;
-  let { arrowStyles, arrowRef } = React.useContext(PopoverArrowContext);
+  let { children, ...arrowProps } = props;
+  let { arrowPlacementStyles, arrowRef } = React.useContext(PopoverArrowContext);
   let ref = useComposedRefs(forwardedRef, arrowRef);
+
+  // we use an extra wrapper because `useSize` doesn't play well with
+  // the SVG arrow which is sized via CSS
   return (
-    <Comp
-      style={{
-        ...arrowStyles,
-        ...style,
-      }}
-      {...interopDataAttrObj('arrow')}
-      {...otherProps}
-    >
-      <span
-        // we use an extra wrapper because `useSize` doesn't play well with
-        // the SVG arrow which is sized via CSS
-        ref={ref}
-      >
-        {arrowElement || <Arrow />}
-      </span>
-    </Comp>
+    <span style={{ ...arrowPlacementStyles, display: 'inline-block' }} ref={ref}>
+      <Arrow {...arrowProps} {...interopDataAttrObj('arrow')} />
+    </span>
   );
 });
 
@@ -204,8 +192,10 @@ const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
   },
   arrow: {
     ...cssReset(ARROW_DEFAULT_TAG),
-    display: 'inline-block',
+    ...arrowStyles.root,
+    display: 'block',
     verticalAlign: 'top',
+    strokeDasharray: '0,30,10',
   },
 });
 
