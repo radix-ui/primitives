@@ -1,11 +1,11 @@
-# `react-radio`
+# `react-radio-group`
 
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-radio
+$ yarn add @interop-ui/react-radio-group
 # or
-$ npm install @interop-ui/react-radio
+$ npm install @interop-ui/react-radio-group
 ```
 
 ## Usage
