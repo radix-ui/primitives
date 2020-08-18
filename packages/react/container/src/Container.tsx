@@ -3,7 +3,7 @@ import { cssReset } from '@interop-ui/utils';
 import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'Container';
-const DEFAULT_TAG = 'span';
+const DEFAULT_TAG = 'div';
 
 type ContainerDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type ContainerOwnProps = {};
