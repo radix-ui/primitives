@@ -694,7 +694,7 @@ const [styles, interopDataAttrObj] = createStyleObj(COMBOBOX_NAME, {
   option: {
     ...cssReset(OPTION_DEFAULT_TAG),
   },
-  text: {
+  optionText: {
     ...cssReset(TEXT_DEFAULT_TAG),
   },
   group: {
