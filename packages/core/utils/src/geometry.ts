@@ -27,21 +27,6 @@ export function makeRect({ width, height }: Size, { x, y }: Point): ClientRect {
 }
 
 /**
- * Gets the rect (`ClientRect`) of an element and rounds all values.
- */
-export function getRoundedRect(element: HTMLElement): ClientRect {
-  const rect = element.getBoundingClientRect();
-  return {
-    width: Math.round(rect.width),
-    height: Math.round(rect.height),
-    top: Math.round(rect.top),
-    right: Math.round(rect.right),
-    bottom: Math.round(rect.bottom),
-    left: Math.round(rect.left),
-  };
-}
-
-/**
  * Gets the opposite side of a given side (ie. top => bottom, left => right, …)
  */
 export function getOppositeSide(side: Side): Side {
