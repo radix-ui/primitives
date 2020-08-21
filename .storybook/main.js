@@ -11,7 +11,7 @@ module.exports = {
     resolve: {
       ...config.resolve,
       alias: {
-        ...config.alias,
+        ...config.resolve.alias,
         ...convertTsConfigPathsToWebpackAliases(),
       },
     },

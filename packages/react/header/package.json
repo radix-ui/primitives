@@ -10,7 +10,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts && ts-node ../../../scripts/build-styles header",
+    "build": "parcel build src/index.ts && yarn build:styles",
+    "build:styles": "ts-node -r tsconfig-paths/register ../../../scripts/build-styles header",
     "clean": "rm -rf dist",
     "bump": "yarn version --deferred",
     "prepublish": "yarn clean && yarn build"

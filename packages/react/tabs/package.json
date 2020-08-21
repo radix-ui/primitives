@@ -10,14 +10,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts && ts-node ../../../scripts/build-styles tabs",
+    "build": "parcel build src/index.ts && yarn build:styles",
+    "build:styles": "ts-node -r tsconfig-paths/register ../../../scripts/build-styles tabs",
     "clean": "rm -rf dist",
     "bump": "yarn version --deferred",
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
     "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "worksapce:*"
+    "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1",

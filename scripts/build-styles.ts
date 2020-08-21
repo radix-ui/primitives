@@ -1,5 +1,4 @@
 import fs from 'fs';
-// @ts-ignore
 import css from 'json-to-css';
 import { interopDataAttrSelector } from '@interop-ui/utils';
 import { getNamespacedPart } from '@interop-ui/react-utils';

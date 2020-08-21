@@ -10,7 +10,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts && ts-node ../../../scripts/build-styles accordion",
+    "build": "parcel build src/index.ts && yarn build:styles",
+    "build:styles": "ts-node -r tsconfig-paths/register ../../../scripts/build-styles accordion",
     "clean": "rm -rf dist",
     "bump": "yarn version --deferred",
     "changeset": "yarn version minor --deferred",
