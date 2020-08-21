@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { Portal } from '@interop-ui/react-portal';
 import { Lock, useLockContext } from '@interop-ui/react-lock';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
 import { RemoveScroll } from 'react-remove-scroll';
 import {
   createContext,
+  createStyleObj,
   forwardRef,
   useCallbackRef,
   useComposedRefs,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
@@ -111,7 +111,7 @@ const SheetRoot: React.FC<SheetRootProps> = (props) => {
 
   return (
     <SheetContext.Provider value={ctx}>
-      <Portal {...interopDataAttrObj(ROOT_NAME)}>{children}</Portal>
+      <Portal {...interopDataAttrObj('root')}>{children}</Portal>
     </SheetContext.Provider>
   );
 };
@@ -133,7 +133,7 @@ const SheetOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, SheetOverlayProps>(
     let debugContext = useDebugContext();
     return (
       <Comp
-        {...interopDataAttrObj(OVERLAY_NAME)}
+        {...interopDataAttrObj('overlay')}
         ref={forwardedRef}
         style={{
           pointerEvents: debugContext.disableLock ? 'none' : undefined,
@@ -171,7 +171,7 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
     shouldCloseOnOutsideClick,
   } = useSheetContext(INNER_NAME);
   return (
-    <Comp {...interopDataAttrObj(INNER_NAME)} ref={forwardedRef} {...innerProps}>
+    <Comp {...interopDataAttrObj('inner')} ref={forwardedRef} {...innerProps}>
       <RemoveScroll>
         <Lock
           isActive={debugContext.disableLock ? false : isOpen}
@@ -207,7 +207,7 @@ const SheetContent = forwardRef<typeof CONTENT_DEFAULT_TAG, SheetContentProps>(
     let { lockContainerRef } = useLockContext();
     return (
       <Comp
-        {...interopDataAttrObj(CONTENT_NAME)}
+        {...interopDataAttrObj('content')}
         ref={useComposedRefs(forwardedRef, lockContainerRef)}
         role="dialog"
         aria-modal
@@ -289,8 +289,9 @@ interface SheetStaticProps {
   Content: typeof SheetContent;
 }
 
-const styles: PrimitiveStyles = {
-  [interopSelector(OVERLAY_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(SHEET_NAME, {
+  root: {},
+  overlay: {
     ...cssReset(OVERLAY_DEFAULT_TAG),
     position: 'fixed',
     top: 0,
@@ -298,7 +299,7 @@ const styles: PrimitiveStyles = {
     bottom: 0,
     left: 0,
   },
-  [interopSelector(INNER_NAME)]: {
+  inner: {
     ...cssReset(INNER_DEFAULT_TAG),
     position: 'fixed',
     top: 0,
@@ -307,14 +308,14 @@ const styles: PrimitiveStyles = {
     left: 0,
     pointerEvents: 'none',
   },
-  [interopSelector(CONTENT_NAME)]: {
+  content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
     pointerEvents: 'auto',
     position: 'absolute',
     top: 0,
     bottom: 0,
   },
-};
+});
 
 export { Sheet, styles };
 export type { SheetProps, SheetRootProps, SheetOverlayProps, SheetContentProps, SheetInnerProps };

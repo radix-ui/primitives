@@ -1,16 +1,9 @@
 import React from 'react';
-import { forwardRef, useRect, useComposedRefs, PrimitiveStyles } from '@interop-ui/react-utils';
+import { forwardRef, useRect, useComposedRefs, createStyleObj } from '@interop-ui/react-utils';
 import { useSize } from '@interop-ui/react-use-size';
 import { Portal } from '@interop-ui/react-portal';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import {
-  cssReset,
-  Side,
-  Align,
-  isFunction,
-  interopDataAttrObj,
-  interopSelector,
-} from '@interop-ui/utils';
+import { cssReset, Side, Align, isFunction } from '@interop-ui/utils';
 import { getPlacementData } from '@interop-ui/popper';
 import { Arrow } from '@interop-ui/react-arrow';
 import * as CSS from 'csstype';
@@ -137,7 +130,7 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
                 ...popperStyles,
                 ...style,
               }}
-              {...interopDataAttrObj(POPOVER_NAME)}
+              {...interopDataAttrObj('root')}
               {...contentProps}
             >
               {/*
@@ -183,7 +176,7 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
         ...arrowStyles,
         ...style,
       }}
-      {...interopDataAttrObj(ARROW_NAME)}
+      {...interopDataAttrObj('arrow')}
       {...otherProps}
     >
       <span
@@ -204,17 +197,17 @@ Popover.Arrow = PopoverArrow;
 Popover.displayName = POPOVER_NAME;
 Popover.Arrow.displayName = ARROW_NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(POPOVER_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
+  root: {
     ...cssReset(POPOVER_DEFAULT_TAG),
     position: 'absolute',
   },
-  [interopSelector(ARROW_NAME)]: {
+  arrow: {
     ...cssReset(ARROW_DEFAULT_TAG),
     display: 'inline-block',
     verticalAlign: 'top',
   },
-};
+});
 
 export { Popover, styles };
 export type { PopoverProps, PopoverArrowProps };

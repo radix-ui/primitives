@@ -7,8 +7,6 @@ import {
   isFunction,
   makeId,
   DistributiveOmit,
-  interopDataAttrObj,
-  interopSelector,
   cssReset,
   __DEV__,
 } from '@interop-ui/utils';
@@ -17,12 +15,12 @@ import { findAll } from 'highlight-words-core';
 import {
   composeEventHandlers,
   createContext,
+  createStyleObj,
   forwardRef,
   memo,
   useComposedRefs,
   useCallbackRef,
   useId,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { Popover, PopoverProps } from '@interop-ui/react-popover';
 import {
@@ -212,7 +210,7 @@ const Combobox = forwardRef<typeof COMBOBOX_DEFAULT_TAG, ComboboxProps, Combobox
 
     return (
       <ComboboxContext.Provider value={context}>
-        <Comp {...props} {...interopDataAttrObj(COMBOBOX_NAME)} ref={forwardedRef}>
+        <Comp {...props} {...interopDataAttrObj('root')} ref={forwardedRef}>
           {isFunction(children)
             ? children({ id: comboboxId, isOpen: popoverIsExpanded(state) })
             : children}
@@ -304,7 +302,7 @@ const ComboboxInputImpl = forwardRef<typeof INPUT_DEFAULT_TAG, ComboboxInputProp
     return (
       <Comp
         ref={ref}
-        {...interopDataAttrObj(INPUT_NAME)}
+        {...interopDataAttrObj('input')}
         aria-activedescendant={
           highlightedValue ? makeItemId(comboboxId, kebabCase(highlightedValue)) : undefined
         }
@@ -363,7 +361,7 @@ const ComboboxPopoverImpl = React.forwardRef<
   return (
     <Popover
       {...otherProps}
-      {...interopDataAttrObj(POPOVER_NAME)}
+      {...interopDataAttrObj('popover')}
       ref={ref}
       isOpen={isOpen}
       onKeyDown={composeEventHandlers<any>(onKeyDown, handleKeyDown)}
@@ -400,7 +398,7 @@ const ComboboxList = forwardRef<typeof LIST_DEFAULT_TAG, ComboboxListProps>(func
       tabIndex={0}
       {...props}
       ref={forwardedRef}
-      {...interopDataAttrObj(LIST_NAME)}
+      {...interopDataAttrObj('list')}
       id={listboxId}
     />
   );
@@ -469,7 +467,7 @@ const ComboboxOption = forwardRef<typeof OPTION_DEFAULT_TAG, ComboboxOptionProps
           aria-selected={isActive}
           role="option"
           {...props}
-          {...interopDataAttrObj(OPTION_NAME)}
+          {...interopDataAttrObj('option')}
           ref={ref}
           id={makeItemId(comboboxId, kebabCase(value))}
           data-highlighted={isActive ? '' : undefined}
@@ -515,7 +513,7 @@ const ComboboxOptionText = forwardRef<typeof TEXT_DEFAULT_TAG, ComboboxOptionTex
     );
 
     return (
-      <Comp ref={forwardedRef} {...interopDataAttrObj(TEXT_NAME)} {...textProps}>
+      <Comp ref={forwardedRef} {...interopDataAttrObj('text')} {...textProps}>
         {results.length
           ? results.map((result, index) => {
               let str = value.slice(result.start, result.end);
@@ -562,7 +560,7 @@ const ComboboxGroup = forwardRef<typeof GROUP_DEFAULT_TAG, ComboboxGroupProps>(
       <React.Fragment>{children}</React.Fragment>
     ) : (
       <OptionGroupContext.Provider value={{ label }}>
-        <div {...interopDataAttrObj(GROUP_NAME)} {...rest} ref={forwardedRef} role="none">
+        <div {...interopDataAttrObj('group')} {...rest} ref={forwardedRef} role="none">
           {children}
         </div>
       </OptionGroupContext.Provider>
@@ -635,7 +633,7 @@ const ComboboxButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ComboboxButtonProps
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         {...props}
-        {...interopDataAttrObj(BUTTON_NAME)}
+        {...interopDataAttrObj('button')}
         ref={ref}
         onClick={composeEventHandlers(onClick, handleClick)}
         onKeyDown={composeEventHandlers(onKeyDown, handleKeyDown)}
@@ -675,37 +673,37 @@ Combobox.OptionText.displayName = TEXT_NAME;
 Combobox.Group.displayName = GROUP_NAME;
 Combobox.Button.displayName = BUTTON_NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(COMBOBOX_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(COMBOBOX_NAME, {
+  root: {
     ...cssReset(COMBOBOX_DEFAULT_TAG),
     position: 'relative',
     display: 'flex',
     width: '100%',
     alignItems: 'center',
   },
-  [interopSelector(INPUT_NAME)]: {
+  input: {
     ...cssReset(INPUT_DEFAULT_TAG),
   },
-  [interopSelector(POPOVER_NAME)]: {
+  popover: {
     ...cssReset(POPOVER_DEFAULT_TAG),
     position: 'absolute',
   },
-  [interopSelector(LIST_NAME)]: {
+  list: {
     ...cssReset(LIST_DEFAULT_TAG),
   },
-  [interopSelector(OPTION_NAME)]: {
+  option: {
     ...cssReset(OPTION_DEFAULT_TAG),
   },
-  [interopSelector(TEXT_NAME)]: {
+  text: {
     ...cssReset(TEXT_DEFAULT_TAG),
   },
-  [interopSelector(GROUP_NAME)]: {
+  group: {
     ...cssReset(GROUP_DEFAULT_TAG),
   },
-  [interopSelector(BUTTON_NAME)]: {
+  button: {
     ...cssReset(BUTTON_DEFAULT_TAG),
   },
-};
+});
 
 export { Combobox, styles };
 export type {

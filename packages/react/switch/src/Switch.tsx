@@ -1,18 +1,12 @@
 import * as React from 'react';
-import {
-  cssReset,
-  interopDataAttrObj,
-  isFunction,
-  warningOnce,
-  interopSelector,
-} from '@interop-ui/utils';
+import { cssReset, isFunction, warningOnce } from '@interop-ui/utils';
 import { useSize } from '@interop-ui/react-use-size';
 import {
   createContext,
+  createStyleObj,
   forwardRef,
   useCallbackRef,
   useComposedRefs,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
@@ -165,7 +159,7 @@ const SwitchRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SwitchRootProps>(function
   return (
     <SwitchContext.Provider value={ctx}>
       <Comp
-        {...interopDataAttrObj(ROOT_NAME)}
+        {...interopDataAttrObj('root')}
         style={{
           ...style,
           height,
@@ -226,7 +220,7 @@ const SwitchInput = forwardRef<typeof INPUT_DEFAULT_TAG, SwitchInputProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj(INPUT_NAME)}
+      {...interopDataAttrObj('input')}
       ref={ref}
       {...checkboxInputProps}
       type="checkbox"
@@ -262,7 +256,7 @@ const SwitchBox = forwardRef<typeof BOX_DEFAULT_TAG, SwitchBoxProps>(function Sw
   let { boxPartRef } = useSwitchContext(BOX_NAME);
   let ref = useComposedRefs(boxPartRef, forwardedRef);
 
-  return <Comp {...interopDataAttrObj(BOX_NAME)} ref={ref} {...checkboxBoxProps} />;
+  return <Comp {...interopDataAttrObj('box')} ref={ref} {...checkboxBoxProps} />;
 });
 
 /* -------------------------------------------------------------------------------------------------
@@ -288,7 +282,7 @@ const SwitchThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(funct
   let ref = useComposedRefs(thumbPartRef, forwardedRef);
   return (
     <Comp
-      {...interopDataAttrObj(THUMB_NAME)}
+      {...interopDataAttrObj('thumb')}
       style={{
         transform: `translate3d(${checked ? checkedOffset + 'px' : 0}, 0, 0)`,
       }}
@@ -348,15 +342,15 @@ interface SwitchStaticProps {
   Thumb: typeof SwitchThumb;
 }
 
-const styles: PrimitiveStyles = {
-  [interopSelector(ROOT_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(SWITCH_NAME, {
+  root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-flex',
     position: 'relative',
     verticalAlign: 'middle',
     alignItems: 'center',
   },
-  [interopSelector(INPUT_NAME)]: {
+  input: {
     ...cssReset(INPUT_DEFAULT_TAG),
     position: 'absolute',
     top: 0,
@@ -366,17 +360,17 @@ const styles: PrimitiveStyles = {
     zIndex: 1,
     opacity: 0,
   },
-  [interopSelector(BOX_NAME)]: {
+  box: {
     ...cssReset(BOX_DEFAULT_TAG),
     position: 'relative',
     zIndex: 0,
     display: 'flex',
     alignItems: 'center',
   },
-  [interopSelector(THUMB_NAME)]: {
+  thumb: {
     ...cssReset(THUMB_DEFAULT_TAG),
   },
-};
+});
 
 export { Switch, styles };
 export type { SwitchRootProps, SwitchInputProps, SwitchBoxProps, SwitchThumbProps, SwitchProps };

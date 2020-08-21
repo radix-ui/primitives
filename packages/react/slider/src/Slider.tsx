@@ -1,22 +1,14 @@
 import * as React from 'react';
 import omit from 'lodash.omit';
-import {
-  Size,
-  cssReset,
-  clamp,
-  interopDataAttrObj,
-  interopSelector,
-  interopDataAttr,
-  isUndefined,
-} from '@interop-ui/utils';
+import { Size, cssReset, clamp, interopDataAttr, isUndefined } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
+  createStyleObj,
   forwardRef,
   useCallbackRef,
   useComposedRefs,
   usePrevious,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { useSize } from '@interop-ui/react-use-size';
 
@@ -344,7 +336,7 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
     return (
       <SliderContext.Provider value={context}>
         <Comp
-          {...interopDataAttrObj(ROOT_NAME)}
+          {...interopDataAttrObj('root')}
           {...sliderProps}
           ref={composedRefs}
           onKeyDown={isDisabled ? undefined : handleKeyDown}
@@ -408,7 +400,7 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   }, [context, prevSize, size]);
 
   return (
-    <Comp {...interopDataAttrObj(TRACK_NAME)} {...trackProps} ref={composedRefs}>
+    <Comp {...interopDataAttrObj('track')} {...trackProps} ref={composedRefs}>
       <span
         style={{
           display: 'block',
@@ -450,7 +442,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj(RANGE_NAME)}
+      {...interopDataAttrObj('range')}
       {...rangeProps}
       ref={composedRefs}
       style={{ left: left + '%', right: right + '%', ...style }}
@@ -517,7 +509,7 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj(THUMB_NAME)}
+      {...interopDataAttrObj('thumb')}
       aria-label={props['aria-label'] || label}
       aria-valuemin={context.min}
       aria-valuenow={value}
@@ -576,8 +568,8 @@ interface SliderStaticProps {
   Thumb: typeof SliderThumb;
 }
 
-const styles: PrimitiveStyles = {
-  [interopSelector(ROOT_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
+  root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     position: 'relative',
     display: 'inline-flex',
@@ -588,22 +580,19 @@ const styles: PrimitiveStyles = {
     touchAction: 'none', // Prevent parent/window scroll when sliding on touch devices
     zIndex: 0, // create new stacking context
   },
-  'root.state.disabled': {
-    pointerEvents: 'none',
-  },
-  [interopSelector(TRACK_NAME)]: {
+  track: {
     ...cssReset(TRACK_DEFAULT_TAG),
     display: 'block',
     position: 'relative',
     flexGrow: 1,
   },
-  [interopSelector(RANGE_NAME)]: {
+  range: {
     ...cssReset(RANGE_DEFAULT_TAG),
     display: 'block',
     position: 'absolute',
     height: '100%',
   },
-  [interopSelector(THUMB_NAME)]: {
+  thumb: {
     ...cssReset(THUMB_DEFAULT_TAG),
     display: 'block',
     position: 'absolute',
@@ -624,7 +613,7 @@ const styles: PrimitiveStyles = {
       transform: 'translate(-50%, -50%)',
     },
   },
-};
+});
 
 export type { SliderRootProps, SliderRangeProps, SliderTrackProps, SliderThumbProps, SliderProps };
 export { Slider, styles };

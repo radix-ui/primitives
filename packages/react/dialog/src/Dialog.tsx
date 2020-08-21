@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { Portal } from '@interop-ui/react-portal';
 import { Lock, useLockContext } from '@interop-ui/react-lock';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
 import { RemoveScroll } from 'react-remove-scroll';
 import {
   createContext,
+  createStyleObj,
   forwardRef,
   useCallbackRef,
   useComposedRefs,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
@@ -105,7 +105,7 @@ const DialogRoot: React.FC<DialogRootProps> = (props) => {
 
   return (
     <DialogContext.Provider value={ctx}>
-      <Portal {...interopDataAttrObj(ROOT_NAME)}>{children}</Portal>
+      <Portal {...interopDataAttrObj('root')}>{children}</Portal>
     </DialogContext.Provider>
   );
 };
@@ -127,7 +127,7 @@ const DialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayProps>
     let { as: Comp = OVERLAY_DEFAULT_TAG, style, ...overlayProps } = props;
     return (
       <Comp
-        {...interopDataAttrObj(OVERLAY_NAME)}
+        {...interopDataAttrObj('overlay')}
         ref={forwardedRef}
         style={{ pointerEvents: debugContext.disableLock ? 'none' : undefined, ...style }}
         {...overlayProps}
@@ -161,7 +161,7 @@ const DialogInner = forwardRef<typeof INNER_DEFAULT_TAG, DialogInnerProps>(funct
     shouldCloseOnOutsideClick,
   } = useDialogContext(INNER_NAME);
   return (
-    <Comp {...interopDataAttrObj(INNER_NAME)} ref={forwardedRef} {...innerProps}>
+    <Comp {...interopDataAttrObj('inner')} ref={forwardedRef} {...innerProps}>
       <RemoveScroll>
         <Lock
           isActive={debugContext.disableLock ? false : isOpen}
@@ -196,7 +196,7 @@ const DialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentProps>
     let { lockContainerRef } = useLockContext();
     return (
       <Comp
-        {...interopDataAttrObj(CONTENT_NAME)}
+        {...interopDataAttrObj('content')}
         ref={useComposedRefs(forwardedRef, lockContainerRef)}
         role="dialog"
         aria-modal
@@ -211,6 +211,7 @@ const DialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentProps>
 /* -------------------------------------------------------------------------------------------------
  * Composed Dialog
  * -----------------------------------------------------------------------------------------------*/
+const DIALOG_NAME = 'Dialog';
 
 type DialogDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
 type DialogOwnProps = DialogRootProps;
@@ -254,7 +255,7 @@ Dialog.Overlay = DialogOverlay;
 Dialog.Inner = DialogInner;
 Dialog.Content = DialogContent;
 
-Dialog.displayName = 'Dialog';
+Dialog.displayName = DIALOG_NAME;
 Dialog.Root.displayName = ROOT_NAME;
 Dialog.Overlay.displayName = OVERLAY_NAME;
 Dialog.Inner.displayName = INNER_NAME;
@@ -267,8 +268,9 @@ interface DialogStaticProps {
   Content: typeof DialogContent;
 }
 
-const styles: PrimitiveStyles = {
-  [interopSelector(OVERLAY_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(DIALOG_NAME, {
+  root: {},
+  overlay: {
     ...cssReset(OVERLAY_DEFAULT_TAG),
     position: 'fixed',
     top: 0,
@@ -276,7 +278,7 @@ const styles: PrimitiveStyles = {
     bottom: 0,
     left: 0,
   },
-  [interopSelector(INNER_NAME)]: {
+  inner: {
     ...cssReset(INNER_DEFAULT_TAG),
     position: 'fixed',
     top: 0,
@@ -285,11 +287,11 @@ const styles: PrimitiveStyles = {
     left: 0,
     pointerEvents: 'none',
   },
-  [interopSelector(CONTENT_NAME)]: {
+  content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
     pointerEvents: 'auto',
   },
-};
+});
 
 export { Dialog, styles };
 export type {

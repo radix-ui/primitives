@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
+  createStyleObj,
   forwardRef,
   useId,
   composeEventHandlers,
   useControlledState,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButto
 
     return (
       <Comp
-        {...interopDataAttrObj(BUTTON_NAME)}
+        {...interopDataAttrObj('button')}
         ref={forwardedRef}
         aria-controls={context.contentId}
         aria-expanded={context.isOpen || false}
@@ -80,7 +80,7 @@ const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleCon
 
     return (
       <Comp
-        {...interopDataAttrObj(CONTENT_NAME)}
+        {...interopDataAttrObj('content')}
         ref={forwardedRef}
         {...contentProps}
         id={id}
@@ -150,7 +150,7 @@ const Collapsible = forwardRef<
   );
 
   return (
-    <Comp {...interopDataAttrObj(COLLAPSIBLE_NAME)} {...collapsibleProps} ref={forwardedRef}>
+    <Comp {...interopDataAttrObj('root')} {...collapsibleProps} ref={forwardedRef}>
       <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
     </Comp>
   );
@@ -163,11 +163,11 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 Collapsible.Button.displayName = BUTTON_NAME;
 Collapsible.Content.displayName = CONTENT_NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(COLLAPSIBLE_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
+  root: {
     ...cssReset(COLLAPSIBLE_DEFAULT_TAG),
   },
-  [interopSelector(BUTTON_NAME)]: {
+  button: {
     ...cssReset(BUTTON_DEFAULT_TAG),
     display: 'block',
     width: '100%',
@@ -178,10 +178,10 @@ const styles: PrimitiveStyles = {
       pointerEvents: 'none',
     },
   },
-  [interopSelector(CONTENT_NAME)]: {
+  content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
   },
-};
+});
 
 export type { CollapsibleProps, CollapsibleButtonProps, CollapsibleContentProps };
 export { Collapsible, styles };

@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'VisuallyHidden';
 const DEFAULT_TAG = 'span';
@@ -13,17 +12,17 @@ const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
   ({ as: Comp = DEFAULT_TAG, bypassInlineStyles = false, style, ...props }, forwardedRef) => (
     <Comp
       {...props}
-      {...interopDataAttrObj(NAME)}
+      {...interopDataAttrObj('root')}
       ref={forwardedRef}
-      style={bypassInlineStyles ? style : { ...styles.visuallyHidden, ...style }}
+      style={bypassInlineStyles ? style : { ...styles.root, ...style }}
     />
   )
 );
 
 VisuallyHidden.displayName = NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
     // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
     position: 'absolute',
     border: 0,
@@ -36,7 +35,7 @@ const styles: PrimitiveStyles = {
     whiteSpace: 'nowrap',
     wordWrap: 'normal',
   },
-};
+});
 
 export { VisuallyHidden, styles };
 export type { VisuallyHiddenProps };

@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
 import {
   forwardRef,
+  createStyleObj,
   useControlledState,
   composeEventHandlers,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 const NAME = 'ToggleButton';
@@ -45,7 +45,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
   return (
     <Comp
-      {...interopDataAttrObj(NAME)}
+      {...interopDataAttrObj('root')}
       type="button"
       aria-pressed={Boolean(isToggled)}
       ref={forwardedRef}
@@ -57,8 +57,8 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
 ToggleButton.displayName = NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
     ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
@@ -76,7 +76,7 @@ const styles: PrimitiveStyles = {
       pointerEvents: 'none',
     },
   },
-};
+});
 
 export { ToggleButton, styles };
 export type { ToggleButtonProps };

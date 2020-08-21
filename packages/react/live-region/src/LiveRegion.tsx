@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { cssReset, interopDataAttr, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset, interopDataAttr } from '@interop-ui/utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 type RegionType = 'polite' | 'assertive';
 type RegionRole = 'status' | 'alert' | 'log';
@@ -69,14 +69,14 @@ const useLiveRegion = ({
  * LiveRegion
  * -----------------------------------------------------------------------------------------------*/
 
-const REGION_NAME = 'LiveRegion';
-const REGION_DEFAULT_TAG = 'div';
+const NAME = 'LiveRegion';
+const DEFAULT_TAG = 'div';
 
-type LiveRegionDOMProps = React.ComponentPropsWithoutRef<typeof REGION_DEFAULT_TAG>;
+type LiveRegionDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type LiveRegionOwnProps = { type?: RegionType; role?: RegionRole };
 type LiveRegionProps = LiveRegionDOMProps & LiveRegionOwnProps;
 
-const LiveRegion = forwardRef<typeof REGION_DEFAULT_TAG, LiveRegionProps>(function LiveRegion(
+const LiveRegion = forwardRef<typeof DEFAULT_TAG, LiveRegionProps>(function LiveRegion(
   props,
   forwardedRef
 ) {
@@ -87,27 +87,23 @@ const LiveRegion = forwardRef<typeof REGION_DEFAULT_TAG, LiveRegionProps>(functi
 
   return (
     <>
-      <div {...regionProps} {...interopDataAttrObj(REGION_NAME)} ref={forwardedRef}>
+      <div {...regionProps} {...interopDataAttrObj('root')} ref={forwardedRef}>
         {children}
       </div>
 
       {/* portal into live region for screen reader announcements */}
-      {region &&
-        ReactDOM.createPortal(
-          <div {...interopDataAttrObj(`LiveRegion.Mirror`)}>{children}</div>,
-          region
-        )}
+      {region && ReactDOM.createPortal(<div>{children}</div>, region)}
     </>
   );
 });
 
-LiveRegion.displayName = REGION_NAME;
+LiveRegion.displayName = NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(REGION_NAME)]: {
-    ...cssReset(REGION_DEFAULT_TAG),
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
+    ...cssReset(DEFAULT_TAG),
   },
-};
+});
 
 export { LiveRegion, styles, useLiveRegion };
 export type { LiveRegionProps };

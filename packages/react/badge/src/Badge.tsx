@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'Badge';
 const DEFAULT_TAG = 'span';
@@ -11,13 +11,13 @@ type BadgeProps = BadgeDOMProps & BadgeOwnProps;
 
 const Badge = forwardRef<typeof DEFAULT_TAG, BadgeProps>(function Badge(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...badgeProps } = props;
-  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...badgeProps} />;
+  return <Comp {...interopDataAttrObj('root')} ref={forwardedRef} {...badgeProps} />;
 });
 
 Badge.displayName = NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
     ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
@@ -26,7 +26,7 @@ const styles: PrimitiveStyles = {
     userSelect: 'none',
     whiteSpace: 'nowrap',
   },
-};
+});
 
 export { Badge, styles };
 export type { BadgeProps };

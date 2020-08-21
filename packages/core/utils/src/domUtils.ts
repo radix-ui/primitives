@@ -1,5 +1,4 @@
 import kebabCase from 'lodash.kebabcase';
-import camelCase from 'lodash.camelcase';
 import { isFunction } from './typeUtils';
 
 export function interopDataAttr(componentPart: string) {
@@ -8,12 +7,6 @@ export function interopDataAttr(componentPart: string) {
 
 export function interopDataAttrObj(componentPart: string) {
   return { [interopDataAttr(componentPart)]: '' };
-}
-
-export function interopSelector(componentPart: string) {
-  return process.env.EXTRACT_CSS
-    ? interopDataAttrSelector(componentPart)
-    : camelCase(componentPart.split('.').reverse()[0]);
 }
 
 export function interopDataAttrSelector(componentPart: string) {

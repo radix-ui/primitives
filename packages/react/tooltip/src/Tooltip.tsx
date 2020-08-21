@@ -1,22 +1,15 @@
 import * as React from 'react';
-import {
-  cssReset,
-  interopDataAttrObj,
-  Side,
-  Align,
-  isFunction,
-  interopSelector,
-} from '@interop-ui/utils';
+import { cssReset, Side, Align, isFunction } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
+  createStyleObj,
   forwardRef,
   useComposedRefs,
   useControlledState,
   useId,
   usePrevious,
   useRect,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { createStateMachine, stateChart } from './machine';
 import { Popover, PopoverProps, PopoverArrowProps } from '@interop-ui/react-popover';
@@ -204,7 +197,7 @@ const TooltipTarget: React.FC<TooltipTargetProps> = function TooltipTarget(props
   ).props;
 
   return React.cloneElement(child, {
-    ...interopDataAttrObj(TARGET_NAME),
+    ...interopDataAttrObj('target'),
     ref,
     'aria-describedby': tooltipId,
     onMouseEnter: composeEventHandlers(onMouseEnter, () =>
@@ -289,7 +282,7 @@ const TooltipPopover = forwardRef<typeof POPOVER_DEFAULT_TAG, TooltipPopoverProp
         side={side}
         sideOffset={sideOffset}
         targetRef={targetRef}
-        {...interopDataAttrObj(POPOVER_NAME)}
+        {...interopDataAttrObj('popover')}
       >
         {children}
         <VisuallyHidden id={tooltipId} role="tooltip">
@@ -318,7 +311,7 @@ const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProp
     const { as: Comp = CONTENT_DEFAULT_TAG, children, ...otherProps } = props;
     const { label } = useTooltipContext(CONTENT_NAME);
     return (
-      <Comp ref={forwardedRef} {...interopDataAttrObj(CONTENT_NAME)} {...otherProps}>
+      <Comp ref={forwardedRef} {...interopDataAttrObj('content')} {...otherProps}>
         {isFunction(children) ? children({ label }) : label}
       </Comp>
     );
@@ -343,7 +336,7 @@ const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(fun
 ) {
   let { as = ARROW_DEFAULT_TAG, ...otherProps } = props;
   return (
-    <Popover.Arrow as={as} ref={forwardedRef} {...interopDataAttrObj(ARROW_NAME)} {...otherProps} />
+    <Popover.Arrow as={as} ref={forwardedRef} {...interopDataAttrObj('arrow')} {...otherProps} />
   );
 });
 
@@ -410,23 +403,25 @@ Tooltip.Popover.displayName = POPOVER_NAME;
 Tooltip.Content.displayName = CONTENT_NAME;
 Tooltip.Arrow.displayName = ARROW_NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(POPOVER_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
+  root: {},
+  target: {},
+  popover: {
     ...cssReset(POPOVER_DEFAULT_TAG),
     zIndex: 99999,
     pointerEvents: 'none',
   },
-  [interopSelector(ARROW_NAME)]: {
+  arrow: {
     ...cssReset(ARROW_DEFAULT_TAG),
     display: 'inline-block',
     verticalAlign: 'top',
   },
-  [interopSelector(CONTENT_NAME)]: {
+  content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
   },
-};
+});
 
 export { Tooltip, styles };
 export type {

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'Input';
 const DEFAULT_TAG = 'input';
@@ -11,13 +11,13 @@ type InputProps = InputDOMProps & InputOwnProps;
 
 const Input = forwardRef<typeof DEFAULT_TAG, InputProps>(function Input(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...inputProps } = props;
-  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...inputProps} />;
+  return <Comp {...interopDataAttrObj('root')} ref={forwardedRef} {...inputProps} />;
 });
 
 Input.displayName = NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
     ...cssReset(DEFAULT_TAG),
     lineHeight: '1',
 
@@ -25,7 +25,7 @@ const styles: PrimitiveStyles = {
       pointerEvents: 'none',
     },
   },
-};
+});
 
 export { Input, styles };
 export type { InputProps };

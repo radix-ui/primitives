@@ -62,7 +62,7 @@ const Flex = (props: React.ComponentProps<typeof FlexPrimitive>) => (
   <FlexPrimitive
     {...props}
     style={{
-      ...flexStyles.flex,
+      ...flexStyles.root,
       backgroundColor: 'ghostwhite',
       flexWrap: 'wrap',
     }}

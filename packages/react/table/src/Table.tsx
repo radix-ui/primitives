@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Table
@@ -18,7 +18,7 @@ const Table = forwardRef<typeof TABLE_DEFAULT_TAG, TableProps, TableStaticProps>
   forwardedRef
 ) {
   const { as: Comp = TABLE_DEFAULT_TAG, ...tableProps } = props;
-  return <Comp {...interopDataAttrObj(TABLE_NAME)} ref={forwardedRef} {...tableProps} />;
+  return <Comp {...interopDataAttrObj('root')} ref={forwardedRef} {...tableProps} />;
 });
 
 /* -------------------------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ const TableHeader = forwardRef<typeof HEADER_DEFAULT_TAG, TableHeaderProps>(func
   forwardedRef
 ) {
   const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
-  return <Comp {...interopDataAttrObj(HEADER_NAME)} ref={forwardedRef} {...headerProps} />;
+  return <Comp {...interopDataAttrObj('header')} ref={forwardedRef} {...headerProps} />;
 });
 
 /* -------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ const TableFooter = forwardRef<typeof FOOTER_DEFAULT_TAG, TableFooterProps>(func
   forwardedRef
 ) {
   const { as: Comp = FOOTER_DEFAULT_TAG, ...footerProps } = props;
-  return <Comp {...interopDataAttrObj(FOOTER_NAME)} ref={forwardedRef} {...footerProps} />;
+  return <Comp {...interopDataAttrObj('footer')} ref={forwardedRef} {...footerProps} />;
 });
 
 /* -------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ const TableBody = forwardRef<typeof BODY_DEFAULT_TAG, TableBodyProps>(function T
   forwardedRef
 ) {
   const { as: Comp = BODY_DEFAULT_TAG, ...bodyProps } = props;
-  return <Comp {...interopDataAttrObj(BODY_NAME)} ref={forwardedRef} {...bodyProps} />;
+  return <Comp {...interopDataAttrObj('body')} ref={forwardedRef} {...bodyProps} />;
 });
 
 /* -------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ const TableRow = forwardRef<typeof ROW_DEFAULT_TAG, TableRowProps>(function Tabl
   forwardedRef
 ) {
   const { as: Comp = ROW_DEFAULT_TAG, ...rowProps } = props;
-  return <Comp {...interopDataAttrObj(ROW_NAME)} ref={forwardedRef} {...rowProps} />;
+  return <Comp {...interopDataAttrObj('row')} ref={forwardedRef} {...rowProps} />;
 });
 
 /* -------------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ type TableSummaryCellProps = TableSummaryCellDOMProps & TableSummaryCellOwnProps
 const TableSummaryCell = forwardRef<typeof SUMMARY_CELL_DEFAULT_TAG, TableSummaryCellProps>(
   function TableSummaryCell(props, forwardedRef) {
     const { as: Comp = SUMMARY_CELL_DEFAULT_TAG, ...cellProps } = props;
-    return <Comp {...interopDataAttrObj(SUMMARY_CELL_NAME)} ref={forwardedRef} {...cellProps} />;
+    return <Comp {...interopDataAttrObj('summaryCell')} ref={forwardedRef} {...cellProps} />;
   }
 );
 
@@ -131,7 +131,7 @@ const TableCell = forwardRef<typeof CELL_DEFAULT_TAG, TableCellProps>(function T
   forwardedRef
 ) {
   const { as: Comp = CELL_DEFAULT_TAG, ...cellProps } = props;
-  return <Comp {...interopDataAttrObj(CELL_NAME)} ref={forwardedRef} {...cellProps} />;
+  return <Comp {...interopDataAttrObj('cell')} ref={forwardedRef} {...cellProps} />;
 });
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -160,31 +160,31 @@ Table.Row.displayName = ROW_NAME;
 Table.SummaryCell.displayName = SUMMARY_CELL_NAME;
 Table.Cell.displayName = CELL_NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(TABLE_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(TABLE_NAME, {
+  root: {
     ...cssReset(TABLE_DEFAULT_TAG),
     borderCollapse: 'collapse',
     width: '100%',
   },
-  [interopSelector(HEADER_NAME)]: {
+  header: {
     ...cssReset(HEADER_DEFAULT_TAG),
   },
-  [interopSelector(FOOTER_NAME)]: {
+  footer: {
     ...cssReset(FOOTER_DEFAULT_TAG),
   },
-  [interopSelector(BODY_NAME)]: {
+  body: {
     ...cssReset(BODY_DEFAULT_TAG),
   },
-  [interopSelector(ROW_NAME)]: {
+  row: {
     ...cssReset(ROW_DEFAULT_TAG),
   },
-  [interopSelector(SUMMARY_CELL_NAME)]: {
+  summaryCell: {
     ...cssReset(SUMMARY_CELL_DEFAULT_TAG),
   },
-  [interopSelector(CELL_NAME)]: {
+  cell: {
     ...cssReset(CELL_DEFAULT_TAG),
   },
-};
+});
 
 export { Table, styles };
 export type {

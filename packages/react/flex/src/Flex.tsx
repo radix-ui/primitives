@@ -1,7 +1,7 @@
 import * as React from 'react';
 import omit from 'lodash.omit';
-import { cssReset, interopDataAttrObj, isUndefined, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset, isUndefined } from '@interop-ui/utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Flex
@@ -40,7 +40,7 @@ const Flex = forwardRef<typeof FLEX_DEFAULT_TAG, FlexProps, FlexStaticProps>(fun
       <div style={{ overflow: 'hidden', flexGrow: 1 }}>
         <Comp
           {...flexProps}
-          {...interopDataAttrObj(FLEX_NAME)}
+          {...interopDataAttrObj('root')}
           ref={forwardedRef}
           style={{
             ...style,
@@ -55,7 +55,7 @@ const Flex = forwardRef<typeof FLEX_DEFAULT_TAG, FlexProps, FlexStaticProps>(fun
   }
 
   return (
-    <Comp {...flexProps} {...interopDataAttrObj(FLEX_NAME)} style={style} ref={forwardedRef}>
+    <Comp {...flexProps} {...interopDataAttrObj('root')} style={style} ref={forwardedRef}>
       {children}
     </Comp>
   );
@@ -82,6 +82,7 @@ const FlexItem = forwardRef<typeof ITEM_DEFAULT_TAG, FlexItemProps>(function Fle
   return (
     <Comp
       {...itemProps}
+      {...interopDataAttrObj('item')}
       ref={forwardedRef}
       style={{
         ...style,
@@ -97,16 +98,16 @@ Flex.Item = FlexItem;
 Flex.displayName = FLEX_NAME;
 Flex.Item.displayName = ITEM_NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(FLEX_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(FLEX_NAME, {
+  root: {
     ...cssReset(FLEX_DEFAULT_TAG),
     display: 'flex',
   },
-  [interopSelector(ITEM_NAME)]: {
+  item: {
     ...cssReset(ITEM_DEFAULT_TAG),
     flex: 1,
   },
-};
+});
 
 export { Flex, styles };
 export type { FlexProps, FlexItemProps };

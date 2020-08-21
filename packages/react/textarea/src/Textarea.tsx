@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'Textarea';
 const DEFAULT_TAG = 'textarea';
@@ -14,18 +14,18 @@ const Textarea = forwardRef<typeof DEFAULT_TAG, TextareaProps>(function Textarea
   forwardedRef
 ) {
   const { as: Comp = DEFAULT_TAG, ...boxProps } = props;
-  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...boxProps} />;
+  return <Comp {...interopDataAttrObj('root')} ref={forwardedRef} {...boxProps} />;
 });
 
 Textarea.displayName = NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
     ...cssReset(DEFAULT_TAG),
     width: '100%',
     resize: 'vertical',
   },
-};
+});
 
 export { Textarea, styles };
 export type { TextareaProps };

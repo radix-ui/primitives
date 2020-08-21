@@ -12,6 +12,7 @@ import * as React from 'react';
 import {
   composeEventHandlers,
   createContext,
+  createStyleObj,
   forwardRef,
   RovingTabIndexProvider,
   useAccessibleMouseDown,
@@ -20,9 +21,8 @@ import {
   useId,
   useRovingTabIndex,
   ForwardRefExoticComponentWithAs,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
-import { cssReset, interopDataAttrObj, makeId, interopSelector } from '@interop-ui/utils';
+import { cssReset, makeId } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -104,7 +104,7 @@ const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props,
 
   return (
     <TabsContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj(TABS_NAME)} ref={forwardedRef} id={tabsId} {...tabsProps}>
+      <Comp {...interopDataAttrObj('tabs')} ref={forwardedRef} id={tabsId} {...tabsProps}>
         {children}
       </Comp>
     </TabsContext.Provider>
@@ -130,7 +130,7 @@ const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function
   return (
     <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
       <Comp
-        {...interopDataAttrObj(TAB_LIST_NAME)}
+        {...interopDataAttrObj('tabList')}
         role="tablist"
         aria-orientation={orientation}
         ref={forwardedRef}
@@ -201,7 +201,7 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
 
   return (
     <Comp
-      {...interopDataAttrObj(TAB_NAME)}
+      {...interopDataAttrObj('tab')}
       id={tabId}
       role="tab"
       aria-selected={isSelected}
@@ -243,7 +243,7 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj(TAB_PANEL_NAME)}
+      {...interopDataAttrObj('tabPanel')}
       id={tabPanelId}
       role="tabpanel"
       aria-labelledby={tabId}
@@ -260,13 +260,14 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
  * Styles
  * -----------------------------------------------------------------------------------------------*/
 
-const styles: PrimitiveStyles = {
-  [interopSelector(TAB_LIST_NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(TABS_NAME, {
+  root: {},
+  tabList: {
     ...cssReset(TAB_LIST_DEFAULT_TAG),
     flexShrink: 0,
     display: 'flex',
   },
-  [interopSelector(TAB_NAME)]: {
+  tab: {
     // reset styles
     ...cssReset(TAB_DEFAULT_TAG),
     display: 'flex',
@@ -280,15 +281,15 @@ const styles: PrimitiveStyles = {
     // enable overlapping adjacent tabs via z-index
     position: 'relative',
   },
-  [interopSelector(TAB_PANEL_NAME)]: {
+  tabPanel: {
     ...cssReset(TAB_PANEL_DEFAULT_TAG),
     flexGrow: 1,
   },
-  [interopSelector(TABS_NAME)]: {
+  tabs: {
     ...cssReset(TABS_DEFAULT_TAG),
     display: 'flex',
   },
-};
+});
 
 Tabs.Panel = TabsPanel;
 Tabs.Tab = TabsTab;

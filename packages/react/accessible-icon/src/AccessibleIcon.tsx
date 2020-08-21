@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'AccessibleIcon';
 const DEFAULT_TAG = 'span';
@@ -18,7 +18,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
   const child = React.Children.only(children);
 
   return (
-    <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...iconProps}>
+    <Comp {...interopDataAttrObj('root')} ref={forwardedRef} {...iconProps}>
       {React.cloneElement(child as React.ReactElement, {
         // accessibility
         'aria-hidden': true,
@@ -31,11 +31,11 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
 
 AccessibleIcon.displayName = NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
     ...cssReset(DEFAULT_TAG),
   },
-};
+});
 
 export { styles, AccessibleIcon };
 export type { AccessibleIconProps };

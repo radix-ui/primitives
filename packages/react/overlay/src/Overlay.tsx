@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, interopSelector } from '@interop-ui/utils';
-import { forwardRef, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'Overlay';
 const DEFAULT_TAG = 'div';
@@ -11,13 +11,13 @@ type OverlayProps = OverlayDOMProps & OverlayOwnProps;
 
 const Overlay = forwardRef<typeof DEFAULT_TAG, OverlayProps>(function Overlay(props, forwardedRef) {
   const { as: Comp = DEFAULT_TAG, ...overlayProps } = props;
-  return <Comp {...interopDataAttrObj(NAME)} ref={forwardedRef} {...overlayProps} />;
+  return <Comp {...interopDataAttrObj('root')} ref={forwardedRef} {...overlayProps} />;
 });
 
 Overlay.displayName = NAME;
 
-const styles: PrimitiveStyles = {
-  [interopSelector(NAME)]: {
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
     ...cssReset(DEFAULT_TAG),
     position: 'fixed',
     top: 0,
@@ -25,7 +25,7 @@ const styles: PrimitiveStyles = {
     bottom: 0,
     left: 0,
   },
-};
+});
 
 export { Overlay, styles };
 export type { OverlayProps };
