@@ -1,4 +1,5 @@
 releases:
+  "@interop-ui/docs": prerelease
   "@interop-ui/popper": prerelease
   "@interop-ui/react-accessible-icon": prerelease
   "@interop-ui/react-accordion": prerelease
@@ -45,6 +46,3 @@ releases:
   "@interop-ui/tabbable": prerelease
   "@interop-ui/utils": prerelease
   interop-ui: prerelease
-
-undecided:
-  - "@interop-ui/docs"

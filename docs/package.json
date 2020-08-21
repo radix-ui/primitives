@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "bump": "yarn version --deferred"
   },
   "dependencies": {
     "@interop-ui/react-button": "workspace:*",
