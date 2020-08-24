@@ -38,7 +38,6 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-is": "^16",
     "@types/react-test-renderer": "^16.9.3",
-    "@types/testing-library__jest-dom": "^5.9.2",
     "@typescript-eslint/eslint-plugin": "2.x",
     "@typescript-eslint/parser": "2.x",
     "babel-eslint": "^10.1.0",
@@ -87,7 +86,7 @@
       "jest-watch-typeahead/testname"
     ],
     "setupFilesAfterEnv": [
-      "@testing-library/jest-dom/extend-expect",
+      "<rootDir>/scripts/setup-tests.ts",
       "jest-axe/extend-expect"
     ]
   },

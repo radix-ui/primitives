@@ -4999,7 +4999,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/testing-library__jest-dom@npm:^5.9.1, @types/testing-library__jest-dom@npm:^5.9.2":
+"@types/testing-library__jest-dom@npm:^5.9.1":
   version: 5.9.2
   resolution: "@types/testing-library__jest-dom@npm:5.9.2"
   dependencies:
@@ -11564,7 +11564,6 @@ fsevents@^1.2.7:
     "@types/react-dom": ^16.9.8
     "@types/react-is": ^16
     "@types/react-test-renderer": ^16.9.3
-    "@types/testing-library__jest-dom": ^5.9.2
     "@typescript-eslint/eslint-plugin": 2.x
     "@typescript-eslint/parser": 2.x
     babel-eslint: ^10.1.0
