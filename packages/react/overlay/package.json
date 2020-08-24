@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "parcel build src/index.ts && yarn build:styles",
-    "build:styles": "ts-node -r tsconfig-paths/register ../../../scripts/build-styles overlay",
+    "build:styles": "node ../../../scripts/build-styles overlay",
     "clean": "rm -rf dist",
     "bump": "yarn version --deferred",
     "prepublish": "yarn clean && yarn build"
@@ -21,9 +21,7 @@
     "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
-    "parcel": "^2.0.0-beta.1",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
     "react": ">=16"

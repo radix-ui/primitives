@@ -59,8 +59,6 @@
     "react-is": "^16.13.1",
     "react-test-renderer": "^16.13.1",
     "ts-jest": "^26.2.0",
-    "ts-node": "^8.10.2",
-    "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.7"
   },
   "engines": {

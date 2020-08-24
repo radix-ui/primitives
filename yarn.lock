@@ -1823,8 +1823,6 @@ __metadata:
     "@interop-ui/react-visually-hidden": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1838,8 +1836,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1852,8 +1848,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1866,8 +1860,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1882,8 +1874,6 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     "@modulz/radix-icons": ^2.4.0
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
@@ -1897,8 +1887,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1911,8 +1899,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1925,8 +1911,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1939,8 +1923,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1953,8 +1935,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1967,8 +1947,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1981,8 +1959,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1995,8 +1971,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2021,8 +1995,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2035,8 +2007,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2053,8 +2023,6 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.3.0
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
@@ -2068,8 +2036,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2084,8 +2050,6 @@ __metadata:
     "@types/lodash.pick": ^4.4.6
     lodash.pick: ^4.4.0
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2098,8 +2062,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2112,8 +2074,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2126,8 +2086,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2140,8 +2098,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2154,8 +2110,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2169,8 +2123,6 @@ __metadata:
     "@interop-ui/react-visually-hidden": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
@@ -2198,8 +2150,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2218,8 +2168,6 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     csstype: ^2.6.11
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
@@ -2247,8 +2195,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2265,8 +2211,6 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.3.0
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
@@ -2283,8 +2227,6 @@ __metadata:
     "@types/lodash.omit": ^4.5.6
     lodash.omit: ^4.5.0
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2298,8 +2240,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2312,8 +2252,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2326,8 +2264,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2340,8 +2276,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2354,8 +2288,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2368,8 +2300,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2386,8 +2316,6 @@ __metadata:
     "@interop-ui/react-visually-hidden": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
@@ -2425,8 +2353,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    ts-node: ^8.10.2
-    typescript: ^3.9.7
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -5703,13 +5629,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"arg@npm:^4.1.0":
-  version: 4.1.3
-  resolution: "arg@npm:4.1.3"
-  checksum: 81b3b40b1529c4fbf75b12f7c3e6fb2dcce9e78072063babc169de9b4f40777788f3d2b04380f659ef676a756e03ccfbfe78adf4477353bda906295fa69dab89
-  languageName: node
-  linkType: hard
-
 "argparse@npm:^1.0.7":
   version: 1.0.10
   resolution: "argparse@npm:1.0.10"
@@ -8746,13 +8665,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diff@npm:^4.0.1":
-  version: 4.0.2
-  resolution: "diff@npm:4.0.2"
-  checksum: 81b5cd7ddde6f0ba2a532d434cfdca365aedd6cc62bb133e851e66e071d40382a30924a07c1034bd3d5a2e332146f64514b73c06fe2ebc0490a67f0c98da79fb
-  languageName: node
-  linkType: hard
-
 "diffie-hellman@npm:^5.0.0":
   version: 5.0.3
   resolution: "diffie-hellman@npm:5.0.3"
@@ -11594,8 +11506,6 @@ fsevents@^1.2.7:
     react-is: ^16.13.1
     react-test-renderer: ^16.13.1
     ts-jest: ^26.2.0
-    ts-node: ^8.10.2
-    tsconfig-paths: ^3.9.0
     typescript: ^3.9.7
   languageName: unknown
   linkType: soft
@@ -13527,7 +13437,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"make-error@npm:1.x, make-error@npm:^1.1.1":
+"make-error@npm:1.x":
   version: 1.3.6
   resolution: "make-error@npm:1.3.6"
   checksum: 2c780bab8409b865e8ee86697c599a2bf2765ec64d21eb67ccda27050e039f983feacad05a0d43aba3c966ea03d305d2612e94fec45474bcbc61181f57c5bb88
@@ -17802,7 +17712,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.16, source-map-support@npm:^0.5.17, source-map-support@npm:^0.5.6, source-map-support@npm:~0.5.12":
+"source-map-support@npm:^0.5.16, source-map-support@npm:^0.5.6, source-map-support@npm:~0.5.12":
   version: 0.5.19
   resolution: "source-map-support@npm:0.5.19"
   dependencies:
@@ -18876,26 +18786,6 @@ fsevents@^1.2.7:
   bin:
     ts-jest: cli.js
   checksum: 79dcfa74af1fde6debde030aaf29d27cd46b4a5dbbd556185930a26b370ab5581a580e829c1d9879f51b4679561f966d2a1ada44c977498d4cfbe7f13f570c9e
-  languageName: node
-  linkType: hard
-
-"ts-node@npm:^8.10.2":
-  version: 8.10.2
-  resolution: "ts-node@npm:8.10.2"
-  dependencies:
-    arg: ^4.1.0
-    diff: ^4.0.1
-    make-error: ^1.1.1
-    source-map-support: ^0.5.17
-    yn: 3.1.1
-  peerDependencies:
-    typescript: ">=2.7"
-  bin:
-    ts-node: dist/bin.js
-    ts-node-script: dist/bin-script.js
-    ts-node-transpile-only: dist/bin-transpile.js
-    ts-script: dist/bin-script-deprecated.js
-  checksum: cd6e023e073d65ea346cf4a5b70bfd1e7c7f342c967a23a83038fd3462067558a4dda4fc8b238e6709db69aca3847590a93b4c52ae001e23ed9fef3b4fecbc71
   languageName: node
   linkType: hard
 
@@ -20032,12 +19922,5 @@ typescript@^3.9.7:
     y18n: ^4.0.0
     yargs-parser: ^18.1.2
   checksum: dbf687d6b938f01bbf11e158dde6df906282b70cd9295af0217ee8cefbd83ad09d49fa9458d0d5325b0e66f03df954a38986db96f91e5b46ccdbbaf9a0157b23
-  languageName: node
-  linkType: hard
-
-"yn@npm:3.1.1":
-  version: 3.1.1
-  resolution: "yn@npm:3.1.1"
-  checksum: bff63b80568d80c711670935427494dde47cdf97e8b04196b140ce0af519c81c5ee857eddad0caa8b422dd65aea0157bbfaacbb1546bebba623f0f383d5d9ae5
   languageName: node
   linkType: hard

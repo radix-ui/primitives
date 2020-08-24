@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "parcel build src/index.ts && yarn build:styles",
-    "build:styles": "ts-node -r tsconfig-paths/register ../../../scripts/build-styles flex",
+    "build:styles": "node ../../../scripts/build-styles flex",
     "clean": "rm -rf dist",
     "bump": "yarn version --deferred",
     "prepublish": "yarn clean && yarn build"
@@ -23,9 +23,7 @@
   },
   "devDependencies": {
     "@types/lodash.pick": "^4.4.6",
-    "parcel": "^2.0.0-beta.1",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
     "react": ">=16"

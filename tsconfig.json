@@ -1,8 +1,5 @@
 {
   "include": ["packages", "types", "scripts"],
-  "ts-node": {
-    "files": true
-  },
   "compilerOptions": {
     "allowJs": false,
     "allowSyntheticDefaultImports": true,

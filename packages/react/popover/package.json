@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "parcel build src/index.ts && yarn build:styles",
-    "build:styles": "ts-node -r tsconfig-paths/register ../../../scripts/build-styles popover",
+    "build:styles": "node ../../../scripts/build-styles popover",
     "clean": "rm -rf dist",
     "bump": "yarn version --deferred",
     "prepublish": "yarn clean && yarn build"
@@ -27,9 +27,7 @@
     "csstype": "^2.6.11"
   },
   "devDependencies": {
-    "parcel": "^2.0.0-beta.1",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
     "react": ">=16",
