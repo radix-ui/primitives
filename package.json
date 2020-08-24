@@ -16,7 +16,7 @@
     "build": "yarn workspaces foreach -pv --exclude interop-ui run build",
     "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude interop-ui npm publish --tolerate-republish",
     "clean": "yarn workspaces foreach -pv --exclude interop-ui run clean",
-    "reset": "yarn clean && rm -rf .parcel-cache .yarn/cache node_modules",
+    "reset": "yarn clean && rm -rf .yarn/cache node_modules",
     "bump": "yarn version apply --all",
     "bump:check": "yarn version check"
   },
