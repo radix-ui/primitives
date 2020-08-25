@@ -1798,7 +1798,6 @@ __metadata:
     next-transpile-modules: ^4.0.2
     react: ^16.13.1
     react-dom: ^16.13.1
-    react-is: ^16.13.1
     react-live: ^2.2.2
     styled-components: ^5.1.1
     typescript: ^3.9.7
@@ -2024,7 +2023,6 @@ __metadata:
     react-remove-scroll: ^2.3.0
   peerDependencies:
     react: ">=16"
-    react-dom: ">=16"
   languageName: unknown
   linkType: soft
 
@@ -2169,7 +2167,6 @@ __metadata:
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
-    react-dom: ">=16"
   languageName: unknown
   linkType: soft
 
@@ -2212,7 +2209,6 @@ __metadata:
     react-remove-scroll: ^2.3.0
   peerDependencies:
     react: ">=16"
-    react-dom: ">=16"
   languageName: unknown
   linkType: soft
 
@@ -2317,7 +2313,6 @@ __metadata:
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
-    react-dom: ">=16"
   languageName: unknown
   linkType: soft
 
