@@ -18,10 +18,15 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v1
+        with:
+          path: .parcel-cache
+          key: parcel-cache
       - name: Install dependencies
         if: steps.yarn-cache-dir-path.outputs.cache-hit != 'true'
         run: yarn
       - name: Run build
+        if: steps.parcel-cache.outputs.cache-hit != 'true'
         run: yarn build
       - name: Run tests
         run: yarn test:ci
