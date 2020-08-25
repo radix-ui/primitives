@@ -1,5 +1,5 @@
 {
-  "include": ["packages", "types", "scripts"],
+  "include": ["packages", "types", "scripts", "docs"],
   "compilerOptions": {
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
