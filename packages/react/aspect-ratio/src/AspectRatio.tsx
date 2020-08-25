@@ -22,8 +22,8 @@ const AspectRatioRoot = forwardRef<typeof ROOT_DEFAULT_TAG, AspectRatioProps>(
         {...interopDataAttrObj('root')}
         ref={forwardedRef}
         style={{
-          paddingBottom: `${paddingBottom}%`,
           ...style,
+          ['--paddingBottom' as any]: `${paddingBottom}%`,
         }}
       />
     );
@@ -74,6 +74,7 @@ interface AspectRatioStaticProps {
 const [styles, interopDataAttrObj] = createStyleObj(ASPECT_RATIO_NAME, {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
+    paddingBottom: 'var(--paddingBottom)',
     position: 'relative',
     width: '100%',
   },
@@ -84,6 +85,7 @@ const [styles, interopDataAttrObj] = createStyleObj(ASPECT_RATIO_NAME, {
     top: 0,
     width: '100%',
     height: '100%',
+    overflow: 'hidden',
   },
 });
 
