@@ -1325,7 +1325,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-typescript@npm:^7.10.4, @babel/plugin-transform-typescript@npm:^7.3.2, @babel/plugin-transform-typescript@npm:^7.4.5, @babel/plugin-transform-typescript@npm:^7.9.0":
+"@babel/plugin-transform-typescript@npm:^7.10.4, @babel/plugin-transform-typescript@npm:^7.4.5, @babel/plugin-transform-typescript@npm:^7.9.0":
   version: 7.11.0
   resolution: "@babel/plugin-transform-typescript@npm:7.11.0"
   dependencies:
@@ -1492,7 +1492,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:^7.3.3, @babel/preset-typescript@npm:^7.8.3, @babel/preset-typescript@npm:^7.9.0":
+"@babel/preset-typescript@npm:^7.9.0":
   version: 7.10.4
   resolution: "@babel/preset-typescript@npm:7.10.4"
   dependencies:
@@ -4035,35 +4035,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/node-logger@npm:^5.3.17":
-  version: 5.3.19
-  resolution: "@storybook/node-logger@npm:5.3.19"
-  dependencies:
-    "@types/npmlog": ^4.1.2
-    chalk: ^3.0.0
-    core-js: ^3.0.1
-    npmlog: ^4.1.2
-    pretty-hrtime: ^1.0.3
-    regenerator-runtime: ^0.13.3
-  checksum: fe04b3622f83f0176251c0fe9b3e46004b2dac4b2a4400a1630d6b7651d8930dc5ce19de33901ff83a6ccafb9562282361e1cd0708a0c40cad2fe09efa957085
-  languageName: node
-  linkType: hard
-
-"@storybook/preset-typescript@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@storybook/preset-typescript@npm:3.0.0"
-  dependencies:
-    "@babel/preset-typescript": ^7.8.3
-    "@storybook/node-logger": ^5.3.17
-    "@types/babel__core": ^7.1.6
-    babel-preset-typescript-vue: ^1.0.3
-    fork-ts-checker-webpack-plugin: ^4.1.0
-  peerDependencies:
-    typescript: ">=3.4"
-  checksum: f518f632f240a2fb779038cb47cc3c9165edf8cd2e2cb1318224a66ab3d61c7829d0d02f68ee04f8e9210baa926430f9a8f3befa8a35c7d352d10039fe6282aa
-  languageName: node
-  linkType: hard
-
 "@storybook/react@npm:^6.0.16":
   version: 6.0.17
   resolution: "@storybook/react@npm:6.0.17"
@@ -4410,7 +4381,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.6, @types/babel__core@npm:^7.1.7":
+"@types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.7":
   version: 7.1.9
   resolution: "@types/babel__core@npm:7.1.9"
   dependencies:
@@ -6492,20 +6463,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-preset-typescript-vue@npm:^1.0.3":
-  version: 1.1.1
-  resolution: "babel-preset-typescript-vue@npm:1.1.1"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.0.0
-    "@babel/plugin-transform-typescript": ^7.3.2
-    "@babel/preset-typescript": ^7.3.3
-    vue-template-compiler: ^2.6.11
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 0ba79c64ed696feeebd52724ce6fcbb960e1f7ad0c70330ae9f635cdfa52bdc57c2cef0a4e7c0514bb11c7ac2ab84b9da08549c48827fc9e176ecac851599c6c
-  languageName: node
-  linkType: hard
-
 "balanced-match@npm:^1.0.0":
   version: 1.0.0
   resolution: "balanced-match@npm:1.0.0"
@@ -8422,13 +8379,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"de-indent@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "de-indent@npm:1.0.2"
-  checksum: a1933a4328d053d9b0db447668521a6d0360b509c115dc5340420fd645be556c00b82e491d6b862249981ed22fbf2016080b222ad23c25038aba72cb8e3120ea
-  languageName: node
-  linkType: hard
-
 "debug@npm:2.6.9, debug@npm:^2.2.0, debug@npm:^2.3.3, debug@npm:^2.6.0, debug@npm:^2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -10274,7 +10224,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fork-ts-checker-webpack-plugin@npm:^4.1.0, fork-ts-checker-webpack-plugin@npm:^4.1.4":
+"fork-ts-checker-webpack-plugin@npm:^4.1.4":
   version: 4.1.6
   resolution: "fork-ts-checker-webpack-plugin@npm:4.1.6"
   dependencies:
@@ -10909,7 +10859,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"he@npm:1.1.1, he@npm:^1.1.0":
+"he@npm:1.1.1":
   version: 1.1.1
   resolution: "he@npm:1.1.1"
   bin:
@@ -11475,7 +11425,6 @@ fsevents@^1.2.7:
   resolution: "interop-ui@workspace:."
   dependencies:
     "@babel/core": ^7.0.0
-    "@storybook/preset-typescript": ^3.0.0
     "@storybook/react": ^6.0.16
     "@testing-library/jest-dom": ^5.11.3
     "@testing-library/react": ^10.4.8
@@ -19406,16 +19355,6 @@ typescript@^3.9.7:
   version: 1.1.2
   resolution: "vm-browserify@npm:1.1.2"
   checksum: fc571a62d2cf797ae8773ebb3cb0d2bea50ed02059e128dd9087975929fce4c80a6485ce1aaf7d44ef69db99dfdcde50b6be5d5eb73b296660d761c32fb544fe
-  languageName: node
-  linkType: hard
-
-"vue-template-compiler@npm:^2.6.11":
-  version: 2.6.12
-  resolution: "vue-template-compiler@npm:2.6.12"
-  dependencies:
-    de-indent: ^1.0.2
-    he: ^1.1.0
-  checksum: 5b05dda398cc1df7ba244316ddfb8f6463dbaafb4d23a4ac7e1cb8914e813a464f4ac055e41ac6e60feeadd4cccdeec1111fac592f2bb4eeb320889846a18912
   languageName: node
   linkType: hard
 
