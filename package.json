@@ -14,7 +14,7 @@
     "test:ci": "jest --ci",
     "storybook": "start-storybook -p 9009",
     "build": "yarn workspaces foreach -ptv --exclude interop-ui --exclude @interop-ui/docs run build",
-    "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude interop-ui npm publish --tolerate-republish",
+    "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude interop-ui --exclude @interop-ui/docs npm publish --tolerate-republish --access public",
     "clean": "yarn workspaces foreach -pv --exclude interop-ui run clean",
     "reset": "yarn clean && rm -rf .yarn/cache node_modules",
     "bump": "yarn version apply --all",
