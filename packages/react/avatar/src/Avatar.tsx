@@ -40,7 +40,6 @@ const AvatarRoot = forwardRef<typeof ROOT_DEFAULT_TAG, AvatarProps>(function Ava
     renderFallback,
     renderLoading,
     src,
-    style,
     ...avatarProps
   } = props;
 
