@@ -1798,6 +1798,7 @@ __metadata:
     next-transpile-modules: ^4.0.2
     react: ^16.13.1
     react-dom: ^16.13.1
+    react-is: ^16.13.1
     react-live: ^2.2.2
     styled-components: ^5.1.1
     typescript: ^3.9.7
@@ -16338,7 +16339,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-is@npm:16.13.1, react-is@npm:^16.12.0, react-is@npm:^16.7.0, react-is@npm:^16.8.1, react-is@npm:^16.8.6":
+"react-is@npm:16.13.1, react-is@npm:^16.12.0, react-is@npm:^16.13.1, react-is@npm:^16.7.0, react-is@npm:^16.8.1, react-is@npm:^16.8.6":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 11bcf1267a314a522615f626f3ce3727a3a24cdbf61c4d452add3550a7875326669631326cfb1ba3e92b6f72244c32ffecf93ad21c0cad8455d3e169d0e3f060
