@@ -20,13 +20,12 @@
     "@interop-ui/react-image": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*",
-    "@modulz/radix-icons": "^2.4.0"
+    "@modulz/radix-icons": "^2.4.1"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
-    "react": ">=16",
-    "react-dom": ">=16"
+    "react": ">=16"
   }
 }

@@ -12,7 +12,7 @@
     "@interop-ui/react-button": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@modulz/radix": "0.0.1-beta.44",
-    "@modulz/radix-icons": "^2.4.0",
+    "@modulz/radix-icons": "^2.4.1",
     "next": "^9.5.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
