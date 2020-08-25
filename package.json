@@ -36,7 +36,6 @@
     "@types/parcel-bundler": "^1.12.1",
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
-    "@types/react-is": "^16",
     "@types/react-test-renderer": "^16.9.3",
     "@typescript-eslint/eslint-plugin": "2.x",
     "@typescript-eslint/parser": "2.x",
@@ -56,7 +55,6 @@
     "json-to-css": "^0.1.0",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
-    "react-is": "^16.13.1",
     "react-test-renderer": "^16.13.1",
     "ts-jest": "^26.2.0",
     "typescript": "^3.9.7"

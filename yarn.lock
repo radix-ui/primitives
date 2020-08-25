@@ -11484,7 +11484,6 @@ fsevents@^1.2.7:
     "@types/parcel-bundler": ^1.12.1
     "@types/react": ^16.9.43
     "@types/react-dom": ^16.9.8
-    "@types/react-is": ^16
     "@types/react-test-renderer": ^16.9.3
     "@typescript-eslint/eslint-plugin": 2.x
     "@typescript-eslint/parser": 2.x
@@ -11506,7 +11505,6 @@ fsevents@^1.2.7:
     pretty-quick: ^2.0.1
     react: ^16.13.1
     react-dom: ^16.13.1
-    react-is: ^16.13.1
     react-test-renderer: ^16.13.1
     ts-jest: ^26.2.0
     typescript: ^3.9.7
@@ -16340,7 +16338,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-is@npm:16.13.1, react-is@npm:^16.12.0, react-is@npm:^16.13.1, react-is@npm:^16.7.0, react-is@npm:^16.8.1, react-is@npm:^16.8.6":
+"react-is@npm:16.13.1, react-is@npm:^16.12.0, react-is@npm:^16.7.0, react-is@npm:^16.8.1, react-is@npm:^16.8.6":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 11bcf1267a314a522615f626f3ce3727a3a24cdbf61c4d452add3550a7875326669631326cfb1ba3e92b6f72244c32ffecf93ad21c0cad8455d3e169d0e3f060
