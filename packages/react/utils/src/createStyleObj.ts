@@ -18,21 +18,10 @@ export function createStyleObj<Part extends string = string>(
     return interopDataAttrSelector(namespacedPart);
   };
 
-  const stylesInput = isFunction(originalStyles) ? originalStyles(selector) : originalStyles;
-  let stylesOutput = stylesInput;
-
-  if (process.env.EXTRACT_CSS) {
-    stylesOutput = Object.keys(stylesInput).reduce((acc, part) => {
-      const namespacedPart = getNamespacedPart(namespace, part);
-      return {
-        ...acc,
-        [interopDataAttrSelector(namespacedPart)]: stylesInput[part as Part],
-      };
-    }, {} as PrimitiveStyles<string>);
-  }
+  const styles = isFunction(originalStyles) ? originalStyles(selector) : originalStyles;
 
   return [
-    stylesOutput,
+    styles,
     (part) => {
       const namespacedPart = getNamespacedPart(namespace, part);
       return interopDataAttrObj(namespacedPart);
@@ -40,6 +29,6 @@ export function createStyleObj<Part extends string = string>(
   ];
 }
 
-function getNamespacedPart(namespace: string, part: string) {
+export function getNamespacedPart(namespace: string, part: string) {
   return part === 'root' ? namespace : namespace + '.' + part;
 }

@@ -24,21 +24,27 @@ function Title({
   ...props
 }: HeadingProps & { hideInQuickNav?: boolean }) {
   return (
-    <RadixHeading as="h1" size={4} sx={{ lineHeight: 9 }} {...props}>
-      {hideInQuickNav ? children : <QuickNavItem label="Description">{children}</QuickNavItem>}
-    </RadixHeading>
+    <>
+      {/* @ts-ignore */}
+      <RadixHeading as="h1" size={4} sx={{ lineHeight: 9 }} {...props}>
+        {hideInQuickNav ? children : <QuickNavItem label="Description">{children}</QuickNavItem>}
+      </RadixHeading>
+    </>
   );
 }
 
 function Description(props: HeadingProps) {
   return (
-    <RadixHeading
-      as="h2"
-      size={2}
-      weight="normal"
-      sx={{ mb: 6, lineHeight: 3, color: 'gray700' }}
-      {...props}
-    />
+    <>
+      {/* @ts-ignore */}
+      <RadixHeading
+        as="h2"
+        size={2}
+        weight="normal"
+        sx={{ mb: 6, lineHeight: 3, color: 'gray700' }}
+        {...props}
+      />
+    </>
   );
 }
 
@@ -49,9 +55,12 @@ function Heading({
   ...props
 }: HeadingProps & { hideInQuickNav?: boolean }) {
   return (
-    <RadixHeading as="h3" size={3} sx={{ mt: 9, mb: 3, ...sx }} {...props}>
-      {hideInQuickNav ? children : <QuickNavItem>{children}</QuickNavItem>}
-    </RadixHeading>
+    <>
+      {/* @ts-ignore */}
+      <RadixHeading as="h3" size={3} sx={{ mt: 9, mb: 3, ...sx }} {...props}>
+        {hideInQuickNav ? children : <QuickNavItem>{children}</QuickNavItem>}
+      </RadixHeading>
+    </>
   );
 }
 
@@ -62,9 +71,12 @@ function SubHeading({
   ...props
 }: HeadingProps & { hideInQuickNav?: boolean }) {
   return (
-    <RadixHeading as="h4" size={1} sx={{ lineHeight: 2, my: 4, ...sx }} {...props}>
-      {hideInQuickNav ? children : <QuickNavItem level={1}>{children}</QuickNavItem>}
-    </RadixHeading>
+    <>
+      {/* @ts-ignore */}
+      <RadixHeading as="h4" size={1} sx={{ lineHeight: 2, my: 4, ...sx }} {...props}>
+        {hideInQuickNav ? children : <QuickNavItem level={1}>{children}</QuickNavItem>}
+      </RadixHeading>
+    </>
   );
 }
 

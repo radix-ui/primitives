@@ -1,16 +1,8 @@
-import { __DEV__ } from './constants';
-
 const alreadyWarned: Record<string, boolean> = {};
-
-export function invariant(cond: boolean, message: string): void {
-  if (!cond) {
-    throw new Error(message);
-  }
-}
 
 export function warning(cond: boolean, message: string): void {
   if (!cond) {
-    if (__DEV__) {
+    if (process.env.NODE_ENV === 'development') {
       console.warn(message);
     }
 
@@ -29,8 +21,4 @@ export function warningOnce(key: string, cond: boolean, message: string) {
     alreadyWarned[key] = true;
     warning(false, message);
   }
-}
-
-export function log(message: any, ...optionalParams: any[]) {
-  return console.log(message, ...optionalParams);
 }

@@ -33,6 +33,7 @@ export default function InputPage() {
         <Tbody>
           <Tr>
             <Td>
+              {/* @ts-ignore */}
               <Code as="kbd">Space</Code>
             </Td>
             <Td>
@@ -41,6 +42,7 @@ export default function InputPage() {
           </Tr>
           <Tr>
             <Td>
+              {/* @ts-ignore */}
               <Code as="kbd">Enter</Code>
             </Td>
             <Td>

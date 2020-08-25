@@ -23,6 +23,7 @@ function MainNavigation() {
   return (
     <ScrollArea>
       <Box sx={{ pb: 7 }}>
+        {/* @ts-ignore */}
         <Box as="a" href="/" sx={{ display: 'inline-flex', m: 3 }}>
           <Logo />
         </Box>

@@ -1,28 +1,33 @@
 {
   "name": "@interop-ui/react-tooltip",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "license": "MIT",
+  "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/react-tooltip.esm.min.js",
-  "types": "dist/types/index.d.ts",
+  "module": "dist/index.module.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "src",
     "dist"
   ],
   "scripts": {
-    "test": "cross-env CI=true ts-node --transpile-only ../../../scripts/test --passWithNoTests",
-    "test:watch": "npm run test -- --watchAll",
-    "build": "node ../../../scripts/build",
-    "clean": "ts-node ../../../scripts/clean",
-    "prepublish": "npm run build"
+    "build": "parcel build src/index.ts && yarn build:styles",
+    "build:styles": "node ../../../scripts/build-styles tooltip",
+    "clean": "rm -rf dist",
+    "bump": "yarn version --deferred",
+    "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/popper": "1.0.0",
-    "@interop-ui/react-arrow": "1.0.0",
-    "@interop-ui/react-popover": "1.0.0",
-    "@interop-ui/react-utils": "1.0.0",
-    "@interop-ui/react-visually-hidden": "1.0.0",
-    "@interop-ui/utils": "1.0.0",
-    "tslib": "^2.0.0"
+    "@interop-ui/popper": "workspace:*",
+    "@interop-ui/react-arrow": "workspace:*",
+    "@interop-ui/react-popover": "workspace:*",
+    "@interop-ui/react-utils": "workspace:*",
+    "@interop-ui/react-visually-hidden": "workspace:*",
+    "@interop-ui/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "parcel": "^2.0.0-beta.1"
+  },
+  "peerDependencies": {
+    "react": ">=16"
   }
 }
