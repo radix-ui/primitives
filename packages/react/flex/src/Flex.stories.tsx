@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex as FlexPrimitive, styles as flexStyles } from './Flex';
+import { Flex as FlexPrimitive, styles } from './Flex';
 
 export default { title: 'Flex' };
 
@@ -14,66 +14,83 @@ export const Basic = () => (
   </Flex>
 );
 
+export const InlineStyle = () => (
+  <FlexInlineStyle>
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+  </FlexInlineStyle>
+);
+
 export const Gap = () => (
-  <Flex gap={5}>
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-  </Flex>
+  <FlexInlineStyle gap={5}>
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+  </FlexInlineStyle>
 );
 
 export const RowGap = () => (
-  <Flex rowGap={5}>
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-  </Flex>
+  <FlexInlineStyle rowGap={5}>
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+  </FlexInlineStyle>
 );
 
 export const ColumnGap = () => (
-  <Flex columnGap={5}>
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem />
-  </Flex>
+  <FlexInlineStyle columnGap={5}>
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+  </FlexInlineStyle>
 );
 
 export const OffsetGap = () => (
-  <Flex gap={5}>
-    <FlexItem />
-    <FlexItem xOffset={20} />
-    <FlexItem />
-    <FlexItem />
-    <FlexItem yOffset={20} />
-    <FlexItem />
-  </Flex>
+  <FlexInlineStyle gap={5}>
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem xOffset={20} />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem />
+    <FlexInlineStyleItem yOffset={20} />
+    <FlexInlineStyleItem />
+  </FlexInlineStyle>
 );
 
 const Flex = (props: React.ComponentProps<typeof FlexPrimitive>) => (
-  <FlexPrimitive
+  <FlexPrimitive {...props} style={{ ...styles.root, ...props.style }} />
+);
+
+const FlexItem = (props: React.ComponentProps<typeof FlexPrimitive.Item>) => (
+  <FlexPrimitive.Item {...props} style={{ ...styles.item, ...props.style }} />
+);
+
+const FlexInlineStyle = (props: React.ComponentProps<typeof Flex>) => (
+  <Flex
     {...props}
     style={{
-      ...flexStyles.root,
       backgroundColor: 'ghostwhite',
       flexWrap: 'wrap',
     }}
   />
 );
 
-const FlexItem = (props: React.ComponentProps<typeof FlexPrimitive.Item>) => (
-  <FlexPrimitive.Item
+const FlexInlineStyleItem = (props: React.ComponentProps<typeof FlexItem>) => (
+  <FlexItem
     {...props}
     style={{
-      ...flexStyles.item,
       height: 50,
       minWidth: 200,
       borderWidth: 2,
