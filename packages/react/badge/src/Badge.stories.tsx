@@ -1,12 +1,22 @@
 import * as React from 'react';
-import { Badge, styles as badgeStyles } from './Badge';
+import { Badge as BadgePrimitive, styles } from './Badge';
 
 export default { title: 'Badge' };
 
-export function Basic() {
-  return (
-    <Badge style={badgeStyles.root}>
-      Cool Badge <span aria-hidden>😎</span>
-    </Badge>
-  );
-}
+export const Basic = () => <Badge>Badge</Badge>;
+
+export const InlineStyle = () => (
+  <Badge
+    style={{
+      backgroundColor: 'gainsboro',
+      borderRadius: '9999px',
+      padding: '5px 10px',
+    }}
+  >
+    Badge
+  </Badge>
+);
+
+const Badge = (props: React.ComponentProps<typeof BadgePrimitive>) => (
+  <BadgePrimitive {...props} style={{ ...styles.root, ...props.style }} />
+);
