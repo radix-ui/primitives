@@ -26,7 +26,6 @@ jobs:
         if: steps.yarn-cache-dir-path.outputs.cache-hit != 'true'
         run: yarn
       - name: Run build
-        if: steps.parcel-cache.outputs.cache-hit != 'true'
         run: yarn build
       - name: Run tests
         run: yarn test:ci
