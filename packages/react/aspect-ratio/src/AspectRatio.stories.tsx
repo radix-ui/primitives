@@ -20,7 +20,7 @@ export const InlineStyle = () => (
 );
 
 const AspectRatio = ({ children, ...props }: React.ComponentProps<typeof AspectRatioPrimitive>) => (
-  <AspectRatioPrimitive.Root {...props} style={{ ...styles.root, ...props.style }}>
+  <AspectRatioPrimitive {...props} style={{ ...styles.root, ...props.style }}>
     <AspectRatioPrimitive.Inner style={styles.inner}>{children}</AspectRatioPrimitive.Inner>
-  </AspectRatioPrimitive.Root>
+  </AspectRatioPrimitive>
 );
