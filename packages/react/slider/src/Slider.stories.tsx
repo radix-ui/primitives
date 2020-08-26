@@ -1,42 +1,51 @@
 import * as React from 'react';
-import { Slider, styles } from './Slider';
+import { Slider as SliderPrimitive, styles } from './Slider';
 
 export default { title: 'Slider' };
 
 export const Basic = () => (
-  <Slider.Root style={styles.root}>
-    <Slider.Track style={styles.track}>
-      <Slider.Range style={styles.range} />
-    </Slider.Track>
-    <Slider.Thumb style={styles.thumb} />
-  </Slider.Root>
+  <Slider>
+    <SliderTrack>
+      <SliderRange />
+    </SliderTrack>
+    <SliderThumb />
+  </Slider>
 );
 
 export const InlineStyle = () => (
-  <Slider.Root style={styles.root}>
-    <Slider.Track
+  <Slider>
+    <SliderTrack
       style={{
-        ...styles.track,
         height: 4,
         background: 'gainsboro',
         borderRadius: 4,
       }}
     >
-      <Slider.Range
-        style={{
-          ...styles.range,
-          background: 'black',
-        }}
-      />
-    </Slider.Track>
-    <Slider.Thumb
+      <SliderRange style={{ background: 'black' }} />
+    </SliderTrack>
+    <SliderThumb
       style={{
-        ...styles.thumb,
         borderRadius: 15,
         width: 15,
         height: 15,
         background: 'black',
       }}
     />
-  </Slider.Root>
+  </Slider>
+);
+
+const Slider = (props: React.ComponentProps<typeof SliderPrimitive>) => (
+  <SliderPrimitive {...props} style={{ ...styles.root, ...props.style }} />
+);
+
+const SliderRange = (props: React.ComponentProps<typeof SliderPrimitive.Range>) => (
+  <SliderPrimitive.Range {...props} style={{ ...styles.range, ...props.style }} />
+);
+
+const SliderTrack = (props: React.ComponentProps<typeof SliderPrimitive.Track>) => (
+  <SliderPrimitive.Track {...props} style={{ ...styles.track, ...props.style }} />
+);
+
+const SliderThumb = (props: React.ComponentProps<typeof SliderPrimitive.Thumb>) => (
+  <SliderPrimitive.Thumb {...props} style={{ ...styles.thumb, ...props.style }} />
 );

@@ -43,42 +43,42 @@ type SliderContextValue = {
 
 const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
   'SliderContext',
-  'Slider.Root'
+  'Slider'
 );
 
 /* -------------------------------------------------------------------------------------------------
- * SliderRoot
+ * Slider
  * -----------------------------------------------------------------------------------------------*/
 
-const ROOT_NAME = 'Slider.Root';
-const ROOT_DEFAULT_TAG = 'span';
+const SLIDER_NAME = 'Slider';
+const SLIDER_DEFAULT_TAG = 'span';
 
-type SliderRootDOMProps = Omit<
-  React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>,
+type SliderDOMProps = Omit<
+  React.ComponentPropsWithoutRef<typeof SLIDER_DEFAULT_TAG>,
   'defaultValue' | 'onChange'
 >;
-type SliderRootControlledProps = { value: number; onChange: (value: number) => void };
-type SliderRootUncontrolledProps = { defaultValue?: number; onChange?: (value: number) => void };
+type SliderControlledProps = { value: number; onChange: (value: number) => void };
+type SliderUncontrolledProps = { defaultValue?: number; onChange?: (value: number) => void };
 type SliderRangeControlledProps = { value: number[]; onChange: (value: number[]) => void };
 type SliderRangeUncontrolledProps = {
   defaultValue?: number[];
   onChange?: (value: number[]) => void;
 };
-type SliderRootProps = SliderRootDOMProps &
+type SliderProps = SliderDOMProps &
   Partial<SliderBounds> & {
     name?: string;
     disabled?: boolean;
   } & (
-    | SliderRootControlledProps
-    | SliderRootUncontrolledProps
+    | SliderControlledProps
+    | SliderUncontrolledProps
     | SliderRangeControlledProps
     | SliderRangeUncontrolledProps
   );
 
-const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderStaticProps>(
-  function SliderRoot(props, forwardedRef) {
+const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticProps>(
+  function Slider(props, forwardedRef) {
     const {
-      as: Comp = ROOT_DEFAULT_TAG,
+      as: Comp = SLIDER_DEFAULT_TAG,
       children,
       name,
       min = 0,
@@ -90,10 +90,10 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
       ...restProps
     } = props;
 
-    const { defaultValue } = props as SliderRootUncontrolledProps | SliderRangeUncontrolledProps;
-    const { value: valueProp } = props as SliderRootControlledProps | SliderRangeControlledProps;
+    const { defaultValue } = props as SliderUncontrolledProps | SliderRangeUncontrolledProps;
+    const { value: valueProp } = props as SliderControlledProps | SliderRangeControlledProps;
 
-    const sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderRootDOMProps;
+    const sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderDOMProps;
     const sliderRef = React.useRef<HTMLSpanElement>(null);
     const inputRefs = React.useRef<HTMLInputElement[]>([]);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
@@ -127,7 +127,7 @@ const SliderRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SliderRootProps, SliderSt
         activeValueIndexRef.current = nextValues.indexOf(nextValue);
         onValueRangeChange(nextValues);
       } else {
-        const onValueChange = onChange as SliderRootControlledProps['onChange'];
+        const onValueChange = onChange as SliderControlledProps['onChange'];
         if (!isControlled) setValuesState([nextValue]);
         activeValueIndexRef.current = atIndex;
         onValueChange(nextValue);
@@ -525,44 +525,18 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
   );
 });
 
-/* -------------------------------------------------------------------------------------------------
- * Slider
- * -----------------------------------------------------------------------------------------------*/
-
-const SLIDER_NAME = 'Slider';
-
-type SliderProps = SliderRootProps;
-
-const Slider = forwardRef<typeof ROOT_DEFAULT_TAG, SliderProps, SliderStaticProps>(function Slider(
-  props,
-  forwardedRef
-) {
-  const { children, ...rootProps } = props;
-  return (
-    <SliderRoot ref={forwardedRef} {...rootProps}>
-      <SliderTrack>
-        <SliderRange />
-        {children}
-      </SliderTrack>
-    </SliderRoot>
-  );
-});
-
 /* -----------------------------------------------------------------------------------------------*/
 
-Slider.Root = SliderRoot;
 Slider.Track = SliderTrack;
 Slider.Range = SliderRange;
 Slider.Thumb = SliderThumb;
 
 Slider.displayName = SLIDER_NAME;
-Slider.Root.displayName = ROOT_NAME;
 Slider.Track.displayName = TRACK_NAME;
 Slider.Range.displayName = RANGE_NAME;
 Slider.Thumb.displayName = THUMB_NAME;
 
 interface SliderStaticProps {
-  Root: typeof SliderRoot;
   Track: typeof SliderTrack;
   Range: typeof SliderRange;
   Thumb: typeof SliderThumb;
@@ -570,7 +544,7 @@ interface SliderStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
   root: {
-    ...cssReset(ROOT_DEFAULT_TAG),
+    ...cssReset(SLIDER_DEFAULT_TAG),
     position: 'relative',
     display: 'inline-flex',
     alignItems: 'center',
@@ -615,7 +589,7 @@ const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
   },
 });
 
-export type { SliderRootProps, SliderRangeProps, SliderTrackProps, SliderThumbProps, SliderProps };
+export type { SliderProps, SliderRangeProps, SliderTrackProps, SliderThumbProps };
 export { Slider, styles };
 
 /* -----------------------------------------------------------------------------------------------*/
