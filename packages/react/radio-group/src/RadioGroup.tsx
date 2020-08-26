@@ -7,7 +7,7 @@ import {
   useCallbackRef,
   useControlledState,
 } from '@interop-ui/react-utils';
-import { Radio, styles as radioStyles } from '@interop-ui/react-radio';
+import { Radio, styles as radioStyles } from './Radio';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup

@@ -2177,20 +2177,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-radio-group@workspace:packages/react/radio-group"
   dependencies:
-    "@interop-ui/react-radio": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-radio@workspace:*, @interop-ui/react-radio@workspace:packages/react/radio":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-radio@workspace:packages/react/radio"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
