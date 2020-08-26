@@ -55,10 +55,12 @@ const ITEM_NAME = 'RadioGroup.Item';
 type RadioProps = Omit<React.ComponentProps<typeof Radio>, 'value'> & { value: string };
 type RadioGroupItemProps = RadioProps;
 
-const RadioGroupItem = forwardRef<typeof Radio.Root, RadioGroupItemProps>(function RadioGroupInput(
-  props,
-  forwardedRef
-) {
+const RadioGroupItem = forwardRef<
+  // This silences type errors for now but will change
+  // when the `PrimitiveComponent` type for consumers is added
+  React.ElementType<React.ComponentPropsWithRef<typeof Radio>>,
+  RadioGroupItemProps
+>(function RadioGroupInput(props, forwardedRef) {
   const context = useRadioGroupContext(ITEM_NAME);
   const checked = context.value === props.value;
 
@@ -69,7 +71,7 @@ const RadioGroupItem = forwardRef<typeof Radio.Root, RadioGroupItemProps>(functi
   );
 
   return (
-    <Radio.Root
+    <Radio
       {...props}
       checked={checked}
       onChange={onChange}

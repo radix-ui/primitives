@@ -10,7 +10,7 @@ import {
 
 // These props will be passed to the top-level root rather than the input when using the
 // composed API so that we can share data via context.
-const inputPropsForRoot = [
+const inputPropsForRadio = [
   'autoComplete',
   'autoFocus',
   'checked',
@@ -24,7 +24,7 @@ const inputPropsForRoot = [
   'value',
 ] as const;
 
-type RadioInputAttributes = typeof inputPropsForRoot[number];
+type RadioInputAttributes = typeof inputPropsForRadio[number];
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -43,31 +43,28 @@ type RadioContextValue = {
   value: React.ComponentProps<'input'>['value'];
 };
 
-const [RadioContext, useRadioContext] = createContext<RadioContextValue>(
-  'RadioContext',
-  'Radio.Root'
-);
+const [RadioContext, useRadioContext] = createContext<RadioContextValue>('RadioContext', 'Radio');
 
 /* -------------------------------------------------------------------------------------------------
- * RadioRoot
+ * Radio
  * -----------------------------------------------------------------------------------------------*/
 
-const ROOT_NAME = 'Radio.Root';
-const ROOT_DEFAULT_TAG = 'span';
+const RADIO_NAME = 'Radio';
+const RADIO_DEFAULT_TAG = 'span';
 
-type RadioRootDOMProps = Omit<
-  React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>,
+type RadioDOMProps = Omit<
+  React.ComponentPropsWithoutRef<typeof RADIO_DEFAULT_TAG>,
   RadioInputAttributes
 >;
-type RadioRootOwnProps = Pick<React.ComponentPropsWithoutRef<'input'>, RadioInputAttributes>;
-type RadioRootProps = RadioRootDOMProps & RadioRootOwnProps;
+type RadioOwnProps = Pick<React.ComponentPropsWithoutRef<'input'>, RadioInputAttributes>;
+type RadioProps = RadioDOMProps & RadioOwnProps;
 
-const RadioRoot = forwardRef<typeof ROOT_DEFAULT_TAG, RadioRootProps>(function RadioRoot(
+const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioProps, RadioStaticProps>(function Radio(
   props,
   forwardedRef
 ) {
   let {
-    as: Comp = ROOT_DEFAULT_TAG,
+    as: Comp = RADIO_DEFAULT_TAG,
 
     // input props
     defaultChecked,
@@ -157,11 +154,11 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
   const ref = useComposedRefs(forwardedRef, inputRef);
 
   React.useEffect(() => {
-    for (let prop of inputPropsForRoot) {
+    for (let prop of inputPropsForRadio) {
       warningOnce(
         prop,
         !Object.hasOwnProperty.call(radioInputProps, prop),
-        `The ${prop} prop was passed to the Radio.Input component. This was likely a mistake. Instead, pass ${prop} to Radio.Root instead so that its data is available to the entire Radio component.`
+        `The ${prop} prop was passed to the Radio.Input component. This was likely a mistake. Instead, pass ${prop} to Radio instead so that its data is available to the entire Radio component.`
       );
     }
   });
@@ -210,49 +207,23 @@ const RadioIcon = forwardRef<typeof ICON_DEFAULT_TAG, RadioIconProps>(function R
   ) : null;
 });
 
-/* -------------------------------------------------------------------------------------------------
- * Radio
- * -----------------------------------------------------------------------------------------------*/
-
-const RADIO_NAME = 'Radio';
-const RADIO_DEFAULT_TAG = 'input';
-
-type RadioDOMProps = RadioRootDOMProps;
-type RadioOwnProps = RadioRootOwnProps;
-type RadioProps = RadioDOMProps & RadioOwnProps;
-
-const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioInputProps, RadioStaticProps>(
-  function Radio(props, forwardedRef) {
-    const { as, children, ...containerProps } = props;
-    return (
-      <RadioRoot {...containerProps}>
-        <RadioInput as={as} ref={forwardedRef} />
-        <RadioIcon />
-      </RadioRoot>
-    );
-  }
-);
-
 /* ---------------------------------------------------------------------------------------------- */
 
-Radio.Root = RadioRoot;
 Radio.Input = RadioInput;
 Radio.Icon = RadioIcon;
 
 Radio.displayName = RADIO_NAME;
-Radio.Root.displayName = ROOT_NAME;
 Radio.Input.displayName = INPUT_NAME;
 Radio.Icon.displayName = ICON_NAME;
 
 interface RadioStaticProps {
-  Root: typeof RadioRoot;
   Input: typeof RadioInput;
   Icon: typeof RadioIcon;
 }
 
 const [styles, interopDataAttrObj] = createStyleObj(RADIO_NAME, {
   root: {
-    ...cssReset(ROOT_DEFAULT_TAG),
+    ...cssReset(RADIO_DEFAULT_TAG),
     display: 'inline-block',
     position: 'relative',
     verticalAlign: 'middle',
@@ -280,4 +251,4 @@ const [styles, interopDataAttrObj] = createStyleObj(RADIO_NAME, {
 });
 
 export { Radio, styles };
-export type { RadioRootProps, RadioInputProps, RadioIconProps, RadioProps };
+export type { RadioProps, RadioInputProps, RadioIconProps };
