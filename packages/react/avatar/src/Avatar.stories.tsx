@@ -27,7 +27,7 @@ export const InlineStyle = () => (
 );
 
 const Avatar = (props: React.ComponentProps<typeof AvatarPrimitive>) => (
-  <AvatarPrimitive.Root
+  <AvatarPrimitive
     {...props}
     renderLoading={() => <span style={{ color: 'red', fontSize: 11 }}>Loading</span>}
     style={{ ...styles.root, ...props.style }}
@@ -35,5 +35,5 @@ const Avatar = (props: React.ComponentProps<typeof AvatarPrimitive>) => (
     <AvatarPrimitive.Image style={styles.image} />
     <AvatarPrimitive.Abbr style={styles.abbr} />
     <AvatarPrimitive.Icon />
-  </AvatarPrimitive.Root>
+  </AvatarPrimitive>
 );
