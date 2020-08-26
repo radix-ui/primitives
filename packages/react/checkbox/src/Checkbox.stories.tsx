@@ -24,11 +24,11 @@ export const InlineStyle = () => (
   </Checkbox>
 );
 
-const Checkbox = ({ children, ...props }: React.ComponentProps<typeof CheckboxPrimitive.Root>) => (
-  <CheckboxPrimitive.Root {...props} style={{ ...styles.root, ...props.style }}>
+const Checkbox = ({ children, ...props }: React.ComponentProps<typeof CheckboxPrimitive>) => (
+  <CheckboxPrimitive {...props} style={{ ...styles.root, ...props.style }}>
     <CheckboxPrimitive.Input style={styles.input} />
     {children}
-  </CheckboxPrimitive.Root>
+  </CheckboxPrimitive>
 );
 
 const CheckboxIcon = (props: React.ComponentProps<typeof CheckboxPrimitive.Icon>) => (
