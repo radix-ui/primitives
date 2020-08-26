@@ -3,7 +3,7 @@ import { cssReset } from '@interop-ui/utils';
 import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'Box';
-const DEFAULT_TAG = 'span';
+const DEFAULT_TAG = 'div';
 
 type BoxDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type BoxOwnProps = {};
