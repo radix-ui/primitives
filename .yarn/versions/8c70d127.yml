@@ -28,7 +28,6 @@ releases:
   "@interop-ui/react-overlay": prerelease
   "@interop-ui/react-popover": prerelease
   "@interop-ui/react-portal": prerelease
-  "@interop-ui/react-radio": prerelease
   "@interop-ui/react-radio-group": prerelease
   "@interop-ui/react-sheet": prerelease
   "@interop-ui/react-slider": prerelease
