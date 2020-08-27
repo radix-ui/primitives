@@ -37,6 +37,8 @@ const AspectRatio = forwardRef<typeof ASPECT_RATIO__DEFAULT_TAG, AspectRatioProp
         ref={forwardedRef}
         style={{
           ...style,
+          // Using `any` here recommended by the React.CSSProperties interface definition:
+          // https://github.com/frenic/csstype#what-should-i-do-when-i-get-type-errors
           ['--paddingBottom' as any]: `${paddingBottom}%`,
         }}
       >
