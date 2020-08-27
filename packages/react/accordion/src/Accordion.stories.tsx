@@ -93,7 +93,9 @@ const AccordionItem = (props: React.ComponentProps<typeof AccordionPrimitive.Ite
 );
 
 const AccordionButton = (props: React.ComponentProps<typeof AccordionPrimitive.Button>) => (
-  <AccordionPrimitive.Button {...props} style={{ ...styles.button, ...props.style }} />
+  <AccordionPrimitive.Header style={styles.header}>
+    <AccordionPrimitive.Button {...props} style={{ ...styles.button, ...props.style }} />
+  </AccordionPrimitive.Header>
 );
 
 const AccordionPanel = (props: React.ComponentProps<typeof AccordionPrimitive.Panel>) => (
