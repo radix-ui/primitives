@@ -34,6 +34,8 @@ AccessibleIcon.displayName = NAME;
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
     ...cssReset(DEFAULT_TAG),
+    display: 'inline-flex',
+    verticalAlign: 'middle',
   },
 });
 
