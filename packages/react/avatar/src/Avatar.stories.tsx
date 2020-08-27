@@ -3,20 +3,25 @@ import { Avatar as AvatarPrimitive, styles } from './Avatar';
 
 export default { title: 'Avatar' };
 
-export const WithImage = () => (
-  <Avatar src="https://picsum.photos/id/1005/400/400" alt="John Smith" />
-);
-
-export const WithoutImage = () => <Avatar alt="Someone else" />;
-
-export const BrokenLink = () => (
-  <Avatar src="https://broken.link.com/broken-pic.jpg" alt="John Smith" />
-);
+export const WithImage = () => <Avatar src="https://picsum.photos/id/1005/400/400" />;
+export const WithoutImage = () => <Avatar />;
+export const BrokenLink = () => <Avatar src="https://broken.link.com/broken-pic.jpg" />;
 
 export const InlineStyle = () => (
   <Avatar
     src="https://picsum.photos/id/1005/400/400"
-    alt="John Smith"
+    style={{
+      backgroundColor: 'gainsboro',
+      borderRadius: 50,
+      width: 50,
+      height: 50,
+    }}
+  />
+);
+
+export const InlineStyleBroken = () => (
+  <Avatar
+    src="https://broken.link.com/broken-pic.jpg"
     style={{
       backgroundColor: 'gainsboro',
       borderRadius: 50,
@@ -29,11 +34,10 @@ export const InlineStyle = () => (
 const Avatar = (props: React.ComponentProps<typeof AvatarPrimitive>) => (
   <AvatarPrimitive
     {...props}
-    renderLoading={() => <span style={{ color: 'red', fontSize: 11 }}>Loading</span>}
     style={{ ...styles.root, ...props.style }}
+    onStatusChange={console.log}
   >
-    <AvatarPrimitive.Image style={styles.image} />
-    <AvatarPrimitive.Abbr style={styles.abbr} />
-    <AvatarPrimitive.Icon />
+    <AvatarPrimitive.Image alt="John Smith" style={styles.image} />
+    <AvatarPrimitive.Fallback>JS</AvatarPrimitive.Fallback>
   </AvatarPrimitive>
 );
