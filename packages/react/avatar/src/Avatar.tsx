@@ -4,10 +4,14 @@ import { Image as ImagePrimitive } from '@interop-ui/react-image';
 import { cssReset, isFunction } from '@interop-ui/utils';
 import { createContext, forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
-const ROOT_NAME = 'Avatar.Root';
-const ROOT_DEFAULT_TAG = 'span';
+/* -------------------------------------------------------------------------------------------------
+ * Avatar
+ * -----------------------------------------------------------------------------------------------*/
 
-type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>;
+const AVATAR_NAME = 'Avatar';
+const AVATAR_DEFAULT_TAG = 'span';
+
+type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof AVATAR_DEFAULT_TAG>;
 type AvatarOwnProps = {
   src?: string;
   alt?: string;
@@ -26,63 +30,66 @@ interface AvatarContextValue {
 
 const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
   'AvatarContext',
-  ROOT_NAME
+  AVATAR_NAME
 );
 
-const AvatarRoot = forwardRef<typeof ROOT_DEFAULT_TAG, AvatarProps>(function AvatarRoot(
-  props,
-  forwardedRef
-) {
-  const {
-    alt,
-    as: Comp = ROOT_DEFAULT_TAG,
-    children,
-    renderFallback,
-    renderLoading,
-    src,
-    ...avatarProps
-  } = props;
-
-  let imageLoadingStatus = useImageLoadingStatus(src);
-  let hasImage = Boolean(src);
-
-  let whatToRender: AvatarRenderType = 'ICON';
-  if (hasImage) {
-    if (imageLoadingStatus === 'loading') {
-      whatToRender = isFunction(renderLoading) ? 'LOADING' : 'IMAGE';
-    } else if (imageLoadingStatus === 'error') {
-      whatToRender = isFunction(renderFallback)
-        ? 'FALLBACK'
-        : alt !== undefined
-        ? 'ALT_ABBR'
-        : 'ICON';
-    } else {
-      whatToRender = 'IMAGE';
-    }
-  } else {
-    whatToRender = isFunction(renderFallback) ? 'FALLBACK' : 'ICON';
-  }
-
-  const ctx = React.useMemo(() => {
-    return {
+const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
+  function Avatar(props, forwardedRef) {
+    const {
       alt,
+      as: Comp = AVATAR_DEFAULT_TAG,
+      children,
+      renderFallback,
+      renderLoading,
       src,
-      whatToRender,
-    };
-  }, [alt, src, whatToRender]);
+      ...avatarProps
+    } = props;
 
-  return (
-    <AvatarContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj('root')} {...avatarProps} ref={forwardedRef}>
-        {whatToRender === 'FALLBACK'
-          ? (renderFallback as Function)()
-          : whatToRender === 'LOADING'
-          ? (renderLoading as Function)()
-          : children}
-      </Comp>
-    </AvatarContext.Provider>
-  );
-});
+    let imageLoadingStatus = useImageLoadingStatus(src);
+    let hasImage = Boolean(src);
+
+    let whatToRender: AvatarRenderType = 'ICON';
+    if (hasImage) {
+      if (imageLoadingStatus === 'loading') {
+        whatToRender = isFunction(renderLoading) ? 'LOADING' : 'IMAGE';
+      } else if (imageLoadingStatus === 'error') {
+        whatToRender = isFunction(renderFallback)
+          ? 'FALLBACK'
+          : alt !== undefined
+          ? 'ALT_ABBR'
+          : 'ICON';
+      } else {
+        whatToRender = 'IMAGE';
+      }
+    } else {
+      whatToRender = isFunction(renderFallback) ? 'FALLBACK' : 'ICON';
+    }
+
+    const ctx = React.useMemo(() => {
+      return {
+        alt,
+        src,
+        whatToRender,
+      };
+    }, [alt, src, whatToRender]);
+
+    return (
+      <AvatarContext.Provider value={ctx}>
+        <Comp {...interopDataAttrObj('root')} {...avatarProps} ref={forwardedRef}>
+          {whatToRender === 'FALLBACK'
+            ? (renderFallback as Function)()
+            : whatToRender === 'LOADING'
+            ? (renderLoading as Function)()
+            : children}
+        </Comp>
+      </AvatarContext.Provider>
+    );
+  }
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * AvatarImage
+ * -----------------------------------------------------------------------------------------------*/
 
 const IMAGE_NAME = 'Avatar.Image';
 const IMAGE_DEFAULT_TAG = 'img';
@@ -102,6 +109,10 @@ const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(funct
   ) : null;
 });
 
+/* -------------------------------------------------------------------------------------------------
+ * AvatarIcon
+ * -----------------------------------------------------------------------------------------------*/
+
 const ICON_NAME = 'Avatar.Icon';
 const ICON_DEFAULT_TAG = 'svg';
 
@@ -119,6 +130,10 @@ const AvatarIcon = forwardRef<typeof ICON_DEFAULT_TAG, AvatarIconProps>(function
     <Comp {...interopDataAttrObj('icon')} ref={forwardedRef} {...iconProps} />
   ) : null;
 });
+
+/* -------------------------------------------------------------------------------------------------
+ * AvatarAbbr
+ * -----------------------------------------------------------------------------------------------*/
 
 const ABBR_NAME = 'Avatar.Abbr';
 const ABBR_DEFAULT_TAG = 'span';
@@ -140,36 +155,16 @@ const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function
   ) : null;
 });
 
-const AVATAR_NAME = 'Avatar';
-const AVATAR_DEFAULT_TAG = ROOT_DEFAULT_TAG;
-
-const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
-  function Avatar(props, forwardedRef) {
-    const { children, ...avatarProps } = props;
-
-    return (
-      <AvatarRoot ref={forwardedRef} {...avatarProps}>
-        <AvatarImage />
-        <AvatarIcon />
-        <AvatarAbbr />
-      </AvatarRoot>
-    );
-  }
-);
-
-Avatar.Root = AvatarRoot;
 Avatar.Image = AvatarImage;
 Avatar.Icon = AvatarIcon;
 Avatar.Abbr = AvatarAbbr;
 
 Avatar.displayName = AVATAR_NAME;
-Avatar.Root.displayName = ROOT_NAME;
 Avatar.Image.displayName = IMAGE_NAME;
 Avatar.Icon.displayName = ICON_NAME;
 Avatar.Abbr.displayName = ABBR_NAME;
 
 interface AvatarStaticProps {
-  Root: typeof AvatarRoot;
   Image: typeof AvatarImage;
   Abbr: typeof AvatarAbbr;
   Icon: typeof AvatarIcon;
@@ -212,7 +207,7 @@ function useImageLoadingStatus(src?: string) {
 
 const [styles, interopDataAttrObj] = createStyleObj(AVATAR_NAME, {
   root: {
-    ...cssReset(ROOT_DEFAULT_TAG),
+    ...cssReset(AVATAR_DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
