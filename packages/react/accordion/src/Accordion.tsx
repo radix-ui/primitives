@@ -162,32 +162,6 @@ const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonPro
 );
 
 /* -------------------------------------------------------------------------------------------------
- * AccordionTrigger
- * Composes AccordionHeader + AccordionButton
- * -----------------------------------------------------------------------------------------------*/
-
-const TRIGGER_NAME = 'Accordion.Trigger';
-const TRIGGER_DEFAULT_TAG = HEADER_DEFAULT_TAG;
-
-type AccordionTriggerDOMProps = AccordionButtonDOMProps;
-type AccordionTriggerOwnProps = AccordionButtonOwnProps;
-type AccordionTriggerProps = CollapsibleButtonProps &
-  AccordionTriggerDOMProps &
-  AccordionTriggerOwnProps;
-
-const AccordionTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, AccordionTriggerProps>(
-  function AccordionTrigger(props, forwardedRef) {
-    const { as = TRIGGER_DEFAULT_TAG, ...buttonProps } = props;
-
-    return (
-      <AccordionHeader as={as}>
-        <AccordionButton {...buttonProps} ref={forwardedRef} />
-      </AccordionHeader>
-    );
-  }
-);
-
-/* -------------------------------------------------------------------------------------------------
  * AccordionPanel
  * -----------------------------------------------------------------------------------------------*/
 
@@ -322,21 +296,18 @@ const Accordion = forwardRef<typeof ACCORDION_DEFAULT_TAG, AccordionProps, Accor
 Accordion.Item = AccordionItem;
 Accordion.Header = AccordionHeader;
 Accordion.Button = AccordionButton;
-Accordion.Trigger = AccordionTrigger;
 Accordion.Panel = AccordionPanel;
 
 Accordion.displayName = ACCORDION_NAME;
 Accordion.Item.displayName = ITEM_NAME;
 Accordion.Header.displayName = HEADER_NAME;
 Accordion.Button.displayName = BUTTON_NAME;
-Accordion.Trigger.displayName = TRIGGER_NAME;
 Accordion.Panel.displayName = PANEL_NAME;
 
 interface AccordionStaticProps {
   Item: typeof AccordionItem;
   Header: typeof AccordionHeader;
   Button: typeof AccordionButton;
-  Trigger: typeof AccordionTrigger;
   Panel: typeof AccordionPanel;
 }
 
@@ -366,7 +337,6 @@ export type {
   AccordionProps,
   AccordionButtonProps,
   AccordionHeaderProps,
-  AccordionTriggerProps,
   AccordionItemProps,
   AccordionPanelProps,
 };
