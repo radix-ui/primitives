@@ -45,88 +45,84 @@ type CheckboxContextValue = {
 
 const [CheckboxContext, useCheckboxContext] = createContext<CheckboxContextValue>(
   'CheckboxContext',
-  'Checkbox.Root'
+  'Checkbox'
 );
 CheckboxContext.displayName = 'CheckboxContext';
 
 /* -------------------------------------------------------------------------------------------------
- * CheckboxRoot
+ * Checkbox
  * -----------------------------------------------------------------------------------------------*/
 
-const ROOT_NAME = 'Checkbox.Root';
-const ROOT_DEFAULT_TAG = 'span';
+const CHECKBOX_NAME = 'Checkbox';
+const CHECKBOX_DEFAULT_TAG = 'span';
 
-type CheckboxRootDOMProps = Omit<
-  React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>,
+type CheckboxDOMProps = Omit<
+  React.ComponentPropsWithoutRef<typeof CHECKBOX_DEFAULT_TAG>,
   CheckboxInputAttributes
 >;
-type CheckboxRootOwnProps = Pick<
-  React.ComponentPropsWithoutRef<'input'>,
-  CheckboxInputAttributes
-> & {
+type CheckboxOwnProps = Pick<React.ComponentPropsWithoutRef<'input'>, CheckboxInputAttributes> & {
   isIndeterminate?: boolean;
 };
 
-type CheckboxRootProps = CheckboxRootDOMProps & CheckboxRootOwnProps;
+type CheckboxProps = CheckboxDOMProps & CheckboxOwnProps;
 
-const CheckboxRoot = forwardRef<typeof ROOT_DEFAULT_TAG, CheckboxRootProps>(function CheckboxRoot(
-  props,
-  forwardedRef
-) {
-  let {
-    as: Comp = ROOT_DEFAULT_TAG,
+const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, CheckboxStaticProps>(
+  function Checkbox(props, forwardedRef) {
+    let {
+      as: Comp = CHECKBOX_DEFAULT_TAG,
 
-    // input props
-    defaultChecked,
-    checked: checkedProp,
-    onChange: onChangeProp,
-    autoComplete,
-    autoFocus,
-    disabled,
-    form,
-    name,
-    readOnly,
-    required,
-    value,
-    ...checkboxRootProps
-  } = props;
-
-  let isControlled = React.useRef(checkedProp != null);
-
-  let inputRef = React.useRef<HTMLInputElement>(null);
-
-  let [_checked, setChecked] = React.useState(defaultChecked ?? false);
-  let checked = isControlled.current ? checkedProp! : _checked;
-
-  let onChange = useCallbackRef((event: React.ChangeEvent<HTMLInputElement>) => {
-    onChangeProp && onChangeProp(event);
-    if (!isControlled.current) {
-      setChecked(event.target.checked);
-    }
-  });
-
-  let context: CheckboxContextValue = React.useMemo(
-    () => ({
-      onChange,
-      checked,
-      inputRef,
+      // input props
+      defaultChecked,
+      checked: checkedProp,
+      onChange: onChangeProp,
       autoComplete,
+      autoFocus,
       disabled,
       form,
       name,
       readOnly,
       required,
       value,
-    }),
-    [onChange, checked, autoComplete, disabled, form, name, readOnly, required, value]
-  );
+      ...CheckboxProps
+    } = props;
 
-  return (
-    <CheckboxContext.Provider value={context}>
-      <Comp {...checkboxRootProps} {...interopDataAttrObj('root')} ref={forwardedRef} />
-    </CheckboxContext.Provider>
-  );
-});
+    let isControlled = React.useRef(checkedProp != null);
+
+    let inputRef = React.useRef<HTMLInputElement>(null);
+
+    let [_checked, setChecked] = React.useState(defaultChecked ?? false);
+    let checked = isControlled.current ? checkedProp! : _checked;
+
+    let onChange = useCallbackRef((event: React.ChangeEvent<HTMLInputElement>) => {
+      onChangeProp && onChangeProp(event);
+      if (!isControlled.current) {
+        setChecked(event.target.checked);
+      }
+    });
+
+    let context: CheckboxContextValue = React.useMemo(
+      () => ({
+        onChange,
+        checked,
+        inputRef,
+        autoComplete,
+        disabled,
+        form,
+        name,
+        readOnly,
+        required,
+        value,
+      }),
+      [onChange, checked, autoComplete, disabled, form, name, readOnly, required, value]
+    );
+
+    return (
+      <CheckboxContext.Provider value={context}>
+        <Comp {...CheckboxProps} {...interopDataAttrObj('root')} ref={forwardedRef} />
+      </CheckboxContext.Provider>
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * CheckboxInput
@@ -214,49 +210,23 @@ const CheckboxIcon = forwardRef<typeof ICON_DEFAULT_TAG, CheckboxIconProps>(func
   ) : null;
 });
 
-/* -------------------------------------------------------------------------------------------------
- * Checkbox
- * -----------------------------------------------------------------------------------------------*/
-
-interface CheckboxStaticProps {
-  Root: typeof CheckboxRoot;
-  Input: typeof CheckboxInput;
-  Icon: typeof CheckboxIcon;
-}
-
-const CHECKBOX_NAME = 'Checkbox';
-const CHECKBOX_DEFAULT_TAG = 'input';
-
-type CheckboxDOMProps = CheckboxRootDOMProps;
-type CheckboxOwnProps = CheckboxRootOwnProps;
-type CheckboxProps = CheckboxDOMProps & CheckboxOwnProps;
-
-const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxInputProps, CheckboxStaticProps>(
-  function Checkbox(props, forwardedRef) {
-    const { children, ...containerProps } = props;
-    return (
-      <CheckboxRoot {...containerProps}>
-        <CheckboxInput ref={forwardedRef} />
-        <CheckboxIcon />
-      </CheckboxRoot>
-    );
-  }
-);
-
 /* ---------------------------------------------------------------------------------------------- */
 
-Checkbox.Root = CheckboxRoot;
 Checkbox.Input = CheckboxInput;
 Checkbox.Icon = CheckboxIcon;
 
 Checkbox.displayName = CHECKBOX_NAME;
-Checkbox.Root.displayName = ROOT_NAME;
 Checkbox.Input.displayName = INPUT_NAME;
 Checkbox.Icon.displayName = ICON_NAME;
 
+interface CheckboxStaticProps {
+  Input: typeof CheckboxInput;
+  Icon: typeof CheckboxIcon;
+}
+
 const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
   root: {
-    ...cssReset(ROOT_DEFAULT_TAG),
+    ...cssReset(CHECKBOX_DEFAULT_TAG),
     display: 'inline-block',
     position: 'relative',
     verticalAlign: 'middle',
@@ -283,5 +253,5 @@ const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
   },
 });
 
-export type { CheckboxRootProps, CheckboxInputProps, CheckboxIconProps, CheckboxProps };
+export type { CheckboxProps, CheckboxInputProps, CheckboxIconProps };
 export { Checkbox, styles };
