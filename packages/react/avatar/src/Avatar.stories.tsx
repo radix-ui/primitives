@@ -31,13 +31,17 @@ export const InlineStyleBroken = () => (
   />
 );
 
-const Avatar = (props: React.ComponentProps<typeof AvatarPrimitive>) => (
-  <AvatarPrimitive
-    {...props}
-    style={{ ...styles.root, ...props.style }}
-    onStatusChange={console.log}
-  >
-    <AvatarPrimitive.Image alt="John Smith" style={styles.image} />
+const Avatar = ({
+  src,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive> & { src?: string }) => (
+  <AvatarPrimitive {...props} style={{ ...styles.root, ...props.style }}>
+    <AvatarPrimitive.Image
+      alt="John Smith"
+      src={src}
+      style={styles.image}
+      onLoadingStatusChange={console.log}
+    />
     <AvatarPrimitive.Fallback>JS</AvatarPrimitive.Fallback>
   </AvatarPrimitive>
 );

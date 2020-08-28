@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
 import { cssReset } from '@interop-ui/utils';
-import { createContext, forwardRef, createStyleObj, useCallbackRef } from '@interop-ui/react-utils';
+import {
+  createContext,
+  forwardRef,
+  createStyleObj,
+  useCallbackRef,
+  useIsomorphicLayoutEffect,
+} from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar
@@ -11,17 +17,12 @@ const AVATAR_NAME = 'Avatar';
 const AVATAR_DEFAULT_TAG = 'span';
 
 type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof AVATAR_DEFAULT_TAG>;
-type AvatarOwnProps = {
-  src?: string;
-  alt?: string;
-  onStatusChange?: (status: ImageLoadingStatus) => void;
-};
+type AvatarOwnProps = { onLoadingStatusChange?: (status: ImageLoadingStatus) => void };
 type AvatarProps = AvatarDOMProps & AvatarOwnProps;
-
-interface AvatarContextValue {
-  src?: string;
-  imageLoadingStatus: ImageLoadingStatus;
-}
+type AvatarContextValue = [
+  ImageLoadingStatus,
+  React.Dispatch<React.SetStateAction<ImageLoadingStatus>>
+];
 
 const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
   'AvatarContext',
@@ -30,23 +31,8 @@ const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
 
 const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
   function Avatar(props, forwardedRef) {
-    const {
-      as: Comp = AVATAR_DEFAULT_TAG,
-      src,
-      children,
-      onStatusChange: onStatusChangeProp = () => {},
-      ...avatarProps
-    } = props;
-
-    const imageLoadingStatus = useImageLoadingStatus(src);
-    const onStatusChange = useCallbackRef(onStatusChangeProp);
-    const context = React.useMemo(() => ({ src, imageLoadingStatus }), [src, imageLoadingStatus]);
-
-    React.useEffect(() => {
-      if (imageLoadingStatus !== 'idle') {
-        onStatusChange(imageLoadingStatus);
-      }
-    }, [imageLoadingStatus, onStatusChange]);
+    const { as: Comp = AVATAR_DEFAULT_TAG, children, ...avatarProps } = props;
+    const context = React.useState<ImageLoadingStatus>('idle');
 
     return (
       <Comp {...interopDataAttrObj('root')} {...avatarProps} ref={forwardedRef}>
@@ -63,20 +49,38 @@ const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticPr
 const IMAGE_NAME = 'Avatar.Image';
 const IMAGE_DEFAULT_TAG = 'img';
 
-type AvatarImageDOMProps = React.ComponentPropsWithRef<typeof IMAGE_DEFAULT_TAG>;
-type AvatarImageOwnProps = {};
+type AvatarImageDOMProps = React.ComponentPropsWithRef<typeof ImagePrimitive>;
+type AvatarImageOwnProps = { onLoadingStatusChange?: (status: ImageLoadingStatus) => void };
 type AvatarImageProps = AvatarImageDOMProps & AvatarImageOwnProps;
 
-const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(function AvatarImage(
-  props,
-  forwardedRef
-) {
-  const { as: Comp = ImagePrimitive, children: _, ...imageProps } = props;
-  const { src, imageLoadingStatus } = useAvatarContext(IMAGE_NAME);
-  return imageLoadingStatus === 'loaded' ? (
-    <Comp {...imageProps} {...interopDataAttrObj('image')} src={src} ref={forwardedRef} />
-  ) : null;
-});
+const AvatarImage = React.forwardRef<React.ElementRef<typeof ImagePrimitive>, AvatarImageProps>(
+  function AvatarImage(props, forwardedRef) {
+    const {
+      src,
+      onLoadingStatusChange: onLoadingStatusChangeProp = () => {},
+      ...imageProps
+    } = props;
+    const [, setImageLoadingStatus] = useAvatarContext(IMAGE_NAME);
+    const imageLoadingStatus = useImageLoadingStatus(src);
+    const onLoadingStatusChange = useCallbackRef(onLoadingStatusChangeProp);
+
+    useIsomorphicLayoutEffect(() => {
+      if (imageLoadingStatus !== 'idle') {
+        onLoadingStatusChange(imageLoadingStatus);
+        setImageLoadingStatus(imageLoadingStatus);
+      }
+    }, [imageLoadingStatus, setImageLoadingStatus, onLoadingStatusChange]);
+
+    return imageLoadingStatus === 'loaded' ? (
+      <ImagePrimitive
+        {...imageProps}
+        {...interopDataAttrObj('image')}
+        src={src}
+        ref={forwardedRef}
+      />
+    ) : null;
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * AvatarFallback
@@ -92,8 +96,8 @@ type AvatarFallbackProps = AvatarFallbackDOMProps & AvatarFallbackOwnProps;
 const AvatarFallback = forwardRef<typeof FALLBACK_DEFAULT_TAG, AvatarFallbackProps>(
   function AvatarFallback(props, forwardedRef) {
     const { as: Comp = FALLBACK_DEFAULT_TAG, ...fallbackProps } = props;
-    const { src, imageLoadingStatus } = useAvatarContext(FALLBACK_NAME);
-    return !src || imageLoadingStatus === 'error' ? (
+    const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
+    return imageLoadingStatus !== 'idle' && imageLoadingStatus !== 'loaded' ? (
       <Comp {...fallbackProps} {...interopDataAttrObj('fallback')} ref={forwardedRef} />
     ) : null;
   }
@@ -117,7 +121,10 @@ function useImageLoadingStatus(src?: string) {
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
 
   React.useEffect(() => {
-    if (!src) return;
+    if (!src) {
+      setLoadingStatus('error');
+      return;
+    }
 
     let isMounted = true;
     const image = new Image();
