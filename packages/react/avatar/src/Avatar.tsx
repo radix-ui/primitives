@@ -1,8 +1,13 @@
 import * as React from 'react';
-import { AvatarIcon as RadixIcon } from '@modulz/radix-icons';
 import { Image as ImagePrimitive } from '@interop-ui/react-image';
-import { cssReset, isFunction } from '@interop-ui/utils';
-import { createContext, forwardRef, createStyleObj } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import {
+  createContext,
+  forwardRef,
+  createStyleObj,
+  useCallbackRef,
+  useIsomorphicLayoutEffect,
+} from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar
@@ -12,21 +17,12 @@ const AVATAR_NAME = 'Avatar';
 const AVATAR_DEFAULT_TAG = 'span';
 
 type AvatarDOMProps = React.ComponentPropsWithoutRef<typeof AVATAR_DEFAULT_TAG>;
-type AvatarOwnProps = {
-  src?: string;
-  alt?: string;
-  renderFallback?: React.ReactNode;
-  renderLoading?: React.ReactNode;
-};
+type AvatarOwnProps = { onLoadingStatusChange?: (status: ImageLoadingStatus) => void };
 type AvatarProps = AvatarDOMProps & AvatarOwnProps;
-
-type AvatarRenderType = 'LOADING' | 'ICON' | 'IMAGE' | 'FALLBACK' | 'ALT_ABBR';
-
-interface AvatarContextValue {
-  src: string | undefined;
-  alt: string | undefined;
-  whatToRender: AvatarRenderType;
-}
+type AvatarContextValue = [
+  ImageLoadingStatus,
+  React.Dispatch<React.SetStateAction<ImageLoadingStatus>>
+];
 
 const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
   'AvatarContext',
@@ -35,54 +31,13 @@ const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
 
 const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticProps>(
   function Avatar(props, forwardedRef) {
-    const {
-      alt,
-      as: Comp = AVATAR_DEFAULT_TAG,
-      children,
-      renderFallback,
-      renderLoading,
-      src,
-      ...avatarProps
-    } = props;
-
-    let imageLoadingStatus = useImageLoadingStatus(src);
-    let hasImage = Boolean(src);
-
-    let whatToRender: AvatarRenderType = 'ICON';
-    if (hasImage) {
-      if (imageLoadingStatus === 'loading') {
-        whatToRender = isFunction(renderLoading) ? 'LOADING' : 'IMAGE';
-      } else if (imageLoadingStatus === 'error') {
-        whatToRender = isFunction(renderFallback)
-          ? 'FALLBACK'
-          : alt !== undefined
-          ? 'ALT_ABBR'
-          : 'ICON';
-      } else {
-        whatToRender = 'IMAGE';
-      }
-    } else {
-      whatToRender = isFunction(renderFallback) ? 'FALLBACK' : 'ICON';
-    }
-
-    const ctx = React.useMemo(() => {
-      return {
-        alt,
-        src,
-        whatToRender,
-      };
-    }, [alt, src, whatToRender]);
+    const { as: Comp = AVATAR_DEFAULT_TAG, children, ...avatarProps } = props;
+    const context = React.useState<ImageLoadingStatus>('idle');
 
     return (
-      <AvatarContext.Provider value={ctx}>
-        <Comp {...interopDataAttrObj('root')} {...avatarProps} ref={forwardedRef}>
-          {whatToRender === 'FALLBACK'
-            ? (renderFallback as Function)()
-            : whatToRender === 'LOADING'
-            ? (renderLoading as Function)()
-            : children}
-        </Comp>
-      </AvatarContext.Provider>
+      <Comp {...interopDataAttrObj('root')} {...avatarProps} ref={forwardedRef}>
+        <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
+      </Comp>
     );
   }
 );
@@ -94,80 +49,69 @@ const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticPr
 const IMAGE_NAME = 'Avatar.Image';
 const IMAGE_DEFAULT_TAG = 'img';
 
-type AvatarImageDOMProps = React.ComponentPropsWithRef<typeof IMAGE_DEFAULT_TAG>;
-type AvatarImageOwnProps = {};
+type AvatarImageDOMProps = React.ComponentPropsWithRef<typeof ImagePrimitive>;
+type AvatarImageOwnProps = { onLoadingStatusChange?: (status: ImageLoadingStatus) => void };
 type AvatarImageProps = AvatarImageDOMProps & AvatarImageOwnProps;
 
-const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(function AvatarImage(
-  props,
-  forwardedRef
-) {
-  let { as: Comp = ImagePrimitive, children: _, ...imageProps } = props;
-  let { src, alt, whatToRender } = useAvatarContext(IMAGE_NAME);
-  return whatToRender === 'IMAGE' ? (
-    <Comp {...interopDataAttrObj('image')} ref={forwardedRef} src={src} alt={alt} {...imageProps} />
+const AvatarImage = forwardRef<
+  // This silences type errors for now but will change
+  // when the `PrimitiveComponent` type for consumers is added
+  React.ElementType<React.ComponentPropsWithRef<typeof ImagePrimitive>>,
+  AvatarImageProps
+>(function AvatarImage(props, forwardedRef) {
+  const {
+    as: Comp = ImagePrimitive,
+    src,
+    onLoadingStatusChange: onLoadingStatusChangeProp = () => {},
+    ...imageProps
+  } = props;
+  const [, setImageLoadingStatus] = useAvatarContext(IMAGE_NAME);
+  const imageLoadingStatus = useImageLoadingStatus(src);
+  const onLoadingStatusChange = useCallbackRef(onLoadingStatusChangeProp);
+
+  useIsomorphicLayoutEffect(() => {
+    if (imageLoadingStatus !== 'idle') {
+      onLoadingStatusChange(imageLoadingStatus);
+      setImageLoadingStatus(imageLoadingStatus);
+    }
+  }, [imageLoadingStatus, setImageLoadingStatus, onLoadingStatusChange]);
+
+  return imageLoadingStatus === 'loaded' ? (
+    <Comp {...imageProps} {...interopDataAttrObj('image')} src={src} ref={forwardedRef} />
   ) : null;
 });
 
 /* -------------------------------------------------------------------------------------------------
- * AvatarIcon
+ * AvatarFallback
  * -----------------------------------------------------------------------------------------------*/
 
-const ICON_NAME = 'Avatar.Icon';
-const ICON_DEFAULT_TAG = 'svg';
+const FALLBACK_NAME = 'Avatar.Fallback';
+const FALLBACK_DEFAULT_TAG = 'span';
 
-type AvatarIconDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
-type AvatarIconOwnProps = {};
-type AvatarIconProps = AvatarIconDOMProps & AvatarIconOwnProps;
+type AvatarFallbackDOMProps = React.ComponentPropsWithoutRef<typeof FALLBACK_DEFAULT_TAG>;
+type AvatarFallbackOwnProps = {};
+type AvatarFallbackProps = AvatarFallbackDOMProps & AvatarFallbackOwnProps;
 
-const AvatarIcon = forwardRef<typeof ICON_DEFAULT_TAG, AvatarIconProps>(function AvatarIcon(
-  props,
-  forwardedRef
-) {
-  let { as: Comp = RadixIcon as any, ...iconProps } = props;
-  let { whatToRender } = useAvatarContext(ICON_NAME);
-  return whatToRender === 'ICON' ? (
-    <Comp {...interopDataAttrObj('icon')} ref={forwardedRef} {...iconProps} />
-  ) : null;
-});
-
-/* -------------------------------------------------------------------------------------------------
- * AvatarAbbr
- * -----------------------------------------------------------------------------------------------*/
-
-const ABBR_NAME = 'Avatar.Abbr';
-const ABBR_DEFAULT_TAG = 'span';
-
-type AvatarAbbrDOMProps = React.ComponentPropsWithoutRef<typeof ABBR_DEFAULT_TAG>;
-type AvatarAbbrOwnProps = {};
-type AvatarAbbrProps = AvatarAbbrDOMProps & AvatarAbbrOwnProps;
-
-const AvatarAbbr = forwardRef<typeof ABBR_DEFAULT_TAG, AvatarAbbrProps>(function AvatarAbbr(
-  props,
-  forwardedRef
-) {
-  let { as: Comp = 'span', children, ...abbrProps } = props;
-  let { alt, whatToRender } = useAvatarContext(ABBR_NAME);
-  return alt && whatToRender === 'ALT_ABBR' ? (
-    <Comp {...interopDataAttrObj('abbr')} aria-hidden ref={forwardedRef} {...abbrProps}>
-      {alt[0]}
-    </Comp>
-  ) : null;
-});
+const AvatarFallback = forwardRef<typeof FALLBACK_DEFAULT_TAG, AvatarFallbackProps>(
+  function AvatarFallback(props, forwardedRef) {
+    const { as: Comp = FALLBACK_DEFAULT_TAG, ...fallbackProps } = props;
+    const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
+    return imageLoadingStatus !== 'idle' && imageLoadingStatus !== 'loaded' ? (
+      <Comp {...fallbackProps} {...interopDataAttrObj('fallback')} ref={forwardedRef} />
+    ) : null;
+  }
+);
 
 Avatar.Image = AvatarImage;
-Avatar.Icon = AvatarIcon;
-Avatar.Abbr = AvatarAbbr;
+Avatar.Fallback = AvatarFallback;
 
 Avatar.displayName = AVATAR_NAME;
 Avatar.Image.displayName = IMAGE_NAME;
-Avatar.Icon.displayName = ICON_NAME;
-Avatar.Abbr.displayName = ABBR_NAME;
+Avatar.Fallback.displayName = FALLBACK_NAME;
 
 interface AvatarStaticProps {
   Image: typeof AvatarImage;
-  Abbr: typeof AvatarAbbr;
-  Icon: typeof AvatarIcon;
+  Fallback: typeof AvatarFallback;
 }
 
 type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
@@ -177,25 +121,22 @@ function useImageLoadingStatus(src?: string) {
 
   React.useEffect(() => {
     if (!src) {
-      return undefined;
+      setLoadingStatus('error');
+      return;
     }
-
-    setLoadingStatus('loading');
 
     let isMounted = true;
     const image = new Image();
+
+    const updateStatus = (status: ImageLoadingStatus) => () => {
+      if (!isMounted) return;
+      setLoadingStatus(status);
+    };
+
+    setLoadingStatus('loading');
+    image.onload = updateStatus('loaded');
+    image.onerror = updateStatus('error');
     image.src = src;
-    image.onload = () => {
-      if (!isMounted) return;
-      setLoadingStatus('loaded');
-    };
-    image.onerror = () => {
-      if (!isMounted) return;
-      setLoadingStatus('error');
-    };
-    image.oninvalid = () => {
-      // TODO
-    };
 
     return () => {
       isMounted = false;
@@ -221,18 +162,11 @@ const [styles, interopDataAttrObj] = createStyleObj(AVATAR_NAME, {
     height: '100%',
     // Make sure images are not distorted
     objectFit: 'cover',
-    // Remove alt text (appears in some browsers when image doesn't load)
-    color: 'transparent',
-    // Hide the image broken icon (Chrome only)
-    textIndent: 10000,
   },
-  abbr: {
-    ...cssReset(ABBR_DEFAULT_TAG),
-  },
-  icon: {
-    ...cssReset(ICON_DEFAULT_TAG),
+  fallback: {
+    ...cssReset(FALLBACK_DEFAULT_TAG),
   },
 });
 
-export type { AvatarProps, AvatarImageProps, AvatarIconProps, AvatarAbbrProps };
+export type { AvatarProps, AvatarImageProps, AvatarFallbackProps };
 export { Avatar, styles };

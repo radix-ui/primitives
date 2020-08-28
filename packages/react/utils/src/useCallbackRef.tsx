@@ -5,12 +5,10 @@ import * as React from 'react';
  * to avoid triggering re-renders when passed as a prop
  * or avoid re-executing effects when passed as a dependency
  */
-export function useCallbackRef<T extends (...args: any[]) => any>(
-  callback: T,
-  useEffect = React.useEffect
-) {
+export function useCallbackRef<T extends (...args: any[]) => any>(callback: T) {
   const callbackRef = React.useRef(callback);
-  useEffect(() => {
+
+  React.useEffect(() => {
     callbackRef.current = callback;
   });
 
