@@ -55,15 +55,15 @@ function isControlled(checked: boolean | undefined): checked is boolean {
 const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
   function CheckboxInput(props, forwardedRef) {
     const { as: Comp = INPUT_DEFAULT_TAG, ...checkboxInputProps } = props;
-    const [, setChecked] = useCheckboxContext(INPUT_NAME);
+    const [, setIsChecked] = useCheckboxContext(INPUT_NAME);
     const checked = props.checked ?? props.defaultChecked ?? false;
 
     React.useEffect(() => {
-      setChecked(checked);
-    }, [checked, setChecked]);
+      setIsChecked(checked);
+    }, [checked, setIsChecked]);
 
     const handleChange = composeEventHandlers(props.onChange, (event) => {
-      if (!isControlled(props.checked)) setChecked(event.target.checked);
+      if (!isControlled(props.checked)) setIsChecked(event.target.checked);
     });
 
     return (
