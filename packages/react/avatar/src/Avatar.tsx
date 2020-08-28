@@ -53,34 +53,33 @@ type AvatarImageDOMProps = React.ComponentPropsWithRef<typeof ImagePrimitive>;
 type AvatarImageOwnProps = { onLoadingStatusChange?: (status: ImageLoadingStatus) => void };
 type AvatarImageProps = AvatarImageDOMProps & AvatarImageOwnProps;
 
-const AvatarImage = React.forwardRef<React.ElementRef<typeof ImagePrimitive>, AvatarImageProps>(
-  function AvatarImage(props, forwardedRef) {
-    const {
-      src,
-      onLoadingStatusChange: onLoadingStatusChangeProp = () => {},
-      ...imageProps
-    } = props;
-    const [, setImageLoadingStatus] = useAvatarContext(IMAGE_NAME);
-    const imageLoadingStatus = useImageLoadingStatus(src);
-    const onLoadingStatusChange = useCallbackRef(onLoadingStatusChangeProp);
+const AvatarImage = forwardRef<
+  // This silences type errors for now but will change
+  // when the `PrimitiveComponent` type for consumers is added
+  React.ElementType<React.ComponentPropsWithRef<typeof ImagePrimitive>>,
+  AvatarImageProps
+>(function AvatarImage(props, forwardedRef) {
+  const {
+    as: Comp = ImagePrimitive,
+    src,
+    onLoadingStatusChange: onLoadingStatusChangeProp = () => {},
+    ...imageProps
+  } = props;
+  const [, setImageLoadingStatus] = useAvatarContext(IMAGE_NAME);
+  const imageLoadingStatus = useImageLoadingStatus(src);
+  const onLoadingStatusChange = useCallbackRef(onLoadingStatusChangeProp);
 
-    useIsomorphicLayoutEffect(() => {
-      if (imageLoadingStatus !== 'idle') {
-        onLoadingStatusChange(imageLoadingStatus);
-        setImageLoadingStatus(imageLoadingStatus);
-      }
-    }, [imageLoadingStatus, setImageLoadingStatus, onLoadingStatusChange]);
+  useIsomorphicLayoutEffect(() => {
+    if (imageLoadingStatus !== 'idle') {
+      onLoadingStatusChange(imageLoadingStatus);
+      setImageLoadingStatus(imageLoadingStatus);
+    }
+  }, [imageLoadingStatus, setImageLoadingStatus, onLoadingStatusChange]);
 
-    return imageLoadingStatus === 'loaded' ? (
-      <ImagePrimitive
-        {...imageProps}
-        {...interopDataAttrObj('image')}
-        src={src}
-        ref={forwardedRef}
-      />
-    ) : null;
-  }
-);
+  return imageLoadingStatus === 'loaded' ? (
+    <Comp {...imageProps} {...interopDataAttrObj('image')} src={src} ref={forwardedRef} />
+  ) : null;
+});
 
 /* -------------------------------------------------------------------------------------------------
  * AvatarFallback
