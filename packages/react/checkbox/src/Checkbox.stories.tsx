@@ -5,36 +5,69 @@ export default { title: 'Checkbox' };
 
 export const Basic = () => (
   <Checkbox>
-    <CheckboxIcon />
+    <CheckboxInput />
+    <CheckboxBox>
+      <CheckboxIcon />
+    </CheckboxBox>
   </Checkbox>
 );
 
 export const InlineStyle = () => (
-  <Checkbox style={{ border: '1px solid gainsboro', width: 30, height: 30 }}>
-    <CheckboxIcon
-      style={{
-        width: 22,
-        height: 22,
-        backgroundColor: 'dodgerblue',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    />
+  <Checkbox style={{ width: 30, height: 30 }}>
+    <CheckboxInput />
+    <CheckboxBox style={{ border: '1px solid gainsboro' }}>
+      <CheckboxIcon
+        style={{
+          width: 22,
+          height: 22,
+          backgroundColor: 'dodgerblue',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      />
+    </CheckboxBox>
   </Checkbox>
 );
 
-const Checkbox = ({ children, ...props }: React.ComponentProps<typeof CheckboxPrimitive>) => (
-  <CheckboxPrimitive {...props} style={{ ...styles.root, ...props.style }}>
-    <CheckboxPrimitive.Input style={styles.input} />
-    {children}
-  </CheckboxPrimitive>
+export const Controlled = () => {
+  const [isChecked, setIsChecked] = React.useState(true);
+
+  return (
+    <Checkbox style={{ width: 30, height: 30 }}>
+      <CheckboxInput checked={isChecked} onChange={(event) => setIsChecked(event.target.checked)} />
+      <CheckboxBox style={{ border: '1px solid gainsboro' }}>
+        <CheckboxIcon
+          style={{
+            width: 22,
+            height: 22,
+            backgroundColor: 'dodgerblue',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        />
+      </CheckboxBox>
+    </Checkbox>
+  );
+};
+
+const Checkbox = (props: React.ComponentProps<typeof CheckboxPrimitive>) => (
+  <CheckboxPrimitive {...props} style={{ ...styles.root, ...props.style }} />
 );
 
-const CheckboxIcon = (props: React.ComponentProps<typeof CheckboxPrimitive.Icon>) => (
-  <CheckboxPrimitive.Icon {...props} style={{ ...styles.icon, ...props.style }}>
+const CheckboxInput = (props: React.ComponentProps<typeof CheckboxPrimitive.Input>) => (
+  <CheckboxPrimitive.Input {...props} style={{ ...styles.input, ...props.style }} />
+);
+
+const CheckboxBox = (props: React.ComponentProps<typeof CheckboxPrimitive.Box>) => (
+  <CheckboxPrimitive.Box {...props} style={{ ...styles.box, ...props.style }} />
+);
+
+const CheckboxIcon = (props: React.ComponentProps<typeof CheckboxPrimitive.CheckMark>) => (
+  <CheckboxPrimitive.CheckMark {...props} style={{ ...styles.icon, ...props.style }}>
     <svg viewBox="0 0 32 32" width="60%" height="60%" fill="none" stroke="white">
       <path d="M2 30 L30 2 M30 30 L2 2" />
     </svg>
-  </CheckboxPrimitive.Icon>
+  </CheckboxPrimitive.CheckMark>
 );
