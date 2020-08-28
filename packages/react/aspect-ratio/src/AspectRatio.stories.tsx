@@ -10,13 +10,13 @@ export const Basic = () => (
 );
 
 export const CustomRatio = () => (
-  <AspectRatio ratio={4 / 2}>
+  <AspectRatio ratio={2 / 1}>
     <img src="https://picsum.photos/id/10/400/600" alt="" style={{ width: '100%' }} />
   </AspectRatio>
 );
 
 export const InlineStyle = () => (
-  <AspectRatio ratio={4 / 2} style={{ width: 500, backgroundColor: 'gainsboro' }} />
+  <AspectRatio ratio={2 / 1} style={{ width: 500, backgroundColor: 'gainsboro' }} />
 );
 
 const AspectRatio = (props: React.ComponentProps<typeof AspectRatioPrimitive>) => (
