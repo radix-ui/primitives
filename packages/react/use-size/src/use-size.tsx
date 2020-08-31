@@ -34,9 +34,15 @@ export function useSize({ refToObserve, isObserving }: UseSizeOptions) {
         });
       });
 
+      const elem = refToObserve.current;
+      console.log('observe', elem);
       resizeObserver.observe(elementToObserver);
 
-      return () => resizeObserver.unobserve(elementToObserver);
+      return () => {
+        console.log('unobserve', elem);
+        setSize(undefined);
+        resizeObserver.unobserve(elementToObserver);
+      };
     }
     return;
   }, [isObserving, refToObserve]);
