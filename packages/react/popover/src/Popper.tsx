@@ -5,10 +5,8 @@ import { useSize } from '@interop-ui/react-use-size';
 
 const PopperContext = React.createContext<{
   anchorRef: React.RefObject<HTMLElement>;
-  contentRef: React.RefObject<HTMLElement>;
   setContentRef: (ref: React.RefObject<HTMLElement>) => void;
   contentPlacementStyles: React.CSSProperties;
-  arrowRef: React.RefObject<HTMLElement>;
   setArrowRef: (ref: React.RefObject<HTMLElement>) => void;
   arrowPlacementStyles: React.CSSProperties;
 }>({} as any);
@@ -49,10 +47,8 @@ export function Popper({ children }) {
     <PopperContext.Provider
       value={{
         anchorRef,
-        contentRef,
         setContentRef,
         contentPlacementStyles,
-        arrowRef,
         setArrowRef,
         arrowPlacementStyles,
       }}
