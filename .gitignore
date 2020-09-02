@@ -6,6 +6,7 @@ test-output.*
 .cache
 .parcel-cache
 .yarn/cache
+.yarn/install-state.gz
 
 # Editor-specific
 .vscode
