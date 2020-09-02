@@ -34,7 +34,7 @@ TODO: Overview statement on motivation and philosphy of the project
 
 - Our components can be composed or styled the same way underlying JSX components are composed or styled, with limitations only introduced to prevent UX/accessibility dark patterns where needed
 - Components are style agnostic, but they ship with default JS style objects that provide the bare minimal styles needed to reset user agent styles and present a basic, visually sensible control
-- Consumers can choose how to apply these styles in their app with plain CSS, CSS-in-JS, or pass them directly as inline styles
+- Consumers can choose how to apply these styles in their app; we do not enforce a particular styling methodology
 - Consumers can also opt to exclude our default styles altogether and write their own however they see fit
 - As each component that renders to the DOM will render only one element, we can provide predictable prefixed DOM attributes that can be used as CSS selectors:
 
