@@ -84,6 +84,7 @@ function MyArrow(props: any) {
     <div
       {...props}
       style={{
+        ...props.style,
         width: 20,
         height: 10,
         borderBottomLeftRadius: 10,
