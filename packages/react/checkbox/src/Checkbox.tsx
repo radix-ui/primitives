@@ -108,23 +108,23 @@ const CheckboxBox = forwardRef<typeof BOX_DEFAULT_TAG, CheckboxBoxProps>(functio
 });
 
 /* -------------------------------------------------------------------------------------------------
- * CheckboxCheckMark
+ * CheckboxCheckmark
  * -----------------------------------------------------------------------------------------------*/
 
-const CHECKMARK_NAME = 'Checkbox.CheckMark';
+const CHECKMARK_NAME = 'Checkbox.Checkmark';
 const CHECKMARK_DEFAULT_TAG = 'span';
 
-type CheckboxCheckMarkDOMProps = React.ComponentPropsWithoutRef<typeof CHECKMARK_DEFAULT_TAG>;
-type CheckboxCheckMarkOwnProps = {};
-type CheckboxCheckMarkProps = CheckboxCheckMarkDOMProps & CheckboxCheckMarkOwnProps;
+type CheckboxCheckmarkDOMProps = React.ComponentPropsWithoutRef<typeof CHECKMARK_DEFAULT_TAG>;
+type CheckboxCheckmarkOwnProps = {};
+type CheckboxCheckmarkProps = CheckboxCheckmarkDOMProps & CheckboxCheckmarkOwnProps;
 
-const CheckboxCheckMark = forwardRef<typeof CHECKMARK_DEFAULT_TAG, CheckboxCheckMarkProps>(
-  function CheckboxCheckMark(props, forwardedRef) {
-    const { as: Comp = CHECKMARK_DEFAULT_TAG, ...checkMarkProps } = props;
+const CheckboxCheckmark = forwardRef<typeof CHECKMARK_DEFAULT_TAG, CheckboxCheckmarkProps>(
+  function CheckboxCheckmark(props, forwardedRef) {
+    const { as: Comp = CHECKMARK_DEFAULT_TAG, ...checkmarkProps } = props;
     const [isChecked] = useCheckboxContext(CHECKMARK_NAME);
 
     return isChecked ? (
-      <Comp {...checkMarkProps} {...interopDataAttrObj('checkMark')} ref={forwardedRef} />
+      <Comp {...checkmarkProps} {...interopDataAttrObj('checkmark')} ref={forwardedRef} />
     ) : null;
   }
 );
@@ -133,17 +133,17 @@ const CheckboxCheckMark = forwardRef<typeof CHECKMARK_DEFAULT_TAG, CheckboxCheck
 
 Checkbox.Input = CheckboxInput;
 Checkbox.Box = CheckboxBox;
-Checkbox.CheckMark = CheckboxCheckMark;
+Checkbox.Checkmark = CheckboxCheckmark;
 
 Checkbox.displayName = CHECKBOX_NAME;
 Checkbox.Input.displayName = INPUT_NAME;
 Checkbox.Box.displayName = BOX_NAME;
-Checkbox.CheckMark.displayName = CHECKMARK_NAME;
+Checkbox.Checkmark.displayName = CHECKMARK_NAME;
 
 interface CheckboxStaticProps {
   Input: typeof CheckboxInput;
   Box: typeof CheckboxBox;
-  CheckMark: typeof CheckboxCheckMark;
+  Checkmark: typeof CheckboxCheckmark;
 }
 
 const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
@@ -168,7 +168,7 @@ const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
     ...cssReset(BOX_DEFAULT_TAG),
     flex: 1,
   },
-  checkMark: {
+  checkmark: {
     ...cssReset(CHECKMARK_DEFAULT_TAG),
     position: 'absolute',
     top: '50%',
@@ -179,5 +179,5 @@ const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
   },
 });
 
-export type { CheckboxProps, CheckboxInputProps, CheckboxBoxProps, CheckboxCheckMarkProps };
+export type { CheckboxProps, CheckboxInputProps, CheckboxBoxProps, CheckboxCheckmarkProps };
 export { Checkbox, styles };
