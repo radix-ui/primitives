@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { cssReset } from '@interop-ui/utils';
+import { FormValue } from '@interop-ui/react-form-value';
 import {
   createContext,
   createStyleObj,
-  composeEventHandlers,
   forwardRef,
   useControlledState,
 } from '@interop-ui/react-utils';
@@ -13,171 +13,127 @@ import {
  * -----------------------------------------------------------------------------------------------*/
 
 const CHECKBOX_NAME = 'Checkbox';
-const CHECKBOX_DEFAULT_TAG = 'span';
+const CHECKBOX_DEFAULT_TAG = 'button';
 
-type CheckboxDOMProps = React.ComponentPropsWithoutRef<typeof CHECKBOX_DEFAULT_TAG>;
-type CheckboxOwnProps = {};
+type CheckboxDOMProps = Omit<
+  React.ComponentPropsWithoutRef<typeof CHECKBOX_DEFAULT_TAG>,
+  'onChange'
+>;
+type CheckboxOwnProps = {
+  isChecked?: boolean;
+  defaultIsChecked?: boolean;
+  onChange?: (event: CustomEvent<{ checked: boolean }>) => void;
+};
 type CheckboxProps = CheckboxDOMProps & CheckboxOwnProps;
-type CheckboxContextValue = [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 
-const [CheckboxContext, useCheckboxContext] = createContext<CheckboxContextValue>(
+const [CheckboxContext, useCheckboxContext] = createContext<boolean>(
   'CheckboxContext',
   CHECKBOX_NAME
 );
 
 const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, CheckboxStaticProps>(
   function Checkbox(props, forwardedRef) {
-    const { as: Comp = CHECKBOX_DEFAULT_TAG, children, ...checkboxProps } = props;
-    const isCheckedState = React.useState(false);
-
-    return (
-      <Comp {...checkboxProps} {...interopDataAttrObj('root')} ref={forwardedRef}>
-        <CheckboxContext.Provider value={isCheckedState}>{children}</CheckboxContext.Provider>
-      </Comp>
-    );
-  }
-);
-
-/* -------------------------------------------------------------------------------------------------
- * CheckboxInput
- * -----------------------------------------------------------------------------------------------*/
-
-const INPUT_NAME = 'Checkbox.Input';
-const INPUT_DEFAULT_TAG = 'input';
-
-type CheckboxInputDOMProps = React.ComponentPropsWithoutRef<typeof INPUT_DEFAULT_TAG>;
-type CheckboxInputOwnProps = {};
-type CheckboxInputProps = CheckboxInputDOMProps & CheckboxInputOwnProps;
-
-const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
-  function CheckboxInput(props, forwardedRef) {
     const {
-      as: Comp = INPUT_DEFAULT_TAG,
-      checked,
-      defaultChecked,
-      onChange,
-      ...inputProps
+      as: Comp = CHECKBOX_DEFAULT_TAG,
+      isChecked: isCheckedProp,
+      defaultIsChecked,
+      children,
+      name,
+      value = 'on',
+      onChange = () => {},
+      ...checkboxProps
     } = props;
-    const [, setIsCheckedContext] = useCheckboxContext(INPUT_NAME);
 
-    // Make sure `isChecked` is always a `boolean` and not `boolean | undefined`
     const [isChecked = false, setIsChecked] = useControlledState({
-      prop: checked,
-      defaultProp: defaultChecked,
+      prop: isCheckedProp,
+      defaultProp: defaultIsChecked,
     });
 
-    const handleChange = composeEventHandlers(onChange, (event) => {
-      setIsChecked(event.target.checked);
-    });
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+      const button = event.currentTarget;
+      const changeEvent = new CustomEvent('change', {
+        bubbles: true,
+        cancelable: true,
+        detail: { checked: !isChecked },
+      });
 
-    // Make sure the parent context reflects the checked state (including on initial render)
-    React.useEffect(() => {
-      setIsCheckedContext(isChecked);
-    }, [isChecked, setIsCheckedContext]);
+      button.addEventListener('change', (event) => onChange(event as typeof changeEvent), {
+        once: true,
+      });
+
+      if (button.dispatchEvent(changeEvent)) {
+        setIsChecked((prevIsChecked) => !prevIsChecked);
+      }
+    };
 
     return (
-      <Comp
-        {...inputProps}
-        {...interopDataAttrObj('input')}
-        type="checkbox"
-        checked={isChecked}
-        ref={forwardedRef}
-        onChange={handleChange}
-      />
+      <CheckboxContext.Provider value={isChecked}>
+        <FormValue name={name} value={isChecked ? value : ''} />
+        <Comp
+          {...checkboxProps}
+          type="button"
+          role="checkbox"
+          aria-checked={isChecked}
+          data-state={isChecked ? 'checked' : undefined}
+          onClick={handleClick}
+          ref={forwardedRef}
+        >
+          {children}
+        </Comp>
+      </CheckboxContext.Provider>
     );
   }
 );
 
 /* -------------------------------------------------------------------------------------------------
- * CheckboxBox
+ * CheckboxIndicator
  * -----------------------------------------------------------------------------------------------*/
 
-const BOX_NAME = 'Checkbox.Box';
-const BOX_DEFAULT_TAG = 'span';
+const INDICATOR_NAME = 'Checkbox.Indicator';
+const INDICATOR_DEFAULT_TAG = 'span';
 
-type CheckboxBoxDOMProps = React.ComponentPropsWithoutRef<typeof BOX_DEFAULT_TAG>;
-type CheckboxBoxOwnProps = {};
-type CheckboxBoxProps = CheckboxBoxDOMProps & CheckboxBoxOwnProps;
+type CheckboxIndicatorDOMProps = React.ComponentPropsWithoutRef<typeof INDICATOR_DEFAULT_TAG>;
+type CheckboxIndicatorOwnProps = {};
+type CheckboxIndicatorProps = CheckboxIndicatorDOMProps & CheckboxIndicatorOwnProps;
 
-const CheckboxBox = forwardRef<typeof BOX_DEFAULT_TAG, CheckboxBoxProps>(function CheckboxBox(
-  props,
-  forwardedRef
-) {
-  const { as: Comp = BOX_DEFAULT_TAG, ...boxProps } = props;
-  return <Comp {...interopDataAttrObj('box')} ref={forwardedRef} {...boxProps} />;
-});
-
-/* -------------------------------------------------------------------------------------------------
- * CheckboxCheckmark
- * -----------------------------------------------------------------------------------------------*/
-
-const CHECKMARK_NAME = 'Checkbox.Checkmark';
-const CHECKMARK_DEFAULT_TAG = 'span';
-
-type CheckboxCheckmarkDOMProps = React.ComponentPropsWithoutRef<typeof CHECKMARK_DEFAULT_TAG>;
-type CheckboxCheckmarkOwnProps = {};
-type CheckboxCheckmarkProps = CheckboxCheckmarkDOMProps & CheckboxCheckmarkOwnProps;
-
-const CheckboxCheckmark = forwardRef<typeof CHECKMARK_DEFAULT_TAG, CheckboxCheckmarkProps>(
-  function CheckboxCheckmark(props, forwardedRef) {
-    const { as: Comp = CHECKMARK_DEFAULT_TAG, ...checkmarkProps } = props;
-    const [isChecked] = useCheckboxContext(CHECKMARK_NAME);
+const CheckboxIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, CheckboxIndicatorProps>(
+  function CheckboxIndicator(props, forwardedRef) {
+    const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
+    const isChecked = useCheckboxContext(INDICATOR_NAME);
 
     return isChecked ? (
-      <Comp {...checkmarkProps} {...interopDataAttrObj('checkmark')} ref={forwardedRef} />
+      <Comp {...indicatorProps} {...interopDataAttrObj('indicator')} ref={forwardedRef} />
     ) : null;
   }
 );
 
 /* ---------------------------------------------------------------------------------------------- */
 
-Checkbox.Input = CheckboxInput;
-Checkbox.Box = CheckboxBox;
-Checkbox.Checkmark = CheckboxCheckmark;
+Checkbox.Indicator = CheckboxIndicator;
 
 Checkbox.displayName = CHECKBOX_NAME;
-Checkbox.Input.displayName = INPUT_NAME;
-Checkbox.Box.displayName = BOX_NAME;
-Checkbox.Checkmark.displayName = CHECKMARK_NAME;
+Checkbox.Indicator.displayName = INDICATOR_NAME;
 
 interface CheckboxStaticProps {
-  Input: typeof CheckboxInput;
-  Box: typeof CheckboxBox;
-  Checkmark: typeof CheckboxCheckmark;
+  Indicator: typeof CheckboxIndicator;
 }
 
 const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
   root: {
     ...cssReset(CHECKBOX_DEFAULT_TAG),
-    display: 'inline-flex',
     position: 'relative',
-    verticalAlign: 'middle',
+    userSelect: 'none',
     zIndex: 0,
   },
-  input: {
-    ...cssReset(INPUT_DEFAULT_TAG),
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 1,
-    opacity: 0,
-    width: '100%',
-    height: '100%',
-  },
-  box: {
-    ...cssReset(BOX_DEFAULT_TAG),
-    flex: 1,
-  },
-  checkmark: {
-    ...cssReset(CHECKMARK_DEFAULT_TAG),
+  indicator: {
+    ...cssReset(INDICATOR_DEFAULT_TAG),
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    pointerEvents: 'none',
-    userSelect: 'none',
+    zIndex: 1,
   },
 });
 
-export type { CheckboxProps, CheckboxInputProps, CheckboxBoxProps, CheckboxCheckmarkProps };
+export type { CheckboxProps, CheckboxIndicatorProps };
 export { Checkbox, styles };

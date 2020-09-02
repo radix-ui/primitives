@@ -1,5 +1,6 @@
 releases:
   "@interop-ui/react-checkbox": prerelease
+  "@interop-ui/react-form-value": prerelease
 
 declined:
   - interop-ui
