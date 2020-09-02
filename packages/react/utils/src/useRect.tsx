@@ -14,9 +14,7 @@ export function useRect(
   useIsomorphicLayoutEffect(() => {
     if (refToObserve.current) {
       const unobserve = observeElementRect(refToObserve.current, setRect);
-      console.log('observe', refToObserve.current);
       return () => {
-        console.log('unobserve', refToObserve.current);
         setRect(undefined);
         unobserve();
       };

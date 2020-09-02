@@ -31,11 +31,9 @@ export function useSize(
       });
 
       const elem = refToObserve.current;
-      console.log('observe', elem);
       resizeObserver.observe(elementToObserver);
 
       return () => {
-        console.log('unobserve', elem);
         setSize(undefined);
         resizeObserver.unobserve(elementToObserver);
       };
