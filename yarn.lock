@@ -2171,6 +2171,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-popper@workspace:packages/react/popper":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-popper@workspace:packages/react/popper"
+  dependencies:
+    "@interop-ui/popper": "workspace:*"
+    "@interop-ui/react-use-size": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ">=16"
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-portal@workspace:*, @interop-ui/react-portal@workspace:packages/react/portal":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-portal@workspace:packages/react/portal"
