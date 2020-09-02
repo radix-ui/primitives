@@ -5,8 +5,14 @@ dist
 test-output.*
 .cache
 .parcel-cache
-.yarn/cache
-.yarn/install-state.gz
+
+# Yarn 2 build artifacts
+# https://yarnpkg.com/advanced/qa#which-files-should-be-gitignored
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
 
 # Editor-specific
 .vscode
