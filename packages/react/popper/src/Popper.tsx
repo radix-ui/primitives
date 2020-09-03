@@ -17,7 +17,7 @@ import { ArrowProps, Arrow } from '@interop-ui/react-arrow';
 
 type PopperContextValue = {
   arrowRef: React.RefObject<HTMLElement>;
-  setArrowOffset: (offset: number) => void;
+  setArrowOffset: (offset?: number) => void;
   arrowStyles: React.CSSProperties;
 };
 
@@ -56,15 +56,15 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
       children,
       anchorRef,
       side = 'bottom',
-      sideOffset = -5,
+      sideOffset,
       align = 'center',
-      alignOffset = 0,
-      collisionTolerance = 0,
+      alignOffset,
+      collisionTolerance,
       shouldAvoidCollisions = true,
       ...popperProps
     } = props;
 
-    const [arrowOffset, setArrowOffset] = React.useState(0);
+    const [arrowOffset, setArrowOffset] = React.useState<number>();
     const anchorRect = useRect(anchorRef);
     const popperRef = React.useRef<HTMLDivElement>(null);
     const popperSize = useSize(popperRef);
@@ -122,7 +122,7 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
   props,
   forwardedRef
 ) {
-  const { as: Comp = Arrow, offset = 10, ...arrowProps } = props;
+  const { as: Comp = Arrow, offset, ...arrowProps } = props;
   const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
 
   // send the Arrow's offset up to Popper
