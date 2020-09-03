@@ -1893,18 +1893,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-box@workspace:packages/react/box":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-box@workspace:packages/react/box"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-button@workspace:*, @interop-ui/react-button@workspace:packages/react/button":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-button@workspace:packages/react/button"

@@ -45,7 +45,6 @@
       "@interop-ui/react-aspect-ratio": ["./packages/react/aspect-ratio/src"],
       "@interop-ui/react-avatar": ["./packages/react/avatar/src"],
       "@interop-ui/react-blockquote": ["./packages/react/blockquote/src"],
-      "@interop-ui/react-box": ["./packages/react/box/src"],
       "@interop-ui/react-button": ["./packages/react/button/src"],
       "@interop-ui/react-card": ["./packages/react/card/src"],
       "@interop-ui/react-checkbox": ["./packages/react/checkbox/src"],
