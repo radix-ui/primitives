@@ -24,23 +24,23 @@ type LockProps = {
    * (default: first focusable element inside the Lock)
    * (fallback: first focusable element inside the Lock, then the container itself)
    */
-  refToFocusOnActivation?: React.RefObject<FocusableTarget>;
+  refToFocusOnActivation?: React.RefObject<FocusableTarget | null | undefined>;
 
   /**
    * A ref to an element to focus on outside the Lock after it is deactivated.
    * (default: last focused element before the Lock was activated)
    * (fallback: none)
    */
-  refToFocusOnDeactivation?: React.RefObject<FocusableTarget>;
+  refToFocusOnDeactivation?: React.RefObject<FocusableTarget | null | undefined>;
 
   /** Whether pressing the escape key should deactivate the Lock */
-  shouldDeactivateOnEscape: boolean;
+  shouldDeactivateOnEscape?: boolean;
 
   /** Whether clicking outside the locked container should deactivate the Lock */
-  shouldDeactivateOnOutsideClick: boolean | ((event: MouseEvent | TouchEvent) => boolean);
+  shouldDeactivateOnOutsideClick?: boolean | ((event: MouseEvent | TouchEvent) => boolean);
 
   /** Whether pointer events happening outside the locked container should be blocked */
-  shouldBlockOutsideClick: boolean;
+  shouldBlockOutsideClick?: boolean;
 };
 
 function Lock({
@@ -48,9 +48,9 @@ function Lock({
   onDeactivate = () => {},
   refToFocusOnActivation,
   refToFocusOnDeactivation,
-  shouldDeactivateOnEscape,
-  shouldDeactivateOnOutsideClick,
-  shouldBlockOutsideClick,
+  shouldDeactivateOnEscape = true,
+  shouldDeactivateOnOutsideClick = true,
+  shouldBlockOutsideClick = true,
 }: LockProps) {
   /**
    * A ref to set on the container element in which we want to trap focus.
@@ -194,4 +194,3 @@ function useLockContext() {
 
 export { useLockContext, Lock };
 export type { LockProps };
-export type { FocusableTarget };

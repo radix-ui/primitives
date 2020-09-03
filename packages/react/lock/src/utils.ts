@@ -380,7 +380,7 @@ function isHTMLElement(element: any): element is HTMLElement {
 }
 
 function isSelectableInput(element: any): element is FocusableTarget & { select: () => void } {
-  return isHTMLElement(element) && element.tagName.toLowerCase() === 'input' && 'select' in element;
+  return element instanceof HTMLInputElement && 'select' in element;
 }
 
 /**

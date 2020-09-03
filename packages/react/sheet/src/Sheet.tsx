@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Portal } from '@interop-ui/react-portal';
-import { Lock, FocusableTarget, useLockContext } from '@interop-ui/react-lock';
+import { Lock, useLockContext } from '@interop-ui/react-lock';
 import { cssReset } from '@interop-ui/utils';
 import { RemoveScroll } from 'react-remove-scroll';
 import {
@@ -34,41 +34,43 @@ const [SheetContext, useSheetContext] = createContext<SheetContextValue>('SheetC
  * SheetRoot
  * -----------------------------------------------------------------------------------------------*/
 
+type LockProps = React.ComponentProps<typeof Lock>;
+
 type SheetRootOwnProps = {
   /** whether the Sheet is currently opened or not */
   isOpen: boolean;
 
-  /** A function called when the Sheet is closed from the inside (escape / outslide click) */
-  onClose?: () => void;
-
   /** The side where the Sheet should open */
   side?: 'left' | 'right';
+
+  /** A function called when the Sheet is closed from the inside (escape / outslide click) */
+  onClose?: LockProps['onDeactivate'];
 
   /**
    * A ref to an element to focus on inside the Sheet after it is opened.
    * (default: first focusable element inside the Sheet)
    * (fallback: first focusable element inside the Sheet, then the Sheet's content container)
    */
-  refToFocusOnOpen?: React.RefObject<FocusableTarget>;
+  refToFocusOnOpen?: LockProps['refToFocusOnActivation'];
 
   /**
    * A ref to an element to focus on outside the Sheet after it is closed.
    * (default: last focused element before the Sheet was opened)
    * (fallback: none)
    */
-  refToFocusOnClose?: React.RefObject<FocusableTarget>;
+  refToFocusOnClose?: LockProps['refToFocusOnDeactivation'];
 
   /**
    * Whether pressing the `Escape` key should close the Sheet
    * (default: `true`)
    */
-  shouldCloseOnEscape?: boolean;
+  shouldCloseOnEscape?: LockProps['shouldDeactivateOnEscape'];
 
   /**
    * Whether clicking outside the Sheet should close it
    * (default: `true`)
    */
-  shouldCloseOnOutsideClick?: boolean | ((event: MouseEvent | TouchEvent) => boolean);
+  shouldCloseOnOutsideClick?: LockProps['shouldDeactivateOnOutsideClick'];
 };
 type SheetRootProps = SheetRootOwnProps;
 
@@ -172,6 +174,8 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
   return (
     <Comp {...interopDataAttrObj('inner')} ref={forwardedRef} {...innerProps}>
       {debugContext.disableLock ? (
+        children
+      ) : (
         <RemoveScroll>
           <Lock
             onDeactivate={onClose}
@@ -184,8 +188,6 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
             {children}
           </Lock>
         </RemoveScroll>
-      ) : (
-        children
       )}
     </Comp>
   );
