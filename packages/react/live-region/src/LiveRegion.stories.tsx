@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { LiveRegion } from './LiveRegion';
-import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
+import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
 
 export default { title: 'LiveRegion' };
 
@@ -34,7 +34,7 @@ export function StatusChange() {
 
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, lineHeight: 1 }}>
-      <VisuallyHidden>
+      <VisuallyHidden style={visuallyHiddenStyles.root}>
         <LiveRegion>Your friend is {friendIsOnline ? 'online' : 'offline'}</LiveRegion>
       </VisuallyHidden>
       <span
