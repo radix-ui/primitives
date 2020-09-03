@@ -34,41 +34,43 @@ const [SheetContext, useSheetContext] = createContext<SheetContextValue>('SheetC
  * SheetRoot
  * -----------------------------------------------------------------------------------------------*/
 
+type LockProps = React.ComponentProps<typeof Lock>;
+
 type SheetRootOwnProps = {
   /** whether the Sheet is currently opened or not */
   isOpen: boolean;
 
-  /** A function called when the Sheet is closed from the inside (escape / outslide click) */
-  onClose?: () => void;
-
   /** The side where the Sheet should open */
   side?: 'left' | 'right';
+
+  /** A function called when the Sheet is closed from the inside (escape / outslide click) */
+  onClose?: LockProps['onDeactivate'];
 
   /**
    * A ref to an element to focus on inside the Sheet after it is opened.
    * (default: first focusable element inside the Sheet)
    * (fallback: first focusable element inside the Sheet, then the Sheet's content container)
    */
-  refToFocusOnOpen?: React.RefObject<HTMLElement | null | undefined>;
+  refToFocusOnOpen?: LockProps['refToFocusOnActivation'];
 
   /**
    * A ref to an element to focus on outside the Sheet after it is closed.
    * (default: last focused element before the Sheet was opened)
    * (fallback: none)
    */
-  refToFocusOnClose?: React.RefObject<HTMLElement | null | undefined>;
+  refToFocusOnClose?: LockProps['refToFocusOnDeactivation'];
 
   /**
    * Whether pressing the `Escape` key should close the Sheet
    * (default: `true`)
    */
-  shouldCloseOnEscape?: boolean;
+  shouldCloseOnEscape?: LockProps['shouldDeactivateOnEscape'];
 
   /**
    * Whether clicking outside the Sheet should close it
    * (default: `true`)
    */
-  shouldCloseOnOutsideClick?: boolean | ((event: MouseEvent | TouchEvent) => boolean);
+  shouldCloseOnOutsideClick?: LockProps['shouldDeactivateOnOutsideClick'];
 };
 type SheetRootProps = SheetRootOwnProps;
 
@@ -163,7 +165,6 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
   let { as: Comp = INNER_DEFAULT_TAG, children, ...innerProps } = props;
   const debugContext = useDebugContext();
   let {
-    isOpen,
     onClose,
     refToFocusOnOpen,
     refToFocusOnClose,
@@ -172,19 +173,22 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
   } = useSheetContext(INNER_NAME);
   return (
     <Comp {...interopDataAttrObj('inner')} ref={forwardedRef} {...innerProps}>
-      <RemoveScroll>
-        <Lock
-          isActive={debugContext.disableLock ? false : isOpen}
-          onDeactivate={onClose}
-          refToFocusOnActivation={refToFocusOnOpen}
-          refToFocusOnDeactivation={refToFocusOnClose}
-          shouldDeactivateOnEscape={shouldCloseOnEscape}
-          shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
-          shouldBlockOutsideClick
-        >
-          {children}
-        </Lock>
-      </RemoveScroll>
+      {debugContext.disableLock ? (
+        children
+      ) : (
+        <RemoveScroll>
+          <Lock
+            onDeactivate={onClose}
+            refToFocusOnActivation={refToFocusOnOpen}
+            refToFocusOnDeactivation={refToFocusOnClose}
+            shouldDeactivateOnEscape={shouldCloseOnEscape}
+            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
+            shouldBlockOutsideClick
+          >
+            {children}
+          </Lock>
+        </RemoveScroll>
+      )}
     </Comp>
   );
 });
@@ -208,7 +212,7 @@ const SheetContent = forwardRef<typeof CONTENT_DEFAULT_TAG, SheetContentProps>(
     return (
       <Comp
         {...interopDataAttrObj('content')}
-        ref={useComposedRefs(forwardedRef, lockContainerRef)}
+        ref={useComposedRefs(forwardedRef, lockContainerRef as React.RefObject<HTMLDivElement>)}
         role="dialog"
         aria-modal
         {...contentProps}

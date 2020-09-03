@@ -2136,8 +2136,11 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/tabbable": "workspace:*"
     "@interop-ui/utils": "workspace:*"
+    "@types/styled-components": ^5.1.2
     aria-hidden: ^1.1.1
+    conditional-wrap: ^1.0.2
     parcel: ^2.0.0-beta.1
+    styled-components: ^5.1.1
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -7644,6 +7647,15 @@ __metadata:
     readable-stream: ^2.2.2
     typedarray: ^0.0.6
   checksum: 7a97b7a7d0938e36800bdb6f5caf938bac8c523a6ec15df1f2ac41d3785541be30a6671c9f4c0d1ac9609e6ab29dcab8f54d1c84035e3e3b7b24f9336da68ab0
+  languageName: node
+  linkType: hard
+
+"conditional-wrap@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "conditional-wrap@npm:1.0.2"
+  peerDependencies:
+    react: 16.x
+  checksum: 7f759e803b4a3455dca09c23e234f1426bd32853f6cabf6e697462a3e137a4dfe107991bc94f0503ad83f7b1d9d4129787046672da25bae6de875ad903eb95ea
   languageName: node
   linkType: hard
 
