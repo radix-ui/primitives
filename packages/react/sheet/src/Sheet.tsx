@@ -181,8 +181,8 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
             onDeactivate={onClose}
             refToFocusOnActivation={refToFocusOnOpen}
             refToFocusOnDeactivation={refToFocusOnClose}
-            shouldDeactivateOnEscape={shouldCloseOnEscape ?? true}
-            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick ?? true}
+            shouldDeactivateOnEscape={shouldCloseOnEscape}
+            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
             shouldBlockOutsideClick
           >
             {children}
