@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Portal } from '@interop-ui/react-portal';
-import { Lock, useLockContext } from '@interop-ui/react-lock';
+import { Lock, FocusableTarget, useLockContext } from '@interop-ui/react-lock';
 import { cssReset } from '@interop-ui/utils';
 import { RemoveScroll } from 'react-remove-scroll';
 import {
@@ -49,14 +49,14 @@ type SheetRootOwnProps = {
    * (default: first focusable element inside the Sheet)
    * (fallback: first focusable element inside the Sheet, then the Sheet's content container)
    */
-  refToFocusOnOpen?: React.RefObject<HTMLElement | null | undefined>;
+  refToFocusOnOpen?: React.RefObject<FocusableTarget>;
 
   /**
    * A ref to an element to focus on outside the Sheet after it is closed.
    * (default: last focused element before the Sheet was opened)
    * (fallback: none)
    */
-  refToFocusOnClose?: React.RefObject<HTMLElement | null | undefined>;
+  refToFocusOnClose?: React.RefObject<FocusableTarget>;
 
   /**
    * Whether pressing the `Escape` key should close the Sheet
@@ -163,7 +163,6 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
   let { as: Comp = INNER_DEFAULT_TAG, children, ...innerProps } = props;
   const debugContext = useDebugContext();
   let {
-    isOpen,
     onClose,
     refToFocusOnOpen,
     refToFocusOnClose,
@@ -172,19 +171,22 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
   } = useSheetContext(INNER_NAME);
   return (
     <Comp {...interopDataAttrObj('inner')} ref={forwardedRef} {...innerProps}>
-      <RemoveScroll>
-        <Lock
-          isActive={debugContext.disableLock ? false : isOpen}
-          onDeactivate={onClose}
-          refToFocusOnActivation={refToFocusOnOpen}
-          refToFocusOnDeactivation={refToFocusOnClose}
-          shouldDeactivateOnEscape={shouldCloseOnEscape}
-          shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
-          shouldBlockOutsideClick
-        >
-          {children}
-        </Lock>
-      </RemoveScroll>
+      {debugContext.disableLock ? (
+        <RemoveScroll>
+          <Lock
+            onDeactivate={onClose}
+            refToFocusOnActivation={refToFocusOnOpen}
+            refToFocusOnDeactivation={refToFocusOnClose}
+            shouldDeactivateOnEscape={shouldCloseOnEscape ?? true}
+            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick ?? true}
+            shouldBlockOutsideClick
+          >
+            {children}
+          </Lock>
+        </RemoveScroll>
+      ) : (
+        children
+      )}
     </Comp>
   );
 });
@@ -208,7 +210,7 @@ const SheetContent = forwardRef<typeof CONTENT_DEFAULT_TAG, SheetContentProps>(
     return (
       <Comp
         {...interopDataAttrObj('content')}
-        ref={useComposedRefs(forwardedRef, lockContainerRef)}
+        ref={useComposedRefs(forwardedRef, lockContainerRef as React.RefObject<HTMLDivElement>)}
         role="dialog"
         aria-modal
         {...contentProps}

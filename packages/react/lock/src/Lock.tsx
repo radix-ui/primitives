@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useComposedRefs } from '@interop-ui/react-utils';
-import { createFocusTrap, FocusTrap } from './utils';
+import { createFocusTrap, FocusableTarget, FocusTrap } from './utils';
 
-interface LockContextValue {
-  containerRef: React.RefObject<null | HTMLElement>;
+type LockContextValue = {
+  containerRef: React.RefObject<HTMLElement>;
   deactivateParentLocks?: (shouldPreventFocusControl: boolean) => void;
   shouldDeactivateOnOutsideClick?: boolean | ((event: MouseEvent | TouchEvent) => boolean);
-}
+};
 
 const LockContext = React.createContext({} as LockContextValue);
 LockContext.displayName = 'LockContext';
@@ -15,35 +15,29 @@ type LockProps = {
   children: React.ReactNode | ((ref: React.RefObject<HTMLElement | undefined>) => React.ReactNode);
 
   /**
-   * Whether the Lock is currently active
-   * (defaut: false)
-   */
-  isActive?: boolean;
-
-  /**
    * A function called when the Lock is deactivated from the inside (escape / outslide click)
    */
-  onDeactivate?(): void;
+  onDeactivate?: () => void;
 
   /**
    * A ref to an element to focus on inside the Lock after it is activated.
    * (default: first focusable element inside the Lock)
    * (fallback: first focusable element inside the Lock, then the container itself)
    */
-  refToFocusOnActivation?: React.RefObject<HTMLElement | null | undefined>;
+  refToFocusOnActivation?: React.RefObject<FocusableTarget>;
 
   /**
    * A ref to an element to focus on outside the Lock after it is deactivated.
    * (default: last focused element before the Lock was activated)
    * (fallback: none)
    */
-  refToFocusOnDeactivation?: React.RefObject<HTMLElement | null | undefined>;
+  refToFocusOnDeactivation?: React.RefObject<FocusableTarget>;
 
   /** Whether pressing the escape key should deactivate the Lock */
-  shouldDeactivateOnEscape?: boolean;
+  shouldDeactivateOnEscape: boolean;
 
   /** Whether clicking outside the locked container should deactivate the Lock */
-  shouldDeactivateOnOutsideClick?: boolean | ((event: MouseEvent | TouchEvent) => boolean);
+  shouldDeactivateOnOutsideClick: boolean | ((event: MouseEvent | TouchEvent) => boolean);
 
   /** Whether pointer events happening outside the locked container should be blocked */
   shouldBlockOutsideClick: boolean;
@@ -51,7 +45,6 @@ type LockProps = {
 
 function Lock({
   children,
-  isActive = false,
   onDeactivate = () => {},
   refToFocusOnActivation,
   refToFocusOnDeactivation,
@@ -64,7 +57,7 @@ function Lock({
    *
    * NOTE: we do not support the case where that container would dynamically change.
    */
-  const containerRef = React.useRef<HTMLElement | null>(null);
+  const containerRef = React.useRef<HTMLElement>(null);
 
   /** A ref to the focus trap  */
   const focusTrapRef = React.useRef<FocusTrap>();
@@ -112,6 +105,7 @@ function Lock({
         // deactivate and create a new trap if an option changes so instead we manually sync these
         // changes in their own effect via a setter on the focus trap instance.
       });
+      focusTrapRef.current.activate();
     }
 
     return () => {
@@ -122,19 +116,6 @@ function Lock({
       shouldPreventFocusControlWhenDeactivatedRef.current = false;
     };
   }, []);
-
-  // Synchronize changes to `isActive`
-  React.useEffect(() => {
-    if (isActive) {
-      focusTrapRef.current?.activate();
-    } else {
-      focusTrapRef.current?.deactivate({
-        shouldPreventFocusControl: shouldPreventFocusControlWhenDeactivatedRef.current,
-      });
-      // reset
-      shouldPreventFocusControlWhenDeactivatedRef.current = false;
-    }
-  }, [isActive]);
 
   const onOutsideClickHandler = React.useCallback(
     (event: MouseEvent | TouchEvent, shouldPreventFocusControl: boolean) => {
@@ -176,8 +157,9 @@ function Lock({
     shouldBlockOutsideClick,
   ]);
 
-  let child = typeof children === 'function' ? null : React.Children.only(children);
-  let ref = useComposedRefs(child ? (child as any).ref : null, containerRef);
+  const child = typeof children === 'function' ? null : React.Children.only(children);
+  // compose all the possible refs to the container element
+  const ref = useComposedRefs(child ? (child as any).ref : null, containerRef);
 
   let content: React.ReactNode;
 
@@ -185,14 +167,11 @@ function Lock({
     // useful for cases when we need to attach the container ref to a specific element
     // other than the first child node (used in Popover for example)
     content = children(containerRef);
-  } else {
-    content = React.cloneElement(child as React.ReactElement, {
-      // compose all the possible refs to the container element
-      ref,
-    });
+  } else if (child) {
+    // finally, clone our container, attaching the composed ref to it
+    content = React.cloneElement(child as React.ReactElement, { ref });
   }
 
-  // finally, clone our container, attaching the composed ref to it
   return (
     <LockContext.Provider
       value={{
@@ -210,13 +189,9 @@ function Lock({
 
 function useLockContext() {
   let { containerRef } = React.useContext(LockContext);
-  return React.useMemo(
-    () => ({
-      lockContainerRef: containerRef,
-    }),
-    [containerRef]
-  );
+  return React.useMemo(() => ({ lockContainerRef: containerRef }), [containerRef]);
 }
 
 export { useLockContext, Lock };
 export type { LockProps };
+export type { FocusableTarget };
