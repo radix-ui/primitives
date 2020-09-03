@@ -1905,18 +1905,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-card@workspace:packages/react/card":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-card@workspace:packages/react/card"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-checkbox@workspace:packages/react/checkbox":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-checkbox@workspace:packages/react/checkbox"
