@@ -58,7 +58,7 @@ export function getPlacementData({
   targetRect,
   popperSize,
   arrowSize,
-  arrowOffset = 20,
+  arrowOffset = 0,
   side,
   sideOffset = 0,
   align,
@@ -203,10 +203,10 @@ function getAllPlacementPoints(
   const x = getPopperSlotsForAxis(targetRect, popperSize, 'x');
   const y = getPopperSlotsForAxis(targetRect, popperSize, 'y');
 
-  const topY    = y.before + sideOffset - arrowBaseToTipLength; // prettier-ignore
-  const bottomY = y.after  - sideOffset + arrowBaseToTipLength; // prettier-ignore
-  const leftX   = x.before + sideOffset - arrowBaseToTipLength; // prettier-ignore
-  const rightX  = x.after  - sideOffset + arrowBaseToTipLength; // prettier-ignore
+  const topY    = y.before - sideOffset - arrowBaseToTipLength; // prettier-ignore
+  const bottomY = y.after  + sideOffset + arrowBaseToTipLength; // prettier-ignore
+  const leftX   = x.before - sideOffset - arrowBaseToTipLength; // prettier-ignore
+  const rightX  = x.after  + sideOffset + arrowBaseToTipLength; // prettier-ignore
 
   // prettier-ignore
   const map: AllPlacementPoints = {
@@ -306,7 +306,7 @@ export function getAlignAccountingForCollisions(
   return align;
 }
 
-export function getPlacementStylesForPoint(point: Point): CSS.Properties {
+function getPlacementStylesForPoint(point: Point): CSS.Properties {
   const x = Math.round(point.x + window.pageXOffset);
   const y = Math.round(point.y + window.pageYOffset);
   return {
@@ -375,7 +375,7 @@ type GetArrowStylesOptions = {
  * Computes the styles necessary to position, rotate and align the arrow correctly.
  * It can adjust itself based on target/popper size, side/align and an optional offset.
  */
-export function getPopperArrowStyles({
+function getPopperArrowStyles({
   popperSize,
   arrowSize,
   arrowOffset,

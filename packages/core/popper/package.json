@@ -20,6 +20,8 @@
     "csstype": "^2.6.11"
   },
   "devDependencies": {
+    "@interop-ui/react-use-size": "workspace:*",
+    "@interop-ui/react-utils": "workspace:*",
     "parcel": "^2.0.0-beta.1"
   }
 }

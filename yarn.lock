@@ -1809,6 +1809,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/popper@workspace:packages/core/popper"
   dependencies:
+    "@interop-ui/react-use-size": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     csstype: ^2.6.11
     parcel: ^2.0.0-beta.1
