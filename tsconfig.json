@@ -47,7 +47,6 @@
       "@interop-ui/react-blockquote": ["./packages/react/blockquote/src"],
       "@interop-ui/react-button": ["./packages/react/button/src"],
       "@interop-ui/react-checkbox": ["./packages/react/checkbox/src"],
-      "@interop-ui/react-code": ["./packages/react/code/src"],
       "@interop-ui/react-collapsible": ["./packages/react/collapsible/src"],
       "@interop-ui/react-collection": ["./packages/react/collection/src"],
       "@interop-ui/react-container": ["./packages/react/container/src"],
