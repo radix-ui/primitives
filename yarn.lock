@@ -1981,20 +1981,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-flex@workspace:packages/react/flex":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-flex@workspace:packages/react/flex"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    "@types/lodash.pick": ^4.4.6
-    lodash.pick: ^4.4.0
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-grid@workspace:packages/react/grid":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-grid@workspace:packages/react/grid"
@@ -4582,15 +4568,6 @@ __metadata:
   dependencies:
     "@types/lodash": "*"
   checksum: 18c42592a5c807d657b771b9adc986cad66602f23676305e5dcf2f1d6a72b46164987563b8c5a1215b7179d3ebdb58602fed8a7d7d8a821e151cab509e8765b3
-  languageName: node
-  linkType: hard
-
-"@types/lodash.pick@npm:^4.4.6":
-  version: 4.4.6
-  resolution: "@types/lodash.pick@npm:4.4.6"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: 2c4a9d7329bd44524f8e9ecb9f75c36b5e7dedb205c410178094850b6ed16746023f90da74786783d93b27639a8abf6dc4497419a66a7f1d0174c7b22d0e458d
   languageName: node
   linkType: hard
 

@@ -52,7 +52,6 @@
       "@interop-ui/react-debug-context": ["./packages/react/debug-context/src"],
       "@interop-ui/react-dialog": ["./packages/react/dialog/src"],
       "@interop-ui/react-divider": ["./packages/react/divider/src"],
-      "@interop-ui/react-flex": ["./packages/react/flex/src"],
       "@interop-ui/react-grid": ["./packages/react/grid/src"],
       "@interop-ui/react-header": ["./packages/react/header/src"],
       "@interop-ui/react-image": ["./packages/react/image/src"],
