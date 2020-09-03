@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { ElementTagNameMap } from '@interop-ui/utils';
 
-export type PossibleRef<T> = React.Ref<T> | undefined;
-
 // The following types help us deal with the `as` prop.
 // We probably want to write some tests for these!
 

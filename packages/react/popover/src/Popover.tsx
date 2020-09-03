@@ -85,9 +85,9 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
 
     let popperRef = React.useRef<HTMLDivElement>(null);
     let arrowRef = React.useRef<HTMLSpanElement>(null);
-    let targetRect = useRect({ refToObserve: targetRef, isObserving: isOpen });
-    let popperRect = useRect({ refToObserve: popperRef, isObserving: isOpen });
-    let arrowSize = useSize({ refToObserve: arrowRef, isObserving: isOpen });
+    let targetRect = useRect(targetRef);
+    let popperRect = useRect(popperRef);
+    let arrowSize = useSize(arrowRef);
 
     let popperSize =
       popperRect?.height && popperRect?.width

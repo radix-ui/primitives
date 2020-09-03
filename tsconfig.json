@@ -67,6 +67,7 @@
       "@interop-ui/react-lock": ["./packages/react/lock/src"],
       "@interop-ui/react-overlay": ["./packages/react/overlay/src"],
       "@interop-ui/react-popover": ["./packages/react/popover/src"],
+      "@interop-ui/react-popper": ["./packages/react/popper/src"],
       "@interop-ui/react-portal": ["./packages/react/portal/src"],
       "@interop-ui/react-radio": ["./packages/react/radio/src"],
       "@interop-ui/react-sheet": ["./packages/react/sheet/src"],

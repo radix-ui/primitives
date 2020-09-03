@@ -109,14 +109,8 @@ const SwitchRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SwitchRootProps>(function
 
   let boxPartRef = React.useRef<HTMLElement>(null);
   let thumbPartRef = React.useRef<HTMLElement>(null);
-  let boxPartSize = useSize({
-    refToObserve: boxPartRef,
-    isObserving: true,
-  });
-  let thumbPartSize = useSize({
-    refToObserve: thumbPartRef,
-    isObserving: true,
-  });
+  let boxPartSize = useSize(boxPartRef);
+  let thumbPartSize = useSize(thumbPartRef);
 
   let biggestHeight = Math.max(boxPartSize?.height ?? 0, thumbPartSize?.height ?? 0);
 

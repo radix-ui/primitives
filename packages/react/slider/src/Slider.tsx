@@ -390,7 +390,7 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   const context = useSliderContext(TRACK_NAME);
   const ref = React.useRef<HTMLSpanElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
-  const size = useSize({ refToObserve: ref, isObserving: true });
+  const size = useSize(ref);
   const prevSize = usePrevious(size);
 
   React.useLayoutEffect(() => {
@@ -471,7 +471,7 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
   // destructure for references so that we don't need `context` as effect dependency
   const { updateSize, addThumb, removeThumb, thumbNodes } = context;
   const ref = React.useRef<HTMLSpanElement>(null);
-  const size = useSize({ refToObserve: ref, isObserving: true });
+  const size = useSize(ref);
   const prevSize = usePrevious(size);
   const composedRefs = useComposedRefs(forwardedRef, ref);
 

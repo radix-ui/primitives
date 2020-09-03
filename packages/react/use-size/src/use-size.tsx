@@ -2,18 +2,14 @@ import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { Size } from '@interop-ui/utils';
 
-type UseSizeOptions = {
+export function useSize(
   /** A reference to the element whose size to observe */
-  refToObserve: React.RefObject<HTMLElement | SVGElement>;
-  /** Whether we want to currently observe or not */
-  isObserving: boolean;
-};
-
-export function useSize({ refToObserve, isObserving }: UseSizeOptions) {
+  refToObserve: React.RefObject<HTMLElement | SVGElement>
+) {
   let [size, setSize] = React.useState<Size | undefined>(undefined);
 
   React.useEffect(() => {
-    if (isObserving && refToObserve.current) {
+    if (refToObserve.current) {
       let elementToObserver = refToObserve.current;
       let resizeObserver = new ResizeObserver((entries) => {
         if (!Array.isArray(entries)) {
@@ -34,12 +30,16 @@ export function useSize({ refToObserve, isObserving }: UseSizeOptions) {
         });
       });
 
+      const elem = refToObserve.current;
       resizeObserver.observe(elementToObserver);
 
-      return () => resizeObserver.unobserve(elementToObserver);
+      return () => {
+        setSize(undefined);
+        resizeObserver.unobserve(elementToObserver);
+      };
     }
     return;
-  }, [isObserving, refToObserve]);
+  }, [refToObserve]);
 
   return size;
 }

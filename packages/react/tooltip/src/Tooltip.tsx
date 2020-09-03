@@ -112,11 +112,7 @@ const TooltipRoot: React.FC<TooltipRootProps> = function TooltipRoot(props) {
   const isOpen = Boolean(_isOpen);
 
   const targetRef = React.useRef<HTMLElement | SVGElement>(null);
-  const targetRect = useRect({
-    refToObserve: targetRef,
-    isObserving: isOpen,
-    shouldResetWhenNotObserving: true,
-  });
+  const targetRect = useRect(targetRef);
 
   const targetLeft = targetRect?.left;
   const previousTargetLeft = usePrevious(targetLeft);
