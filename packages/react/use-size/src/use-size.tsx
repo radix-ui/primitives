@@ -6,12 +6,12 @@ export function useSize(
   /** A reference to the element whose size to observe */
   refToObserve: React.RefObject<HTMLElement | SVGElement>
 ) {
-  let [size, setSize] = React.useState<Size | undefined>(undefined);
+  const [size, setSize] = React.useState<Size | undefined>(undefined);
 
   React.useEffect(() => {
     if (refToObserve.current) {
-      let elementToObserver = refToObserve.current;
-      let resizeObserver = new ResizeObserver((entries) => {
+      const elementToObserve = refToObserve.current;
+      const resizeObserver = new ResizeObserver((entries) => {
         if (!Array.isArray(entries)) {
           return;
         }
@@ -22,7 +22,7 @@ export function useSize(
           return;
         }
 
-        let entry = entries[0];
+        const entry = entries[0];
 
         setSize({
           width: entry.contentRect.width,
@@ -30,12 +30,11 @@ export function useSize(
         });
       });
 
-      const elem = refToObserve.current;
-      resizeObserver.observe(elementToObserver);
+      resizeObserver.observe(elementToObserve);
 
       return () => {
         setSize(undefined);
-        resizeObserver.unobserve(elementToObserver);
+        resizeObserver.unobserve(elementToObserve);
       };
     }
     return;
