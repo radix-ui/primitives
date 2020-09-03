@@ -18,14 +18,14 @@
   },
   "dependencies": {
     "@interop-ui/popper": "workspace:*",
-    "@interop-ui/utils": "workspace:*",
     "@interop-ui/react-arrow": "workspace:*",
     "@interop-ui/react-use-size": "workspace:*",
-    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*",
+    "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
-    "parcel": "^2.0.0-beta.1",
-    "@interop-ui/react-portal": "workspace:*"
+    "@interop-ui/react-portal": "workspace:*",
+    "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
     "react": ">=16"

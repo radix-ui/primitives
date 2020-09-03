@@ -2176,8 +2176,11 @@ __metadata:
   resolution: "@interop-ui/react-popper@workspace:packages/react/popper"
   dependencies:
     "@interop-ui/popper": "workspace:*"
+    "@interop-ui/react-arrow": "workspace:*"
+    "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-use-size": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
