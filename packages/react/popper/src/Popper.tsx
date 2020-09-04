@@ -1,13 +1,7 @@
 import * as React from 'react';
 import { getPlacementData } from '@interop-ui/popper';
 import { useSize } from '@interop-ui/react-use-size';
-import {
-  createContext,
-  forwardRef,
-  useRect,
-  useComposedRefs,
-  createStyleObj,
-} from '@interop-ui/react-utils';
+import { createContext, forwardRef, useRect, createStyleObj } from '@interop-ui/react-utils';
 import { Side, Align, cssReset } from '@interop-ui/utils';
 import { ArrowProps, Arrow } from '@interop-ui/react-arrow';
 
@@ -70,7 +64,6 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     const popperSize = useSize(popperRef);
     const arrowRef = React.useRef<HTMLSpanElement>(null);
     const arrowSize = useSize(arrowRef);
-    const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
 
     const { popperStyles, arrowStyles } = getPlacementData({
       targetRect: anchorRect,
@@ -98,9 +91,11 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
 
     return (
       <div style={popperStyles}>
-        <Comp {...interopDataAttrObj('root')} {...popperProps} ref={composedPopperRef}>
-          <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
-        </Comp>
+        <div ref={popperRef}>
+          <Comp {...interopDataAttrObj('root')} {...popperProps} ref={forwardedRef}>
+            <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
+          </Comp>
+        </div>
       </div>
     );
   }

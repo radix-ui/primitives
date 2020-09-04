@@ -20,7 +20,7 @@ export function observeElementRect(
 
     if (observedElements.size === 1) {
       // start the internal loop once at least 1 element is observed
-      runLoop();
+      rafId = requestAnimationFrame(runLoop);
     }
   } else {
     // only add a callback for this element as it's already observed
