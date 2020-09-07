@@ -1881,30 +1881,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-badge@workspace:packages/react/badge":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-badge@workspace:packages/react/badge"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-box@workspace:packages/react/box":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-box@workspace:packages/react/box"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-button@workspace:*, @interop-ui/react-button@workspace:packages/react/button":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-button@workspace:packages/react/button"
@@ -1917,33 +1893,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-card@workspace:packages/react/card":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-card@workspace:packages/react/card"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-checkbox@workspace:packages/react/checkbox":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-checkbox@workspace:packages/react/checkbox"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-code@workspace:packages/react/code":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-code@workspace:packages/react/code"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
@@ -1968,18 +1920,6 @@ __metadata:
 "@interop-ui/react-collection@workspace:packages/react/collection":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-collection@workspace:packages/react/collection"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-container@workspace:packages/react/container":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-container@workspace:packages/react/container"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
@@ -2023,20 +1963,6 @@ __metadata:
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-flex@workspace:packages/react/flex":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-flex@workspace:packages/react/flex"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    "@types/lodash.pick": ^4.4.6
-    lodash.pick: ^4.4.0
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
@@ -4630,15 +4556,6 @@ __metadata:
   dependencies:
     "@types/lodash": "*"
   checksum: 18c42592a5c807d657b771b9adc986cad66602f23676305e5dcf2f1d6a72b46164987563b8c5a1215b7179d3ebdb58602fed8a7d7d8a821e151cab509e8765b3
-  languageName: node
-  linkType: hard
-
-"@types/lodash.pick@npm:^4.4.6":
-  version: 4.4.6
-  resolution: "@types/lodash.pick@npm:4.4.6"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: 2c4a9d7329bd44524f8e9ecb9f75c36b5e7dedb205c410178094850b6ed16746023f90da74786783d93b27639a8abf6dc4497419a66a7f1d0174c7b22d0e458d
   languageName: node
   linkType: hard
 
