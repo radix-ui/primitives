@@ -1969,18 +1969,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-grid@workspace:packages/react/grid":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-grid@workspace:packages/react/grid"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-header@workspace:packages/react/header":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-header@workspace:packages/react/header"
