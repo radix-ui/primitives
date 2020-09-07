@@ -1880,18 +1880,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-blockquote@workspace:packages/react/blockquote":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-blockquote@workspace:packages/react/blockquote"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-checkbox@workspace:packages/react/checkbox":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-checkbox@workspace:packages/react/checkbox"
@@ -1959,18 +1947,6 @@ __metadata:
 "@interop-ui/react-divider@workspace:packages/react/divider":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-divider@workspace:packages/react/divider"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-grid@workspace:packages/react/grid":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-grid@workspace:packages/react/grid"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
