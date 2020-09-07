@@ -1881,18 +1881,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-blockquote@workspace:packages/react/blockquote":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-blockquote@workspace:packages/react/blockquote"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-button@workspace:*, @interop-ui/react-button@workspace:packages/react/button":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-button@workspace:packages/react/button"

@@ -44,7 +44,6 @@
       "@interop-ui/react-arrow": ["./packages/react/arrow/src"],
       "@interop-ui/react-aspect-ratio": ["./packages/react/aspect-ratio/src"],
       "@interop-ui/react-avatar": ["./packages/react/avatar/src"],
-      "@interop-ui/react-blockquote": ["./packages/react/blockquote/src"],
       "@interop-ui/react-button": ["./packages/react/button/src"],
       "@interop-ui/react-checkbox": ["./packages/react/checkbox/src"],
       "@interop-ui/react-collapsible": ["./packages/react/collapsible/src"],
