@@ -131,6 +131,7 @@ const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function
     <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
       <Comp
         {...interopDataAttrObj('tabList')}
+        data-orientation={orientation}
         role="tablist"
         aria-orientation={orientation}
         ref={forwardedRef}
@@ -202,11 +203,14 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
   return (
     <Comp
       {...interopDataAttrObj('tab')}
+      data-state={isSelected ? 'active' : 'inactive'}
+      data-disabled={disabled ? '' : undefined}
+      data-tab-id={id}
       id={tabId}
       role="tab"
       aria-selected={isSelected}
       aria-controls={tabPanelId}
-      aria-disabled={disabled ? true : undefined}
+      aria-disabled={disabled || undefined}
       tabIndex={tabIndex}
       onFocus={composeEventHandlers(rovingTabIndexFocusHandler, handleFocus, {
         checkForDefaultPrevented: false,
@@ -244,6 +248,7 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
   return (
     <Comp
       {...interopDataAttrObj('tabPanel')}
+      data-state={isSelected ? 'active' : 'inactive'}
       id={tabPanelId}
       role="tabpanel"
       aria-labelledby={tabId}
