@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { getPlacementData } from '@interop-ui/popper';
 import { useSize } from '@interop-ui/react-use-size';
-import { createContext, forwardRef, useRect, createStyleObj } from '@interop-ui/react-utils';
+import {
+  createContext,
+  forwardRef,
+  useRect,
+  createStyleObj,
+  useComposedRefs,
+} from '@interop-ui/react-utils';
 import { Side, Align, cssReset } from '@interop-ui/utils';
 import { ArrowProps, Arrow } from '@interop-ui/react-arrow';
 
@@ -64,6 +70,7 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     const popperSize = useSize(popperRef);
     const arrowRef = React.useRef<HTMLSpanElement>(null);
     const arrowSize = useSize(arrowRef);
+    const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
 
     const { popperStyles, arrowStyles } = getPlacementData({
       targetRect: anchorRect,
@@ -91,15 +98,9 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
 
     return (
       <div style={popperStyles}>
-        <div
-          // we need an extra "unstyleable" wrapper to measure because `useSize` reports a `contentRect`
-          // which means that if the element had `padding` for example, it would mess the calculations
-          ref={popperRef}
-        >
-          <Comp {...interopDataAttrObj('root')} {...popperProps} ref={forwardedRef}>
-            <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
-          </Comp>
-        </div>
+        <Comp {...interopDataAttrObj('root')} {...popperProps} ref={composedPopperRef}>
+          <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
+        </Comp>
       </div>
     );
   }
@@ -130,15 +131,16 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
   return (
     <span style={arrowStyles}>
       <span
-        // we use an extra wrapper because `useSize` doesn't play well with
-        // the SVG arrow which is sized via CSS
+        // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
+        // doesn't report size as we'd expect on SVG elements.
+        // it reports their bounding box which is effectively the largest path inside the SVG.
         ref={arrowRef}
         style={{
           display: 'inline-block',
           verticalAlign: 'top',
         }}
       >
-        <Comp ref={forwardedRef} {...interopDataAttrObj('arrow')} {...arrowProps} />
+        <Comp {...interopDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
       </span>
     </span>
   );

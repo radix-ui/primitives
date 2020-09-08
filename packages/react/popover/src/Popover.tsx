@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 import { cssReset } from '@interop-ui/utils';
-import {
-  Popper,
-  styles as popperStyles,
-  PopperProps,
-  PopperArrowProps,
-} from '@interop-ui/react-popper';
+import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import { Lock, LockProps } from '@interop-ui/react-lock';
+import { Lock } from '@interop-ui/react-lock';
 import { RemoveScroll } from 'react-remove-scroll';
 import { Portal } from '@interop-ui/react-portal';
+
+import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
+import type { LockProps } from '@interop-ui/react-lock';
 
 /* -------------------------------------------------------------------------------------------------
  * Popover
@@ -57,10 +55,10 @@ type PopoverOwnProps = {
   shouldPreventOutsideClick?: LockProps['shouldPreventOutsideClick'];
 
   /**
-   * Whether scrolling should be locked or not
+   * Whether scrolling outside the Popover should be prevented
    * (default: `false`)
    */
-  shouldLockScroll?: boolean;
+  shouldPreventOutsideScroll?: boolean;
 
   /**
    * Whether the Popover should render in a Portal
@@ -75,7 +73,7 @@ interface PopoverStaticProps {
 }
 
 const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStaticProps>(
-  (props, forwardedRef) => {
+  function Popover(props, forwardedRef) {
     const {
       children,
       onClose,
@@ -84,19 +82,14 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
       shouldCloseOnEscape = true,
       shouldCloseOnOutsideClick = true,
       shouldPreventOutsideClick = false,
-      shouldLockScroll = false,
+      shouldPreventOutsideScroll = false,
       shouldPortal = true,
       ...popoverProps
     } = props;
     const debugContext = useDebugContext();
 
-    const ScrollLockWrapper = React.useMemo(
-      () => (shouldLockScroll ? RemoveScroll : React.Fragment),
-      [shouldLockScroll]
-    );
-    const PortalWrapper = React.useMemo(() => (shouldPortal ? Portal : React.Fragment), [
-      shouldPortal,
-    ]);
+    const ScrollLockWrapper = shouldPreventOutsideScroll ? RemoveScroll : React.Fragment;
+    const PortalWrapper = shouldPortal ? Portal : React.Fragment;
 
     const content = (
       <Popper {...interopDataAttrObj('root')} {...popoverProps} ref={forwardedRef}>
