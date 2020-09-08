@@ -51,10 +51,10 @@ type PopoverOwnProps = {
   shouldCloseOnOutsideClick?: LockProps['shouldDeactivateOnOutsideClick'];
 
   /**
-   * Whether pointer events happening outside the Popover should be blocked
+   * Whether pointer events happening outside the Popover should be prevented
    * (default: `false`)
    */
-  shouldBlockOutsideClick?: LockProps['shouldBlockOutsideClick'];
+  shouldPreventOutsideClick?: LockProps['shouldPreventOutsideClick'];
 
   /**
    * Whether scrolling should be locked or not
@@ -83,7 +83,7 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
       refToFocusOnClose,
       shouldCloseOnEscape = true,
       shouldCloseOnOutsideClick = true,
-      shouldBlockOutsideClick = false,
+      shouldPreventOutsideClick = false,
       shouldLockScroll = false,
       shouldPortal = true,
       ...popoverProps
@@ -116,7 +116,7 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
               refToFocusOnDeactivation={refToFocusOnClose}
               shouldDeactivateOnEscape={shouldCloseOnEscape}
               shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
-              shouldBlockOutsideClick={shouldBlockOutsideClick}
+              shouldPreventOutsideClick={shouldPreventOutsideClick}
             >
               {content}
             </Lock>
