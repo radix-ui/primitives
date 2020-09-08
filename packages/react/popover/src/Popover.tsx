@@ -88,33 +88,26 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
     } = props;
     const debugContext = useDebugContext();
 
-    const ScrollLockWrapper = shouldPreventOutsideScroll ? RemoveScroll : React.Fragment;
+    const ScrollLockWrapper =
+      shouldPreventOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
-
-    const content = (
-      <Popper {...interopDataAttrObj('root')} {...popoverProps} ref={forwardedRef}>
-        {children}
-      </Popper>
-    );
 
     return (
       <PortalWrapper>
-        {debugContext.disableLock ? (
-          content
-        ) : (
-          <ScrollLockWrapper>
-            <Lock
-              onDeactivate={onClose}
-              refToFocusOnActivation={refToFocusOnOpen}
-              refToFocusOnDeactivation={refToFocusOnClose}
-              shouldDeactivateOnEscape={shouldCloseOnEscape}
-              shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
-              shouldPreventOutsideClick={shouldPreventOutsideClick}
-            >
-              {content}
-            </Lock>
-          </ScrollLockWrapper>
-        )}
+        <ScrollLockWrapper>
+          <Lock
+            onDeactivate={onClose}
+            refToFocusOnActivation={refToFocusOnOpen}
+            refToFocusOnDeactivation={refToFocusOnClose}
+            shouldDeactivateOnEscape={shouldCloseOnEscape}
+            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
+            shouldPreventOutsideClick={shouldPreventOutsideClick}
+          >
+            <Popper {...interopDataAttrObj('root')} {...popoverProps} ref={forwardedRef}>
+              {children}
+            </Popper>
+          </Lock>
+        </ScrollLockWrapper>
       </PortalWrapper>
     );
   }

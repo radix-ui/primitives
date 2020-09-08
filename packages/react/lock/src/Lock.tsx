@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useComposedRefs } from '@interop-ui/react-utils';
 import { createFocusTrap, FocusableTarget, FocusTrap } from './utils';
+import { useDebugContext } from '@interop-ui/react-debug-context';
 
 type LockContextValue = {
   containerRef: React.RefObject<HTMLElement>;
@@ -12,7 +13,7 @@ const LockContext = React.createContext({} as LockContextValue);
 LockContext.displayName = 'LockContext';
 
 type LockProps = {
-  children: React.ReactNode | ((ref: React.RefObject<HTMLElement | undefined>) => React.ReactNode);
+  children: React.ReactElement;
 
   /**
    * A function called when the Lock is deactivated from the inside (escape / outslide click)
@@ -43,7 +44,15 @@ type LockProps = {
   shouldPreventOutsideClick?: boolean;
 };
 
-function Lock({
+function Lock({ children, ...props }: LockProps) {
+  const debugContext = useDebugContext();
+  const child = React.Children.only(children);
+  if (!React.isValidElement(child)) return null;
+
+  return debugContext.disableLock ? child : <LockImpl {...props}>{child}</LockImpl>;
+}
+
+function LockImpl({
   children,
   onDeactivate = () => {},
   refToFocusOnActivation,
@@ -157,20 +166,7 @@ function Lock({
     shouldPreventOutsideClick,
   ]);
 
-  const child = typeof children === 'function' ? null : React.Children.only(children);
-  // compose all the possible refs to the container element
-  const ref = useComposedRefs(child ? (child as any).ref : null, containerRef);
-
-  let content: React.ReactNode;
-
-  if (typeof children === 'function') {
-    // useful for cases when we need to attach the container ref to a specific element
-    // other than the first child node (used in Popover for example)
-    content = children(containerRef);
-  } else if (child) {
-    // finally, clone our container, attaching the composed ref to it
-    content = React.cloneElement(child as React.ReactElement, { ref });
-  }
+  const composedContainerRef = useComposedRefs((children as any).ref, containerRef);
 
   return (
     <LockContext.Provider
@@ -182,7 +178,10 @@ function Lock({
           shouldDeactivateOnOutsideClickFromContext ?? shouldDeactivateOnOutsideClick,
       }}
     >
-      {content}
+      {
+        // finally, clone our container, attaching the composed ref to it
+        React.cloneElement(children, { ref: composedContainerRef })
+      }
     </LockContext.Provider>
   );
 }
