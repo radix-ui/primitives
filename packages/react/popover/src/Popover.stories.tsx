@@ -1,39 +1,44 @@
 import * as React from 'react';
 import { Popover, styles } from './Popover';
 
+import type { PopoverTargetProps } from './Popover';
+
 export default { title: 'Popover' };
 
 export const Basic = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLButtonElement>(null);
   return (
     <div
       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
     >
-      <button ref={anchorRef} onClick={() => setIsOpen(true)}>
-        open
-      </button>
-
-      {isOpen && (
-        <Popover
-          anchorRef={anchorRef}
-          onClose={() => setIsOpen(false)}
-          style={{ ...styles.root, backgroundColor: '#eee', width: 250, height: 150 }}
+      <Popover>
+        <Popover.Target as={Button}>open</Popover.Target>
+        <Popover.Content
+          style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
         >
-          <button onClick={() => setIsOpen(false)}>close</button>
+          <Popover.Close as={Button}>close</Popover.Close>
           <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
-        </Popover>
-      )}
+        </Popover.Content>
+      </Popover>
     </div>
   );
 };
 
-export const Nested = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [isNestedOpen, setIsNestedOpen] = React.useState(false);
+const Button = React.forwardRef<HTMLButtonElement, PopoverTargetProps>((props, forwardedRef) => (
+  <button
+    ref={forwardedRef}
+    style={{
+      ...props.style,
+      ...styles.target,
+      border: '2px solid #999',
+      padding: '5px 10px',
+      borderRadius: 4,
+    }}
+    {...props}
+  />
+));
 
+export const Nested = () => {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
-  const nestedButtonRef = React.useRef<HTMLButtonElement>(null);
 
   return (
     <div
@@ -53,62 +58,48 @@ export const Nested = () => {
         Focus popover button
       </button>
 
-      <button type="button" ref={buttonRef} onClick={() => setIsOpen(true)}>
-        {!isOpen ? 'Open' : 'Close'} popover
-      </button>
+      <Popover>
+        <Popover.Target type="button" ref={buttonRef}>
+          Open popover
+        </Popover.Target>
 
-      {isOpen ? (
-        <Popover
-          anchorRef={buttonRef}
-          onClose={() => setIsOpen(false)}
+        <Popover.Content
           sideOffset={10}
-          style={{ ...styles.root, backgroundColor: 'royalblue', padding: 30, borderRadius: 5 }}
+          style={{ ...styles.content, backgroundColor: 'royalblue', padding: 30, borderRadius: 5 }}
         >
           <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'royalblue' }} />
-          <button type="button" onClick={() => setIsOpen(false)} style={{ marginRight: 10 }}>
+          <Popover.Close type="button" style={{ marginRight: 10 }}>
             close
-          </button>
-          <button type="button" ref={nestedButtonRef} onClick={() => setIsNestedOpen(true)}>
-            {!isNestedOpen ? 'Open' : 'Close'} nested popover
-          </button>
-        </Popover>
-      ) : null}
+          </Popover.Close>
 
-      {isNestedOpen ? (
-        <Popover
-          anchorRef={nestedButtonRef}
-          onClose={() => setIsNestedOpen(false)}
-          side="top"
-          align="center"
-          sideOffset={10}
-          style={{ ...styles.root, backgroundColor: 'tomato', padding: 30, borderRadius: 5 }}
-        >
-          <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'tomato' }} />
-          <button type="button" onClick={() => setIsNestedOpen(false)}>
-            close
-          </button>
-        </Popover>
-      ) : null}
+          <Popover>
+            <Popover.Target type="button">Open nested popover</Popover.Target>
+            <Popover.Content
+              side="top"
+              align="center"
+              sideOffset={10}
+              style={{ ...styles.root, backgroundColor: 'tomato', padding: 30, borderRadius: 5 }}
+            >
+              <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'tomato' }} />
+              <Popover.Close type="button">close</Popover.Close>
+            </Popover.Content>
+          </Popover>
+        </Popover.Content>
+      </Popover>
     </div>
   );
 };
 
 export const FocusTest = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const buttonRef = React.useRef(null);
   return (
     <>
       <button style={{ marginRight: 10 }} onClick={() => (document.activeElement as any)?.blur()}>
         Blur
       </button>
-      <button ref={buttonRef} onClick={() => setIsOpen(true)}>
-        Open Popover
-      </button>
-      {isOpen ? (
-        <Popover
-          anchorRef={buttonRef}
-          onClose={() => setIsOpen(false)}
-          style={{ ...styles.root, backgroundColor: '#eee', width: 250, height: 150 }}
+      <Popover>
+        <Popover.Target as={Button}>Open Popover</Popover.Target>
+        <Popover.Content
+          style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
         >
           <button
             style={{ marginRight: 10 }}
@@ -116,8 +107,8 @@ export const FocusTest = () => {
           >
             Blur
           </button>
-        </Popover>
-      ) : null}
+        </Popover.Content>
+      </Popover>
     </>
   );
 };
