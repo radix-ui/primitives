@@ -70,8 +70,8 @@ export function getPlacementData({
   // we return some good default styles
   if (!targetRect || !popperSize) {
     return {
-      popperStyles: getUnmeasuredPopperStyles(),
-      arrowStyles: getUnmeasuredArrowStyles(),
+      popperStyles: UNMEASURED_POPPER_STYLES,
+      arrowStyles: UNMEASURED_ARROW_STYLES,
       transformOriginStyles: {},
       adjustedSide: side,
       adjustedAlign: align,
@@ -94,7 +94,7 @@ export function getPlacementData({
   if (shouldAvoidCollisions === false) {
     const popperStyles = getPlacementStylesForPoint(popperPoint);
 
-    let arrowStyles = getUnmeasuredArrowStyles();
+    let arrowStyles = UNMEASURED_ARROW_STYLES;
     if (arrowSize) {
       arrowStyles = getPopperArrowStyles({ popperSize, arrowSize, arrowOffset, side, align });
     }
@@ -153,7 +153,7 @@ export function getPlacementData({
   // compute adjusted popper / arrow / transform origin styles
   const popperStyles = getPlacementStylesForPoint(adjustedPopperPoint);
 
-  let arrowStyles = getUnmeasuredArrowStyles();
+  let arrowStyles = UNMEASURED_ARROW_STYLES;
   if (arrowSize) {
     arrowStyles = getPopperArrowStyles({
       popperSize,
@@ -350,26 +350,22 @@ function getTransformOriginStyles(
   };
 }
 
-function getUnmeasuredPopperStyles(): CSS.Properties {
-  return {
-    // position: 'fixed' here is important because it will take the popper
-    // out of the flow so it does not disturb the position of the target
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    opacity: 0,
-    pointerEvents: 'none',
-  };
-}
+const UNMEASURED_POPPER_STYLES: CSS.Properties = {
+  // position: 'fixed' here is important because it will take the popper
+  // out of the flow so it does not disturb the position of the target
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  opacity: 0,
+  pointerEvents: 'none',
+};
 
-function getUnmeasuredArrowStyles(): CSS.Properties {
-  return {
-    // given the arrow is nested inside the popper,
-    // make sure that it is out of the flow and doesn't hinder then popper's measurement
-    position: 'absolute',
-    opacity: 0,
-  };
-}
+const UNMEASURED_ARROW_STYLES: CSS.Properties = {
+  // given the arrow is nested inside the popper,
+  // make sure that it is out of the flow and doesn't hinder then popper's measurement
+  position: 'absolute',
+  opacity: 0,
+};
 
 type GetArrowStylesOptions = {
   /** The size of the popper to place */
