@@ -35,38 +35,40 @@ const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
  * DialogRoot
  * -----------------------------------------------------------------------------------------------*/
 
+type LockProps = React.ComponentProps<typeof Lock>;
+
 type DialogRootProps = {
   /** whether the Dialog is currently opened or not */
   isOpen: boolean;
 
   /** A function called when the Dialog is closed from the inside (escape / outslide click) */
-  onClose?(): void;
+  onClose?: LockProps['onDeactivate'];
 
   /**
    * A ref to an element to focus on inside the Dialog after it is opened.
    * (default: first focusable element inside the Dialog)
    * (fallback: first focusable element inside the Dialog, then the Dialog's content container)
    */
-  refToFocusOnOpen?: React.RefObject<HTMLElement | null | undefined>;
+  refToFocusOnOpen?: LockProps['refToFocusOnActivation'];
 
   /**
    * A ref to an element to focus on outside the Dialog after it is closed.
    * (default: last focused element before the Dialog was opened)
    * (fallback: none)
    */
-  refToFocusOnClose?: React.RefObject<HTMLElement | null | undefined>;
+  refToFocusOnClose?: LockProps['refToFocusOnDeactivation'];
 
   /**
    * Whether pressing the `Escape` key should close the Dialog
    * (default: `true`)
    */
-  shouldCloseOnEscape?: boolean;
+  shouldCloseOnEscape?: LockProps['shouldDeactivateOnEscape'];
 
   /**
    * Whether clicking outside the Dialog should close it
    * (default: `true`)
    */
-  shouldCloseOnOutsideClick?: boolean | ((event: MouseEvent | TouchEvent) => boolean);
+  shouldCloseOnOutsideClick?: LockProps['shouldDeactivateOnOutsideClick'];
 };
 
 const DialogRoot: React.FC<DialogRootProps> = (props) => {
@@ -153,7 +155,6 @@ const DialogInner = forwardRef<typeof INNER_DEFAULT_TAG, DialogInnerProps>(funct
   let { as: Comp = INNER_DEFAULT_TAG, children, ...innerProps } = props;
   const debugContext = useDebugContext();
   let {
-    isOpen,
     onClose,
     refToFocusOnOpen,
     refToFocusOnClose,
@@ -162,19 +163,22 @@ const DialogInner = forwardRef<typeof INNER_DEFAULT_TAG, DialogInnerProps>(funct
   } = useDialogContext(INNER_NAME);
   return (
     <Comp {...interopDataAttrObj('inner')} ref={forwardedRef} {...innerProps}>
-      <RemoveScroll>
-        <Lock
-          isActive={debugContext.disableLock ? false : isOpen}
-          onDeactivate={onClose}
-          refToFocusOnActivation={refToFocusOnOpen}
-          refToFocusOnDeactivation={refToFocusOnClose}
-          shouldDeactivateOnEscape={shouldCloseOnEscape}
-          shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
-          shouldBlockOutsideClick
-        >
-          {children}
-        </Lock>
-      </RemoveScroll>
+      {debugContext.disableLock ? (
+        children
+      ) : (
+        <RemoveScroll>
+          <Lock
+            onDeactivate={onClose}
+            refToFocusOnActivation={refToFocusOnOpen}
+            refToFocusOnDeactivation={refToFocusOnClose}
+            shouldDeactivateOnEscape={shouldCloseOnEscape}
+            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
+            shouldBlockOutsideClick
+          >
+            {children}
+          </Lock>
+        </RemoveScroll>
+      )}
     </Comp>
   );
 });
@@ -197,7 +201,7 @@ const DialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentProps>
     return (
       <Comp
         {...interopDataAttrObj('content')}
-        ref={useComposedRefs(forwardedRef, lockContainerRef)}
+        ref={useComposedRefs(forwardedRef, lockContainerRef as React.RefObject<HTMLDivElement>)}
         role="dialog"
         aria-modal
         {...contentProps}

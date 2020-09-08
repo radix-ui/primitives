@@ -2,6 +2,8 @@ import { tabbable } from '@interop-ui/tabbable';
 import { hideOthers } from 'aria-hidden';
 import { arrayRemove } from '@interop-ui/utils';
 
+export type FocusableTarget = HTMLElement | { focus(): void };
+
 type FocusTrapConfig = {
   /** The element inside which we want to trap focus */
   container: HTMLElement;
@@ -11,14 +13,14 @@ type FocusTrapConfig = {
    * (default: first focusable element inside the focus trap)
    * (fallback: first focusable element inside the focus trap, then the container itself)
    */
-  elementToFocusWhenActivated?: HTMLElement | null;
+  elementToFocusWhenActivated?: FocusableTarget | null;
 
   /**
    * An element to focus on outside the focus trap after it is deactivated.
    * (default: last focused element before the focus trap was activated)
    * (fallback: none)
    */
-  elementToFocusWhenDeactivated?: HTMLElement | null;
+  elementToFocusWhenDeactivated?: FocusableTarget | null;
 
   /** Whether pressing the escape key should deactivate the focus trap */
   shouldDeactivateOnEscape?: boolean;
@@ -365,20 +367,20 @@ function getCurrentlyFocusedElement() {
 
 function getFirstTabbableElement(container: HTMLElement) {
   const tabbableElements = tabbable(container, { includeContainer: false });
-  return tabbableElements[0];
+  return tabbableElements[0] as HTMLElement;
 }
 
 function getLastTabbableElement(container: HTMLElement) {
   const tabbableElements = tabbable(container, { includeContainer: false });
-  return tabbableElements[tabbableElements.length - 1];
+  return tabbableElements[tabbableElements.length - 1] as HTMLElement;
 }
 
 function isHTMLElement(element: any): element is HTMLElement {
   return element instanceof HTMLElement;
 }
 
-function isSelectableInput(element: any): element is HTMLElement & { select: () => void } {
-  return isHTMLElement(element) && element.tagName.toLowerCase() === 'input' && 'select' in element;
+function isSelectableInput(element: any): element is FocusableTarget & { select: () => void } {
+  return element instanceof HTMLInputElement && 'select' in element;
 }
 
 /**
@@ -386,7 +388,7 @@ function isSelectableInput(element: any): element is HTMLElement & { select: () 
  * If unsuccessful, displays an error in the console and potentially focus will fall back on a provided `fallbackElement`.
  */
 function attemptFocus(
-  element: Element | undefined,
+  element: FocusableTarget | undefined,
   errorMessage?: string,
   fallbackElement?: HTMLElement
 ) {
@@ -411,12 +413,12 @@ function attemptFocus(
  * Moves focus to a given element (and select it if it is a selectable input)
  * Returns whether the focus was successfully moved to the given element
  */
-function focus(element: Element | undefined) {
-  if (element && (element as HTMLElement).focus) {
+function focus(element: FocusableTarget | undefined) {
+  if (element && element.focus) {
     // NOTE: we prevent scrolling on focus because we are not preventing overflow in our `Popover`
     // If scroll isn't prevented and the popover is partially cut-off, the browser would try to
     // get the focused element to fit in view no matter what and would just bust the layout.
-    (element as HTMLElement).focus({ preventScroll: true });
+    element.focus({ preventScroll: true });
     if (isSelectableInput(element)) {
       element.select();
     }

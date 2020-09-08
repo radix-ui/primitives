@@ -4,18 +4,12 @@ import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 const NAME = 'VisuallyHidden';
 const DEFAULT_TAG = 'span';
 
-type VisuallyHiddenOwnProps = { bypassInlineStyles?: boolean };
 type VisuallyHiddenDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
-type VisuallyHiddenProps = VisuallyHiddenOwnProps & VisuallyHiddenDOMProps;
+type VisuallyHiddenProps = VisuallyHiddenDOMProps;
 
 const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
-  ({ as: Comp = DEFAULT_TAG, bypassInlineStyles = false, style, ...props }, forwardedRef) => (
-    <Comp
-      {...props}
-      {...interopDataAttrObj('root')}
-      ref={forwardedRef}
-      style={bypassInlineStyles ? style : { ...styles.root, ...style }}
-    />
+  ({ as: Comp = DEFAULT_TAG, ...props }, forwardedRef) => (
+    <Comp {...props} {...interopDataAttrObj('root')} ref={forwardedRef} />
   )
 );
 
