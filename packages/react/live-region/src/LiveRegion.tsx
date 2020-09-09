@@ -1,7 +1,11 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { cssReset, interopDataAttr } from '@interop-ui/utils';
-import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
+import {
+  forwardRef,
+  createStyleObj,
+  useIsomorphicLayoutEffect as useLayoutEffect,
+} from '@interop-ui/react-utils';
 
 type RegionType = 'polite' | 'assertive';
 type RegionRole = 'status' | 'alert' | 'log';
@@ -17,28 +21,24 @@ const interopAttr = interopDataAttr('LiveRegionRegion');
 const useLiveRegion = ({
   ariaAtomic,
   ariaRelevant,
-  role: roleProp,
-  type,
+  type = 'polite',
+  role = ROLES[type],
 }: {
   ariaAtomic?: boolean;
   // Generally use of aria-relevant is discouraged, but we want to provide support for it in
   // specific cases. We should provide guidance for this via documentation.
   ariaRelevant?: string | AriaRelevantOptions[];
   role?: RegionRole;
-  type: RegionType;
+  type?: RegionType;
 }) => {
   const [region, setRegion] = React.useState<HTMLElement>();
-
-  // Supports an explicit role prop. If none is set, fallback to role based on the region type.
-  const role = roleProp || ROLES[type];
-
   const relevant = ariaRelevant
     ? Array.isArray(ariaRelevant)
       ? ariaRelevant.join(' ')
       : ariaRelevant
     : undefined;
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     let element = document.querySelector(buildSelector({ type, role, relevant }));
 
     if (!element) {
@@ -80,19 +80,47 @@ const LiveRegion = forwardRef<typeof DEFAULT_TAG, LiveRegionProps>(function Live
   props,
   forwardedRef
 ) {
-  const { type = 'polite', 'aria-relevant': ariaRelevant, role, children, ...regionProps } = props;
+  const {
+    as: Comp = DEFAULT_TAG,
+    type = 'polite',
+    'aria-relevant': ariaRelevant,
+    role,
+    children,
+    ...regionProps
+  } = props;
 
   const ariaAtomic = ['true', true].includes(regionProps['aria-atomic'] as any);
   const region = useLiveRegion({ type, ariaAtomic, role, ariaRelevant });
+  const [space, setSpace] = React.useState(false);
+  const mounted = React.useRef(false);
+
+  React.useEffect(() => {
+    // Skip on first render
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    setSpace((s) => !s);
+  }, [children]);
+
+  // const childrenArray = React.Children.toArray(children);
+  // const lastChild = childrenArray.length > 0 ? childrenArray[childrenArray.length - 1] : null;
 
   return (
     <>
-      <div {...regionProps} {...interopDataAttrObj('root')} ref={forwardedRef}>
+      <Comp {...regionProps} {...interopDataAttrObj('root')} ref={forwardedRef}>
         {children}
-      </div>
+      </Comp>
 
       {/* portal into live region for screen reader announcements */}
-      {region && ReactDOM.createPortal(<div>{children}</div>, region)}
+      {region &&
+        ReactDOM.createPortal(
+          <div>
+            {children}
+            {space && ' '}
+          </div>,
+          region
+        )}
     </>
   );
 });
