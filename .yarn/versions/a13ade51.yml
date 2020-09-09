@@ -1,4 +1,5 @@
 releases:
+  "@interop-ui/react-aspect-ratio": prerelease
   "@interop-ui/react-avatar": prerelease
 
 declined:
