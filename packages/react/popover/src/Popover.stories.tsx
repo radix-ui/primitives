@@ -23,19 +23,24 @@ export const Basic = () => {
   );
 };
 
-const Button = React.forwardRef<HTMLButtonElement, PopoverTargetProps>((props, forwardedRef) => (
-  <button
-    ref={forwardedRef}
-    style={{
-      ...props.style,
-      ...styles.target,
-      border: '2px solid #999',
-      padding: '5px 10px',
-      borderRadius: 4,
-    }}
-    {...props}
-  />
-));
+export const Controlled = () => {
+  const [isOpen, setIsOpen] = React.useState(true);
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
+    >
+      <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
+        <Popover.Target as={Button}>{isOpen ? 'close' : 'open'}</Popover.Target>
+        <Popover.Content
+          style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
+        >
+          <Popover.Close as={Button}>close</Popover.Close>
+          <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
+        </Popover.Content>
+      </Popover>
+    </div>
+  );
+};
 
 export const Nested = () => {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
@@ -112,3 +117,22 @@ export const FocusTest = () => {
     </>
   );
 };
+
+const Button = React.forwardRef<HTMLButtonElement, PopoverTargetProps>(function Button(
+  props,
+  forwardedRef
+) {
+  return (
+    <button
+      ref={forwardedRef}
+      style={{
+        ...props.style,
+        ...styles.target,
+        border: '2px solid #999',
+        padding: '5px 10px',
+        borderRadius: 4,
+      }}
+      {...props}
+    />
+  );
+});

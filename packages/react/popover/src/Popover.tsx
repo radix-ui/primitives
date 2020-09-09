@@ -5,6 +5,7 @@ import {
   createContext,
   useComposedRefs,
   composeEventHandlers,
+  useControlledState,
 } from '@interop-ui/react-utils';
 import { cssReset } from '@interop-ui/utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
@@ -45,14 +46,21 @@ interface PopoverStaticProps {
 }
 
 type PopoverProps = {
+  isOpen?: boolean;
   defaultIsOpen?: boolean;
+  onIsOpenChange?: (isOpen: boolean) => void;
 };
 
 const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(props) {
-  const { children, defaultIsOpen = false } = props;
+  const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
   const targetRef = React.useRef<HTMLButtonElement>(null);
-  const [isOpen, setIsOpen] = React.useState(defaultIsOpen);
-  const context = React.useMemo(() => ({ targetRef, isOpen, setIsOpen }), [isOpen]);
+  const [_isOpen, setIsOpen] = useControlledState({
+    prop: isOpenProp,
+    defaultProp: defaultIsOpen,
+    onChange: onIsOpenChange,
+  });
+  const isOpen = Boolean(_isOpen);
+  const context = React.useMemo(() => ({ targetRef, isOpen, setIsOpen }), [isOpen, setIsOpen]);
 
   return <PopoverContext.Provider value={context}>{children}</PopoverContext.Provider>;
 };
@@ -95,9 +103,6 @@ const CONTENT_DEFAULT_TAG = 'div';
 
 type PopoverContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
 type PopoverContentOwnProps = {
-  /** A function called when the Popover is closed from the inside (escape / outslide click) */
-  onClose?: LockProps['onDeactivate'];
-
   /**
    * A ref to an element to focus on inside the Popover after it is opened.
    * (default: first focusable element inside the Popover)
@@ -148,9 +153,15 @@ type PopoverContentProps = Omit<PopperProps, 'anchorRef'> &
 
 const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
   function PopoverContent(props, forwardedRef) {
+    const context = usePopoverContext(CONTENT_NAME);
+    return context.isOpen ? <PopoverContentImpl ref={forwardedRef} {...props} /> : null;
+  }
+);
+
+const PopoverContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
+  function PopoverContentImpl(props, forwardedRef) {
     const {
       children,
-      onClose,
       refToFocusOnOpen,
       refToFocusOnClose,
       shouldCloseOnEscape = true,
@@ -167,16 +178,13 @@ const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProp
       shouldPreventOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
 
-    return context.isOpen ? (
+    return (
       <PortalWrapper>
         <ScrollLockWrapper>
           <Lock
-            onDeactivate={() => {
-              onClose?.();
-              context.setIsOpen(false);
-            }}
+            onDeactivate={() => context.setIsOpen(false)}
             refToFocusOnActivation={refToFocusOnOpen}
-            refToFocusOnDeactivation={refToFocusOnClose}
+            refToFocusOnDeactivation={refToFocusOnClose ?? context.targetRef}
             shouldDeactivateOnEscape={shouldCloseOnEscape}
             shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
             shouldPreventOutsideClick={shouldPreventOutsideClick}
@@ -192,7 +200,7 @@ const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProp
           </Lock>
         </ScrollLockWrapper>
       </PortalWrapper>
-    ) : null;
+    );
   }
 );
 
