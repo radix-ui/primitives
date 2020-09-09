@@ -78,6 +78,7 @@ const PopoverTarget = forwardRef<typeof TARGET_DEFAULT_TAG, PopoverTargetProps>(
       <Comp
         {...interopDataAttrObj('target')}
         ref={composedTargetRef}
+        type={Comp === TARGET_DEFAULT_TAG ? 'button' : undefined}
         {...targetProps}
         onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
       />
@@ -215,6 +216,7 @@ const PopoverClose = forwardRef<typeof CLOSE_DEFAULT_TAG, PopoverCloseProps>(
       <Comp
         {...interopDataAttrObj('close')}
         ref={forwardedRef}
+        type={Comp === CLOSE_DEFAULT_TAG ? 'button' : undefined}
         {...closeProps}
         onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
       />

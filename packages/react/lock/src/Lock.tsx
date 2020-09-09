@@ -13,7 +13,7 @@ const LockContext = React.createContext({} as LockContextValue);
 LockContext.displayName = 'LockContext';
 
 type LockProps = {
-  children: React.ReactElement;
+  children: React.ReactElement & { ref?: React.Ref<HTMLElement> };
 
   /**
    * A function called when the Lock is deactivated from the inside (escape / outslide click)
@@ -46,10 +46,7 @@ type LockProps = {
 
 function Lock({ children, ...props }: LockProps) {
   const debugContext = useDebugContext();
-  const child = React.Children.only(children);
-  if (!React.isValidElement(child)) return null;
-
-  return debugContext.disableLock ? child : <LockImpl {...props}>{child}</LockImpl>;
+  return debugContext.disableLock ? children : <LockImpl {...props}>{children}</LockImpl>;
 }
 
 function LockImpl({
@@ -166,7 +163,9 @@ function LockImpl({
     shouldPreventOutsideClick,
   ]);
 
-  const composedContainerRef = useComposedRefs((children as any).ref, containerRef);
+  const child = React.Children.only(children);
+  const composedContainerRef = useComposedRefs(child.ref, containerRef);
+  if (!React.isValidElement(child)) return null;
 
   return (
     <LockContext.Provider
@@ -180,7 +179,7 @@ function LockImpl({
     >
       {
         // finally, clone our container, attaching the composed ref to it
-        React.cloneElement(children, { ref: composedContainerRef })
+        React.cloneElement(child, { ref: composedContainerRef })
       }
     </LockContext.Provider>
   );
