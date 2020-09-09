@@ -53,7 +53,7 @@ type TabsOwnProps = {
   /** The id of the tab to select by default, if uncontrolled */
   defaultSelectedId?: string;
   /** A function called when a new tab is selected */
-  onSelect?: (id?: string) => void;
+  onSelect?: (id: string) => void;
   /**
    * The orientation the tabs are layed out.
    * Mainly so arrow navigation is done accordingly (left & right vs. up & down)

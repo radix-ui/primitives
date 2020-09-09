@@ -21,10 +21,12 @@ export const Basic = () => (
 export const InlineStyle = () => {
   const [selectedId, setSelectedId] = React.useState<string>('tab1');
   const [focusedId, setFocusedId] = React.useState<string | null>(null);
+  const disabledId = 'tab2';
 
-  function getTabStyle(id: string, disabled?: boolean): React.CSSProperties {
+  function getTabStyle(id: string): React.CSSProperties {
     let selected = id === selectedId;
     let focused = id === focusedId;
+    let disabled = id === disabledId;
     return {
       lineHeight: 1,
       fontWeight: 'bold',
@@ -45,14 +47,14 @@ export const InlineStyle = () => {
     lineHeight: '1.5',
   };
 
-  function onTabFocus(e: React.FocusEvent) {
-    const { tabId: clickedTabId = null } = (e.target as HTMLElement)?.dataset || {};
+  function handleTabFocus(e: React.FocusEvent) {
+    const { tabId: clickedTabId } = (e.target as HTMLElement)?.dataset || {};
     if (clickedTabId) {
       setFocusedId(clickedTabId);
     }
   }
 
-  function onTabBlur(e: React.FocusEvent) {
+  function handleTabBlur(e: React.FocusEvent) {
     setFocusedId(null);
   }
 
@@ -61,29 +63,35 @@ export const InlineStyle = () => {
       activationMode="manual"
       style={{ fontFamily: 'sans-serif', maxWidth: '20rem' }}
       selectedId={selectedId}
-      onSelect={(newValue) => {
-        if (newValue) {
-          setSelectedId(newValue);
-        }
-      }}
+      onSelect={setSelectedId}
     >
       <Tabs.List
         aria-label="tabs example"
         style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.05)' }}
       >
-        <Tabs.Tab onFocus={onTabFocus} onBlur={onTabBlur} style={getTabStyle('tab1')} id="tab1">
+        <Tabs.Tab
+          onFocus={handleTabFocus}
+          onBlur={handleTabBlur}
+          style={getTabStyle('tab1')}
+          id="tab1"
+        >
           Tab 1
         </Tabs.Tab>
         <Tabs.Tab
-          onFocus={onTabFocus}
-          onBlur={onTabBlur}
-          style={getTabStyle('tab2', true)}
+          onFocus={handleTabFocus}
+          onBlur={handleTabBlur}
+          style={getTabStyle('tab2')}
           id="tab2"
           disabled
         >
           Tab 2
         </Tabs.Tab>
-        <Tabs.Tab onFocus={onTabFocus} onBlur={onTabBlur} style={getTabStyle('tab3')} id="tab3">
+        <Tabs.Tab
+          onFocus={handleTabFocus}
+          onBlur={handleTabBlur}
+          style={getTabStyle('tab3')}
+          id="tab3"
+        >
           Tab 3
         </Tabs.Tab>
       </Tabs.List>
