@@ -7,12 +7,6 @@ export const overviewPages = [
 ];
 
 export const componentsPages = [
-  {
-    id: 'components/button',
-    label: 'Button',
-    description:
-      'A button enables users to trigger an event, such as submitting a form, opening a dialog, canceling an action, or performing a delete operation.',
-  },
   { id: 'components/input', label: 'Input', description: 'An input is a form control.' },
 ];
 

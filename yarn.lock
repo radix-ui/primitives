@@ -1785,7 +1785,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/docs@workspace:docs"
   dependencies:
-    "@interop-ui/react-button": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@modulz/radix": 0.0.1-beta.44
     "@modulz/radix-icons": ^2.4.1
@@ -1875,18 +1874,6 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     "@modulz/radix-icons": ^2.4.1
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-button@workspace:*, @interop-ui/react-button@workspace:packages/react/button":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-button@workspace:packages/react/button"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
