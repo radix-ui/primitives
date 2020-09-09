@@ -6,6 +6,7 @@ import {
   useComposedRefs,
   composeEventHandlers,
   useControlledState,
+  useId,
 } from '@interop-ui/react-utils';
 import { cssReset } from '@interop-ui/utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
@@ -23,6 +24,7 @@ import type { LockProps } from '@interop-ui/react-lock';
 
 type PopoverContextValue = {
   targetRef: React.RefObject<HTMLButtonElement>;
+  id: string;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 };
@@ -54,13 +56,18 @@ type PopoverProps = {
 const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(props) {
   const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
   const targetRef = React.useRef<HTMLButtonElement>(null);
+  const id = `popover-${useId()}`;
   const [_isOpen, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
     onChange: onIsOpenChange,
   });
   const isOpen = Boolean(_isOpen);
-  const context = React.useMemo(() => ({ targetRef, isOpen, setIsOpen }), [isOpen, setIsOpen]);
+  const context = React.useMemo(() => ({ targetRef, id, isOpen, setIsOpen }), [
+    id,
+    isOpen,
+    setIsOpen,
+  ]);
 
   return <PopoverContext.Provider value={context}>{children}</PopoverContext.Provider>;
 };
@@ -88,6 +95,9 @@ const PopoverTarget = forwardRef<typeof TARGET_DEFAULT_TAG, PopoverTargetProps>(
         ref={composedTargetRef}
         type={Comp === TARGET_DEFAULT_TAG ? 'button' : undefined}
         {...targetProps}
+        aria-haspopup="dialog"
+        aria-expanded={context.isOpen}
+        aria-controls={context.id}
         onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
       />
     );
@@ -194,6 +204,10 @@ const PopoverContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContent
               {...popoverProps}
               anchorRef={context.targetRef}
               ref={forwardedRef}
+              id={context.id}
+              role="dialog"
+              // I believe this depends on whether we trap focus or not (always for now)
+              aria-modal="true"
             >
               {children}
             </Popper>
