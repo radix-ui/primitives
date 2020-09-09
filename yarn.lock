@@ -1870,7 +1870,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-avatar@workspace:packages/react/avatar"
   dependencies:
-    "@interop-ui/react-image": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     "@modulz/radix-icons": ^2.4.1
@@ -1944,66 +1943,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-divider@workspace:packages/react/divider":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-divider@workspace:packages/react/divider"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-header@workspace:packages/react/header":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-header@workspace:packages/react/header"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-image@workspace:*, @interop-ui/react-image@workspace:packages/react/image":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-image@workspace:packages/react/image"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-input@workspace:packages/react/input":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-input@workspace:packages/react/input"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-link@workspace:packages/react/link":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-link@workspace:packages/react/link"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-live-region@workspace:packages/react/live-region":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-live-region@workspace:packages/react/live-region"
@@ -2030,18 +1969,6 @@ __metadata:
     conditional-wrap: ^1.0.2
     parcel: ^2.0.0-beta.1
     styled-components: ^5.1.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-overlay@workspace:packages/react/overlay":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-overlay@workspace:packages/react/overlay"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2151,45 +2078,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-table@workspace:packages/react/table":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-table@workspace:packages/react/table"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-tabs@workspace:packages/react/tabs":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-tabs@workspace:packages/react/tabs"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-text@workspace:packages/react/text":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-text@workspace:packages/react/text"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-textarea@workspace:packages/react/textarea":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-textarea@workspace:packages/react/textarea"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
