@@ -15,7 +15,7 @@ export const Base = () => {
   >(undefined);
   const [shouldDeactivateOnEscape, setShouldDeactivateOnEscape] = React.useState(true);
   const [shouldDeactivateOnOutsideClick, setShouldDeactivateOnOutsideClick] = React.useState(true);
-  const [shouldBlockOutsideClick, setShouldBlockOutsideClick] = React.useState(true);
+  const [shouldPreventOutsideClick, setShouldPreventOutsideClick] = React.useState(true);
 
   const ageInputRef = React.useRef<HTMLInputElement>(null);
   const nextButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -121,8 +121,8 @@ export const Base = () => {
         <label>
           <input
             type="checkbox"
-            checked={shouldBlockOutsideClick}
-            onChange={(event) => setShouldBlockOutsideClick(event.target.checked)}
+            checked={shouldPreventOutsideClick}
+            onChange={(event) => setShouldPreventOutsideClick(event.target.checked)}
           />{' '}
           Block outside click
         </label>
@@ -178,7 +178,7 @@ export const Base = () => {
             }
             shouldDeactivateOnEscape={shouldDeactivateOnEscape}
             shouldDeactivateOnOutsideClick={shouldDeactivateOnOutsideClick}
-            shouldBlockOutsideClick={shouldBlockOutsideClick}
+            shouldPreventOutsideClick={shouldPreventOutsideClick}
           >
             {children}
           </Lock>
@@ -235,7 +235,7 @@ export const Nested = () => {
             onDeactivate={() => setIsActive(false)}
             shouldDeactivateOnEscape
             shouldDeactivateOnOutsideClick
-            shouldBlockOutsideClick
+            shouldPreventOutsideClick
           >
             <LockIndicatorBox isActive={isActive}>
               <button type="button" onClick={() => setIsActive(false)}>
@@ -255,7 +255,7 @@ export const Nested = () => {
                   onDeactivate={() => setIsActiveNested(false)}
                   shouldDeactivateOnEscape
                   shouldDeactivateOnOutsideClick
-                  shouldBlockOutsideClick
+                  shouldPreventOutsideClick
                 >
                   <LockIndicatorBox isActive={isActiveNested}>
                     <button type="button" onClick={() => setIsActiveNested(false)}>
@@ -288,7 +288,7 @@ export const ExoticFocusableTarget = () => {
             onDeactivate={() => setIsActive(false)}
             shouldDeactivateOnEscape
             shouldDeactivateOnOutsideClick={false}
-            shouldBlockOutsideClick
+            shouldPreventOutsideClick
             refToFocusOnDeactivation={fancyInputRef}
           >
             {children}

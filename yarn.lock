@@ -1961,6 +1961,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-lock@workspace:packages/react/lock"
   dependencies:
+    "@interop-ui/react-debug-context": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/tabbable": "workspace:*"
     "@interop-ui/utils": "workspace:*"
@@ -1978,21 +1979,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-popover@workspace:packages/react/popover"
   dependencies:
-    "@interop-ui/popper": "workspace:*"
-    "@interop-ui/react-arrow": "workspace:*"
     "@interop-ui/react-debug-context": "workspace:*"
+    "@interop-ui/react-lock": "workspace:*"
+    "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-use-size": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
-    csstype: ^2.6.11
     parcel: ^2.0.0-beta.1
+    react-remove-scroll: ^2.3.0
   peerDependencies:
     react: ">=16"
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-popper@workspace:packages/react/popper":
+"@interop-ui/react-popper@workspace:*, @interop-ui/react-popper@workspace:packages/react/popper":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-popper@workspace:packages/react/popper"
   dependencies:

@@ -173,7 +173,7 @@ const DialogInner = forwardRef<typeof INNER_DEFAULT_TAG, DialogInnerProps>(funct
             refToFocusOnDeactivation={refToFocusOnClose}
             shouldDeactivateOnEscape={shouldCloseOnEscape}
             shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
-            shouldBlockOutsideClick
+            shouldPreventOutsideClick
           >
             {children}
           </Lock>

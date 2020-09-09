@@ -34,8 +34,8 @@ type FocusTrapConfig = {
   /** Click outside handler */
   onOutsideClick?: (event: MouseEvent | TouchEvent, shouldPreventFocusControl: boolean) => void;
 
-  /** Whether pointer events happening outside the focus trap container should be blocked */
-  shouldBlockOutsideClick?: boolean;
+  /** Whether pointer events happening outside the focus trap container should be prevented */
+  shouldPreventOutsideClick?: boolean;
 };
 
 type FocusTrapState = {
@@ -115,7 +115,7 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
 
   let removeEscapeListener = () => {};
   let removeOutsideClickListener = () => {};
-  let stopBlockingOutsidePointerEvents = () => {};
+  let stopPreventingOutsidePointerEvents = () => {};
   let stopHidingOutsideFromScreenReaders = () => {};
 
   const focusTrap: FocusTrap = {
@@ -191,18 +191,18 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
       return key in updatedConfig && config[key] !== updatedConfig[key];
     }
 
-    const wasShouldBlockOutsideClickUpdated = wasKeyUpdated('shouldBlockOutsideClick');
+    const wasShouldPreventOutsideClick = wasKeyUpdated('shouldPreventOutsideClick');
 
     // update config
     config = { ...config, ...updatedConfig };
 
     // deal with dynamic changes whilst the focus trap is currently active
     if (state.isActive) {
-      if (wasShouldBlockOutsideClickUpdated) {
-        if (updatedConfig.shouldBlockOutsideClick) {
-          startBlockingOutsidePointerEvents();
+      if (wasShouldPreventOutsideClick) {
+        if (updatedConfig.shouldPreventOutsideClick) {
+          startPreventingOutsidePointerEvents();
         } else {
-          stopBlockingOutsidePointerEvents();
+          stopPreventingOutsidePointerEvents();
         }
       }
     }
@@ -281,9 +281,9 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
     if (shouldDeactivate) {
       // when deactivating by clicking outside, prevent normal return focus behaviour
       // (to `elementFocusedBeforeActivation` or `elementToFocusOnDeactivate`)
-      // ONLY IF we are NOT blocking outside clicks (clicks are allowed to go through)
+      // ONLY IF we are NOT preventing outside clicks (clicks are allowed to go through)
       // instead let the browser do what it needs to do (ie. focus a focusable element, etc)
-      const shouldPreventFocusControl = !config.shouldBlockOutsideClick;
+      const shouldPreventFocusControl = !config.shouldPreventOutsideClick;
       config.onOutsideClick && config.onOutsideClick(event, shouldPreventFocusControl);
     } else {
       // prevent focusing the clicked element
@@ -291,12 +291,12 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
     }
   }
 
-  function startBlockingOutsidePointerEvents() {
-    // make sure we always clean up if it was already blocking
-    stopBlockingOutsidePointerEvents();
+  function startPreventingOutsidePointerEvents() {
+    // make sure we always clean up if it was already preventing
+    stopPreventingOutsidePointerEvents();
 
-    // start blocking
-    stopBlockingOutsidePointerEvents = blockOutsidePointerEvents(config.container);
+    // start preventing
+    stopPreventingOutsidePointerEvents = preventOutsidePointerEvents(config.container);
   }
 
   function attachFocusTrapMarkers() {
@@ -322,8 +322,8 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
     document.addEventListener('focus', handleFocus, { capture: true });
     removeEscapeListener = onEscapeKeydown(handleEscape);
     removeOutsideClickListener = onOutsidePointerDown(config.container, handleOutsideClick);
-    if (config.shouldBlockOutsideClick) {
-      startBlockingOutsidePointerEvents();
+    if (config.shouldPreventOutsideClick) {
+      startPreventingOutsidePointerEvents();
     }
   }
 
@@ -332,7 +332,7 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
     document.removeEventListener('focus', handleFocus, { capture: true });
     removeEscapeListener();
     removeOutsideClickListener();
-    stopBlockingOutsidePointerEvents();
+    stopPreventingOutsidePointerEvents();
   }
 }
 // NOTE: `createFocusTrap` ends here
@@ -474,11 +474,11 @@ function onOutsidePointerDown(
 }
 
 /**
- * Blocks outside pointer events.
- * Returns a function to stop blocking.
+ * Prevents outside pointer events.
+ * Returns a function to stop preventing.
  */
-function blockOutsidePointerEvents(
-  /** The container used as a reference to check if events should be blocked (if they happen outside of it) */
+function preventOutsidePointerEvents(
+  /** The container used as a reference to check if events should be prevented (if they happen outside of it) */
   container: HTMLElement
 ) {
   const originalBodyPointerEvents = document.body.style.pointerEvents;
