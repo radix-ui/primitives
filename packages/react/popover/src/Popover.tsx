@@ -94,11 +94,11 @@ const PopoverTarget = forwardRef<typeof TARGET_DEFAULT_TAG, PopoverTargetProps>(
         {...interopDataAttrObj('target')}
         ref={composedTargetRef}
         type={Comp === TARGET_DEFAULT_TAG ? 'button' : undefined}
-        {...targetProps}
         aria-haspopup="dialog"
         aria-expanded={context.isOpen}
         aria-controls={context.id}
         onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
+        {...targetProps}
       />
     );
   }
@@ -201,13 +201,13 @@ const PopoverContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContent
           >
             <Popper
               {...interopDataAttrObj('content')}
-              {...popoverProps}
               anchorRef={context.targetRef}
               ref={forwardedRef}
-              id={context.id}
               role="dialog"
               // I believe this depends on whether we trap focus or not (always for now)
               aria-modal="true"
+              {...popoverProps}
+              id={context.id}
             >
               {children}
             </Popper>

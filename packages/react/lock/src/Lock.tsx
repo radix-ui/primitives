@@ -165,7 +165,6 @@ function LockImpl({
 
   const child = React.Children.only(children);
   const composedContainerRef = useComposedRefs(child.ref, containerRef);
-  if (!React.isValidElement(child)) return null;
 
   return (
     <LockContext.Provider
