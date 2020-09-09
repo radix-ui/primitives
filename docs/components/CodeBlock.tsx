@@ -2,12 +2,10 @@ import React from 'react';
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live';
 import { PrismTheme } from 'prism-react-renderer';
 import { Box, theme as radixTheme } from '@modulz/radix';
-import { Button } from '@interop-ui/react-button';
 import * as RI from '@modulz/radix-icons';
 
 const componentsExposedToCodeBlock = {
   // Add components in scope for the code block editor here
-  Button,
   ...RI,
 };
 

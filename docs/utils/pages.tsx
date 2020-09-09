@@ -6,14 +6,7 @@ export const overviewPages: Page[] = [
   { id: 'overview/roadmap', label: 'Roadmap' },
 ];
 
-export const componentsPages: ComponentPage[] = [
-  {
-    id: 'components/button',
-    label: 'Button',
-    description:
-      'A button enables users to trigger an event, such as submitting a form, opening a dialog, canceling an action, or performing a delete operation.',
-  },
-];
+export const componentsPages: ComponentPage[] = [];
 
 export const allPages = [...overviewPages, ...componentsPages];
 
