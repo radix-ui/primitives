@@ -23,6 +23,7 @@ const useLiveRegion = ({
   ariaRelevant,
   type = 'polite',
   role = ROLES[type],
+  ownerDocument = document,
 }: {
   ariaAtomic?: boolean;
   // Generally use of aria-relevant is discouraged, but we want to provide support for it in
@@ -30,6 +31,7 @@ const useLiveRegion = ({
   ariaRelevant?: string | AriaRelevantOptions[];
   role?: RegionRole;
   type?: RegionType;
+  ownerDocument?: Document;
 }) => {
   const [region, setRegion] = React.useState<HTMLElement>();
   const relevant = ariaRelevant
@@ -38,29 +40,50 @@ const useLiveRegion = ({
       : ariaRelevant
     : undefined;
 
-  useLayoutEffect(() => {
-    let element = document.querySelector(buildSelector({ type, role, relevant }));
-
+  const getLiveRegionElement = React.useCallback(() => {
+    let element = ownerDocument.querySelector(buildSelector({ type, role, relevant }));
     if (!element) {
-      element = document.createElement('div');
-      element.setAttribute(interopAttr, '');
-      element.setAttribute(
-        'style',
-        'position: absolute; top: -1px; width: 1px; height: 1px; overflow: hidden;'
-      );
-      document.body.appendChild(element);
+      element = buildLiveRegionElement(ownerDocument, {
+        type,
+        relevant,
+        role,
+        atomic: ariaAtomic || false,
+      });
+    }
+    return element;
+  }, [ariaAtomic, ownerDocument, relevant, role, type]);
+
+  useLayoutEffect(() => {
+    setRegion(getLiveRegionElement() as HTMLElement);
+  }, [getLiveRegionElement]);
+
+  // In some screen-reader/browser combinations, alerts coming from an inactive browser tab may be
+  // announced, which is a confusing experience for a user interacting with a completely different
+  // page. When the page visibility changes we'll update the `role` and `aria-live` attributes of
+  // our region element to prevent that.
+  // https://inclusive-components.design/notifications/#restrictingmessagestocontexts
+  React.useEffect(() => {
+    const liveRegionElement = getLiveRegionElement();
+
+    // I'm pretty sure this is fine. We don't need this listener for more than once per live region
+    // type. YOLO...
+    const yolo = `__INTEROP_LIVE_REGION_LISTENER_ATTACHED_${type.toUpperCase()}`;
+    if (!(window as any)[yolo]) {
+      ownerDocument.addEventListener('visibilitychange', updateAttributesOnVisibilityChange);
+      Object.assign(window, { [yolo]: true });
+      return function () {
+        Object.assign(window, { [yolo]: false });
+        ownerDocument.removeEventListener('visibilitychange', updateAttributesOnVisibilityChange);
+      };
     }
 
-    element.setAttribute('aria-live', type);
-    element.setAttribute('aria-atomic', String(ariaAtomic || false));
-    element.setAttribute('role', role);
-    if (relevant) {
-      element.setAttribute('aria-relevant', relevant);
-    }
+    return;
 
-    const regionElement = element as HTMLElement;
-    setRegion(regionElement);
-  }, [relevant, type, role, ariaAtomic]);
+    function updateAttributesOnVisibilityChange() {
+      liveRegionElement.setAttribute('role', ownerDocument.hidden ? 'none' : role);
+      liveRegionElement.setAttribute('aria-live', ownerDocument.hidden ? 'off' : type);
+    }
+  }, [getLiveRegionElement, ownerDocument, role, type]);
 
   return region;
 };
@@ -136,15 +159,36 @@ const [styles, interopDataAttrObj] = createStyleObj(NAME, {
 export { LiveRegion, styles, useLiveRegion };
 export type { LiveRegionProps };
 
-function buildSelector({
-  type,
-  relevant,
-  role,
-}: {
+type LiveRegionOptions = {
   type: string;
   relevant?: string;
   role: string;
-}) {
+  atomic?: boolean;
+};
+
+function buildLiveRegionElement(
+  ownerDocument: Document,
+  { type, relevant, role, atomic }: LiveRegionOptions
+) {
+  const element = ownerDocument.createElement('div');
+  element.setAttribute(interopAttr, '');
+  element.setAttribute(
+    'style',
+    'position: absolute; top: -1px; width: 1px; height: 1px; overflow: hidden;'
+  );
+  ownerDocument.body.appendChild(element);
+
+  element.setAttribute('aria-live', type);
+  element.setAttribute('aria-atomic', String(atomic || false));
+  element.setAttribute('role', role);
+  if (relevant) {
+    element.setAttribute('aria-relevant', relevant);
+  }
+
+  return element;
+}
+
+function buildSelector({ type, relevant, role }: LiveRegionOptions) {
   return `[${interopAttr}]${[
     ['aria-live', type],
     ['aria-relevant', relevant],
