@@ -35,7 +35,9 @@ export function StatusChange() {
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, lineHeight: 1 }}>
       <VisuallyHidden style={visuallyHiddenStyles.root}>
-        <LiveRegion>Your friend is {friendIsOnline ? 'online' : 'offline'}</LiveRegion>
+        <LiveRegion aria-relevant="all">
+          Your friend is {friendIsOnline ? 'online' : 'offline'}
+        </LiveRegion>
       </VisuallyHidden>
       <span
         style={{
