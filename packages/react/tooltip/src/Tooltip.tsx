@@ -52,7 +52,6 @@ const TOOLTIP_NAME = 'Tooltip';
 interface TooltipStaticProps {
   Target: typeof TooltipTarget;
   Content: typeof TooltipContent;
-  Label: typeof TooltipLabel;
   Arrow: typeof TooltipArrow;
 }
 
@@ -254,35 +253,6 @@ function CheckTargetMoved() {
 }
 
 /* -------------------------------------------------------------------------------------------------
- * TooltipLabel
- * -----------------------------------------------------------------------------------------------*/
-
-const LABEL_NAME = 'Tooltip.Label';
-
-type TooltipLabelProps = {
-  label: string;
-  ariaLabel?: string;
-};
-
-const TooltipLabel: React.FC<TooltipLabelProps> = function TooltipLabel({
-  label,
-  // we default `ariaLabel` to the `label` to simplify the implementation later on
-  // as we then don't need to differentiate whether or not we have an `ariaLabel`
-  // we instead always render it inside a `VisuallyHidden`
-  ariaLabel = label,
-}) {
-  const { id } = useTooltipContext(LABEL_NAME);
-  return (
-    <>
-      {label}
-      <VisuallyHidden id={id} role="tooltip" style={visuallyHiddenStyles.root}>
-        {ariaLabel}
-      </VisuallyHidden>
-    </>
-  );
-};
-
-/* -------------------------------------------------------------------------------------------------
  * TooltipArrow
  * -----------------------------------------------------------------------------------------------*/
 
@@ -303,13 +273,11 @@ const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(fun
 
 Tooltip.Target = TooltipTarget;
 Tooltip.Content = TooltipContent;
-Tooltip.Label = TooltipLabel;
 Tooltip.Arrow = TooltipArrow;
 
 Tooltip.displayName = TOOLTIP_NAME;
 Tooltip.Target.displayName = TARGET_NAME;
 Tooltip.Content.displayName = CONTENT_NAME;
-Tooltip.Label.displayName = LABEL_NAME;
 Tooltip.Arrow.displayName = ARROW_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
@@ -329,5 +297,5 @@ const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   },
 });
 
-export type { TooltipContentProps, TooltipLabelProps, TooltipArrowProps };
+export type { TooltipProps, TooltipTargetProps, TooltipContentProps, TooltipArrowProps };
 export { Tooltip, styles };

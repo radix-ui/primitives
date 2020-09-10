@@ -7,7 +7,7 @@ export const Basic = () => (
   <Tooltip>
     <Tooltip.Target style={{ margin: 100 }}>Hover or Focus me</Tooltip.Target>
     <Tooltip.Content as={Content} sideOffset={5}>
-      <Tooltip.Label label="Nicely done!" />
+      Nicely done!
       <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
     </Tooltip.Content>
   </Tooltip>
@@ -22,7 +22,7 @@ export const Controlled = () => {
         I'm controlled, look I'm {isOpen ? 'open' : 'closed'}
       </Tooltip.Target>
       <Tooltip.Content as={Content} sideOffset={5}>
-        <Tooltip.Label label="Nicely done!" />
+        Nicely done!
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
       </Tooltip.Content>
     </Tooltip>
@@ -324,12 +324,12 @@ export const Unmount = () => {
   );
 };
 
-function SimpleTooltip({ children, label, ariaLabel, isOpen, onOpenChange, ...props }: any) {
+function SimpleTooltip({ children, label, isOpen, onOpenChange, ...props }: any) {
   return (
     <Tooltip isOpen={isOpen} onIsOpenChange={onOpenChange}>
       {children}
       <Tooltip.Content as={Content} sideOffset={5} {...props}>
-        <Tooltip.Label label={label} ariaLabel={ariaLabel} />
+        {label}
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
       </Tooltip.Content>
     </Tooltip>
