@@ -17,7 +17,6 @@ import {
   PopperProps,
   PopperArrowProps,
 } from '@interop-ui/react-popper';
-import { useDebugContext } from '@interop-ui/react-debug-context';
 import { Portal } from '@interop-ui/react-portal';
 import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
@@ -180,7 +179,6 @@ type TooltipContentProps = Omit<PopperProps, 'anchorRef'> & TooltipContentDOMPro
 const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
   (props, forwardedRef) => {
     const { targetRef, isOpen } = useTooltipContext(CONTENT_NAME);
-    const debugContext = useDebugContext();
 
     return isOpen ? (
       <Portal>
@@ -190,9 +188,6 @@ const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProp
           {...props}
           ref={forwardedRef}
           anchorRef={targetRef}
-          shouldAvoidCollisions={
-            props.shouldAvoidCollisions ?? !debugContext.disableCollisionChecking
-          }
         />
       </Portal>
     ) : null;
