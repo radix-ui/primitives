@@ -6,7 +6,7 @@ export default { title: 'Tooltip' };
 export const Basic = () => (
   <Tooltip>
     <Tooltip.Target style={{ margin: 100 }}>Hover or Focus me</Tooltip.Target>
-    <Tooltip.Content as={Content} sideOffset={5}>
+    <Tooltip.Content as={Content} sideOffset={5} aria-label="Even better done this way!">
       Nicely done!
       <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
     </Tooltip.Content>
@@ -246,7 +246,7 @@ export const AriaLabel = () => (
         </Tooltip.Target>
       </SimpleTooltip>
 
-      <SimpleTooltip label="Notifications" ariaLabel="3 notifications">
+      <SimpleTooltip label="Notifications" aria-label="3 notifications">
         <Tooltip.Target style={{ margin: 5 }}>
           <span aria-hidden>🔔(3)</span>
         </Tooltip.Target>

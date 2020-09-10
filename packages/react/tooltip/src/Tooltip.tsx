@@ -221,7 +221,7 @@ const TooltipContentImp = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentP
         >
           {children}
           <VisuallyHidden id={context.id} role="tooltip" style={visuallyHiddenStyles.root}>
-            {children || ariaLabel}
+            {ariaLabel || children}
           </VisuallyHidden>
         </Popper>
       </PortalWrapper>
