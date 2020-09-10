@@ -183,7 +183,7 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
             refToFocusOnDeactivation={refToFocusOnClose}
             shouldDeactivateOnEscape={shouldCloseOnEscape}
             shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
-            shouldBlockOutsideClick
+            shouldPreventOutsideClick
           >
             {children}
           </Lock>

@@ -23,14 +23,28 @@ export function useSize(
         }
 
         const entry = entries[0];
+        let width: number;
+        let height: number;
 
-        setSize({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        });
+        if ('borderBoxSize' in entry) {
+          const borderSizeEntry = entry['borderBoxSize'];
+          // iron out differences between browsers
+          const borderSize = Array.isArray(borderSizeEntry) ? borderSizeEntry[0] : borderSizeEntry;
+          width = borderSize['inlineSize'];
+          height = borderSize['blockSize'];
+        } else {
+          // for browsers that don't support `borderBoxSize`
+          // we calculate a rect ourselves to get the correct border box.
+          const rect = elementToObserve.getBoundingClientRect();
+          width = rect.width;
+          height = rect.height;
+        }
+
+        setSize({ width, height });
       });
 
-      resizeObserver.observe(elementToObserve);
+      // @ts-ignore: types are wrong as we're using the polyfill, will sort that out later
+      resizeObserver.observe(elementToObserve, { box: 'border-box' });
 
       return () => {
         setSize(undefined);

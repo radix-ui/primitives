@@ -18,7 +18,7 @@ export const Basic = () => {
       {isOpen && (
         <Popper
           anchorRef={anchorRef}
-          style={{ ...styles.root, backgroundColor: '#eee', width: 250, height: 150 }}
+          style={{ ...styles.root, backgroundColor: '#eee', width: 250, height: 150, padding: 20 }}
         >
           <button onClick={() => setIsOpen(false)}>close</button>
           <Popper.Arrow width={50} height={20} style={{ ...styles.arrow }} />
