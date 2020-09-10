@@ -5,8 +5,8 @@ import {
   createContext,
   forwardRef,
   useRect,
-  useComposedRefs,
   createStyleObj,
+  useComposedRefs,
 } from '@interop-ui/react-utils';
 import { Side, Align, cssReset } from '@interop-ui/utils';
 import { ArrowProps, Arrow } from '@interop-ui/react-arrow';
@@ -131,15 +131,16 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
   return (
     <span style={arrowStyles}>
       <span
-        // we use an extra wrapper because `useSize` doesn't play well with
-        // the SVG arrow which is sized via CSS
+        // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
+        // doesn't report size as we'd expect on SVG elements.
+        // it reports their bounding box which is effectively the largest path inside the SVG.
         ref={arrowRef}
         style={{
           display: 'inline-block',
           verticalAlign: 'top',
         }}
       >
-        <Comp ref={forwardedRef} {...interopDataAttrObj('arrow')} {...arrowProps} />
+        <Comp {...interopDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
       </span>
     </span>
   );
