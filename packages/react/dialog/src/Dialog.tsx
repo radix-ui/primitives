@@ -12,6 +12,8 @@ import {
 } from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
+import type { LockProps } from '@interop-ui/react-lock';
+
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
@@ -34,8 +36,6 @@ const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
 /* -------------------------------------------------------------------------------------------------
  * DialogRoot
  * -----------------------------------------------------------------------------------------------*/
-
-type LockProps = React.ComponentProps<typeof Lock>;
 
 type DialogRootProps = {
   /** whether the Dialog is currently opened or not */

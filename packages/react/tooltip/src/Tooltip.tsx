@@ -184,6 +184,10 @@ const CONTENT_DEFAULT_TAG = 'div';
 type TooltipContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
 type TooltipContentOwnProps = {
   /**
+   * A more descriptive label for accessibility purpose
+   */
+  'aria-label'?: string;
+  /**
    * Whether the Tooltip should render in a Portal
    * (default: `true`)
    */
@@ -202,7 +206,7 @@ const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProp
 
 const TooltipContentImp = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
   (props, forwardedRef) => {
-    const { children, shouldPortal = true, ...contentProps } = props;
+    const { children, 'aria-label': ariaLabel, shouldPortal = true, ...contentProps } = props;
     const context = useTooltipContext(CONTENT_NAME);
 
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
@@ -217,6 +221,9 @@ const TooltipContentImp = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentP
           anchorRef={context.targetRef}
         >
           {children}
+          <VisuallyHidden id={context.id} role="tooltip" style={visuallyHiddenStyles.root}>
+            {children || ariaLabel}
+          </VisuallyHidden>
         </Popper>
       </PortalWrapper>
     );
@@ -313,6 +320,8 @@ const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
     ...popperStyles.root,
+    userSelect: 'none',
+    pointerEvents: 'none',
   },
   arrow: {
     ...cssReset(ARROW_DEFAULT_TAG),
