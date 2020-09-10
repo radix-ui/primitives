@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Image as ImagePrimitive } from '@interop-ui/react-image';
 import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
@@ -49,18 +48,16 @@ const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticPr
 const IMAGE_NAME = 'Avatar.Image';
 const IMAGE_DEFAULT_TAG = 'img';
 
-type AvatarImageDOMProps = React.ComponentPropsWithRef<typeof ImagePrimitive>;
+type AvatarImageDOMProps = React.ComponentPropsWithoutRef<typeof IMAGE_DEFAULT_TAG>;
 type AvatarImageOwnProps = { onLoadingStatusChange?: (status: ImageLoadingStatus) => void };
 type AvatarImageProps = AvatarImageDOMProps & AvatarImageOwnProps;
 
-const AvatarImage = forwardRef<
-  // This silences type errors for now but will change
-  // when the `PrimitiveComponent` type for consumers is added
-  React.ElementType<React.ComponentPropsWithRef<typeof ImagePrimitive>>,
-  AvatarImageProps
->(function AvatarImage(props, forwardedRef) {
+const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(function AvatarImage(
+  props,
+  forwardedRef
+) {
   const {
-    as: Comp = ImagePrimitive,
+    as: Comp = IMAGE_DEFAULT_TAG,
     src,
     onLoadingStatusChange: onLoadingStatusChangeProp = () => {},
     ...imageProps

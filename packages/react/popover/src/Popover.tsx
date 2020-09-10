@@ -1,151 +1,247 @@
-import React from 'react';
-import { forwardRef, useRect, useComposedRefs, createStyleObj } from '@interop-ui/react-utils';
-import { useSize } from '@interop-ui/react-use-size';
-import { Portal } from '@interop-ui/react-portal';
+import * as React from 'react';
+import {
+  forwardRef,
+  createStyleObj,
+  createContext,
+  useComposedRefs,
+  composeEventHandlers,
+  useControlledState,
+  useId,
+} from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import { cssReset, Side, Align, isFunction } from '@interop-ui/utils';
-import { getPlacementData } from '@interop-ui/popper';
-import { Arrow } from '@interop-ui/react-arrow';
-import * as CSS from 'csstype';
+import { Lock } from '@interop-ui/react-lock';
+import { RemoveScroll } from 'react-remove-scroll';
+import { Portal } from '@interop-ui/react-portal';
+
+import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
+import type { LockProps } from '@interop-ui/react-lock';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
 
-const PopoverArrowContext = React.createContext<{
-  arrowStyles: React.CSSProperties;
-  arrowRef: React.RefObject<HTMLElement | null>;
-}>({ arrowStyles: {}, arrowRef: { current: null } });
-PopoverArrowContext.displayName = 'PopoverArrowContext';
+type PopoverContextValue = {
+  targetRef: React.RefObject<HTMLButtonElement>;
+  id: string;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+};
+
+const [PopoverContext, usePopoverContext] = createContext<PopoverContextValue>(
+  'PopoverContext',
+  'Popover'
+);
 
 /* -------------------------------------------------------------------------------------------------
  * Popover
  * -----------------------------------------------------------------------------------------------*/
 
 const POPOVER_NAME = 'Popover';
-const POPOVER_DEFAULT_TAG = 'div';
 
-type PopoverDOMProps = React.ComponentPropsWithRef<typeof POPOVER_DEFAULT_TAG>;
-type PopoverOwnProps = {
-  targetRef: React.RefObject<HTMLElement | SVGElement>;
+interface PopoverStaticProps {
+  Target: typeof PopoverTarget;
+  Content: typeof PopoverContent;
+  Close: typeof PopoverClose;
+  Arrow: typeof PopoverArrow;
+}
 
-  /** whether the Popover is currently opened or not */
-  isOpen: boolean;
+type PopoverProps = {
+  isOpen?: boolean;
+  defaultIsOpen?: boolean;
+  onIsOpenChange?: (isOpen: boolean) => void;
+};
 
-  side?: Side;
-  sideOffset?: number;
-  align?: Align;
-  alignOffset?: number;
-  arrowOffset?: number;
-  collisionTolerance?: number;
+const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(props) {
+  const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
+  const targetRef = React.useRef<HTMLButtonElement>(null);
+  const id = `popover-${useId()}`;
+  const [_isOpen, setIsOpen] = useControlledState({
+    prop: isOpenProp,
+    defaultProp: defaultIsOpen,
+    onChange: onIsOpenChange,
+  });
+  const isOpen = Boolean(_isOpen);
+  const context = React.useMemo(() => ({ targetRef, id, isOpen, setIsOpen }), [
+    id,
+    isOpen,
+    setIsOpen,
+  ]);
+
+  return <PopoverContext.Provider value={context}>{children}</PopoverContext.Provider>;
+};
+
+/* -------------------------------------------------------------------------------------------------
+ * PopoverTarget
+ * -----------------------------------------------------------------------------------------------*/
+
+const TARGET_NAME = 'Popover.Target';
+const TARGET_DEFAULT_TAG = 'button';
+
+type PopoverTargetDOMProps = React.ComponentPropsWithoutRef<typeof TARGET_DEFAULT_TAG>;
+type PopoverTargetOwnProps = {};
+type PopoverTargetProps = PopoverTargetOwnProps & PopoverTargetDOMProps;
+
+const PopoverTarget = forwardRef<typeof TARGET_DEFAULT_TAG, PopoverTargetProps>(
+  (props, forwardedRef) => {
+    const { as: Comp = TARGET_DEFAULT_TAG, onClick, ...targetProps } = props;
+    const context = usePopoverContext(TARGET_NAME);
+    const composedTargetRef = useComposedRefs(forwardedRef, context.targetRef);
+
+    return (
+      <Comp
+        {...interopDataAttrObj('target')}
+        ref={composedTargetRef}
+        type={Comp === TARGET_DEFAULT_TAG ? 'button' : undefined}
+        aria-haspopup="dialog"
+        aria-expanded={context.isOpen}
+        aria-controls={context.id}
+        onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
+        {...targetProps}
+      />
+    );
+  }
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * PopoverContent
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONTENT_NAME = 'Popover.Content';
+const CONTENT_DEFAULT_TAG = 'div';
+
+type PopoverContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
+type PopoverContentOwnProps = {
+  /**
+   * A ref to an element to focus on inside the Popover after it is opened.
+   * (default: first focusable element inside the Popover)
+   * (fallback: first focusable element inside the Popover, then the Popover's content container)
+   */
+  refToFocusOnOpen?: LockProps['refToFocusOnActivation'];
 
   /**
-   * By default the popover will only render when open. Some components using popover may work
-   * better by hiding the popover visually using CSS rather than conditionally rendering, so this
-   * prop povides an opt-out for those cases.
+   * A ref to an element to focus on outside the Popover after it is closed.
+   * (default: last focused element before the Popover was opened)
+   * (fallback: none)
+   */
+  refToFocusOnClose?: LockProps['refToFocusOnDeactivation'];
+
+  /**
+   * Whether pressing the `Escape` key should close the Popover
    * (default: `true`)
    */
-  renderOnlyWhileOpen?: boolean;
+  shouldCloseOnEscape?: LockProps['shouldDeactivateOnEscape'];
 
   /**
-   * Whether or not to portal the contents of the popover.
+   * Whether clicking outside the Popover should close it
+   * (default: `true`)
+   */
+  shouldCloseOnOutsideClick?: LockProps['shouldDeactivateOnOutsideClick'];
+
+  /**
+   * Whether pointer events happening outside the Popover should be prevented
+   * (default: `false`)
+   */
+  shouldPreventOutsideClick?: LockProps['shouldPreventOutsideClick'];
+
+  /**
+   * Whether scrolling outside the Popover should be prevented
+   * (default: `false`)
+   */
+  shouldPreventOutsideScroll?: boolean;
+
+  /**
+   * Whether the Popover should render in a Portal
    * (default: `true`)
    */
   shouldPortal?: boolean;
-  positionOverride?(props: {
-    targetRect: ClientRect | undefined;
-    popperRect: ClientRect | undefined;
-  }): CSS.Properties;
 };
-type PopoverProps = PopoverDOMProps & PopoverOwnProps;
+type PopoverContentProps = Omit<PopperProps, 'anchorRef'> &
+  PopoverContentDOMProps &
+  PopoverContentOwnProps;
 
-const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStaticProps>(
-  function Popover(props, forwardedRef) {
+const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
+  function PopoverContent(props, forwardedRef) {
+    const context = usePopoverContext(CONTENT_NAME);
+    return context.isOpen ? <PopoverContentImpl ref={forwardedRef} {...props} /> : null;
+  }
+);
+
+const PopoverContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
+  function PopoverContentImpl(props, forwardedRef) {
     const {
-      as: Comp = POPOVER_DEFAULT_TAG,
-      align = 'center',
-      alignOffset = 0,
-      arrowOffset = 10,
       children,
-      collisionTolerance = 0,
-      isOpen,
-      positionOverride,
-      renderOnlyWhileOpen = true,
+      refToFocusOnOpen,
+      refToFocusOnClose,
+      shouldCloseOnEscape = true,
+      shouldCloseOnOutsideClick = true,
+      shouldPreventOutsideClick = false,
+      shouldPreventOutsideScroll = false,
       shouldPortal = true,
-      side = 'bottom',
-      sideOffset = -5,
-      style,
-      targetRef,
-      ...contentProps
+      ...popoverProps
     } = props;
+    const context = usePopoverContext(CONTENT_NAME);
+    const debugContext = useDebugContext();
 
-    let debugContext = useDebugContext();
-
-    let shouldRender = renderOnlyWhileOpen ? isOpen : true;
-
-    let popperRef = React.useRef<HTMLDivElement>(null);
-    let arrowRef = React.useRef<HTMLSpanElement>(null);
-    let targetRect = useRect(targetRef);
-    let popperRect = useRect(popperRef);
-    let arrowSize = useSize(arrowRef);
-
-    let popperSize =
-      popperRect?.height && popperRect?.width
-        ? { height: popperRect.height, width: popperRect.width }
-        : undefined;
-
-    let shouldUseOverride = isFunction(positionOverride);
-
-    let popperStyles: CSS.Properties = {};
-    let arrowStyles: CSS.Properties = {};
-    if (shouldUseOverride) {
-      popperStyles = positionOverride!({ targetRect, popperRect });
-    } else {
-      let placementData = getPlacementData({
-        popperSize,
-        targetRect,
-        arrowSize,
-        arrowOffset,
-        side,
-        sideOffset,
-        align,
-        alignOffset,
-        collisionTolerance,
-        shouldAvoidCollisions: !debugContext.disableCollisionChecking,
-      });
-
-      popperStyles = placementData.popperStyles;
-      arrowStyles = placementData.arrowStyles;
-    }
-
-    let Wrapper = shouldPortal ? Portal : React.Fragment;
+    const ScrollLockWrapper =
+      shouldPreventOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
+    const PortalWrapper = shouldPortal ? Portal : React.Fragment;
 
     return (
-      <PopoverArrowContext.Provider value={{ arrowStyles, arrowRef }}>
-        {shouldRender ? (
-          <Wrapper>
-            <Comp
+      <PortalWrapper>
+        <ScrollLockWrapper>
+          <Lock
+            onDeactivate={() => context.setIsOpen(false)}
+            refToFocusOnActivation={refToFocusOnOpen}
+            refToFocusOnDeactivation={refToFocusOnClose ?? context.targetRef}
+            shouldDeactivateOnEscape={shouldCloseOnEscape}
+            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
+            shouldPreventOutsideClick={shouldPreventOutsideClick}
+          >
+            <Popper
+              {...interopDataAttrObj('content')}
+              anchorRef={context.targetRef}
               ref={forwardedRef}
-              style={{
-                ...popperStyles,
-                ...style,
-              }}
-              {...interopDataAttrObj('root')}
-              {...contentProps}
+              role="dialog"
+              // I believe this depends on whether we trap focus or not (always for now)
+              aria-modal="true"
+              {...popoverProps}
+              id={context.id}
             >
-              {/*
-              We put the `popperRef` on a div around the content and not on the content element
-              itself. This is because the size measured by `useSize` doesn't account for
-              padding/border (ResizeObserver limitations) so there would be some calculations issues
-              if padding/border styles are passed to `<Content />` via CSS.
+              {children}
+            </Popper>
+          </Lock>
+        </ScrollLockWrapper>
+      </PortalWrapper>
+    );
+  }
+);
 
-              See: https://github.com/que-etc/resize-observer-polyfill/issues/11
-            */}
-              <div ref={popperRef}>{children}</div>
-            </Comp>
-          </Wrapper>
-        ) : null}
-      </PopoverArrowContext.Provider>
+/* -------------------------------------------------------------------------------------------------
+ * PopoverClose
+ * -----------------------------------------------------------------------------------------------*/
+
+const CLOSE_NAME = 'Popover.Close';
+const CLOSE_DEFAULT_TAG = 'button';
+
+type PopoverCloseDOMProps = React.ComponentPropsWithoutRef<typeof CLOSE_DEFAULT_TAG>;
+type PopoverCloseOwnProps = {};
+type PopoverCloseProps = PopoverCloseOwnProps & PopoverCloseDOMProps;
+
+const PopoverClose = forwardRef<typeof CLOSE_DEFAULT_TAG, PopoverCloseProps>(
+  (props, forwardedRef) => {
+    const { as: Comp = CLOSE_DEFAULT_TAG, onClick, ...closeProps } = props;
+    const context = usePopoverContext(CLOSE_NAME);
+
+    return (
+      <Comp
+        {...interopDataAttrObj('close')}
+        ref={forwardedRef}
+        type={Comp === CLOSE_DEFAULT_TAG ? 'button' : undefined}
+        {...closeProps}
+        onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
+      />
     );
   }
 );
@@ -155,63 +251,54 @@ const Popover = forwardRef<typeof POPOVER_DEFAULT_TAG, PopoverProps, PopoverStat
  * -----------------------------------------------------------------------------------------------*/
 
 const ARROW_NAME = 'Popover.Arrow';
-const ARROW_DEFAULT_TAG = 'span';
+const ARROW_DEFAULT_TAG = 'svg';
 
-type PopoverArrowDOMProps = React.ComponentPropsWithRef<typeof ARROW_DEFAULT_TAG>;
-type PopoverArrowOwnProps = {
-  arrowElement?: React.ReactElement<any>;
-};
-type PopoverArrowProps = PopoverArrowDOMProps & PopoverArrowOwnProps;
+type PopoverArrowOwnProps = {};
+type PopoverArrowProps = PopperArrowProps & PopoverArrowOwnProps;
 
 const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(function PopoverArrow(
   props,
   forwardedRef
 ) {
-  let { as: Comp = ARROW_DEFAULT_TAG, arrowElement, style, children, ...otherProps } = props;
-  let { arrowStyles, arrowRef } = React.useContext(PopoverArrowContext);
-  let ref = useComposedRefs(forwardedRef, arrowRef);
-  return (
-    <Comp
-      style={{
-        ...arrowStyles,
-        ...style,
-      }}
-      {...interopDataAttrObj('arrow')}
-      {...otherProps}
-    >
-      <span
-        // we use an extra wrapper because `useSize` doesn't play well with
-        // the SVG arrow which is sized via CSS
-        ref={ref}
-      >
-        {arrowElement || <Arrow />}
-      </span>
-    </Comp>
-  );
+  return <Popper.Arrow {...interopDataAttrObj('arrow')} {...props} ref={forwardedRef} />;
 });
 
 /* -----------------------------------------------------------------------------------------------*/
 
+Popover.Target = PopoverTarget;
+Popover.Content = PopoverContent;
+Popover.Close = PopoverClose;
 Popover.Arrow = PopoverArrow;
 
 Popover.displayName = POPOVER_NAME;
+Popover.Target.displayName = TARGET_NAME;
+Popover.Content.displayName = CONTENT_NAME;
+Popover.Close.displayName = CLOSE_NAME;
 Popover.Arrow.displayName = ARROW_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
-  root: {
-    ...cssReset(POPOVER_DEFAULT_TAG),
-    position: 'absolute',
+  root: {},
+  target: {
+    ...cssReset(TARGET_DEFAULT_TAG),
+  },
+  content: {
+    ...cssReset(CONTENT_DEFAULT_TAG),
+    ...popperStyles.root,
+  },
+  close: {
+    ...cssReset(CLOSE_DEFAULT_TAG),
   },
   arrow: {
     ...cssReset(ARROW_DEFAULT_TAG),
-    display: 'inline-block',
-    verticalAlign: 'top',
+    ...popperStyles.arrow,
   },
 });
 
+export type {
+  PopoverProps,
+  PopoverTargetProps,
+  PopoverContentProps,
+  PopoverCloseProps,
+  PopoverArrowProps,
+};
 export { Popover, styles };
-export type { PopoverProps, PopoverArrowProps };
-
-interface PopoverStaticProps {
-  Arrow: typeof PopoverArrow;
-}
