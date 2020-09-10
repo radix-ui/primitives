@@ -9,6 +9,7 @@ import {
   useRect,
   usePrevious,
   useControlledState,
+  useIsomorphicLayoutEffect,
 } from '@interop-ui/react-utils';
 import { cssReset } from '@interop-ui/utils';
 import {
@@ -57,19 +58,18 @@ interface TooltipStaticProps {
 
 type TooltipProps = {
   isOpen?: boolean;
-  onOpenChange?: (isOpen?: boolean) => void;
+  defaultIsOpen?: boolean;
+  onIsOpenChange?: (isOpen: boolean) => void;
 };
 
-const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip({
-  children,
-  isOpen: isOpenProp,
-  onOpenChange,
-}) {
+const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(props) {
+  const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
   const targetRef = React.useRef<HTMLButtonElement>(null);
   const id = `tooltip-${useId()}`;
   const [_isOpen, setIsOpen] = useControlledState({
     prop: isOpenProp,
-    onChange: onOpenChange,
+    defaultProp: defaultIsOpen,
+    onChange: onIsOpenChange,
   });
   const isOpen = Boolean(_isOpen);
 
@@ -95,7 +95,7 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip({
 
   // if we're controlling the component
   // put the state machine in the appropriate state
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isOpenProp === true) {
       stateMachine.transition('mouseEntered', { id });
     }
@@ -111,60 +111,68 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip({
  * -----------------------------------------------------------------------------------------------*/
 
 const TARGET_NAME = 'Tooltip.Target';
+const TARGET_DEFAULT_TAG = 'button';
 
-const TooltipTarget: React.FC = function TooltipTarget({ children }) {
-  const { targetRef, id } = useTooltipContext(TARGET_NAME);
-  const child = React.Children.only(children);
-  const composedTargetRef = useComposedRefs((child as any).ref || null, targetRef);
+type TooltipTargetDOMProps = React.ComponentPropsWithoutRef<typeof TARGET_DEFAULT_TAG>;
+type TooltipTargetOwnProps = {};
+type TooltipTargetProps = TooltipTargetOwnProps & TooltipTargetDOMProps;
 
-  if (!React.isValidElement(child)) {
-    // TODO: THROW DEV WARNING?
-    return null;
+const TooltipTarget = forwardRef<typeof TARGET_DEFAULT_TAG, TooltipTargetProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = TARGET_DEFAULT_TAG,
+      onMouseEnter,
+      onMouseMove,
+      onMouseLeave,
+      onFocus,
+      onBlur,
+      onMouseDown,
+      onKeyDown,
+      ...targetProps
+    } = props;
+    const context = useTooltipContext(TARGET_NAME);
+    const composedTargetRef = useComposedRefs(forwardedRef, context.targetRef);
+
+    return (
+      <Comp
+        {...interopDataAttrObj('target')}
+        ref={composedTargetRef}
+        type={Comp === TARGET_DEFAULT_TAG ? 'button' : undefined}
+        aria-describedby={context.id}
+        onMouseEnter={composeEventHandlers(onMouseEnter, () =>
+          stateMachine.transition('mouseEntered', { id: context.id })
+        )}
+        onMouseMove={composeEventHandlers(onMouseMove, () =>
+          stateMachine.transition('mouseMoved', { id: context.id })
+        )}
+        onMouseLeave={composeEventHandlers(onMouseLeave, () => {
+          const stateMachineContext = stateMachine.getContext();
+          if (stateMachineContext.id === context.id) {
+            stateMachine.transition('mouseLeft', { id: context.id });
+          }
+        })}
+        onFocus={composeEventHandlers(onFocus, () =>
+          stateMachine.transition('focused', { id: context.id })
+        )}
+        onBlur={composeEventHandlers(onBlur, () => {
+          const stateMachineContext = stateMachine.getContext();
+          if (stateMachineContext.id === context.id) {
+            stateMachine.transition('blurred', { id: context.id });
+          }
+        })}
+        onMouseDown={composeEventHandlers(onMouseDown, () =>
+          stateMachine.transition('activated', { id: context.id })
+        )}
+        onKeyDown={composeEventHandlers(onKeyDown, (event) => {
+          if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+            stateMachine.transition('activated', { id: context.id });
+          }
+        })}
+        {...targetProps}
+      />
+    );
   }
-
-  const {
-    onMouseEnter,
-    onMouseMove,
-    onMouseLeave,
-    onFocus,
-    onBlur,
-    onMouseDown,
-    onKeyDown,
-  } = child.props;
-
-  return React.cloneElement(child, {
-    ...interopDataAttrObj('target'),
-    ref: composedTargetRef,
-    'aria-describedby': id,
-    onMouseEnter: composeEventHandlers(onMouseEnter, () =>
-      stateMachine.transition('mouseEntered', { id })
-    ),
-    onMouseMove: composeEventHandlers(onMouseMove, () =>
-      stateMachine.transition('mouseMoved', { id })
-    ),
-    onMouseLeave: composeEventHandlers(onMouseLeave, () => {
-      const context = stateMachine.getContext();
-      if (context.id === id) {
-        stateMachine.transition('mouseLeft', { id });
-      }
-    }),
-    onFocus: composeEventHandlers(onFocus, () => stateMachine.transition('focused', { id })),
-    onBlur: composeEventHandlers(onBlur, () => {
-      const context = stateMachine.getContext();
-      if (context.id === id) {
-        stateMachine.transition('blurred', { id });
-      }
-    }),
-    onMouseDown: composeEventHandlers(onMouseDown, () =>
-      stateMachine.transition('activated', { id })
-    ),
-    onKeyDown: composeEventHandlers(onKeyDown, (event: KeyboardEvent) => {
-      if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-        stateMachine.transition('activated', { id });
-      }
-    }),
-  });
-};
+);
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipContent
@@ -174,23 +182,44 @@ const CONTENT_NAME = 'Tooltip.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
 type TooltipContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type TooltipContentProps = Omit<PopperProps, 'anchorRef'> & TooltipContentDOMProps;
+type TooltipContentOwnProps = {
+  /**
+   * Whether the Tooltip should render in a Portal
+   * (default: `true`)
+   */
+  shouldPortal?: boolean;
+};
+type TooltipContentProps = Omit<PopperProps, 'anchorRef'> &
+  TooltipContentDOMProps &
+  TooltipContentOwnProps;
 
 const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
   (props, forwardedRef) => {
-    const { targetRef, isOpen } = useTooltipContext(CONTENT_NAME);
+    const context = useTooltipContext(CONTENT_NAME);
+    return context.isOpen ? <TooltipContentImp ref={forwardedRef} {...props} /> : null;
+  }
+);
 
-    return isOpen ? (
-      <Portal>
+const TooltipContentImp = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
+  (props, forwardedRef) => {
+    const { children, shouldPortal = true, ...contentProps } = props;
+    const context = useTooltipContext(CONTENT_NAME);
+
+    const PortalWrapper = shouldPortal ? Portal : React.Fragment;
+
+    return (
+      <PortalWrapper>
         <CheckTargetMoved />
         <Popper
           {...interopDataAttrObj('content')}
-          {...props}
+          {...contentProps}
           ref={forwardedRef}
-          anchorRef={targetRef}
-        />
-      </Portal>
-    ) : null;
+          anchorRef={context.targetRef}
+        >
+          {children}
+        </Popper>
+      </PortalWrapper>
+    );
   }
 );
 
@@ -278,7 +307,9 @@ Tooltip.Arrow.displayName = ARROW_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   root: {},
-  target: {},
+  target: {
+    ...cssReset(TARGET_DEFAULT_TAG),
+  },
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
     ...popperStyles.root,
