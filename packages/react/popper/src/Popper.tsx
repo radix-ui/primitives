@@ -73,8 +73,8 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
 
     const { popperStyles, arrowStyles } = getPlacementData({
-      targetRect: anchorRect,
-      popperSize: popperSize,
+      anchorRect,
+      popperSize,
       arrowSize,
 
       // config
