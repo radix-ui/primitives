@@ -16,11 +16,19 @@ export const Basic = () => {
       </div>
 
       {isOpen && (
-        <Popper
-          anchorRef={anchorRef}
-          style={{ ...styles.root, backgroundColor: '#eee', width: 250, height: 150, padding: 20 }}
-        >
-          <button onClick={() => setIsOpen(false)}>close</button>
+        <Popper anchorRef={anchorRef} style={{ ...styles.root }}>
+          <Popper.Content
+            style={{
+              ...styles.content,
+              backgroundColor: '#eee',
+              width: 250,
+              height: 150,
+              padding: 20,
+              border: '10px solid tomato',
+            }}
+          >
+            <button onClick={() => setIsOpen(false)}>close</button>
+          </Popper.Content>
           <Popper.Arrow width={50} height={20} style={{ ...styles.arrow }} />
         </Popper>
       )}
@@ -41,11 +49,12 @@ export const WithPortal = () => {
 
       {isOpen && (
         <Portal>
-          <Popper
-            anchorRef={anchorRef}
-            style={{ ...styles.root, backgroundColor: '#eee', width: 250, height: 150 }}
-          >
-            <button onClick={() => setIsOpen(false)}>close</button>
+          <Popper anchorRef={anchorRef} style={{ ...styles.root }}>
+            <Popper.Content
+              style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
+            >
+              <button onClick={() => setIsOpen(false)}>close</button>
+            </Popper.Content>
             <Popper.Arrow width={50} height={20} style={{ ...styles.arrow }} />
           </Popper>
         </Portal>
@@ -66,12 +75,12 @@ export const WithCustomArrow = () => {
       </div>
 
       {isOpen && (
-        <Popper
-          anchorRef={anchorRef}
-          side="right"
-          style={{ ...styles.root, backgroundColor: '#eee', width: 250, height: 150 }}
-        >
-          <button onClick={() => setIsOpen(false)}>close</button>
+        <Popper anchorRef={anchorRef} side="right" style={{ ...styles.root }}>
+          <Popper.Content
+            style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
+          >
+            <button onClick={() => setIsOpen(false)}>close</button>
+          </Popper.Content>
           <Popper.Arrow as={MyArrow} width={50} height={20} style={{ ...styles.arrow }} />
         </Popper>
       )}

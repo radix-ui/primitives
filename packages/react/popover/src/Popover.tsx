@@ -42,6 +42,7 @@ const POPOVER_NAME = 'Popover';
 
 interface PopoverStaticProps {
   Target: typeof PopoverTarget;
+  Position: typeof PopoverPosition;
   Content: typeof PopoverContent;
   Close: typeof PopoverClose;
   Arrow: typeof PopoverArrow;
@@ -105,14 +106,14 @@ const PopoverTarget = forwardRef<typeof TARGET_DEFAULT_TAG, PopoverTargetProps>(
 );
 
 /* -------------------------------------------------------------------------------------------------
- * PopoverContent
+ * PopoverPosition
  * -----------------------------------------------------------------------------------------------*/
 
-const CONTENT_NAME = 'Popover.Content';
-const CONTENT_DEFAULT_TAG = 'div';
+const POSITION_NAME = 'Popover.Position';
+const POSITION_DEFAULT_TAG = 'div';
 
-type PopoverContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type PopoverContentOwnProps = {
+type PopoverPositionDOMProps = React.ComponentPropsWithoutRef<typeof POSITION_DEFAULT_TAG>;
+type PopoverPositionOwnProps = {
   /**
    * A ref to an element to focus on inside the Popover after it is opened.
    * (default: first focusable element inside the Popover)
@@ -157,19 +158,19 @@ type PopoverContentOwnProps = {
    */
   shouldPortal?: boolean;
 };
-type PopoverContentProps = Omit<PopperProps, 'anchorRef'> &
-  PopoverContentDOMProps &
-  PopoverContentOwnProps;
+type PopoverPositionProps = Omit<PopperProps, 'anchorRef'> &
+  PopoverPositionDOMProps &
+  PopoverPositionOwnProps;
 
-const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
-  function PopoverContent(props, forwardedRef) {
-    const context = usePopoverContext(CONTENT_NAME);
-    return context.isOpen ? <PopoverContentImpl ref={forwardedRef} {...props} /> : null;
+const PopoverPosition = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPositionProps>(
+  function PopoverPosition(props, forwardedRef) {
+    const context = usePopoverContext(POSITION_NAME);
+    return context.isOpen ? <PopoverPositionImpl ref={forwardedRef} {...props} /> : null;
   }
 );
 
-const PopoverContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
-  function PopoverContentImpl(props, forwardedRef) {
+const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPositionProps>(
+  function PopoverPositionImpl(props, forwardedRef) {
     const {
       children,
       refToFocusOnOpen,
@@ -181,7 +182,7 @@ const PopoverContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContent
       shouldPortal = true,
       ...popoverProps
     } = props;
-    const context = usePopoverContext(CONTENT_NAME);
+    const context = usePopoverContext(POSITION_NAME);
     const debugContext = useDebugContext();
 
     const ScrollLockWrapper =
@@ -200,7 +201,7 @@ const PopoverContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContent
             shouldPreventOutsideClick={shouldPreventOutsideClick}
           >
             <Popper
-              {...interopDataAttrObj('content')}
+              {...interopDataAttrObj('position')}
               anchorRef={context.targetRef}
               ref={forwardedRef}
               role="dialog"
@@ -215,6 +216,23 @@ const PopoverContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContent
         </ScrollLockWrapper>
       </PortalWrapper>
     );
+  }
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * PopoverContent
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONTENT_NAME = 'Popover.Content';
+const CONTENT_DEFAULT_TAG = 'div';
+
+type PopoverContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
+type PopoverContentOwnProps = {};
+type PopoverContentProps = PopoverContentDOMProps & PopoverContentOwnProps;
+
+const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
+  (props, forwardedRef) => {
+    return <Popper.Content {...interopDataAttrObj('content')} {...props} ref={forwardedRef} />;
   }
 );
 
@@ -266,12 +284,14 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
 /* -----------------------------------------------------------------------------------------------*/
 
 Popover.Target = PopoverTarget;
+Popover.Position = PopoverPosition;
 Popover.Content = PopoverContent;
 Popover.Close = PopoverClose;
 Popover.Arrow = PopoverArrow;
 
 Popover.displayName = POPOVER_NAME;
 Popover.Target.displayName = TARGET_NAME;
+Popover.Position.displayName = POSITION_NAME;
 Popover.Content.displayName = CONTENT_NAME;
 Popover.Close.displayName = CLOSE_NAME;
 Popover.Arrow.displayName = ARROW_NAME;
@@ -281,9 +301,13 @@ const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
   target: {
     ...cssReset(TARGET_DEFAULT_TAG),
   },
+  position: {
+    ...cssReset(POSITION_DEFAULT_TAG),
+    ...popperStyles.root,
+  },
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
-    ...popperStyles.root,
+    ...popperStyles.content,
   },
   close: {
     ...cssReset(CLOSE_DEFAULT_TAG),
@@ -297,6 +321,7 @@ const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
 export type {
   PopoverProps,
   PopoverTargetProps,
+  PopoverPositionProps,
   PopoverContentProps,
   PopoverCloseProps,
   PopoverArrowProps,
