@@ -150,47 +150,41 @@ export const CustomAnchor = () => {
   const itemBoxRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <div style={{ width: 250 }}>
-      {Array.from({ length: 10 }, (_, i) => (
-        <div
-          ref={i === 3 ? itemBoxRef : undefined}
-          key={i}
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: 20,
-            marginBottom: 1,
-            backgroundColor: '#eee',
-          }}
+    <div
+      ref={itemBoxRef}
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: 250,
+        padding: 20,
+        margin: 100,
+        backgroundColor: '#eee',
+      }}
+    >
+      Item
+      <Popover>
+        <Popover.Trigger>open</Popover.Trigger>
+        <Popover.Position
+          style={{ ...styles.position }}
+          anchorRef={itemBoxRef}
+          side="right"
+          sideOffset={1}
+          align="start"
         >
-          Item {i + 1}
-          {i === 3 ? (
-            <Popover>
-              <Popover.Trigger>open</Popover.Trigger>
-              <Popover.Position
-                style={{ ...styles.position }}
-                anchorRef={itemBoxRef}
-                side="right"
-                sideOffset={1}
-                align="start"
-              >
-                <Popover.Content
-                  style={{
-                    ...styles.content,
-                    backgroundColor: '#eee',
-                    width: 250,
-                    height: 150,
-                    padding: 20,
-                  }}
-                >
-                  <Popover.Close>close</Popover.Close>
-                </Popover.Content>
-              </Popover.Position>
-            </Popover>
-          ) : null}
-        </div>
-      ))}
+          <Popover.Content
+            style={{
+              ...styles.content,
+              backgroundColor: '#eee',
+              width: 250,
+              height: 150,
+              padding: 20,
+            }}
+          >
+            <Popover.Close>close</Popover.Close>
+          </Popover.Content>
+        </Popover.Position>
+      </Popover>
     </div>
   );
 };
