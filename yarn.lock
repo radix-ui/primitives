@@ -1842,6 +1842,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-announce@workspace:packages/react/announce":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-announce@workspace:packages/react/announce"
+  dependencies:
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/react-visually-hidden": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-arrow@workspace:*, @interop-ui/react-arrow@workspace:packages/react/arrow":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-arrow@workspace:packages/react/arrow"
@@ -1940,20 +1954,6 @@ __metadata:
     react-remove-scroll: ^2.3.0
   peerDependencies:
     react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-live-region@workspace:packages/react/live-region":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-live-region@workspace:packages/react/live-region"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/react-visually-hidden": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
   languageName: unknown
   linkType: soft
 
