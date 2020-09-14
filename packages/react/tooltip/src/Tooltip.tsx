@@ -65,12 +65,11 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(pr
   const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
   const targetRef = React.useRef<HTMLButtonElement>(null);
   const id = `tooltip-${useId()}`;
-  const [_isOpen, setIsOpen] = useControlledState({
+  const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
     onChange: onIsOpenChange,
   });
-  const isOpen = Boolean(_isOpen);
 
   // control open state using state machine subscription
   React.useEffect(() => {

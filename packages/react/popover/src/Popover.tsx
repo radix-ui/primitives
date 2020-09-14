@@ -58,12 +58,11 @@ const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(pr
   const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
   const targetRef = React.useRef<HTMLButtonElement>(null);
   const id = `popover-${useId()}`;
-  const [_isOpen, setIsOpen] = useControlledState({
+  const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
     onChange: onIsOpenChange,
   });
-  const isOpen = Boolean(_isOpen);
   const context = React.useMemo(() => ({ targetRef, id, isOpen, setIsOpen }), [
     id,
     isOpen,
