@@ -56,7 +56,7 @@ type LockImplProps = Omit<LockProps, 'children'> & {
 };
 
 function LockImpl({
-  children,
+  children: child,
   onDeactivate = () => {},
   refToFocusOnActivation,
   refToFocusOnDeactivation,
@@ -169,7 +169,7 @@ function LockImpl({
     shouldPreventOutsideClick,
   ]);
 
-  const composedContainerRef = useComposedRefs(children.ref, containerRef);
+  const composedContainerRef = useComposedRefs(child.ref, containerRef);
 
   return (
     <LockContext.Provider
@@ -183,7 +183,7 @@ function LockImpl({
     >
       {
         // finally, clone our container, attaching the composed ref to it
-        React.cloneElement(children, { ref: composedContainerRef })
+        React.cloneElement(child, { ref: composedContainerRef })
       }
     </LockContext.Provider>
   );
