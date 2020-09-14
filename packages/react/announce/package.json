@@ -1,5 +1,5 @@
 {
-  "name": "@interop-ui/react-live-region",
+  "name": "@interop-ui/react-announce",
   "version": "0.0.1-0",
   "license": "MIT",
   "source": "src/index.ts",
@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "parcel build src/index.ts && yarn build:styles",
-    "build:styles": "node ../../../scripts/build-styles live-region",
+    "build:styles": "node ../../../scripts/build-styles announce",
     "clean": "rm -rf dist",
     "bump": "yarn version --deferred",
     "prepublish": "yarn clean && yarn build"
