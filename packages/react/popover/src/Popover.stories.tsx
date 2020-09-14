@@ -12,12 +12,21 @@ export const Basic = () => {
     >
       <Popover>
         <Popover.Target as={Button}>open</Popover.Target>
-        <Popover.Content
-          style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
-        >
-          <Popover.Close as={Button}>close</Popover.Close>
+        <Popover.Position style={{ ...styles.position }} sideOffset={10}>
+          <Popover.Content
+            style={{
+              ...styles.content,
+              backgroundColor: '#eee',
+              width: 250,
+              height: 150,
+              padding: 20,
+              border: '10px solid tomato',
+            }}
+          >
+            <Popover.Close as={Button}>close</Popover.Close>
+          </Popover.Content>
           <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
-        </Popover.Content>
+        </Popover.Position>
       </Popover>
     </div>
   );
@@ -31,12 +40,14 @@ export const Controlled = () => {
     >
       <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
         <Popover.Target as={Button}>{isOpen ? 'close' : 'open'}</Popover.Target>
-        <Popover.Content
-          style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
-        >
-          <Popover.Close as={Button}>close</Popover.Close>
+        <Popover.Position style={{ ...styles.position }}>
+          <Popover.Content
+            style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
+          >
+            <Popover.Close as={Button}>close</Popover.Close>
+          </Popover.Content>
           <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
-        </Popover.Content>
+        </Popover.Position>
       </Popover>
     </div>
   );
@@ -68,28 +79,43 @@ export const Nested = () => {
           Open popover
         </Popover.Target>
 
-        <Popover.Content
-          sideOffset={10}
-          style={{ ...styles.content, backgroundColor: 'royalblue', padding: 30, borderRadius: 5 }}
-        >
-          <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'royalblue' }} />
-          <Popover.Close type="button" style={{ marginRight: 10 }}>
-            close
-          </Popover.Close>
+        <Popover.Position sideOffset={10} style={{ ...styles.position }}>
+          <Popover.Content
+            style={{
+              ...styles.content,
+              backgroundColor: 'royalblue',
+              padding: 30,
+              borderRadius: 5,
+            }}
+          >
+            <Popover.Close type="button" style={{ marginRight: 10 }}>
+              close
+            </Popover.Close>
 
-          <Popover>
-            <Popover.Target type="button">Open nested popover</Popover.Target>
-            <Popover.Content
-              side="top"
-              align="center"
-              sideOffset={10}
-              style={{ ...styles.root, backgroundColor: 'tomato', padding: 30, borderRadius: 5 }}
-            >
-              <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'tomato' }} />
-              <Popover.Close type="button">close</Popover.Close>
-            </Popover.Content>
-          </Popover>
-        </Popover.Content>
+            <Popover>
+              <Popover.Target type="button">Open nested popover</Popover.Target>
+              <Popover.Position
+                side="top"
+                align="center"
+                sideOffset={10}
+                style={{ ...styles.position }}
+              >
+                <Popover.Content
+                  style={{
+                    ...styles.content,
+                    backgroundColor: 'tomato',
+                    padding: 30,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Popover.Close type="button">close</Popover.Close>
+                </Popover.Content>
+                <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'tomato' }} />
+              </Popover.Position>
+            </Popover>
+          </Popover.Content>
+          <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'royalblue' }} />
+        </Popover.Position>
       </Popover>
     </div>
   );
@@ -103,16 +129,18 @@ export const FocusTest = () => {
       </button>
       <Popover>
         <Popover.Target as={Button}>Open Popover</Popover.Target>
-        <Popover.Content
-          style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
-        >
-          <button
-            style={{ marginRight: 10 }}
-            onClick={() => (document.activeElement as any)?.blur()}
+        <Popover.Position style={{ ...styles.position }}>
+          <Popover.Content
+            style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
           >
-            Blur
-          </button>
-        </Popover.Content>
+            <button
+              style={{ marginRight: 10 }}
+              onClick={() => (document.activeElement as any)?.blur()}
+            >
+              Blur
+            </button>
+          </Popover.Content>
+        </Popover.Position>
       </Popover>
     </>
   );
