@@ -8,7 +8,7 @@ import {
   useControlledState,
   useId,
 } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, isFunction } from '@interop-ui/utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { Lock } from '@interop-ui/react-lock';
@@ -99,7 +99,9 @@ const PopoverTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, PopoverTriggerProp
         aria-haspopup="dialog"
         aria-expanded={context.isOpen}
         aria-controls={context.id}
-        onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
+        onClick={composeEventHandlers(onClick, () =>
+          context.setIsOpen(context.isOpen ? false : true)
+        )}
         {...triggerProps}
       />
     );
@@ -199,7 +201,14 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
             refToFocusOnActivation={refToFocusOnOpen}
             refToFocusOnDeactivation={refToFocusOnClose ?? context.triggerRef}
             shouldDeactivateOnEscape={shouldCloseOnEscape}
-            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
+            shouldDeactivateOnOutsideClick={(event) => {
+              if (event.target === context.triggerRef.current) {
+                return false;
+              }
+              if (isFunction(shouldCloseOnOutsideClick)) {
+                return shouldCloseOnOutsideClick(event);
+              } else return shouldCloseOnOutsideClick;
+            }}
             shouldPreventOutsideClick={shouldPreventOutsideClick}
           >
             <Popper
