@@ -7,7 +7,7 @@ export const Basic = () => (
   <Checkbox>
     <CheckboxInput />
     <CheckboxBox>
-      <CheckboxCheckmark />
+      <CheckboxIndicator />
     </CheckboxBox>
   </Checkbox>
 );
@@ -16,7 +16,7 @@ export const InlineStyle = () => (
   <Checkbox style={{ width: 30, height: 30 }}>
     <CheckboxInput />
     <CheckboxBox style={{ border: '1px solid gainsboro' }}>
-      <CheckboxCheckmark
+      <CheckboxIndicator
         style={{
           width: 22,
           height: 22,
@@ -37,7 +37,7 @@ export const Controlled = () => {
     <Checkbox style={{ width: 30, height: 30 }}>
       <CheckboxInput checked={isChecked} onChange={(event) => setIsChecked(event.target.checked)} />
       <CheckboxBox style={{ border: '1px solid gainsboro' }}>
-        <CheckboxCheckmark
+        <CheckboxIndicator
           style={{
             width: 22,
             height: 22,
@@ -64,10 +64,10 @@ const CheckboxBox = (props: React.ComponentProps<typeof CheckboxPrimitive.Box>) 
   <CheckboxPrimitive.Box {...props} style={{ ...styles.box, ...props.style }} />
 );
 
-const CheckboxCheckmark = (props: React.ComponentProps<typeof CheckboxPrimitive.Checkmark>) => (
-  <CheckboxPrimitive.Checkmark {...props} style={{ ...styles.checkmark, ...props.style }}>
+const CheckboxIndicator = (props: React.ComponentProps<typeof CheckboxPrimitive.Indicator>) => (
+  <CheckboxPrimitive.Indicator {...props} style={{ ...styles.indicator, ...props.style }}>
     <svg viewBox="0 0 32 32" width="60%" height="60%" fill="none" stroke="white">
       <path d="M2 30 L30 2 M30 30 L2 2" />
     </svg>
-  </CheckboxPrimitive.Checkmark>
+  </CheckboxPrimitive.Indicator>
 );
