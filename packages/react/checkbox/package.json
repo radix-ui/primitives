@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@interop-ui/react-utils": "workspace:*",
+    "@interop-ui/react-visually-hidden": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
