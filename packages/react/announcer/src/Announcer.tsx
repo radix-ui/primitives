@@ -17,7 +17,7 @@ const ROLES: { [key in RegionType]: RegionRole } = {
   off: 'none',
 };
 
-function useLiveRegion({
+function useAnnouncer({
   'aria-atomic': ariaAtomic,
   'aria-relevant': ariaRelevant,
   type = 'polite',
@@ -25,7 +25,7 @@ function useLiveRegion({
   ownerDocument = document,
   children,
   id,
-}: LiveRegionHookProps) {
+}: AnnouncerHookProps) {
   const [region, setRegion] = React.useState<HTMLElement>();
   const relevant = ariaRelevant
     ? Array.isArray(ariaRelevant)
@@ -90,19 +90,19 @@ function useLiveRegion({
 }
 
 /* -------------------------------------------------------------------------------------------------
- * LiveRegion
+ * Announcer
  * -----------------------------------------------------------------------------------------------*/
 
-const NAME = 'LiveRegion';
+const NAME = 'Announcer';
 const DEFAULT_TAG = 'div';
 
-type LiveRegionDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
-type LiveRegionOwnProps = Omit<LiveRegionHookProps, 'ownerDocument'> & {
+type AnnouncerDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
+type AnnouncerOwnProps = Omit<AnnouncerHookProps, 'ownerDocument'> & {
   regionIdentifier?: string;
 };
-type LiveRegionProps = LiveRegionDOMProps & LiveRegionOwnProps;
+type AnnouncerProps = AnnouncerDOMProps & AnnouncerOwnProps;
 
-const LiveRegion = forwardRef<typeof DEFAULT_TAG, LiveRegionProps>(function LiveRegion(
+const Announcer = forwardRef<typeof DEFAULT_TAG, AnnouncerProps>(function Announcer(
   props,
   forwardedRef
 ) {
@@ -117,7 +117,7 @@ const LiveRegion = forwardRef<typeof DEFAULT_TAG, LiveRegionProps>(function Live
   } = props;
 
   const ariaAtomic = ['true', true].includes(regionProps['aria-atomic'] as any);
-  useLiveRegion({
+  useAnnouncer({
     'aria-atomic': ariaAtomic,
     'aria-relevant': ariaRelevant,
     children,
@@ -133,7 +133,7 @@ const LiveRegion = forwardRef<typeof DEFAULT_TAG, LiveRegionProps>(function Live
   );
 });
 
-LiveRegion.displayName = NAME;
+Announcer.displayName = NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
@@ -141,10 +141,10 @@ const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   },
 });
 
-export { LiveRegion, styles, useLiveRegion };
-export type { LiveRegionProps, LiveRegionHookProps };
+export { Announcer, styles, useAnnouncer };
+export type { AnnouncerProps, AnnouncerHookProps };
 
-type LiveRegionOptions = {
+type AnnouncerOptions = {
   type: string;
   relevant?: string;
   role: string;
@@ -152,7 +152,7 @@ type LiveRegionOptions = {
   id?: string;
 };
 
-type LiveRegionHookProps = {
+type AnnouncerHookProps = {
   /**
    * Mirrors the `aria-atomic` DOM attribute for live regions. It is an optional attribute that
    * indicates whether assistive technologies will present all, or only parts of, the changed region
@@ -186,7 +186,7 @@ type LiveRegionHookProps = {
   /**
    * An optional unique identifier for the live region.
    *
-   * By default, `LiveRegion` components and the `useLiveRegion` hook create, at most, two unique
+   * By default, `Announcer` components and the `useAnnouncer` hook create, at most, two unique
    * `aria-live` regions in the document (one for all `polite` notifications, one for all
    * `assertive` notifications). In some cases you may wish to append additional `aria-live` regions
    * for distinct purposes (for example, simple status updates may need to be separated from a stack
@@ -218,7 +218,7 @@ type LiveRegionHookProps = {
 
 function buildLiveRegionElement(
   ownerDocument: Document,
-  { type, relevant, role, atomic, id }: LiveRegionOptions
+  { type, relevant, role, atomic, id }: AnnouncerOptions
 ) {
   const element = ownerDocument.createElement('div');
   element.setAttribute(getInteropAttr(id), '');
@@ -238,7 +238,7 @@ function buildLiveRegionElement(
   return element;
 }
 
-function buildSelector({ type, relevant, role, id }: LiveRegionOptions) {
+function buildSelector({ type, relevant, role, id }: AnnouncerOptions) {
   return `[${getInteropAttr(id)}]${[
     ['aria-live', type],
     ['aria-relevant', relevant],
@@ -250,5 +250,5 @@ function buildSelector({ type, relevant, role, id }: LiveRegionOptions) {
 }
 
 function getInteropAttr(id?: string) {
-  return interopDataAttr('LiveRegionRegion' + (id ? `-${id}` : ''));
+  return interopDataAttr('AnnouncerRegion' + (id ? `-${id}` : ''));
 }

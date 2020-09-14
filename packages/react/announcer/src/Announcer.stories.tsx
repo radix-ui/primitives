@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { LiveRegion } from './LiveRegion';
+import { Announcer } from './Announcer';
 import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
 
-export default { title: 'LiveRegion' };
+export default { title: 'Announcer' };
 
 export function Basic() {
   const [count, setCount] = React.useState(1);
@@ -13,9 +13,9 @@ export function Basic() {
       <button onClick={() => setCount((count) => count + 1)}>add</button>
 
       {[...Array(count)].map((_, index) => (
-        <LiveRegion key={index} type={index % 2 ? 'assertive' : 'polite'}>
+        <Announcer key={index} type={index % 2 ? 'assertive' : 'polite'}>
           Message {index}
-        </LiveRegion>
+        </Announcer>
       ))}
     </>
   );
@@ -35,9 +35,9 @@ export function StatusChange() {
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, lineHeight: 1 }}>
       <VisuallyHidden style={visuallyHiddenStyles.root}>
-        <LiveRegion aria-relevant="all">
+        <Announcer aria-relevant="all">
           Your friend is {friendIsOnline ? 'online' : 'offline'}
-        </LiveRegion>
+        </Announcer>
       </VisuallyHidden>
       <span
         style={{
