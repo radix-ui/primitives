@@ -43,8 +43,8 @@ function Demo({ disableCollisions = false }) {
   const side = SIDE_OPTIONS[sideIndex];
   const align = ALIGN_OPTIONS[alignIndex];
 
-  const targetRef = React.useRef<HTMLDivElement>(null);
-  const targetRect = useRect(targetRef);
+  const anchorRef = React.useRef<HTMLDivElement>(null);
+  const anchorRect = useRect(anchorRef);
 
   const popperRef = React.useRef<HTMLDivElement>(null);
   const popperSize = useSize(popperRef);
@@ -54,7 +54,7 @@ function Demo({ disableCollisions = false }) {
 
   const { popperStyles, arrowStyles } = getPlacementData({
     popperSize,
-    targetRect,
+    anchorRect,
     arrowSize,
     arrowOffset,
     side,
@@ -68,7 +68,7 @@ function Demo({ disableCollisions = false }) {
   return (
     <>
       <div
-        ref={targetRef}
+        ref={anchorRef}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -78,7 +78,7 @@ function Demo({ disableCollisions = false }) {
           backgroundColor: '#ccc',
         }}
       >
-        Target
+        Anchor
       </div>
 
       <div style={popperStyles}>

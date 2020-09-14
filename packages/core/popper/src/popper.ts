@@ -12,13 +12,13 @@ import {
 } from '@interop-ui/utils';
 
 type GetPlacementDataOptions = {
-  /** The rect of the target we are placing around */
-  targetRect?: ClientRect;
+  /** The rect of the anchor we are placing around */
+  anchorRect?: ClientRect;
   /** The size of the popper to place */
   popperSize?: Size;
   /** An optional arrow size */
   arrowSize?: Size;
-  /** An optional arrow offset (along the side, default: 20) */
+  /** An optional arrow offset (along the side, default: 0) */
   arrowOffset?: number;
   /** The desired side */
   side: Side;
@@ -55,7 +55,7 @@ type PlacementData = {
  * - the adjusted align (because it might have changed because of collisions)
  */
 export function getPlacementData({
-  targetRect,
+  anchorRect,
   popperSize,
   arrowSize,
   arrowOffset = 0,
@@ -68,7 +68,7 @@ export function getPlacementData({
 }: GetPlacementDataOptions): PlacementData {
   // if we're not ready to do all the measurements yet,
   // we return some good default styles
-  if (!targetRect || !popperSize) {
+  if (!anchorRect || !popperSize) {
     return {
       popperStyles: UNMEASURED_POPPER_STYLES,
       arrowStyles: UNMEASURED_ARROW_STYLES,
@@ -81,7 +81,7 @@ export function getPlacementData({
   // pre-compute points for all potential placements
   const allPlacementPoints = getAllPlacementPoints(
     popperSize,
-    targetRect,
+    anchorRect,
     sideOffset,
     alignOffset,
     arrowSize
@@ -142,7 +142,7 @@ export function getPlacementData({
   // adjust alignnment accounting for collisions
   const adjustedAlign = getAlignAccountingForCollisions(
     popperSize,
-    targetRect,
+    anchorRect,
     side,
     align,
     popperCollisions
@@ -185,15 +185,15 @@ type AllPlacementPoints = Record<Side, Record<Align, Point>>;
 
 function getAllPlacementPoints(
   popperSize: Size,
-  targetRect: ClientRect,
+  anchorRect: ClientRect,
   sideOffset: number = 0,
   alignOffset: number = 0,
   arrowSize?: Size
 ): AllPlacementPoints {
   const arrowBaseToTipLength = arrowSize ? arrowSize.height : 0;
 
-  const x = getPopperSlotsForAxis(targetRect, popperSize, 'x');
-  const y = getPopperSlotsForAxis(targetRect, popperSize, 'y');
+  const x = getPopperSlotsForAxis(anchorRect, popperSize, 'x');
+  const y = getPopperSlotsForAxis(anchorRect, popperSize, 'y');
 
   const topY    = y.before - sideOffset - arrowBaseToTipLength; // prettier-ignore
   const bottomY = y.after  + sideOffset + arrowBaseToTipLength; // prettier-ignore
@@ -227,21 +227,21 @@ function getAllPlacementPoints(
   return map;
 }
 
-function getPopperSlotsForAxis(targetRect: ClientRect, popperSize: Size, axis: Axis) {
+function getPopperSlotsForAxis(anchorRect: ClientRect, popperSize: Size, axis: Axis) {
   const startSide = axis === 'x' ? 'left' : 'top';
-  const targetStart = targetRect[startSide];
+  const anchorStart = anchorRect[startSide];
 
   const dimension = axis === 'x' ? 'width' : 'height';
-  const targetDimension = targetRect[dimension];
+  const anchorDimension = anchorRect[dimension];
   const popperDimension = popperSize[dimension];
 
   // prettier-ignore
   return {
-    before: targetStart - popperDimension,
-    start:  targetStart,
-    center: targetStart + (targetDimension - popperDimension) / 2,
-    end:    targetStart + targetDimension - popperDimension,
-    after:  targetStart + targetDimension,
+    before: anchorStart - popperDimension,
+    start:  anchorStart,
+    center: anchorStart + (anchorDimension - popperDimension) / 2,
+    end:    anchorStart + anchorDimension - popperDimension,
+    after:  anchorStart + anchorDimension,
   };
 }
 
@@ -268,8 +268,8 @@ export function getSideAccountingForCollisions(
 export function getAlignAccountingForCollisions(
   /** The size of the popper to place */
   popperSize: Size,
-  /** The size of the target we are placing around */
-  targetSize: Size,
+  /** The size of the anchor we are placing around */
+  anchorSize: Size,
   /** The final side */
   side: Side,
   /** The desired align */
@@ -281,16 +281,16 @@ export function getAlignAccountingForCollisions(
   const startBound = isHorizontalSide ? 'left' : 'top';
   const endBound = isHorizontalSide ? 'right' : 'bottom';
   const dimension = isHorizontalSide ? 'width' : 'height';
-  const isTargetBigger = targetSize[dimension] > popperSize[dimension];
+  const isAnchorBigger = anchorSize[dimension] > popperSize[dimension];
 
   if (align === 'start' || align === 'center') {
-    if ((collisions[startBound] && isTargetBigger) || (collisions[endBound] && !isTargetBigger)) {
+    if ((collisions[startBound] && isAnchorBigger) || (collisions[endBound] && !isAnchorBigger)) {
       return 'end';
     }
   }
 
   if (align === 'end' || align === 'center') {
-    if ((collisions[endBound] && isTargetBigger) || (collisions[startBound] && !isTargetBigger)) {
+    if ((collisions[endBound] && isAnchorBigger) || (collisions[startBound] && !isAnchorBigger)) {
       return 'start';
     }
   }
@@ -352,7 +352,7 @@ function getTransformOriginStyles(
 
 const UNMEASURED_POPPER_STYLES: CSS.Properties = {
   // position: 'fixed' here is important because it will take the popper
-  // out of the flow so it does not disturb the position of the target
+  // out of the flow so it does not disturb the position of the anchor
   position: 'fixed',
   top: 0,
   left: 0,
@@ -382,7 +382,7 @@ type GetArrowStylesOptions = {
 
 /**
  * Computes the styles necessary to position, rotate and align the arrow correctly.
- * It can adjust itself based on target/popper size, side/align and an optional offset.
+ * It can adjust itself based on anchor/popper size, side/align and an optional offset.
  */
 function getPopperArrowStyles({
   popperSize,
