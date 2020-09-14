@@ -51,6 +51,7 @@ const TOOLTIP_NAME = 'Tooltip';
 
 interface TooltipStaticProps {
   Target: typeof TooltipTarget;
+  Position: typeof TooltipPosition;
   Content: typeof TooltipContent;
   Arrow: typeof TooltipArrow;
 }
@@ -173,40 +174,35 @@ const TooltipTarget = forwardRef<typeof TARGET_DEFAULT_TAG, TooltipTargetProps>(
 );
 
 /* -------------------------------------------------------------------------------------------------
- * TooltipContent
+ * TooltipPosition
  * -----------------------------------------------------------------------------------------------*/
 
-const CONTENT_NAME = 'Tooltip.Content';
-const CONTENT_DEFAULT_TAG = 'div';
+const POSITION_NAME = 'Tooltip.Position';
+const POSITION_DEFAULT_TAG = 'div';
 
-type TooltipContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type TooltipContentOwnProps = {
-  /**
-   * A more descriptive label for accessibility purpose
-   */
-  'aria-label'?: string;
+type TooltipPositionDOMProps = React.ComponentPropsWithoutRef<typeof POSITION_DEFAULT_TAG>;
+type TooltipPositionOwnProps = {
   /**
    * Whether the Tooltip should render in a Portal
    * (default: `true`)
    */
   shouldPortal?: boolean;
 };
-type TooltipContentProps = Omit<PopperProps, 'anchorRef'> &
-  TooltipContentDOMProps &
-  TooltipContentOwnProps;
+type TooltipPositionProps = Omit<PopperProps, 'anchorRef'> &
+  TooltipPositionDOMProps &
+  TooltipPositionOwnProps;
 
-const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
+const TooltipPosition = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPositionProps>(
   (props, forwardedRef) => {
-    const context = useTooltipContext(CONTENT_NAME);
-    return context.isOpen ? <TooltipContentImp ref={forwardedRef} {...props} /> : null;
+    const context = useTooltipContext(POSITION_NAME);
+    return context.isOpen ? <TooltipPositionImpl ref={forwardedRef} {...props} /> : null;
   }
 );
 
-const TooltipContentImp = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
+const TooltipPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPositionProps>(
   (props, forwardedRef) => {
-    const { children, 'aria-label': ariaLabel, shouldPortal = true, ...contentProps } = props;
-    const context = useTooltipContext(CONTENT_NAME);
-
+    const { children, shouldPortal = true, ...popperProps } = props;
+    const context = useTooltipContext(POSITION_NAME);
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
 
     return (
@@ -214,14 +210,11 @@ const TooltipContentImp = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentP
         <CheckTargetMoved />
         <Popper
           {...interopDataAttrObj('content')}
-          {...contentProps}
+          {...popperProps}
           ref={forwardedRef}
           anchorRef={context.targetRef}
         >
           {children}
-          <VisuallyHidden id={context.id} role="tooltip" style={visuallyHiddenStyles.root}>
-            {ariaLabel || children}
-          </VisuallyHidden>
         </Popper>
       </PortalWrapper>
     );
@@ -252,6 +245,38 @@ function CheckTargetMoved() {
 }
 
 /* -------------------------------------------------------------------------------------------------
+ * TooltipContent
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONTENT_NAME = 'Tooltip.Content';
+const CONTENT_DEFAULT_TAG = 'div';
+
+type TooltipContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
+type TooltipContentOwnProps = {
+  /**
+   * A more descriptive label for accessibility purpose
+   */
+  'aria-label'?: string;
+};
+type TooltipContentProps = TooltipContentDOMProps & TooltipContentOwnProps;
+
+const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
+  (props, forwardedRef) => {
+    const { children, 'aria-label': ariaLabel, ...contentProps } = props;
+    const context = useTooltipContext(CONTENT_NAME);
+
+    return (
+      <Popper.Content {...interopDataAttrObj('content')} {...contentProps} ref={forwardedRef}>
+        {children}
+        <VisuallyHidden id={context.id} role="tooltip" style={visuallyHiddenStyles.root}>
+          {ariaLabel || children}
+        </VisuallyHidden>
+      </Popper.Content>
+    );
+  }
+);
+
+/* -------------------------------------------------------------------------------------------------
  * TooltipArrow
  * -----------------------------------------------------------------------------------------------*/
 
@@ -271,11 +296,13 @@ const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(fun
 /* -----------------------------------------------------------------------------------------------*/
 
 Tooltip.Target = TooltipTarget;
+Tooltip.Position = TooltipPosition;
 Tooltip.Content = TooltipContent;
 Tooltip.Arrow = TooltipArrow;
 
 Tooltip.displayName = TOOLTIP_NAME;
 Tooltip.Target.displayName = TARGET_NAME;
+Tooltip.Position.displayName = POSITION_NAME;
 Tooltip.Content.displayName = CONTENT_NAME;
 Tooltip.Arrow.displayName = ARROW_NAME;
 
@@ -284,9 +311,13 @@ const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   target: {
     ...cssReset(TARGET_DEFAULT_TAG),
   },
+  position: {
+    ...cssReset(POSITION_DEFAULT_TAG),
+    ...popperStyles.root,
+  },
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
-    ...popperStyles.root,
+    ...popperStyles.content,
     userSelect: 'none',
     pointerEvents: 'none',
   },

@@ -6,10 +6,12 @@ export default { title: 'Tooltip' };
 export const Basic = () => (
   <Tooltip>
     <Tooltip.Target style={{ margin: 100 }}>Hover or Focus me</Tooltip.Target>
-    <Tooltip.Content as={Content} sideOffset={5} aria-label="Even better done this way!">
-      Nicely done!
+    <Tooltip.Position sideOffset={5}>
+      <Tooltip.Content as={Content} aria-label="Even better done this way!">
+        Nicely done!
+      </Tooltip.Content>
       <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-    </Tooltip.Content>
+    </Tooltip.Position>
   </Tooltip>
 );
 
@@ -21,10 +23,10 @@ export const Controlled = () => {
       <Tooltip.Target style={{ margin: 100 }}>
         I'm controlled, look I'm {isOpen ? 'open' : 'closed'}
       </Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        Nicely done!
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>Nicely done!</Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
   );
 };
@@ -33,120 +35,138 @@ export const CustomContent = () => (
   <div style={{ display: 'flex', gap: 20, padding: 100 }}>
     <Tooltip>
       <Tooltip.Target>Heading</Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        <h1>Some heading</h1>
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>
+          <h1>Some heading</h1>
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Target>Paragraph</Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        <p>Some paragraph</p>
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>
+          <p>Some paragraph</p>
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Target>List</Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        <ul>
-          <li>One</li>
-          <li>Two</li>
-          <li>Three</li>
-        </ul>
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>
+          <ul>
+            <li>One</li>
+            <li>Two</li>
+            <li>Three</li>
+          </ul>
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Target>Article</Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        <article>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum, quae qui. Magnam delectus
-          ex totam repellat amet distinctio unde, porro architecto voluptatibus nemo et nisi,
-          voluptatem eligendi earum autem fugit.
-        </article>
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>
+          <article>
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum, quae qui. Magnam
+            delectus ex totam repellat amet distinctio unde, porro architecto voluptatibus nemo et
+            nisi, voluptatem eligendi earum autem fugit.
+          </article>
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Target>Figure</Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        <figure style={{ margin: 0 }}>
-          <img
-            src="https://pbs.twimg.com/profile_images/864164353771229187/Catw6Nmh_400x400.jpg"
-            alt=""
-            width={100}
-          />
-          <figcaption>Colm Tuite</figcaption>
-        </figure>
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>
+          <figure style={{ margin: 0 }}>
+            <img
+              src="https://pbs.twimg.com/profile_images/864164353771229187/Catw6Nmh_400x400.jpg"
+              alt=""
+              width={100}
+            />
+            <figcaption>Colm Tuite</figcaption>
+          </figure>
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Target>Time</Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        {/* @ts-ignore */}
-        <time datetime="2017-10-31T11:21:00+02:00">Tuesday, 31 October 2017</time>
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>
+          {/* @ts-ignore */}
+          <time datetime="2017-10-31T11:21:00+02:00">Tuesday, 31 October 2017</time>
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Target>Link</Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        View in <a href="https://modulz.app">Modulz</a>
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>
+          View in <a href="https://modulz.app">Modulz</a>
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Target>Form</Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        <form>
-          <label htmlFor="fname">First name:</label>
-          <br />
-          <input type="text" id="fname" name="fname" />
-          <br />
-          <label htmlFor="lname">Last name:</label>
-          <br />
-          <input type="text" id="lname" name="lname" />
-        </form>
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>
+          <form>
+            <label htmlFor="fname">First name:</label>
+            <br />
+            <input type="text" id="fname" name="fname" />
+            <br />
+            <label htmlFor="lname">Last name:</label>
+            <br />
+            <input type="text" id="lname" name="lname" />
+          </form>
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Target>Mini layout</Tooltip.Target>
-      <Tooltip.Content as={Content} sideOffset={5}>
-        <p
-          style={{
-            margin: 0,
-            textAlign: 'center',
-            fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
-            fontSize: 14,
-          }}
-        >
-          Start video call
-          <span style={{ display: 'block', color: '#999' }}>
-            press{' '}
-            <kbd
-              style={{
-                fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
-                fontWeight: 'bold',
-                color: 'white',
-              }}
-              aria-label="c key"
-            >
-              c
-            </kbd>
-          </span>
-        </p>
+      <Tooltip.Position sideOffset={5}>
+        <Tooltip.Content as={Content}>
+          <p
+            style={{
+              margin: 0,
+              textAlign: 'center',
+              fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
+              fontSize: 14,
+            }}
+          >
+            Start video call
+            <span style={{ display: 'block', color: '#999' }}>
+              press{' '}
+              <kbd
+                style={{
+                  fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
+                  fontWeight: 'bold',
+                  color: 'white',
+                }}
+                aria-label="c key"
+              >
+                c
+              </kbd>
+            </span>
+          </p>
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
   </div>
 );
@@ -324,14 +344,23 @@ export const Unmount = () => {
   );
 };
 
-function SimpleTooltip({ children, label, isOpen, onOpenChange, ...props }: any) {
+function SimpleTooltip({
+  children,
+  label,
+  'aria-label': ariaLabel,
+  isOpen,
+  onOpenChange,
+  ...props
+}: any) {
   return (
     <Tooltip isOpen={isOpen} onIsOpenChange={onOpenChange}>
       {children}
-      <Tooltip.Content as={Content} sideOffset={5} {...props}>
-        {label}
+      <Tooltip.Position sideOffset={5} {...props}>
+        <Tooltip.Content as={Content} aria-label={ariaLabel}>
+          {label}
+        </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Content>
+      </Tooltip.Position>
     </Tooltip>
   );
 }
