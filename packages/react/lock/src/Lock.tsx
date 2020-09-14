@@ -13,7 +13,7 @@ const LockContext = React.createContext({} as LockContextValue);
 LockContext.displayName = 'LockContext';
 
 type LockProps = {
-  children: React.ReactElement & { ref?: React.Ref<HTMLElement> };
+  children: React.ReactNode;
 
   /**
    * A function called when the Lock is deactivated from the inside (escape / outslide click)
@@ -46,18 +46,24 @@ type LockProps = {
 
 function Lock({ children, ...props }: LockProps) {
   const debugContext = useDebugContext();
-  return debugContext.disableLock ? children : <LockImpl {...props}>{children}</LockImpl>;
+  const child = React.Children.only(children);
+  if (!React.isValidElement(child)) return null;
+  return debugContext.disableLock ? child : <LockImpl {...props}>{child}</LockImpl>;
 }
 
+type LockImplProps = Omit<LockProps, 'children'> & {
+  children: React.ReactElement & { ref?: React.Ref<HTMLElement> };
+};
+
 function LockImpl({
-  children,
+  children: child,
   onDeactivate = () => {},
   refToFocusOnActivation,
   refToFocusOnDeactivation,
   shouldDeactivateOnEscape = true,
   shouldDeactivateOnOutsideClick = true,
   shouldPreventOutsideClick = true,
-}: LockProps) {
+}: LockImplProps) {
   /**
    * A ref to set on the container element in which we want to trap focus.
    *
@@ -163,7 +169,6 @@ function LockImpl({
     shouldPreventOutsideClick,
   ]);
 
-  const child = React.Children.only(children);
   const composedContainerRef = useComposedRefs(child.ref, containerRef);
 
   return (
