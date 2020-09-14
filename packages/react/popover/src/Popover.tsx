@@ -17,6 +17,7 @@ import { Portal } from '@interop-ui/react-portal';
 
 import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
 import type { LockProps } from '@interop-ui/react-lock';
+import type { Optional } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -158,7 +159,7 @@ type PopoverPositionOwnProps = {
    */
   shouldPortal?: boolean;
 };
-type PopoverPositionProps = Omit<PopperProps, 'anchorRef'> &
+type PopoverPositionProps = Optional<PopperProps, 'anchorRef'> &
   PopoverPositionDOMProps &
   PopoverPositionOwnProps;
 
@@ -173,6 +174,7 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
   function PopoverPositionImpl(props, forwardedRef) {
     const {
       children,
+      anchorRef,
       refToFocusOnOpen,
       refToFocusOnClose,
       shouldCloseOnEscape = true,
@@ -202,7 +204,7 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
           >
             <Popper
               {...interopDataAttrObj('position')}
-              anchorRef={context.triggerRef}
+              anchorRef={anchorRef || context.triggerRef}
               ref={forwardedRef}
               role="dialog"
               // I believe this depends on whether we trap focus or not (always for now)
