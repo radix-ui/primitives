@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Announcer } from './Announcer';
+import { Announce } from './Announce';
 import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
 
-export default { title: 'Announcer' };
+export default { title: 'Announce' };
 
 export function Basic() {
   const [count, setCount] = React.useState(1);
@@ -13,9 +13,9 @@ export function Basic() {
       <button onClick={() => setCount((count) => count + 1)}>add</button>
 
       {[...Array(count)].map((_, index) => (
-        <Announcer key={index} type={index % 2 ? 'assertive' : 'polite'}>
+        <Announce key={index} type={index % 2 ? 'assertive' : 'polite'}>
           Message {index}
-        </Announcer>
+        </Announce>
       ))}
     </>
   );
@@ -35,9 +35,9 @@ export function StatusChange() {
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, lineHeight: 1 }}>
       <VisuallyHidden style={visuallyHiddenStyles.root}>
-        <Announcer aria-relevant="all">
+        <Announce aria-relevant="all">
           Your friend is {friendIsOnline ? 'online' : 'offline'}
-        </Announcer>
+        </Announce>
       </VisuallyHidden>
       <span
         style={{

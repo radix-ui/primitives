@@ -21,14 +21,14 @@ const ROLES: { [key in RegionType]: RegionRole } = {
 const listenerMap = new Map<Element, number>();
 
 /* -------------------------------------------------------------------------------------------------
- * Announcer
+ * Announce
  * -----------------------------------------------------------------------------------------------*/
 
-const NAME = 'Announcer';
+const NAME = 'Announce';
 const DEFAULT_TAG = 'div';
 
-type AnnouncerDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
-type AnnouncerOwnProps = {
+type AnnounceDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
+type AnnounceOwnProps = {
   /**
    * Mirrors the `aria-atomic` DOM attribute for live regions. It is an optional attribute that
    * indicates whether assistive technologies will present all, or only parts of, the changed region
@@ -62,7 +62,7 @@ type AnnouncerOwnProps = {
   /**
    * An optional unique identifier for the live region.
    *
-   * By default, `Announcer` components create, at most, two unique `aria-live` regions in the
+   * By default, `Announce` components create, at most, two unique `aria-live` regions in the
    * document (one for all `polite` notifications, one for all `assertive` notifications). In some
    * cases you may wish to append additional `aria-live` regions for distinct purposes (for example,
    * simple status updates may need to be separated from a stack of toast-style notifications). By
@@ -86,10 +86,10 @@ type AnnouncerOwnProps = {
    */
   type?: RegionType;
 };
-type AnnouncerProps = AnnouncerDOMProps & AnnouncerOwnProps;
-type AnnouncerDOMElement = HTMLElementTagNameMap[typeof DEFAULT_TAG];
+type AnnounceProps = AnnounceDOMProps & AnnounceOwnProps;
+type AnnounceDOMElement = HTMLElementTagNameMap[typeof DEFAULT_TAG];
 
-const Announcer = forwardRef<typeof DEFAULT_TAG, AnnouncerProps>(function Announcer(
+const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce(
   props,
   forwardedRef
 ) {
@@ -105,12 +105,12 @@ const Announcer = forwardRef<typeof DEFAULT_TAG, AnnouncerProps>(function Announ
 
   const ariaAtomic = ['true', true].includes(regionProps['aria-atomic'] as any);
   const [ownerDocument, setOwnerDocument] = React.useState(document);
-  const setOwnerDocumentFromRef = React.useCallback((node: AnnouncerDOMElement) => {
+  const setOwnerDocumentFromRef = React.useCallback((node: AnnounceDOMElement) => {
     if (node) {
       setOwnerDocument(node.ownerDocument);
     }
   }, []);
-  const ownRef = React.useRef<AnnouncerDOMElement | null>(null);
+  const ownRef = React.useRef<AnnounceDOMElement | null>(null);
   const ref = useComposedRefs(forwardedRef, ownRef, setOwnerDocumentFromRef);
 
   const [region, setRegion] = React.useState<HTMLElement>();
@@ -154,24 +154,24 @@ const Announcer = forwardRef<typeof DEFAULT_TAG, AnnouncerProps>(function Announ
     // Ok, so this might look a little weird and confusing, but here's what's going on:
     //   - We need to hide `aria-live` regions via a global event listener, as noted in the comment
     //     above.
-    //   - We only need one listener per region. Keep in mind that each `Announcer` does not
+    //   - We only need one listener per region. Keep in mind that each `Announce` does not
     //     necessarily generate a unique live region element.
     //   - We track whether or not a listener has already been attached for a given region in a map
-    //     so we can skip these effects after `Announcer` is used again with a shared live region.
+    //     so we can skip these effects after `Announce` is used again with a shared live region.
     const regionElement = getLiveRegionElement();
 
     if (!listenerMap.get(regionElement)) {
       ownerDocument.addEventListener('visibilitychange', updateAttributesOnVisibilityChange);
       listenerMap.set(regionElement, 1);
     } else {
-      const announcerCount = listenerMap.get(regionElement)!;
-      listenerMap.set(regionElement, announcerCount + 1);
+      const announceCount = listenerMap.get(regionElement)!;
+      listenerMap.set(regionElement, announceCount + 1);
     }
 
     return function () {
-      const announcerCount = listenerMap.get(regionElement)!;
-      listenerMap.set(regionElement, announcerCount - 1);
-      if (announcerCount === 1) {
+      const announceCount = listenerMap.get(regionElement)!;
+      listenerMap.set(regionElement, announceCount - 1);
+      if (announceCount === 1) {
         ownerDocument.removeEventListener('visibilitychange', updateAttributesOnVisibilityChange);
       }
     };
@@ -189,7 +189,7 @@ const Announcer = forwardRef<typeof DEFAULT_TAG, AnnouncerProps>(function Announ
   );
 });
 
-Announcer.displayName = NAME;
+Announce.displayName = NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
@@ -197,10 +197,10 @@ const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   },
 });
 
-export { Announcer, styles };
-export type { AnnouncerProps };
+export { Announce, styles };
+export type { AnnounceProps };
 
-type AnnouncerOptions = {
+type LiveRegionOptions = {
   type: string;
   relevant?: string;
   role: string;
@@ -210,7 +210,7 @@ type AnnouncerOptions = {
 
 function buildLiveRegionElement(
   ownerDocument: Document,
-  { type, relevant, role, atomic, id }: AnnouncerOptions
+  { type, relevant, role, atomic, id }: LiveRegionOptions
 ) {
   const element = ownerDocument.createElement('div');
   element.setAttribute(getInteropAttr(id), '');
@@ -230,7 +230,7 @@ function buildLiveRegionElement(
   return element;
 }
 
-function buildSelector({ type, relevant, role, id }: AnnouncerOptions) {
+function buildSelector({ type, relevant, role, id }: LiveRegionOptions) {
   return `[${getInteropAttr(id)}]${[
     ['aria-live', type],
     ['aria-relevant', relevant],
@@ -242,5 +242,5 @@ function buildSelector({ type, relevant, role, id }: AnnouncerOptions) {
 }
 
 function getInteropAttr(id?: string) {
-  return interopDataAttr('AnnouncerRegion' + (id ? `-${id}` : ''));
+  return interopDataAttr('AnnounceRegion' + (id ? `-${id}` : ''));
 }

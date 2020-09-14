@@ -1842,9 +1842,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-announcer@workspace:packages/react/announcer":
+"@interop-ui/react-announce@workspace:packages/react/announcer":
   version: 0.0.0-use.local
-  resolution: "@interop-ui/react-announcer@workspace:packages/react/announcer"
+  resolution: "@interop-ui/react-announce@workspace:packages/react/announcer"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/react-visually-hidden": "workspace:*"

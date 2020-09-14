@@ -1,1 +1,1 @@
-export * from './LiveRegion';
+export * from './Announce';
