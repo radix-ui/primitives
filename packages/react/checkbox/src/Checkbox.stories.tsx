@@ -5,34 +5,17 @@ export default { title: 'Checkbox' };
 
 export const Basic = () => (
   <Checkbox>
-    <CheckboxIndicator />
+    <CheckboxInput />
+    <CheckboxBox>
+      <CheckboxIndicator />
+    </CheckboxBox>
   </Checkbox>
 );
 
 export const InlineStyle = () => (
-  <Checkbox style={{ width: 30, height: 30, border: '1px solid gainsboro' }}>
-    <CheckboxIndicator
-      style={{
-        width: 22,
-        height: 22,
-        backgroundColor: 'dodgerblue',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    />
-  </Checkbox>
-);
-
-export const Controlled = () => {
-  const [isChecked, setIsChecked] = React.useState(true);
-
-  return (
-    <Checkbox
-      style={{ width: 30, height: 30, border: '1px solid gainsboro' }}
-      isChecked={isChecked}
-      onChange={(event) => setIsChecked(event.detail.checked)}
-    >
+  <Checkbox style={{ width: 30, height: 30 }}>
+    <CheckboxInput />
+    <CheckboxBox style={{ border: '1px solid gainsboro' }}>
       <CheckboxIndicator
         style={{
           width: 22,
@@ -43,12 +26,42 @@ export const Controlled = () => {
           justifyContent: 'center',
         }}
       />
+    </CheckboxBox>
+  </Checkbox>
+);
+
+export const Controlled = () => {
+  const [isChecked, setIsChecked] = React.useState(true);
+
+  return (
+    <Checkbox style={{ width: 30, height: 30 }}>
+      <CheckboxInput checked={isChecked} onChange={(event) => setIsChecked(event.target.checked)} />
+      <CheckboxBox style={{ border: '1px solid gainsboro' }}>
+        <CheckboxIndicator
+          style={{
+            width: 22,
+            height: 22,
+            backgroundColor: 'dodgerblue',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        />
+      </CheckboxBox>
     </Checkbox>
   );
 };
 
 const Checkbox = (props: React.ComponentProps<typeof CheckboxPrimitive>) => (
   <CheckboxPrimitive {...props} style={{ ...styles.root, ...props.style }} />
+);
+
+const CheckboxInput = (props: React.ComponentProps<typeof CheckboxPrimitive.Input>) => (
+  <CheckboxPrimitive.Input {...props} style={{ ...styles.input, ...props.style }} />
+);
+
+const CheckboxBox = (props: React.ComponentProps<typeof CheckboxPrimitive.Box>) => (
+  <CheckboxPrimitive.Box {...props} style={{ ...styles.box, ...props.style }} />
 );
 
 const CheckboxIndicator = (props: React.ComponentProps<typeof CheckboxPrimitive.Indicator>) => (
