@@ -2,6 +2,7 @@ releases:
   "@interop-ui/popper": prerelease
   "@interop-ui/react-accessible-icon": prerelease
   "@interop-ui/react-accordion": prerelease
+  "@interop-ui/react-announce": prerelease
   "@interop-ui/react-arrow": prerelease
   "@interop-ui/react-aspect-ratio": prerelease
   "@interop-ui/react-avatar": prerelease
@@ -10,7 +11,6 @@ releases:
   "@interop-ui/react-collection": prerelease
   "@interop-ui/react-debug-context": prerelease
   "@interop-ui/react-dialog": prerelease
-  "@interop-ui/react-live-region": prerelease
   "@interop-ui/react-lock": prerelease
   "@interop-ui/react-popover": prerelease
   "@interop-ui/react-popper": prerelease
