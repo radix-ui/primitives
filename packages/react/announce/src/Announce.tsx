@@ -177,15 +177,15 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
     };
   }, [getLiveRegionElement, ownerDocument, role, type]);
 
-  if (region) {
-    // Portal into live region for screen reader announcements
-    ReactDOM.createPortal(<div>{children}</div>, region);
-  }
-
   return (
-    <Comp {...regionProps} {...interopDataAttrObj('root')} ref={ref}>
-      {children}
-    </Comp>
+    <React.Fragment>
+      <Comp {...regionProps} {...interopDataAttrObj('root')} ref={ref}>
+        {children}
+      </Comp>
+
+      {/* portal into live region for screen reader announcements */}
+      {region && ReactDOM.createPortal(<div>{children}</div>, region)}
+    </React.Fragment>
   );
 });
 
