@@ -38,7 +38,7 @@ describe('getAlignAccountingForCollisions', () => {
     const START_BOUND_COLLISION = isHorizontalSide ? COLLISION_LEFT : COLLISION_TOP;
     const END_BOUND_COLLISION = isHorizontalSide ? COLLISION_RIGHT : COLLISION_BOTTOM;
 
-    describe('when the popper is smaller than the target along the side', () => {
+    describe('when the popper is smaller than the anchor along the side', () => {
       // for each sides
       describe(`on the ${side}`, () => {
         // for `start` and `center` align
@@ -73,7 +73,7 @@ describe('getAlignAccountingForCollisions', () => {
       });
     });
 
-    describe('when the popper is bigger than the target along the side', () => {
+    describe('when the popper is bigger than the anchor along the side', () => {
       // for each sides
       describe(`side: ${side}`, () => {
         // for `start` and `center` align
