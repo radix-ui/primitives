@@ -27,7 +27,7 @@ import { createStateMachine, stateChart } from './machine';
  * -----------------------------------------------------------------------------------------------*/
 
 type TooltipContextValue = {
-  targetRef: React.RefObject<HTMLButtonElement>;
+  triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
   isOpen: boolean;
 };
@@ -50,7 +50,7 @@ const stateMachine = createStateMachine(stateChart);
 const TOOLTIP_NAME = 'Tooltip';
 
 interface TooltipStaticProps {
-  Target: typeof TooltipTarget;
+  Trigger: typeof TooltipTrigger;
   Position: typeof TooltipPosition;
   Content: typeof TooltipContent;
   Arrow: typeof TooltipArrow;
@@ -64,7 +64,7 @@ type TooltipProps = {
 
 const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(props) {
   const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
-  const targetRef = React.useRef<HTMLButtonElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `tooltip-${useId()}`;
   const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
@@ -100,26 +100,26 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(pr
     }
   }, [id, isOpenProp]);
 
-  const context = React.useMemo(() => ({ targetRef, id, isOpen }), [id, isOpen]);
+  const context = React.useMemo(() => ({ triggerRef, id, isOpen }), [id, isOpen]);
 
   return <TooltipContext.Provider value={context}>{children}</TooltipContext.Provider>;
 };
 
 /* -------------------------------------------------------------------------------------------------
- * TooltipTarget
+ * TooltipTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const TARGET_NAME = 'Tooltip.Target';
-const TARGET_DEFAULT_TAG = 'button';
+const TRIGGER_NAME = 'Tooltip.Trigger';
+const TRIGGER_DEFAULT_TAG = 'button';
 
-type TooltipTargetDOMProps = React.ComponentPropsWithoutRef<typeof TARGET_DEFAULT_TAG>;
-type TooltipTargetOwnProps = {};
-type TooltipTargetProps = TooltipTargetOwnProps & TooltipTargetDOMProps;
+type TooltipTriggerDOMProps = React.ComponentPropsWithoutRef<typeof TRIGGER_DEFAULT_TAG>;
+type TooltipTriggerOwnProps = {};
+type TooltipTriggerProps = TooltipTriggerOwnProps & TooltipTriggerDOMProps;
 
-const TooltipTarget = forwardRef<typeof TARGET_DEFAULT_TAG, TooltipTargetProps>(
+const TooltipTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, TooltipTriggerProps>(
   (props, forwardedRef) => {
     const {
-      as: Comp = TARGET_DEFAULT_TAG,
+      as: Comp = TRIGGER_DEFAULT_TAG,
       onMouseEnter,
       onMouseMove,
       onMouseLeave,
@@ -127,16 +127,16 @@ const TooltipTarget = forwardRef<typeof TARGET_DEFAULT_TAG, TooltipTargetProps>(
       onBlur,
       onMouseDown,
       onKeyDown,
-      ...targetProps
+      ...triggerProps
     } = props;
-    const context = useTooltipContext(TARGET_NAME);
-    const composedTargetRef = useComposedRefs(forwardedRef, context.targetRef);
+    const context = useTooltipContext(TRIGGER_NAME);
+    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
     return (
       <Comp
-        {...interopDataAttrObj('target')}
-        ref={composedTargetRef}
-        type={Comp === TARGET_DEFAULT_TAG ? 'button' : undefined}
+        {...interopDataAttrObj('trigger')}
+        ref={composedTriggerRef}
+        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
         aria-describedby={context.isOpen ? context.id : undefined}
         onMouseEnter={composeEventHandlers(onMouseEnter, () =>
           stateMachine.transition('mouseEntered', { id: context.id })
@@ -167,7 +167,7 @@ const TooltipTarget = forwardRef<typeof TARGET_DEFAULT_TAG, TooltipTargetProps>(
             stateMachine.transition('activated', { id: context.id });
           }
         })}
-        {...targetProps}
+        {...triggerProps}
       />
     );
   }
@@ -207,12 +207,12 @@ const TooltipPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPosit
 
     return (
       <PortalWrapper>
-        <CheckTargetMoved />
+        <CheckTriggerMoved />
         <Popper
           {...interopDataAttrObj('position')}
           {...popperProps}
           ref={forwardedRef}
-          anchorRef={context.targetRef}
+          anchorRef={context.triggerRef}
         >
           {children}
         </Popper>
@@ -221,25 +221,25 @@ const TooltipPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPosit
   }
 );
 
-function CheckTargetMoved() {
-  const { targetRef, id } = useTooltipContext('CheckTargetMoved');
+function CheckTriggerMoved() {
+  const { triggerRef, id } = useTooltipContext('CheckTriggerMoved');
 
-  const targetRect = useRect(targetRef);
-  const targetLeft = targetRect?.left;
-  const previousTargetLeft = usePrevious(targetLeft);
-  const targetTop = targetRect?.top;
-  const previousTargetTop = usePrevious(targetTop);
+  const triggerRect = useRect(triggerRef);
+  const triggerLeft = triggerRect?.left;
+  const previousTriggerLeft = usePrevious(triggerLeft);
+  const triggerTop = triggerRect?.top;
+  const previousTriggerTop = usePrevious(triggerTop);
 
   React.useEffect(() => {
     // checking if the user has scrolled…
-    const hasTargetMoved =
-      (previousTargetLeft !== undefined && previousTargetLeft !== targetLeft) ||
-      (previousTargetTop !== undefined && previousTargetTop !== targetTop);
+    const hasTriggerMoved =
+      (previousTriggerLeft !== undefined && previousTriggerLeft !== triggerLeft) ||
+      (previousTriggerTop !== undefined && previousTriggerTop !== triggerTop);
 
-    if (hasTargetMoved) {
-      stateMachine.transition('targetMoved', { id });
+    if (hasTriggerMoved) {
+      stateMachine.transition('triggerMoved', { id });
     }
-  }, [id, previousTargetLeft, previousTargetTop, targetLeft, targetTop]);
+  }, [id, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
 
   return null;
 }
@@ -295,21 +295,21 @@ const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(fun
 
 /* -----------------------------------------------------------------------------------------------*/
 
-Tooltip.Target = TooltipTarget;
+Tooltip.Trigger = TooltipTrigger;
 Tooltip.Position = TooltipPosition;
 Tooltip.Content = TooltipContent;
 Tooltip.Arrow = TooltipArrow;
 
 Tooltip.displayName = TOOLTIP_NAME;
-Tooltip.Target.displayName = TARGET_NAME;
+Tooltip.Trigger.displayName = TRIGGER_NAME;
 Tooltip.Position.displayName = POSITION_NAME;
 Tooltip.Content.displayName = CONTENT_NAME;
 Tooltip.Arrow.displayName = ARROW_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   root: {},
-  target: {
-    ...cssReset(TARGET_DEFAULT_TAG),
+  trigger: {
+    ...cssReset(TRIGGER_DEFAULT_TAG),
   },
   position: {
     ...cssReset(POSITION_DEFAULT_TAG),
@@ -327,5 +327,5 @@ const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   },
 });
 
-export type { TooltipProps, TooltipTargetProps, TooltipContentProps, TooltipArrowProps };
+export type { TooltipProps, TooltipTriggerProps, TooltipContentProps, TooltipArrowProps };
 export { Tooltip, styles };
