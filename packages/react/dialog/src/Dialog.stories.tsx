@@ -114,7 +114,7 @@ export const CustomFocus = () => {
   );
 };
 
-const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(function Button(
+const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(function Content(
   props,
   forwardedRef
 ) {
