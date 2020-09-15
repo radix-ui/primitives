@@ -52,7 +52,7 @@ type DialogProps = {
 };
 
 const Dialog: React.FC<DialogProps> & DialogStaticProps = function Dialog(props) {
-  const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
+  const { children, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `dialog-${useId()}`;
   const [isOpen = false, setIsOpen] = useControlledState({
