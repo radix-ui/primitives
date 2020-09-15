@@ -12,15 +12,13 @@ import {
   useIsomorphicLayoutEffect,
 } from '@interop-ui/react-utils';
 import { cssReset } from '@interop-ui/utils';
-import {
-  Popper,
-  styles as popperStyles,
-  PopperProps,
-  PopperArrowProps,
-} from '@interop-ui/react-popper';
+import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
 import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
+
+import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
+import type { Optional } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -188,7 +186,7 @@ type TooltipPositionOwnProps = {
    */
   shouldPortal?: boolean;
 };
-type TooltipPositionProps = Omit<PopperProps, 'anchorRef'> &
+type TooltipPositionProps = Optional<PopperProps, 'anchorRef'> &
   TooltipPositionDOMProps &
   TooltipPositionOwnProps;
 
@@ -201,7 +199,7 @@ const TooltipPosition = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPositionP
 
 const TooltipPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPositionProps>(
   (props, forwardedRef) => {
-    const { children, shouldPortal = true, ...popperProps } = props;
+    const { children, anchorRef, shouldPortal = true, ...popperProps } = props;
     const context = useTooltipContext(POSITION_NAME);
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
 
@@ -212,7 +210,7 @@ const TooltipPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPosit
           {...interopDataAttrObj('position')}
           {...popperProps}
           ref={forwardedRef}
-          anchorRef={context.triggerRef}
+          anchorRef={anchorRef || context.triggerRef}
         >
           {children}
         </Popper>
