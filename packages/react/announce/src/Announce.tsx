@@ -125,7 +125,7 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
     : undefined;
 
   const getLiveRegionElement = React.useCallback(() => {
-    const { current: ownerDocument } = ownerDocumentRef;
+    const ownerDocument = ownerDocumentRef.current;
     const selectorConfig = { type, role, relevant, id: regionIdentifier, atomic: ariaAtomic };
     const regionSelector = buildSelector(selectorConfig);
     const element = ownerDocument.querySelector(regionSelector);
@@ -143,7 +143,7 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
   // our region element to prevent that.
   // https://inclusive-components.design/notifications/#restrictingmessagestocontexts
   React.useEffect(() => {
-    const { current: ownerDocument } = ownerDocumentRef;
+    const ownerDocument = ownerDocumentRef.current;
     function updateAttributesOnVisibilityChange() {
       regionElement.setAttribute('role', ownerDocument.hidden ? 'none' : role);
       regionElement.setAttribute('aria-live', ownerDocument.hidden ? 'off' : type);
@@ -232,7 +232,6 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
   return `[${getInteropAttr(id)}]${[
     ['aria-live', type],
     ['aria-atomic', atomic],
-    ['aria-live', type],
     ['aria-relevant', relevant],
     ['role', role],
   ]
