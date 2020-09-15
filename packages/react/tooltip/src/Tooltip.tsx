@@ -137,7 +137,7 @@ const TooltipTarget = forwardRef<typeof TARGET_DEFAULT_TAG, TooltipTargetProps>(
         {...interopDataAttrObj('target')}
         ref={composedTargetRef}
         type={Comp === TARGET_DEFAULT_TAG ? 'button' : undefined}
-        aria-describedby={context.id}
+        aria-describedby={context.isOpen ? context.id : undefined}
         onMouseEnter={composeEventHandlers(onMouseEnter, () =>
           stateMachine.transition('mouseEntered', { id: context.id })
         )}
