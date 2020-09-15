@@ -126,11 +126,11 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
 
   const getLiveRegionElement = React.useCallback(() => {
     const ownerDocument = ownerDocumentRef.current;
-    const selectorConfig = { type, role, relevant, id: regionIdentifier, atomic: ariaAtomic };
-    const regionSelector = buildSelector(selectorConfig);
+    const regionConfig = { type, role, relevant, id: regionIdentifier, atomic: ariaAtomic };
+    const regionSelector = buildSelector(regionConfig);
     const element = ownerDocument.querySelector(regionSelector);
 
-    return element || buildLiveRegionElement(ownerDocument, selectorConfig);
+    return element || buildLiveRegionElement(ownerDocument, regionConfig);
   }, [ariaAtomic, relevant, role, type, regionIdentifier]);
 
   useLayoutEffect(() => {
