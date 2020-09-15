@@ -209,7 +209,7 @@ const TooltipPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPosit
       <PortalWrapper>
         <CheckTargetMoved />
         <Popper
-          {...interopDataAttrObj('content')}
+          {...interopDataAttrObj('position')}
           {...popperProps}
           ref={forwardedRef}
           anchorRef={context.targetRef}
