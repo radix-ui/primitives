@@ -27,7 +27,7 @@ type PopoverContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  setIsOpen: (isOpen: boolean | ((prevIsOpen?: boolean) => boolean)) => void;
 };
 
 const [PopoverContext, usePopoverContext] = createContext<PopoverContextValue>(
@@ -100,7 +100,7 @@ const PopoverTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, PopoverTriggerProp
         aria-expanded={context.isOpen}
         aria-controls={context.id}
         onClick={composeEventHandlers(onClick, () =>
-          context.setIsOpen(context.isOpen ? false : true)
+          context.setIsOpen((prevIsOpen) => !prevIsOpen)
         )}
         {...triggerProps}
       />
