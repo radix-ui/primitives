@@ -8,13 +8,11 @@ import {
   useControlledState,
   useId,
 } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, makeId } from '@interop-ui/utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import { Lock } from '@interop-ui/react-lock';
+import { Lock, LockProps } from '@interop-ui/react-lock';
 import { RemoveScroll } from 'react-remove-scroll';
 import { Portal } from '@interop-ui/react-portal';
-
-import type { LockProps } from '@interop-ui/react-lock';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -46,15 +44,17 @@ interface DialogStaticProps {
 }
 
 type DialogProps = {
+  id?: string;
   isOpen?: boolean;
   defaultIsOpen?: boolean;
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
 const Dialog: React.FC<DialogProps> & DialogStaticProps = function Dialog(props) {
-  const { children, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
+  const { children, id: idProp, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const id = `dialog-${useId()}`;
+  const generatedId = makeId('dialog', useId());
+  const id = idProp || generatedId;
   const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
@@ -90,7 +90,7 @@ const DialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, DialogTriggerProps>
       <Comp
         {...interopDataAttrObj('trigger')}
         ref={composedTriggerRef}
-        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         aria-haspopup="dialog"
         aria-expanded={context.isOpen}
         aria-controls={context.id}
@@ -235,7 +235,7 @@ const DialogClose = forwardRef<typeof CLOSE_DEFAULT_TAG, DialogCloseProps>(
       <Comp
         {...interopDataAttrObj('close')}
         ref={forwardedRef}
-        type={Comp === CLOSE_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         {...closeProps}
         onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
       />

@@ -1,50 +1,58 @@
 import * as React from 'react';
 import {
   Dialog,
-  DialogRootProps,
-  DialogOverlayProps,
-  DialogInnerProps,
+  DialogCloseProps,
   DialogContentProps,
+  DialogOverlayProps,
+  DialogProps,
+  DialogTriggerProps,
+  styles as dialogStyles,
 } from '@interop-ui/react-dialog';
-import { cssReset, interopDataAttrObj, makeId } from '@interop-ui/utils';
-import { createContext, forwardRef, useId, PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset, makeId, warning } from '@interop-ui/utils';
+import {
+  createContext,
+  createStyleObj,
+  forwardRef,
+  useComposedRefs,
+  useId,
+} from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
 
+const ROOT_NAME = 'AlertDialog';
+
 type AlertDialogContextValue = {
   descriptionId: string;
   titleId: string;
 };
+
+type AlertDialogContentContextValue = {
+  leastDestructiveActionRef: React.MutableRefObject<HTMLElement | null | undefined>;
+};
+
 const [AlertDialogContext, useAlertDialogContext] = createContext<AlertDialogContextValue>(
   'AlertDialogContext',
-  'AlertDialog.Root'
+  ROOT_NAME
 );
+
+const [AlertDialogContentContext, useAlertDialogContentContext] = createContext<
+  AlertDialogContentContextValue
+>('AlertDialogContext', ROOT_NAME);
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogRoot
  * -----------------------------------------------------------------------------------------------*/
 
-type AlertDialogRootProps = DialogRootProps & {
-  /**
-   * To prevent accidental destructive behavior if a user reacts too quickly to an alert prompt, an
-   * alert dialog should focus on the least destructive action button when it opens. This is the
-   * same as `refToFocusOnOpen` in `Dialog`, but it's explicitly named and required here.
-   *
-   * @see https://www.w3.org/TR/wai-aria-practices-1.2/examples/dialog-modal/alertdialog.html
-   */
-  leastDestructiveActionRef: React.RefObject<HTMLElement>;
-  id?: string;
-};
+type AlertDialogProps = DialogProps;
 
-const AlertDialogRoot: React.FC<AlertDialogRootProps> = (props) => {
-  let { children, leastDestructiveActionRef, id: idProp, ...dialogProps } = props;
-
-  let generatedId = makeId('alert-dialog', useId());
-  let alertDialogId = idProp || generatedId;
-  let descriptionId = makeId('description', alertDialogId);
-  let titleId = makeId('label', alertDialogId);
+const AlertDialog: React.FC<AlertDialogProps> = (props) => {
+  const { children, id: idProp, ...dialogProps } = props;
+  const generatedId = makeId('alert-dialog', useId());
+  const alertDialogId = idProp || generatedId;
+  const descriptionId = makeId('description', alertDialogId);
+  const titleId = makeId('label', alertDialogId);
 
   return (
     <AlertDialogContext.Provider
@@ -55,18 +63,39 @@ const AlertDialogRoot: React.FC<AlertDialogRootProps> = (props) => {
         };
       }, [descriptionId, titleId])}
     >
-      <Dialog.Root
-        {...interopDataAttrObj('AlertDialogRoot')}
-        {...dialogProps}
-        refToFocusOnOpen={leastDestructiveActionRef}
-      >
-        {children}
-      </Dialog.Root>
+      <Dialog {...dialogProps}>{children}</Dialog>
     </AlertDialogContext.Provider>
   );
 };
 
-AlertDialogRoot.displayName = 'AlertDialog.Root';
+/* -------------------------------------------------------------------------------------------------
+ * AlertDialogTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const TRIGGER_NAME = 'AlertDialog.Trigger';
+const TRIGGER_DEFAULT_TAG = 'button';
+
+type AlertDialogTriggerDOMProps = React.ComponentPropsWithoutRef<typeof TRIGGER_DEFAULT_TAG>;
+type AlertDialogTriggerOwnProps = {};
+type AlertDialogTriggerProps = DialogTriggerProps &
+  AlertDialogTriggerDOMProps &
+  AlertDialogTriggerOwnProps;
+
+const AlertDialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, AlertDialogTriggerProps>(
+  function AlertDialogTrigger(props, forwardedRef) {
+    const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
+    return (
+      <Dialog.Trigger
+        {...interopDataAttrObj('trigger')}
+        as={as}
+        ref={forwardedRef}
+        {...triggerProps}
+      />
+    );
+  }
+);
+
+AlertDialogTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogOverlay
@@ -82,10 +111,10 @@ type AlertDialogOverlayProps = DialogOverlayProps &
 
 const AlertDialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, AlertDialogOverlayProps>(
   function AlertDialogOverlay(props, forwardedRef) {
-    let { as = OVERLAY_DEFAULT_TAG, ...overlayProps } = props;
+    const { as = OVERLAY_DEFAULT_TAG, ...overlayProps } = props;
     return (
       <Dialog.Overlay
-        {...interopDataAttrObj('AlertDialogRoot')}
+        {...interopDataAttrObj('overlay')}
         as={as}
         ref={forwardedRef}
         {...overlayProps}
@@ -97,30 +126,57 @@ const AlertDialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, AlertDialogOve
 AlertDialogOverlay.displayName = 'AlertDialog.Overlay';
 
 /* -------------------------------------------------------------------------------------------------
- * AlertDialogInner
+ * AlertDialogCancel
  * -----------------------------------------------------------------------------------------------*/
 
-const INNER_DEFAULT_TAG = 'div';
+const CANCEL_NAME = 'AlertDialog.Cancel';
+const CANCEL_DEFAULT_TAG = 'button';
 
-type AlertDialogInnerDOMProps = React.ComponentPropsWithoutRef<typeof INNER_DEFAULT_TAG>;
-type AlertDialogInnerOwnProps = {};
-type AlertDialogInnerProps = DialogInnerProps & AlertDialogInnerDOMProps & AlertDialogInnerOwnProps;
+type AlertDialogCancelDOMProps = React.ComponentPropsWithoutRef<typeof CANCEL_DEFAULT_TAG>;
+type AlertDialogCancelOwnProps = {};
+type AlertDialogCancelProps = DialogCloseProps &
+  AlertDialogCancelOwnProps &
+  AlertDialogCancelDOMProps;
 
-const AlertDialogInner = forwardRef<typeof INNER_DEFAULT_TAG, AlertDialogInnerProps>(
-  function AlertDialogInner(props, forwardedRef) {
-    let { as = INNER_DEFAULT_TAG, ...innerProps } = props;
+const AlertDialogCancel = forwardRef<typeof CANCEL_DEFAULT_TAG, AlertDialogCancelProps>(
+  function AlertDialogCancel(props, forwardedRef) {
+    const { as = CANCEL_DEFAULT_TAG, ...cancelProps } = props;
+    const { leastDestructiveActionRef } = useAlertDialogContentContext(CANCEL_NAME);
+    const ref = useComposedRefs(forwardedRef, leastDestructiveActionRef as any);
+    return <Dialog.Close {...interopDataAttrObj('cancel')} as={as} ref={ref} {...cancelProps} />;
+  }
+);
+
+AlertDialogCancel.displayName = CANCEL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * AlertDialogConfirm
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONFIRM_NAME = 'AlertDialog.Confirm';
+const CONFIRM_DEFAULT_TAG = 'button';
+
+type AlertDialogConfirmDOMProps = React.ComponentPropsWithoutRef<typeof CONFIRM_DEFAULT_TAG>;
+type AlertDialogConfirmOwnProps = {};
+type AlertDialogConfirmProps = DialogCloseProps &
+  AlertDialogConfirmOwnProps &
+  AlertDialogConfirmDOMProps;
+
+const AlertDialogConfirm = forwardRef<typeof CONFIRM_DEFAULT_TAG, AlertDialogCancelProps>(
+  function AlertDialogConfirm(props, forwardedRef) {
+    const { as = CONFIRM_DEFAULT_TAG, ...confirmProps } = props;
     return (
-      <Dialog.Inner
-        {...interopDataAttrObj('AlertDialogInner')}
+      <Dialog.Close
+        {...interopDataAttrObj('confirm')}
         as={as}
         ref={forwardedRef}
-        {...innerProps}
+        {...confirmProps}
       />
     );
   }
 );
 
-AlertDialogInner.displayName = 'AlertDialog.Inner';
+AlertDialogConfirm.displayName = CONFIRM_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogContent
@@ -129,47 +185,78 @@ AlertDialogInner.displayName = 'AlertDialog.Inner';
 const CONTENT_DEFAULT_TAG = 'div';
 
 type AlertDialogContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type AlertDialogContentOwnProps = {};
-type AlertDialogContentProps = DialogContentProps &
+type AlertDialogContentOwnProps = {
+  /**
+   * To prevent accidental destructive behavior if a user reacts too quickly to an alert prompt, an
+   * alert dialog should focus on the least destructive action button when it opens. This is the
+   * same as `refToFocusOnOpen` in `Dialog`, but it's explicitly named here to clarify that
+   * distinction. This can be passed when not using `AlertDialog.Cancel`.
+   *
+   * @see https://www.w3.org/TR/wai-aria-practices-1.2/examples/dialog-modal/alertdialog.html
+   */
+  leastDestructiveActionRef?: React.RefObject<HTMLElement | null | undefined>;
+};
+type AlertDialogContentProps = Omit<DialogContentProps, 'refToFocusOnOpen'> &
   AlertDialogContentDOMProps &
   AlertDialogContentOwnProps;
 
 const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogContentProps>(
   function AlertDialogContent(props, forwardedRef) {
-    let {
+    const {
       as = CONTENT_DEFAULT_TAG,
       'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
       'aria-describedby': ariaDescribedBy,
+      leastDestructiveActionRef: leastDestructiveActionRefProp,
       ...dialogContentProps
     } = props;
-    let { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
-    React.useEffect(() => {
-      if (__DEV__) {
-        if (!ariaLabel && !(titleId && document.getElementById(titleId))) {
-          console.warn(
-            // TODO: Improve warning and add link to docs when available
-            `You must label your AlertDialog.`
-          );
-        }
-        if (!ariaDescribedBy && !(descriptionId && document.getElementById(descriptionId))) {
-          console.warn(
-            // TODO: Improve warning and add link to docs when available
-            `You must use a description for your AlertDialog.`
-          );
-        }
-      }
-    }, [titleId, ariaLabel, ariaDescribedBy, descriptionId]);
+    const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
+    const cancelRef = React.useRef<HTMLElementTagNameMap[typeof CANCEL_DEFAULT_TAG] | null>(null);
+    const leastDestructiveActionRef = leastDestructiveActionRefProp || cancelRef;
+
+    if (process.env.NODE_ENV === 'development') {
+      // Hook is called conditionally but safely, as it's consistent in a given environment
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      React.useEffect(() => {
+        const hasLabel = Boolean(
+          ariaLabel ||
+            (ariaLabelledBy && document.getElementById(ariaLabelledBy)) ||
+            (titleId && document.getElementById(titleId))
+        );
+        const hasDescription = Boolean(
+          (ariaDescribedBy && document.getElementById(ariaDescribedBy)) ||
+            (descriptionId && document.getElementById(descriptionId))
+        );
+
+        // TODO: Improve warnings and add link to docs when available
+        warning(hasLabel, `You must label your AlertDialog.`);
+        warning(hasDescription, `You must use a description for your AlertDialog.`);
+      }, [titleId, ariaLabel, ariaDescribedBy, descriptionId, ariaLabelledBy]);
+    }
+
     return (
-      <Dialog.Content
-        {...interopDataAttrObj('AlertDialogContent')}
-        as={as}
-        ref={forwardedRef}
-        role="alertdialog"
-        aria-describedby={ariaDescribedBy || descriptionId}
-        aria-labelledby={ariaLabel ? undefined : titleId}
-        aria-label={ariaLabel || undefined}
-        {...dialogContentProps}
-      />
+      <AlertDialogContentContext.Provider
+        value={React.useMemo(() => {
+          return {
+            leastDestructiveActionRef,
+          };
+        }, [leastDestructiveActionRef])}
+      >
+        <Dialog.Content
+          {...interopDataAttrObj('content')}
+          as={as}
+          ref={forwardedRef}
+          role="alertdialog"
+          aria-describedby={ariaDescribedBy || descriptionId}
+          // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
+          // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
+          // `AlertDialogTitle`
+          aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
+          aria-label={ariaLabel || undefined}
+          {...dialogContentProps}
+          refToFocusOnOpen={leastDestructiveActionRef}
+        />
+      </AlertDialogContentContext.Provider>
     );
   }
 );
@@ -179,6 +266,11 @@ AlertDialogContent.displayName = 'AlertDialog.Content';
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogTitle
  * -----------------------------------------------------------------------------------------------*/
+
+// Because `AlertDialog` depends more heavily on both a title and description for proper screen
+// reader announcements, we provide explicit components for each to reduce the friction and make it
+// simpler to get these right. These are optional if the consumer prefers to pass appropriate aria
+// labelling props directly.
 
 const TITLE_DEFAULT_TAG = 'h2';
 
@@ -191,12 +283,7 @@ const AlertDialogTitle = forwardRef<typeof TITLE_DEFAULT_TAG, AlertDialogTitlePr
     let { as: Comp = TITLE_DEFAULT_TAG, ...titleProps } = props;
     let { titleId } = useAlertDialogContext('AlertDialogTitle');
     return (
-      <Comp
-        {...interopDataAttrObj('AlertDialogTitle')}
-        ref={forwardedRef}
-        id={titleId}
-        {...titleProps}
-      />
+      <Comp {...interopDataAttrObj('title')} ref={forwardedRef} id={titleId} {...titleProps} />
     );
   }
 );
@@ -223,7 +310,7 @@ const AlertDialogDescription = forwardRef<
   let { descriptionId } = useAlertDialogContext('AlertDialogDescription');
   return (
     <Comp
-      {...interopDataAttrObj('AlertDialogDescription')}
+      {...interopDataAttrObj('description')}
       ref={forwardedRef}
       id={descriptionId}
       {...descriptionProps}
@@ -233,96 +320,41 @@ const AlertDialogDescription = forwardRef<
 
 AlertDialogDescription.displayName = 'AlertDialog.Description';
 
-/* -------------------------------------------------------------------------------------------------
- * Composed AlertDialog
- * -----------------------------------------------------------------------------------------------*/
-
-type AlertDialogDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type AlertDialogOwnProps = AlertDialogRootProps;
-type AlertDialogProps = AlertDialogDOMProps & AlertDialogOwnProps;
-
-const AlertDialog = forwardRef<
-  typeof CONTENT_DEFAULT_TAG,
-  AlertDialogProps,
-  AlertDialogStaticProps
->(function AlertDialog(props, forwardedRef) {
-  let {
-    isOpen,
-    onClose,
-    leastDestructiveActionRef,
-    refToFocusOnClose,
-    shouldCloseOnEscape,
-    shouldCloseOnOutsideClick,
-    children,
-    ...contentProps
-  } = props;
-  return (
-    <AlertDialogRoot
-      isOpen={isOpen}
-      leastDestructiveActionRef={leastDestructiveActionRef}
-      onClose={onClose}
-      refToFocusOnClose={refToFocusOnClose}
-      shouldCloseOnEscape={shouldCloseOnEscape}
-      shouldCloseOnOutsideClick={shouldCloseOnOutsideClick}
-    >
-      <AlertDialogOverlay>
-        <AlertDialogInner>
-          <AlertDialogContent ref={forwardedRef} {...contentProps}>
-            {children}
-          </AlertDialogContent>
-        </AlertDialogInner>
-      </AlertDialogOverlay>
-    </AlertDialogRoot>
-  );
-});
-
 /* ---------------------------------------------------------------------------------------------- */
 
-AlertDialog.displayName = 'AlertDialog';
-AlertDialog.Root = AlertDialogRoot;
-AlertDialog.Overlay = AlertDialogOverlay;
-AlertDialog.Inner = AlertDialogInner;
-AlertDialog.Content = AlertDialogContent;
+const _AlertDialog = Object.assign(AlertDialog, {
+  Overlay: AlertDialogOverlay,
+  Trigger: AlertDialogTrigger,
+  Content: AlertDialogContent,
+  Cancel: AlertDialogCancel,
+  Confirm: AlertDialogConfirm,
+  Title: AlertDialogTitle,
+  Description: AlertDialogDescription,
+});
 
-interface AlertDialogStaticProps {
-  Root: typeof AlertDialogRoot;
-  Overlay: typeof AlertDialogOverlay;
-  Inner: typeof AlertDialogInner;
-  Content: typeof AlertDialogContent;
-  Title: typeof AlertDialogTitle;
-  Description: typeof AlertDialogDescription;
-}
+_AlertDialog.displayName = 'AlertDialog';
 
-const useHasAlertDialogContext = () => {
-  try {
-    let ctx = useAlertDialogContext('useHasAlertDialogContext');
-    return !!ctx;
-  } catch (err) {}
-  return false;
-};
-
-const styles: PrimitiveStyles = {
-  root: null,
+const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
+  root: dialogStyles.root,
   overlay: {
     ...cssReset(OVERLAY_DEFAULT_TAG),
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
+    ...dialogStyles.overlay,
   },
-  inner: {
-    ...cssReset(INNER_DEFAULT_TAG),
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    pointerEvents: 'none',
+  trigger: {
+    ...cssReset(TRIGGER_DEFAULT_TAG),
+    ...dialogStyles.trigger,
+  },
+  cancel: {
+    ...cssReset(CANCEL_DEFAULT_TAG),
+    ...dialogStyles.close,
+  },
+  confirm: {
+    ...cssReset(CONFIRM_DEFAULT_TAG),
+    ...dialogStyles.close,
   },
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
-    pointerEvents: 'auto',
+    ...dialogStyles.content,
   },
   title: {
     ...cssReset(TITLE_DEFAULT_TAG),
@@ -330,15 +362,16 @@ const styles: PrimitiveStyles = {
   description: {
     ...cssReset(DESCRIPTION_DEFAULT_TAG),
   },
-};
+});
 
-export { AlertDialog, styles, useHasAlertDialogContext };
+export { _AlertDialog as AlertDialog, styles };
 export type {
   AlertDialogProps,
-  AlertDialogRootProps,
   AlertDialogOverlayProps,
   AlertDialogContentProps,
-  AlertDialogInnerProps,
+  AlertDialogCancelProps,
+  AlertDialogConfirmProps,
+  AlertDialogTriggerProps,
   AlertDialogTitleProps,
   AlertDialogDescriptionProps,
 };
