@@ -2,6 +2,8 @@ import { tabbable } from '@interop-ui/tabbable';
 import { hideOthers } from 'aria-hidden';
 import { arrayRemove } from '@interop-ui/utils';
 
+export type FocusableTarget = HTMLElement | { focus(): void };
+
 type FocusTrapConfig = {
   /** The element inside which we want to trap focus */
   container: HTMLElement;
@@ -11,14 +13,14 @@ type FocusTrapConfig = {
    * (default: first focusable element inside the focus trap)
    * (fallback: first focusable element inside the focus trap, then the container itself)
    */
-  elementToFocusWhenActivated?: HTMLElement | null;
+  elementToFocusWhenActivated?: FocusableTarget | null;
 
   /**
    * An element to focus on outside the focus trap after it is deactivated.
    * (default: last focused element before the focus trap was activated)
    * (fallback: none)
    */
-  elementToFocusWhenDeactivated?: HTMLElement | null;
+  elementToFocusWhenDeactivated?: FocusableTarget | null;
 
   /** Whether pressing the escape key should deactivate the focus trap */
   shouldDeactivateOnEscape?: boolean;
@@ -32,8 +34,8 @@ type FocusTrapConfig = {
   /** Click outside handler */
   onOutsideClick?: (event: MouseEvent | TouchEvent, shouldPreventFocusControl: boolean) => void;
 
-  /** Whether pointer events happening outside the focus trap container should be blocked */
-  shouldBlockOutsideClick?: boolean;
+  /** Whether pointer events happening outside the focus trap container should be prevented */
+  shouldPreventOutsideClick?: boolean;
 };
 
 type FocusTrapState = {
@@ -113,7 +115,7 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
 
   let removeEscapeListener = () => {};
   let removeOutsideClickListener = () => {};
-  let stopBlockingOutsidePointerEvents = () => {};
+  let stopPreventingOutsidePointerEvents = () => {};
   let stopHidingOutsideFromScreenReaders = () => {};
 
   const focusTrap: FocusTrap = {
@@ -189,18 +191,18 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
       return key in updatedConfig && config[key] !== updatedConfig[key];
     }
 
-    const wasShouldBlockOutsideClickUpdated = wasKeyUpdated('shouldBlockOutsideClick');
+    const wasShouldPreventOutsideClick = wasKeyUpdated('shouldPreventOutsideClick');
 
     // update config
     config = { ...config, ...updatedConfig };
 
     // deal with dynamic changes whilst the focus trap is currently active
     if (state.isActive) {
-      if (wasShouldBlockOutsideClickUpdated) {
-        if (updatedConfig.shouldBlockOutsideClick) {
-          startBlockingOutsidePointerEvents();
+      if (wasShouldPreventOutsideClick) {
+        if (updatedConfig.shouldPreventOutsideClick) {
+          startPreventingOutsidePointerEvents();
         } else {
-          stopBlockingOutsidePointerEvents();
+          stopPreventingOutsidePointerEvents();
         }
       }
     }
@@ -279,9 +281,9 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
     if (shouldDeactivate) {
       // when deactivating by clicking outside, prevent normal return focus behaviour
       // (to `elementFocusedBeforeActivation` or `elementToFocusOnDeactivate`)
-      // ONLY IF we are NOT blocking outside clicks (clicks are allowed to go through)
+      // ONLY IF we are NOT preventing outside clicks (clicks are allowed to go through)
       // instead let the browser do what it needs to do (ie. focus a focusable element, etc)
-      const shouldPreventFocusControl = !config.shouldBlockOutsideClick;
+      const shouldPreventFocusControl = !config.shouldPreventOutsideClick;
       config.onOutsideClick && config.onOutsideClick(event, shouldPreventFocusControl);
     } else {
       // prevent focusing the clicked element
@@ -289,12 +291,12 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
     }
   }
 
-  function startBlockingOutsidePointerEvents() {
-    // make sure we always clean up if it was already blocking
-    stopBlockingOutsidePointerEvents();
+  function startPreventingOutsidePointerEvents() {
+    // make sure we always clean up if it was already preventing
+    stopPreventingOutsidePointerEvents();
 
-    // start blocking
-    stopBlockingOutsidePointerEvents = blockOutsidePointerEvents(config.container);
+    // start preventing
+    stopPreventingOutsidePointerEvents = preventOutsidePointerEvents(config.container);
   }
 
   function attachFocusTrapMarkers() {
@@ -320,8 +322,8 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
     document.addEventListener('focus', handleFocus, { capture: true });
     removeEscapeListener = onEscapeKeydown(handleEscape);
     removeOutsideClickListener = onOutsidePointerDown(config.container, handleOutsideClick);
-    if (config.shouldBlockOutsideClick) {
-      startBlockingOutsidePointerEvents();
+    if (config.shouldPreventOutsideClick) {
+      startPreventingOutsidePointerEvents();
     }
   }
 
@@ -330,7 +332,7 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
     document.removeEventListener('focus', handleFocus, { capture: true });
     removeEscapeListener();
     removeOutsideClickListener();
-    stopBlockingOutsidePointerEvents();
+    stopPreventingOutsidePointerEvents();
   }
 }
 // NOTE: `createFocusTrap` ends here
@@ -365,20 +367,20 @@ function getCurrentlyFocusedElement() {
 
 function getFirstTabbableElement(container: HTMLElement) {
   const tabbableElements = tabbable(container, { includeContainer: false });
-  return tabbableElements[0];
+  return tabbableElements[0] as HTMLElement;
 }
 
 function getLastTabbableElement(container: HTMLElement) {
   const tabbableElements = tabbable(container, { includeContainer: false });
-  return tabbableElements[tabbableElements.length - 1];
+  return tabbableElements[tabbableElements.length - 1] as HTMLElement;
 }
 
 function isHTMLElement(element: any): element is HTMLElement {
   return element instanceof HTMLElement;
 }
 
-function isSelectableInput(element: any): element is HTMLElement & { select: () => void } {
-  return isHTMLElement(element) && element.tagName.toLowerCase() === 'input' && 'select' in element;
+function isSelectableInput(element: any): element is FocusableTarget & { select: () => void } {
+  return element instanceof HTMLInputElement && 'select' in element;
 }
 
 /**
@@ -386,7 +388,7 @@ function isSelectableInput(element: any): element is HTMLElement & { select: () 
  * If unsuccessful, displays an error in the console and potentially focus will fall back on a provided `fallbackElement`.
  */
 function attemptFocus(
-  element: Element | undefined,
+  element: FocusableTarget | undefined,
   errorMessage?: string,
   fallbackElement?: HTMLElement
 ) {
@@ -411,12 +413,12 @@ function attemptFocus(
  * Moves focus to a given element (and select it if it is a selectable input)
  * Returns whether the focus was successfully moved to the given element
  */
-function focus(element: Element | undefined) {
-  if (element && (element as HTMLElement).focus) {
+function focus(element: FocusableTarget | undefined) {
+  if (element && element.focus) {
     // NOTE: we prevent scrolling on focus because we are not preventing overflow in our `Popover`
     // If scroll isn't prevented and the popover is partially cut-off, the browser would try to
     // get the focused element to fit in view no matter what and would just bust the layout.
-    (element as HTMLElement).focus({ preventScroll: true });
+    element.focus({ preventScroll: true });
     if (isSelectableInput(element)) {
       element.select();
     }
@@ -472,11 +474,11 @@ function onOutsidePointerDown(
 }
 
 /**
- * Blocks outside pointer events.
- * Returns a function to stop blocking.
+ * Prevents outside pointer events.
+ * Returns a function to stop preventing.
  */
-function blockOutsidePointerEvents(
-  /** The container used as a reference to check if events should be blocked (if they happen outside of it) */
+function preventOutsidePointerEvents(
+  /** The container used as a reference to check if events should be prevented (if they happen outside of it) */
   container: HTMLElement
 ) {
   const originalBodyPointerEvents = document.body.style.pointerEvents;

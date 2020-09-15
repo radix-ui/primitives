@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, isFunction, warningOnce } from '@interop-ui/utils';
+import { cssReset, isFunction, warningOnce } from '@interop-ui/utils';
 import {
   createContext,
+  createStyleObj,
   forwardRef,
   useCallbackRef,
   useComposedRefs,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
@@ -52,6 +52,7 @@ const [RadioContext, useRadioContext] = createContext<RadioContextValue>(
  * RadioRoot
  * -----------------------------------------------------------------------------------------------*/
 
+const ROOT_NAME = 'Radio.Root';
 const ROOT_DEFAULT_TAG = 'span';
 
 type RadioRootDOMProps = Omit<
@@ -118,19 +119,18 @@ const RadioRoot = forwardRef<typeof ROOT_DEFAULT_TAG, RadioRootProps>(function R
 
   return (
     <RadioContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj('RadioRoot')} ref={forwardedRef} {...radioProps}>
+      <Comp {...interopDataAttrObj('root')} ref={forwardedRef} {...radioProps}>
         {isFunction(children) ? children({ checked }) : children}
       </Comp>
     </RadioContext.Provider>
   );
 });
 
-RadioRoot.displayName = 'Radio.Root';
-
 /* -------------------------------------------------------------------------------------------------
  * RadioInput
  * -----------------------------------------------------------------------------------------------*/
 
+const INPUT_NAME = 'Radio.Input';
 const INPUT_DEFAULT_TAG = 'input';
 
 type RadioInputDOMProps = Omit<
@@ -157,7 +157,7 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
     readOnly,
     required,
     value,
-  } = useRadioContext('Radio.Input');
+  } = useRadioContext(INPUT_NAME);
 
   const ref = useComposedRefs(forwardedRef, inputRef);
 
@@ -173,7 +173,7 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
 
   return (
     <Comp
-      {...interopDataAttrObj('RadioInput')}
+      {...interopDataAttrObj('input')}
       ref={ref}
       {...checkboxInputProps}
       type="radio"
@@ -189,12 +189,12 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
     />
   );
 });
-RadioInput.displayName = 'Radio.Input';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioBox
  * -----------------------------------------------------------------------------------------------*/
 
+const BOX_NAME = 'Radio.Box';
 const BOX_DEFAULT_TAG = 'span';
 
 type RadioBoxDOMProps = React.ComponentPropsWithoutRef<typeof BOX_DEFAULT_TAG>;
@@ -207,14 +207,14 @@ const RadioBox = forwardRef<typeof BOX_DEFAULT_TAG, RadioBoxProps>(function Radi
 ) {
   const { as: Comp = BOX_DEFAULT_TAG, ...checkboxBoxProps } = props;
 
-  return <Comp {...interopDataAttrObj('CheckboBox')} ref={forwardedRef} {...checkboxBoxProps} />;
+  return <Comp {...interopDataAttrObj('box')} ref={forwardedRef} {...checkboxBoxProps} />;
 });
-RadioBox.displayName = 'Radio.Box';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioIcon
  * -----------------------------------------------------------------------------------------------*/
 
+const ICON_NAME = 'Radio.Icon';
 const ICON_DEFAULT_TAG = 'span';
 
 type RadioIconDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
@@ -228,20 +228,19 @@ const RadioIcon = forwardRef<typeof ICON_DEFAULT_TAG, RadioIconProps>(function R
   forwardedRef
 ) {
   let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
-  let { checked } = useRadioContext('Radio.Icon');
+  let { checked } = useRadioContext(ICON_NAME);
   return (
-    <Comp {...interopDataAttrObj('RadioIcon')} ref={forwardedRef} {...checkboxBoxProps}>
+    <Comp {...interopDataAttrObj('icon')} ref={forwardedRef} {...checkboxBoxProps}>
       {isFunction(children) ? children({ checked }) : children}
     </Comp>
   );
 });
 
-RadioIcon.displayName = 'Radio.Icon';
-
 /* -------------------------------------------------------------------------------------------------
  * Radio
  * -----------------------------------------------------------------------------------------------*/
 
+const RADIO_NAME = 'Radio';
 const RADIO_DEFAULT_TAG = 'input';
 
 type RadioDOMProps = RadioRootDOMProps;
@@ -264,14 +263,18 @@ const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioInputProps, RadioStaticP
   }
 );
 
-Radio.displayName = 'Radio';
-
 /* ---------------------------------------------------------------------------------------------- */
 
 Radio.Root = RadioRoot;
 Radio.Input = RadioInput;
 Radio.Box = RadioBox;
 Radio.Icon = RadioIcon;
+
+Radio.displayName = RADIO_NAME;
+Radio.Root.displayName = ROOT_NAME;
+Radio.Input.displayName = INPUT_NAME;
+Radio.Box.displayName = BOX_NAME;
+Radio.Icon.displayName = ICON_NAME;
 
 interface RadioStaticProps {
   Root: typeof RadioRoot;
@@ -280,7 +283,7 @@ interface RadioStaticProps {
   Icon: typeof RadioIcon;
 }
 
-const styles: PrimitiveStyles = {
+const [styles, interopDataAttrObj] = createStyleObj(RADIO_NAME, (selector) => ({
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-block',
@@ -299,6 +302,10 @@ const styles: PrimitiveStyles = {
     left: 0,
     zIndex: 1,
     opacity: 0,
+
+    [`&:checked + ${selector('icon')}`]: {
+      opacity: 1,
+    },
   },
   box: {
     ...cssReset(BOX_DEFAULT_TAG),
@@ -323,10 +330,7 @@ const styles: PrimitiveStyles = {
     opacity: 0,
     borderRadius: 9999999,
   },
-  'root.state.checked[icon]': {
-    opacity: 1,
-  },
-};
+}));
 
 export { Radio, styles };
 export type { RadioRootProps, RadioInputProps, RadioBoxProps, RadioIconProps, RadioProps };

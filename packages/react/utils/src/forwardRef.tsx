@@ -9,6 +9,6 @@ export function forwardRef<ComponentType extends As, Props = {}, StaticProps = {
   render: ForwardRefWithAsRenderFunction<ComponentType, Props>
 ) {
   type ComponentWithStaticProps = StaticProps &
-    ForwardRefExoticComponentWithAs<ComponentType, Props>;
+    ForwardRefExoticComponentWithAs<ComponentType, Props> & { displayName: string };
   return React.forwardRef(render) as ComponentWithStaticProps;
 }

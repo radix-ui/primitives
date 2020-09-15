@@ -1,13 +1,13 @@
 import React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
+  createStyleObj,
   forwardRef,
   useComposedRefs,
   useControlledState,
   useId,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 import { Collapsible, styles as collapsibleStyles } from '@interop-ui/react-collapsible';
 
@@ -38,6 +38,7 @@ const [AccordionContext, useAccordionContext] = createContext<AccordionContextVa
  * AccordionItem
  * -----------------------------------------------------------------------------------------------*/
 
+const ITEM_NAME = 'Accordion.Item';
 const ITEM_DEFAULT_TAG = 'div';
 
 type AccordionItemDOMProps = React.ComponentPropsWithoutRef<typeof ITEM_DEFAULT_TAG>;
@@ -53,7 +54,7 @@ type AccordionItemContextValue = {
 
 const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionItemContextValue>(
   'AccordionItemContext',
-  'Accordion.Item'
+  ITEM_NAME
 );
 
 const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
@@ -66,7 +67,7 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
       onToggle,
       ...accordionItemProps
     } = props;
-    const accordionContext = useAccordionContext('Accordion.Item');
+    const accordionContext = useAccordionContext(ITEM_NAME);
 
     const generatedButtonId = `accordion-button-${useId()}`;
     const buttonId = props.id || generatedButtonId;
@@ -80,7 +81,7 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
     return (
       <Collapsible
         {...accordionItemProps}
-        {...interopDataAttrObj('AccordionItem')}
+        {...interopDataAttrObj('item')}
         ref={forwardedRef}
         disabled={accordionContext.isDisabled ?? props.disabled}
         isOpen={isOpen}
@@ -94,12 +95,11 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
   }
 );
 
-AccordionItem.displayName = 'Accordion.Item';
-
 /* -------------------------------------------------------------------------------------------------
  * AccordionHeader
  * -----------------------------------------------------------------------------------------------*/
 
+const HEADER_NAME = 'Accordion.Header';
 const HEADER_DEFAULT_TAG = 'h3';
 
 type AccordionHeaderDOMProps = React.ComponentPropsWithoutRef<typeof HEADER_DEFAULT_TAG>;
@@ -110,16 +110,15 @@ const AccordionHeader = forwardRef<typeof HEADER_DEFAULT_TAG, AccordionHeaderPro
   function AccordionHeader(props, forwardedRef) {
     const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
 
-    return <Comp ref={forwardedRef} {...headerProps} {...interopDataAttrObj('AccordionHeader')} />;
+    return <Comp ref={forwardedRef} {...headerProps} {...interopDataAttrObj('header')} />;
   }
 );
-
-AccordionHeader.displayName = 'Accordion.Header';
 
 /* -------------------------------------------------------------------------------------------------
  * AccordionButton
  * -----------------------------------------------------------------------------------------------*/
 
+const BUTTON_NAME = 'Accordion.Button';
 const BUTTON_DEFAULT_TAG = 'button';
 
 type AccordionButtonDOMProps = React.ComponentPropsWithoutRef<typeof BUTTON_DEFAULT_TAG>;
@@ -131,8 +130,8 @@ type AccordionButtonProps = CollapsibleButtonProps &
 const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonProps>(
   function AccordionButton(props, forwardedRef) {
     const { ...buttonProps } = props;
-    const { buttonNodesRef } = useAccordionContext('Accordion.Header');
-    const itemContext = useAccordionItemContext('Accordion.Header');
+    const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
+    const itemContext = useAccordionItemContext(BUTTON_NAME);
 
     const ref = React.useRef<ElementByTag<typeof BUTTON_DEFAULT_TAG> | null>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -153,7 +152,7 @@ const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonPro
     return (
       <Collapsible.Button
         {...buttonProps}
-        {...interopDataAttrObj('AccordionButton')}
+        {...interopDataAttrObj('button')}
         ref={composedRefs}
         aria-disabled={itemContext.isOpen || undefined}
         id={itemContext.buttonId}
@@ -162,39 +161,11 @@ const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonPro
   }
 );
 
-AccordionButton.displayName = 'Accordion.Button';
-
-/* -------------------------------------------------------------------------------------------------
- * AccordionTrigger
- * Composes AccordionHeader + AccordionButton
- * -----------------------------------------------------------------------------------------------*/
-
-const TRIGGER_DEFAULT_TAG = HEADER_DEFAULT_TAG;
-
-type AccordionTriggerDOMProps = AccordionButtonDOMProps;
-type AccordionTriggerOwnProps = AccordionButtonOwnProps;
-type AccordionTriggerProps = CollapsibleButtonProps &
-  AccordionTriggerDOMProps &
-  AccordionTriggerOwnProps;
-
-const AccordionTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, AccordionTriggerProps>(
-  function AccordionTrigger(props, forwardedRef) {
-    const { as = TRIGGER_DEFAULT_TAG, ...buttonProps } = props;
-
-    return (
-      <AccordionHeader as={as}>
-        <AccordionButton {...buttonProps} ref={forwardedRef} />
-      </AccordionHeader>
-    );
-  }
-);
-
-AccordionTrigger.displayName = 'Accordion.Trigger';
-
 /* -------------------------------------------------------------------------------------------------
  * AccordionPanel
  * -----------------------------------------------------------------------------------------------*/
 
+const PANEL_NAME = 'Accordion.Panel';
 const PANEL_DEFAULT_TAG = 'div';
 
 type AccordionPanelDOMProps = React.ComponentPropsWithoutRef<typeof PANEL_DEFAULT_TAG>;
@@ -205,11 +176,11 @@ type AccordionPanelProps = CollapsibleContentProps &
 
 const AccordionPanel = forwardRef<typeof PANEL_DEFAULT_TAG, AccordionPanelProps>(
   function AccordionPanel(props, forwardedRef) {
-    const itemContext = useAccordionItemContext('Accordion.Panel');
+    const itemContext = useAccordionItemContext(PANEL_NAME);
     return (
       <Collapsible.Content
         {...props}
-        {...interopDataAttrObj('AccordionPanel')}
+        {...interopDataAttrObj('panel')}
         ref={forwardedRef}
         role="region"
         aria-labelledby={itemContext.buttonId}
@@ -218,12 +189,11 @@ const AccordionPanel = forwardRef<typeof PANEL_DEFAULT_TAG, AccordionPanelProps>
   }
 );
 
-AccordionPanel.displayName = 'Accordion.Panel';
-
 /* -------------------------------------------------------------------------------------------------
  * Accordion
  * -----------------------------------------------------------------------------------------------*/
 
+const ACCORDION_NAME = 'Accordion';
 const ACCORDION_DEFAULT_TAG = 'div';
 
 type AccordionDOMProps = Omit<
@@ -311,7 +281,7 @@ const Accordion = forwardRef<typeof ACCORDION_DEFAULT_TAG, AccordionProps, Accor
     return (
       <Comp
         {...accordionProps}
-        {...interopDataAttrObj('Accordion')}
+        {...interopDataAttrObj('root')}
         ref={composedRefs}
         onKeyDown={isDisabled ? undefined : handleKeyDown}
       >
@@ -321,34 +291,33 @@ const Accordion = forwardRef<typeof ACCORDION_DEFAULT_TAG, AccordionProps, Accor
   }
 );
 
-Accordion.displayName = 'Accordion';
-
 /* -----------------------------------------------------------------------------------------------*/
 
 Accordion.Item = AccordionItem;
 Accordion.Header = AccordionHeader;
 Accordion.Button = AccordionButton;
-Accordion.Trigger = AccordionTrigger;
 Accordion.Panel = AccordionPanel;
+
+Accordion.displayName = ACCORDION_NAME;
+Accordion.Item.displayName = ITEM_NAME;
+Accordion.Header.displayName = HEADER_NAME;
+Accordion.Button.displayName = BUTTON_NAME;
+Accordion.Panel.displayName = PANEL_NAME;
 
 interface AccordionStaticProps {
   Item: typeof AccordionItem;
   Header: typeof AccordionHeader;
   Button: typeof AccordionButton;
-  Trigger: typeof AccordionTrigger;
   Panel: typeof AccordionPanel;
 }
 
-const styles: PrimitiveStyles = {
-  accordion: {
+const [styles, interopDataAttrObj] = createStyleObj(ACCORDION_NAME, {
+  root: {
     ...cssReset(ACCORDION_DEFAULT_TAG),
   },
   item: {
     ...cssReset(ITEM_DEFAULT_TAG),
-    ...collapsibleStyles.collapsible,
-  },
-  'item.state.disabled[button]': {
-    ...collapsibleStyles['collapsible.state.disabled[button]'],
+    ...collapsibleStyles.root,
   },
   header: {
     ...cssReset(HEADER_DEFAULT_TAG),
@@ -361,14 +330,13 @@ const styles: PrimitiveStyles = {
     ...cssReset(PANEL_DEFAULT_TAG),
     ...collapsibleStyles.content,
   },
-};
+});
 
 export { Accordion, styles };
 export type {
   AccordionProps,
   AccordionButtonProps,
   AccordionHeaderProps,
-  AccordionTriggerProps,
   AccordionItemProps,
   AccordionPanelProps,
 };

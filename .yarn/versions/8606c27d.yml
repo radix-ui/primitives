@@ -1,0 +1,8 @@
+releases:
+  "@interop-ui/react-accessible-icon": prerelease
+  "@interop-ui/react-live-region": prerelease
+  "@interop-ui/react-tooltip": prerelease
+  "@interop-ui/react-visually-hidden": prerelease
+
+declined:
+  - interop-ui

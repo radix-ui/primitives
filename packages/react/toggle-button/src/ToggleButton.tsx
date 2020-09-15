@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
 import {
   forwardRef,
+  createStyleObj,
   useControlledState,
   composeEventHandlers,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
+const NAME = 'ToggleButton';
 const DEFAULT_TAG = 'button';
 
 type ToggleButtonDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
@@ -36,7 +37,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
     ...buttonProps
   } = props;
 
-  const [isToggled, setIsToggled] = useControlledState({
+  const [isToggled = false, setIsToggled] = useControlledState({
     prop: isToggledProp,
     onChange: onToggle,
     defaultProp: defaultIsToggled,
@@ -44,9 +45,9 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
   return (
     <Comp
-      {...interopDataAttrObj('ToggleButton')}
+      {...interopDataAttrObj('root')}
       type="button"
-      aria-pressed={Boolean(isToggled)}
+      aria-pressed={isToggled}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, () => setIsToggled(!isToggled))}
       {...buttonProps}
@@ -54,10 +55,10 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
   );
 });
 
-ToggleButton.displayName = 'ToggleButton';
+ToggleButton.displayName = NAME;
 
-const styles: PrimitiveStyles = {
-  toggleButton: {
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
     ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
@@ -69,11 +70,13 @@ const styles: PrimitiveStyles = {
     whiteSpace: 'nowrap',
     // enable overlapping adjacent buttons via z-index
     position: 'relative',
+
+    // prevent hover/focus/active styles when disabled
+    '&:disabled': {
+      pointerEvents: 'none',
+    },
   },
-  'toggleButton.state.disabled': {
-    pointerEvents: 'none',
-  },
-};
+});
 
 export { ToggleButton, styles };
 export type { ToggleButtonProps };

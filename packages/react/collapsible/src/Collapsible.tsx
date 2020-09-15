@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
+  createStyleObj,
   forwardRef,
   useId,
   composeEventHandlers,
   useControlledState,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -30,6 +30,7 @@ const [CollapsibleContext, useCollapsibleContext] = createContext<CollapsibleCon
  * CollapsibleButton
  * -----------------------------------------------------------------------------------------------*/
 
+const BUTTON_NAME = 'Collapsible.Button';
 const BUTTON_DEFAULT_TAG = 'button';
 
 type CollapsibleButtonDOMProps = React.ComponentPropsWithoutRef<typeof BUTTON_DEFAULT_TAG>;
@@ -39,11 +40,11 @@ type CollapsibleButtonProps = CollapsibleButtonDOMProps & CollapsibleButtonOwnPr
 const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButtonProps>(
   (props, forwardedRef) => {
     let { as: Comp = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
-    let context = useCollapsibleContext('Collapsible.Button');
+    let context = useCollapsibleContext(BUTTON_NAME);
 
     return (
       <Comp
-        {...interopDataAttrObj('CollapsibleButton')}
+        {...interopDataAttrObj('button')}
         ref={forwardedRef}
         aria-controls={context.contentId}
         aria-expanded={context.isOpen || false}
@@ -55,12 +56,11 @@ const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButto
   }
 );
 
-CollapsibleButton.displayName = 'Collapsible.Button';
-
 /* -------------------------------------------------------------------------------------------------
  * CollapsibleContent
  * -----------------------------------------------------------------------------------------------*/
 
+const CONTENT_NAME = 'Collapsible.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
 type CollapsibleContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
@@ -70,7 +70,7 @@ type CollapsibleContentProps = CollapsibleContentOwnProps & CollapsibleContentDO
 const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleContentProps>(
   (props, forwardedRef) => {
     const { as: Comp = CONTENT_DEFAULT_TAG, id: idProp, children, ...contentProps } = props;
-    const { setContentId, isOpen } = useCollapsibleContext('Collapsible.Content');
+    const { setContentId, isOpen } = useCollapsibleContext(CONTENT_NAME);
     const generatedId = `collapsible-${useId()}`;
     const id = idProp || generatedId;
 
@@ -80,7 +80,7 @@ const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleCon
 
     return (
       <Comp
-        {...interopDataAttrObj('CollapsibleContent')}
+        {...interopDataAttrObj('content')}
         ref={forwardedRef}
         {...contentProps}
         id={id}
@@ -92,12 +92,11 @@ const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleCon
   }
 );
 
-CollapsibleContent.displayName = 'Collapsible.Content';
-
 /* -------------------------------------------------------------------------------------------------
  * Collapsible
  * -----------------------------------------------------------------------------------------------*/
 
+const COLLAPSIBLE_NAME = 'Collapsible';
 const COLLAPSIBLE_DEFAULT_TAG = 'div';
 
 type CollapsibleDOMProps = Omit<
@@ -151,7 +150,7 @@ const Collapsible = forwardRef<
   );
 
   return (
-    <Comp {...interopDataAttrObj('Collapsible')} {...collapsibleProps} ref={forwardedRef}>
+    <Comp {...interopDataAttrObj('root')} {...collapsibleProps} ref={forwardedRef}>
       <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
     </Comp>
   );
@@ -160,10 +159,12 @@ const Collapsible = forwardRef<
 Collapsible.Button = CollapsibleButton;
 Collapsible.Content = CollapsibleContent;
 
-Collapsible.displayName = 'Collapsible';
+Collapsible.displayName = COLLAPSIBLE_NAME;
+Collapsible.Button.displayName = BUTTON_NAME;
+Collapsible.Content.displayName = CONTENT_NAME;
 
-const styles: PrimitiveStyles = {
-  collapsible: {
+const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
+  root: {
     ...cssReset(COLLAPSIBLE_DEFAULT_TAG),
   },
   button: {
@@ -172,14 +173,15 @@ const styles: PrimitiveStyles = {
     width: '100%',
     textAlign: 'inherit',
     userSelect: 'none',
-  },
-  'collapsible.state.disabled[button]': {
-    pointerEvents: 'none',
+
+    '&:disabled': {
+      pointerEvents: 'none',
+    },
   },
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
   },
-};
+});
 
 export type { CollapsibleProps, CollapsibleButtonProps, CollapsibleContentProps };
 export { Collapsible, styles };

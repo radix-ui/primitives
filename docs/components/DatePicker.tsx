@@ -25,8 +25,8 @@ export const DatePicker = () => {
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+              fillRule="evenodd"
+              clipRule="evenodd"
               d="M9.3534 3.14636C9.54866 3.34162 9.54866 3.65821 9.3534 3.85347L5.70695 7.49992L9.3534 11.1464C9.54866 11.3416 9.54866 11.6582 9.3534 11.8535C9.15814 12.0487 8.84156 12.0487 8.64629 11.8535L4.64629 7.85347C4.45103 7.65821 4.45103 7.34162 4.64629 7.14636L8.64629 3.14636C8.84156 2.9511 9.15814 2.9511 9.3534 3.14636Z"
               fill="#282B2E"
             />
@@ -44,8 +44,8 @@ export const DatePicker = () => {
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+              fillRule="evenodd"
+              clipRule="evenodd"
               d="M5.64683 3.14628C5.84209 2.95102 6.15867 2.95102 6.35394 3.14628L10.3539 7.14628C10.4477 7.24005 10.5004 7.36722 10.5004 7.49983C10.5004 7.63244 10.4477 7.75962 10.3539 7.85339L6.35393 11.8534C6.15867 12.0486 5.84209 12.0486 5.64683 11.8534C5.45157 11.6581 5.45157 11.3415 5.64683 11.1463L9.29328 7.49983L5.64683 3.85339C5.45157 3.65812 5.45157 3.34154 5.64683 3.14628Z"
               fill="#282B2E"
             />
@@ -55,7 +55,10 @@ export const DatePicker = () => {
       <Grid sx={{ gridTemplateColumns: ['repeat(1, 1fr)', 'repeat(7, 1fr)'] }}>
         {/* Days of the week */}
         {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
-          <Flex sx={{ width: 6, height: 6, alignItems: 'center', justifyContent: 'center' }}>
+          <Flex
+            key={day}
+            sx={{ width: 6, height: 6, alignItems: 'center', justifyContent: 'center' }}
+          >
             <Text size={2} sx={{ color: 'gray700' }}>
               {day}
             </Text>
@@ -72,6 +75,7 @@ export const DatePicker = () => {
           const isBetween = day > start && day < end;
           return (
             <Flex
+              key={index}
               sx={{
                 width: 6,
                 height: 6,

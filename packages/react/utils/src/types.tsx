@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { ElementTagNameMap } from '@interop-ui/utils';
 
-export type PossibleRef<T> = React.Ref<T> | undefined;
-
 // The following types help us deal with the `as` prop.
 // We probably want to write some tests for these!
 
@@ -109,7 +107,3 @@ export interface ForwardRefWithAsRenderFunction<ComponentType extends As, Compon
 }
 
 export type ElementByTag<TagName extends keyof ElementTagNameMap> = ElementTagNameMap[TagName];
-
-export type PrimitiveStyles = {
-  [part: string]: React.CSSProperties | null;
-};

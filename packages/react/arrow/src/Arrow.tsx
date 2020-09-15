@@ -1,14 +1,17 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj } from '@interop-ui/utils';
-import { PrimitiveStyles } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
+import { createStyleObj } from '@interop-ui/react-utils';
 
-type ArrowDOMProps = React.ComponentPropsWithRef<'svg'>;
+const NAME = 'Arrow';
+const DEFAULT_TAG = 'svg';
+
+type ArrowDOMProps = React.ComponentPropsWithRef<typeof DEFAULT_TAG>;
 type ArrowProps = ArrowDOMProps;
 
 const Arrow = React.forwardRef<SVGSVGElement, ArrowProps>(function Arrow(props, forwardedRef) {
   return (
     <svg
-      {...interopDataAttrObj('Arrow')}
+      {...interopDataAttrObj('root')}
       {...props}
       ref={forwardedRef}
       viewBox="0 0 30 10"
@@ -19,17 +22,17 @@ const Arrow = React.forwardRef<SVGSVGElement, ArrowProps>(function Arrow(props, 
   );
 });
 
-Arrow.displayName = 'Arrow';
+Arrow.displayName = NAME;
 Arrow.defaultProps = {
   width: 10,
   height: 5,
 };
 
-const styles: PrimitiveStyles = {
-  arrow: {
-    ...cssReset('svg'),
+const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+  root: {
+    ...cssReset(DEFAULT_TAG),
   },
-};
+});
 
 export { Arrow, styles };
 export type { ArrowProps };

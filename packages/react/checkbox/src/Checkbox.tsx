@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { cssReset, isFunction, warningOnce, interopDataAttrObj } from '@interop-ui/utils';
+import { cssReset, isFunction, warningOnce, interopDataAttrSelector } from '@interop-ui/utils';
 import {
   createContext,
+  createStyleObj,
   forwardRef,
   useComposedRefs,
   useCallbackRef,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
@@ -53,6 +53,7 @@ CheckboxContext.displayName = 'CheckboxContext';
  * CheckboxRoot
  * -----------------------------------------------------------------------------------------------*/
 
+const ROOT_NAME = 'Checkbox.Root';
 const ROOT_DEFAULT_TAG = 'span';
 
 type CheckboxRootDOMProps = Omit<
@@ -124,19 +125,18 @@ const CheckboxRoot = forwardRef<typeof ROOT_DEFAULT_TAG, CheckboxRootProps>(func
 
   return (
     <CheckboxContext.Provider value={context}>
-      <Comp {...interopDataAttrObj('CheckboxRoot')} ref={forwardedRef} {...checkboxRootProps}>
+      <Comp {...interopDataAttrObj('root')} ref={forwardedRef} {...checkboxRootProps}>
         {isFunction(children) ? children({ checked }) : children}
       </Comp>
     </CheckboxContext.Provider>
   );
 });
 
-CheckboxRoot.displayName = 'Checkbox.Root';
-
 /* -------------------------------------------------------------------------------------------------
  * CheckboxInput
  * -----------------------------------------------------------------------------------------------*/
 
+const INPUT_NAME = 'Checkbox.Input';
 const INPUT_DEFAULT_TAG = 'input';
 
 type CheckboxInputDOMProps = Omit<
@@ -161,7 +161,7 @@ const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
       readOnly,
       required,
       value,
-    } = useCheckboxContext('Checkbox.Input');
+    } = useCheckboxContext(INPUT_NAME);
 
     const ref = useComposedRefs(forwardedRef, inputRef);
 
@@ -177,7 +177,7 @@ const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
 
     return (
       <Comp
-        {...interopDataAttrObj('CheckboxInput')}
+        {...interopDataAttrObj('input')}
         ref={ref}
         {...checkboxInputProps}
         type="checkbox"
@@ -194,12 +194,12 @@ const CheckboxInput = forwardRef<typeof INPUT_DEFAULT_TAG, CheckboxInputProps>(
     );
   }
 );
-CheckboxInput.displayName = 'Checkbox.Input';
 
 /* -------------------------------------------------------------------------------------------------
  * CheckboxBox
  * -----------------------------------------------------------------------------------------------*/
 
+const BOX_NAME = 'Checkbox.Box';
 const BOX_DEFAULT_TAG = 'span';
 
 type CheckboxBoxDOMProps = React.ComponentPropsWithoutRef<typeof BOX_DEFAULT_TAG>;
@@ -212,14 +212,14 @@ const CheckboxBox = forwardRef<typeof BOX_DEFAULT_TAG, CheckboxBoxProps>(functio
 ) {
   const { as: Comp = BOX_DEFAULT_TAG, ...checkboxBoxProps } = props;
 
-  return <Comp {...interopDataAttrObj('CheckboBox')} ref={forwardedRef} {...checkboxBoxProps} />;
+  return <Comp {...interopDataAttrObj('box')} ref={forwardedRef} {...checkboxBoxProps} />;
 });
-CheckboxBox.displayName = 'Checkbox.Box';
 
 /* -------------------------------------------------------------------------------------------------
  * CheckboxIcon
  * -----------------------------------------------------------------------------------------------*/
 
+const ICON_NAME = 'Checkbox.Icon';
 const ICON_DEFAULT_TAG = 'span';
 
 type CheckboxIconDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
@@ -233,15 +233,13 @@ const CheckboxIcon = forwardRef<typeof ICON_DEFAULT_TAG, CheckboxIconProps>(func
   forwardedRef
 ) {
   let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
-  let { checked } = useCheckboxContext('Checkbox.Icon');
+  let { checked } = useCheckboxContext(ICON_NAME);
   return (
-    <Comp {...interopDataAttrObj('CheckboxIcon')} ref={forwardedRef} {...checkboxBoxProps}>
+    <Comp {...interopDataAttrObj('icon')} ref={forwardedRef} {...checkboxBoxProps}>
       {isFunction(children) ? children({ checked }) : children}
     </Comp>
   );
 });
-
-CheckboxIcon.displayName = 'Checkbox.Icon';
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
@@ -254,6 +252,7 @@ interface CheckboxStaticProps {
   Box: typeof CheckboxBox;
 }
 
+const CHECKBOX_NAME = 'Checkbox';
 const CHECKBOX_DEFAULT_TAG = 'input';
 
 type CheckboxDOMProps = CheckboxRootDOMProps;
@@ -262,9 +261,9 @@ type CheckboxProps = CheckboxDOMProps & CheckboxOwnProps;
 
 const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxInputProps, CheckboxStaticProps>(
   function Checkbox(props, forwardedRef) {
-    const { children, ...cotainerProps } = props;
+    const { children, ...containerProps } = props;
     return (
-      <CheckboxRoot {...cotainerProps}>
+      <CheckboxRoot {...containerProps}>
         {({ checked }) => (
           <CheckboxBox>
             <CheckboxInput ref={forwardedRef} />
@@ -276,8 +275,6 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxInputProps, Che
   }
 );
 
-Checkbox.displayName = 'Checkbox';
-
 /* ---------------------------------------------------------------------------------------------- */
 
 Checkbox.Root = CheckboxRoot;
@@ -285,7 +282,13 @@ Checkbox.Input = CheckboxInput;
 Checkbox.Box = CheckboxBox;
 Checkbox.Icon = CheckboxIcon;
 
-const styles: PrimitiveStyles = {
+Checkbox.displayName = CHECKBOX_NAME;
+Checkbox.Root.displayName = ROOT_NAME;
+Checkbox.Input.displayName = INPUT_NAME;
+Checkbox.Box.displayName = BOX_NAME;
+Checkbox.Icon.displayName = ICON_NAME;
+
+const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-block',
@@ -304,6 +307,10 @@ const styles: PrimitiveStyles = {
     left: 0,
     zIndex: 1,
     opacity: 0,
+
+    [`&:checked + ${interopDataAttrSelector(ICON_NAME)}`]: {
+      opacity: 1,
+    },
   },
   box: {
     ...cssReset(BOX_DEFAULT_TAG),
@@ -326,10 +333,7 @@ const styles: PrimitiveStyles = {
     userSelect: 'none',
     opacity: 0,
   },
-  'root.state.checked[icon]': {
-    opacity: 1,
-  },
-};
+});
 
 export type {
   CheckboxRootProps,

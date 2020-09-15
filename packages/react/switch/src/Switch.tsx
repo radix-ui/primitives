@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { cssReset, interopDataAttrObj, isFunction, warningOnce } from '@interop-ui/utils';
+import { cssReset, isFunction, warningOnce } from '@interop-ui/utils';
 import { useSize } from '@interop-ui/react-use-size';
 import {
   createContext,
+  createStyleObj,
   forwardRef,
   useCallbackRef,
   useComposedRefs,
-  PrimitiveStyles,
 } from '@interop-ui/react-utils';
 
 // These props will be passed to the top-level root rather than the input when using the
@@ -57,6 +57,7 @@ const [SwitchContext, useSwitchContext] = createContext<SwitchContextValue>(
  * SwitchRoot
  * -----------------------------------------------------------------------------------------------*/
 
+const ROOT_NAME = 'Switch.Root';
 const ROOT_DEFAULT_TAG = 'span';
 
 type SwitchRootDOMProps = Omit<
@@ -108,14 +109,8 @@ const SwitchRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SwitchRootProps>(function
 
   let boxPartRef = React.useRef<HTMLElement>(null);
   let thumbPartRef = React.useRef<HTMLElement>(null);
-  let boxPartSize = useSize({
-    refToObserve: boxPartRef,
-    isObserving: true,
-  });
-  let thumbPartSize = useSize({
-    refToObserve: thumbPartRef,
-    isObserving: true,
-  });
+  let boxPartSize = useSize(boxPartRef);
+  let thumbPartSize = useSize(thumbPartRef);
 
   let biggestHeight = Math.max(boxPartSize?.height ?? 0, thumbPartSize?.height ?? 0);
 
@@ -158,7 +153,7 @@ const SwitchRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SwitchRootProps>(function
   return (
     <SwitchContext.Provider value={ctx}>
       <Comp
-        {...interopDataAttrObj('SwitchRoot')}
+        {...interopDataAttrObj('root')}
         style={{
           ...style,
           height,
@@ -172,12 +167,11 @@ const SwitchRoot = forwardRef<typeof ROOT_DEFAULT_TAG, SwitchRootProps>(function
   );
 });
 
-SwitchRoot.displayName = 'Switch.Root';
-
 /* -------------------------------------------------------------------------------------------------
  * SwitchInput
  * -----------------------------------------------------------------------------------------------*/
 
+const INPUT_NAME = 'Switch.Input';
 const INPUT_DEFAULT_TAG = 'input';
 
 type SwitchInputDOMProps = Omit<
@@ -204,7 +198,7 @@ const SwitchInput = forwardRef<typeof INPUT_DEFAULT_TAG, SwitchInputProps>(funct
     readOnly,
     required,
     value,
-  } = useSwitchContext('Switch.Input');
+  } = useSwitchContext(INPUT_NAME);
 
   const ref = useComposedRefs(forwardedRef, inputRef);
 
@@ -220,7 +214,7 @@ const SwitchInput = forwardRef<typeof INPUT_DEFAULT_TAG, SwitchInputProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj('SwitchInput')}
+      {...interopDataAttrObj('input')}
       ref={ref}
       {...checkboxInputProps}
       type="checkbox"
@@ -236,12 +230,12 @@ const SwitchInput = forwardRef<typeof INPUT_DEFAULT_TAG, SwitchInputProps>(funct
     />
   );
 });
-SwitchInput.displayName = 'Switch.Input';
 
 /* -------------------------------------------------------------------------------------------------
  * SwitchBox
  * -----------------------------------------------------------------------------------------------*/
 
+const BOX_NAME = 'Switch.Box';
 const BOX_DEFAULT_TAG = 'span';
 
 type SwitchBoxDOMProps = React.ComponentPropsWithoutRef<typeof BOX_DEFAULT_TAG>;
@@ -253,36 +247,36 @@ const SwitchBox = forwardRef<typeof BOX_DEFAULT_TAG, SwitchBoxProps>(function Sw
   forwardedRef
 ) {
   let { as: Comp = BOX_DEFAULT_TAG, ...checkboxBoxProps } = props;
-  let { boxPartRef } = useSwitchContext('Switch.Box');
+  let { boxPartRef } = useSwitchContext(BOX_NAME);
   let ref = useComposedRefs(boxPartRef, forwardedRef);
 
-  return <Comp {...interopDataAttrObj('CheckboBox')} ref={ref} {...checkboxBoxProps} />;
+  return <Comp {...interopDataAttrObj('box')} ref={ref} {...checkboxBoxProps} />;
 });
-SwitchBox.displayName = 'Switch.Box';
 
 /* -------------------------------------------------------------------------------------------------
  * SwitchThumb
  * -----------------------------------------------------------------------------------------------*/
 
-const ICON_DEFAULT_TAG = 'span';
+const THUMB_NAME = 'Switch.Thumb';
+const THUMB_DEFAULT_TAG = 'span';
 
-type SwitchThumbDOMProps = React.ComponentPropsWithoutRef<typeof ICON_DEFAULT_TAG>;
+type SwitchThumbDOMProps = React.ComponentPropsWithoutRef<typeof THUMB_DEFAULT_TAG>;
 type SwitchThumbOwnProps = {
   children?: React.ReactElement | ((props: { checked: boolean }) => React.ReactElement);
 };
 type SwitchThumbProps = SwitchThumbDOMProps & SwitchThumbOwnProps;
 
-const SwitchThumb = forwardRef<typeof ICON_DEFAULT_TAG, SwitchThumbProps>(function SwitchThumb(
+const SwitchThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(function SwitchThumb(
   props,
   forwardedRef
 ) {
-  let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
-  let { checked, switchWidth, thumbPartRef, thumbWidth } = useSwitchContext('Switch.Thumb');
+  let { as: Comp = THUMB_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
+  let { checked, switchWidth, thumbPartRef, thumbWidth } = useSwitchContext(THUMB_NAME);
   let checkedOffset = switchWidth - thumbWidth;
   let ref = useComposedRefs(thumbPartRef, forwardedRef);
   return (
     <Comp
-      {...interopDataAttrObj('SwitchThumb')}
+      {...interopDataAttrObj('thumb')}
       style={{
         transform: `translate3d(${checked ? checkedOffset + 'px' : 0}, 0, 0)`,
       }}
@@ -294,12 +288,11 @@ const SwitchThumb = forwardRef<typeof ICON_DEFAULT_TAG, SwitchThumbProps>(functi
   );
 });
 
-SwitchThumb.displayName = 'Switch.Icon';
-
 /* -------------------------------------------------------------------------------------------------
  * Switch
  * -----------------------------------------------------------------------------------------------*/
 
+const SWITCH_NAME = 'Switch';
 const SWITCH_DEFAULT_TAG = 'input';
 
 type SwitchDOMProps = SwitchRootDOMProps;
@@ -323,14 +316,18 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchInputProps, SwitchSta
   }
 );
 
-Switch.displayName = 'Switch';
-
 /* ---------------------------------------------------------------------------------------------- */
 
 Switch.Root = SwitchRoot;
 Switch.Input = SwitchInput;
 Switch.Box = SwitchBox;
 Switch.Thumb = SwitchThumb;
+
+Switch.displayName = SWITCH_NAME;
+Switch.Root.displayName = ROOT_NAME;
+Switch.Input.displayName = INPUT_NAME;
+Switch.Box.displayName = BOX_NAME;
+Switch.Thumb.displayName = THUMB_NAME;
 
 interface SwitchStaticProps {
   Root: typeof SwitchRoot;
@@ -339,7 +336,7 @@ interface SwitchStaticProps {
   Thumb: typeof SwitchThumb;
 }
 
-const styles: PrimitiveStyles = {
+const [styles, interopDataAttrObj] = createStyleObj(SWITCH_NAME, {
   root: {
     ...cssReset(ROOT_DEFAULT_TAG),
     display: 'inline-flex',
@@ -365,9 +362,9 @@ const styles: PrimitiveStyles = {
     alignItems: 'center',
   },
   thumb: {
-    ...cssReset(ICON_DEFAULT_TAG),
+    ...cssReset(THUMB_DEFAULT_TAG),
   },
-};
+});
 
 export { Switch, styles };
 export type { SwitchRootProps, SwitchInputProps, SwitchBoxProps, SwitchThumbProps, SwitchProps };

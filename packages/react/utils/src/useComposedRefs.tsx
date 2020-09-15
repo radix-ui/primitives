@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { PossibleRef } from './types';
+
+type PossibleRef<T> = React.Ref<T> | undefined;
 
 /**
  * Set a given ref to a given value
@@ -26,5 +27,6 @@ export function composeRefs<T>(...refs: PossibleRef<T>[]) {
  * Accepts callback refs and RefObject(s)
  */
 export function useComposedRefs<T>(...refs: PossibleRef<T>[]) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return React.useCallback(composeRefs(...refs), refs);
 }

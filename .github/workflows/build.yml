@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v1
+        with:
+          path: .parcel-cache
+          key: parcel-cache
+      - name: Install dependencies
+        if: steps.yarn-cache-dir-path.outputs.cache-hit != 'true'
+        run: yarn
+      - name: Run build
+        run: yarn build
+      - name: Run tests
+        run: yarn test:ci

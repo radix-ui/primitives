@@ -2,20 +2,16 @@ import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { Size } from '@interop-ui/utils';
 
-type UseSizeOptions = {
+export function useSize(
   /** A reference to the element whose size to observe */
-  refToObserve: React.RefObject<HTMLElement | SVGElement>;
-  /** Whether we want to currently observe or not */
-  isObserving: boolean;
-};
-
-export function useSize({ refToObserve, isObserving }: UseSizeOptions) {
-  let [size, setSize] = React.useState<Size | undefined>(undefined);
+  refToObserve: React.RefObject<HTMLElement | SVGElement>
+) {
+  const [size, setSize] = React.useState<Size | undefined>(undefined);
 
   React.useEffect(() => {
-    if (isObserving && refToObserve.current) {
-      let elementToObserver = refToObserve.current;
-      let resizeObserver = new ResizeObserver((entries) => {
+    if (refToObserve.current) {
+      const elementToObserve = refToObserve.current;
+      const resizeObserver = new ResizeObserver((entries) => {
         if (!Array.isArray(entries)) {
           return;
         }
@@ -26,20 +22,37 @@ export function useSize({ refToObserve, isObserving }: UseSizeOptions) {
           return;
         }
 
-        let entry = entries[0];
+        const entry = entries[0];
+        let width: number;
+        let height: number;
 
-        setSize({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        });
+        if ('borderBoxSize' in entry) {
+          const borderSizeEntry = entry['borderBoxSize'];
+          // iron out differences between browsers
+          const borderSize = Array.isArray(borderSizeEntry) ? borderSizeEntry[0] : borderSizeEntry;
+          width = borderSize['inlineSize'];
+          height = borderSize['blockSize'];
+        } else {
+          // for browsers that don't support `borderBoxSize`
+          // we calculate a rect ourselves to get the correct border box.
+          const rect = elementToObserve.getBoundingClientRect();
+          width = rect.width;
+          height = rect.height;
+        }
+
+        setSize({ width, height });
       });
 
-      resizeObserver.observe(elementToObserver);
+      // @ts-ignore: types are wrong as we're using the polyfill, will sort that out later
+      resizeObserver.observe(elementToObserve, { box: 'border-box' });
 
-      return () => resizeObserver.unobserve(elementToObserver);
+      return () => {
+        setSize(undefined);
+        resizeObserver.unobserve(elementToObserve);
+      };
     }
     return;
-  }, [isObserving, refToObserve]);
+  }, [refToObserve]);
 
   return size;
 }

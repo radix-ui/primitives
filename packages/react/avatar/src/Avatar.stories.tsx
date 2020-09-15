@@ -1,35 +1,47 @@
 import * as React from 'react';
-import { Avatar, styles as avatarStyles } from './Avatar';
+import { Avatar as AvatarPrimitive, styles } from './Avatar';
 
 export default { title: 'Avatar' };
 
-export function Basic() {
-  return (
-    <div>
-      <Avatar.Root
-        alt="John Smith"
-        src="https://picsum.photos/400/400"
-        style={avatarStyles.root || {}}
-      >
-        <Avatar.Image style={avatarStyles.image || {}} />
-        <Avatar.Abbr style={avatarStyles.abbr || {}} />
-      </Avatar.Root>
-    </div>
-  );
-}
+export const WithImage = () => <Avatar src="https://picsum.photos/id/1005/400/400" />;
+export const WithoutImage = () => <Avatar />;
+export const BrokenLink = () => <Avatar src="https://broken.link.com/broken-pic.jpg" />;
 
-export function BrokenLink() {
-  return (
-    <div>
-      <Avatar.Root
-        alt="John Smith"
-        src="https://broken.link.com/broken-pic.jpg"
-        style={avatarStyles.root || {}}
-        renderLoading={() => <span style={{ color: 'red' }}>Loading lalalala</span>}
-      >
-        <Avatar.Image style={avatarStyles.image || {}} />
-        <Avatar.Abbr style={avatarStyles.abbr || {}} />
-      </Avatar.Root>
-    </div>
-  );
-}
+export const InlineStyle = () => (
+  <Avatar
+    src="https://picsum.photos/id/1005/400/400"
+    style={{
+      backgroundColor: 'gainsboro',
+      borderRadius: 50,
+      width: 50,
+      height: 50,
+    }}
+  />
+);
+
+export const InlineStyleBroken = () => (
+  <Avatar
+    src="https://broken.link.com/broken-pic.jpg"
+    style={{
+      backgroundColor: 'gainsboro',
+      borderRadius: 50,
+      width: 50,
+      height: 50,
+    }}
+  />
+);
+
+const Avatar = ({
+  src,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive> & { src?: string }) => (
+  <AvatarPrimitive {...props} style={{ ...styles.root, ...props.style }}>
+    <AvatarPrimitive.Image
+      alt="John Smith"
+      src={src}
+      style={styles.image}
+      onLoadingStatusChange={console.log}
+    />
+    <AvatarPrimitive.Fallback>JS</AvatarPrimitive.Fallback>
+  </AvatarPrimitive>
+);
