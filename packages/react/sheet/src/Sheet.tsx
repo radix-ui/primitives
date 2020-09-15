@@ -12,6 +12,8 @@ import {
 } from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
+import type { LockProps } from '@interop-ui/react-lock';
+
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
@@ -33,8 +35,6 @@ const [SheetContext, useSheetContext] = createContext<SheetContextValue>('SheetC
 /* -------------------------------------------------------------------------------------------------
  * SheetRoot
  * -----------------------------------------------------------------------------------------------*/
-
-type LockProps = React.ComponentProps<typeof Lock>;
 
 type SheetRootOwnProps = {
   /** whether the Sheet is currently opened or not */

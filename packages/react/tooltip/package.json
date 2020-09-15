@@ -20,6 +20,7 @@
     "@interop-ui/popper": "workspace:*",
     "@interop-ui/react-arrow": "workspace:*",
     "@interop-ui/react-popover": "workspace:*",
+    "@interop-ui/react-portal": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/react-visually-hidden": "workspace:*",
     "@interop-ui/utils": "workspace:*"

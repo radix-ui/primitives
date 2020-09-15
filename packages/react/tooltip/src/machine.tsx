@@ -127,7 +127,7 @@ type TooltipState =
   | 'OPEN'
 
   // tooltip is closed
-  // we are checking if the mouse enters another tooltip target (SKIP_REST_THRESHOLD_DURATION)
+  // we are checking if the mouse enters another tooltip trigger (SKIP_REST_THRESHOLD_DURATION)
   | 'CHECKING_IF_SHOULD_SKIP_REST_THRESHOLD'
 
   // tooltip has been dismissed via click or keyboard action (escape, space, enter)
@@ -142,7 +142,7 @@ type TooltipEvent =
   | 'focused'
   | 'blurred'
   | 'activated'
-  | 'targetMoved'
+  | 'triggerMoved'
   | 'unmounted';
 
 type TooltipContext = { id: string | null };
@@ -178,7 +178,7 @@ export const stateChart: TooltipStateChart = {
         mouseMoved: 'OPEN',
         activated: 'DISMISSED',
         blurred: 'CLOSED',
-        targetMoved: 'CLOSED',
+        triggerMoved: 'CLOSED',
         unmounted: 'CLOSED',
       },
     },
@@ -204,7 +204,7 @@ export const stateChart: TooltipStateChart = {
 };
 
 // The rest timer is used to check for the user "resting" a certain
-// period of time over the target, before deciding to open the tooltip.
+// period of time over the trigger, before deciding to open the tooltip.
 let restTimerId: number;
 
 function startRestTimer(transition: TooltipTransitionFn) {
@@ -216,7 +216,7 @@ function clearRestTimer() {
   clearTimeout(restTimerId);
 }
 
-// The skip rest timer is used to check if the user enters another tooltip target
+// The skip rest timer is used to check if the user enters another tooltip trigger
 // in a certain period of time, in which case, we would skip the rest timer and open
 // the tooltip instantly.
 let skipRestTimerId: number;

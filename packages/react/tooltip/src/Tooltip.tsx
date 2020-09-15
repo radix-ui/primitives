@@ -1,43 +1,38 @@
 import * as React from 'react';
-import { cssReset, Side, Align, isFunction } from '@interop-ui/utils';
 import {
-  composeEventHandlers,
-  createContext,
-  createStyleObj,
   forwardRef,
+  createStyleObj,
+  createContext,
   useComposedRefs,
-  useControlledState,
   useId,
-  usePrevious,
+  composeEventHandlers,
   useRect,
+  usePrevious,
+  useControlledState,
+  useIsomorphicLayoutEffect,
 } from '@interop-ui/react-utils';
-import { createStateMachine, stateChart } from './machine';
-import { Popover, PopoverProps, PopoverArrowProps } from '@interop-ui/react-popover';
+import { cssReset } from '@interop-ui/utils';
+import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
+import { Portal } from '@interop-ui/react-portal';
 import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
+import { createStateMachine, stateChart } from './machine';
+
+import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
+import type { Optional } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
 
-interface TooltipContextValue {
-  align: Align;
-  alignOffset: number;
-  ariaLabel: string;
-  arrowOffset: number;
-  collisionTolerance: number;
+type TooltipContextValue = {
+  triggerRef: React.RefObject<HTMLButtonElement>;
+  id: string;
   isOpen: boolean;
-  label: TooltipRootProps['label'];
-  popoverRef: React.RefObject<any>;
-  side: Side;
-  sideOffset: number;
-  targetRect: ClientRect | undefined;
-  targetRef: React.RefObject<any>;
-  tooltipId: string;
-}
+};
 
 const [TooltipContext, useTooltipContext] = createContext<TooltipContextValue>(
   'TooltipContext',
-  'Tooltip.Root'
+  'Tooltip'
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -47,80 +42,35 @@ const [TooltipContext, useTooltipContext] = createContext<TooltipContextValue>(
 const stateMachine = createStateMachine(stateChart);
 
 /* -------------------------------------------------------------------------------------------------
- * TooltipRoot
+ * Tooltip
  * -----------------------------------------------------------------------------------------------*/
 
-const ROOT_NAME = 'Tooltip.Root';
+const TOOLTIP_NAME = 'Tooltip';
 
-type TooltipRootOwnProps = {
-  align?: Align;
-  alignOffset?: number;
-  'aria-label'?: string;
-  arrowOffset?: number;
-  collisionTolerance?: number;
-  id?: string;
+interface TooltipStaticProps {
+  Trigger: typeof TooltipTrigger;
+  Position: typeof TooltipPosition;
+  Content: typeof TooltipContent;
+  Arrow: typeof TooltipArrow;
+}
+
+type TooltipProps = {
   isOpen?: boolean;
-  label: string;
-  onOpenChange?: (isOpen?: boolean) => void;
-  side?: Side;
-  sideOffset?: number;
-  children: React.ReactNode;
+  defaultIsOpen?: boolean;
+  onIsOpenChange?: (isOpen: boolean) => void;
 };
-type TooltipRootProps = TooltipRootOwnProps;
 
-const TooltipRoot: React.FC<TooltipRootProps> = function TooltipRoot(props) {
-  const {
-    children,
-    label,
-
-    // we default `ariaLabel` to the `label` to simplify the implementation later on
-    // as we then don't need to differentiate whether or not we have an `ariaLabel`
-    // we instead always render it inside a `VisuallyHidden`
-    'aria-label': ariaLabel = label,
-    isOpen: isOpenProp,
-    onOpenChange,
-    side = 'bottom',
-    sideOffset = -5,
-    align = 'start',
-    alignOffset = 0,
-    arrowOffset = 10,
-    collisionTolerance = 0,
-  } = props;
-
-  const _id = `tooltip-${useId()}`;
-  const id = props.id || _id;
-
-  // send transition if the component unmounts
-  React.useEffect(() => {
-    return () => {
-      stateMachine.transition('unmounted', { id });
-    };
-  }, [id]);
-
-  // if we're controlling the component
-  // put the state machine in the appropriate state
-  React.useEffect(() => {
-    if (isOpenProp === true) {
-      stateMachine.transition('mouseEntered', { id });
-    }
-  }, [id, isOpenProp]);
-
-  const [_isOpen, setIsOpen] = useControlledState({
+const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(props) {
+  const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const id = `tooltip-${useId()}`;
+  const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
-    onChange: onOpenChange,
+    defaultProp: defaultIsOpen,
+    onChange: onIsOpenChange,
   });
-  const isOpen = Boolean(_isOpen);
 
-  const targetRef = React.useRef<HTMLElement | SVGElement>(null);
-  const targetRect = useRect(targetRef);
-
-  const targetLeft = targetRect?.left;
-  const previousTargetLeft = usePrevious(targetLeft);
-  const targetTop = targetRect?.top;
-  const previousTargetTop = usePrevious(targetTop);
-
-  const popoverRef = React.useRef<HTMLDivElement>(null);
-
+  // control open state using state machine subscription
   React.useEffect(() => {
     const unsubscribe = stateMachine.subscribe((state, context) => {
       if (state === 'OPEN' && context.id === id) {
@@ -133,161 +83,164 @@ const TooltipRoot: React.FC<TooltipRootProps> = function TooltipRoot(props) {
     return unsubscribe;
   }, [id, setIsOpen]);
 
+  // send transition if the component unmounts
   React.useEffect(() => {
-    // checking if the user has scrolled…
-    const hasTargetMoved =
-      (previousTargetLeft !== undefined && previousTargetLeft !== targetLeft) ||
-      (previousTargetTop !== undefined && previousTargetTop !== targetTop);
+    return () => {
+      stateMachine.transition('unmounted', { id });
+    };
+  }, [id]);
 
-    if (isOpen && hasTargetMoved) {
-      stateMachine.transition('targetMoved', { id });
+  // if we're controlling the component
+  // put the state machine in the appropriate state
+  useIsomorphicLayoutEffect(() => {
+    if (isOpenProp === true) {
+      stateMachine.transition('mouseEntered', { id });
     }
-  }, [id, isOpen, previousTargetLeft, previousTargetTop, targetLeft, targetTop]);
+  }, [id, isOpenProp]);
 
-  return (
-    <TooltipContext.Provider
-      value={{
-        align,
-        alignOffset,
-        ariaLabel,
-        arrowOffset,
-        collisionTolerance,
-        isOpen,
-        label,
-        popoverRef,
-        side,
-        sideOffset,
-        targetRect,
-        targetRef,
-        tooltipId: id,
-      }}
-    >
-      {children}
-    </TooltipContext.Provider>
-  );
+  const context = React.useMemo(() => ({ triggerRef, id, isOpen }), [id, isOpen]);
+
+  return <TooltipContext.Provider value={context}>{children}</TooltipContext.Provider>;
 };
 
 /* -------------------------------------------------------------------------------------------------
- * TooltipTarget
+ * TooltipTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const TARGET_NAME = 'Tooltip.Target';
+const TRIGGER_NAME = 'Tooltip.Trigger';
+const TRIGGER_DEFAULT_TAG = 'button';
 
-type TooltipTargetOwnProps = {};
-type TooltipTargetProps = TooltipTargetOwnProps;
+type TooltipTriggerDOMProps = React.ComponentPropsWithoutRef<typeof TRIGGER_DEFAULT_TAG>;
+type TooltipTriggerOwnProps = {};
+type TooltipTriggerProps = TooltipTriggerOwnProps & TooltipTriggerDOMProps;
 
-const TooltipTarget: React.FC<TooltipTargetProps> = function TooltipTarget(props) {
-  let { targetRef, tooltipId } = useTooltipContext(TARGET_NAME);
-  let { children } = props;
-
-  let child = React.Children.only(children);
-  let ref = useComposedRefs((child as any).ref || null, targetRef);
-
-  if (!React.isValidElement(child)) {
-    // TODO: THROW DEV WARNING?
-    return null;
-  }
-
-  let { onMouseEnter, onMouseMove, onMouseLeave, onFocus, onBlur, onMouseDown, onKeyDown } = (
-    child || { props: {} }
-  ).props;
-
-  return React.cloneElement(child, {
-    ...interopDataAttrObj('target'),
-    ref,
-    'aria-describedby': tooltipId,
-    onMouseEnter: composeEventHandlers(onMouseEnter, () =>
-      stateMachine.transition('mouseEntered', { id: tooltipId })
-    ),
-    onMouseMove: composeEventHandlers(onMouseMove, () =>
-      stateMachine.transition('mouseMoved', { id: tooltipId })
-    ),
-    onMouseLeave: composeEventHandlers(onMouseLeave, () => {
-      const context = stateMachine.getContext();
-      if (context.id === tooltipId) {
-        stateMachine.transition('mouseLeft', { id: tooltipId });
-      }
-    }),
-    onFocus: composeEventHandlers(onFocus, () =>
-      stateMachine.transition('focused', { id: tooltipId })
-    ),
-    onBlur: composeEventHandlers(onBlur, () => {
-      const context = stateMachine.getContext();
-      if (context.id === tooltipId) {
-        stateMachine.transition('blurred', { id: tooltipId });
-      }
-    }),
-    onMouseDown: composeEventHandlers(onMouseDown, () =>
-      stateMachine.transition('activated', { id: tooltipId })
-    ),
-    onKeyDown: composeEventHandlers(onKeyDown, (event: KeyboardEvent) => {
-      if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-        stateMachine.transition('activated', { id: tooltipId });
-      }
-    }),
-  });
-};
-
-/* -------------------------------------------------------------------------------------------------
- * TooltipPopover
- * -----------------------------------------------------------------------------------------------*/
-
-const POPOVER_NAME = 'Tooltip.Popper';
-const POPOVER_DEFAULT_TAG = 'div';
-
-type TooltipPopoverOwnProps = {};
-type TooltipPopoverProps = Omit<
-  PopoverProps,
-  | 'align'
-  | 'alignOffset'
-  | 'arrowOffset'
-  | 'collisionTolerance'
-  | 'isOpen'
-  | 'side'
-  | 'sideOffset'
-  | 'targetRef'
-> &
-  TooltipPopoverOwnProps;
-
-const TooltipPopover = forwardRef<typeof POPOVER_DEFAULT_TAG, TooltipPopoverProps>(
-  function TooltipPopover(props, forwardedRef) {
-    let { as = POPOVER_DEFAULT_TAG, children, ...otherProps } = props;
-    let {
-      align,
-      alignOffset,
-      ariaLabel,
-      arrowOffset,
-      collisionTolerance,
-      isOpen,
-      side,
-      sideOffset,
-      targetRef,
-      tooltipId,
-    } = useTooltipContext(POPOVER_NAME);
+const TooltipTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, TooltipTriggerProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = TRIGGER_DEFAULT_TAG,
+      onMouseEnter,
+      onMouseMove,
+      onMouseLeave,
+      onFocus,
+      onBlur,
+      onMouseDown,
+      onKeyDown,
+      ...triggerProps
+    } = props;
+    const context = useTooltipContext(TRIGGER_NAME);
+    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
     return (
-      <Popover
-        as={as}
-        ref={forwardedRef}
-        {...otherProps}
-        align={align}
-        alignOffset={alignOffset}
-        arrowOffset={arrowOffset}
-        collisionTolerance={collisionTolerance}
-        isOpen={isOpen}
-        side={side}
-        sideOffset={sideOffset}
-        targetRef={targetRef}
-        {...interopDataAttrObj('popover')}
-      >
-        {children}
-        <VisuallyHidden style={visuallyHiddenStyles.root} id={tooltipId} role="tooltip">
-          {ariaLabel}
-        </VisuallyHidden>
-      </Popover>
+      <Comp
+        {...interopDataAttrObj('trigger')}
+        ref={composedTriggerRef}
+        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
+        aria-describedby={context.isOpen ? context.id : undefined}
+        onMouseEnter={composeEventHandlers(onMouseEnter, () =>
+          stateMachine.transition('mouseEntered', { id: context.id })
+        )}
+        onMouseMove={composeEventHandlers(onMouseMove, () =>
+          stateMachine.transition('mouseMoved', { id: context.id })
+        )}
+        onMouseLeave={composeEventHandlers(onMouseLeave, () => {
+          const stateMachineContext = stateMachine.getContext();
+          if (stateMachineContext.id === context.id) {
+            stateMachine.transition('mouseLeft', { id: context.id });
+          }
+        })}
+        onFocus={composeEventHandlers(onFocus, () =>
+          stateMachine.transition('focused', { id: context.id })
+        )}
+        onBlur={composeEventHandlers(onBlur, () => {
+          const stateMachineContext = stateMachine.getContext();
+          if (stateMachineContext.id === context.id) {
+            stateMachine.transition('blurred', { id: context.id });
+          }
+        })}
+        onMouseDown={composeEventHandlers(onMouseDown, () =>
+          stateMachine.transition('activated', { id: context.id })
+        )}
+        onKeyDown={composeEventHandlers(onKeyDown, (event) => {
+          if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+            stateMachine.transition('activated', { id: context.id });
+          }
+        })}
+        {...triggerProps}
+      />
     );
   }
 );
+
+/* -------------------------------------------------------------------------------------------------
+ * TooltipPosition
+ * -----------------------------------------------------------------------------------------------*/
+
+const POSITION_NAME = 'Tooltip.Position';
+const POSITION_DEFAULT_TAG = 'div';
+
+type TooltipPositionDOMProps = React.ComponentPropsWithoutRef<typeof POSITION_DEFAULT_TAG>;
+type TooltipPositionOwnProps = {
+  /**
+   * Whether the Tooltip should render in a Portal
+   * (default: `true`)
+   */
+  shouldPortal?: boolean;
+};
+type TooltipPositionProps = Optional<PopperProps, 'anchorRef'> &
+  TooltipPositionDOMProps &
+  TooltipPositionOwnProps;
+
+const TooltipPosition = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPositionProps>(
+  (props, forwardedRef) => {
+    const context = useTooltipContext(POSITION_NAME);
+    return context.isOpen ? <TooltipPositionImpl ref={forwardedRef} {...props} /> : null;
+  }
+);
+
+const TooltipPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPositionProps>(
+  (props, forwardedRef) => {
+    const { children, anchorRef, shouldPortal = true, ...popperProps } = props;
+    const context = useTooltipContext(POSITION_NAME);
+    const PortalWrapper = shouldPortal ? Portal : React.Fragment;
+
+    return (
+      <PortalWrapper>
+        <CheckTriggerMoved />
+        <Popper
+          {...interopDataAttrObj('position')}
+          {...popperProps}
+          ref={forwardedRef}
+          anchorRef={anchorRef || context.triggerRef}
+        >
+          {children}
+        </Popper>
+      </PortalWrapper>
+    );
+  }
+);
+
+function CheckTriggerMoved() {
+  const { triggerRef, id } = useTooltipContext('CheckTriggerMoved');
+
+  const triggerRect = useRect(triggerRef);
+  const triggerLeft = triggerRect?.left;
+  const previousTriggerLeft = usePrevious(triggerLeft);
+  const triggerTop = triggerRect?.top;
+  const previousTriggerTop = usePrevious(triggerTop);
+
+  React.useEffect(() => {
+    // checking if the user has scrolled…
+    const hasTriggerMoved =
+      (previousTriggerLeft !== undefined && previousTriggerLeft !== triggerLeft) ||
+      (previousTriggerTop !== undefined && previousTriggerTop !== triggerTop);
+
+    if (hasTriggerMoved) {
+      stateMachine.transition('triggerMoved', { id });
+    }
+  }, [id, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
+
+  return null;
+}
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipContent
@@ -296,143 +249,81 @@ const TooltipPopover = forwardRef<typeof POPOVER_DEFAULT_TAG, TooltipPopoverProp
 const CONTENT_NAME = 'Tooltip.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
-type TooltipContentDOMProps = React.ComponentPropsWithRef<typeof CONTENT_DEFAULT_TAG>;
+type TooltipContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
 type TooltipContentOwnProps = {
-  children?(props: { label: string }): React.ReactNode;
+  /**
+   * A more descriptive label for accessibility purpose
+   */
+  'aria-label'?: string;
 };
 type TooltipContentProps = TooltipContentDOMProps & TooltipContentOwnProps;
 
 const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
-  function TooltipContent(props, forwardedRef) {
-    const { as: Comp = CONTENT_DEFAULT_TAG, children, ...otherProps } = props;
-    const { label } = useTooltipContext(CONTENT_NAME);
+  (props, forwardedRef) => {
+    const { children, 'aria-label': ariaLabel, ...contentProps } = props;
+    const context = useTooltipContext(CONTENT_NAME);
+
     return (
-      <Comp ref={forwardedRef} {...interopDataAttrObj('content')} {...otherProps}>
-        {isFunction(children) ? children({ label }) : label}
-      </Comp>
+      <Popper.Content {...interopDataAttrObj('content')} {...contentProps} ref={forwardedRef}>
+        {children}
+        <VisuallyHidden id={context.id} role="tooltip" style={visuallyHiddenStyles.root}>
+          {ariaLabel || children}
+        </VisuallyHidden>
+      </Popper.Content>
     );
   }
 );
-
-TooltipContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipArrow
  * -----------------------------------------------------------------------------------------------*/
 
 const ARROW_NAME = 'Tooltip.Arrow';
-const ARROW_DEFAULT_TAG = 'span';
+const ARROW_DEFAULT_TAG = 'svg';
 
 type TooltipArrowOwnProps = {};
-type TooltipArrowProps = PopoverArrowProps & TooltipArrowOwnProps;
+type TooltipArrowProps = PopperArrowProps & TooltipArrowOwnProps;
 
 const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(function TooltipArrow(
   props,
   forwardedRef
 ) {
-  let { as = ARROW_DEFAULT_TAG, ...otherProps } = props;
-  return (
-    <Popover.Arrow as={as} ref={forwardedRef} {...interopDataAttrObj('arrow')} {...otherProps} />
-  );
+  return <Popper.Arrow {...interopDataAttrObj('arrow')} {...props} ref={forwardedRef} />;
 });
-
-/* -------------------------------------------------------------------------------------------------
- * Composed Tooltip
- * -----------------------------------------------------------------------------------------------*/
-const TOOLTIP_NAME = 'Tooltip';
-
-type TooltipDOMProps = TooltipContentDOMProps;
-type TooltipOwnProps = TooltipRootOwnProps;
-type TooltipProps = TooltipDOMProps & TooltipOwnProps;
-
-const Tooltip = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipProps, TooltipStaticProps>(
-  function Tooltip(props, ref) {
-    let {
-      label,
-      'aria-label': ariaLabel,
-      isOpen,
-      onOpenChange,
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      arrowOffset,
-      collisionTolerance,
-      children,
-      ...contentProps
-    } = props;
-    return (
-      <TooltipRoot
-        label={label}
-        aria-label={ariaLabel}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        side={side}
-        sideOffset={sideOffset}
-        align={align}
-        alignOffset={alignOffset}
-        arrowOffset={arrowOffset}
-        collisionTolerance={collisionTolerance}
-      >
-        <TooltipTarget>{children}</TooltipTarget>
-        <TooltipPopover>
-          <TooltipContent {...contentProps} />
-          <TooltipArrow />
-        </TooltipPopover>
-      </TooltipRoot>
-    );
-  }
-);
 
 /* -----------------------------------------------------------------------------------------------*/
 
-Tooltip.Root = TooltipRoot;
-Tooltip.Target = TooltipTarget;
-Tooltip.Popover = TooltipPopover;
+Tooltip.Trigger = TooltipTrigger;
+Tooltip.Position = TooltipPosition;
 Tooltip.Content = TooltipContent;
 Tooltip.Arrow = TooltipArrow;
 
 Tooltip.displayName = TOOLTIP_NAME;
-Tooltip.Root.displayName = ROOT_NAME;
-Tooltip.Target.displayName = TARGET_NAME;
-Tooltip.Popover.displayName = POPOVER_NAME;
+Tooltip.Trigger.displayName = TRIGGER_NAME;
+Tooltip.Position.displayName = POSITION_NAME;
 Tooltip.Content.displayName = CONTENT_NAME;
 Tooltip.Arrow.displayName = ARROW_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   root: {},
-  target: {},
-  popover: {
-    ...cssReset(POPOVER_DEFAULT_TAG),
-    zIndex: 99999,
+  trigger: {
+    ...cssReset(TRIGGER_DEFAULT_TAG),
+  },
+  position: {
+    ...cssReset(POSITION_DEFAULT_TAG),
+    ...popperStyles.root,
+  },
+  content: {
+    ...cssReset(CONTENT_DEFAULT_TAG),
+    ...popperStyles.content,
+    userSelect: 'none',
     pointerEvents: 'none',
   },
   arrow: {
     ...cssReset(ARROW_DEFAULT_TAG),
-    display: 'inline-block',
-    verticalAlign: 'top',
-  },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-    display: 'inline-flex',
-    alignItems: 'center',
+    ...popperStyles.arrow,
   },
 });
 
+export type { TooltipProps, TooltipTriggerProps, TooltipContentProps, TooltipArrowProps };
 export { Tooltip, styles };
-export type {
-  TooltipProps,
-  TooltipRootProps,
-  TooltipTargetProps,
-  TooltipPopoverProps,
-  TooltipArrowProps,
-  TooltipContentProps,
-};
-
-interface TooltipStaticProps {
-  Root: typeof TooltipRoot;
-  Target: typeof TooltipTarget;
-  Popover: typeof TooltipPopover;
-  Arrow: typeof TooltipArrow;
-  Content: typeof TooltipContent;
-}

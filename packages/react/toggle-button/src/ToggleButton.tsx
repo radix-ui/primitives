@@ -37,7 +37,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
     ...buttonProps
   } = props;
 
-  const [isToggled, setIsToggled] = useControlledState({
+  const [isToggled = false, setIsToggled] = useControlledState({
     prop: isToggledProp,
     onChange: onToggle,
     defaultProp: defaultIsToggled,
@@ -47,7 +47,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
     <Comp
       {...interopDataAttrObj('root')}
       type="button"
-      aria-pressed={Boolean(isToggled)}
+      aria-pressed={isToggled}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, () => setIsToggled(!isToggled))}
       {...buttonProps}
