@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-announce": prerelease
+
+declined:
+  - interop-ui

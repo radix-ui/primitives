@@ -104,10 +104,14 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
   } = props;
 
   const ariaAtomic = ['true', true].includes(regionProps['aria-atomic'] as any);
-  const [ownerDocument, setOwnerDocument] = React.useState(document);
+
+  // The region is appended to the root document node, which is usually the global `document` but in
+  // some contexts may be another node. After the Announce element ref is attached, we set the
+  // ownerDocumentRef to make sure we have the right root node. We should only need to do this once.
+  const ownerDocumentRef = React.useRef(document);
   const setOwnerDocumentFromRef = React.useCallback((node: AnnounceDOMElement) => {
     if (node) {
-      setOwnerDocument(node.ownerDocument);
+      ownerDocumentRef.current = node.ownerDocument;
     }
   }, []);
   const ownRef = React.useRef<AnnounceDOMElement | null>(null);
@@ -121,20 +125,13 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
     : undefined;
 
   const getLiveRegionElement = React.useCallback(() => {
-    let element = ownerDocument.querySelector(
-      buildSelector({ type, role, relevant, id: regionIdentifier })
-    );
-    if (!element) {
-      element = buildLiveRegionElement(ownerDocument, {
-        type,
-        relevant,
-        role,
-        atomic: ariaAtomic || false,
-        id: regionIdentifier,
-      });
-    }
-    return element;
-  }, [ariaAtomic, ownerDocument, relevant, role, type, regionIdentifier]);
+    const ownerDocument = ownerDocumentRef.current;
+    const regionConfig = { type, role, relevant, id: regionIdentifier, atomic: ariaAtomic };
+    const regionSelector = buildSelector(regionConfig);
+    const element = ownerDocument.querySelector(regionSelector);
+
+    return element || buildLiveRegionElement(ownerDocument, regionConfig);
+  }, [ariaAtomic, relevant, role, type, regionIdentifier]);
 
   useLayoutEffect(() => {
     setRegion(getLiveRegionElement() as HTMLElement);
@@ -146,6 +143,7 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
   // our region element to prevent that.
   // https://inclusive-components.design/notifications/#restrictingmessagestocontexts
   React.useEffect(() => {
+    const ownerDocument = ownerDocumentRef.current;
     function updateAttributesOnVisibilityChange() {
       regionElement.setAttribute('role', ownerDocument.hidden ? 'none' : role);
       regionElement.setAttribute('aria-live', ownerDocument.hidden ? 'off' : type);
@@ -175,7 +173,7 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
         ownerDocument.removeEventListener('visibilitychange', updateAttributesOnVisibilityChange);
       }
     };
-  }, [getLiveRegionElement, ownerDocument, role, type]);
+  }, [getLiveRegionElement, role, type]);
 
   return (
     <React.Fragment>
@@ -230,9 +228,10 @@ function buildLiveRegionElement(
   return element;
 }
 
-function buildSelector({ type, relevant, role, id }: LiveRegionOptions) {
+function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) {
   return `[${getInteropAttr(id)}]${[
     ['aria-live', type],
+    ['aria-atomic', atomic],
     ['aria-relevant', relevant],
     ['role', role],
   ]
