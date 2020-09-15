@@ -50,18 +50,6 @@
       "@interop-ui/react-collection": ["./packages/react/collection/src"],
       "@interop-ui/react-debug-context": ["./packages/react/debug-context/src"],
       "@interop-ui/react-dialog": ["./packages/react/dialog/src"],
-<<<<<<< HEAD
-      "@interop-ui/react-divider": ["./packages/react/divider/src"],
-      "@interop-ui/react-flex": ["./packages/react/flex/src"],
-      "@interop-ui/react-form-value": ["./packages/react/form-value/src"],
-      "@interop-ui/react-grid": ["./packages/react/grid/src"],
-      "@interop-ui/react-header": ["./packages/react/header/src"],
-      "@interop-ui/react-image": ["./packages/react/image/src"],
-      "@interop-ui/react-input": ["./packages/react/input/src"],
-      "@interop-ui/react-link": ["./packages/react/link/src"],
-      "@interop-ui/react-live-region": ["./packages/react/live-region/src"],
-=======
->>>>>>> main
       "@interop-ui/react-lock": ["./packages/react/lock/src"],
       "@interop-ui/react-popover": ["./packages/react/popover/src"],
       "@interop-ui/react-popper": ["./packages/react/popper/src"],
