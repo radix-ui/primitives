@@ -8,7 +8,7 @@ import {
   useControlledState,
   useId,
 } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, isFunction } from '@interop-ui/utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { Lock } from '@interop-ui/react-lock';
@@ -17,16 +17,17 @@ import { Portal } from '@interop-ui/react-portal';
 
 import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
 import type { LockProps } from '@interop-ui/react-lock';
+import type { Optional } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
 
 type PopoverContextValue = {
-  targetRef: React.RefObject<HTMLButtonElement>;
+  triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  setIsOpen: (isOpen: boolean | ((prevIsOpen?: boolean) => boolean)) => void;
 };
 
 const [PopoverContext, usePopoverContext] = createContext<PopoverContextValue>(
@@ -41,7 +42,7 @@ const [PopoverContext, usePopoverContext] = createContext<PopoverContextValue>(
 const POPOVER_NAME = 'Popover';
 
 interface PopoverStaticProps {
-  Target: typeof PopoverTarget;
+  Trigger: typeof PopoverTrigger;
   Position: typeof PopoverPosition;
   Content: typeof PopoverContent;
   Close: typeof PopoverClose;
@@ -56,7 +57,7 @@ type PopoverProps = {
 
 const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(props) {
   const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
-  const targetRef = React.useRef<HTMLButtonElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `popover-${useId()}`;
   const [_isOpen, setIsOpen] = useControlledState({
     prop: isOpenProp,
@@ -64,7 +65,7 @@ const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(pr
     onChange: onIsOpenChange,
   });
   const isOpen = Boolean(_isOpen);
-  const context = React.useMemo(() => ({ targetRef, id, isOpen, setIsOpen }), [
+  const context = React.useMemo(() => ({ triggerRef, id, isOpen, setIsOpen }), [
     id,
     isOpen,
     setIsOpen,
@@ -74,32 +75,34 @@ const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(pr
 };
 
 /* -------------------------------------------------------------------------------------------------
- * PopoverTarget
+ * PopoverTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const TARGET_NAME = 'Popover.Target';
-const TARGET_DEFAULT_TAG = 'button';
+const TRIGGER_NAME = 'Popover.Trigger';
+const TRIGGER_DEFAULT_TAG = 'button';
 
-type PopoverTargetDOMProps = React.ComponentPropsWithoutRef<typeof TARGET_DEFAULT_TAG>;
-type PopoverTargetOwnProps = {};
-type PopoverTargetProps = PopoverTargetOwnProps & PopoverTargetDOMProps;
+type PopoverTriggerDOMProps = React.ComponentPropsWithoutRef<typeof TRIGGER_DEFAULT_TAG>;
+type PopoverTriggerOwnProps = {};
+type PopoverTriggerProps = PopoverTriggerOwnProps & PopoverTriggerDOMProps;
 
-const PopoverTarget = forwardRef<typeof TARGET_DEFAULT_TAG, PopoverTargetProps>(
+const PopoverTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, PopoverTriggerProps>(
   (props, forwardedRef) => {
-    const { as: Comp = TARGET_DEFAULT_TAG, onClick, ...targetProps } = props;
-    const context = usePopoverContext(TARGET_NAME);
-    const composedTargetRef = useComposedRefs(forwardedRef, context.targetRef);
+    const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
+    const context = usePopoverContext(TRIGGER_NAME);
+    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
     return (
       <Comp
-        {...interopDataAttrObj('target')}
-        ref={composedTargetRef}
-        type={Comp === TARGET_DEFAULT_TAG ? 'button' : undefined}
+        {...interopDataAttrObj('trigger')}
+        ref={composedTriggerRef}
+        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
         aria-haspopup="dialog"
         aria-expanded={context.isOpen}
         aria-controls={context.id}
-        onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
-        {...targetProps}
+        onClick={composeEventHandlers(onClick, () =>
+          context.setIsOpen((prevIsOpen) => !prevIsOpen)
+        )}
+        {...triggerProps}
       />
     );
   }
@@ -158,7 +161,7 @@ type PopoverPositionOwnProps = {
    */
   shouldPortal?: boolean;
 };
-type PopoverPositionProps = Omit<PopperProps, 'anchorRef'> &
+type PopoverPositionProps = Optional<PopperProps, 'anchorRef'> &
   PopoverPositionDOMProps &
   PopoverPositionOwnProps;
 
@@ -173,6 +176,7 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
   function PopoverPositionImpl(props, forwardedRef) {
     const {
       children,
+      anchorRef,
       refToFocusOnOpen,
       refToFocusOnClose,
       shouldCloseOnEscape = true,
@@ -195,14 +199,21 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
           <Lock
             onDeactivate={() => context.setIsOpen(false)}
             refToFocusOnActivation={refToFocusOnOpen}
-            refToFocusOnDeactivation={refToFocusOnClose ?? context.targetRef}
+            refToFocusOnDeactivation={refToFocusOnClose ?? context.triggerRef}
             shouldDeactivateOnEscape={shouldCloseOnEscape}
-            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
+            shouldDeactivateOnOutsideClick={(event) => {
+              if (event.target === context.triggerRef.current) {
+                return false;
+              }
+              if (isFunction(shouldCloseOnOutsideClick)) {
+                return shouldCloseOnOutsideClick(event);
+              } else return shouldCloseOnOutsideClick;
+            }}
             shouldPreventOutsideClick={shouldPreventOutsideClick}
           >
             <Popper
               {...interopDataAttrObj('position')}
-              anchorRef={context.targetRef}
+              anchorRef={anchorRef || context.triggerRef}
               ref={forwardedRef}
               role="dialog"
               // I believe this depends on whether we trap focus or not (always for now)
@@ -283,14 +294,14 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
 
 /* -----------------------------------------------------------------------------------------------*/
 
-Popover.Target = PopoverTarget;
+Popover.Trigger = PopoverTrigger;
 Popover.Position = PopoverPosition;
 Popover.Content = PopoverContent;
 Popover.Close = PopoverClose;
 Popover.Arrow = PopoverArrow;
 
 Popover.displayName = POPOVER_NAME;
-Popover.Target.displayName = TARGET_NAME;
+Popover.Trigger.displayName = TRIGGER_NAME;
 Popover.Position.displayName = POSITION_NAME;
 Popover.Content.displayName = CONTENT_NAME;
 Popover.Close.displayName = CLOSE_NAME;
@@ -298,8 +309,8 @@ Popover.Arrow.displayName = ARROW_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
   root: {},
-  target: {
-    ...cssReset(TARGET_DEFAULT_TAG),
+  trigger: {
+    ...cssReset(TRIGGER_DEFAULT_TAG),
   },
   position: {
     ...cssReset(POSITION_DEFAULT_TAG),
@@ -320,7 +331,7 @@ const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
 
 export type {
   PopoverProps,
-  PopoverTargetProps,
+  PopoverTriggerProps,
   PopoverPositionProps,
   PopoverContentProps,
   PopoverCloseProps,
