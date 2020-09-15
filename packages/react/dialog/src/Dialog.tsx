@@ -1,114 +1,105 @@
 import * as React from 'react';
-import { Portal } from '@interop-ui/react-portal';
-import { Lock, useLockContext } from '@interop-ui/react-lock';
-import { cssReset } from '@interop-ui/utils';
-import { RemoveScroll } from 'react-remove-scroll';
 import {
-  createContext,
-  createStyleObj,
   forwardRef,
-  useCallbackRef,
+  createStyleObj,
+  createContext,
   useComposedRefs,
+  composeEventHandlers,
+  useControlledState,
+  useId,
 } from '@interop-ui/react-utils';
+import { cssReset } from '@interop-ui/utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
+import { Lock } from '@interop-ui/react-lock';
+import { RemoveScroll } from 'react-remove-scroll';
+import { Portal } from '@interop-ui/react-portal';
+
+import type { LockProps } from '@interop-ui/react-lock';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
-const ROOT_NAME = 'Dialog.Root';
 
 type DialogContextValue = {
-  isOpen: DialogRootProps['isOpen'];
-  onClose: NonNullable<DialogRootProps['onClose']>;
-  refToFocusOnOpen: DialogRootProps['refToFocusOnOpen'];
-  refToFocusOnClose: DialogRootProps['refToFocusOnClose'];
-  shouldCloseOnEscape: DialogRootProps['shouldCloseOnEscape'];
-  shouldCloseOnOutsideClick: DialogRootProps['shouldCloseOnOutsideClick'];
+  triggerRef: React.RefObject<HTMLButtonElement>;
+  id: string;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 };
 
 const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
   'DialogContext',
-  ROOT_NAME
+  'Dialog'
 );
 
 /* -------------------------------------------------------------------------------------------------
- * DialogRoot
+ * Dialog
  * -----------------------------------------------------------------------------------------------*/
 
-type DialogRootProps = {
-  /** whether the Dialog is currently opened or not */
-  isOpen: boolean;
+const DIALOG_NAME = 'Dialog';
 
-  /** A function called when the Dialog is closed from the inside (escape / outslide click) */
-  onClose?(): void;
+interface DialogStaticProps {
+  Trigger: typeof DialogTrigger;
+  Overlay: typeof DialogOverlay;
+  Content: typeof DialogContent;
+  Close: typeof DialogClose;
+}
 
-  /**
-   * A ref to an element to focus on inside the Dialog after it is opened.
-   * (default: first focusable element inside the Dialog)
-   * (fallback: first focusable element inside the Dialog, then the Dialog's content container)
-   */
-  refToFocusOnOpen?: React.RefObject<HTMLElement | null | undefined>;
-
-  /**
-   * A ref to an element to focus on outside the Dialog after it is closed.
-   * (default: last focused element before the Dialog was opened)
-   * (fallback: none)
-   */
-  refToFocusOnClose?: React.RefObject<HTMLElement | null | undefined>;
-
-  /**
-   * Whether pressing the `Escape` key should close the Dialog
-   * (default: `true`)
-   */
-  shouldCloseOnEscape?: boolean;
-
-  /**
-   * Whether clicking outside the Dialog should close it
-   * (default: `true`)
-   */
-  shouldCloseOnOutsideClick?: boolean | ((event: MouseEvent | TouchEvent) => boolean);
+type DialogProps = {
+  isOpen?: boolean;
+  defaultIsOpen?: boolean;
+  onIsOpenChange?: (isOpen: boolean) => void;
 };
 
-const DialogRoot: React.FC<DialogRootProps> = (props) => {
-  const {
-    children,
-    isOpen,
-    onClose: onCloseProp,
-    refToFocusOnClose,
-    refToFocusOnOpen,
-    shouldCloseOnEscape,
-    shouldCloseOnOutsideClick,
-  } = props;
-
-  const onClose: () => void = useCallbackRef(() => {
-    onCloseProp && onCloseProp();
+const Dialog: React.FC<DialogProps> & DialogStaticProps = function Dialog(props) {
+  const { children, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const id = `dialog-${useId()}`;
+  const [isOpen = false, setIsOpen] = useControlledState({
+    prop: isOpenProp,
+    defaultProp: defaultIsOpen,
+    onChange: onIsOpenChange,
   });
+  const context = React.useMemo(() => ({ triggerRef, id, isOpen, setIsOpen }), [
+    id,
+    isOpen,
+    setIsOpen,
+  ]);
 
-  const ctx = React.useMemo(
-    () => ({
-      isOpen,
-      onClose,
-      refToFocusOnClose,
-      refToFocusOnOpen,
-      shouldCloseOnEscape,
-      shouldCloseOnOutsideClick,
-    }),
-    [
-      isOpen,
-      onClose,
-      refToFocusOnClose,
-      refToFocusOnOpen,
-      shouldCloseOnEscape,
-      shouldCloseOnOutsideClick,
-    ]
-  );
-
-  return (
-    <DialogContext.Provider value={ctx}>
-      <Portal {...interopDataAttrObj('root')}>{children}</Portal>
-    </DialogContext.Provider>
-  );
+  return <DialogContext.Provider value={context}>{children}</DialogContext.Provider>;
 };
+
+/* -------------------------------------------------------------------------------------------------
+ * DialogTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const TRIGGER_NAME = 'Dialog.Trigger';
+const TRIGGER_DEFAULT_TAG = 'button';
+
+type DialogTriggerDOMProps = React.ComponentPropsWithoutRef<typeof TRIGGER_DEFAULT_TAG>;
+type DialogTriggerOwnProps = {};
+type DialogTriggerProps = DialogTriggerOwnProps & DialogTriggerDOMProps;
+
+const DialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, DialogTriggerProps>(
+  (props, forwardedRef) => {
+    const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
+    const context = useDialogContext(TRIGGER_NAME);
+    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
+
+    return (
+      <Comp
+        {...interopDataAttrObj('trigger')}
+        ref={composedTriggerRef}
+        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
+        aria-haspopup="dialog"
+        aria-expanded={context.isOpen}
+        aria-controls={context.id}
+        onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
+        {...triggerProps}
+      />
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * DialogOverlay
@@ -123,61 +114,22 @@ type DialogOverlayProps = DialogOverlayDOMProps & DialogOverlayOwnProps;
 
 const DialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayProps>(
   function DialogOverlay(props, forwardedRef) {
-    let debugContext = useDebugContext();
-    let { as: Comp = OVERLAY_DEFAULT_TAG, style, ...overlayProps } = props;
-    return (
-      <Comp
-        {...interopDataAttrObj('overlay')}
-        ref={forwardedRef}
-        style={{ pointerEvents: debugContext.disableLock ? 'none' : undefined, ...style }}
-        {...overlayProps}
-      />
-    );
+    const context = useDialogContext(OVERLAY_NAME);
+    return context.isOpen ? <DialogOverlayImpl ref={forwardedRef} {...props} /> : null;
   }
 );
 
-/* -------------------------------------------------------------------------------------------------
- * DialogInner
- * -----------------------------------------------------------------------------------------------*/
-const INNER_NAME = 'Dialog.Inner';
-const INNER_DEFAULT_TAG = 'div';
+const DialogOverlayImpl = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayProps>(
+  function DialogOverlayImpl(props, forwardedRef) {
+    const { as: Comp = OVERLAY_DEFAULT_TAG, ...overlayProps } = props;
 
-type DialogInnerDOMProps = React.ComponentPropsWithoutRef<typeof INNER_DEFAULT_TAG>;
-type DialogInnerOwnProps = {};
-type DialogInnerProps = DialogInnerDOMProps & DialogInnerOwnProps;
-
-const DialogInner = forwardRef<typeof INNER_DEFAULT_TAG, DialogInnerProps>(function DialogInner(
-  props,
-  forwardedRef
-) {
-  let { as: Comp = INNER_DEFAULT_TAG, children, ...innerProps } = props;
-  const debugContext = useDebugContext();
-  let {
-    isOpen,
-    onClose,
-    refToFocusOnOpen,
-    refToFocusOnClose,
-    shouldCloseOnEscape,
-    shouldCloseOnOutsideClick,
-  } = useDialogContext(INNER_NAME);
-  return (
-    <Comp {...interopDataAttrObj('inner')} ref={forwardedRef} {...innerProps}>
-      <RemoveScroll>
-        <Lock
-          isActive={debugContext.disableLock ? false : isOpen}
-          onDeactivate={onClose}
-          refToFocusOnActivation={refToFocusOnOpen}
-          refToFocusOnDeactivation={refToFocusOnClose}
-          shouldDeactivateOnEscape={shouldCloseOnEscape}
-          shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
-          shouldBlockOutsideClick
-        >
-          {children}
-        </Lock>
-      </RemoveScroll>
-    </Comp>
-  );
-});
+    return (
+      <Portal>
+        <Comp {...interopDataAttrObj('overlay')} ref={forwardedRef} {...overlayProps} />
+      </Portal>
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * DialogContent
@@ -187,99 +139,130 @@ const CONTENT_NAME = 'Dialog.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
 type DialogContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type DialogContentOwnProps = {};
+type DialogContentOwnProps = {
+  /**
+   * A ref to an element to focus on inside the Dialog after it is opened.
+   * (default: first focusable element inside the Dialog)
+   * (fallback: first focusable element inside the Dialog, then the Dialog's content container)
+   */
+  refToFocusOnOpen?: LockProps['refToFocusOnActivation'];
+
+  /**
+   * A ref to an element to focus on outside the Dialog after it is closed.
+   * (default: last focused element before the Dialog was opened)
+   * (fallback: none)
+   */
+  refToFocusOnClose?: LockProps['refToFocusOnDeactivation'];
+
+  /**
+   * Whether pressing the `Escape` key should close the Dialog
+   * (default: `true`)
+   */
+  shouldCloseOnEscape?: LockProps['shouldDeactivateOnEscape'];
+
+  /**
+   * Whether clicking outside the Dialog should close it
+   * (default: `true`)
+   */
+  shouldCloseOnOutsideClick?: LockProps['shouldDeactivateOnOutsideClick'];
+};
 type DialogContentProps = DialogContentDOMProps & DialogContentOwnProps;
 
 const DialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentProps>(
   function DialogContent(props, forwardedRef) {
-    let { as: Comp = CONTENT_DEFAULT_TAG, children, ...contentProps } = props;
-    let { lockContainerRef } = useLockContext();
+    const context = useDialogContext(CONTENT_NAME);
+    return context.isOpen ? <DialogContentImpl ref={forwardedRef} {...props} /> : null;
+  }
+);
+
+const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentProps>(
+  function DialogContentImpl(props, forwardedRef) {
+    const {
+      as: Comp = CONTENT_DEFAULT_TAG,
+      refToFocusOnOpen,
+      refToFocusOnClose,
+      shouldCloseOnEscape = true,
+      shouldCloseOnOutsideClick = true,
+      ...contentProps
+    } = props;
+    const context = useDialogContext(CONTENT_NAME);
+    const debugContext = useDebugContext();
+    const ScrollLockWrapper = !debugContext.disableLock ? RemoveScroll : React.Fragment;
+
     return (
-      <Comp
-        {...interopDataAttrObj('content')}
-        ref={useComposedRefs(forwardedRef, lockContainerRef)}
-        role="dialog"
-        aria-modal
-        {...contentProps}
-      >
-        {children}
-      </Comp>
+      <Portal>
+        <ScrollLockWrapper>
+          <Lock
+            onDeactivate={() => context.setIsOpen(false)}
+            refToFocusOnActivation={refToFocusOnOpen}
+            refToFocusOnDeactivation={refToFocusOnClose ?? context.triggerRef}
+            shouldDeactivateOnEscape={shouldCloseOnEscape}
+            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
+            shouldPreventOutsideClick
+          >
+            <Comp
+              {...interopDataAttrObj('content')}
+              ref={forwardedRef}
+              role="dialog"
+              aria-modal
+              {...contentProps}
+              id={context.id}
+            />
+          </Lock>
+        </ScrollLockWrapper>
+      </Portal>
     );
   }
 );
 
 /* -------------------------------------------------------------------------------------------------
- * Composed Dialog
+ * DialogClose
  * -----------------------------------------------------------------------------------------------*/
-const DIALOG_NAME = 'Dialog';
 
-type DialogDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type DialogOwnProps = DialogRootProps;
-type DialogProps = DialogDOMProps & DialogOwnProps;
+const CLOSE_NAME = 'Dialog.Close';
+const CLOSE_DEFAULT_TAG = 'button';
 
-const Dialog = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogProps, DialogStaticProps>(
-  function Dialog(props, forwardedRef) {
-    let {
-      isOpen,
-      onClose,
-      refToFocusOnOpen,
-      refToFocusOnClose,
-      shouldCloseOnEscape,
-      shouldCloseOnOutsideClick,
-      children,
-      ...contentProps
-    } = props;
+type DialogCloseDOMProps = React.ComponentPropsWithoutRef<typeof CLOSE_DEFAULT_TAG>;
+type DialogCloseOwnProps = {};
+type DialogCloseProps = DialogCloseOwnProps & DialogCloseDOMProps;
+
+const DialogClose = forwardRef<typeof CLOSE_DEFAULT_TAG, DialogCloseProps>(
+  (props, forwardedRef) => {
+    const { as: Comp = CLOSE_DEFAULT_TAG, onClick, ...closeProps } = props;
+    const context = useDialogContext(CLOSE_NAME);
+
     return (
-      <DialogRoot
-        isOpen={isOpen}
-        onClose={onClose}
-        refToFocusOnOpen={refToFocusOnOpen}
-        refToFocusOnClose={refToFocusOnClose}
-        shouldCloseOnEscape={shouldCloseOnEscape}
-        shouldCloseOnOutsideClick={shouldCloseOnOutsideClick}
-      >
-        <DialogOverlay>
-          <DialogInner>
-            <DialogContent ref={forwardedRef} {...contentProps}>
-              {children}
-            </DialogContent>
-          </DialogInner>
-        </DialogOverlay>
-      </DialogRoot>
+      <Comp
+        {...interopDataAttrObj('close')}
+        ref={forwardedRef}
+        type={Comp === CLOSE_DEFAULT_TAG ? 'button' : undefined}
+        {...closeProps}
+        onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
+      />
     );
   }
 );
 
-Dialog.Root = DialogRoot;
+/* -----------------------------------------------------------------------------------------------*/
+
+Dialog.Trigger = DialogTrigger;
 Dialog.Overlay = DialogOverlay;
-Dialog.Inner = DialogInner;
 Dialog.Content = DialogContent;
+Dialog.Close = DialogClose;
 
 Dialog.displayName = DIALOG_NAME;
-Dialog.Root.displayName = ROOT_NAME;
+Dialog.Trigger.displayName = TRIGGER_NAME;
 Dialog.Overlay.displayName = OVERLAY_NAME;
-Dialog.Inner.displayName = INNER_NAME;
 Dialog.Content.displayName = CONTENT_NAME;
-
-interface DialogStaticProps {
-  Root: typeof DialogRoot;
-  Overlay: typeof DialogOverlay;
-  Inner: typeof DialogInner;
-  Content: typeof DialogContent;
-}
+Dialog.Close.displayName = CLOSE_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(DIALOG_NAME, {
   root: {},
+  trigger: {
+    ...cssReset(TRIGGER_DEFAULT_TAG),
+  },
   overlay: {
     ...cssReset(OVERLAY_DEFAULT_TAG),
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-  },
-  inner: {
-    ...cssReset(INNER_DEFAULT_TAG),
     position: 'fixed',
     top: 0,
     right: 0,
@@ -289,15 +272,20 @@ const [styles, interopDataAttrObj] = createStyleObj(DIALOG_NAME, {
   },
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
-    pointerEvents: 'auto',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+  },
+  close: {
+    ...cssReset(CLOSE_DEFAULT_TAG),
   },
 });
 
-export { Dialog, styles };
 export type {
   DialogProps,
-  DialogRootProps,
+  DialogTriggerProps,
   DialogOverlayProps,
   DialogContentProps,
-  DialogInnerProps,
+  DialogCloseProps,
 };
+export { Dialog, styles };

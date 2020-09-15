@@ -47,9 +47,6 @@ const Portal: React.FC<PortalProps> = ({ children, containerRef }) => {
   return null;
 };
 
-export { Portal };
-export type { PortalProps };
-
 function getHostElement() {
   if (typeof document !== 'undefined') {
     return document.createElement('interop-portal');
@@ -58,3 +55,6 @@ function getHostElement() {
   // bail out of ssr
   return null;
 }
+
+export { Portal };
+export type { PortalProps };

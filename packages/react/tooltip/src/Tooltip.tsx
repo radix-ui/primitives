@@ -13,7 +13,7 @@ import {
 } from '@interop-ui/react-utils';
 import { createStateMachine, stateChart } from './machine';
 import { Popover, PopoverProps, PopoverArrowProps } from '@interop-ui/react-popover';
-import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
+import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -112,11 +112,7 @@ const TooltipRoot: React.FC<TooltipRootProps> = function TooltipRoot(props) {
   const isOpen = Boolean(_isOpen);
 
   const targetRef = React.useRef<HTMLElement | SVGElement>(null);
-  const targetRect = useRect({
-    refToObserve: targetRef,
-    isObserving: isOpen,
-    shouldResetWhenNotObserving: true,
-  });
+  const targetRect = useRect(targetRef);
 
   const targetLeft = targetRect?.left;
   const previousTargetLeft = usePrevious(targetLeft);
@@ -285,7 +281,7 @@ const TooltipPopover = forwardRef<typeof POPOVER_DEFAULT_TAG, TooltipPopoverProp
         {...interopDataAttrObj('popover')}
       >
         {children}
-        <VisuallyHidden id={tooltipId} role="tooltip">
+        <VisuallyHidden style={visuallyHiddenStyles.root} id={tooltipId} role="tooltip">
           {ariaLabel}
         </VisuallyHidden>
       </Popover>

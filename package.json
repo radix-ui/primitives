@@ -12,7 +12,7 @@
     "lint": "eslint packages --ext .js,.ts,.tsx",
     "test": "jest",
     "test:ci": "jest --ci",
-    "storybook": "start-storybook -p 9009",
+    "storybook": "start-storybook -p 9009 --ci",
     "build": "yarn workspaces foreach -ptv --exclude interop-ui --exclude @interop-ui/docs run build",
     "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude interop-ui --exclude @interop-ui/docs npm publish --tolerate-republish --access public",
     "clean": "yarn workspaces foreach -pv --exclude interop-ui run clean",

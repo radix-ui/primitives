@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { PossibleRef } from './types';
+
+type PossibleRef<T> = React.Ref<T> | undefined;
 
 /**
  * Set a given ref to a given value

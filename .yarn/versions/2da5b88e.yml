@@ -1,0 +1,9 @@
+releases:
+  "@interop-ui/react-dialog": prerelease
+  "@interop-ui/react-lock": prerelease
+  "@interop-ui/react-popover": prerelease
+  "@interop-ui/react-sheet": prerelease
+  "@interop-ui/react-tooltip": prerelease
+
+declined:
+  - interop-ui
