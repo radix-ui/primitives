@@ -272,7 +272,9 @@ const [styles, interopDataAttrObj] = createStyleObj(DIALOG_NAME, {
   },
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
-    position: 'relative',
+    position: 'fixed',
+    top: 0,
+    left: 0,
   },
   close: {
     ...cssReset(CLOSE_DEFAULT_TAG),

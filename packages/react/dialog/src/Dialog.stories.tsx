@@ -22,7 +22,6 @@ export const InlineStyle = () => (
     <Dialog.Content
       style={{
         ...styles.content,
-        position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
@@ -123,7 +122,6 @@ const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(function Co
       ref={forwardedRef}
       style={{
         ...styles.content,
-        position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
