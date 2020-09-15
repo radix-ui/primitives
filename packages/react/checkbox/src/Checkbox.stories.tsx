@@ -1,32 +1,21 @@
 import * as React from 'react';
-import { Checkbox as CheckboxPrimitive, styles } from './Checkbox';
+import { Checkbox, styles } from './Checkbox';
 
 export default { title: 'Checkbox' };
 
 export const Basic = () => (
-  <Checkbox>
-    <CheckboxInput />
-    <CheckboxBox>
-      <CheckboxIndicator />
-    </CheckboxBox>
+  <Checkbox as={Container}>
+    <Checkbox.Input as={Input}>
+      <Checkbox.Indicator as={Indicator} />
+    </Checkbox.Input>
   </Checkbox>
 );
 
 export const InlineStyle = () => (
-  <Checkbox style={{ width: 30, height: 30 }}>
-    <CheckboxInput />
-    <CheckboxBox style={{ border: '1px solid gainsboro' }}>
-      <CheckboxIndicator
-        style={{
-          width: 22,
-          height: 22,
-          backgroundColor: 'dodgerblue',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      />
-    </CheckboxBox>
+  <Checkbox as={Container}>
+    <Checkbox.Input as={StyledInput}>
+      <Checkbox.Indicator as={StyledIndicator} />
+    </Checkbox.Input>
   </Checkbox>
 );
 
@@ -34,40 +23,45 @@ export const Controlled = () => {
   const [isChecked, setIsChecked] = React.useState(true);
 
   return (
-    <Checkbox style={{ width: 30, height: 30 }}>
-      <CheckboxInput checked={isChecked} onChange={(event) => setIsChecked(event.target.checked)} />
-      <CheckboxBox style={{ border: '1px solid gainsboro' }}>
-        <CheckboxIndicator
-          style={{
-            width: 22,
-            height: 22,
-            backgroundColor: 'dodgerblue',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        />
-      </CheckboxBox>
+    <Checkbox as={Container}>
+      <Checkbox.Input
+        as={StyledInput}
+        checked={isChecked}
+        onChange={(event) => setIsChecked(event.target.checked)}
+      >
+        <Checkbox.Indicator as={StyledIndicator} />
+      </Checkbox.Input>
     </Checkbox>
   );
 };
 
-const Checkbox = (props: React.ComponentProps<typeof CheckboxPrimitive>) => (
-  <CheckboxPrimitive {...props} style={{ ...styles.root, ...props.style }} />
-);
-
-const CheckboxInput = (props: React.ComponentProps<typeof CheckboxPrimitive.Input>) => (
-  <CheckboxPrimitive.Input {...props} style={{ ...styles.input, ...props.style }} />
-);
-
-const CheckboxBox = (props: React.ComponentProps<typeof CheckboxPrimitive.Box>) => (
-  <CheckboxPrimitive.Box {...props} style={{ ...styles.box, ...props.style }} />
-);
-
-const CheckboxIndicator = (props: React.ComponentProps<typeof CheckboxPrimitive.Indicator>) => (
-  <CheckboxPrimitive.Indicator {...props} style={{ ...styles.indicator, ...props.style }}>
+const Container = (props: any) => <span {...props} style={{ ...styles.root, ...props.style }} />;
+const Input = (props: any) => <input {...props} style={{ ...styles.input, ...props.style }} />;
+const Indicator = (props: any) => (
+  <span {...props} style={{ ...styles.indicator, ...props.style }}>
     <svg viewBox="0 0 32 32" width="60%" height="60%" fill="none" stroke="white">
       <path d="M2 30 L30 2 M30 30 L2 2" />
     </svg>
-  </CheckboxPrimitive.Indicator>
+  </span>
+);
+
+const StyledInput = (props: any) => (
+  <input
+    {...props}
+    style={{ ...styles.input, border: '1px solid gainsboro', width: 30, height: 30 }}
+  />
+);
+
+const StyledIndicator = (props: any) => (
+  <Indicator
+    {...props}
+    style={{
+      width: 22,
+      height: 22,
+      backgroundColor: 'dodgerblue',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}
+  />
 );
