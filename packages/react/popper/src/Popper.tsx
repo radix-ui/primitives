@@ -157,7 +157,7 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
   React.useEffect(() => setArrowOffset(offset), [setArrowOffset, offset]);
 
   return (
-    <span style={arrowStyles}>
+    <span style={{ ...arrowStyles, pointerEvents: 'none' }}>
       <span
         // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
         // doesn't report size as we'd expect on SVG elements.
@@ -166,6 +166,7 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
         style={{
           display: 'inline-block',
           verticalAlign: 'top',
+          pointerEvents: 'auto',
         }}
       >
         <Comp {...interopDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
