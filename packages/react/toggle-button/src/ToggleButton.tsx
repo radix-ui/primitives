@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, isFunction } from '@interop-ui/utils';
 import {
   forwardRef,
   createStyleObj,
@@ -13,14 +13,15 @@ const DEFAULT_TAG = 'button';
 type ToggleButtonDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type ToggleButtonOwnProps = {
   /** Whether the button is toggled or not, if controlled */
-  isToggled?: boolean;
+  toggled?: boolean;
   /**
    * Whether the button is toggled by default, if uncontrolled
    * (default: false)
    */
-  defaultIsToggled?: boolean;
+  defaultToggled?: boolean;
   /** A function called when the button is toggled */
-  onToggle?(isToggled?: boolean): void;
+  onToggle?(toggled: boolean): void;
+  children: React.ReactNode | ((props: { toggled: boolean }) => React.ReactNode);
 };
 type ToggleButtonProps = ToggleButtonDOMProps & ToggleButtonOwnProps;
 
@@ -30,28 +31,37 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 ) {
   const {
     as: Comp = DEFAULT_TAG,
-    isToggled: isToggledProp,
-    defaultIsToggled = false,
+    toggled: toggledProp,
+    defaultToggled = false,
     onClick,
     onToggle,
+    disabled,
+    children,
     ...buttonProps
   } = props;
 
-  const [isToggled = false, setIsToggled] = useControlledState({
-    prop: isToggledProp,
+  const [toggled = false, setToggled] = useControlledState({
+    prop: toggledProp,
     onChange: onToggle,
-    defaultProp: defaultIsToggled,
+    defaultProp: defaultToggled,
   });
 
   return (
     <Comp
       {...interopDataAttrObj('root')}
       type="button"
-      aria-pressed={isToggled}
+      aria-pressed={toggled}
+      data-state={toggled ? 'on' : 'off'}
       ref={forwardedRef}
-      onClick={composeEventHandlers(onClick, () => setIsToggled(!isToggled))}
+      onClick={composeEventHandlers(onClick, () => {
+        if (!disabled) {
+          setToggled(!toggled);
+        }
+      })}
       {...buttonProps}
-    />
+    >
+      {isFunction(children) ? children({ toggled }) : children}
+    </Comp>
   );
 });
 
@@ -60,21 +70,6 @@ ToggleButton.displayName = NAME;
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
     ...cssReset(DEFAULT_TAG),
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexBasis: 0,
-    flexGrow: 1,
-    lineHeight: '1',
-    userSelect: 'none',
-    whiteSpace: 'nowrap',
-    // enable overlapping adjacent buttons via z-index
-    position: 'relative',
-
-    // prevent hover/focus/active styles when disabled
-    '&:disabled': {
-      pointerEvents: 'none',
-    },
   },
 });
 
