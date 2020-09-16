@@ -1,5 +1,0 @@
-releases:
-  "@interop-ui/docs": prerelease
-
-declined:
-  - interop-ui

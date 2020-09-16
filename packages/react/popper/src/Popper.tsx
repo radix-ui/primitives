@@ -10,6 +10,7 @@ import {
 } from '@interop-ui/react-utils';
 import { Side, Align, cssReset } from '@interop-ui/utils';
 import { ArrowProps, Arrow } from '@interop-ui/react-arrow';
+import { useDebugContext } from '@interop-ui/react-debug-context';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -72,6 +73,7 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     const contentSize = useSize(contentRef);
     const arrowRef = React.useRef<HTMLSpanElement>(null);
     const arrowSize = useSize(arrowRef);
+    const debugContext = useDebugContext();
 
     const { popperStyles, arrowStyles } = getPlacementData({
       anchorRect,
@@ -85,7 +87,7 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
       align,
       alignOffset,
       collisionTolerance,
-      shouldAvoidCollisions,
+      shouldAvoidCollisions: shouldAvoidCollisions && !debugContext.disableCollisionChecking,
     });
 
     const context = React.useMemo(

@@ -1,6 +1,6 @@
 {
   "name": "@interop-ui/react-tooltip",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -20,6 +20,7 @@
     "@interop-ui/popper": "workspace:*",
     "@interop-ui/react-arrow": "workspace:*",
     "@interop-ui/react-popover": "workspace:*",
+    "@interop-ui/react-portal": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/react-visually-hidden": "workspace:*",
     "@interop-ui/utils": "workspace:*"
