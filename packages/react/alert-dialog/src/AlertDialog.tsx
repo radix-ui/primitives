@@ -46,9 +46,21 @@ const [AlertDialogContentContext, useAlertDialogContentContext] = createContext<
  * AlertDialog
  * -----------------------------------------------------------------------------------------------*/
 
+interface AlertDialogStaticProps {
+  Trigger: typeof AlertDialogTrigger;
+  Overlay: typeof AlertDialogOverlay;
+  Content: typeof AlertDialogContent;
+  Cancel: typeof AlertDialogCancel;
+  Confirm: typeof AlertDialogConfirm;
+  Title: typeof AlertDialogTitle;
+  Description: typeof AlertDialogDescription;
+}
+
 type AlertDialogProps = DialogProps;
 
-const AlertDialog: React.FC<AlertDialogProps> = (props) => {
+const AlertDialog: React.FC<AlertDialogProps> & AlertDialogStaticProps = function AlertDialog(
+  props
+) {
   const { children, id: idProp, ...dialogProps } = props;
   const generatedId = makeId('alert-dialog', useId());
   const alertDialogId = idProp || generatedId;
@@ -369,24 +381,22 @@ const AlertDialogDescription = forwardRef<
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const AlertDialogPackage = Object.assign(AlertDialog, {
-  Cancel: AlertDialogCancel,
-  Confirm: AlertDialogConfirm,
-  Content: AlertDialogContent,
-  Description: AlertDialogDescription,
-  Overlay: AlertDialogOverlay,
-  Title: AlertDialogTitle,
-  Trigger: AlertDialogTrigger,
-});
+AlertDialog.Cancel = AlertDialogCancel;
+AlertDialog.Confirm = AlertDialogConfirm;
+AlertDialog.Content = AlertDialogContent;
+AlertDialog.Description = AlertDialogDescription;
+AlertDialog.Overlay = AlertDialogOverlay;
+AlertDialog.Title = AlertDialogTitle;
+AlertDialog.Trigger = AlertDialogTrigger;
 
+AlertDialogTitle.displayName = TITLE_NAME;
 AlertDialogCancel.displayName = CANCEL_NAME;
 AlertDialogConfirm.displayName = CONFIRM_NAME;
 AlertDialogContent.displayName = CONTENT_NAME;
 AlertDialogDescription.displayName = DESCRIPTION_NAME;
 AlertDialogOverlay.displayName = OVERLAY_NAME;
-AlertDialogTitle.displayName = TITLE_NAME;
 AlertDialogTrigger.displayName = TRIGGER_NAME;
-AlertDialogPackage.displayName = ROOT_NAME;
+AlertDialog.displayName = ROOT_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   root: dialogStyles.root,
@@ -418,7 +428,7 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   },
 });
 
-export { AlertDialogPackage as AlertDialog, styles };
+export { AlertDialog, styles };
 export type {
   AlertDialogProps,
   AlertDialogOverlayProps,
