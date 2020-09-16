@@ -15,6 +15,7 @@ import {
   forwardRef,
   useComposedRefs,
   useId,
+  useDocumentRef,
 } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -30,6 +31,7 @@ type AlertDialogContextValue = {
 
 type AlertDialogContentContextValue = {
   leastDestructiveActionRef: React.MutableRefObject<HTMLElement | null | undefined>;
+  ownerDocumentRef: React.MutableRefObject<Document>;
 };
 
 const [AlertDialogContext, useAlertDialogContext] = createContext<AlertDialogContextValue>(
@@ -203,7 +205,6 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       'aria-describedby': ariaDescribedBy,
-      children,
       leastDestructiveActionRef: leastDestructiveActionRefProp,
       ...dialogContentProps
     } = props;
@@ -211,31 +212,15 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
     const cancelRef = React.useRef<HTMLElementTagNameMap[typeof CANCEL_DEFAULT_TAG] | null>(null);
     const leastDestructiveActionRef = leastDestructiveActionRefProp || cancelRef;
 
-    if (process.env.NODE_ENV === 'development') {
-      // Hook is called conditionally but safely, as it's consistent in a given environment
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      React.useEffect(() => {
-        const hasLabel = Boolean(
-          ariaLabel ||
-            (ariaLabelledBy && document.getElementById(ariaLabelledBy)) ||
-            (titleId && document.getElementById(titleId))
-        );
-        const hasDescription = Boolean(
-          (ariaDescribedBy && document.getElementById(ariaDescribedBy)) ||
-            (descriptionId && document.getElementById(descriptionId))
-        );
-
-        // TODO: Improve warnings and add link to docs when available
-        warning(hasLabel, `You must label your AlertDialog.`);
-        warning(hasDescription, `You must use a description for your AlertDialog.`);
-      }, [titleId, ariaLabel, ariaDescribedBy, descriptionId, ariaLabelledBy]);
-    }
+    const ownRef = React.useRef<HTMLElementTagNameMap[typeof CONTENT_DEFAULT_TAG] | null>(null);
+    const ownerDocumentRef = useDocumentRef(ownRef);
+    const ref = useComposedRefs(forwardedRef, ownRef);
 
     return (
       <Dialog.Content
         {...interopDataAttrObj('content')}
         as={as}
-        ref={forwardedRef}
+        ref={ref}
         role="alertdialog"
         aria-describedby={ariaDescribedBy || descriptionId}
         // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
@@ -250,15 +235,83 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
           value={React.useMemo(() => {
             return {
               leastDestructiveActionRef,
+              ownerDocumentRef,
             };
-          }, [leastDestructiveActionRef])}
+          }, [leastDestructiveActionRef, ownerDocumentRef])}
         >
-          {children}
+          <AlertDialogContentInner {...props} />
         </AlertDialogContentContext.Provider>
       </Dialog.Content>
     );
   }
 );
+
+// We need some effects to fire when Dialog.Content is mounted. Dialog.Content returns `null` when
+// the Dialog is closed, meaning that if we put these effects up in AlertDialog.Content these
+// effects only fire on its initial mount, NOT when the underlying Dialog.Content mounts. We stick
+// this inner component inside Dialog.Content to make sure the effects fire as expected.
+const AlertDialogContentInner: React.FC<AlertDialogContentProps> = (props) => {
+  const {
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    'aria-describedby': ariaDescribedBy,
+    children,
+  } = props;
+  const { ownerDocumentRef } = useAlertDialogContentContext(CANCEL_NAME);
+  const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
+
+  if (process.env.NODE_ENV === 'development') {
+    // Hook is called conditionally but safely, as it's consistent in a given environment
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    React.useEffect(() => {
+      const ownerDocument = ownerDocumentRef.current;
+
+      // We need to query the DOM to make sure our labeling elements exist. Rendering of inner
+      // elements seems to be delayed by `requestAnimationFrame` in the `Lock` component, so this
+      // timeout is only meant to deal with that. Ideally we could revisit this and solve the race
+      // condition. In the event that consumers need to query the inner DOM nodes here they will run
+      // into these same challenges.
+      const timeout = window.setTimeout(() => {
+        const hasLabel = Boolean(
+          ariaLabel ||
+            (ariaLabelledBy && ownerDocument.getElementById(ariaLabelledBy)) ||
+            (titleId && ownerDocument.getElementById(titleId))
+        );
+        const hasDescription = Boolean(
+          (ariaDescribedBy && ownerDocument.getElementById(ariaDescribedBy)) ||
+            (descriptionId && ownerDocument.getElementById(descriptionId))
+        );
+
+        // TODO: Add link to docs when available
+        warning(
+          hasLabel,
+          multiline([
+            `${CONTENT_NAME} requires a label for the component to be accessible for screen reader users.`,
+            `You can label the ${CONTENT_NAME} by passing a ${TITLE_NAME} component as a child, which also benefits sighted users by adding visible context to the dialog.`,
+            `Alternatively, you can use your own component as a title by assigning it an \`id\` and passing the same value to the \`aria-labelledby\` prop in ${CONTENT_NAME}. If the label is confusing or duplicative for sighted users, you can also pass a label directly by using the \`aria-label\` prop.`,
+            `For more information, see https://LINK-TO-DOCS.com`,
+          ])
+        );
+
+        warning(
+          hasDescription,
+          multiline([
+            `${CONTENT_NAME} requires a description for the component to be accessible for screen reader users.`,
+            `You can add a description to the ${CONTENT_NAME} by passing a ${DESCRIPTION_NAME} component as a child, which also benefits sighted users by adding visible context to the dialog.`,
+            `Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in ${CONTENT_NAME}. If the description is confusing or duplicative for sighted users, you can use the \`interop-ui/react-visually-hidden\` component as a wrapper around your description component.`,
+            `For more information, see https://LINK-TO-DOCS.com`,
+          ])
+        );
+      }, 0);
+
+      return function () {
+        window.clearTimeout(timeout);
+      };
+    }, [titleId, ariaLabel, ariaDescribedBy, descriptionId, ariaLabelledBy, ownerDocumentRef]);
+  }
+
+  return children as React.ReactElement<any, any>;
+};
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogTitle
@@ -377,3 +430,7 @@ export type {
   AlertDialogTitleProps,
   AlertDialogDescriptionProps,
 };
+
+function multiline(val: string[] | string, doubleSpace?: boolean) {
+  return Array.isArray(val) ? val.join(doubleSpace ? '\n\n' : '\n') : val;
+}
