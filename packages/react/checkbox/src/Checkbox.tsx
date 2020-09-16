@@ -18,8 +18,12 @@ const CHECKBOX_DEFAULT_TAG = 'input';
 
 type CheckedState = boolean | 'mixed';
 type CheckboxDOMProps = React.ComponentPropsWithoutRef<typeof CHECKBOX_DEFAULT_TAG>;
-type CheckboxOwnProps = { isChecked?: CheckedState; defaultIsChecked?: CheckedState };
-type CheckboxProps = CheckboxOwnProps & Omit<CheckboxDOMProps, 'checked' | 'defaultChecked'>;
+type CheckboxOwnProps = {
+  checked?: CheckedState;
+  defaultChecked?: CheckedState;
+  onCheckedChange?: CheckboxDOMProps['onChange'];
+};
+type CheckboxProps = CheckboxOwnProps & Omit<CheckboxDOMProps, keyof CheckboxOwnProps | 'onChange'>;
 
 const [CheckboxContext, useCheckboxContext] = createContext<CheckedState>(
   CHECKBOX_NAME + 'Context',
@@ -31,20 +35,20 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
     const {
       as: Comp = CHECKBOX_DEFAULT_TAG,
       children,
-      isChecked: isCheckedProp,
-      defaultIsChecked,
-      onChange,
+      checked: checkedProp,
+      defaultChecked,
+      onCheckedChange,
       ...checkboxProps
     } = props;
     const inputRef = React.useRef<HTMLInputElement>(null);
     const ref = useComposedRefs(forwardedRef, inputRef);
-    const [isChecked = false, setIsChecked] = useControlledState({
-      prop: isCheckedProp,
-      defaultProp: defaultIsChecked,
+    const [checked = false, setChecked] = useControlledState({
+      prop: checkedProp,
+      defaultProp: defaultChecked,
     });
 
     React.useEffect(() => {
-      const isIndeterminate = isChecked === 'mixed';
+      const isIndeterminate = checked === 'mixed';
       inputRef.current && (inputRef.current.indeterminate = isIndeterminate);
     });
 
@@ -59,9 +63,11 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           type="checkbox"
           checked={isChecked === 'mixed' || isChecked}
           ref={ref}
-          onChange={composeEventHandlers(onChange, (event) => setIsChecked(event.target.checked))}
+          onChange={composeEventHandlers(onCheckedChange, (event) =>
+            setChecked(event.target.checked)
+          )}
         />
-        <CheckboxContext.Provider value={isChecked}>{children}</CheckboxContext.Provider>
+        <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
       </span>
     );
   }
@@ -80,8 +86,8 @@ type CheckboxIndicatorProps = CheckboxIndicatorDOMProps & CheckboxIndicatorOwnPr
 
 const CheckboxIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, CheckboxIndicatorProps>(
   function CheckboxIndicator(props, forwardedRef) {
-    const isChecked = useCheckboxContext(INDICATOR_NAME);
-    return isChecked ? <CheckboxIndicatorImpl {...props} ref={forwardedRef} /> : null;
+    const checked = useCheckboxContext(INDICATOR_NAME);
+    return checked ? <CheckboxIndicatorImpl {...props} ref={forwardedRef} /> : null;
   }
 );
 

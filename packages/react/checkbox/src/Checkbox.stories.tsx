@@ -25,7 +25,7 @@ export const InlineStyle = () => (
 );
 
 export const Controlled = () => {
-  const [isChecked, setIsChecked] = React.useState(true);
+  const [checked, setChecked] = React.useState(true);
 
   return (
     <>
@@ -36,8 +36,8 @@ export const Controlled = () => {
       <label htmlFor="randBox">This is the label</label>{' '}
       <Checkbox
         as={StyledRoot}
-        isChecked={isChecked}
-        onChange={(event) => setIsChecked(event.target.checked)}
+        checked={checked}
+        onCheckedChange={(event) => setChecked(event.target.checked)}
         id="randBox"
       >
         <Checkbox.Indicator as={StyledIndicator} />
@@ -47,25 +47,23 @@ export const Controlled = () => {
 };
 
 export const Indeterminate = () => {
-  const [isChecked, setIsChecked] = React.useState<boolean | 'mixed'>('mixed');
+  const [checked, setChecked] = React.useState<boolean | 'mixed'>('mixed');
 
   return (
     <>
       <p>
         <Checkbox
           as={StyledRoot}
-          isChecked={isChecked}
-          onChange={(event) => setIsChecked(event.target.checked)}
+          checked={checked}
+          onCheckedChange={(event) => setChecked(event.target.checked)}
         >
-          <Checkbox.Indicator as={StyledIndicator} isIndeterminate={isChecked === 'mixed'} />
+          <Checkbox.Indicator as={StyledIndicator} indeterminate={checked === 'mixed'} />
         </Checkbox>
       </p>
 
       <button
         type="button"
-        onClick={() =>
-          setIsChecked((prevIsChecked) => (prevIsChecked === 'mixed' ? false : 'mixed'))
-        }
+        onClick={() => setChecked((prevIsChecked) => (prevIsChecked === 'mixed' ? false : 'mixed'))}
       >
         Toggle indeterminate
       </button>
@@ -74,16 +72,16 @@ export const Indeterminate = () => {
 };
 
 export const WithinForm = () => {
-  const [isChecked, setIsChecked] = React.useState(false);
+  const [checked, setChecked] = React.useState(false);
 
   return (
     <form
       onChange={(event) => {
         const input = event.target as HTMLInputElement;
-        setIsChecked(input.checked);
+        setChecked(input.checked);
       }}
     >
-      <p>isChecked: {String(isChecked)}</p>
+      <p>checked: {String(checked)}</p>
 
       <Checkbox as={StyledRoot}>
         <Checkbox.Indicator as={StyledIndicator} />
@@ -118,9 +116,9 @@ const Root = (props: any) => {
   );
 };
 
-const Indicator = ({ isIndeterminate, ...props }: any) => (
+const Indicator = ({ indeterminate, ...props }: any) => (
   <span {...props} style={{ ...styles.indicator, ...props.style }}>
-    {isIndeterminate ? (
+    {indeterminate ? (
       <b style={{ paddingBottom: '2px' }}>&mdash;</b>
     ) : (
       <svg viewBox="0 0 32 32" width="60%" height="60%" fill="none" stroke="currentColor">
