@@ -250,19 +250,3 @@ const Content = React.forwardRef<HTMLDivElement, AlertDialogContentProps>(functi
     />
   );
 });
-
-function useUpdateEffect(
-  effect: React.EffectCallback,
-  deps?: React.DependencyList,
-  useEffect = React.useEffect
-) {
-  let mounted = React.useRef(false);
-  useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-      return;
-    }
-    effect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
-}
