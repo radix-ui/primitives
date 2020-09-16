@@ -16,7 +16,7 @@ import {
 const CHECKBOX_NAME = 'Checkbox';
 const CHECKBOX_DEFAULT_TAG = 'input';
 
-type CheckedState = boolean | 'mixed';
+type CheckedState = boolean | 'indeterminate';
 type CheckboxDOMProps = React.ComponentPropsWithoutRef<typeof CHECKBOX_DEFAULT_TAG>;
 type CheckboxOwnProps = {
   checked?: CheckedState;
@@ -48,7 +48,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
     });
 
     React.useEffect(() => {
-      const isIndeterminate = checked === 'mixed';
+      const isIndeterminate = checked === 'indeterminate';
       inputRef.current && (inputRef.current.indeterminate = isIndeterminate);
     });
 
@@ -61,7 +61,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           {...checkboxProps}
           {...interopDataAttrObj('root')}
           type="checkbox"
-          checked={checked === 'mixed' ? false : checked}
+          checked={checked === 'indeterminate' ? false : checked}
           ref={ref}
           onChange={composeEventHandlers(onCheckedChange, (event) =>
             setChecked(event.target.checked)
