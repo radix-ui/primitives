@@ -47,7 +47,7 @@ export const Controlled = () => {
 };
 
 export const Indeterminate = () => {
-  const [checked, setChecked] = React.useState<boolean | 'mixed'>('mixed');
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
 
   return (
     <>
@@ -57,13 +57,17 @@ export const Indeterminate = () => {
           checked={checked}
           onCheckedChange={(event) => setChecked(event.target.checked)}
         >
-          <Checkbox.Indicator as={StyledIndicator} indeterminate={checked === 'mixed'} />
+          <Checkbox.Indicator as={StyledIndicator} indeterminate={checked === 'indeterminate'} />
         </Checkbox>
       </p>
 
       <button
         type="button"
-        onClick={() => setChecked((prevIsChecked) => (prevIsChecked === 'mixed' ? false : 'mixed'))}
+        onClick={() =>
+          setChecked((prevIsChecked) =>
+            prevIsChecked === 'indeterminate' ? false : 'indeterminate'
+          )
+        }
       >
         Toggle indeterminate
       </button>
