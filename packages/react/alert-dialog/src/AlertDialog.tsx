@@ -193,7 +193,10 @@ const AlertDialogConfirm = forwardRef<typeof CONFIRM_DEFAULT_TAG, AlertDialogCan
 const CONTENT_NAME = 'AlertDialog.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
-type AlertDialogContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
+type AlertDialogContentDOMProps = Omit<
+  React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>,
+  'id'
+>;
 type AlertDialogContentOwnProps = {
   /**
    * To prevent accidental destructive behavior if a user reacts too quickly to an alert prompt, an

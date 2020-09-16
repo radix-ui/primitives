@@ -140,7 +140,7 @@ const DialogOverlayImpl = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayPr
 const CONTENT_NAME = 'Dialog.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
-type DialogContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
+type DialogContentDOMProps = Omit<React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>, 'id'>;
 type DialogContentOwnProps = {
   /**
    * A ref to an element to focus on inside the Dialog after it is opened.
