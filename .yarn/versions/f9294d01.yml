@@ -1,6 +1,7 @@
 releases:
   "@interop-ui/react-alert-dialog": prerelease
   "@interop-ui/react-dialog": prerelease
+  "@interop-ui/react-utils": prerelease
 
 declined:
   - interop-ui
