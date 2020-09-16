@@ -1,5 +1,2 @@
-releases:
-  "@interop-ui/react-box": prerelease
-
 declined:
   - interop-ui
