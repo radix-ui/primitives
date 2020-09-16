@@ -87,16 +87,24 @@ export const InlineStyle = () => {
 export const Controlled = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [housePurchased, setHousePurchased] = React.useState(false);
+
   return (
     <div>
       <div>
         <img src="https://i.ibb.co/K54hsKt/house.jpg" alt="a large white house with a red roof" />
       </div>
       <AlertDialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
-        <AlertDialog.Trigger as={Button} disabled={housePurchased}>
-          {housePurchased ? 'You bought the house!' : 'Buy this house'}
+        <AlertDialog.Trigger
+          as={Button}
+          onClick={(e) => {
+            if (housePurchased) {
+              e.preventDefault();
+              setHousePurchased(false);
+            }
+          }}
+        >
+          {housePurchased ? 'You bought the house! Sell it!' : 'Buy this house'}
         </AlertDialog.Trigger>
-        {housePurchased && <Button onClick={() => setHousePurchased(false)}>Sell the house</Button>}
         <AlertDialog.Overlay as={Overlay} />
         <AlertDialog.Content as={Content}>
           <AlertDialog.Title>Are you sure?</AlertDialog.Title>
@@ -117,7 +125,7 @@ export const Controlled = () => {
 export const ManualAccessibility = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [hacked, setHacked] = React.useState(false);
-  const cancelRef = React.useRef<any>();
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
   const labelId = 'label';
   const descId = 'desc';
   return (
@@ -126,8 +134,16 @@ export const ManualAccessibility = () => {
         {hacked ? "Halp! We've been hacked!" : 'Do you want to hack the mainframe?'}
       </h2>
       <AlertDialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
-        <AlertDialog.Trigger as={Button} disabled={hacked}>
-          Hack the mainframe
+        <AlertDialog.Trigger
+          as={Button}
+          onClick={(e) => {
+            if (hacked) {
+              e.preventDefault();
+              setHacked(false);
+            }
+          }}
+        >
+          {hacked ? 'Halp! Fix me!' : 'Hack the mainframe?'}
         </AlertDialog.Trigger>
         <AlertDialog.Overlay as={Overlay} />
         <AlertDialog.Content
@@ -167,7 +183,6 @@ const Button = React.forwardRef<HTMLButtonElement, any>(function Button(props, r
       style={{
         ...styles.trigger,
         appearance: 'none',
-        display: 'inline-block',
         marginRight: 10,
         border: 'none',
         padding: '0.5em 0.8em',
@@ -178,6 +193,8 @@ const Button = React.forwardRef<HTMLButtonElement, any>(function Button(props, r
         background: '#DCDCDC',
         color: '#111',
         fontFamily: 'helvetica, sans-serif',
+        opacity: props.disabled ? 0.5 : 1,
+        display: props.hidden ? 'none' : 'inline-block',
         ...props.style,
       }}
     />
@@ -233,3 +250,19 @@ const Content = React.forwardRef<HTMLDivElement, AlertDialogContentProps>(functi
     />
   );
 });
+
+function useUpdateEffect(
+  effect: React.EffectCallback,
+  deps?: React.DependencyList,
+  useEffect = React.useEffect
+) {
+  let mounted = React.useRef(false);
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    effect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
