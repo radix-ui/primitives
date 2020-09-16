@@ -10,9 +10,11 @@ import {
 } from '@interop-ui/react-utils';
 import { cssReset, makeId } from '@interop-ui/utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import { Lock, LockProps } from '@interop-ui/react-lock';
+import { Lock } from '@interop-ui/react-lock';
 import { RemoveScroll } from 'react-remove-scroll';
 import { Portal } from '@interop-ui/react-portal';
+
+import type { LockProps } from '@interop-ui/react-lock';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -90,7 +92,7 @@ const DialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, DialogTriggerProps>
       <Comp
         {...interopDataAttrObj('trigger')}
         ref={composedTriggerRef}
-        type="button"
+        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
         aria-haspopup="dialog"
         aria-expanded={context.isOpen}
         aria-controls={context.id}
@@ -235,7 +237,7 @@ const DialogClose = forwardRef<typeof CLOSE_DEFAULT_TAG, DialogCloseProps>(
       <Comp
         {...interopDataAttrObj('close')}
         ref={forwardedRef}
-        type="button"
+        type={Comp === CLOSE_DEFAULT_TAG ? 'button' : undefined}
         {...closeProps}
         onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
       />

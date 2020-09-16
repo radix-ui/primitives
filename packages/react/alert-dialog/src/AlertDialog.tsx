@@ -55,16 +55,18 @@ const AlertDialog: React.FC<AlertDialogProps> = (props) => {
   const titleId = makeId('label', alertDialogId);
 
   return (
-    <AlertDialogContext.Provider
-      value={React.useMemo(() => {
-        return {
-          descriptionId,
-          titleId,
-        };
-      }, [descriptionId, titleId])}
-    >
-      <Dialog {...dialogProps}>{children}</Dialog>
-    </AlertDialogContext.Provider>
+    <Dialog {...dialogProps}>
+      <AlertDialogContext.Provider
+        value={React.useMemo(() => {
+          return {
+            descriptionId,
+            titleId,
+          };
+        }, [descriptionId, titleId])}
+      >
+        {children}
+      </AlertDialogContext.Provider>
+    </Dialog>
   );
 };
 
@@ -207,6 +209,7 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       'aria-describedby': ariaDescribedBy,
+      children,
       leastDestructiveActionRef: leastDestructiveActionRefProp,
       ...dialogContentProps
     } = props;
@@ -235,28 +238,30 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
     }
 
     return (
-      <AlertDialogContentContext.Provider
-        value={React.useMemo(() => {
-          return {
-            leastDestructiveActionRef,
-          };
-        }, [leastDestructiveActionRef])}
+      <Dialog.Content
+        {...interopDataAttrObj('content')}
+        as={as}
+        ref={forwardedRef}
+        role="alertdialog"
+        aria-describedby={ariaDescribedBy || descriptionId}
+        // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
+        // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
+        // `AlertDialogTitle`
+        aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
+        aria-label={ariaLabel || undefined}
+        {...dialogContentProps}
+        refToFocusOnOpen={leastDestructiveActionRef}
       >
-        <Dialog.Content
-          {...interopDataAttrObj('content')}
-          as={as}
-          ref={forwardedRef}
-          role="alertdialog"
-          aria-describedby={ariaDescribedBy || descriptionId}
-          // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
-          // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
-          // `AlertDialogTitle`
-          aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
-          aria-label={ariaLabel || undefined}
-          {...dialogContentProps}
-          refToFocusOnOpen={leastDestructiveActionRef}
-        />
-      </AlertDialogContentContext.Provider>
+        <AlertDialogContentContext.Provider
+          value={React.useMemo(() => {
+            return {
+              leastDestructiveActionRef,
+            };
+          }, [leastDestructiveActionRef])}
+        >
+          {children}
+        </AlertDialogContentContext.Provider>
+      </Dialog.Content>
     );
   }
 );
@@ -294,7 +299,7 @@ AlertDialogTitle.displayName = 'AlertDialog.Title';
  * AlertDialogDescription
  * -----------------------------------------------------------------------------------------------*/
 
-const DESCRIPTION_DEFAULT_TAG = 'div';
+const DESCRIPTION_DEFAULT_TAG = 'p';
 
 type AlertDialogDescriptionDOMProps = React.ComponentPropsWithoutRef<
   typeof DESCRIPTION_DEFAULT_TAG
@@ -322,7 +327,7 @@ AlertDialogDescription.displayName = 'AlertDialog.Description';
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const _AlertDialog = Object.assign(AlertDialog, {
+const AlertDialogPackage = Object.assign(AlertDialog, {
   Overlay: AlertDialogOverlay,
   Trigger: AlertDialogTrigger,
   Content: AlertDialogContent,
@@ -332,7 +337,7 @@ const _AlertDialog = Object.assign(AlertDialog, {
   Description: AlertDialogDescription,
 });
 
-_AlertDialog.displayName = 'AlertDialog';
+AlertDialogPackage.displayName = ROOT_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   root: dialogStyles.root,
@@ -364,7 +369,7 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   },
 });
 
-export { _AlertDialog as AlertDialog, styles };
+export { AlertDialogPackage as AlertDialog, styles };
 export type {
   AlertDialogProps,
   AlertDialogOverlayProps,

@@ -11,7 +11,7 @@ export const Basic = () => {
       <AlertDialog.Content style={styles.content}>
         <AlertDialog.Title style={styles.title}>Are you sure?</AlertDialog.Title>
         <AlertDialog.Description style={styles.description}>
-          <p>This will do a very dangerous thing. Thar be dragons!</p>
+          This will do a very dangerous thing. Thar be dragons!
         </AlertDialog.Description>
         <AlertDialog.Confirm style={styles.confirm}>yolo, do it</AlertDialog.Confirm>
         <AlertDialog.Cancel style={styles.cancel}>maybe not</AlertDialog.Cancel>
@@ -58,7 +58,7 @@ export const InlineStyle = () => {
       >
         <AlertDialog.Title>Are you sure?</AlertDialog.Title>
         <AlertDialog.Description>
-          <p>This will do a very dangerous thing. Thar be dragons!</p>
+          This will do a very dangerous thing. Thar be dragons!
         </AlertDialog.Description>
         <AlertDialog.Confirm
           style={{
@@ -100,10 +100,8 @@ export const Controlled = () => {
         <AlertDialog.Content as={Content}>
           <AlertDialog.Title>Are you sure?</AlertDialog.Title>
           <AlertDialog.Description>
-            <p>
-              Houses are very expensive and it looks like you only have €20 in the bank. Maybe
-              consult with a financial advisor?
-            </p>
+            Houses are very expensive and it looks like you only have €20 in the bank. Maybe consult
+            with a financial advisor?
           </AlertDialog.Description>
           <AlertDialog.Confirm as={WarningButton} onClick={() => setHousePurchased(true)}>
             buy it anyway
@@ -137,9 +135,7 @@ export const ManualAccessibility = () => {
           aria-labelledby={labelId}
           aria-describedby={descId}
         >
-          <div id={descId}>
-            <p>Only l337 h4x0rs can hack the mainframe. Are you ready?</p>
-          </div>
+          <div id={descId}>Only l337 h4x0rs can hack the mainframe. Are you ready?</div>
           <Button
             onClick={() => {
               setIsOpen(false);
