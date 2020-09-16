@@ -15,11 +15,11 @@ export const InlineStyle = () => (
       This checkbox is nested inside a label. The box-shadow is styled to appear when the checkbox
       is in focus regardless of the input modality. The state is uncontrolled.
     </p>
-    <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+    <label>
+      This is the label{' '}
       <Checkbox as={StyledRoot}>
         <Checkbox.Indicator as={StyledIndicator} />
       </Checkbox>
-      <span>This is the label</span>
     </label>
   </>
 );
@@ -33,17 +33,15 @@ export const Controlled = () => {
         This checkbox is placed adjacent to its label. The box-shadow is styled to appear when the
         checkbox is in focus regardless of the input modality. The state is controlled.
       </p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Checkbox
-          as={StyledRoot}
-          isChecked={isChecked}
-          onChange={(event) => setIsChecked(event.target.checked)}
-          id="randBox"
-        >
-          <Checkbox.Indicator as={StyledIndicator} />
-        </Checkbox>
-        <label htmlFor="randBox">This is the label</label>
-      </div>
+      <label htmlFor="randBox">This is the label</label>{' '}
+      <Checkbox
+        as={StyledRoot}
+        isChecked={isChecked}
+        onChange={(event) => setIsChecked(event.target.checked)}
+        id="randBox"
+      >
+        <Checkbox.Indicator as={StyledIndicator} />
+      </Checkbox>
     </>
   );
 };
