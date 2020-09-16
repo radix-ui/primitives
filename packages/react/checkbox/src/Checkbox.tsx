@@ -16,12 +16,12 @@ import {
 const CHECKBOX_NAME = 'Checkbox';
 const CHECKBOX_DEFAULT_TAG = 'input';
 
-type CheckedStates = boolean | 'mixed';
+type CheckedState = boolean | 'mixed';
 type CheckboxDOMProps = React.ComponentPropsWithoutRef<typeof CHECKBOX_DEFAULT_TAG>;
-type CheckboxOwnProps = { isChecked?: CheckedStates; defaultIsChecked?: CheckedStates };
+type CheckboxOwnProps = { isChecked?: CheckedState; defaultIsChecked?: CheckedState };
 type CheckboxProps = CheckboxOwnProps & Omit<CheckboxDOMProps, 'checked' | 'defaultChecked'>;
 
-const [CheckboxContext, useCheckboxContext] = createContext<CheckedStates>(
+const [CheckboxContext, useCheckboxContext] = createContext<CheckedState>(
   CHECKBOX_NAME + 'Context',
   CHECKBOX_NAME
 );
