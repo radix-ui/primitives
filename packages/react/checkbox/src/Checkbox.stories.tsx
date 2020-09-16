@@ -1,8 +1,3 @@
-// Remove this once API is finalized, and we can configure eslint-plugin-jsx-a11y to recognize our
-// checkbox as an input
-// https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/label-has-associated-control.md
-/* eslint-disable jsx-a11y/label-has-associated-control */
-
 import * as React from 'react';
 import { Checkbox, styles } from './Checkbox';
 
