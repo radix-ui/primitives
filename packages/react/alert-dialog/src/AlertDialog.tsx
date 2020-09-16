@@ -42,7 +42,7 @@ const [AlertDialogContentContext, useAlertDialogContentContext] = createContext<
 >('AlertDialogContext', ROOT_NAME);
 
 /* -------------------------------------------------------------------------------------------------
- * AlertDialogRoot
+ * AlertDialog
  * -----------------------------------------------------------------------------------------------*/
 
 type AlertDialogProps = DialogProps;
@@ -97,12 +97,11 @@ const AlertDialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, AlertDialogTri
   }
 );
 
-AlertDialogTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogOverlay
  * -----------------------------------------------------------------------------------------------*/
 
+const OVERLAY_NAME = 'AlertDialog.Overlay';
 const OVERLAY_DEFAULT_TAG = 'div';
 
 type AlertDialogOverlayDOMProps = React.ComponentPropsWithoutRef<typeof OVERLAY_DEFAULT_TAG>;
@@ -125,8 +124,6 @@ const AlertDialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, AlertDialogOve
   }
 );
 
-AlertDialogOverlay.displayName = 'AlertDialog.Overlay';
-
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogCancel
  * -----------------------------------------------------------------------------------------------*/
@@ -148,8 +145,6 @@ const AlertDialogCancel = forwardRef<typeof CANCEL_DEFAULT_TAG, AlertDialogCance
     return <Dialog.Close {...interopDataAttrObj('cancel')} as={as} ref={ref} {...cancelProps} />;
   }
 );
-
-AlertDialogCancel.displayName = CANCEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogConfirm
@@ -178,12 +173,11 @@ const AlertDialogConfirm = forwardRef<typeof CONFIRM_DEFAULT_TAG, AlertDialogCan
   }
 );
 
-AlertDialogConfirm.displayName = CONFIRM_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogContent
  * -----------------------------------------------------------------------------------------------*/
 
+const CONTENT_NAME = 'AlertDialog.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
 type AlertDialogContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
@@ -266,8 +260,6 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
   }
 );
 
-AlertDialogContent.displayName = 'AlertDialog.Content';
-
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogTitle
  * -----------------------------------------------------------------------------------------------*/
@@ -277,6 +269,7 @@ AlertDialogContent.displayName = 'AlertDialog.Content';
 // simpler to get these right. These are optional if the consumer prefers to pass appropriate aria
 // labelling props directly.
 
+const TITLE_NAME = 'AlertDialog.Title';
 const TITLE_DEFAULT_TAG = 'h2';
 
 type AlertDialogTitleDOMProps = React.ComponentPropsWithoutRef<typeof TITLE_DEFAULT_TAG>;
@@ -293,12 +286,11 @@ const AlertDialogTitle = forwardRef<typeof TITLE_DEFAULT_TAG, AlertDialogTitlePr
   }
 );
 
-AlertDialogTitle.displayName = 'AlertDialog.Title';
-
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogDescription
  * -----------------------------------------------------------------------------------------------*/
 
+const DESCRIPTION_NAME = 'AlertDialog.Description';
 const DESCRIPTION_DEFAULT_TAG = 'p';
 
 type AlertDialogDescriptionDOMProps = React.ComponentPropsWithoutRef<
@@ -323,20 +315,25 @@ const AlertDialogDescription = forwardRef<
   );
 });
 
-AlertDialogDescription.displayName = 'AlertDialog.Description';
-
 /* ---------------------------------------------------------------------------------------------- */
 
 const AlertDialogPackage = Object.assign(AlertDialog, {
-  Overlay: AlertDialogOverlay,
-  Trigger: AlertDialogTrigger,
-  Content: AlertDialogContent,
   Cancel: AlertDialogCancel,
   Confirm: AlertDialogConfirm,
-  Title: AlertDialogTitle,
+  Content: AlertDialogContent,
   Description: AlertDialogDescription,
+  Overlay: AlertDialogOverlay,
+  Title: AlertDialogTitle,
+  Trigger: AlertDialogTrigger,
 });
 
+AlertDialogCancel.displayName = CANCEL_NAME;
+AlertDialogConfirm.displayName = CONFIRM_NAME;
+AlertDialogContent.displayName = CONTENT_NAME;
+AlertDialogDescription.displayName = DESCRIPTION_NAME;
+AlertDialogOverlay.displayName = OVERLAY_NAME;
+AlertDialogTitle.displayName = TITLE_NAME;
+AlertDialogTrigger.displayName = TRIGGER_NAME;
 AlertDialogPackage.displayName = ROOT_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
