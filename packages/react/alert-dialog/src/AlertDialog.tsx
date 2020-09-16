@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  Dialog,
-  DialogCloseProps,
-  DialogContentProps,
-  DialogOverlayProps,
-  DialogProps,
-  DialogTriggerProps,
-  styles as dialogStyles,
-} from '@interop-ui/react-dialog';
+import { Dialog, styles as dialogStyles } from '@interop-ui/react-dialog';
 import { cssReset, makeId, warning } from '@interop-ui/utils';
 import {
   createContext,
@@ -17,6 +9,13 @@ import {
   useId,
   useDocumentRef,
 } from '@interop-ui/react-utils';
+import type {
+  DialogCloseProps,
+  DialogContentProps,
+  DialogOverlayProps,
+  DialogProps,
+  DialogTriggerProps,
+} from '@interop-ui/react-dialog';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context

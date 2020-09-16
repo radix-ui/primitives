@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { AlertDialog, AlertDialogContentProps, styles } from './AlertDialog';
+import { AlertDialog, styles } from './AlertDialog';
+import type { AlertDialogContentProps } from './AlertDialog';
 
 export default { title: 'AlertDialog' };
 
