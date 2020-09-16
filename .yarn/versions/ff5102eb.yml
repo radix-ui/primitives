@@ -3,4 +3,6 @@ releases:
   "@interop-ui/react-popover": prerelease
   "@interop-ui/react-popper": prerelease
   "@interop-ui/react-tooltip": prerelease
-  interop-ui: prerelease
+
+declined:
+  - interop-ui
