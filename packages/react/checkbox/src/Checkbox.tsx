@@ -61,7 +61,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           {...checkboxProps}
           {...interopDataAttrObj('root')}
           type="checkbox"
-          checked={isChecked === 'mixed' || isChecked}
+          checked={checked === 'mixed' ? false : checked}
           ref={ref}
           onChange={composeEventHandlers(onCheckedChange, (event) =>
             setChecked(event.target.checked)
