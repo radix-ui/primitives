@@ -159,6 +159,12 @@ type PopoverPositionOwnProps = {
    * (default: `true`)
    */
   shouldPortal?: boolean;
+
+  /**
+   * Whether or not Popover should trap focus inside.
+   * (default: `true`)
+   */
+  shouldLockFocus?: boolean;
 };
 type PopoverPositionProps = Optional<PopperProps, 'anchorRef'> &
   PopoverPositionDOMProps &
@@ -178,11 +184,9 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
       anchorRef,
       refToFocusOnOpen,
       refToFocusOnClose,
-      shouldCloseOnEscape = true,
-      shouldCloseOnOutsideClick = true,
-      shouldPreventOutsideClick = false,
       shouldPreventOutsideScroll = false,
       shouldPortal = true,
+      shouldLockFocus = true,
       ...popoverProps
     } = props;
     const context = usePopoverContext(POSITION_NAME);
@@ -192,42 +196,61 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
       shouldPreventOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
 
+    const FocusLockWrapper = shouldLockFocus
+      ? ({ children }: any) => <PopoverFocusLock {...props} children={children} />
+      : React.Fragment;
+
     return (
       <PortalWrapper>
         <ScrollLockWrapper>
-          <Lock
-            onDeactivate={() => context.setIsOpen(false)}
-            refToFocusOnActivation={refToFocusOnOpen}
-            refToFocusOnDeactivation={refToFocusOnClose ?? context.triggerRef}
-            shouldDeactivateOnEscape={shouldCloseOnEscape}
-            shouldDeactivateOnOutsideClick={(event) => {
-              if (event.target === context.triggerRef.current) {
-                return false;
-              }
-              if (isFunction(shouldCloseOnOutsideClick)) {
-                return shouldCloseOnOutsideClick(event);
-              } else return shouldCloseOnOutsideClick;
-            }}
-            shouldPreventOutsideClick={shouldPreventOutsideClick}
-          >
+          <FocusLockWrapper>
             <Popper
               {...interopDataAttrObj('position')}
               anchorRef={anchorRef || context.triggerRef}
               ref={forwardedRef}
               role="dialog"
-              // I believe this depends on whether we trap focus or not (always for now)
-              aria-modal="true"
               {...popoverProps}
               id={context.id}
             >
               {children}
             </Popper>
-          </Lock>
+          </FocusLockWrapper>
         </ScrollLockWrapper>
       </PortalWrapper>
     );
   }
 );
+
+const PopoverFocusLock: React.FC<PopoverPositionProps> = function PopoverFocusLock(props) {
+  const context = usePopoverContext(POSITION_NAME);
+  const {
+    children,
+    refToFocusOnOpen,
+    refToFocusOnClose,
+    shouldCloseOnEscape = true,
+    shouldCloseOnOutsideClick = true,
+    shouldPreventOutsideClick = false,
+  } = props;
+  return (
+    <Lock
+      onDeactivate={() => context.setIsOpen(false)}
+      refToFocusOnActivation={refToFocusOnOpen}
+      refToFocusOnDeactivation={refToFocusOnClose ?? context.triggerRef}
+      shouldDeactivateOnEscape={shouldCloseOnEscape}
+      shouldDeactivateOnOutsideClick={(event) => {
+        if (event.target === context.triggerRef.current) {
+          return false;
+        }
+        if (isFunction(shouldCloseOnOutsideClick)) {
+          return shouldCloseOnOutsideClick(event);
+        } else return shouldCloseOnOutsideClick;
+      }}
+      shouldPreventOutsideClick={shouldPreventOutsideClick}
+    >
+      {children}
+    </Lock>
+  );
+};
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverContent
