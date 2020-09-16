@@ -35,7 +35,6 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
     defaultToggled = false,
     onClick,
     onToggle,
-    disabled,
     children,
     ...buttonProps
   } = props;
@@ -54,7 +53,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
       data-state={toggled ? 'on' : 'off'}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, () => {
-        if (!disabled) {
+        if (!props.disabled) {
           setToggled(!toggled);
         }
       })}
