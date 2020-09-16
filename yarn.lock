@@ -1957,17 +1957,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-form-value@workspace:packages/react/form-value":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-form-value@workspace:packages/react/form-value"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-lock@workspace:*, @interop-ui/react-lock@workspace:packages/react/lock":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-lock@workspace:packages/react/lock"
