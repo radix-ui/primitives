@@ -87,15 +87,16 @@ const SwitchThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(funct
   forwardedRef
 ) {
   const checked = useSwitchContext(THUMB_NAME);
-  return <SwitchThumbImpl {...props} data-state={getState(checked)} ref={forwardedRef} />;
+  const { as: Comp = THUMB_DEFAULT_TAG, ...thumbProps } = props;
+  return (
+    <Comp
+      {...thumbProps}
+      {...interopDataAttrObj('thumb')}
+      data-state={getState(checked)}
+      ref={forwardedRef}
+    />
+  );
 });
-
-const SwitchThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(
-  function SwitchThumbImpl(props, forwardedRef) {
-    const { as: Comp = THUMB_DEFAULT_TAG, ...thumbProps } = props;
-    return <Comp {...thumbProps} {...interopDataAttrObj('thumb')} ref={forwardedRef} />;
-  }
-);
 
 /* ---------------------------------------------------------------------------------------------- */
 
