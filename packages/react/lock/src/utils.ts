@@ -36,6 +36,12 @@ type FocusTrapConfig = {
 
   /** Whether pointer events happening outside the focus trap container should be prevented */
   shouldPreventOutsideClick?: boolean;
+
+  /** Whether focus should be trapped */
+  shouldTrapFocus?: boolean;
+
+  /** Blur outside handler */
+  onBlurOutside?: () => void;
 };
 
 type FocusTrapState = {
@@ -191,18 +197,29 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
       return key in updatedConfig && config[key] !== updatedConfig[key];
     }
 
-    const wasShouldPreventOutsideClick = wasKeyUpdated('shouldPreventOutsideClick');
+    const wasShouldPreventOutsideClickUpdated = wasKeyUpdated('shouldPreventOutsideClick');
+    const wasShouldTrapFocusUpdated = wasKeyUpdated('shouldTrapFocus');
 
     // update config
     config = { ...config, ...updatedConfig };
 
     // deal with dynamic changes whilst the focus trap is currently active
     if (state.isActive) {
-      if (wasShouldPreventOutsideClick) {
+      if (wasShouldPreventOutsideClickUpdated) {
         if (updatedConfig.shouldPreventOutsideClick) {
           startPreventingOutsidePointerEvents();
         } else {
           stopPreventingOutsidePointerEvents();
+        }
+      }
+
+      if (wasShouldTrapFocusUpdated) {
+        if (updatedConfig.shouldTrapFocus) {
+          attachFocusTrapMarkers();
+          startHidingOutsideFromScreenReaders();
+        } else {
+          detachFocusTrapMarkers();
+          stopHidingOutsideFromScreenReaders();
         }
       }
     }
@@ -223,9 +240,15 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
 
   function handleBlur(event: FocusEvent) {
     const relatedTarget = event.relatedTarget as Element | null;
+
     // We only need to respond to a blur event if another element outisde of the popover is receiving focus.
     // https://github.com/modulz/modulz/pull/1215
     if (relatedTarget && !config.container.contains(relatedTarget)) {
+      if (!config.shouldTrapFocus) {
+        config.onBlurOutside?.();
+        return;
+      }
+
       handleFocusOutside(relatedTarget);
     }
   }
@@ -260,7 +283,7 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
 
   function handleEscape(event: KeyboardEvent) {
     if (config.shouldDeactivateOnEscape) {
-      config.onEscape && config.onEscape(event);
+      config.onEscape?.(event);
     }
   }
 
@@ -284,7 +307,7 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
       // ONLY IF we are NOT preventing outside clicks (clicks are allowed to go through)
       // instead let the browser do what it needs to do (ie. focus a focusable element, etc)
       const shouldPreventFocusControl = !config.shouldPreventOutsideClick;
-      config.onOutsideClick && config.onOutsideClick(event, shouldPreventFocusControl);
+      config.onOutsideClick?.(event, shouldPreventFocusControl);
     } else {
       // prevent focusing the clicked element
       event.preventDefault();
@@ -312,7 +335,9 @@ export function createFocusTrap(initialConfig: FocusTrapConfig) {
   }
 
   function startHidingOutsideFromScreenReaders() {
-    stopHidingOutsideFromScreenReaders = hideOthers(config.container);
+    if (config.shouldTrapFocus) {
+      stopHidingOutsideFromScreenReaders = hideOthers(config.container);
+    }
   }
 
   function addListeners() {

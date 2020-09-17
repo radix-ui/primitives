@@ -42,6 +42,9 @@ type LockProps = {
 
   /** Whether pointer events happening outside the locked container should be prevented */
   shouldPreventOutsideClick?: boolean;
+
+  /** Whether focus should be trapped inside the locked container */
+  shouldTrapFocus?: boolean;
 };
 
 function Lock({ children, ...props }: LockProps) {
@@ -63,6 +66,7 @@ function LockImpl({
   shouldDeactivateOnEscape = true,
   shouldDeactivateOnOutsideClick = true,
   shouldPreventOutsideClick = true,
+  shouldTrapFocus = true,
 }: LockImplProps) {
   /**
    * A ref to set on the container element in which we want to trap focus.
@@ -145,18 +149,26 @@ function LockImpl({
     [onDeactivate, shouldPreventOutsideClick, deactivateParentLocksFromContext]
   );
 
+  const onBlurOutsideHandler = React.useCallback(() => {
+    // NOTE: make sure we update the ref before calling `onDeactivate` so it's setup on time
+    shouldPreventFocusControlWhenDeactivatedRef.current = true;
+    onDeactivate();
+  }, [onDeactivate]);
+
   // Synchronise config changes
   React.useEffect(() => {
     focusTrapRef.current?.updateConfig({
       elementToFocusWhenActivated: refToFocusOnActivation?.current,
       elementToFocusWhenDeactivated: refToFocusOnDeactivation?.current,
       shouldDeactivateOnEscape,
-      onEscape: onDeactivate,
+      onEscape: () => onDeactivate(),
       shouldDeactivateOnOutsideClick:
         // prioritize the configuration coming from the parent Lock over the prop
         shouldDeactivateOnOutsideClickFromContext ?? shouldDeactivateOnOutsideClick,
       onOutsideClick: onOutsideClickHandler,
       shouldPreventOutsideClick,
+      shouldTrapFocus,
+      onBlurOutside: onBlurOutsideHandler,
     });
   }, [
     refToFocusOnActivation,
@@ -167,6 +179,8 @@ function LockImpl({
     shouldDeactivateOnOutsideClickFromContext,
     onOutsideClickHandler,
     shouldPreventOutsideClick,
+    shouldTrapFocus,
+    onBlurOutsideHandler,
   ]);
 
   const composedContainerRef = useComposedRefs(child.ref, containerRef);

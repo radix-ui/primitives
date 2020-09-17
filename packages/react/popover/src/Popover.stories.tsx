@@ -121,6 +121,40 @@ export const Nested = () => {
   );
 };
 
+export const NoFocusTrapping = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
+    >
+      <Popover>
+        <Popover.Trigger as={Button}>open</Popover.Trigger>
+        <Popover.Position
+          style={{ ...styles.position }}
+          sideOffset={10}
+          shouldTrapFocus={false}
+          shouldPortal={false}
+        >
+          <Popover.Content
+            style={{
+              ...styles.content,
+              backgroundColor: '#eee',
+              width: 250,
+              height: 150,
+              padding: 20,
+              border: '10px solid tomato',
+            }}
+          >
+            <Popover.Close as={Button}>close</Popover.Close>
+            <button type="button">Other</button>
+          </Popover.Content>
+          <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
+        </Popover.Position>
+      </Popover>
+      <Button style={{ marginLeft: 10 }}>Next action</Button>
+    </div>
+  );
+};
+
 export const FocusTest = () => {
   return (
     <>
@@ -196,6 +230,7 @@ const Button = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(function
   return (
     <button
       ref={forwardedRef}
+      type="button"
       style={{
         ...props.style,
         ...styles.trigger,

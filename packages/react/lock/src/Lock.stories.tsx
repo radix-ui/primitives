@@ -16,6 +16,7 @@ export const Base = () => {
   const [shouldDeactivateOnEscape, setShouldDeactivateOnEscape] = React.useState(true);
   const [shouldDeactivateOnOutsideClick, setShouldDeactivateOnOutsideClick] = React.useState(true);
   const [shouldPreventOutsideClick, setShouldPreventOutsideClick] = React.useState(true);
+  const [shouldTrapFocus, setShouldTrapFocus] = React.useState(true);
 
   const ageInputRef = React.useRef<HTMLInputElement>(null);
   const nextButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -127,6 +128,16 @@ export const Base = () => {
           Block outside click
         </label>
       </div>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={shouldTrapFocus}
+            onChange={(event) => setShouldTrapFocus(event.target.checked)}
+          />{' '}
+          Trap focus
+        </label>
+      </div>
     </div>
   );
 
@@ -146,7 +157,7 @@ export const Base = () => {
       {options}
       <div style={{ padding: 50, textAlign: 'center' }}>
         <button type="button" onClick={() => setIsActive(true)}>
-          Activate focus trap
+          Activate Lock
         </button>
 
         <button
@@ -179,6 +190,7 @@ export const Base = () => {
             shouldDeactivateOnEscape={shouldDeactivateOnEscape}
             shouldDeactivateOnOutsideClick={shouldDeactivateOnOutsideClick}
             shouldPreventOutsideClick={shouldPreventOutsideClick}
+            shouldTrapFocus={shouldTrapFocus}
           >
             {children}
           </Lock>
@@ -205,7 +217,7 @@ export const Base = () => {
             />
             <div style={{ marginTop: 10 }}>
               <button type="button" onClick={() => setIsActive(false)}>
-                Deactivate focus trap
+                Deactivate Lock
               </button>
             </div>
             <details style={{ marginTop: 30 }}>
@@ -215,6 +227,10 @@ export const Base = () => {
           </form>
         </LockIndicatorBox>
       </ConditionalWrap>
+
+      <p>Some content after</p>
+      <button type="button">A button</button>
+      <input type="text" defaultValue="An input" />
     </FocusTracker>
   );
 };
@@ -231,12 +247,7 @@ export const Nested = () => {
         </button>
 
         {isActive && (
-          <Lock
-            onDeactivate={() => setIsActive(false)}
-            shouldDeactivateOnEscape
-            shouldDeactivateOnOutsideClick
-            shouldPreventOutsideClick
-          >
+          <Lock onDeactivate={() => setIsActive(false)}>
             <LockIndicatorBox isActive={isActive}>
               <button type="button" onClick={() => setIsActive(false)}>
                 Deactivate focus trap
@@ -251,12 +262,7 @@ export const Nested = () => {
               </button>
 
               {isActiveNested && (
-                <Lock
-                  onDeactivate={() => setIsActiveNested(false)}
-                  shouldDeactivateOnEscape
-                  shouldDeactivateOnOutsideClick
-                  shouldPreventOutsideClick
-                >
+                <Lock onDeactivate={() => setIsActiveNested(false)}>
                   <LockIndicatorBox isActive={isActiveNested}>
                     <button type="button" onClick={() => setIsActiveNested(false)}>
                       Deactivate nested focus trap
