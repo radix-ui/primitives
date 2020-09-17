@@ -75,24 +75,24 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
  * SwitchThumb
  * -----------------------------------------------------------------------------------------------*/
 
-const INDICATOR_NAME = 'Switch.Thumb';
-const INDICATOR_DEFAULT_TAG = 'span';
+const THUMB_NAME = 'Switch.Thumb';
+const THUMB_DEFAULT_TAG = 'span';
 
-type SwitchThumbDOMProps = React.ComponentPropsWithoutRef<typeof INDICATOR_DEFAULT_TAG>;
+type SwitchThumbDOMProps = React.ComponentPropsWithoutRef<typeof THUMB_DEFAULT_TAG>;
 type SwitchThumbOwnProps = {};
 type SwitchThumbProps = SwitchThumbDOMProps & SwitchThumbOwnProps;
 
-const SwitchThumb = forwardRef<typeof INDICATOR_DEFAULT_TAG, SwitchThumbProps>(function SwitchThumb(
+const SwitchThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(function SwitchThumb(
   props,
   forwardedRef
 ) {
-  const checked = useSwitchContext(INDICATOR_NAME);
+  const checked = useSwitchContext(THUMB_NAME);
   return <SwitchThumbImpl {...props} data-state={getState(checked)} ref={forwardedRef} />;
 });
 
-const SwitchThumbImpl = forwardRef<typeof INDICATOR_DEFAULT_TAG, SwitchThumbProps>(
+const SwitchThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(
   function SwitchThumbImpl(props, forwardedRef) {
-    const { as: Comp = INDICATOR_DEFAULT_TAG, ...thumbProps } = props;
+    const { as: Comp = THUMB_DEFAULT_TAG, ...thumbProps } = props;
     return <Comp {...thumbProps} {...interopDataAttrObj('thumb')} ref={forwardedRef} />;
   }
 );
@@ -106,7 +106,7 @@ function getState(checked: boolean) {
 Switch.Thumb = SwitchThumb;
 
 Switch.displayName = SWITCH_NAME;
-Switch.Thumb.displayName = INDICATOR_NAME;
+Switch.Thumb.displayName = THUMB_NAME;
 
 interface SwitchStaticProps {
   Thumb: typeof SwitchThumb;
@@ -121,7 +121,7 @@ const [styles, interopDataAttrObj] = createStyleObj(SWITCH_NAME, {
     MozAppearance: 'none',
   },
   thumb: {
-    ...cssReset(INDICATOR_DEFAULT_TAG),
+    ...cssReset(THUMB_DEFAULT_TAG),
     position: 'absolute',
     top: 0,
     left: 0,
