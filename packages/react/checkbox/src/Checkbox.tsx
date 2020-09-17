@@ -55,7 +55,8 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
     return (
       <span
         {...interopDataAttrObj('wrapper')}
-        style={{ display: 'inline-block', verticalAlign: 'middle', position: 'relative' }}
+        // Uses `inline-flex` to prevent extraneous whitespace below input
+        style={{ display: 'inline-flex', verticalAlign: 'middle', position: 'relative' }}
       >
         <Comp
           {...checkboxProps}
