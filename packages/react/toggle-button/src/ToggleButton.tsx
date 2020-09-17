@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, isFunction } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
 import {
   forwardRef,
   createStyleObj,
@@ -21,7 +21,6 @@ type ToggleButtonOwnProps = {
   defaultToggled?: boolean;
   /** A function called when the button is toggled */
   onToggle?(toggled: boolean): void;
-  children: React.ReactNode | ((props: { toggled: boolean }) => React.ReactNode);
 };
 type ToggleButtonProps = ToggleButtonDOMProps & ToggleButtonOwnProps;
 
@@ -51,6 +50,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
       type="button"
       aria-pressed={toggled}
       data-state={toggled ? 'on' : 'off'}
+      data-disabled={props.disabled ? '' : undefined}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, () => {
         if (!props.disabled) {
@@ -59,7 +59,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
       })}
       {...buttonProps}
     >
-      {isFunction(children) ? children({ toggled }) : children}
+      {children}
     </Comp>
   );
 });
@@ -69,6 +69,9 @@ ToggleButton.displayName = NAME;
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
     ...cssReset(DEFAULT_TAG),
+    '&[data-disabled]': {
+      pointerEvents: 'none',
+    },
   },
 });
 

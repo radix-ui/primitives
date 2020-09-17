@@ -3,15 +3,11 @@ import { ToggleButton, styles } from './ToggleButton';
 
 export default { title: 'ToggleButton' };
 
-export const Basic = () => (
-  <ToggleButton style={styles.root}>
-    {({ toggled }) => `Currently ${toggled ? 'on' : 'off'}`}
-  </ToggleButton>
-);
+export const Basic = () => {
+  return <ToggleButton style={styles.root}>Toggle</ToggleButton>;
+};
 
-export const InlineStyle = () => (
-  <ToggleButton as={Button}>{({ toggled }) => `Currently ${toggled ? 'on' : 'off'}`}</ToggleButton>
-);
+export const InlineStyle = () => <ToggleButton as={Button}>Toggle</ToggleButton>;
 
 export const Controlled = () => {
   const [toggled, setToggled] = React.useState(true);
