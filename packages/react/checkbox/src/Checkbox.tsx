@@ -63,6 +63,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           {...interopDataAttrObj('root')}
           type="checkbox"
           checked={checked === 'indeterminate' ? false : checked}
+          data-state={checked ? 'checked' : 'unchecked'}
           ref={ref}
           onChange={composeEventHandlers(onCheckedChange, (event) =>
             setChecked(event.target.checked)
@@ -88,7 +89,9 @@ type CheckboxIndicatorProps = CheckboxIndicatorDOMProps & CheckboxIndicatorOwnPr
 const CheckboxIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, CheckboxIndicatorProps>(
   function CheckboxIndicator(props, forwardedRef) {
     const checked = useCheckboxContext(INDICATOR_NAME);
-    return checked ? <CheckboxIndicatorImpl {...props} ref={forwardedRef} /> : null;
+    return checked ? (
+      <CheckboxIndicatorImpl {...props} data-state="checked" ref={forwardedRef} />
+    ) : null;
   }
 );
 
