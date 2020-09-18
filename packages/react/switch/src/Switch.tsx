@@ -118,8 +118,6 @@ const [styles, interopDataAttrObj] = createStyleObj(SWITCH_NAME, {
   root: {
     ...cssReset(SWITCH_DEFAULT_TAG),
     appearance: 'none',
-    WebkitAppearance: 'none',
-    MozAppearance: 'none',
   },
   thumb: {
     ...cssReset(THUMB_DEFAULT_TAG),

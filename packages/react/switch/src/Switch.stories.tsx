@@ -26,9 +26,9 @@ export const StitchesStyle = () => (
     <p>This switch is nested inside a label. The state is uncontrolled.</p>
     <label>
       This is the label{' '}
-      <SwitchRoot>
-        <Thumb />
-      </SwitchRoot>
+      <Switch as={Root}>
+        <Switch.Thumb as={Thumb} />
+      </Switch>
     </label>
   </>
 );
@@ -40,13 +40,14 @@ export const Controlled = () => {
     <>
       <p>This switch is placed adjacent to its label. The state is controlled.</p>
       <label htmlFor="randBox">This is the label</label>{' '}
-      <SwitchRoot
+      <Switch
+        as={Root}
         checked={checked}
         onCheckedChange={(event: any) => setChecked(event.target.checked)}
         id="randBox"
       >
-        <Thumb />
-      </SwitchRoot>
+        <Switch.Thumb as={Thumb} />
+      </Switch>
     </>
   );
 };
@@ -63,9 +64,9 @@ export const WithinForm = () => {
     >
       <p>checked: {String(checked)}</p>
 
-      <SwitchRoot>
-        <Thumb />
-      </SwitchRoot>
+      <Switch as={Root}>
+        <Switch.Thumb as={Thumb} />
+      </Switch>
     </form>
   );
 };
@@ -78,7 +79,7 @@ export const WithinForm = () => {
 const HEIGHT = 30;
 const BORDER = 4;
 
-const SwitchRoot = styled(Switch, {
+const Root = styled('input', {
   ...(styles.root as any),
   height: `${HEIGHT}px`,
   width: `${HEIGHT * 2}px`,
@@ -92,9 +93,8 @@ const SwitchRoot = styled(Switch, {
   },
 });
 
-const Thumb = styled(Switch.Thumb, {
+const Thumb = styled('span', {
   ...(styles.thumb as any),
-  position: 'absolute',
   width: `${HEIGHT - BORDER * 2}px`,
   height: `${HEIGHT - BORDER * 2}px`,
   top: `${BORDER}px`,
