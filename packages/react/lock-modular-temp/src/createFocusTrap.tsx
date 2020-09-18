@@ -2,43 +2,73 @@ import { tabbable } from 'tabbable';
 
 type FocusableTarget = HTMLElement | { focus(): void };
 
-type FocusTrapState = {
+type FocusScopeState = {
   container: HTMLElement;
-  lastFocusedElementInsideContainer: HTMLElement | null;
-  beforeFocusTrapMarker: HTMLElement;
-  afterFocusTrapMarker: HTMLElement;
+  startFocusScopeMarker: HTMLElement;
+  endFocusScopeMarker: HTMLElement;
+  previouslyFocusedElement?: HTMLElement | null;
+  lastFocusedElementInsideContainer?: HTMLElement | null;
+  elementToMoveFocusTo?: FocusableTarget | null;
+  elementToReturnFocusTo?: FocusableTarget | null;
 };
 
 /* -------------------------------------------------------------------------------------------------
- * createFocusTrap
+ * createFocusScope
  * -----------------------------------------------------------------------------------------------*/
 
-function createFocusTrap(container: HTMLElement) {
+function createFocusScope(container: HTMLElement) {
   // We keep track of some internal state
-  const state: FocusTrapState = {
+  const state: FocusScopeState = {
     container,
-    lastFocusedElementInsideContainer: null,
-    // In order to perform the focus trapping, we create (and later inject) 2 focusable marker elements.
-    // One is injected just before the focus trap, and the other just after it.
-    //
+    // In order to contain focus, we create (and later inject) 2 focusable markers.
+    // One is injected just before the container, and the other just after it.
     // Their function is twofold:
-    //
-    // - when the focus escapes the focus trap, it ensures one of these will be focused with no visual feedback.
+    // - when focus escapes the container, it ensures one of these will be the focus recipient
     // - they serve as markers to know which direction the user was tabbing through
-    beforeFocusTrapMarker: createFocusTrapMarkerElement('before'),
-    afterFocusTrapMarker: createFocusTrapMarkerElement('after'),
+    startFocusScopeMarker: createFocusScopeMarker('start'),
+    endFocusScopeMarker: createFocusScopeMarker('end'),
   };
 
   // setup
   const makeContainerNonFocusable = makeContainerFocusable(state.container);
-  const removeFocusTrapMarkers = addFocusTrapMarkers(state);
-  const removeFocusBlurListeners = addFocusBlurListeners(state);
+  state.previouslyFocusedElement = getCurrentlyFocusedElement();
+  let freeFocus = () => {};
 
-  // teardown
-  return function destroyFocusTrap() {
-    makeContainerNonFocusable();
-    removeFocusTrapMarkers();
-    removeFocusBlurListeners();
+  // return focus scope instance
+  return {
+    containFocus: () => {
+      const removeFocusScopeMarkers = addFocusScopeMarkers(state);
+      const removeFocusBlurListeners = addFocusBlurListeners(state);
+      freeFocus = () => {
+        removeFocusScopeMarkers();
+        removeFocusBlurListeners();
+      };
+      return freeFocus;
+    },
+
+    setElementToMoveFocusTo: (elementToMoveFocusTo?: FocusableTarget | null) => {
+      state.elementToMoveFocusTo = elementToMoveFocusTo;
+    },
+
+    moveFocusInScope: () => {
+      const firstTabbableElement = getFirstTabbableElement(state.container);
+      const elementToFocus = state.elementToMoveFocusTo || firstTabbableElement;
+      attemptFocus(elementToFocus, MOVE_FOCUS_ERROR, state.container);
+    },
+
+    setElementToReturnFocusTo: (elementToReturnFocusTo?: FocusableTarget | null) => {
+      state.elementToReturnFocusTo = elementToReturnFocusTo;
+    },
+
+    returnFocusOutsideScope: () => {
+      const elementToFocus = state.elementToReturnFocusTo || state.previouslyFocusedElement;
+      attemptFocus(elementToFocus, RETURN_FOCUS_ERROR);
+    },
+
+    destroy: () => {
+      makeContainerNonFocusable();
+      freeFocus();
+    },
   };
 }
 
@@ -46,36 +76,37 @@ function createFocusTrap(container: HTMLElement) {
  * Major utils
  * -----------------------------------------------------------------------------------------------*/
 
-function createFocusTrapMarkerElement(position: 'before' | 'after') {
-  const focusTrapMarkerElement = document.createElement('span');
-  focusTrapMarkerElement.setAttribute('data-focus-trap-marker', position);
-  focusTrapMarkerElement.tabIndex = 0;
-  return focusTrapMarkerElement;
+function createFocusScopeMarker(position: 'start' | 'end') {
+  const focusScopeMarkerElement = document.createElement('span');
+  focusScopeMarkerElement.setAttribute('data-focus-scope-marker', position);
+  focusScopeMarkerElement.tabIndex = 0;
+  focusScopeMarkerElement.style.outline = 'none';
+  return focusScopeMarkerElement;
 }
 
 function makeContainerFocusable(container: HTMLElement) {
-  container.setAttribute('data-focus-trap-container', 'true');
+  container.setAttribute('data-focus-scope-container', 'true');
   container.tabIndex = -1;
 
   return function makeContainerNonFocusable() {
-    container.removeAttribute('data-focus-trap-container');
+    container.removeAttribute('data-focus-scope-container');
     container.removeAttribute('tabIndex');
   };
 }
 
-function addFocusTrapMarkers(state: FocusTrapState) {
-  const { container, beforeFocusTrapMarker, afterFocusTrapMarker } = state;
+function addFocusScopeMarkers(state: FocusScopeState) {
+  const { container, startFocusScopeMarker, endFocusScopeMarker } = state;
   const parent = container.parentNode;
-  parent?.insertBefore(beforeFocusTrapMarker, container);
-  parent?.insertBefore(afterFocusTrapMarker, container.nextSibling);
+  parent?.insertBefore(startFocusScopeMarker, container);
+  parent?.insertBefore(endFocusScopeMarker, container.nextSibling);
 
-  return function removeFocusTrapMarkers() {
-    beforeFocusTrapMarker.remove();
-    afterFocusTrapMarker.remove();
+  return function removeFocusScopeMarkers() {
+    startFocusScopeMarker.remove();
+    endFocusScopeMarker.remove();
   };
 }
 
-function addFocusBlurListeners(state: FocusTrapState) {
+function addFocusBlurListeners(state: FocusScopeState) {
   function handleBlur(event: FocusEvent) {
     const relatedTarget = event.relatedTarget as Element | null;
     // We only need to respond to a blur event if another element outside is receiving focus.
@@ -95,24 +126,25 @@ function addFocusBlurListeners(state: FocusTrapState) {
 
   function handleFocusOutside(elementReceivingFocus: Element | null) {
     // If we got here, it means the focus event was technically outside the container.
-    // We do an extra check for focus within any focus trap container. This is because focus trap containers
-    // are not always truly nested in the DOM (ie. when used within a Portal)
-    if (elementReceivingFocus?.closest('[data-focus-trap-container=true]')) {
+    // We do an extra check for focus within any focus scope container.
+    // This is because focus scope containers are not always truly nested in the DOM
+    // (ie. when used within a Portal)
+    if (elementReceivingFocus?.closest('[data-focus-scope-container=true]')) {
       // in such case we allow manually focusing into parent locks (via click)
       return;
     }
 
-    if (elementReceivingFocus === state.beforeFocusTrapMarker) {
+    if (elementReceivingFocus === state.startFocusScopeMarker) {
       const lastTabbableElement = getLastTabbableElement(state.container);
       attemptFocus(lastTabbableElement, 'Could not focus last tabbable element', state.container);
-    } else if (elementReceivingFocus === state.afterFocusTrapMarker) {
+    } else if (elementReceivingFocus === state.endFocusScopeMarker) {
       const firstTabbableElement = getFirstTabbableElement(state.container);
       attemptFocus(firstTabbableElement, 'Could not focus first tabbable element', state.container);
     } else {
       const firstTabbableElement = getFirstTabbableElement(state.container);
       attemptFocus(
         state.lastFocusedElementInsideContainer ?? firstTabbableElement,
-        'Could not re-focus previously focused element (or first tabbable element)',
+        'Could not re-focus last focused element (or first tabbable element)',
         state.container
       );
     }
@@ -136,7 +168,7 @@ function isTargetOutsideElement(target: EventTarget | null, element: HTMLElement
 }
 
 function getCurrentlyFocusedElement() {
-  return document.activeElement;
+  return document.activeElement as HTMLElement | null;
 }
 
 function getFirstTabbableElement(container: HTMLElement) {
@@ -162,7 +194,7 @@ function isSelectableInput(element: any): element is FocusableTarget & { select:
  * If unsuccessful, displays an error in the console and potentially focus will fall back on a provided `fallbackElement`.
  */
 function attemptFocus(
-  element?: FocusableTarget,
+  element?: FocusableTarget | null,
   errorMessage?: string,
   fallbackElement?: HTMLElement
 ) {
@@ -187,7 +219,7 @@ function attemptFocus(
  * Moves focus to a given element (and select it if it is a selectable input)
  * Returns whether the focus was successfully moved to the given element
  */
-function focus(element: FocusableTarget | undefined) {
+function focus(element?: FocusableTarget | null) {
   if (element && element.focus) {
     // NOTE: we prevent scrolling on focus.
     // This is so we don't cause jarring transitions for users.
@@ -199,5 +231,17 @@ function focus(element: FocusableTarget | undefined) {
   return getCurrentlyFocusedElement() === element;
 }
 
-export { createFocusTrap };
+const MOVE_FOCUS_ERROR = `Could not move focus to an element inside the focus scope (see details below).
+
+- your focus scope should contain at least one focusable element
+- or a focusable element should be provided to \`elementToMoveFocusTo\`
+`;
+
+const RETURN_FOCUS_ERROR = `Could not return focus to an element outside the focus scope (see details below).
+
+- the element that was focused before creating the focus scope should still exists
+- or a focusable element should be provided to \`elementToReturnFocusTo\`
+`;
+
+export { createFocusScope };
 export type { FocusableTarget };
