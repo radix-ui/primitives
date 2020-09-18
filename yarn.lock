@@ -2070,9 +2070,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-switch@workspace:packages/react/switch"
   dependencies:
-    "@interop-ui/react-use-size": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
+    "@stitches/react": 0.0.3-canary.1
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
@@ -3551,6 +3551,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stitches/core@npm:^0.0.3-canary.1":
+  version: 0.0.3-canary.1
+  resolution: "@stitches/core@npm:0.0.3-canary.1"
+  dependencies:
+    "@types/node": ^13.11.1
+    tslib: ^1.11.1
+  checksum: 4e5e4b7066cd3777ca77f5d643b75cbc626c9b910e6c4c1b44af5a7045fb053ac218200a1eba65bfe3f087a68855cd0302033f0d2575cb511faf063f9e16e6be
+  languageName: node
+  linkType: hard
+
+"@stitches/react@npm:0.0.3-canary.1":
+  version: 0.0.3-canary.1
+  resolution: "@stitches/react@npm:0.0.3-canary.1"
+  dependencies:
+    "@stitches/core": ^0.0.3-canary.1
+    "@types/node": ^13.11.1
+    "@types/react-test-renderer": ^16.9.3
+    tslib: ^1.11.1
+  peerDependencies:
+    react: ^16.13.1
+  checksum: 8361276821cdfbbb55b6185cf54109da0c285edc03467e61435ff07f75cff0305295181b5c6916003410aac3b89c862bc96ab4672a4cd6cef7140f47c347db68
+  languageName: node
+  linkType: hard
+
 "@storybook/addons@npm:6.0.17":
   version: 6.0.17
   resolution: "@storybook/addons@npm:6.0.17"
@@ -4473,6 +4497,13 @@ __metadata:
   version: 14.6.0
   resolution: "@types/node@npm:14.6.0"
   checksum: ff23553ab77516d0f90b6710a041a49723fc1b1ca33a5379d5746068cac8b9ddbec428d3a4913afaee50bcdc69b9583843740a18a3519ae997982694f5287c6b
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^13.11.1":
+  version: 13.13.21
+  resolution: "@types/node@npm:13.13.21"
+  checksum: 8e88d06fa585e932d3158644d2aefb9dcd3a3e0383594d820044b5264f912126c0fe32b33cdb83e2e1d11560240c64e5b1ac72bbe5bb0f96936f3bd1bb76aeb3
   languageName: node
   linkType: hard
 
@@ -18567,7 +18598,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.0.0, tslib@npm:^1.10.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
+"tslib@npm:^1.0.0, tslib@npm:^1.10.0, tslib@npm:^1.11.1, tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
   version: 1.13.0
   resolution: "tslib@npm:1.13.0"
   checksum: 5dc3bdaea3b67c76ef4a14c28fcb2171da7bcf292fd9c59a260098729626b1ce766c52b588f08e324ed9a0c52ea8a93a815920f980d75981abc9d850fbf310fb
