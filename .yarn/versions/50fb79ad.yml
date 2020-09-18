@@ -1,3 +1,5 @@
+releases:
+  "@interop-ui/react-lock-modular-temp": prerelease
+
 declined:
   - interop-ui
-  - "@interop-ui/react-lock-modular-temp"
