@@ -1,3 +1,5 @@
-undecided:
+releases:
+  "@interop-ui/react-switch": prerelease
+
+declined:
   - interop-ui
-  - "@interop-ui/react-switch"
