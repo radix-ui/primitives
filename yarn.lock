@@ -2023,6 +2023,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-progress@workspace:packages/react/progress":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-progress@workspace:packages/react/progress"
+  dependencies:
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    "@stitches/react": 0.0.3-canary.1
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ">=16"
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-radio@workspace:packages/react/radio":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-radio@workspace:packages/react/radio"
