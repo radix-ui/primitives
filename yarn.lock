@@ -2023,9 +2023,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-progress@workspace:packages/react/progress":
+"@interop-ui/react-progress-bar@workspace:packages/react/progress-bar":
   version: 0.0.0-use.local
-  resolution: "@interop-ui/react-progress@workspace:packages/react/progress"
+  resolution: "@interop-ui/react-progress-bar@workspace:packages/react/progress-bar"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"

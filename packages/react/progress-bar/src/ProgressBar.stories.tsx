@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Progress, styles } from './Progress';
+import { ProgressBar, styles } from './ProgressBar';
 import { createStyled } from '@stitches/react';
 
-export default { title: 'Progress' };
+export default { title: 'ProgressBar' };
 
 const { styled } = createStyled({
   tokens: {
@@ -22,11 +22,11 @@ export const Basic = () => {
   const toggleIndeterminate = useIndeterminateToggle(value, setValue);
   return (
     <div>
-      <Progress style={styles.root} value={value}>
-        <Progress.Indicator
+      <ProgressBar style={styles.root} value={value}>
+        <ProgressBar.Indicator
           style={{ ...styles.indicator, width: percentage ?? `${percentage}%` }}
         />
-      </Progress>
+      </ProgressBar>
       <hr />
       <button onClick={toggleIndeterminate}>Toggle Indeterminate</button>
       <ProgressRange value={value} setValue={setValue} />
@@ -40,12 +40,12 @@ export const StitchesStyle = () => {
   const toggleIndeterminate = useIndeterminateToggle(value, setValue);
   return (
     <div>
-      <Progress as={Root} value={value} max={max}>
-        <Progress.Indicator
+      <ProgressBar as={Root} value={value} max={max}>
+        <ProgressBar.Indicator
           as={Indicator}
           style={{ width: percentage != null ? `${percentage}%` : undefined }}
         />
-      </Progress>
+      </ProgressBar>
       <hr />
       <button onClick={toggleIndeterminate}>Toggle Indeterminate</button>
       <ProgressRange value={value} setValue={setValue} max={max} />
