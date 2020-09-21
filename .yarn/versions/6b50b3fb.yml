@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-separator": prerelease
+
+declined:
+  - interop-ui
