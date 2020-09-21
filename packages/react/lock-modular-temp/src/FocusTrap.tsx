@@ -6,11 +6,10 @@ import { createFocusTrap } from './createFocusTrap';
 function useFocusTrap(ref: React.RefObject<HTMLElement>) {
   React.useEffect(() => {
     const container = ref.current;
-    let destroyFocusTrap = () => {};
     if (container) {
-      destroyFocusTrap = createFocusTrap(container);
+      return createFocusTrap(container);
     }
-    return destroyFocusTrap;
+    return () => {};
   }, [ref]);
 }
 
@@ -19,7 +18,7 @@ type FocusTrapProps = { children: React.ReactNode };
 function FocusTrap({ children }: FocusTrapProps) {
   const child = React.Children.only(children);
   if (!React.isValidElement(child) || ReactIs.isFragment(child)) {
-    throw new Error('Focus Trap needs to have a single valid React child.');
+    throw new Error('FocusTrap needs to have a single valid React child.');
   }
   return <FocusTrapImpl>{child}</FocusTrapImpl>;
 }
