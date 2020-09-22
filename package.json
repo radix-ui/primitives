@@ -40,7 +40,6 @@
     "@typescript-eslint/parser": "2.x",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
-    "babel-plugin-dev-expression": "^0.2.2",
     "eslint": "6.x",
     "eslint-config-react-app": "^5.2.1",
     "eslint-plugin-flowtype": "4.x",

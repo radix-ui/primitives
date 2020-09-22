@@ -5937,15 +5937,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-dev-expression@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "babel-plugin-dev-expression@npm:0.2.2"
-  peerDependencies:
-    "@babel/core": ^7.0.0
-  checksum: 3bd43a87ebca39ff02dc9bc77fdd8c0019b57eb51c6cc65bf4a46a88b5d1366a637059345edf051dab892bc7ea9f1a747e64ac565430ec1349cdc47e525f1885
-  languageName: node
-  linkType: hard
-
 "babel-plugin-dynamic-import-node@npm:^2.3.3":
   version: 2.3.3
   resolution: "babel-plugin-dynamic-import-node@npm:2.3.3"
@@ -11295,7 +11286,6 @@ fsevents@^1.2.7:
     "@typescript-eslint/parser": 2.x
     babel-eslint: ^10.1.0
     babel-loader: ^8.1.0
-    babel-plugin-dev-expression: ^0.2.2
     eslint: 6.x
     eslint-config-react-app: ^5.2.1
     eslint-plugin-flowtype: 4.x
