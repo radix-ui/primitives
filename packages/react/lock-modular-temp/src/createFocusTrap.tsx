@@ -86,10 +86,10 @@ function addFocusBlurListeners(state: FocusTrapState) {
 
   function handleBlur(event: FocusEvent) {
     const relatedTarget = event.relatedTarget as Element | null;
-    // We only need to respond to a blur event if another element outisde of the popover is receiving focus.
+    // We only need to respond to a blur event if another element outside is receiving focus.
     // https://github.com/modulz/modulz/pull/1215
-    handleFocusOutside(relatedTarget);
     if (relatedTarget && isTargetOutsideElement(relatedTarget, state.container)) {
+      handleFocusOutside(relatedTarget);
     }
   }
 
