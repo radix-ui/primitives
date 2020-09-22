@@ -14,7 +14,7 @@ export const Basic = () => {
         <AlertDialog.Description style={styles.description}>
           This will do a very dangerous thing. Thar be dragons!
         </AlertDialog.Description>
-        <AlertDialog.Confirm style={styles.confirm}>yolo, do it</AlertDialog.Confirm>
+        <AlertDialog.Action style={styles.action}>yolo, do it</AlertDialog.Action>
         <AlertDialog.Cancel style={styles.cancel}>maybe not</AlertDialog.Cancel>
       </AlertDialog.Content>
     </AlertDialog>
@@ -61,16 +61,16 @@ export const InlineStyle = () => {
         <AlertDialog.Description>
           This will do a very dangerous thing. Thar be dragons!
         </AlertDialog.Description>
-        <AlertDialog.Confirm
+        <AlertDialog.Action
           style={{
-            ...styles.confirm,
+            ...styles.action,
             ...buttonStyles,
             background: 'crimson',
             color: '#fff',
           }}
         >
           yolo, do it
-        </AlertDialog.Confirm>
+        </AlertDialog.Action>
         <AlertDialog.Cancel
           style={{
             ...styles.cancel,
@@ -112,63 +112,10 @@ export const Controlled = () => {
             Houses are very expensive and it looks like you only have €20 in the bank. Maybe consult
             with a financial advisor?
           </AlertDialog.Description>
-          <AlertDialog.Confirm as={WarningButton} onClick={() => setHousePurchased(true)}>
+          <AlertDialog.Action as={WarningButton} onClick={() => setHousePurchased(true)}>
             buy it anyway
-          </AlertDialog.Confirm>
+          </AlertDialog.Action>
           <AlertDialog.Cancel as={Button}>good point, I'll reconsider</AlertDialog.Cancel>
-        </AlertDialog.Content>
-      </AlertDialog>
-    </div>
-  );
-};
-
-export const ManualAccessibility = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [hacked, setHacked] = React.useState(false);
-  const cancelRef = React.useRef<HTMLButtonElement>(null);
-  const labelId = 'label';
-  const descId = 'desc';
-  return (
-    <div>
-      <h2 id={labelId}>
-        {hacked ? "Halp! We've been hacked!" : 'Do you want to hack the mainframe?'}
-      </h2>
-      <AlertDialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
-        <AlertDialog.Trigger
-          as={Button}
-          onClick={(e) => {
-            if (hacked) {
-              e.preventDefault();
-              setHacked(false);
-            }
-          }}
-        >
-          {hacked ? 'Halp! Fix me!' : 'Hack the mainframe?'}
-        </AlertDialog.Trigger>
-        <AlertDialog.Overlay as={Overlay} />
-        <AlertDialog.Content
-          as={Content}
-          leastDestructiveActionRef={cancelRef}
-          aria-labelledby={labelId}
-          aria-describedby={descId}
-        >
-          <div id={descId}>Only l337 h4x0rs can hack the mainframe. Are you ready?</div>
-          <Button
-            onClick={() => {
-              setIsOpen(false);
-            }}
-            ref={cancelRef}
-          >
-            I am not worthy
-          </Button>
-          <Button
-            onClick={() => {
-              setIsOpen(false);
-              setHacked(true);
-            }}
-          >
-            I am l337, let's hack
-          </Button>
         </AlertDialog.Content>
       </AlertDialog>
     </div>

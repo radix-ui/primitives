@@ -29,7 +29,7 @@ type AlertDialogContextValue = {
 };
 
 type AlertDialogContentContextValue = {
-  leastDestructiveActionRef: React.MutableRefObject<HTMLElement | null | undefined>;
+  cancelRef: React.MutableRefObject<HTMLElementTagNameMap[typeof CANCEL_DEFAULT_TAG] | null>;
   ownerDocumentRef: React.MutableRefObject<Document>;
 };
 
@@ -51,7 +51,7 @@ interface AlertDialogStaticProps {
   Overlay: typeof AlertDialogOverlay;
   Content: typeof AlertDialogContent;
   Cancel: typeof AlertDialogCancel;
-  Confirm: typeof AlertDialogConfirm;
+  Action: typeof AlertDialogAction;
   Title: typeof AlertDialogTitle;
   Description: typeof AlertDialogDescription;
 }
@@ -148,35 +148,30 @@ type AlertDialogCancelProps = DialogCloseProps &
 const AlertDialogCancel = forwardRef<typeof CANCEL_DEFAULT_TAG, AlertDialogCancelProps>(
   function AlertDialogCancel(props, forwardedRef) {
     const { as = CANCEL_DEFAULT_TAG, ...cancelProps } = props;
-    const { leastDestructiveActionRef } = useAlertDialogContentContext(CANCEL_NAME);
-    const ref = useComposedRefs(forwardedRef, leastDestructiveActionRef as any);
+    const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
+    const ref = useComposedRefs(forwardedRef, cancelRef);
     return <Dialog.Close {...interopDataAttrObj('cancel')} as={as} ref={ref} {...cancelProps} />;
   }
 );
 
 /* -------------------------------------------------------------------------------------------------
- * AlertDialogConfirm
+ * AlertDialogAction
  * -----------------------------------------------------------------------------------------------*/
 
-const CONFIRM_NAME = 'AlertDialog.Confirm';
-const CONFIRM_DEFAULT_TAG = 'button';
+const ACTION_NAME = 'AlertDialog.Action';
+const ACTION_DEFAULT_TAG = 'button';
 
-type AlertDialogConfirmDOMProps = React.ComponentPropsWithoutRef<typeof CONFIRM_DEFAULT_TAG>;
-type AlertDialogConfirmOwnProps = {};
-type AlertDialogConfirmProps = DialogCloseProps &
-  AlertDialogConfirmOwnProps &
-  AlertDialogConfirmDOMProps;
+type AlertDialogActionDOMProps = React.ComponentPropsWithoutRef<typeof ACTION_DEFAULT_TAG>;
+type AlertDialogActionOwnProps = {};
+type AlertDialogActionProps = DialogCloseProps &
+  AlertDialogActionOwnProps &
+  AlertDialogActionDOMProps;
 
-const AlertDialogConfirm = forwardRef<typeof CONFIRM_DEFAULT_TAG, AlertDialogCancelProps>(
-  function AlertDialogConfirm(props, forwardedRef) {
-    const { as = CONFIRM_DEFAULT_TAG, ...confirmProps } = props;
+const AlertDialogAction = forwardRef<typeof ACTION_DEFAULT_TAG, AlertDialogCancelProps>(
+  function AlertDialogAction(props, forwardedRef) {
+    const { as = ACTION_DEFAULT_TAG, ...actionProps } = props;
     return (
-      <Dialog.Close
-        {...interopDataAttrObj('confirm')}
-        as={as}
-        ref={forwardedRef}
-        {...confirmProps}
-      />
+      <Dialog.Close {...interopDataAttrObj('action')} as={as} ref={forwardedRef} {...actionProps} />
     );
   }
 );
@@ -192,17 +187,7 @@ type AlertDialogContentDOMProps = Omit<
   React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>,
   'id'
 >;
-type AlertDialogContentOwnProps = {
-  /**
-   * To prevent accidental destructive behavior if a user reacts too quickly to an alert prompt, an
-   * alert dialog should focus on the least destructive action button when it opens. This is the
-   * same as `refToFocusOnOpen` in `Dialog`, but it's explicitly named here to clarify that
-   * distinction. This can be passed when not using `AlertDialog.Cancel`.
-   *
-   * @see https://www.w3.org/TR/wai-aria-practices-1.2/examples/dialog-modal/alertdialog.html
-   */
-  leastDestructiveActionRef?: React.RefObject<HTMLElement | null | undefined>;
-};
+type AlertDialogContentOwnProps = {};
 type AlertDialogContentProps = Omit<DialogContentProps, 'refToFocusOnOpen'> &
   AlertDialogContentDOMProps &
   AlertDialogContentOwnProps;
@@ -214,13 +199,10 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       'aria-describedby': ariaDescribedBy,
-      leastDestructiveActionRef: leastDestructiveActionRefProp,
       ...dialogContentProps
     } = props;
     const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
     const cancelRef = React.useRef<HTMLElementTagNameMap[typeof CANCEL_DEFAULT_TAG] | null>(null);
-    const leastDestructiveActionRef = leastDestructiveActionRefProp || cancelRef;
-
     const ownRef = React.useRef<HTMLElementTagNameMap[typeof CONTENT_DEFAULT_TAG] | null>(null);
     const ownerDocumentRef = useDocumentRef(ownRef);
     const ref = useComposedRefs(forwardedRef, ownRef);
@@ -238,15 +220,15 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
         aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
         aria-label={ariaLabel || undefined}
         {...dialogContentProps}
-        refToFocusOnOpen={leastDestructiveActionRef}
+        refToFocusOnOpen={cancelRef}
       >
         <AlertDialogContentContext.Provider
           value={React.useMemo(() => {
             return {
-              leastDestructiveActionRef,
+              cancelRef,
               ownerDocumentRef,
             };
-          }, [leastDestructiveActionRef, ownerDocumentRef])}
+          }, [cancelRef, ownerDocumentRef])}
         >
           <AlertDialogContentInner {...props} />
         </AlertDialogContentContext.Provider>
@@ -342,7 +324,7 @@ const AlertDialogDescription = forwardRef<
 /* ---------------------------------------------------------------------------------------------- */
 
 AlertDialog.Cancel = AlertDialogCancel;
-AlertDialog.Confirm = AlertDialogConfirm;
+AlertDialog.Action = AlertDialogAction;
 AlertDialog.Content = AlertDialogContent;
 AlertDialog.Description = AlertDialogDescription;
 AlertDialog.Overlay = AlertDialogOverlay;
@@ -351,7 +333,7 @@ AlertDialog.Trigger = AlertDialogTrigger;
 
 AlertDialog.Title.displayName = TITLE_NAME;
 AlertDialog.Cancel.displayName = CANCEL_NAME;
-AlertDialog.Confirm.displayName = CONFIRM_NAME;
+AlertDialog.Action.displayName = ACTION_NAME;
 AlertDialog.Content.displayName = CONTENT_NAME;
 AlertDialog.Description.displayName = DESCRIPTION_NAME;
 AlertDialog.Overlay.displayName = OVERLAY_NAME;
@@ -372,8 +354,8 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
     ...cssReset(CANCEL_DEFAULT_TAG),
     ...dialogStyles.close,
   },
-  confirm: {
-    ...cssReset(CONFIRM_DEFAULT_TAG),
+  action: {
+    ...cssReset(ACTION_DEFAULT_TAG),
     ...dialogStyles.close,
   },
   content: {
@@ -394,7 +376,7 @@ export type {
   AlertDialogOverlayProps,
   AlertDialogContentProps,
   AlertDialogCancelProps,
-  AlertDialogConfirmProps,
+  AlertDialogActionProps,
   AlertDialogTriggerProps,
   AlertDialogTitleProps,
   AlertDialogDescriptionProps,
