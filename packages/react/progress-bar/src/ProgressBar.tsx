@@ -139,7 +139,7 @@ ProgressBar.propTypes = {
     let strVal = String(propValue);
     if (propValue && !isValidMaxNumber(propValue)) {
       return new Error(
-        `Invalid ${location} \`${propFullName}\` of value \`${strVal}\` supplied to \`${componentName}\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`
+        `Invalid ${location} '${propFullName}' of value '${strVal}' supplied to '${componentName}'. Only numbers greater than 0 are valid max values. Defaulting to '${DEFAULT_MAX}'.`
       );
     }
     return null;
@@ -150,12 +150,12 @@ ProgressBar.propTypes = {
     let max = isValidMaxNumber(props.max) ? props.max : DEFAULT_MAX;
     if (valueProp != null && !isValidValueNumber(valueProp, max)) {
       return new Error(
-        `Invalid ${location} \`${propFullName}\` of value \`${strVal}\` supplied to \`${componentName}\`. The \`value\` prop must be:
+        `Invalid ${location} '${propFullName}' of value '${strVal}' supplied to '${componentName}'. The 'value' prop must be:
  - a positive number
- - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no max prop is set)
- - \`null\` if the progress bar is indeterminate.
+ - less than the value passed to 'max' (or ${DEFAULT_MAX} if no max prop is set)
+ - 'null' if the progress bar is indeterminate.
 
-Defaulting to \`null\`.`
+Defaulting to 'null'.`
       );
     }
     return null;
