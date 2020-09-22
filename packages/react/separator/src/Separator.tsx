@@ -65,14 +65,14 @@ const [styles, interopDataAttrObj] = createStyleObj(NAME, {
 Separator.propTypes = {
   orientation(props, propName, componentName, location, propFullName) {
     let propValue = props[propName];
+    let strVal = String(propValue);
     if (!isValidOrientation(props[propName])) {
       return new Error(
-        `Invalid ${location} \`${propFullName}\` of value \`${String(
-          propValue
-        )}\` supplied to \`${componentName}\`, expected one of:${listify(
-          ORIENTATIONS,
-          '\n - '
-        )}\nDefaulting to \`${DEFAULT_ORIENTATION}\`.`
+        `Invalid ${location} \`${propFullName}\` of value \`${strVal}\` supplied to \`${componentName}\`, expected one of:
+ - horizontal
+ - vertical
+
+ Defaulting to \`${DEFAULT_ORIENTATION}\`.`
       );
     }
     return null;
@@ -84,8 +84,4 @@ export type { SeparatorProps };
 
 function isValidOrientation(orientation: any): orientation is Orientation {
   return ORIENTATIONS.includes(orientation);
-}
-
-function listify(arr: string[] | readonly string[], sep: string) {
-  return arr.length > 0 ? sep + arr.join(sep) : '';
 }
