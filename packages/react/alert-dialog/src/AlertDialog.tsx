@@ -70,12 +70,7 @@ const AlertDialog: React.FC<AlertDialogProps> & AlertDialogStaticProps = functio
   return (
     <Dialog {...dialogProps}>
       <AlertDialogContext.Provider
-        value={React.useMemo(() => {
-          return {
-            descriptionId,
-            titleId,
-          };
-        }, [descriptionId, titleId])}
+        value={React.useMemo(() => ({ descriptionId, titleId }), [descriptionId, titleId])}
       >
         {children}
       </AlertDialogContext.Provider>
@@ -275,53 +270,15 @@ const AlertDialogContentInner: React.FC<AlertDialogContentProps> = (props) => {
   const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
 
   if (process.env.NODE_ENV === 'development') {
-    // Hook is called conditionally but safely, as it's consistent in a given environment
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    React.useEffect(() => {
-      const ownerDocument = ownerDocumentRef.current;
-
-      // We need to query the DOM to make sure our labeling elements exist. Rendering of inner
-      // elements seems to be delayed by `requestAnimationFrame` in the `Lock` component, so this
-      // timeout is only meant to deal with that. Ideally we could revisit this and solve the race
-      // condition. In the event that consumers need to query the inner DOM nodes here they will run
-      // into these same challenges.
-      const timeout = window.setTimeout(() => {
-        const hasLabel = Boolean(
-          ariaLabel ||
-            (ariaLabelledBy && ownerDocument.getElementById(ariaLabelledBy)) ||
-            (titleId && ownerDocument.getElementById(titleId))
-        );
-        const hasDescription = Boolean(
-          (ariaDescribedBy && ownerDocument.getElementById(ariaDescribedBy)) ||
-            (descriptionId && ownerDocument.getElementById(descriptionId))
-        );
-
-        // TODO: Add link to docs when available
-        warning(
-          hasLabel,
-          multiline([
-            `${CONTENT_NAME} requires a label for the component to be accessible for screen reader users.`,
-            `You can label the ${CONTENT_NAME} by passing a ${TITLE_NAME} component as a child, which also benefits sighted users by adding visible context to the dialog.`,
-            `Alternatively, you can use your own component as a title by assigning it an \`id\` and passing the same value to the \`aria-labelledby\` prop in ${CONTENT_NAME}. If the label is confusing or duplicative for sighted users, you can also pass a label directly by using the \`aria-label\` prop.`,
-            `For more information, see https://LINK-TO-DOCS.com`,
-          ])
-        );
-
-        warning(
-          hasDescription,
-          multiline([
-            `${CONTENT_NAME} requires a description for the component to be accessible for screen reader users.`,
-            `You can add a description to the ${CONTENT_NAME} by passing a ${DESCRIPTION_NAME} component as a child, which also benefits sighted users by adding visible context to the dialog.`,
-            `Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in ${CONTENT_NAME}. If the description is confusing or duplicative for sighted users, you can use the \`interop-ui/react-visually-hidden\` component as a wrapper around your description component.`,
-            `For more information, see https://LINK-TO-DOCS.com`,
-          ])
-        );
-      }, 0);
-
-      return function () {
-        window.clearTimeout(timeout);
-      };
-    }, [titleId, ariaLabel, ariaDescribedBy, descriptionId, ariaLabelledBy, ownerDocumentRef]);
+    useDevModeLabelWarnings({
+      ariaLabel,
+      ariaLabelledBy,
+      ariaDescribedBy,
+      descriptionId,
+      ownerDocumentRef,
+      titleId,
+    });
   }
 
   return children as React.ReactElement<any, any>;
@@ -345,8 +302,8 @@ type AlertDialogTitleProps = AlertDialogTitleDOMProps & AlertDialogTitleOwnProps
 
 const AlertDialogTitle = forwardRef<typeof TITLE_DEFAULT_TAG, AlertDialogTitleProps>(
   function AlertDialogTitle(props, forwardedRef) {
-    let { as: Comp = TITLE_DEFAULT_TAG, ...titleProps } = props;
-    let { titleId } = useAlertDialogContext('AlertDialogTitle');
+    const { as: Comp = TITLE_DEFAULT_TAG, ...titleProps } = props;
+    const { titleId } = useAlertDialogContext('AlertDialogTitle');
     return (
       <Comp {...interopDataAttrObj('title')} ref={forwardedRef} id={titleId} {...titleProps} />
     );
@@ -370,8 +327,8 @@ const AlertDialogDescription = forwardRef<
   typeof DESCRIPTION_DEFAULT_TAG,
   AlertDialogDescriptionProps
 >(function AlertDialogDescription(props, forwardedRef) {
-  let { as: Comp = DESCRIPTION_DEFAULT_TAG, ...descriptionProps } = props;
-  let { descriptionId } = useAlertDialogContext('AlertDialogDescription');
+  const { as: Comp = DESCRIPTION_DEFAULT_TAG, ...descriptionProps } = props;
+  const { descriptionId } = useAlertDialogContext('AlertDialogDescription');
   return (
     <Comp
       {...interopDataAttrObj('description')}
@@ -392,13 +349,13 @@ AlertDialog.Overlay = AlertDialogOverlay;
 AlertDialog.Title = AlertDialogTitle;
 AlertDialog.Trigger = AlertDialogTrigger;
 
-AlertDialogTitle.displayName = TITLE_NAME;
-AlertDialogCancel.displayName = CANCEL_NAME;
-AlertDialogConfirm.displayName = CONFIRM_NAME;
-AlertDialogContent.displayName = CONTENT_NAME;
-AlertDialogDescription.displayName = DESCRIPTION_NAME;
-AlertDialogOverlay.displayName = OVERLAY_NAME;
-AlertDialogTrigger.displayName = TRIGGER_NAME;
+AlertDialog.Title.displayName = TITLE_NAME;
+AlertDialog.Cancel.displayName = CANCEL_NAME;
+AlertDialog.Confirm.displayName = CONFIRM_NAME;
+AlertDialog.Content.displayName = CONTENT_NAME;
+AlertDialog.Description.displayName = DESCRIPTION_NAME;
+AlertDialog.Overlay.displayName = OVERLAY_NAME;
+AlertDialog.Trigger.displayName = TRIGGER_NAME;
 AlertDialog.displayName = ROOT_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
@@ -443,6 +400,64 @@ export type {
   AlertDialogDescriptionProps,
 };
 
-function multiline(val: string[] | string, doubleSpace?: boolean) {
-  return Array.isArray(val) ? val.join(doubleSpace ? '\n\n' : '\n') : val;
+// TODO: Add link to docs when available
+const LABEL_WARNING = `${CONTENT_NAME} requires a label for the component to be accessible for screen reader users.
+
+You can label the ${CONTENT_NAME} by passing a ${TITLE_NAME} component as a child, which also benefits sighted users by adding visible context to the dialog.
+
+Alternatively, you can use your own component as a title by assigning it an \`id\` and passing the same value to the \`aria-labelledby\` prop in ${CONTENT_NAME}. If the label is confusing or duplicative for sighted users, you can also pass a label directly by using the \`aria-label\` prop.
+
+For more information, see https://LINK-TO-DOCS.com`;
+
+const DESC_WARNING = `${CONTENT_NAME} requires a description for the component to be accessible for screen reader users.
+
+You can add a description to the ${CONTENT_NAME} by passing a ${DESCRIPTION_NAME} component as a child, which also benefits sighted users by adding visible context to the dialog.
+
+Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in ${CONTENT_NAME}. If the description is confusing or duplicative for sighted users, you can use the \`interop-ui/react-visually-hidden\` component as a wrapper around your description component.
+
+For more information, see https://LINK-TO-DOCS.com`;
+
+function useDevModeLabelWarnings(props: {
+  ariaLabel: string | undefined;
+  ariaLabelledBy: string | undefined;
+  ariaDescribedBy: string | undefined;
+  titleId: string;
+  descriptionId: string;
+  ownerDocumentRef: React.MutableRefObject<Document>;
+}) {
+  const {
+    ariaLabel,
+    ariaLabelledBy,
+    ariaDescribedBy,
+    descriptionId,
+    ownerDocumentRef,
+    titleId,
+  } = props;
+
+  React.useEffect(() => {
+    const ownerDocument = ownerDocumentRef.current;
+
+    // We need to query the DOM to make sure our labeling elements exist. Rendering of inner
+    // elements seems to be delayed by `requestAnimationFrame` in the `Lock` component, so this
+    // timeout is only meant to deal with that. Ideally we could revisit this and solve the race
+    // condition. In the event that consumers need to query the inner DOM nodes here they will run
+    // into these same challenges.
+    const timeout = window.setTimeout(() => {
+      const hasLabel = Boolean(
+        ariaLabel ||
+          (ariaLabelledBy && ownerDocument.getElementById(ariaLabelledBy)) ||
+          (titleId && ownerDocument.getElementById(titleId))
+      );
+      const hasDescription = Boolean(
+        (ariaDescribedBy && ownerDocument.getElementById(ariaDescribedBy)) ||
+          (descriptionId && ownerDocument.getElementById(descriptionId))
+      );
+      warning(hasLabel, LABEL_WARNING);
+      warning(hasDescription, DESC_WARNING);
+    }, 0);
+
+    return function () {
+      window.clearTimeout(timeout);
+    };
+  }, [titleId, ariaLabel, ariaDescribedBy, descriptionId, ariaLabelledBy, ownerDocumentRef]);
 }
