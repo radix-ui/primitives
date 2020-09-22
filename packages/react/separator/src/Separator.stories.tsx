@@ -14,54 +14,55 @@ const { styled } = createStyled({
 
 export const Basic = () => <Separator />;
 
-export const ToggleOrientation = () => {
-  const [orientation, setOrientation] = React.useState<'horizontal' | 'vertical'>('horizontal');
+export const HorizontalOrientation = () => {
   return (
     <div>
-      <OuterBox orientation={orientation}>
-        <InnerBox orientation={orientation}>
-          <p>The following separator is {orientation} and has semantic meaning.</p>
-        </InnerBox>
-        <Separator as={Root} orientation={orientation} />
-        <InnerBox orientation={orientation}>
-          <p>
-            The following separator is {orientation} and is purely decorative. Assistive technology
-            will ignore this element.
-          </p>
-        </InnerBox>
-        <Separator as={Root} orientation={orientation} decorative />
-      </OuterBox>
-      <fieldset>
-        <legend>Select orientation:</legend>
-        {['vertical', 'horizontal'].map((o) => (
-          <div key={o}>
-            <label>
-              <input
-                type="radio"
-                name="orientation"
-                value={o}
-                checked={orientation === o}
-                onChange={(e) => setOrientation(e.target.value as any)}
-              />
-              {o}
-            </label>
-          </div>
-        ))}
-      </fieldset>
+      <div>
+        <p>The following separator is horizontal and has semantic meaning.</p>
+      </div>
+      <Separator as={Root} orientation="horizontal" />
+      <div>
+        <p>
+          The following separator is horizontal and is purely decorative. Assistive technology will
+          ignore this element.
+        </p>
+      </div>
+      <Separator as={Root} orientation="horizontal" decorative />
     </div>
   );
 };
 
-function OuterBox({ children, orientation }: any) {
+export const VerticalOrientation = () => {
+  return (
+    <VerticalSeparatorBox>
+      <VerticalSeparatorInner>
+        <p>The following separator is vertical and has semantic meaning.</p>
+      </VerticalSeparatorInner>
+      <Separator as={Root} orientation="vertical" />
+      <VerticalSeparatorInner>
+        <p>
+          The following separator is vertical and is purely decorative. Assistive technology will
+          ignore this element.
+        </p>
+      </VerticalSeparatorInner>
+      <Separator as={Root} orientation="vertical" decorative />
+    </VerticalSeparatorBox>
+  );
+};
+
+/* -------------------------------------------------------------------------------------------------
+ * Styled components
+ * -----------------------------------------------------------------------------------------------*/
+
+function VerticalSeparatorBox({ children }: any) {
   return (
     <div
       style={{
-        marginBottom: 20,
         height: '200px',
         width: '100%',
         display: 'flex',
         flexWrap: 'wrap',
-        flexDirection: orientation === 'vertical' ? 'row' : 'column',
+        flexDirection: 'row',
       }}
     >
       {children}
@@ -69,21 +70,9 @@ function OuterBox({ children, orientation }: any) {
   );
 }
 
-function InnerBox({ children, orientation }: any) {
-  return (
-    <div
-      style={
-        orientation === 'vertical' ? { width: '200px', margin: '0 20px' } : { margin: '20px 0' }
-      }
-    >
-      {children}
-    </div>
-  );
+function VerticalSeparatorInner({ children }: any) {
+  return <div style={{ width: '200px', margin: '0 20px' }}>{children}</div>;
 }
-
-/* -------------------------------------------------------------------------------------------------
- * Styled components
- * -----------------------------------------------------------------------------------------------*/
 
 const Root = styled('hr', {
   ...(styles.root as any),

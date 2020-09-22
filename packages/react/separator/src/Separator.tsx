@@ -5,8 +5,9 @@ import { cssReset } from '@interop-ui/utils';
 const NAME = 'Separator';
 const DEFAULT_TAG = 'hr';
 const DEFAULT_ORIENTATION = 'horizontal';
+const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
-type Orientation = 'vertical' | 'horizontal';
+type Orientation = typeof ORIENTATIONS[number];
 type SeparatorDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type SeparatorOwnProps = {
   /**
@@ -32,31 +33,10 @@ const Separator = forwardRef<typeof DEFAULT_TAG, SeparatorProps>(function Separa
     ...domProps
   } = props;
 
-  let orientation = orientationProp;
-  if (!isValidOrientation(orientation)) {
-    orientation = DEFAULT_ORIENTATION;
-  }
-
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    React.useEffect(() => {
-      if (orientationProp && !isValidOrientation(orientationProp)) {
-        console.warn(
-          'An invalid `orientation` prop was passed to ' +
-            NAME +
-            '. Only `vertical` and `horizontal` are valid orientations. Defaulting to `' +
-            DEFAULT_ORIENTATION +
-            '`.'
-        );
-      }
-    }, [orientationProp]);
-  }
+  const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
 
   // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
-  let ariaOrientation: 'vertical' | undefined;
-  if (orientation === 'vertical') {
-    ariaOrientation = 'vertical';
-  }
+  const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
 
   const semanticProps = decorative
     ? { role: 'none' }
@@ -82,9 +62,30 @@ const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   },
 });
 
+Separator.propTypes = {
+  orientation(props, propName, componentName, location, propFullName) {
+    let propValue = props[propName];
+    if (!isValidOrientation(props[propName])) {
+      return new Error(
+        `Invalid ${location} \`${propFullName}\` of value \`${String(
+          propValue
+        )}\` supplied to \`${componentName}\`, expected one of:${listify(
+          ORIENTATIONS,
+          '\n - '
+        )}\nDefaulting to \`${DEFAULT_ORIENTATION}\`.`
+      );
+    }
+    return null;
+  },
+};
+
 export { Separator, styles };
 export type { SeparatorProps };
 
 function isValidOrientation(orientation: any): orientation is Orientation {
-  return ['horizontal', 'vertical'].includes(orientation);
+  return ORIENTATIONS.includes(orientation);
+}
+
+function listify(arr: string[] | readonly string[], sep: string) {
+  return arr.length > 0 ? sep + arr.join(sep) : '';
 }
