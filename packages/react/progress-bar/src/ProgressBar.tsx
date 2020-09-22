@@ -15,7 +15,7 @@ type ProgressBarDOMProps = React.ComponentPropsWithoutRef<typeof PROGRESS_DEFAUL
 type ProgressBarOwnProps = {
   value?: number | null | undefined;
   max?: number;
-  valueLabel?(value: number): string;
+  getValueLabel?(value: number, max: number): string;
 };
 type ProgressBarProps = ProgressBarOwnProps & ProgressBarDOMProps;
 
@@ -38,51 +38,13 @@ const ProgressBar = forwardRef<
     as: Comp = PROGRESS_DEFAULT_TAG,
     children,
     value: valueProp,
-    valueLabel: valueLabelProp,
     max: maxProp,
+    getValueLabel = defaultGetValueLabel,
     ...progressProps
   } = props;
 
-  let max = DEFAULT_MAX;
-  if (isValidMaxNumber(maxProp)) {
-    max = maxProp;
-  }
-
-  let value: number | null = null;
-  if (isValidValueNumber(valueProp, max)) {
-    value = valueProp;
-  }
-
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    React.useEffect(() => {
-      if (maxProp && !isValidMaxNumber(maxProp)) {
-        console.warn(
-          'An invalid `max` prop was passed to ' +
-            PROGRESS_NAME +
-            '. Only numbers greater than 0 are valid max values. Defaulting to `' +
-            DEFAULT_MAX +
-            '`.'
-        );
-      }
-    }, [maxProp]);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    React.useEffect(() => {
-      if (valueProp != null && !isValidValueNumber(valueProp, max)) {
-        console.warn(
-          'An invalid `value` prop was passed to ' +
-            PROGRESS_NAME +
-            '. The `value` prop must be a positive number that is:\n' +
-            ' - a positive number\n' +
-            ' - less than the value passed to `max` (or ' +
-            DEFAULT_MAX +
-            ' if no max prop is set)\n' +
-            ' - `null` if the progress bar is indeterminate\n\n' +
-            'Defaulting to `null`.'
-        );
-      }
-    }, [valueProp, max]);
-  }
+  let max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+  let value = isValidValueNumber(valueProp, max) ? valueProp : null;
 
   const ctx: ProgressBarContextValue = React.useMemo(
     () => ({
@@ -92,10 +54,7 @@ const ProgressBar = forwardRef<
     [value, max]
   );
 
-  let valueLabel: string | undefined;
-  if (isNumber(value)) {
-    valueLabel = valueLabelProp ? valueLabelProp(value) : `${Math.round(value / max)}%`;
-  }
+  let valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
 
   return (
     <Comp
@@ -174,8 +133,41 @@ const [styles, interopDataAttrObj] = createStyleObj(PROGRESS_NAME, {
   },
 });
 
+ProgressBar.propTypes = {
+  max(props, propName, componentName, location, propFullName) {
+    let propValue = props[propName];
+    let strVal = String(propValue);
+    if (propValue && !isValidMaxNumber(propValue)) {
+      return new Error(
+        `Invalid ${location} \`${propFullName}\` of value \`${strVal}\` supplied to \`${componentName}\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`
+      );
+    }
+    return null;
+  },
+  value(props, propName, componentName, location, propFullName) {
+    let valueProp = props[propName];
+    let strVal = String(valueProp);
+    let max = isValidMaxNumber(props.max) ? props.max : DEFAULT_MAX;
+    if (valueProp != null && !isValidValueNumber(valueProp, max)) {
+      return new Error(
+        `Invalid ${location} \`${propFullName}\` of value \`${strVal}\` supplied to \`${componentName}\`. The \`value\` prop must be:
+ - a positive number
+ - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no max prop is set)
+ - \`null\` if the progress bar is indeterminate.
+
+Defaulting to \`null\`.`
+      );
+    }
+    return null;
+  },
+};
+
 export type { ProgressBarProps, ProgressBarIndicatorProps, ProgressBarState };
 export { ProgressBar, styles, useProgressBarState };
+
+function defaultGetValueLabel(value: number, max: number) {
+  return `${Math.round((value / max) * 100)}%`;
+}
 
 function getProgressBarState(value: number | undefined | null, maxValue: number): ProgressBarState {
   return value == null ? 'indeterminate' : value === maxValue ? 'complete' : 'loading';
