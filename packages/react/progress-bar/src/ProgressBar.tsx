@@ -178,25 +178,20 @@ function isNumber(value: any): value is number {
 }
 
 function isValidMaxNumber(max: any): max is number {
+  // prettier-ignore
   return (
-    // is a number
     isNumber(max) &&
-    // isn't NaN
     !isNaN(max) &&
-    // is greater than zero
     max > 0
   );
 }
 
 function isValidValueNumber(value: any, max: number): value is number {
+  // prettier-ignore
   return (
-    // is a number
     isNumber(value) &&
-    // isn't NaN
     !isNaN(value) &&
-    // isn't bigger than our max value
     value <= max &&
-    // isn't less than zero
     value >= 0
   );
 }
