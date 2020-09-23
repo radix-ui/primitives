@@ -1852,7 +1852,6 @@ __metadata:
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16.8"
-    react-dom: ">=16.8"
   languageName: unknown
   linkType: soft
 
@@ -1911,6 +1910,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-checkbox@workspace:packages/react/checkbox"
   dependencies:
+    "@interop-ui/react-label": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -1966,6 +1966,18 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.3.0
+  peerDependencies:
+    react: ">=16"
+  languageName: unknown
+  linkType: soft
+
+"@interop-ui/react-label@workspace:*, @interop-ui/react-label@workspace:packages/react/label":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-label@workspace:packages/react/label"
+  dependencies:
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
   languageName: unknown
