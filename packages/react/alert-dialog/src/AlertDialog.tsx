@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import * as React from 'react';
 import { Dialog, styles as dialogStyles } from '@interop-ui/react-dialog';
 import { cssReset, makeId, warning } from '@interop-ui/utils';
