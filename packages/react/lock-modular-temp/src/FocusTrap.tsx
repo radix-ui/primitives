@@ -18,7 +18,9 @@ type FocusTrapProps = { children: React.ReactNode };
 function FocusTrap({ children }: FocusTrapProps) {
   const child = React.Children.only(children);
   if (!React.isValidElement(child) || ReactIs.isFragment(child)) {
-    throw new Error('FocusTrap needs to have a single valid React child.');
+    throw new Error(
+      'FocusTrap needs to have a single valid React child that renders a DOM element.'
+    );
   }
   return <FocusTrapImpl>{child}</FocusTrapImpl>;
 }
