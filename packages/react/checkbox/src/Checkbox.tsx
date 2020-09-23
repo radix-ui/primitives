@@ -23,6 +23,7 @@ type CheckboxDOMProps = React.ComponentPropsWithoutRef<typeof CHECKBOX_DEFAULT_T
 type CheckboxOwnProps = {
   checked?: CheckedState;
   defaultChecked?: CheckedState;
+  required?: InputDOMProps['required'];
   readOnly?: InputDOMProps['readOnly'];
   onCheckedChange?: InputDOMProps['onChange'];
 };
@@ -42,6 +43,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
       children,
       checked: checkedProp,
       defaultChecked,
+      required,
       disabled,
       readOnly,
       style,
@@ -70,6 +72,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           ref={inputRef}
           type="checkbox"
           checked={checked === 'indeterminate' ? false : checked}
+          required={required}
           disabled={disabled}
           readOnly={readOnly}
           hidden
@@ -87,6 +90,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           role="checkbox"
           aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
           aria-labelledby={labelledBy}
+          aria-required={required}
           data-state={getState(checked)}
           data-readonly={readOnly}
           disabled={disabled}
