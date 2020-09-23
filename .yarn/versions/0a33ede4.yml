@@ -25,7 +25,7 @@ releases:
   "@interop-ui/react-use-size": prerelease
   "@interop-ui/react-utils": prerelease
   "@interop-ui/react-visually-hidden": prerelease
-  "@interop-ui/utils": prerelease
+  "@interop-ui/tabbable": prerelease
 
 declined:
   - interop-ui

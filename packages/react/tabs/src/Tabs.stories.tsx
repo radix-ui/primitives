@@ -24,9 +24,9 @@ export const InlineStyle = () => {
   const disabledId = 'tab2';
 
   function getTabStyle(id: string): React.CSSProperties {
-    let selected = id === selectedId;
-    let focused = id === focusedId;
-    let disabled = id === disabledId;
+    const selected = id === selectedId;
+    const focused = id === focusedId;
+    const disabled = id === disabledId;
     return {
       lineHeight: 1,
       fontWeight: 'bold',

@@ -235,17 +235,21 @@ const Accordion = forwardRef<typeof ACCORDION_DEFAULT_TAG, AccordionProps, Accor
     });
 
     const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
-      const isAccordionKey = ACCORDION_KEYS.includes(event.key);
       const target = event.target as HTMLElement;
+      if (!ACCORDION_KEYS.includes(event.key) || !isButton(target)) {
+        return;
+      }
+
       const buttonNodes = [...buttonNodesRef.current].filter((node) => !(node && node.disabled));
       const buttonCount = buttonNodes.length;
-
-      if (!isAccordionKey || !isButton(target)) return;
       const buttonIndex = buttonNodes.indexOf(target);
 
       if (buttonIndex === -1) return;
-      let nextIndex = buttonIndex;
 
+      // Prevents page scroll while user is navigating
+      event.preventDefault();
+
+      let nextIndex = buttonIndex;
       switch (event.key) {
         case 'Home':
           nextIndex = 0;

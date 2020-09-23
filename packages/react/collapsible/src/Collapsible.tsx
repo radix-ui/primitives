@@ -39,8 +39,8 @@ type CollapsibleButtonProps = CollapsibleButtonDOMProps & CollapsibleButtonOwnPr
 
 const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButtonProps>(
   (props, forwardedRef) => {
-    let { as: Comp = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
-    let context = useCollapsibleContext(BUTTON_NAME);
+    const { as: Comp = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
+    const context = useCollapsibleContext(BUTTON_NAME);
 
     return (
       <Comp
@@ -121,7 +121,7 @@ const Collapsible = forwardRef<
   CollapsibleProps,
   CollapsibleStaticProps
 >((props, forwardedRef) => {
-  let {
+  const {
     as: Comp = COLLAPSIBLE_DEFAULT_TAG,
     id: idProp,
     children,
@@ -132,13 +132,13 @@ const Collapsible = forwardRef<
     ...collapsibleProps
   } = props;
 
-  let [isOpen, setIsOpen] = useControlledState({
+  const [isOpen, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
     onChange: onToggle,
   });
-  let [contentId, setContentId] = React.useState<string>();
-  let context = React.useMemo(
+  const [contentId, setContentId] = React.useState<string>();
+  const context = React.useMemo(
     () => ({
       contentId,
       isOpen,

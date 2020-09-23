@@ -101,6 +101,18 @@
       "react": {
         "version": "detect"
       }
+    },
+    "rules": {
+      "prefer-const": 1,
+      "jsx-a11y/label-has-associated-control": [
+        2,
+        {
+          "controlComponents": [
+            "Checkbox"
+          ],
+          "depth": 3
+        }
+      ]
     }
   },
   "eslintIgnore": [

@@ -1,6 +1,0 @@
-releases:
-  "@interop-ui/react-avatar": prerelease
-
-declined:
-  - interop-ui
-  - "@interop-ui/react-utils"
