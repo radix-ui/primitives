@@ -90,9 +90,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           data-state={getState(checked)}
           data-readonly={readOnly}
           disabled={disabled}
-          onClick={() => {
-            inputRef.current?.click();
-          }}
+          onClick={() => inputRef.current?.click()}
         >
           <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
         </Comp>
