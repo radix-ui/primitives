@@ -76,14 +76,6 @@ function addFocusTrapMarkers(state: FocusTrapState) {
 }
 
 function addFocusBlurListeners(state: FocusTrapState) {
-  document.addEventListener('blur', handleBlur, { capture: true });
-  document.addEventListener('focus', handleFocus, { capture: true });
-
-  return function removeFocusBlurListeners() {
-    document.removeEventListener('blur', handleBlur, { capture: true });
-    document.removeEventListener('focus', handleFocus, { capture: true });
-  };
-
   function handleBlur(event: FocusEvent) {
     const relatedTarget = event.relatedTarget as Element | null;
     // We only need to respond to a blur event if another element outside is receiving focus.
@@ -125,6 +117,14 @@ function addFocusBlurListeners(state: FocusTrapState) {
       );
     }
   }
+
+  document.addEventListener('blur', handleBlur, { capture: true });
+  document.addEventListener('focus', handleFocus, { capture: true });
+
+  return function removeFocusBlurListeners() {
+    document.removeEventListener('blur', handleBlur, { capture: true });
+    document.removeEventListener('focus', handleFocus, { capture: true });
+  };
 }
 
 /* -------------------------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ function isTargetOutsideElement(target: EventTarget | null, element: HTMLElement
 }
 
 function getCurrentlyFocusedElement() {
-  return document.activeElement as HTMLElement | undefined;
+  return document.activeElement;
 }
 
 function getFirstTabbableElement(container: HTMLElement) {
@@ -162,7 +162,7 @@ function isSelectableInput(element: any): element is FocusableTarget & { select:
  * If unsuccessful, displays an error in the console and potentially focus will fall back on a provided `fallbackElement`.
  */
 function attemptFocus(
-  element: FocusableTarget | undefined,
+  element?: FocusableTarget,
   errorMessage?: string,
   fallbackElement?: HTMLElement
 ) {
