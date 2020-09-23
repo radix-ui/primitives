@@ -1852,7 +1852,6 @@ __metadata:
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16.8"
-    react-dom: ">=16.8"
   languageName: unknown
   linkType: soft
 
