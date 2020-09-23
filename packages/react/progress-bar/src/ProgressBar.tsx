@@ -138,25 +138,16 @@ ProgressBar.propTypes = {
     const propValue = props[propName];
     const strVal = String(propValue);
     if (propValue && !isValidMaxNumber(propValue)) {
-      return new Error(
-        `Invalid ${location} '${propFullName}' of value '${strVal}' supplied to '${componentName}'. Only numbers greater than 0 are valid max values. Defaulting to '${DEFAULT_MAX}'.`
-      );
+      return new Error(getInvalidMaxError(strVal, componentName));
     }
     return null;
   },
-  value(props, propName, componentName, location, propFullName) {
+  value(props, propName, componentName) {
     const valueProp = props[propName];
     const strVal = String(valueProp);
     const max = isValidMaxNumber(props.max) ? props.max : DEFAULT_MAX;
     if (valueProp != null && !isValidValueNumber(valueProp, max)) {
-      return new Error(
-        `Invalid ${location} '${propFullName}' of value '${strVal}' supplied to '${componentName}'. The 'value' prop must be:
- - a positive number
- - less than the value passed to 'max' (or ${DEFAULT_MAX} if no max prop is set)
- - 'null' if the progress bar is indeterminate.
-
-Defaulting to 'null'.`
-      );
+      return new Error(getInvalidValueError(strVal, componentName));
     }
     return null;
   },
@@ -194,4 +185,18 @@ function isValidValueNumber(value: any, max: number): value is number {
     value <= max &&
     value >= 0
   );
+}
+
+// Split this out for clearer readability of the error message.
+function getInvalidMaxError(propValue: string, componentName: string) {
+  return `Invalid prop \`max\` of value \`${propValue}\` supplied to \`${componentName}\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`;
+}
+
+function getInvalidValueError(propValue: string, componentName: string) {
+  return `Invalid prop \`value\` of value \`${propValue}\` supplied to \`${componentName}\`. The \`value\` prop must be:
+  - a positive number
+  - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)
+  - \`null\` if the progress bar is indeterminate.
+
+Defaulting to \`null\`.`;
 }
