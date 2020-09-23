@@ -68,7 +68,7 @@ const RadioRoot = forwardRef<typeof ROOT_DEFAULT_TAG, RadioRootProps>(function R
   props,
   forwardedRef
 ) {
-  let {
+  const {
     as: Comp = ROOT_DEFAULT_TAG,
     children,
 
@@ -87,21 +87,21 @@ const RadioRoot = forwardRef<typeof ROOT_DEFAULT_TAG, RadioRootProps>(function R
     ...radioProps
   } = props;
 
-  let isControlled = React.useRef(checkedProp != null);
+  const isControlled = React.useRef(checkedProp != null);
 
-  let inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
-  let [_checked, setChecked] = React.useState(defaultChecked ?? false);
-  let checked = isControlled.current ? checkedProp! : _checked;
+  const [_checked, setChecked] = React.useState(defaultChecked ?? false);
+  const checked = isControlled.current ? checkedProp! : _checked;
 
-  let onChange = useCallbackRef((event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = useCallbackRef((event: React.ChangeEvent<HTMLInputElement>) => {
     onChangeProp && onChangeProp(event);
     if (!isControlled.current) {
       setChecked(event.target.checked);
     }
   });
 
-  let ctx: RadioContextValue = React.useMemo(
+  const ctx: RadioContextValue = React.useMemo(
     () => ({
       onChange,
       checked,
@@ -146,7 +146,7 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
 ) {
   const { as: Comp = INPUT_DEFAULT_TAG, children, ...checkboxInputProps } = props;
 
-  let {
+  const {
     inputRef,
     checked,
     onChange,
@@ -162,7 +162,7 @@ const RadioInput = forwardRef<typeof INPUT_DEFAULT_TAG, RadioInputProps>(functio
   const ref = useComposedRefs(forwardedRef, inputRef);
 
   React.useEffect(() => {
-    for (let prop of inputPropsForRoot) {
+    for (const prop of inputPropsForRoot) {
       warningOnce(
         prop,
         !Object.hasOwnProperty.call(checkboxInputProps, prop),
@@ -227,8 +227,8 @@ const RadioIcon = forwardRef<typeof ICON_DEFAULT_TAG, RadioIconProps>(function R
   props,
   forwardedRef
 ) {
-  let { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
-  let { checked } = useRadioContext(ICON_NAME);
+  const { as: Comp = ICON_DEFAULT_TAG, children, ...checkboxBoxProps } = props;
+  const { checked } = useRadioContext(ICON_NAME);
   return (
     <Comp {...interopDataAttrObj('icon')} ref={forwardedRef} {...checkboxBoxProps}>
       {isFunction(children) ? children({ checked }) : children}

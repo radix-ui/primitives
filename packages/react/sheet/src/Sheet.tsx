@@ -75,7 +75,7 @@ type SheetRootOwnProps = {
 type SheetRootProps = SheetRootOwnProps;
 
 const SheetRoot: React.FC<SheetRootProps> = (props) => {
-  let {
+  const {
     children,
     isOpen,
     onClose: onCloseProp,
@@ -131,8 +131,8 @@ type SheetOverlayProps = SheetOverlayDOMProps & SheetOverlayOwnProps;
 
 const SheetOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, SheetOverlayProps>(
   function SheetOverlay(props, forwardedRef) {
-    let { as: Comp = OVERLAY_DEFAULT_TAG, style, ...sheetProps } = props;
-    let debugContext = useDebugContext();
+    const { as: Comp = OVERLAY_DEFAULT_TAG, style, ...sheetProps } = props;
+    const debugContext = useDebugContext();
     return (
       <Comp
         {...interopDataAttrObj('overlay')}
@@ -162,9 +162,9 @@ const SheetInner = forwardRef<typeof INNER_DEFAULT_TAG, SheetInnerProps>(functio
   props,
   forwardedRef
 ) {
-  let { as: Comp = INNER_DEFAULT_TAG, children, ...innerProps } = props;
+  const { as: Comp = INNER_DEFAULT_TAG, children, ...innerProps } = props;
   const debugContext = useDebugContext();
-  let {
+  const {
     onClose,
     refToFocusOnOpen,
     refToFocusOnClose,
@@ -206,9 +206,9 @@ type SheetContentProps = SheetContentDOMProps & SheetContentOwnProps;
 
 const SheetContent = forwardRef<typeof CONTENT_DEFAULT_TAG, SheetContentProps>(
   function SheetContent(props, forwardedRef) {
-    let { as: Comp = CONTENT_DEFAULT_TAG, children, style, ...contentProps } = props;
-    let { side } = useSheetContext(CONTENT_NAME);
-    let { lockContainerRef } = useLockContext();
+    const { as: Comp = CONTENT_DEFAULT_TAG, children, style, ...contentProps } = props;
+    const { side } = useSheetContext(CONTENT_NAME);
+    const { lockContainerRef } = useLockContext();
     return (
       <Comp
         {...interopDataAttrObj('content')}
@@ -241,7 +241,7 @@ const Sheet = forwardRef<typeof CONTENT_DEFAULT_TAG, SheetProps, SheetStaticProp
   props,
   forwardedRef
 ) {
-  let {
+  const {
     isOpen,
     onClose,
     refToFocusOnOpen,

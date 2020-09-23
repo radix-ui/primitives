@@ -125,7 +125,7 @@ const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function
   forwardedRef
 ) {
   const { orientation, shouldLoop } = useTabsContext(TAB_LIST_NAME);
-  let { as: Comp = TAB_LIST_DEFAULT_TAG, ...otherProps } = props;
+  const { as: Comp = TAB_LIST_DEFAULT_TAG, ...otherProps } = props;
 
   return (
     <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
