@@ -26,7 +26,7 @@ const Separator = forwardRef<typeof DEFAULT_TAG, SeparatorProps>(function Separa
   props,
   forwardedRef
 ) {
-  let {
+  const {
     as: Comp = DEFAULT_TAG,
     decorative,
     orientation: orientationProp = DEFAULT_ORIENTATION,
@@ -64,8 +64,8 @@ const [styles, interopDataAttrObj] = createStyleObj(NAME, {
 
 Separator.propTypes = {
   orientation(props, propName, componentName, location, propFullName) {
-    let propValue = props[propName];
-    let strVal = String(propValue);
+    const propValue = props[propName];
+    const strVal = String(propValue);
     if (!isValidOrientation(props[propName])) {
       return new Error(
         `Invalid ${location} \`${propFullName}\` of value \`${strVal}\` supplied to \`${componentName}\`, expected one of:
