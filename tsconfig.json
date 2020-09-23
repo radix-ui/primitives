@@ -55,6 +55,7 @@
       "@interop-ui/react-popover": ["./packages/react/popover/src"],
       "@interop-ui/react-popper": ["./packages/react/popper/src"],
       "@interop-ui/react-portal": ["./packages/react/portal/src"],
+      "@interop-ui/react-progress-bar": ["./packages/react/progress-bar/src"],
       "@interop-ui/react-radio": ["./packages/react/radio/src"],
       "@interop-ui/react-separator": ["./packages/react/separator/src"],
       "@interop-ui/react-sheet": ["./packages/react/sheet/src"],

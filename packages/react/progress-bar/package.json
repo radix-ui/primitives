@@ -1,0 +1,30 @@
+{
+  "name": "@interop-ui/react-progress-bar",
+  "version": "0.0.0",
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.module.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "parcel build src/index.ts && yarn build:styles",
+    "build:styles": "node ../../../scripts/build-styles progress-bar",
+    "clean": "rm -rf dist",
+    "bump": "yarn version --deferred",
+    "prepublish": "yarn clean && yarn build"
+  },
+  "dependencies": {
+    "@interop-ui/react-utils": "workspace:*",
+    "@interop-ui/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@stitches/react": "0.0.3-canary.1",
+    "parcel": "^2.0.0-beta.1"
+  },
+  "peerDependencies": {
+    "react": ">=16"
+  }
+}
