@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import * as React from 'react';
 import { Dialog, styles as dialogStyles } from '@interop-ui/react-dialog';
 import { cssReset, makeId, warning } from '@interop-ui/utils';
@@ -29,7 +30,7 @@ type AlertDialogContextValue = {
 };
 
 type AlertDialogContentContextValue = {
-  cancelRef: React.MutableRefObject<HTMLElementTagNameMap[typeof CANCEL_DEFAULT_TAG] | null>;
+  cancelRef: React.MutableRefObject<HTMLElement | null>;
   ownerDocumentRef: React.MutableRefObject<Document>;
 };
 
@@ -64,8 +65,8 @@ const AlertDialog: React.FC<AlertDialogProps> & AlertDialogStaticProps = functio
   const { children, id: idProp, ...dialogProps } = props;
   const generatedId = makeId('alert-dialog', useId());
   const alertDialogId = idProp || generatedId;
-  const descriptionId = makeId('description', alertDialogId);
-  const titleId = makeId('label', alertDialogId);
+  const descriptionId = makeId(alertDialogId, 'description');
+  const titleId = makeId(alertDialogId, 'title');
 
   return (
     <Dialog {...dialogProps}>
@@ -149,7 +150,7 @@ const AlertDialogCancel = forwardRef<typeof CANCEL_DEFAULT_TAG, AlertDialogCance
   function AlertDialogCancel(props, forwardedRef) {
     const { as = CANCEL_DEFAULT_TAG, ...cancelProps } = props;
     const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
-    const ref = useComposedRefs(forwardedRef, cancelRef);
+    const ref = useComposedRefs(forwardedRef, cancelRef as any);
     return <Dialog.Close {...interopDataAttrObj('cancel')} as={as} ref={ref} {...cancelProps} />;
   }
 );
@@ -199,6 +200,7 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       'aria-describedby': ariaDescribedBy,
+      children,
       ...dialogContentProps
     } = props;
     const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
@@ -230,41 +232,13 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
             };
           }, [cancelRef, ownerDocumentRef])}
         >
-          <AlertDialogContentInner {...props} />
+          {process.env.NODE_ENV === 'development' && <AccessibilityDevWarnings {...props} />}
+          {children}
         </AlertDialogContentContext.Provider>
       </Dialog.Content>
     );
   }
 );
-
-// We need some effects to fire when Dialog.Content is mounted. Dialog.Content returns `null` when
-// the Dialog is closed, meaning that if we put these effects up in AlertDialog.Content these
-// effects only fire on its initial mount, NOT when the underlying Dialog.Content mounts. We stick
-// this inner component inside Dialog.Content to make sure the effects fire as expected.
-const AlertDialogContentInner: React.FC<AlertDialogContentProps> = (props) => {
-  const {
-    'aria-label': ariaLabel,
-    'aria-labelledby': ariaLabelledBy,
-    'aria-describedby': ariaDescribedBy,
-    children,
-  } = props;
-  const { ownerDocumentRef } = useAlertDialogContentContext(CANCEL_NAME);
-  const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
-
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useDevModeLabelWarnings({
-      ariaLabel,
-      ariaLabelledBy,
-      ariaDescribedBy,
-      descriptionId,
-      ownerDocumentRef,
-      titleId,
-    });
-  }
-
-  return children as React.ReactElement<any, any>;
-};
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogTitle
@@ -399,31 +373,30 @@ Alternatively, you can use your own component as a description by assigning it a
 
 For more information, see https://LINK-TO-DOCS.com`;
 
-function useDevModeLabelWarnings(props: {
-  ariaLabel: string | undefined;
-  ariaLabelledBy: string | undefined;
-  ariaDescribedBy: string | undefined;
-  titleId: string;
-  descriptionId: string;
-  ownerDocumentRef: React.MutableRefObject<Document>;
-}) {
+// We need some effects to fire when Dialog.Content is mounted that will give us some useful dev
+// warnings. Dialog.Content returns `null` when the Dialog is closed, meaning that if we put these
+// effects up in AlertDialog.Content these effects only fire on its initial mount, NOT when the
+// underlying Dialog.Content mounts. We stick this inner component inside Dialog.Content to make
+// sure the effects fire as expected. This component is only useful in a dev environment, so we
+// won't bother rendering it in production.
+const AccessibilityDevWarnings: React.FC<AlertDialogContentProps> = function AccessibilityDevWarnings(
+  props
+) {
   const {
-    ariaLabel,
-    ariaLabelledBy,
-    ariaDescribedBy,
-    descriptionId,
-    ownerDocumentRef,
-    titleId,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    'aria-describedby': ariaDescribedBy,
   } = props;
-
+  const { ownerDocumentRef } = useAlertDialogContentContext(CANCEL_NAME);
+  const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
   React.useEffect(() => {
     const ownerDocument = ownerDocumentRef.current;
 
     // We need to query the DOM to make sure our labeling elements exist. Rendering of inner
-    // elements seems to be delayed by `requestAnimationFrame` in the `Lock` component, so this
-    // timeout is only meant to deal with that. Ideally we could revisit this and solve the race
-    // condition. In the event that consumers need to query the inner DOM nodes here they will run
-    // into these same challenges.
+    // elements seems to be delayed by something somewhere, so this timeout is only meant to deal
+    // with that. Ideally we could revisit this and solve the race condition, but this is just for
+    // dev warnings so this is fine. In the event that consumers need to query the inner DOM nodes
+    // here they will run into these same challenges.
     const timeout = window.setTimeout(() => {
       const hasLabel = Boolean(
         ariaLabel ||
@@ -442,4 +415,6 @@ function useDevModeLabelWarnings(props: {
       window.clearTimeout(timeout);
     };
   }, [titleId, ariaLabel, ariaDescribedBy, descriptionId, ariaLabelledBy, ownerDocumentRef]);
-}
+
+  return null;
+};

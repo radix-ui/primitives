@@ -1,5 +1,4 @@
 releases:
-  "@interop-ui/docs": prerelease
   "@interop-ui/popper": prerelease
   "@interop-ui/react-accessible-icon": prerelease
   "@interop-ui/react-accordion": prerelease
@@ -18,6 +17,7 @@ releases:
   "@interop-ui/react-popper": prerelease
   "@interop-ui/react-portal": prerelease
   "@interop-ui/react-radio": prerelease
+  "@interop-ui/react-separator": prerelease
   "@interop-ui/react-sheet": prerelease
   "@interop-ui/react-slider": prerelease
   "@interop-ui/react-switch": prerelease
@@ -30,3 +30,4 @@ releases:
 
 declined:
   - interop-ui
+  - "@interop-ui/docs"
