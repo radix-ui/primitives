@@ -1,0 +1,11 @@
+releases:
+  "@interop-ui/react-collapsible": prerelease
+  "@interop-ui/react-lock": prerelease
+  "@interop-ui/react-radio": prerelease
+  "@interop-ui/react-sheet": prerelease
+  "@interop-ui/react-tabs": prerelease
+  "@interop-ui/react-utils": prerelease
+  "@interop-ui/tabbable": prerelease
+
+declined:
+  - interop-ui

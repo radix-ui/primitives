@@ -40,7 +40,7 @@ export const Basic = () => (
 );
 
 export const Controlled = () => {
-  let [value, setValue] = React.useState('one');
+  const [value, setValue] = React.useState('one');
 
   return (
     <Accordion value={value} onChange={setValue}>
