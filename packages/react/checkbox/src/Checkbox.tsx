@@ -37,7 +37,6 @@ const [CheckboxContext, useCheckboxContext] = createContext<CheckedState>(
 const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, CheckboxStaticProps>(
   function Checkbox(props, forwardedRef) {
     const {
-      id,
       as: Comp = CHECKBOX_DEFAULT_TAG,
       'aria-labelledby': ariaLabelledby,
       children,
@@ -46,8 +45,6 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
       required,
       disabled,
       readOnly,
-      style,
-      className,
       onCheckedChange,
       ...checkboxProps
     } = props;
@@ -84,7 +81,6 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
         <Comp
           {...checkboxProps}
           {...interopDataAttrObj('root')}
-          id={id}
           ref={ref}
           type="button"
           role="checkbox"
@@ -94,8 +90,6 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           data-state={getState(checked)}
           data-readonly={readOnly}
           disabled={disabled}
-          className={className}
-          style={style}
           onClick={() => {
             inputRef.current?.click();
           }}
