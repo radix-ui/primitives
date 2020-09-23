@@ -13,15 +13,15 @@ type LabelDOMProps = React.ComponentPropsWithoutRef<typeof LABEL_DEFAULT_TAG>;
 type LabelOwnProps = {};
 type LabelProps = LabelOwnProps & LabelDOMProps;
 
-const LabelContext = React.createContext<string>('');
+const LabelContext = React.createContext<string | undefined>(undefined);
 const useLabelContext = () => React.useContext(LabelContext);
 
 const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(props, forwardedRef) {
   const { as: Comp = LABEL_DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
   const labelRef = React.useRef<HTMLLabelElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
-  const defaultId = `label-${useId()}`;
-  const id = idProp || defaultId;
+  const generatedId = `label-${useId()}`;
+  const id = idProp || generatedId;
 
   React.useEffect(() => {
     // prevent text selection when double clicking label

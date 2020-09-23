@@ -31,11 +31,14 @@ const Control = () => {
  * Styled components
  * -----------------------------------------------------------------------------------------------*/
 
-const Root = ({ children, ...props }: React.ComponentProps<typeof Label>) => (
-  <label
-    {...props}
-    style={{ ...styles.root, border: '1px solid gainsboro', margin: 10, padding: 10 }}
-  >
-    {children}
-  </label>
+const Root = React.forwardRef<HTMLLabelElement, React.ComponentProps<typeof Label>>(
+  ({ children, ...props }, forwardedRef) => (
+    <label
+      {...props}
+      style={{ ...styles.root, border: '1px solid gainsboro', margin: 10, padding: 10 }}
+      ref={forwardedRef}
+    >
+      {children}
+    </label>
+  )
 );

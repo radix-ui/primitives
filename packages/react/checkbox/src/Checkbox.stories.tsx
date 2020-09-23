@@ -105,7 +105,7 @@ const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root
  * Styled components
  * -----------------------------------------------------------------------------------------------*/
 
-const Root = (props: any) => {
+const Root = React.forwardRef((props: any, forwardedRef) => {
   // NOTE: We can remove this when we add stitches as a dev dependency and handle focus styles there
   //       This is just for testing quickly with inline styles.
   const [focused, setFocused] = React.useState(false);
@@ -116,6 +116,7 @@ const Root = (props: any) => {
   return (
     <button
       {...props}
+      ref={forwardedRef}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       style={{
@@ -127,7 +128,7 @@ const Root = (props: any) => {
       }}
     />
   );
-};
+});
 
 const Indicator = ({ indeterminate, ...props }: any) => (
   <span
