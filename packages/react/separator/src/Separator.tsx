@@ -34,10 +34,8 @@ const Separator = forwardRef<typeof DEFAULT_TAG, SeparatorProps>(function Separa
   } = props;
 
   const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
-
   // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
   const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
-
   const semanticProps = decorative
     ? { role: 'none' }
     : { 'aria-orientation': ariaOrientation, role: 'separator' };
