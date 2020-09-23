@@ -190,7 +190,7 @@ function LockImpl({
 }
 
 function useLockContext() {
-  let { containerRef } = React.useContext(LockContext);
+  const { containerRef } = React.useContext(LockContext);
   return React.useMemo(() => ({ lockContainerRef: containerRef }), [containerRef]);
 }
 

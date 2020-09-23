@@ -1,5 +1,5 @@
 // https://github.com/davidtheclark/tabbable/blob/master/src/index.js
-let candidateSelectors = [
+const candidateSelectors = [
   'input',
   'select',
   'textarea',
@@ -10,9 +10,9 @@ let candidateSelectors = [
   'video[controls]',
   '[contenteditable]:not([contenteditable="false"])',
 ];
-let candidateSelector = candidateSelectors.join(',');
+const candidateSelector = candidateSelectors.join(',');
 
-let matches: (selectors: string) => boolean =
+const matches: (selectors: string) => boolean =
   typeof Element === 'undefined'
     ? () => false
     : Element.prototype.matches ||
@@ -22,8 +22,8 @@ let matches: (selectors: string) => boolean =
 function tabbable(el: Element, options: TabbableOptions = {}) {
   options = options || {};
 
-  let regularTabbables = [];
-  let orderedTabbables = [];
+  const regularTabbables = [];
+  const orderedTabbables = [];
 
   let candidates: NodeListOf<Element> | Element[] = el.querySelectorAll(candidateSelector);
 
@@ -55,7 +55,7 @@ function tabbable(el: Element, options: TabbableOptions = {}) {
     }
   }
 
-  let tabbableNodes = orderedTabbables
+  const tabbableNodes = orderedTabbables
     .sort(sortOrderedTabbables)
     .map((a) => a.node)
     .concat(regularTabbables);
@@ -90,7 +90,7 @@ function isNodeMatchingSelectorFocusable(node: Element) {
   return true;
 }
 
-let focusableCandidateSelector = candidateSelectors.concat('iframe').join(',');
+const focusableCandidateSelector = candidateSelectors.concat('iframe').join(',');
 function isFocusable(node: Element) {
   if (!node) {
     throw new Error('No node provided');
@@ -102,7 +102,7 @@ function isFocusable(node: Element) {
 }
 
 function getTabindex(node: Element) {
-  let tabindexAttr = parseInt(node.getAttribute('tabindex') as any, 10);
+  const tabindexAttr = parseInt(node.getAttribute('tabindex') as any, 10);
   if (!isNaN(tabindexAttr)) {
     return tabindexAttr;
   }
@@ -140,7 +140,7 @@ function isNonTabbableRadio(node: Element): node is HTMLInputElement {
 
 function getCheckedRadio(nodes: NodeListOf<Element> | Element[]) {
   for (let i = 0; i < nodes.length; i++) {
-    let input = nodes[i] as HTMLInputElement;
+    const input = nodes[i] as HTMLInputElement;
     if (isInput(input) && input.checked) {
       return input;
     }
@@ -149,16 +149,16 @@ function getCheckedRadio(nodes: NodeListOf<Element> | Element[]) {
 }
 
 function isTabbableRadio(node: Element) {
-  let input = node as HTMLInputElement;
+  const input = node as HTMLInputElement;
   if (!input.name) {
     return true;
   }
   // This won't account for the edge case where you have radio groups with the same in separate
   // forms on the same page.
-  let radioSet = input.ownerDocument.querySelectorAll(
+  const radioSet = input.ownerDocument.querySelectorAll(
     'input[type="radio"][name="' + input.name + '"]'
   );
-  let checked = getCheckedRadio(radioSet);
+  const checked = getCheckedRadio(radioSet);
   return !checked || checked === input;
 }
 

@@ -37,7 +37,7 @@ describe('given collection items', () => {
   });
 
   describe('when unmounting an item', () => {
-    let itemsWithoutOne = defaultItems.filter((item) => item.itemRef !== 'one');
+    const itemsWithoutOne = defaultItems.filter((item) => item.itemRef !== 'one');
 
     beforeAll(() => {
       collection.update(itemsWithoutOne);
@@ -55,7 +55,7 @@ describe('given collection items', () => {
   });
 
   describe('when mounting an item', () => {
-    let itemsWithNew = [{ itemRef: 'new' }, ...defaultItems];
+    const itemsWithNew = [{ itemRef: 'new' }, ...defaultItems];
 
     beforeAll(() => {
       collection.update(itemsWithNew);
