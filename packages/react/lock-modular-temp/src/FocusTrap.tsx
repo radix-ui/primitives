@@ -22,15 +22,9 @@ function FocusTrap({ children }: FocusTrapProps) {
       'FocusTrap needs to have a single valid React child that renders a DOM element.'
     );
   }
-  return <FocusTrapImpl>{child}</FocusTrapImpl>;
-}
-
-function FocusTrapImpl({ children: child }: FocusTrapProps) {
   const containerRef = React.useRef<HTMLElement>(null);
   const ref = useComposedRefs((child as any).ref, containerRef);
-
   useFocusTrap(containerRef);
-
   return React.cloneElement(child, { ref });
 }
 
