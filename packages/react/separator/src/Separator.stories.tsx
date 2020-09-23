@@ -76,12 +76,12 @@ function VerticalSeparatorInner({ children }: any) {
 
 const Root = styled('hr', {
   ...(styles.root as any),
-  height: `1px`,
-  width: `100%`,
-  border: `none`,
+  height: '1px',
+  width: '100%',
+  border: 'none',
   backgroundColor: '$gray300',
   '&[data-orientation="vertical"]': {
-    height: `100%`,
-    width: `1px`,
+    height: '100%',
+    width: '1px',
   },
 });
