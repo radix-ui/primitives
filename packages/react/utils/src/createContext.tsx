@@ -4,7 +4,7 @@ export function createContext<ContextValueType>(displayName: string, rootCompone
   const Context = React.createContext<ContextValueType>(null as any);
   Context.displayName = displayName;
   function useContext(componentName: string) {
-    let context = React.useContext(Context);
+    const context = React.useContext(Context);
     if (context === null) {
       throw new Error(`\`${componentName}\` must be used within \`${rootComponentName}\``);
     }
