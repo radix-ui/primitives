@@ -34,7 +34,7 @@ const ProgressBar = forwardRef<
   ProgressBarProps,
   ProgressBarStaticProps
 >(function ProgressBar(props, forwardedRef) {
-  let {
+  const {
     as: Comp = PROGRESS_DEFAULT_TAG,
     children,
     value: valueProp,
@@ -43,8 +43,8 @@ const ProgressBar = forwardRef<
     ...progressProps
   } = props;
 
-  let max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
-  let value = isValidValueNumber(valueProp, max) ? valueProp : null;
+  const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+  const value = isValidValueNumber(valueProp, max) ? valueProp : null;
 
   const ctx: ProgressBarContextValue = React.useMemo(
     () => ({
@@ -54,7 +54,7 @@ const ProgressBar = forwardRef<
     [value, max]
   );
 
-  let valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
+  const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
 
   return (
     <Comp
@@ -135,8 +135,8 @@ const [styles, interopDataAttrObj] = createStyleObj(PROGRESS_NAME, {
 
 ProgressBar.propTypes = {
   max(props, propName, componentName, location, propFullName) {
-    let propValue = props[propName];
-    let strVal = String(propValue);
+    const propValue = props[propName];
+    const strVal = String(propValue);
     if (propValue && !isValidMaxNumber(propValue)) {
       return new Error(
         `Invalid ${location} '${propFullName}' of value '${strVal}' supplied to '${componentName}'. Only numbers greater than 0 are valid max values. Defaulting to '${DEFAULT_MAX}'.`
@@ -145,9 +145,9 @@ ProgressBar.propTypes = {
     return null;
   },
   value(props, propName, componentName, location, propFullName) {
-    let valueProp = props[propName];
-    let strVal = String(valueProp);
-    let max = isValidMaxNumber(props.max) ? props.max : DEFAULT_MAX;
+    const valueProp = props[propName];
+    const strVal = String(valueProp);
+    const max = isValidMaxNumber(props.max) ? props.max : DEFAULT_MAX;
     if (valueProp != null && !isValidValueNumber(valueProp, max)) {
       return new Error(
         `Invalid ${location} '${propFullName}' of value '${strVal}' supplied to '${componentName}'. The 'value' prop must be:
