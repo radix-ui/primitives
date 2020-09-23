@@ -46,13 +46,7 @@ const ProgressBar = forwardRef<
   const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
   const value = isValidValueNumber(valueProp, max) ? valueProp : null;
 
-  const ctx: ProgressBarContextValue = React.useMemo(
-    () => ({
-      value,
-      max,
-    }),
-    [value, max]
-  );
+  const ctx: ProgressBarContextValue = React.useMemo(() => ({ value, max }), [value, max]);
 
   const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
 
