@@ -18,7 +18,7 @@ const useLabelContext = () => React.useContext(LabelContext);
 
 const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(props, forwardedRef) {
   const { as: Comp = LABEL_DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
-  const labelRef = React.useRef<HTMLElementTagNameMap[typeof LABEL_DEFAULT_TAG]>(null);
+  const labelRef = React.useRef<HTMLLabelElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
   const defaultId = `label-${useId()}`;
   const id = idProp || defaultId;

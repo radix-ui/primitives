@@ -48,7 +48,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
       ...checkboxProps
     } = props;
     const labelId = useLabelContext();
-    const inputRef = React.useRef<HTMLElementTagNameMap[typeof CHECKBOX_DEFAULT_TAG]>(null);
+    const inputRef = React.useRef<HTMLInputElement>(null);
     const ref = useComposedRefs(forwardedRef, inputRef);
     const [checked = false, setChecked] = useControlledState({
       prop: checkedProp,
