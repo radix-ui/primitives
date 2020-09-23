@@ -1,0 +1,30 @@
+{
+  "name": "@interop-ui/react-lock-modular-temp",
+  "version": "0.0.0",
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.module.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "parcel build src/index.ts",
+    "clean": "rm -rf dist",
+    "bump": "yarn version --deferred",
+    "prepublish": "yarn clean && yarn build"
+  },
+  "dependencies": {
+    "@interop-ui/react-utils": "workspace:*",
+    "react-is": "16.13.1",
+    "tabbable": "5.0.0"
+  },
+  "devDependencies": {
+    "@types/react-is": "16.7.1",
+    "parcel": "^2.0.0-beta.1"
+  },
+  "peerDependencies": {
+    "react": ">=16"
+  }
+}
