@@ -1,0 +1,31 @@
+{
+  "name": "@interop-ui/react-alert-dialog",
+  "version": "0.0.0",
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.module.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "build": "parcel build src/index.ts && yarn build:styles",
+    "build:styles": "node ../../../scripts/build-styles alert-dialog",
+    "clean": "rm -rf dist",
+    "bump": "yarn version --deferred",
+    "prepublish": "yarn clean && yarn build"
+  },
+  "dependencies": {
+    "@interop-ui/react-dialog": "workspace:*",
+    "@interop-ui/react-utils": "workspace:*",
+    "@interop-ui/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "parcel": "^2.0.0-beta.1"
+  },
+  "peerDependencies": {
+    "react": ">=16.8"
+  }
+}

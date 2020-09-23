@@ -8,7 +8,7 @@ import {
   useControlledState,
   useId,
 } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
+import { cssReset, makeId } from '@interop-ui/utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { Lock } from '@interop-ui/react-lock';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -46,15 +46,17 @@ interface DialogStaticProps {
 }
 
 type DialogProps = {
+  id?: string;
   isOpen?: boolean;
   defaultIsOpen?: boolean;
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
 const Dialog: React.FC<DialogProps> & DialogStaticProps = function Dialog(props) {
-  const { children, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
+  const { children, id: idProp, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const id = `dialog-${useId()}`;
+  const generatedId = makeId('dialog', useId());
+  const id = idProp || generatedId;
   const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
@@ -138,7 +140,7 @@ const DialogOverlayImpl = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayPr
 const CONTENT_NAME = 'Dialog.Content';
 const CONTENT_DEFAULT_TAG = 'div';
 
-type DialogContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
+type DialogContentDOMProps = Omit<React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>, 'id'>;
 type DialogContentOwnProps = {
   /**
    * A ref to an element to focus on inside the Dialog after it is opened.

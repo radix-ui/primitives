@@ -1842,6 +1842,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-alert-dialog@workspace:packages/react/alert-dialog":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-alert-dialog@workspace:packages/react/alert-dialog"
+  dependencies:
+    "@interop-ui/react-dialog": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-announce@workspace:packages/react/announce":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-announce@workspace:packages/react/announce"
@@ -1941,7 +1955,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-dialog@workspace:packages/react/dialog":
+"@interop-ui/react-dialog@workspace:*, @interop-ui/react-dialog@workspace:packages/react/dialog":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-dialog@workspace:packages/react/dialog"
   dependencies:
