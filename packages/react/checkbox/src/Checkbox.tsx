@@ -82,7 +82,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           {...checkboxProps}
           {...interopDataAttrObj('root')}
           ref={ref}
-          type="button"
+          type={Comp === CHECKBOX_DEFAULT_TAG ? 'button' : undefined}
           role="checkbox"
           aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
           aria-labelledby={labelledBy}
