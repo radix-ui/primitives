@@ -85,7 +85,9 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
              * will not focus the button (but it will correctly trigger the input)
              * so we manually focus it.
              */
-            buttonRef.current?.focus();
+            if (buttonRef.current?.ownerDocument.activeElement !== buttonRef.current) {
+              buttonRef.current?.focus();
+            }
           })}
         />
         <Comp
