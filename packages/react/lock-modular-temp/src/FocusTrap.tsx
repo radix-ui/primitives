@@ -19,9 +19,7 @@ type FocusScopeProps = {
   /**
    * Whether to move focus inside the `FocusScope` on mount
    * - `'none'`: Do not focus
-   * - `'auto'`: Default focus behaviour
-   *           - first focusable element inside the FocusScope
-   *           - if none, first focusable element inside the FocusScope, then the container itself
+   * - `'auto'`: first focusable element inside the FocusScope, if none the container itself
    * - `ref`: Focus that element
    *
    * (default: `'none'`)
