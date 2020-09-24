@@ -157,7 +157,7 @@ interface CheckboxStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
   root: {
-    ...cssReset('button'),
+    ...cssReset(CHECKBOX_DEFAULT_TAG),
     position: 'relative',
     verticalAlign: 'middle',
   },
