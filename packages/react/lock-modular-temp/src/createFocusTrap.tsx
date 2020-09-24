@@ -8,7 +8,9 @@ type FocusableTarget = HTMLElement | { focus(): void };
 
 type CreateFocusScopeOptions = {
   container: HTMLElement;
+  /** `null`: don't focus, `undefined`: default focus behaviour, `element` : focus that element */
   elementToFocusOnCreate?: FocusableTarget | null;
+  /** `null`: don't focus, `undefined`: default focus behaviour, `element` : focus that element */
   elementToFocusOnDestroy?: FocusableTarget | null;
 };
 
@@ -54,7 +56,6 @@ function createFocusScope({
   }
 
   function maybeFocusOnDestroy() {
-    console.log(elementToFocusOnDestroy);
     if (elementToFocusOnDestroy === null) return;
     const elementToFocus = elementToFocusOnDestroy || PREVIOUSLY_FOCUSED_ELEMENT;
     attemptFocus(elementToFocus, RETURN_FOCUS_ERROR);

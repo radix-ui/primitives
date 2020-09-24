@@ -106,10 +106,10 @@ export const Basic = () => {
       {isOpen ? (
         <FocusScope
           trapped={trapFocus}
-          focusOnMount={moveFocusOnMount}
-          refToFocusOnMount={moveToAgeField ? ageFieldRef : undefined}
-          returnFocusOnUnmount={returnFocusOnUnmount}
-          refToFocusOnUnmount={returnToNextButton ? nextButtonRef : undefined}
+          focusOnMount={moveFocusOnMount ? (moveToAgeField ? ageFieldRef : 'auto') : 'none'}
+          returnFocusOnUnmount={
+            returnFocusOnUnmount ? (returnToNextButton ? nextButtonRef : 'auto') : 'none'
+          }
         >
           <form
             key="form"
