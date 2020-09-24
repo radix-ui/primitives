@@ -6,7 +6,7 @@ export default { title: 'Modular Lock (temp)/FocusScope' };
 export const Basic = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isEmptyForm, setIsEmptyForm] = React.useState(false);
-  const [containFocus, setContainFocus] = React.useState(false);
+  const [trapFocus, setTrapFocus] = React.useState(false);
   const [moveFocusOnMount, setMoveFocusOnMount] = React.useState(false);
   const [moveToAgeField, setMoveToAgeField] = React.useState(false);
   const [returnFocusOnUnmount, setReturnFocusOnUnmount] = React.useState(false);
@@ -23,10 +23,10 @@ export const Basic = () => {
           <label style={{ display: 'block' }}>
             <input
               type="checkbox"
-              checked={containFocus}
-              onChange={(event) => setContainFocus(event.target.checked)}
+              checked={trapFocus}
+              onChange={(event) => setTrapFocus(event.target.checked)}
             />{' '}
-            Contains focus?
+            Trap focus?
           </label>
           <label style={{ display: 'block' }}>
             <input
@@ -105,11 +105,11 @@ export const Basic = () => {
 
       {isOpen ? (
         <FocusScope
-          contain={containFocus}
-          moveFocusOnMount={moveFocusOnMount}
-          refToMoveFocusTo={moveToAgeField ? ageFieldRef : undefined}
+          trapped={trapFocus}
+          focusOnMount={moveFocusOnMount}
+          refToFocusOnMount={moveToAgeField ? ageFieldRef : undefined}
           returnFocusOnUnmount={returnFocusOnUnmount}
-          refToReturnFocusTo={returnToNextButton ? nextButtonRef : undefined}
+          refToFocusOnUnmount={returnToNextButton ? nextButtonRef : undefined}
         >
           <form
             key="form"

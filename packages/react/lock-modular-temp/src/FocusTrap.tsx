@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactIs from 'react-is';
-import { useComposedRefs } from '@interop-ui/react-utils';
+import { useCallbackRef, useComposedRefs } from '@interop-ui/react-utils';
 import { createFocusScope } from './createFocusTrap';
 
 import type { FocusableTarget } from './createFocusTrap';
@@ -8,20 +8,29 @@ import type { FocusableTarget } from './createFocusTrap';
 type FocusScopeProps = {
   children: React.ReactElement;
 
-  /** Whether focus should be contained within the FocusScope */
-  contain?: boolean;
+  /**
+   * Whether focus should be trapped within the FocusScope
+   * (default: false)
+   */
+  trapped?: boolean;
 
-  /** Whether to move focus inside the `FocusScope` on mount */
-  moveFocusOnMount?: boolean;
+  /**
+   * Whether to move focus inside the `FocusScope` on mount
+   * (default: false)
+   */
+  focusOnMount?: boolean;
 
   /**
    * A ref to an element to focus on inside the FocusScope after it is mounted.
    * (default: first focusable element inside the FocusScope)
    * (fallback: first focusable element inside the FocusScope, then the container itself)
    */
-  refToMoveFocusTo?: React.RefObject<FocusableTarget | null | undefined>;
+  refToFocusOnMount?: React.RefObject<FocusableTarget | null | undefined>;
 
-  /** Whether to return focus outside the `FocusScope` on unmount */
+  /**
+   * Whether to return focus outside the `FocusScope` on unmount
+   * (default: false)
+   **/
   returnFocusOnUnmount?: boolean;
 
   /**
@@ -29,16 +38,16 @@ type FocusScopeProps = {
    * (default: last focused element before the FocusScope was mounted)
    * (fallback: none)
    */
-  refToReturnFocusTo?: React.RefObject<FocusableTarget | null | undefined>;
+  refToFocusOnUnmount?: React.RefObject<FocusableTarget | null | undefined>;
 };
 
 function FocusScope({
   children,
-  contain,
-  moveFocusOnMount,
-  refToMoveFocusTo,
-  returnFocusOnUnmount,
-  refToReturnFocusTo,
+  trapped = false,
+  focusOnMount = false,
+  refToFocusOnMount,
+  returnFocusOnUnmount = false,
+  refToFocusOnUnmount,
 }: FocusScopeProps) {
   const child = React.Children.only(children);
   if (ReactIs.isFragment(child)) {
@@ -54,41 +63,36 @@ function FocusScope({
   React.useEffect(() => {
     const container = containerRef.current;
     if (container) {
-      focusScopeRef.current = createFocusScope(container);
+      const elementToFocusOnMount = refToFocusOnMount?.current ?? undefined;
+      focusScopeRef.current = createFocusScope({
+        container,
+        elementToFocusOnEnter: focusOnMount === false ? null : elementToFocusOnMount,
+      });
       return () => focusScopeRef.current?.destroy();
     }
+    // NOTE: we don't care if `focusOnMount` or `refToFocusOnMount` change
+    // once the component is mounted as these are side-effect to happen on mount only.
+    //
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync `contain` prop
+  // Sync `trapped` prop
   React.useEffect(() => {
-    if (contain) return focusScopeRef.current?.containFocus();
-  }, [contain]);
-
-  // Sync `refToMoveFocusTo` without side-effects
-  React.useEffect(() => {
-    focusScopeRef.current?.setElementToMoveFocusTo(refToMoveFocusTo?.current);
-  }, [refToMoveFocusTo]);
-
-  // Move focus in scope on mount
-  React.useEffect(() => {
-    if (moveFocusOnMount) {
-      focusScopeRef.current?.moveFocusInScope();
+    if (trapped) {
+      focusScopeRef.current?.trap();
+      return () => focusScopeRef.current?.untrap();
     }
-  }, [moveFocusOnMount]);
-
-  // Sync `refToReturnFocusTo` without side-effects
-  React.useEffect(() => {
-    focusScopeRef.current?.setElementToReturnFocusTo(refToReturnFocusTo?.current);
-  }, [refToReturnFocusTo]);
+  }, [trapped]);
 
   // Return focus outside scope on unmount
+  const handleUnmount = useCallbackRef(() => {
+    if (returnFocusOnUnmount) {
+      focusScopeRef.current?.returnFocusOutsideScope(refToFocusOnUnmount?.current);
+    }
+  });
   React.useEffect(() => {
-    return () => {
-      if (returnFocusOnUnmount) {
-        focusScopeRef.current?.returnFocusOutsideScope();
-      }
-    };
-  }, [returnFocusOnUnmount]);
+    return handleUnmount;
+  }, [handleUnmount]);
 
   return React.cloneElement(child, { ref });
 }
