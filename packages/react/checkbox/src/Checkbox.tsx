@@ -40,11 +40,13 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
       as: Comp = CHECKBOX_DEFAULT_TAG,
       'aria-labelledby': ariaLabelledby,
       children,
+      name,
       checked: checkedProp,
       defaultChecked,
       required,
       disabled,
       readOnly,
+      value = 'on',
       onCheckedChange,
       ...checkboxProps
     } = props;
@@ -73,10 +75,12 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
         <input
           ref={inputRef}
           type="checkbox"
+          name={name}
           checked={checked === 'indeterminate' ? false : checked}
           required={required}
           disabled={disabled}
           readOnly={readOnly}
+          value={value}
           hidden
           onChange={composeEventHandlers(onCheckedChange, (event) => {
             setChecked(event.target.checked);
@@ -102,6 +106,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           data-state={getState(checked)}
           data-readonly={readOnly}
           disabled={disabled}
+          value={value}
           /**
            * The `input` is hidden, so when the button is clicked we trigger
            * the input manually
