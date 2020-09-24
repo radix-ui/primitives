@@ -64,6 +64,11 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
     });
 
     return (
+      /**
+       * The `input` is hidden from non-SR and SR users as it only exists to
+       * ensure form events fire when the value changes and that the value
+       * updates when clicking an associated label.
+       */
       <>
         <input
           ref={inputRef}
@@ -75,6 +80,11 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           hidden
           onChange={composeEventHandlers(onCheckedChange, (event) => {
             setChecked(event.target.checked);
+            /**
+             * When this component is wrapped in a label, clicking the label
+             * will not focus the button (but it will correctly trigger the input)
+             * so we manually focus it.
+             */
             buttonRef.current?.focus();
           })}
         />
@@ -90,6 +100,10 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           data-state={getState(checked)}
           data-readonly={readOnly}
           disabled={disabled}
+          /**
+           * The `input` is hidden, so when the button is clicked we trigger
+           * the input manually
+           */
           onClick={() => inputRef.current?.click()}
         >
           <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
