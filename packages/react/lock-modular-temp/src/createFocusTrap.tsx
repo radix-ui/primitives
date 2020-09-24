@@ -8,10 +8,15 @@ type FocusableTarget = HTMLElement | { focus(): void };
 
 type CreateFocusScopeOptions = {
   container: HTMLElement;
-  elementToFocusOnEnter?: FocusableTarget | null;
+  elementToFocusOnCreate?: FocusableTarget | null;
+  elementToFocusOnDestroy?: FocusableTarget | null;
 };
 
-function createFocusScope({ container, elementToFocusOnEnter }: CreateFocusScopeOptions) {
+function createFocusScope({
+  container,
+  elementToFocusOnCreate,
+  elementToFocusOnDestroy: elementToFocusOnDestroyParam,
+}: CreateFocusScopeOptions) {
   const PREVIOUSLY_FOCUSED_ELEMENT = getCurrentlyFocusedElement();
 
   // In order to contain focus, we create (and later inject) 2 focusable markers.
@@ -24,10 +29,11 @@ function createFocusScope({ container, elementToFocusOnEnter }: CreateFocusScope
 
   // We keep track of some internal state
   let lastFocusedElementInsideContainer: HTMLElement | null = null;
+  let elementToFocusOnDestroy: FocusableTarget | undefined | null = elementToFocusOnDestroyParam;
 
   // setup
   makeContainerFocusable(container);
-  maybeFocusOnEnter();
+  maybeFocusOnCreate();
 
   // internal utils
   function addFocusScopeMarkers() {
@@ -41,10 +47,17 @@ function createFocusScope({ container, elementToFocusOnEnter }: CreateFocusScope
     END_MARKER.remove();
   }
 
-  function maybeFocusOnEnter() {
-    if (elementToFocusOnEnter === null) return;
-    const elementToFocus = elementToFocusOnEnter || getFirstTabbableElement(container);
+  function maybeFocusOnCreate() {
+    if (elementToFocusOnCreate === null) return;
+    const elementToFocus = elementToFocusOnCreate || getFirstTabbableElement(container);
     attemptFocus(elementToFocus, ENTER_FOCUS_ERROR, container);
+  }
+
+  function maybeFocusOnDestroy() {
+    console.log(elementToFocusOnDestroy);
+    if (elementToFocusOnDestroy === null) return;
+    const elementToFocus = elementToFocusOnDestroy || PREVIOUSLY_FOCUSED_ELEMENT;
+    attemptFocus(elementToFocus, RETURN_FOCUS_ERROR);
   }
 
   function addFocusBlurListeners() {
@@ -112,14 +125,14 @@ function createFocusScope({ container, elementToFocusOnEnter }: CreateFocusScope
       removeFocusBlurListeners();
     },
 
-    returnFocusOutsideScope: (elementToReturnFocusTo?: FocusableTarget | null) => {
-      const elementToFocus = elementToReturnFocusTo ?? PREVIOUSLY_FOCUSED_ELEMENT;
-      attemptFocus(elementToFocus, RETURN_FOCUS_ERROR);
+    setElementToFocusOnDestroy: (element?: FocusableTarget | null) => {
+      elementToFocusOnDestroy = element;
     },
 
     destroy: () => {
       makeContainerNonFocusable(container);
       focusScope.untrap();
+      maybeFocusOnDestroy();
     },
   };
 

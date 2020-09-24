@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactIs from 'react-is';
-import { useCallbackRef, useComposedRefs } from '@interop-ui/react-utils';
+import { useComposedRefs } from '@interop-ui/react-utils';
 import { createFocusScope } from './createFocusTrap';
 
 import type { FocusableTarget } from './createFocusTrap';
@@ -64,14 +64,21 @@ function FocusScope({
     const container = containerRef.current;
     if (container) {
       const elementToFocusOnMount = refToFocusOnMount?.current ?? undefined;
+      const elementToFocusOnUnmount = refToFocusOnUnmount?.current ?? undefined;
+
       focusScopeRef.current = createFocusScope({
         container,
-        elementToFocusOnEnter: focusOnMount === false ? null : elementToFocusOnMount,
+        elementToFocusOnCreate: focusOnMount === false ? null : elementToFocusOnMount,
+        elementToFocusOnDestroy: returnFocusOnUnmount === false ? null : elementToFocusOnUnmount,
       });
+
       return () => focusScopeRef.current?.destroy();
     }
     // NOTE: we don't care if `focusOnMount` or `refToFocusOnMount` change
     // once the component is mounted as these are side-effect to happen on mount only.
+    //
+    // As for `returnFocusOnUnmount` and `refToFocusOnMount`, we use a setter to update
+    // the focus scope instance.
     //
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -84,15 +91,13 @@ function FocusScope({
     }
   }, [trapped]);
 
-  // Return focus outside scope on unmount
-  const handleUnmount = useCallbackRef(() => {
-    if (returnFocusOnUnmount) {
-      focusScopeRef.current?.returnFocusOutsideScope(refToFocusOnUnmount?.current);
-    }
-  });
+  // Set `elementToFocusOnDestroy` in case things changes whilst mounted
   React.useEffect(() => {
-    return handleUnmount;
-  }, [handleUnmount]);
+    const elementToFocusOnUnmount = refToFocusOnUnmount?.current ?? undefined;
+    focusScopeRef.current?.setElementToFocusOnDestroy(
+      returnFocusOnUnmount === false ? null : elementToFocusOnUnmount
+    );
+  }, [refToFocusOnUnmount, returnFocusOnUnmount]);
 
   return React.cloneElement(child, { ref });
 }
