@@ -1,0 +1,6 @@
+releases:
+  "@interop-ui/react-checkbox": prerelease
+  "@interop-ui/react-label": prerelease
+
+declined:
+  - interop-ui

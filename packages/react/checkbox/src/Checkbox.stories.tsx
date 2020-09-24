@@ -1,11 +1,12 @@
 import * as React from 'react';
+import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
 import { Checkbox, styles } from './Checkbox';
 
 export default { title: 'Checkbox' };
 
 export const Basic = () => (
-  <Checkbox as={Root}>
-    <Checkbox.Indicator as={Indicator} />
+  <Checkbox style={styles.root}>
+    <Checkbox.Indicator style={styles.indicator} />
   </Checkbox>
 );
 
@@ -15,12 +16,12 @@ export const InlineStyle = () => (
       This checkbox is nested inside a label. The box-shadow is styled to appear when the checkbox
       is in focus regardless of the input modality. The state is uncontrolled.
     </p>
-    <label>
-      This is the label{' '}
-      <Checkbox as={StyledRoot}>
-        <Checkbox.Indicator as={StyledIndicator} />
+    <Label>
+      Label{' '}
+      <Checkbox as={Root}>
+        <Checkbox.Indicator as={Indicator} />
       </Checkbox>
-    </label>
+    </Label>
   </>
 );
 
@@ -33,14 +34,14 @@ export const Controlled = () => {
         This checkbox is placed adjacent to its label. The box-shadow is styled to appear when the
         checkbox is in focus regardless of the input modality. The state is controlled.
       </p>
-      <label htmlFor="randBox">This is the label</label>{' '}
+      <Label htmlFor="randBox">Label</Label>{' '}
       <Checkbox
-        as={StyledRoot}
+        as={Root}
         checked={checked}
         onCheckedChange={(event) => setChecked(event.target.checked)}
         id="randBox"
       >
-        <Checkbox.Indicator as={StyledIndicator} />
+        <Checkbox.Indicator as={Indicator} />
       </Checkbox>
     </>
   );
@@ -53,11 +54,11 @@ export const Indeterminate = () => {
     <>
       <p>
         <Checkbox
-          as={StyledRoot}
+          as={Root}
           checked={checked}
           onCheckedChange={(event) => setChecked(event.target.checked)}
         >
-          <Checkbox.Indicator as={StyledIndicator} indeterminate={checked === 'indeterminate'} />
+          <Checkbox.Indicator as={Indicator} indeterminate={checked === 'indeterminate'} />
         </Checkbox>
       </p>
 
@@ -87,18 +88,24 @@ export const WithinForm = () => {
     >
       <p>checked: {String(checked)}</p>
 
-      <Checkbox as={StyledRoot}>
-        <Checkbox.Indicator as={StyledIndicator} />
+      <Checkbox as={Root}>
+        <Checkbox.Indicator as={Indicator} />
       </Checkbox>
     </form>
   );
 };
 
 /* -------------------------------------------------------------------------------------------------
- * Reset components
+ * Label
  * -----------------------------------------------------------------------------------------------*/
 
-const Root = (props: any) => {
+const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
+
+/* -------------------------------------------------------------------------------------------------
+ * Styled components
+ * -----------------------------------------------------------------------------------------------*/
+
+const Root = React.forwardRef((props: any, forwardedRef) => {
   // NOTE: We can remove this when we add stitches as a dev dependency and handle focus styles there
   //       This is just for testing quickly with inline styles.
   const [focused, setFocused] = React.useState(false);
@@ -107,21 +114,36 @@ const Root = (props: any) => {
     outline: focused ? '2px solid crimson' : undefined,
   };
   return (
-    <input
+    <button
       {...props}
+      type="button"
+      ref={forwardedRef}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
       style={{
         ...styles.root,
         ...focusStyles,
-        ...props.style,
+        border: '1px solid gainsboro',
+        width: 30,
+        height: 30,
       }}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
     />
   );
-};
+});
 
 const Indicator = ({ indeterminate, ...props }: any) => (
-  <span {...props} style={{ ...styles.indicator, ...props.style }}>
+  <span
+    {...props}
+    style={{
+      ...styles.indicator,
+      width: 22,
+      height: 22,
+      backgroundColor: 'dodgerblue',
+      display: 'grid',
+      placeItems: 'center',
+      color: 'white',
+    }}
+  >
     {indeterminate ? (
       <b style={{ paddingBottom: '2px' }}>&mdash;</b>
     ) : (
@@ -130,26 +152,4 @@ const Indicator = ({ indeterminate, ...props }: any) => (
       </svg>
     )}
   </span>
-);
-
-/* -------------------------------------------------------------------------------------------------
- * Styled components
- * -----------------------------------------------------------------------------------------------*/
-
-const StyledRoot = (props: any) => (
-  <Root {...props} style={{ border: '1px solid gainsboro', width: 30, height: 30 }} />
-);
-
-const StyledIndicator = (props: any) => (
-  <Indicator
-    {...props}
-    style={{
-      width: 22,
-      height: 22,
-      backgroundColor: 'dodgerblue',
-      display: 'grid',
-      placeItems: 'center',
-      color: 'white',
-    }}
-  />
 );

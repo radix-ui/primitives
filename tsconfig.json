@@ -50,6 +50,7 @@
       "@interop-ui/react-collection": ["./packages/react/collection/src"],
       "@interop-ui/react-debug-context": ["./packages/react/debug-context/src"],
       "@interop-ui/react-dialog": ["./packages/react/dialog/src"],
+      "@interop-ui/react-label": ["./packages/react/label/src"],
       "@interop-ui/react-lock": ["./packages/react/lock/src"],
       "@interop-ui/react-lock-modular-temp": ["./packages/react/lock-modular-temp/src"],
       "@interop-ui/react-popover": ["./packages/react/popover/src"],

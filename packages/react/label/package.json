@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/react-checkbox",
-  "version": "0.0.1-2",
+  "name": "@interop-ui/react-label",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -11,13 +11,12 @@
   ],
   "scripts": {
     "build": "parcel build src/index.ts && yarn build:styles",
-    "build:styles": "node ../../../scripts/build-styles checkbox",
+    "build:styles": "node ../../../scripts/build-styles label",
     "clean": "rm -rf dist",
     "bump": "yarn version --deferred",
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-label": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },

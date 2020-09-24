@@ -8,20 +8,24 @@ import {
   useControlledState,
   useComposedRefs,
 } from '@interop-ui/react-utils';
+import { useLabelContext } from '@interop-ui/react-label';
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
  * -----------------------------------------------------------------------------------------------*/
 
 const CHECKBOX_NAME = 'Checkbox';
-const CHECKBOX_DEFAULT_TAG = 'input';
+const CHECKBOX_DEFAULT_TAG = 'button';
 
 type CheckedState = boolean | 'indeterminate';
+type InputDOMProps = React.ComponentProps<'input'>;
 type CheckboxDOMProps = React.ComponentPropsWithoutRef<typeof CHECKBOX_DEFAULT_TAG>;
 type CheckboxOwnProps = {
   checked?: CheckedState;
   defaultChecked?: CheckedState;
-  onCheckedChange?: CheckboxDOMProps['onChange'];
+  required?: InputDOMProps['required'];
+  readOnly?: InputDOMProps['readOnly'];
+  onCheckedChange?: InputDOMProps['onChange'];
 };
 type CheckboxProps = CheckboxOwnProps & Omit<CheckboxDOMProps, keyof CheckboxOwnProps | 'onChange'>;
 
@@ -34,14 +38,23 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
   function Checkbox(props, forwardedRef) {
     const {
       as: Comp = CHECKBOX_DEFAULT_TAG,
+      'aria-labelledby': ariaLabelledby,
       children,
+      name,
       checked: checkedProp,
       defaultChecked,
+      required,
+      disabled,
+      readOnly,
+      value = 'on',
       onCheckedChange,
       ...checkboxProps
     } = props;
+    const labelId = useLabelContext();
+    const labelledBy = ariaLabelledby || labelId;
     const inputRef = React.useRef<HTMLInputElement>(null);
-    const ref = useComposedRefs(forwardedRef, inputRef);
+    const buttonRef = React.useRef<HTMLButtonElement>(null);
+    const ref = useComposedRefs(forwardedRef, buttonRef);
     const [checked = false, setChecked] = useControlledState({
       prop: checkedProp,
       defaultProp: defaultChecked,
@@ -53,24 +66,56 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
     });
 
     return (
-      <span
-        {...interopDataAttrObj('wrapper')}
-        // Uses `inline-flex` to prevent extraneous whitespace below input
-        style={{ display: 'inline-flex', verticalAlign: 'middle', position: 'relative' }}
-      >
+      /**
+       * The `input` is hidden from non-SR and SR users as it only exists to
+       * ensure form events fire when the value changes and that the value
+       * updates when clicking an associated label.
+       */
+      <>
+        <input
+          ref={inputRef}
+          type="checkbox"
+          name={name}
+          checked={checked === 'indeterminate' ? false : checked}
+          required={required}
+          disabled={disabled}
+          readOnly={readOnly}
+          value={value}
+          hidden
+          onChange={composeEventHandlers(onCheckedChange, (event) => {
+            setChecked(event.target.checked);
+            /**
+             * When this component is wrapped in a label, clicking the label
+             * will not focus the button (but it will correctly trigger the input)
+             * so we manually focus it.
+             */
+            if (buttonRef.current?.ownerDocument.activeElement !== buttonRef.current) {
+              buttonRef.current?.focus();
+            }
+          })}
+        />
         <Comp
           {...checkboxProps}
           {...interopDataAttrObj('root')}
-          type="checkbox"
-          checked={checked === 'indeterminate' ? false : checked}
-          data-state={getState(checked)}
           ref={ref}
-          onChange={composeEventHandlers(onCheckedChange, (event) =>
-            setChecked(event.target.checked)
-          )}
-        />
-        <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
-      </span>
+          type={Comp === CHECKBOX_DEFAULT_TAG ? 'button' : undefined}
+          role="checkbox"
+          aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
+          aria-labelledby={labelledBy}
+          aria-required={required}
+          data-state={getState(checked)}
+          data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
+          /**
+           * The `input` is hidden, so when the button is clicked we trigger
+           * the input manually
+           */
+          onClick={() => inputRef.current?.click()}
+        >
+          <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
+        </Comp>
+      </>
     );
   }
 );
@@ -118,12 +163,10 @@ interface CheckboxStaticProps {
 }
 
 const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
-  wrapper: {},
   root: {
     ...cssReset(CHECKBOX_DEFAULT_TAG),
-    appearance: 'none',
-    WebkitAppearance: 'none',
-    MozAppearance: 'none',
+    position: 'relative',
+    verticalAlign: 'middle',
   },
   indicator: {
     ...cssReset(INDICATOR_DEFAULT_TAG),
@@ -131,7 +174,6 @@ const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    pointerEvents: 'none',
   },
 });
 
