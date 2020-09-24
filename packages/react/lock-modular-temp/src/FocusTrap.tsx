@@ -65,11 +65,9 @@ function FocusScope({
 
       return () => focusScopeRef.current?.destroy();
     }
-    // NOTE: we don't care if `focusOnMount` or `refToFocusOnMount` change
-    // once the component is mounted as these are side-effect to happen on mount only.
-    //
-    // As for `returnFocusOnUnmount` and `refToFocusOnMount`, we use a setter to update
-    // the focus scope instance.
+    // NOTE: we don't care if `focusOnMount` changes once the component is mounted
+    // as it is for side-effect that happens on mount only. As for `returnFocusOnUnmount`,
+    // we use a setter to update the focus scope instance.
     //
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
