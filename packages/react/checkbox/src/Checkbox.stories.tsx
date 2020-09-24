@@ -126,6 +126,7 @@ const Root = React.forwardRef((props: any, forwardedRef) => {
         border: '1px solid gainsboro',
         width: 30,
         height: 30,
+        padding: 4,
       }}
     />
   );
@@ -136,8 +137,8 @@ const Indicator = ({ indeterminate, ...props }: any) => (
     {...props}
     style={{
       ...styles.indicator,
-      width: 22,
-      height: 22,
+      width: 20,
+      height: 20,
       backgroundColor: 'dodgerblue',
       display: 'grid',
       placeItems: 'center',
