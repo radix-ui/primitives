@@ -116,6 +116,7 @@ const Root = React.forwardRef((props: any, forwardedRef) => {
   return (
     <button
       {...props}
+      type="button"
       ref={forwardedRef}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
