@@ -52,13 +52,13 @@ function createFocusScope({
   function maybeFocusOnCreate() {
     if (elementToFocusOnCreate === null) return;
     const elementToFocus = elementToFocusOnCreate || getFirstTabbableElement(container);
-    attemptFocus(elementToFocus, ENTER_FOCUS_ERROR, container);
+    attemptFocus(elementToFocus, FOCUS_ON_CREATE_ERROR, container);
   }
 
   function maybeFocusOnDestroy() {
     if (elementToFocusOnDestroy === null) return;
     const elementToFocus = elementToFocusOnDestroy || PREVIOUSLY_FOCUSED_ELEMENT;
-    attemptFocus(elementToFocus, RETURN_FOCUS_ERROR);
+    attemptFocus(elementToFocus, FOCUS_ON_DESTROY_ERROR);
   }
 
   function addFocusBlurListeners() {
@@ -230,13 +230,13 @@ function focus(element?: FocusableTarget | null) {
   return getCurrentlyFocusedElement() === element;
 }
 
-const ENTER_FOCUS_ERROR = `Could not move focus to an element inside the focus scope (see details below).
+const FOCUS_ON_CREATE_ERROR = `Could not move focus to an element inside the focus scope (see details below).
 
 - your focus scope should contain at least one focusable element
 - or a focusable element should be provided to \`elementToMoveFocusTo\`
 `;
 
-const RETURN_FOCUS_ERROR = `Could not return focus to an element outside the focus scope (see details below).
+const FOCUS_ON_DESTROY_ERROR = `Could not return focus to an element outside the focus scope (see details below).
 
 - the element that was focused before creating the focus scope should still exists
 - or a focusable element should be provided to \`elementToReturnFocusTo\`
