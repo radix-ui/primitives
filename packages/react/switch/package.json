@@ -17,6 +17,7 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
+    "@interop-ui/react-label": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },
