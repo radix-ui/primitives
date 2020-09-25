@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@interop-ui/react-lock-modular-temp",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
