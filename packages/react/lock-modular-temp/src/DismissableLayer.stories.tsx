@@ -1,6 +1,6 @@
 import React from 'react';
 import { DismissableLayer } from './DismissableLayer';
-import { FocusScope } from './FocusTrap';
+import { FocusScope } from './FocusScope';
 import type { DismissableLayerProps } from './DismissableLayer';
 
 export default { title: 'Modular Lock (temp)/DismissableLayer' };
