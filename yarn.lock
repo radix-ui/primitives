@@ -2136,6 +2136,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-switch@workspace:packages/react/switch"
   dependencies:
+    "@interop-ui/react-label": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     "@stitches/react": 0.0.3-canary.1

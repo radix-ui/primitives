@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Switch, styles } from './Switch';
+import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
 import { createStyled } from '@stitches/react';
 
 export default { title: 'Switch' };
@@ -24,12 +25,12 @@ export const Basic = () => (
 export const StitchesStyle = () => (
   <>
     <p>This switch is nested inside a label. The state is uncontrolled.</p>
-    <label>
+    <Label>
       This is the label{' '}
       <Switch as={Root}>
         <Switch.Thumb as={Thumb} />
       </Switch>
-    </label>
+    </Label>
   </>
 );
 
@@ -39,7 +40,7 @@ export const Controlled = () => {
   return (
     <>
       <p>This switch is placed adjacent to its label. The state is controlled.</p>
-      <label htmlFor="randBox">This is the label</label>{' '}
+      <Label htmlFor="randBox">This is the label</Label>{' '}
       <Switch
         as={Root}
         checked={checked}
@@ -72,19 +73,24 @@ export const WithinForm = () => {
 };
 
 /* -------------------------------------------------------------------------------------------------
+ * Label
+ * -----------------------------------------------------------------------------------------------*/
+
+const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
+
+/* -------------------------------------------------------------------------------------------------
  * Reset components
  * -----------------------------------------------------------------------------------------------*/
 
-// Had issues with the size tokens for some reason, feel free to fix this for me stitches style
-const HEIGHT = 30;
-const BORDER = 4;
+const Root = React.forwardRef((props: any, forwardedRef) => (
+  <RootStyles ref={forwardedRef} {...props} type="button" />
+));
 
-const Root = styled('input', {
+const RootStyles = styled('button', {
   ...(styles.root as any),
-  height: `${HEIGHT}px`,
-  width: `${HEIGHT * 2}px`,
-  border: `${BORDER}px solid $gray300`,
-  borderRadius: `${HEIGHT / 2}px`,
+  width: '50px',
+  padding: '4px',
+  borderRadius: '9999px',
   backgroundColor: '$gray300',
   transition: 'all 300ms ease-out',
   '&[data-state="checked"]': {
@@ -95,14 +101,13 @@ const Root = styled('input', {
 
 const Thumb = styled('span', {
   ...(styles.thumb as any),
-  width: `${HEIGHT - BORDER * 2}px`,
-  height: `${HEIGHT - BORDER * 2}px`,
-  top: `${BORDER}px`,
-  left: `${BORDER}px`,
+  width: '20px',
+  height: '20px',
   backgroundColor: '$white',
-  borderRadius: `${HEIGHT / 2}px`,
-  transition: 'transform 300ms ease-out',
+  borderRadius: '9999px',
+  transition: 'all 300ms ease-out',
   '&[data-state="checked"]': {
-    transform: `translateX(${HEIGHT}px)`,
+    marginLeft: '100%',
+    transform: 'translateX(-100%)',
   },
 });

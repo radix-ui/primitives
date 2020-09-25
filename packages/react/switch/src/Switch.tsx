@@ -8,19 +8,23 @@ import {
   useControlledState,
   useComposedRefs,
 } from '@interop-ui/react-utils';
+import { useLabelContext } from '@interop-ui/react-label';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
  * -----------------------------------------------------------------------------------------------*/
 
 const SWITCH_NAME = 'Switch';
-const SWITCH_DEFAULT_TAG = 'input';
+const SWITCH_DEFAULT_TAG = 'button';
 
+type InputDOMProps = React.ComponentProps<'input'>;
 type SwitchDOMProps = React.ComponentPropsWithoutRef<typeof SWITCH_DEFAULT_TAG>;
 type SwitchOwnProps = {
   checked?: boolean;
   defaultChecked?: boolean;
-  onCheckedChange?: SwitchDOMProps['onChange'];
+  required?: InputDOMProps['required'];
+  readOnly?: InputDOMProps['readOnly'];
+  onCheckedChange?: InputDOMProps['onChange'];
 };
 type SwitchProps = SwitchOwnProps & Omit<SwitchDOMProps, keyof SwitchOwnProps | 'onChange'>;
 
@@ -33,40 +37,79 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
   function Switch(props, forwardedRef) {
     const {
       as: Comp = SWITCH_DEFAULT_TAG,
+      'aria-labelledby': ariaLabelledby,
       children,
+      name,
       checked: checkedProp,
       defaultChecked,
+      required,
+      disabled,
+      readOnly,
+      value = 'on',
       onCheckedChange,
       ...switchProps
     } = props;
+    const labelId = useLabelContext();
+    const labelledBy = ariaLabelledby || labelId;
     const inputRef = React.useRef<HTMLInputElement>(null);
-    const ref = useComposedRefs(forwardedRef, inputRef);
+    const buttonRef = React.useRef<HTMLButtonElement>(null);
+    const ref = useComposedRefs(forwardedRef, buttonRef);
     const [checked = false, setChecked] = useControlledState({
       prop: checkedProp,
       defaultProp: defaultChecked,
     });
 
     return (
-      <span
-        {...interopDataAttrObj('wrapper')}
-        // Uses `inline-flex` to prevent extraneous whitespace below input
-        style={{ display: 'inline-flex', verticalAlign: 'middle', position: 'relative' }}
-      >
+      /**
+       * The `input` is hidden from non-SR and SR users as it only exists to
+       * ensure form events fire when the value changes and that the value
+       * updates when clicking an associated label.
+       */
+      <>
+        <input
+          ref={inputRef}
+          type="checkbox"
+          name={name}
+          checked={checked}
+          required={required}
+          disabled={disabled}
+          readOnly={readOnly}
+          value={value}
+          hidden
+          onChange={composeEventHandlers(onCheckedChange, (event) => {
+            setChecked(event.target.checked);
+            /**
+             * When this component is wrapped in a label, clicking the label
+             * will not focus the button (but it will correctly trigger the input)
+             * so we manually focus it.
+             */
+            if (buttonRef.current?.ownerDocument.activeElement !== buttonRef.current) {
+              buttonRef.current?.focus();
+            }
+          })}
+        />
         <Comp
           {...switchProps}
           {...interopDataAttrObj('root')}
-          type="checkbox"
+          ref={ref}
+          type={Comp === SWITCH_DEFAULT_TAG ? 'button' : undefined}
           role="switch"
           aria-checked={checked}
+          aria-labelledby={labelledBy}
+          aria-required={required}
           data-state={getState(checked)}
-          checked={checked}
-          ref={ref}
-          onChange={composeEventHandlers(onCheckedChange, (event) =>
-            setChecked(event.target.checked)
-          )}
-        />
-        <SwitchContext.Provider value={checked}>{children}</SwitchContext.Provider>
-      </span>
+          data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
+          /**
+           * The `input` is hidden, so when the button is clicked we trigger
+           * the input manually
+           */
+          onClick={() => inputRef.current?.click()}
+        >
+          <SwitchContext.Provider value={checked}>{children}</SwitchContext.Provider>
+        </Comp>
+      </>
     );
   }
 );
@@ -114,17 +157,15 @@ interface SwitchStaticProps {
 }
 
 const [styles, interopDataAttrObj] = createStyleObj(SWITCH_NAME, {
-  wrapper: {},
   root: {
     ...cssReset(SWITCH_DEFAULT_TAG),
-    appearance: 'none',
+    verticalAlign: 'middle',
+    textAlign: 'left',
   },
   thumb: {
     ...cssReset(THUMB_DEFAULT_TAG),
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    pointerEvents: 'none',
+    display: 'inline-block',
+    verticalAlign: 'middle',
   },
 });
 
