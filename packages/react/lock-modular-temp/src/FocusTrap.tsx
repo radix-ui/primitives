@@ -37,12 +37,8 @@ type FocusScopeProps = {
   focusOnUnmount?: FocusParam;
 };
 
-function FocusScope({
-  children,
-  trapped = false,
-  focusOnMount = 'none',
-  focusOnUnmount = 'none',
-}: FocusScopeProps) {
+const FocusScope = React.forwardRef<HTMLElement, FocusScopeProps>((props, forwardedRef) => {
+  const { children, trapped = false, focusOnMount = 'none', focusOnUnmount = 'none' } = props;
   const child = React.Children.only(children);
   if (ReactIs.isFragment(child)) {
     throw new Error(
@@ -51,7 +47,7 @@ function FocusScope({
   }
   const focusScopeRef = React.useRef<ReturnType<typeof createFocusScope>>();
   const containerRef = React.useRef<HTMLElement>(null);
-  const ref = useComposedRefs((child as any).ref, containerRef);
+  const ref = useComposedRefs((child as any).ref, forwardedRef, containerRef);
 
   // Create the focus scope on mount and destroy it on unmount
   React.useEffect(() => {
@@ -107,7 +103,7 @@ function FocusScope({
   }, [focusOnUnmount]);
 
   return React.cloneElement(child, { ref });
-}
+});
 
 function resolveFocusParam(param: FocusParam) {
   if (param === 'none') return null;

@@ -21,68 +21,64 @@ export const Basic = () => {
     <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
       <h1>FocusScope</h1>
 
-      <div>
-        <div style={{ display: 'inline-block', textAlign: 'left', marginBottom: 20 }}>
-          <label style={{ display: 'block' }}>
+      <div style={{ display: 'inline-block', textAlign: 'left', marginBottom: 20 }}>
+        <label style={{ display: 'block' }}>
+          <input
+            type="checkbox"
+            checked={trapFocus}
+            onChange={(event) => setTrapFocus(event.target.checked)}
+          />{' '}
+          Trap focus?
+        </label>
+        <label style={{ display: 'block' }}>
+          <input
+            type="checkbox"
+            checked={focusOnMount !== 'none'}
+            onChange={(event) => setFocusOnMount(event.target.checked ? 'auto' : 'none')}
+          />{' '}
+          Focus on mount?
+        </label>
+        {focusOnMount !== 'none' && !isEmptyForm && (
+          <label style={{ display: 'block', marginLeft: 20 }}>
             <input
               type="checkbox"
-              checked={trapFocus}
-              onChange={(event) => setTrapFocus(event.target.checked)}
+              checked={focusOnMount !== 'auto'}
+              onChange={(event) => setFocusOnMount(event.target.checked ? ageFieldRef : 'auto')}
             />{' '}
-            Trap focus?
+            on "age" field?
           </label>
-          <label style={{ display: 'block' }}>
+        )}
+        {focusOnMount !== 'none' && (
+          <label style={{ display: 'block', marginLeft: 20 }}>
             <input
               type="checkbox"
-              checked={focusOnMount !== 'none'}
-              onChange={(event) => setFocusOnMount(event.target.checked ? 'auto' : 'none')}
+              checked={isEmptyForm}
+              onChange={(event) => {
+                setIsEmptyForm(event.target.checked);
+                setFocusOnMount('auto');
+              }}
             />{' '}
-            Focus on mount?
+            empty form?
           </label>
-          {focusOnMount !== 'none' && !isEmptyForm && (
-            <label style={{ display: 'block', marginLeft: 20 }}>
-              <input
-                type="checkbox"
-                checked={focusOnMount !== 'auto'}
-                onChange={(event) => setFocusOnMount(event.target.checked ? ageFieldRef : 'auto')}
-              />{' '}
-              on "age" field?
-            </label>
-          )}
-          {focusOnMount !== 'none' && (
-            <label style={{ display: 'block', marginLeft: 20 }}>
-              <input
-                type="checkbox"
-                checked={isEmptyForm}
-                onChange={(event) => {
-                  setIsEmptyForm(event.target.checked);
-                  setFocusOnMount('auto');
-                }}
-              />{' '}
-              empty form?
-            </label>
-          )}
-          <label style={{ display: 'block' }}>
+        )}
+        <label style={{ display: 'block' }}>
+          <input
+            type="checkbox"
+            checked={focusOnUnmount !== 'none'}
+            onChange={(event) => setFocusOnUnmount(event.target.checked ? 'auto' : 'none')}
+          />{' '}
+          Focus on unmount?
+        </label>
+        {focusOnUnmount !== 'none' && (
+          <label style={{ display: 'block', marginLeft: 20 }}>
             <input
               type="checkbox"
-              checked={focusOnUnmount !== 'none'}
-              onChange={(event) => setFocusOnUnmount(event.target.checked ? 'auto' : 'none')}
+              checked={focusOnUnmount !== 'auto'}
+              onChange={(event) => setFocusOnUnmount(event.target.checked ? nextButtonRef : 'auto')}
             />{' '}
-            Focus on unmount?
+            on "next" button?
           </label>
-          {focusOnUnmount !== 'none' && (
-            <label style={{ display: 'block', marginLeft: 20 }}>
-              <input
-                type="checkbox"
-                checked={focusOnUnmount !== 'auto'}
-                onChange={(event) =>
-                  setFocusOnUnmount(event.target.checked ? nextButtonRef : 'auto')
-                }
-              />{' '}
-              on "next" button?
-            </label>
-          )}
-        </div>
+        )}
       </div>
 
       <div style={{ marginBottom: 20 }}>
