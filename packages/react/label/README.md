@@ -10,4 +10,4 @@ $ npm install @interop-ui/react-label
 
 ## Usage
 
-TODO
+This package is currently in early development and not quite ready for usage.

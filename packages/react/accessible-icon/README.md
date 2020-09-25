@@ -12,7 +12,7 @@ $ npm install @interop-ui/react-accessible-icon
 
 ```js
 import * as React from 'react';
-import { AccessibleIcon, styles } from './AccessibleIcon';
+import { AccessibleIcon, styles } from '@interop-ui/react-accessible-icon';
 
 function MyComponent(spanProps) {
   return (
