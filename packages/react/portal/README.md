@@ -1,0 +1,13 @@
+# `react-portal`
+
+## Installation
+
+```sh
+$ yarn add @interop-ui/react-portal
+# or
+$ npm install @interop-ui/react-portal
+```
+
+## Usage
+
+TODO
