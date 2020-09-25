@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@interop-ui/react-utils": "workspace:*",
+    "@interop-ui/utils": "workspace:*",
     "react-is": "16.13.1",
     "tabbable": "5.0.0"
   },

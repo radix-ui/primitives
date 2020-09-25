@@ -1947,6 +1947,7 @@ __metadata:
   resolution: "@interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
     "@types/react-is": 16.7.1
     parcel: ^2.0.0-beta.1
     react-is: 16.13.1
