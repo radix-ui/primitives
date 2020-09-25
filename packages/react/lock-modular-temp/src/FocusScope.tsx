@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as ReactIs from 'react-is';
 import { useComposedRefs } from '@interop-ui/react-utils';
-import { createFocusScope } from './createFocusTrap';
+import { createFocusScope } from './createFocusScope';
 
-import type { FocusableTarget } from './createFocusTrap';
+import type { FocusableTarget } from './createFocusScope';
 
 type FocusParam = 'none' | 'auto' | React.RefObject<FocusableTarget | null | undefined>;
 

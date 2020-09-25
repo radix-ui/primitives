@@ -1,6 +1,6 @@
 import React from 'react';
-import { FocusScope } from './FocusTrap';
-import type { FocusScopeProps } from './FocusTrap';
+import { FocusScope } from './FocusScope';
+import type { FocusScopeProps } from './FocusScope';
 
 export default { title: 'Modular Lock (temp)/FocusScope' };
 
