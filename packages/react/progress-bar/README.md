@@ -15,9 +15,10 @@ import * as React from 'react';
 import { ProgressBar, styles } from '@interop-ui/react-progress-bar';
 
 function MyComponent(props) {
+  const max = props.max || 100;
   const precentage = props.value != null ? Math.round((props.value / max) * 100) : null;
   return (
-    <ProgressBar style={{ ...styles.root, ...props.style }} value={props.value}>
+    <ProgressBar style={{ ...styles.root, ...props.style }} max={max} value={props.value}>
       <ProgressBar.Indicator
         style={{
           ...styles.indicator,
