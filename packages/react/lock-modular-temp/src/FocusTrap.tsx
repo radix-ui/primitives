@@ -34,14 +34,14 @@ type FocusScopeProps = {
    *
    * (default: `'none'`)
    **/
-  returnFocusOnUnmount?: FocusParam;
+  focusOnUnmount?: FocusParam;
 };
 
 function FocusScope({
   children,
   trapped = false,
   focusOnMount = 'none',
-  returnFocusOnUnmount = 'none',
+  focusOnUnmount = 'none',
 }: FocusScopeProps) {
   const child = React.Children.only(children);
   if (ReactIs.isFragment(child)) {
@@ -60,14 +60,35 @@ function FocusScope({
       focusScopeRef.current = createFocusScope({
         container,
         elementToFocusOnCreate: resolveFocusParam(focusOnMount),
-        elementToFocusOnDestroy: resolveFocusParam(returnFocusOnUnmount),
+        elementToFocusOnDestroy: resolveFocusParam(focusOnUnmount),
       });
 
       return () => focusScopeRef.current?.destroy();
     }
-    // NOTE: we don't care if `focusOnMount` changes once the component is mounted
-    // as it is for side-effect that happens on mount only. As for `returnFocusOnUnmount`,
-    // we use a setter to update the focus scope instance.
+    // NOTE: `createFocusScope` has couple major side-effects:
+    // - when created, it may move focus inside
+    // - when destroyed, it may move focus back outside
+    //
+    // Because of this, we need to ensure we don't destroy/re-create when some config changes
+    // as this would potentially run some side-effects we don't intend to.
+    //
+    // This is why we disable the `react-hooks/exhaustive-deps` rule and skip dependencies.
+    // We can safely do so because of the following reasons:
+    //
+    // There are potentially 3 parameters that can change:
+    //
+    // - `trapped`:
+    //    This is synced manually in the first `useEffect` below using imperative
+    //    `trap()` and `untrap()` methods on the instance returned by `createFocusScope`.
+    //
+    // - `focusOnMount`:
+    //    Even if this changed throughout the component's lifecycle we can safely ignore it
+    //    as its intent is solely to run a side-effect after being mounted.
+    //
+    // - `focusOnUnmount`:
+    //    This could change throughout the component's lifecycle and cannot be safely ignored
+    //    because it runs a side-effect when unmounting. This is why we run a setter in the
+    //    second `useEffect` below to update the configuration without side-effect.
     //
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -82,8 +103,8 @@ function FocusScope({
 
   // Set `elementToFocusOnDestroy` in case things changes whilst mounted
   React.useEffect(() => {
-    focusScopeRef.current?.setElementToFocusOnDestroy(resolveFocusParam(returnFocusOnUnmount));
-  }, [returnFocusOnUnmount]);
+    focusScopeRef.current?.setElementToFocusOnDestroy(resolveFocusParam(focusOnUnmount));
+  }, [focusOnUnmount]);
 
   return React.cloneElement(child, { ref });
 }
