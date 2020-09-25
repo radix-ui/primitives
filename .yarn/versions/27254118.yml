@@ -34,4 +34,5 @@ releases:
   "@interop-ui/utils": prerelease
 
 declined:
+  - interop-ui
   - "@interop-ui/docs"
