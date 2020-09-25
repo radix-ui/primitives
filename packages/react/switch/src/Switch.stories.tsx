@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Switch, styles } from './Switch';
+import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
 import { createStyled } from '@stitches/react';
 
 export default { title: 'Switch' };
@@ -24,12 +25,12 @@ export const Basic = () => (
 export const StitchesStyle = () => (
   <>
     <p>This switch is nested inside a label. The state is uncontrolled.</p>
-    <label>
+    <Label>
       This is the label{' '}
       <Switch as={Root}>
         <Switch.Thumb as={Thumb} />
       </Switch>
-    </label>
+    </Label>
   </>
 );
 
@@ -39,7 +40,7 @@ export const Controlled = () => {
   return (
     <>
       <p>This switch is placed adjacent to its label. The state is controlled.</p>
-      <label htmlFor="randBox">This is the label</label>{' '}
+      <Label htmlFor="randBox">This is the label</Label>{' '}
       <Switch
         as={Root}
         checked={checked}
@@ -72,10 +73,18 @@ export const WithinForm = () => {
 };
 
 /* -------------------------------------------------------------------------------------------------
+ * Label
+ * -----------------------------------------------------------------------------------------------*/
+
+const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
+
+/* -------------------------------------------------------------------------------------------------
  * Reset components
  * -----------------------------------------------------------------------------------------------*/
 
-const Root = (props: any) => <RootStyles {...props} type="button" />;
+const Root = React.forwardRef((props: any, forwardedRef) => (
+  <RootStyles ref={forwardedRef} {...props} type="button" />
+));
 
 const RootStyles = styled('button', {
   ...(styles.root as any),
