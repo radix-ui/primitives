@@ -1,1 +1,1 @@
-export * from './FocusTrap';
+export * from './FocusScope';
