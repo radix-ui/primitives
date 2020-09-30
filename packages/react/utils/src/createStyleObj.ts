@@ -1,7 +1,6 @@
-import * as React from 'react';
 import { interopDataAttrObj, interopDataAttrSelector, isFunction } from '@interop-ui/utils';
 
-type StyleObject = React.CSSProperties | Record<string, React.CSSProperties>;
+type StyleObject = any;
 type Selector = ReturnType<typeof interopDataAttrSelector>;
 type PrimitiveStyles<Part extends string> = {
   root: StyleObject;
