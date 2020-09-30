@@ -11,7 +11,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts && yarn build:styles",
+    "build": "parcel build src/index.ts --no-cache && yarn build:styles",
     "build:styles": "node ../../../scripts/build-styles tabs",
     "clean": "rm -rf dist",
     "version": "yarn version",
