@@ -1,0 +1,12 @@
+declined:
+  - interop-ui
+  - "@interop-ui/popper"
+  - "@interop-ui/tabbable"
+  - "@interop-ui/utils"
+  - "@interop-ui/react-collection"
+  - "@interop-ui/react-debug-context"
+  - "@interop-ui/react-lock"
+  - "@interop-ui/react-lock-modular-temp"
+  - "@interop-ui/react-portal"
+  - "@interop-ui/react-use-size"
+  - "@interop-ui/react-utils"
