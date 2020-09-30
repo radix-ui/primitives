@@ -14,7 +14,7 @@
   "scripts": {
     "build": "parcel build src/index.ts",
     "clean": "rm -rf dist",
-    "bump": "yarn version --deferred",
+    "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {

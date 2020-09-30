@@ -14,7 +14,7 @@
     "build": "parcel build src/index.ts && yarn build:styles",
     "build:styles": "node ../../../scripts/build-styles toggle-button",
     "clean": "rm -rf dist",
-    "bump": "yarn version --deferred",
+    "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
