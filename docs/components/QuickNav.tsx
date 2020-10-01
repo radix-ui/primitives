@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Heading, Link, Text } from '@modulz/radix';
-import { useIsomorphicLayoutEffect } from '@interop-ui/react-utils';
+import { useLayoutEffect } from '@interop-ui/react-utils';
 
 type QuickNavItem = {
   label: string;
@@ -45,7 +45,7 @@ function QuickNavItem({
   const label = labelOverride ?? (typeof children === 'string' ? children : '');
   const slug = slugOverride ?? label.toLowerCase().replace(/\s/g, '-');
 
-  useIsomorphicLayoutEffect(() => {
+  useLayoutEffect(() => {
     setItems((items) => [...items, { label, slug, level }]);
     return () => setItems((items) => items.filter((item) => item.slug !== slug));
   }, [slug, label, level, setItems]);

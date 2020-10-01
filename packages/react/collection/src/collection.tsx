@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, useIsomorphicLayoutEffect } from '@interop-ui/react-utils';
+import { createContext, useLayoutEffect } from '@interop-ui/react-utils';
 
 function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: string) {
   const providerName = name + 'CollectionProvider';
@@ -51,7 +51,7 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
 
     // items are pushed into the `items` array every render, so we reset them
     // everytime the children change.
-    useIsomorphicLayoutEffect(() => {
+    useLayoutEffect(() => {
       setItems([]);
     }, [children]);
 
@@ -98,14 +98,14 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
     ssrSyncUseCollectionItemCountRef.current = ssrSyncUseCollectionItemCountRef.current + 1;
 
     // add item on every render, this is fine because we reset the items in the parent everytime
-    useIsomorphicLayoutEffect(() => {
+    useLayoutEffect(() => {
       addItem(({ ...state, ref } as unknown) as Item);
     });
 
     // only remove on unmount
-    useIsomorphicLayoutEffect(() => {
+    useLayoutEffect(() => {
       return () => removeItem(ref);
-    }, [removeItem]);
+    }, [ref, removeItem]);
 
     return { ref, index };
   }

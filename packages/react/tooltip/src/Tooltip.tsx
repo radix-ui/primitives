@@ -9,7 +9,7 @@ import {
   useRect,
   usePrevious,
   useControlledState,
-  useIsomorphicLayoutEffect,
+  useLayoutEffect,
 } from '@interop-ui/react-utils';
 import { cssReset } from '@interop-ui/utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
@@ -92,7 +92,7 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(pr
 
   // if we're controlling the component
   // put the state machine in the appropriate state
-  useIsomorphicLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (isOpenProp === true) {
       stateMachine.transition('mouseEntered', { id });
     }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useIsomorphicLayoutEffect as useLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useLayoutEffect } from './useLayoutEffect';
 
 export function useDocumentRef<T extends Element>(
   forwardedRef: React.RefObject<T | null>
