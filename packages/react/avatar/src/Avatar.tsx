@@ -5,7 +5,7 @@ import {
   forwardRef,
   createStyleObj,
   useCallbackRef,
-  useIsomorphicLayoutEffect,
+  useLayoutEffect,
 } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(funct
   const imageLoadingStatus = useImageLoadingStatus(src);
   const onLoadingStatusChange = useCallbackRef(onLoadingStatusChangeProp);
 
-  useIsomorphicLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (imageLoadingStatus !== 'idle') {
       onLoadingStatusChange(imageLoadingStatus);
       setImageLoadingStatus(imageLoadingStatus);

@@ -5,7 +5,7 @@ import {
   forwardRef,
   createStyleObj,
   useComposedRefs,
-  useIsomorphicLayoutEffect as useLayoutEffect,
+  useLayoutEffect,
 } from '@interop-ui/react-utils';
 
 type RegionType = 'polite' | 'assertive' | 'off';

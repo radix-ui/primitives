@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observeElementRect } from '@interop-ui/utils';
-import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useLayoutEffect } from './useLayoutEffect';
 
 /**
  * Use this custom hook to get access to an element's rect (getBoundingClientRect)
@@ -11,7 +11,7 @@ export function useRect(
   refToObserve: React.RefObject<HTMLElement | SVGElement>
 ) {
   const [rect, setRect] = React.useState<ClientRect>();
-  useIsomorphicLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (refToObserve.current) {
       const unobserve = observeElementRect(refToObserve.current, setRect);
       return () => {
