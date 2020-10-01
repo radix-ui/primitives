@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { useDebugContext } from '@interop-ui/react-debug-context';
+import { useLayoutEffect } from '@interop-ui/react-utils';
 
 type PortalProps = {
   children: React.ReactNode;
@@ -15,7 +16,7 @@ const Portal: React.FC<PortalProps> = ({ children, containerRef }) => {
   const [hostElement] = React.useState(getHostElement);
 
   // We append the host element and remove it when necessary
-  React.useEffect(() => {
+  useLayoutEffect(() => {
     if (!hostElement) {
       return;
     }
