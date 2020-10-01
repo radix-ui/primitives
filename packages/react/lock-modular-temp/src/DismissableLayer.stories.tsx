@@ -2,6 +2,7 @@ import React from 'react';
 import { DismissableLayer } from './DismissableLayer';
 import { FocusScope } from './FocusScope';
 import type { DismissableLayerProps } from './DismissableLayer';
+import { composeRefs } from '@interop-ui/react-utils';
 
 export default { title: 'Modular Lock (temp)/DismissableLayer' };
 
@@ -69,21 +70,25 @@ export const Basic = () => {
           preventOutsideClick={preventOutsideClick}
           onDismiss={() => setIsOpen(false)}
         >
-          <div
-            style={{
-              display: 'inline-flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              verticalAlign: 'middle',
-              width: 400,
-              height: 300,
-              backgroundColor: 'black',
-              borderRadius: 10,
-              marginBottom: 20,
-            }}
-          >
-            <input type="text" />
-          </div>
+          {({ ref, styles }) => (
+            <div
+              ref={ref}
+              style={{
+                display: 'inline-flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                verticalAlign: 'middle',
+                width: 400,
+                height: 300,
+                backgroundColor: 'black',
+                borderRadius: 10,
+                marginBottom: 20,
+                ...styles,
+              }}
+            >
+              <input type="text" />
+            </div>
+          )}
         </DismissableLayer>
       ) : null}
 
@@ -136,28 +141,34 @@ export const WithFocusScope = () => {
 
       {isOpen ? (
         <FocusScope trapped focusOnMount="auto" focusOnUnmount="auto">
-          <DismissableLayer
-            dismissOnEscape
-            dismissOnOutsideClick={(event) => event.target !== openButtonRef.current}
-            preventOutsideClick
-            onDismiss={() => setIsOpen(false)}
-          >
-            <div
-              style={{
-                display: 'inline-flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                verticalAlign: 'middle',
-                width: 400,
-                height: 300,
-                backgroundColor: 'black',
-                borderRadius: 10,
-                marginBottom: 20,
-              }}
+          {({ ref: focusScopeContainerRef }) => (
+            <DismissableLayer
+              dismissOnEscape
+              dismissOnOutsideClick={(event) => event.target !== openButtonRef.current}
+              preventOutsideClick
+              onDismiss={() => setIsOpen(false)}
             >
-              <input type="text" />
-            </div>
-          </DismissableLayer>
+              {({ ref: dismissableLayerContainerRef, styles }) => (
+                <div
+                  ref={composeRefs(focusScopeContainerRef, dismissableLayerContainerRef)}
+                  style={{
+                    display: 'inline-flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    verticalAlign: 'middle',
+                    width: 400,
+                    height: 300,
+                    backgroundColor: 'black',
+                    borderRadius: 10,
+                    marginBottom: 20,
+                    ...styles,
+                  }}
+                >
+                  <input type="text" />
+                </div>
+              )}
+            </DismissableLayer>
+          )}
         </FocusScope>
       ) : null}
 
@@ -183,29 +194,37 @@ function DismissableBox({ onDismiss, dismissOnOutsideClick }: DismissableBoxProp
       dismissOnOutsideClick={dismissOnOutsideClick}
       onDismiss={onDismiss}
     >
-      <div
-        style={{
-          display: 'inline-block',
-          verticalAlign: 'middle',
-          padding: 20,
-          backgroundColor: 'rgba(0, 0, 0, 0.2)',
-          borderRadius: 10,
-          marginTop: 20,
-        }}
-      >
-        <div>
-          <button ref={openButtonRef} type="button" onClick={() => setIsOpen((isOpen) => !isOpen)}>
-            {isOpen ? 'Close' : 'Open'} dismissable component
-          </button>
-        </div>
+      {({ ref, styles }) => (
+        <div
+          ref={ref}
+          style={{
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            padding: 20,
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            borderRadius: 10,
+            marginTop: 20,
+            ...styles,
+          }}
+        >
+          <div>
+            <button
+              ref={openButtonRef}
+              type="button"
+              onClick={() => setIsOpen((isOpen) => !isOpen)}
+            >
+              {isOpen ? 'Close' : 'Open'} dismissable component
+            </button>
+          </div>
 
-        {isOpen ? (
-          <DismissableBox
-            dismissOnOutsideClick={(event) => event.target !== openButtonRef.current}
-            onDismiss={() => setIsOpen(false)}
-          />
-        ) : null}
-      </div>
+          {isOpen ? (
+            <DismissableBox
+              dismissOnOutsideClick={(event) => event.target !== openButtonRef.current}
+              onDismiss={() => setIsOpen(false)}
+            />
+          ) : null}
+        </div>
+      )}
     </DismissableLayer>
   );
 }

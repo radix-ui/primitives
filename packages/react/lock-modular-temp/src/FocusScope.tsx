@@ -1,6 +1,4 @@
 import * as React from 'react';
-import * as ReactIs from 'react-is';
-import { useComposedRefs } from '@interop-ui/react-utils';
 import { createFocusScope } from './createFocusScope';
 
 import type { FocusableTarget } from './createFocusScope';
@@ -8,7 +6,7 @@ import type { FocusableTarget } from './createFocusScope';
 type FocusParam = 'none' | 'auto' | React.RefObject<FocusableTarget | null | undefined>;
 
 type FocusScopeProps = {
-  children: React.ReactElement;
+  children: (args: { ref: React.RefObject<any> }) => React.ReactElement;
 
   /**
    * Whether focus should be trapped within the FocusScope
@@ -37,17 +35,10 @@ type FocusScopeProps = {
   focusOnUnmount?: FocusParam;
 };
 
-const FocusScope = React.forwardRef<HTMLElement, FocusScopeProps>((props, forwardedRef) => {
+function FocusScope(props: FocusScopeProps) {
   const { children, trapped = false, focusOnMount = 'none', focusOnUnmount = 'none' } = props;
-  const child = React.Children.only(children);
-  if (ReactIs.isFragment(child)) {
-    throw new Error(
-      'FocusScope needs to have a single valid React child that renders a DOM element.'
-    );
-  }
   const focusScopeRef = React.useRef<ReturnType<typeof createFocusScope>>();
   const containerRef = React.useRef<HTMLElement>(null);
-  const ref = useComposedRefs((child as any).ref, forwardedRef, containerRef);
 
   // Create the focus scope on mount and destroy it on unmount
   React.useEffect(() => {
@@ -102,8 +93,8 @@ const FocusScope = React.forwardRef<HTMLElement, FocusScopeProps>((props, forwar
     focusScopeRef.current?.setElementToFocusOnDestroy(resolveFocusParam(focusOnUnmount));
   }, [focusOnUnmount]);
 
-  return React.cloneElement(child, { ref });
-});
+  return children({ ref: containerRef });
+}
 
 function resolveFocusParam(param: FocusParam) {
   if (param === 'none') return null;

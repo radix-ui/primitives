@@ -1,12 +1,13 @@
 import * as React from 'react';
-import * as ReactIs from 'react-is';
-import { useComposedRefs } from '@interop-ui/react-utils';
 import { arrayRemove, isFunction } from '@interop-ui/utils';
 
 let layerStack: Array<React.RefObject<HTMLElement>> = [];
 
 type DismissableLayerProps = {
-  children: React.ReactElement;
+  children: (args: {
+    ref: React.RefObject<any>;
+    styles: ReturnType<typeof usePreventOutsidePointerEvents>;
+  }) => React.ReactElement;
 
   /** Whether pressing the escape key should dismiss */
   dismissOnEscape?: boolean;
@@ -24,85 +25,107 @@ type DismissableLayerProps = {
   preventOutsideClick?: boolean;
 };
 
-const DismissableLayer = React.forwardRef<HTMLElement, DismissableLayerProps>(
-  (props, forwardedRef) => {
-    const {
-      children,
-      dismissOnEscape = false,
-      dismissOnOutsideClick = false,
-      dismissOnOutsideBlur = false,
-      preventOutsideClick = false,
-      onDismiss,
-    } = props;
-    const child = React.Children.only(children);
-    if (ReactIs.isFragment(child)) {
-      throw new Error(
-        'DismissableLayer needs to have a single valid React child that renders a DOM element.'
-      );
+function DismissableLayer(props: DismissableLayerProps) {
+  const {
+    children,
+    dismissOnEscape = false,
+    dismissOnOutsideClick = false,
+    dismissOnOutsideBlur = false,
+    preventOutsideClick = false,
+    onDismiss,
+  } = props;
+  const containerRef = React.useRef<HTMLElement>(null);
+
+  const dismissTopMostLayer = React.useCallback(() => {
+    const isTopMostLayer = layerStack[layerStack.length - 1] === containerRef;
+    if (isTopMostLayer) {
+      onDismiss?.();
     }
-    const containerRef = React.useRef<HTMLElement>(null);
-    const ref = useComposedRefs((child as any).ref, forwardedRef, containerRef);
+  }, [onDismiss]);
 
-    const dismissTopMostLayer = React.useCallback(() => {
-      const isTopMostLayer = layerStack[layerStack.length - 1] === containerRef;
-      if (isTopMostLayer) {
-        onDismiss?.();
-      }
-    }, [onDismiss]);
+  // Maintain stack of open `DismissableLayer`
+  React.useEffect(() => {
+    layerStack = [...layerStack, containerRef];
+    return () => {
+      layerStack = arrayRemove(layerStack, containerRef);
+    };
+  }, []);
 
-    // Maintain stack of open `DismissableLayer`
-    React.useEffect(() => {
-      layerStack = [...layerStack, containerRef];
-      return () => {
-        layerStack = arrayRemove(layerStack, containerRef);
-      };
-    }, []);
+  // Dismiss on escape
+  React.useEffect(() => {
+    if (dismissOnEscape) {
+      return onEscapeKeydown(dismissTopMostLayer);
+    }
+  }, [dismissTopMostLayer, dismissOnEscape]);
 
-    // Dismiss on escape
-    React.useEffect(() => {
-      if (dismissOnEscape) {
-        return onEscapeKeydown(dismissTopMostLayer);
-      }
-    }, [dismissTopMostLayer, dismissOnEscape]);
+  // Dismiss on outside click
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (container && dismissOnOutsideClick) {
+      return onOutsidePointerDown(container, (event) => {
+        const shouldDismiss = isFunction(dismissOnOutsideClick)
+          ? dismissOnOutsideClick(event)
+          : dismissOnOutsideClick;
 
-    // Dismiss on outside click
-    React.useEffect(() => {
-      const container = containerRef.current;
-      if (container && dismissOnOutsideClick) {
-        return onOutsidePointerDown(container, (event) => {
-          const shouldDismiss = isFunction(dismissOnOutsideClick)
-            ? dismissOnOutsideClick(event)
-            : dismissOnOutsideClick;
-
-          // Prevent focus
-          event.preventDefault();
-
-          if (shouldDismiss) {
-            dismissTopMostLayer();
+        if (shouldDismiss) {
+          if (preventOutsideClick) {
+            // NOTE: As outside clicks are prevented, make sure nothing gains focus
+            event.preventDefault();
           }
-        });
-      }
-    }, [dismissTopMostLayer, dismissOnOutsideClick, preventOutsideClick]);
+          dismissTopMostLayer();
+        } else {
+          // NOTE: As we shouldn't dismiss, make sure nothing gains focus
+          event.preventDefault();
+        }
+      });
+    }
+  }, [dismissTopMostLayer, dismissOnOutsideClick, preventOutsideClick]);
 
-    // Dismiss on outside blur
-    React.useEffect(() => {
-      const container = containerRef.current;
-      if (container && dismissOnOutsideBlur) {
-        return onOutsideBlur(container, () => dismissTopMostLayer());
-      }
-    }, [dismissTopMostLayer, dismissOnOutsideBlur]);
+  // Dismiss on outside blur
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (container && dismissOnOutsideBlur) {
+      return onOutsideBlur(container, () => dismissTopMostLayer());
+    }
+  }, [dismissTopMostLayer, dismissOnOutsideBlur]);
 
-    // Prevent outside click
-    React.useEffect(() => {
-      const container = containerRef.current;
-      if (container && preventOutsideClick) {
-        return preventOutsidePointerEvents(container);
-      }
-    }, [preventOutsideClick]);
+  // Prevent outside click
+  const styles = usePreventOutsidePointerEvents({
+    containerRef,
+    active: preventOutsideClick,
+  });
 
-    return React.cloneElement(child, { ref });
-  }
-);
+  return children({ ref: containerRef, styles });
+}
+
+/**
+ * Encapsulates behaviour and styles to prevent outside pointer events.
+ */
+function usePreventOutsidePointerEvents(options: {
+  containerRef: React.RefObject<HTMLElement>;
+  active: boolean;
+}): React.CSSProperties {
+  const { containerRef, active } = options;
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (container && active) {
+      const originalBodyPointerEvents = document.body.style.pointerEvents;
+      document.body.style.pointerEvents = 'none';
+
+      const stopOutsidePointerDownListener = onOutsidePointerDown(container, (event) => {
+        // NOTE: We do this to prevent focus event from happening
+        event.preventDefault();
+      });
+
+      return () => {
+        document.body.style.pointerEvents = originalBodyPointerEvents;
+        stopOutsidePointerDownListener();
+      };
+    }
+  }, [containerRef, active]);
+
+  return active ? { pointerEvents: 'auto' } : {};
+}
 
 /* -------------------------------------------------------------------------------------------------
  * Utils
@@ -166,29 +189,6 @@ function onOutsideBlur(container: HTMLElement, callback: (event: FocusEvent) => 
   document.addEventListener('blur', handleBlur, { capture: true });
 
   return () => document.removeEventListener('blur', handleBlur, { capture: true });
-}
-
-/**
- * Prevents outside pointer events.
- * Returns a function to stop preventing.
- */
-function preventOutsidePointerEvents(container: HTMLElement) {
-  const originalBodyPointerEvents = document.body.style.pointerEvents;
-  const originalContainerPointerEvents = container.style.pointerEvents;
-
-  document.body.style.pointerEvents = 'none';
-  container.style.pointerEvents = 'auto';
-
-  const stopOutsidePointerDownListener = onOutsidePointerDown(container, (event) => {
-    // NOTE: We do this to prevent focus event from happening on focusable elements
-    event.preventDefault();
-  });
-
-  return () => {
-    document.body.style.pointerEvents = originalBodyPointerEvents;
-    container.style.pointerEvents = originalContainerPointerEvents;
-    stopOutsidePointerDownListener();
-  };
 }
 
 export { DismissableLayer };
