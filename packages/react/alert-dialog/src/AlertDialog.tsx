@@ -390,29 +390,17 @@ const AccessibilityDevWarnings: React.FC<AlertDialogContentProps> = function Acc
   const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
   React.useEffect(() => {
     const ownerDocument = ownerDocumentRef.current;
-
-    // We need to query the DOM to make sure our labeling elements exist. Rendering of inner
-    // elements seems to be delayed by something somewhere, so this timeout is only meant to deal
-    // with that. Ideally we could revisit this and solve the race condition, but this is just for
-    // dev warnings so this is fine. In the event that consumers need to query the inner DOM nodes
-    // here they will run into these same challenges.
-    const timeout = window.setTimeout(() => {
-      const hasLabel = Boolean(
-        ariaLabel ||
-          (ariaLabelledBy && ownerDocument.getElementById(ariaLabelledBy)) ||
-          (titleId && ownerDocument.getElementById(titleId))
-      );
-      const hasDescription = Boolean(
-        (ariaDescribedBy && ownerDocument.getElementById(ariaDescribedBy)) ||
-          (descriptionId && ownerDocument.getElementById(descriptionId))
-      );
-      warning(hasLabel, LABEL_WARNING);
-      warning(hasDescription, DESC_WARNING);
-    }, 0);
-
-    return function () {
-      window.clearTimeout(timeout);
-    };
+    const hasLabel = Boolean(
+      ariaLabel ||
+        (ariaLabelledBy && ownerDocument.getElementById(ariaLabelledBy)) ||
+        (titleId && ownerDocument.getElementById(titleId))
+    );
+    const hasDescription = Boolean(
+      (ariaDescribedBy && ownerDocument.getElementById(ariaDescribedBy)) ||
+        (descriptionId && ownerDocument.getElementById(descriptionId))
+    );
+    warning(hasLabel, LABEL_WARNING);
+    warning(hasDescription, DESC_WARNING);
   }, [titleId, ariaLabel, ariaDescribedBy, descriptionId, ariaLabelledBy, ownerDocumentRef]);
 
   return null;
