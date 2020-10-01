@@ -256,8 +256,12 @@ export const PopoverNested = () => (
 
     <div style={{ display: 'flex', gap: 10 }}>
       <DummyPopover>
-        <DummyPopover color="tomato">
-          <DummyPopover color="royalblue"></DummyPopover>
+        <DummyPopover color="tomato" openLabel="Open red" closeLabel="Close red">
+          <DummyPopover
+            color="royalblue"
+            openLabel="Open blue"
+            closeLabel="Close blue"
+          ></DummyPopover>
         </DummyPopover>
       </DummyPopover>
       <input type="text" defaultValue="some input" />
