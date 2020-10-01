@@ -1,10 +1,11 @@
 import * as React from 'react';
+import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
 import { RadioGroup, styles } from './RadioGroup';
 
 export default { title: 'RadioGroup' };
 
 export const Basic = () => (
-  <RadioGroup style={styles.root}>
+  <RadioGroup style={styles.root} defaultValue="1">
     <RadioGroup.Item style={styles.item} value="1">
       <RadioGroup.Indicator style={styles.indicator} />
     </RadioGroup.Item>
@@ -18,17 +19,29 @@ export const Basic = () => (
 );
 
 export const InlineStyle = () => (
-  <RadioGroup as={Root}>
-    <RadioGroup.Item as={Item} value="1">
-      <RadioGroup.Indicator as={Indicator} />
-    </RadioGroup.Item>
-    <RadioGroup.Item as={Item} value="2">
-      <RadioGroup.Indicator as={Indicator} />
-    </RadioGroup.Item>
-    <RadioGroup.Item as={Item} value="3">
-      <RadioGroup.Indicator as={Indicator} />
-    </RadioGroup.Item>
-  </RadioGroup>
+  <Label>
+    Favourite pet
+    <RadioGroup as={Root} defaultValue="1">
+      <Label>
+        <RadioGroup.Item as={Item} value="1">
+          <RadioGroup.Indicator as={Indicator} />
+        </RadioGroup.Item>
+        Cat
+      </Label>{' '}
+      <Label>
+        <RadioGroup.Item as={Item} value="2">
+          <RadioGroup.Indicator as={Indicator} />
+        </RadioGroup.Item>
+        Dog
+      </Label>{' '}
+      <Label>
+        <RadioGroup.Item as={Item} value="3">
+          <RadioGroup.Indicator as={Indicator} />
+        </RadioGroup.Item>
+        Rabbit
+      </Label>
+    </RadioGroup>
+  </Label>
 );
 
 export const Controlled = () => {
@@ -54,6 +67,12 @@ export const Controlled = () => {
 };
 
 /* -------------------------------------------------------------------------------------------------
+ * Label
+ * -----------------------------------------------------------------------------------------------*/
+
+const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
+
+/* -------------------------------------------------------------------------------------------------
  * Styled components
  * -----------------------------------------------------------------------------------------------*/
 
@@ -62,8 +81,9 @@ const Root = React.forwardRef((props: any, forwardedRef) => (
 ));
 
 const Item = React.forwardRef((props: any, forwardedRef) => (
-  <RadioGroup.Item
+  <button
     {...props}
+    type="button"
     ref={forwardedRef}
     style={{
       ...styles.item,
@@ -76,7 +96,7 @@ const Item = React.forwardRef((props: any, forwardedRef) => (
 ));
 
 const Indicator = React.forwardRef((props: any, forwardedRef) => (
-  <RadioGroup.Indicator
+  <span
     {...props}
     ref={forwardedRef}
     style={{

@@ -49,7 +49,7 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
       onCheckedChange,
       ...switchProps
     } = props;
-    const labelId = useLabelContext();
+    const labelId = useLabelContext(handleLabelClick);
     const labelledBy = ariaLabelledby || labelId;
     const inputRef = React.useRef<HTMLInputElement>(null);
     const buttonRef = React.useRef<HTMLButtonElement>(null);
@@ -58,6 +58,14 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
       prop: checkedProp,
       defaultProp: defaultChecked,
     });
+
+    function handleLabelClick(event: MouseEvent) {
+      const button = buttonRef.current!;
+      if (!button.contains(event.target as Node)) {
+        button.click();
+        button.focus();
+      }
+    }
 
     return (
       /**
@@ -78,14 +86,6 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
           hidden
           onChange={composeEventHandlers(onCheckedChange, (event) => {
             setChecked(event.target.checked);
-            /**
-             * When this component is wrapped in a label, clicking the label
-             * will not focus the button (but it will correctly trigger the input)
-             * so we manually focus it.
-             */
-            if (buttonRef.current?.ownerDocument.activeElement !== buttonRef.current) {
-              buttonRef.current?.focus();
-            }
           })}
         />
         <Comp
@@ -105,7 +105,9 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
            * The `input` is hidden, so when the button is clicked we trigger
            * the input manually
            */
-          onClick={() => inputRef.current?.click()}
+          onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
+            checkForDefaultPrevented: false,
+          })}
         >
           <SwitchContext.Provider value={checked}>{children}</SwitchContext.Provider>
         </Comp>

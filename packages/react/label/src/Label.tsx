@@ -1,38 +1,75 @@
 import * as React from 'react';
 import { cssReset } from '@interop-ui/utils';
-import { createStyleObj, forwardRef, useId, useComposedRefs } from '@interop-ui/react-utils';
+import {
+  createStyleObj,
+  forwardRef,
+  useId,
+  useComposedRefs,
+  useCallbackRef,
+} from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
  * -----------------------------------------------------------------------------------------------*/
 
 const LABEL_NAME = 'Label';
-const LABEL_DEFAULT_TAG = 'label';
+const LABEL_DEFAULT_TAG = 'span';
 
 type LabelDOMProps = React.ComponentPropsWithoutRef<typeof LABEL_DEFAULT_TAG>;
-type LabelOwnProps = {};
+type LabelOwnProps = { htmlFor?: string };
 type LabelProps = LabelOwnProps & LabelDOMProps;
 
-const LabelContext = React.createContext<string | undefined>(undefined);
-const useLabelContext = () => React.useContext(LabelContext);
+type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
+const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
+
+const useLabelContext = (onClick?: (event: MouseEvent) => void) => {
+  const context = React.useContext(LabelContext);
+  const hasClickHandler = Boolean(onClick);
+  const handleClick = useCallbackRef(onClick);
+
+  React.useEffect(() => {
+    const label = context?.ref.current;
+    if (hasClickHandler && label) {
+      label.addEventListener('click', handleClick);
+      return () => label.removeEventListener('click', handleClick);
+    }
+  }, [hasClickHandler, handleClick, context]);
+
+  return context?.id;
+};
 
 const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(props, forwardedRef) {
-  const { as: Comp = LABEL_DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
-  const labelRef = React.useRef<HTMLLabelElement>(null);
-  const ref = useComposedRefs(forwardedRef, labelRef);
+  const {
+    htmlFor,
+    as: Comp = (htmlFor ? 'label' : LABEL_DEFAULT_TAG) as any,
+    id: idProp,
+    children,
+    ...spanProps
+  } = props;
+  const spanRef = React.useRef<HTMLSpanElement>(null);
+  const ref = useComposedRefs(forwardedRef, spanRef);
   const generatedId = `label-${useId()}`;
   const id = idProp || generatedId;
 
   React.useEffect(() => {
-    // prevent text selection when double clicking label
-    labelRef.current?.addEventListener('mousedown', (event) => {
+    // prevent text selection when double clicking span
+    spanRef.current?.addEventListener('mousedown', (event) => {
       if (event.detail > 1) event.preventDefault();
     });
-  }, [labelRef]);
+  }, [spanRef]);
 
   return (
-    <Comp {...labelProps} {...interopDataAttrObj('root')} id={id} ref={ref}>
-      <LabelContext.Provider value={id}>{children}</LabelContext.Provider>
+    <Comp
+      {...spanProps}
+      {...interopDataAttrObj('root')}
+      id={id}
+      ref={ref}
+      role="label"
+      htmlFor={htmlFor}
+    >
+      <LabelContext.Provider value={React.useMemo(() => ({ id, ref: spanRef }), [id])}>
+        {children}
+      </LabelContext.Provider>
     </Comp>
   );
 });

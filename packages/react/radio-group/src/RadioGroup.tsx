@@ -6,6 +6,10 @@ import {
   forwardRef,
   useCallbackRef,
   useControlledState,
+  RovingTabIndexProvider,
+  useRovingTabIndex,
+  useComposedRefs,
+  useId,
 } from '@interop-ui/react-utils';
 import { Radio, styles as radioStyles } from './Radio';
 import { useLabelContext } from '@interop-ui/react-label';
@@ -18,6 +22,12 @@ const RADIO_GROUP_DEFAULT_TAG = 'div';
 
 type RadioGroupDOMProps = React.ComponentPropsWithoutRef<typeof RADIO_GROUP_DEFAULT_TAG>;
 type RadioGroupOwnProps = {
+  /**
+   * The direction the radio group is layed out.
+   * Mainly so arrow key navigation is configured appropriately (left & right vs. up & down)
+   * (default: horizontal)
+   */
+  orientation?: React.AriaAttributes['aria-orientation'];
   value?: string;
   defaultValue?: string;
   onValueChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -42,6 +52,7 @@ const RadioGroup = forwardRef<
   const {
     as: Comp = RADIO_GROUP_DEFAULT_TAG,
     'aria-labelledby': ariaLabelledby,
+    orientation = 'horizontal',
     defaultValue,
     children,
     value: valueProp,
@@ -68,8 +79,17 @@ const RadioGroup = forwardRef<
   );
 
   return (
-    <Comp {...groupProps} ref={forwardedRef} role="radiogroup" aria-labelledby={labelledBy}>
-      <RadioGroupContext.Provider value={context}>{children}</RadioGroupContext.Provider>
+    <Comp
+      {...groupProps}
+      ref={forwardedRef}
+      role="radiogroup"
+      data-orientation={orientation}
+      aria-orientation={orientation}
+      aria-labelledby={labelledBy}
+    >
+      <RadioGroupContext.Provider value={context}>
+        <RovingTabIndexProvider orientation={orientation}>{children}</RovingTabIndexProvider>
+      </RadioGroupContext.Provider>
     </Comp>
   );
 });
@@ -87,9 +107,30 @@ type RadioGroupItemProps = RadioProps & { value: string };
 const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
   function RadioGroupItem(props, forwardedRef) {
     const { as, ...itemProps } = props;
+    const id = `radio-group-item-${useId()}`;
     const context = useRadioGroupContext(ITEM_NAME);
+    const radioRef = React.useRef<React.ElementRef<typeof Radio>>(null);
+    const ref = useComposedRefs(forwardedRef, radioRef);
     const isChecked = context.value === props.value;
     const handleChange = composeEventHandlers(props.onCheckedChange, context.onValueChange);
+    const { onFocus, onKeyDown, tabIndex } = useRovingTabIndex({
+      id,
+      isSelected: !context.value || isChecked,
+      elementRef: radioRef,
+    });
+
+    function handleFocus(event: React.FocusEvent<React.ElementRef<typeof Radio>>) {
+      onFocus(event);
+
+      /**
+       * Trigger click to check the input.
+       * We do this imperatively instead of updating `context.value` because changing via
+       * state would not trigger change events (e.g. when in a form).
+       */
+      if (context.value !== undefined) {
+        radioRef.current?.click();
+      }
+    }
 
     return (
       <Radio
@@ -97,8 +138,13 @@ const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
         {...itemProps}
         {...interopDataAttrObj('item')}
         checked={isChecked}
-        ref={forwardedRef}
+        ref={ref}
+        tabIndex={tabIndex}
         onCheckedChange={handleChange}
+        onKeyDown={composeEventHandlers(itemProps.onKeyDown, onKeyDown)}
+        onFocus={composeEventHandlers(itemProps.onFocus, handleFocus, {
+          checkForDefaultPrevented: false,
+        })}
       />
     );
   }

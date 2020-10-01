@@ -1,5 +1,0 @@
-releases:
-  "@interop-ui/react-switch": prerelease
-
-declined:
-  - interop-ui
