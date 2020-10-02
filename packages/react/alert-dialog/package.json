@@ -4,15 +4,28 @@
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/index.module.js",
+  "development": "dist/pkg.development.js",
+  "module": "dist/pkg.module.min.js",
   "types": "dist/index.d.ts",
+  "targets": {
+    "development": {
+      "minify": false,
+      "outputFormat": "global",
+      "scopeHoist": false,
+      "isLibrary": true
+    }
+  },
   "files": [
-    "src",
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache && yarn build:styles",
+    "build": "yarn build:prod && yarn build:dev && yarn build:styles && yarn build:entry",
+    "build:prod": "parcel build src/index.ts --no-cache",
+    "build:dev": "NODE_ENV=development parcel build src/index.ts --no-cache --target development",
     "build:styles": "node ../../../scripts/build-styles alert-dialog",
+    "build:entry": "yarn build:entry:rename && cp ../../../scripts/entry.js dist/index.js",
+    "build:entry:rename": "mv dist/index.js dist/pkg.production.min.js && mv dist/index.js.map dist/pkg.production.min.js.map",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
