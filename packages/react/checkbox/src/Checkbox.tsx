@@ -50,23 +50,15 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
       onCheckedChange,
       ...checkboxProps
     } = props;
-    const labelId = useLabelContext(handleLabelClick);
-    const labelledBy = ariaLabelledby || labelId;
     const inputRef = React.useRef<HTMLInputElement>(null);
     const buttonRef = React.useRef<HTMLButtonElement>(null);
     const ref = useComposedRefs(forwardedRef, buttonRef);
+    const labelId = useLabelContext(buttonRef);
+    const labelledBy = ariaLabelledby || labelId;
     const [checked = false, setChecked] = useControlledState({
       prop: checkedProp,
       defaultProp: defaultChecked,
     });
-
-    function handleLabelClick(event: MouseEvent) {
-      const button = buttonRef.current!;
-      if (!button.contains(event.target as Node)) {
-        button.click();
-        button.focus();
-      }
-    }
 
     React.useEffect(() => {
       const isIndeterminate = checked === 'indeterminate';

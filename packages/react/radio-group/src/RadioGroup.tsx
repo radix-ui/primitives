@@ -14,6 +14,9 @@ import {
 import { Radio, styles as radioStyles } from './Radio';
 import { useLabelContext } from '@interop-ui/react-label';
 
+import type { RadioProps } from './Radio';
+import { cssReset } from '@interop-ui/utils';
+
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
  * -----------------------------------------------------------------------------------------------*/
@@ -22,20 +25,16 @@ const RADIO_GROUP_DEFAULT_TAG = 'div';
 
 type RadioGroupDOMProps = React.ComponentPropsWithoutRef<typeof RADIO_GROUP_DEFAULT_TAG>;
 type RadioGroupOwnProps = {
-  /**
-   * The direction the radio group is layed out.
-   * Mainly so arrow key navigation is configured appropriately (left & right vs. up & down)
-   * (default: horizontal)
-   */
-  orientation?: React.AriaAttributes['aria-orientation'];
   value?: string;
   defaultValue?: string;
+  required?: RadioProps['required'];
   onValueChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 type RadioGroupProps = Omit<RadioGroupDOMProps, 'onChange'> & RadioGroupOwnProps;
 
 type RadioGroupContextValue = {
   value: RadioGroupOwnProps['value'];
+  required?: RadioGroupOwnProps['required'];
   onValueChange: Required<RadioGroupOwnProps>['onValueChange'];
 };
 
@@ -52,16 +51,16 @@ const RadioGroup = forwardRef<
   const {
     as: Comp = RADIO_GROUP_DEFAULT_TAG,
     'aria-labelledby': ariaLabelledby,
-    orientation = 'horizontal',
     defaultValue,
     children,
     value: valueProp,
-    onValueChange: onValueChangeProp = () => {},
+    required,
+    onValueChange,
     ...groupProps
   } = props;
   const labelId = useLabelContext();
   const labelledBy = ariaLabelledby || labelId;
-  const onValueChange = useCallbackRef(onValueChangeProp);
+  const handleValueChange = useCallbackRef(onValueChange);
   const [value, setValue] = useControlledState({
     prop: valueProp,
     defaultProp: defaultValue,
@@ -70,25 +69,24 @@ const RadioGroup = forwardRef<
   const context = React.useMemo(
     () => ({
       value,
-      onValueChange(event: React.ChangeEvent<HTMLInputElement>) {
+      required,
+      onValueChange: composeEventHandlers(handleValueChange, (event) => {
         setValue(event.target.value);
-        onValueChange(event);
-      },
+      }),
     }),
-    [value, onValueChange, setValue]
+    [value, required, handleValueChange, setValue]
   );
 
   return (
     <Comp
       {...groupProps}
+      {...interopDataAttrObj('root')}
       ref={forwardedRef}
       role="radiogroup"
-      data-orientation={orientation}
-      aria-orientation={orientation}
       aria-labelledby={labelledBy}
     >
       <RadioGroupContext.Provider value={context}>
-        <RovingTabIndexProvider orientation={orientation}>{children}</RovingTabIndexProvider>
+        <RovingTabIndexProvider>{children}</RovingTabIndexProvider>
       </RadioGroupContext.Provider>
     </Comp>
   );
@@ -101,12 +99,11 @@ const RadioGroup = forwardRef<
 const ITEM_NAME = 'RadioGroup.Item';
 const ITEM_DEFAULT_TAG = 'button';
 
-type RadioProps = Omit<React.ComponentProps<typeof Radio>, 'value' | 'as'>;
-type RadioGroupItemProps = RadioProps & { value: string };
+type RadioGroupItemProps = Omit<RadioProps, 'value' | 'as'> & { value: string };
 
 const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
   function RadioGroupItem(props, forwardedRef) {
-    const { as, ...itemProps } = props;
+    const { as, required, ...itemProps } = props;
     const id = `radio-group-item-${useId()}`;
     const context = useRadioGroupContext(ITEM_NAME);
     const radioRef = React.useRef<React.ElementRef<typeof Radio>>(null);
@@ -115,6 +112,12 @@ const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
     const handleChange = composeEventHandlers(props.onCheckedChange, context.onValueChange);
     const { onFocus, onKeyDown, tabIndex } = useRovingTabIndex({
       id,
+      /**
+       * Roving index will set all items to `tabIndex={-1}` unless one is selected. Radio groups
+       * can have no items selected by default, which would mean none are focusable. We need
+       * one/them to be focusable on page load to pass the space bar critieria here:
+       * https://w3c.github.io/aria-practices/examples/radio/radio-activedescendant.html#key-space
+       */
       isSelected: !context.value || isChecked,
       elementRef: radioRef,
     });
@@ -123,7 +126,7 @@ const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
       onFocus(event);
 
       /**
-       * Trigger click to check the input.
+       * Roving index will focus the radio and we need to check it when this happens.
        * We do this imperatively instead of updating `context.value` because changing via
        * state would not trigger change events (e.g. when in a form).
        */
@@ -137,6 +140,7 @@ const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
         as={as}
         {...itemProps}
         {...interopDataAttrObj('item')}
+        required={required ?? context.required}
         checked={isChecked}
         ref={ref}
         tabIndex={tabIndex}
@@ -165,7 +169,7 @@ interface RadioGroupStaticProps {
 }
 
 const [styles, interopDataAttrObj] = createStyleObj(RADIO_GROUP_NAME, {
-  root: {},
+  root: cssReset(RADIO_GROUP_DEFAULT_TAG),
   item: radioStyles.root,
   indicator: radioStyles.indicator,
 });

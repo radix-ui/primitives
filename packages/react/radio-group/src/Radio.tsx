@@ -48,21 +48,15 @@ const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioProps, RadioStaticProps>
     onCheckedChange,
     ...radioProps
   } = props;
-  const labelId = useLabelContext(handleLabelClick);
-  const labelledBy = ariaLabelledby || labelId;
   const inputRef = React.useRef<HTMLInputElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const ref = useComposedRefs(forwardedRef, buttonRef);
+  const labelId = useLabelContext(buttonRef);
+  const labelledBy = ariaLabelledby || labelId;
   const [checked = false, setChecked] = useControlledState({
     prop: checkedProp,
     defaultProp: defaultChecked,
   });
-
-  function handleLabelClick() {
-    const button = buttonRef.current!;
-    button.click();
-    button.focus();
-  }
 
   return (
     /**
@@ -156,15 +150,10 @@ interface RadioStaticProps {
 const [styles, interopDataAttrObj] = createStyleObj(RADIO_NAME, {
   root: {
     ...cssReset(RADIO_DEFAULT_TAG),
-    position: 'relative',
     verticalAlign: 'middle',
   },
   indicator: {
     ...cssReset(INDICATOR_DEFAULT_TAG),
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
   },
 });
 

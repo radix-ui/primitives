@@ -50,14 +50,14 @@ function useRovingTabIndex<T extends HTMLElement>({
 
   const getDirection = React.useCallback(
     (event: React.KeyboardEvent<T>) => {
-      const isHorizontal = orientation !== 'vertical';
-      if (isHorizontal) {
-        if (event.key === 'ArrowRight') return 'next';
-        if (event.key === 'ArrowLeft') return 'previous';
-      } else {
-        if (event.key === 'ArrowDown') return 'next';
-        if (event.key === 'ArrowUp') return 'previous';
-      }
+      const mapOrientationToKeys = {
+        none: { next: ['ArrowRight', 'ArrowDown'], prev: ['ArrowLeft', 'ArrowUp'] },
+        horizontal: { next: ['ArrowRight'], prev: ['ArrowLeft'] },
+        vertical: { next: ['ArrowDown'], prev: ['ArrowUp'] },
+      };
+      const { next, prev } = mapOrientationToKeys[orientation || 'none'];
+      if (next.includes(event.key)) return 'next';
+      if (prev.includes(event.key)) return 'previous';
       return null;
     },
     [orientation]
@@ -100,7 +100,7 @@ function useRovingTabIndex<T extends HTMLElement>({
 
 type RovingTabIndexProviderProps = {
   children: React.ReactNode;
-  orientation: React.AriaAttributes['aria-orientation'];
+  orientation?: React.AriaAttributes['aria-orientation'];
   shouldLoop?: boolean;
 };
 
