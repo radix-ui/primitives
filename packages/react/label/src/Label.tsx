@@ -58,8 +58,12 @@ const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(pr
       const label = labelRef.current;
 
       if (label && element) {
+        const removeLabelClickEventListener = addLabelClickEventListener(label, element);
         element.setAttribute('aria-labelledby', id);
-        return addLabelClickEventListener(label, element);
+        return () => {
+          element.removeAttribute('aria-labelledby');
+          removeLabelClickEventListener();
+        };
       }
     }
   }, [id, htmlFor]);
