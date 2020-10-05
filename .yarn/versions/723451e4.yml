@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-select": prerelease
+
+declined:
+  - interop-ui
