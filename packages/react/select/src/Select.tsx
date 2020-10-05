@@ -174,7 +174,7 @@ const SelectPosition = forwardRef<typeof POSITION_DEFAULT_TAG, SelectPositionPro
     return context.open ? (
       <SelectPositionImpl ref={forwardedRef} {...props} />
     ) : (
-      <>{props.children}</>
+      <div hidden>{props.children}</div>
     );
   }
 );
@@ -254,7 +254,7 @@ const SelectOptions = forwardRef<typeof OPTIONS_DEFAULT_TAG, SelectOptionsProps>
     return context.open ? (
       <Popper.Content {...interopDataAttrObj('options')} {...props} ref={forwardedRef} />
     ) : (
-      <div hidden>{props.children}</div>
+      <>{props.children}</>
     );
   }
 );
