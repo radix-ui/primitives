@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { cssReset } from '@interop-ui/utils';
-import {
-  createStyleObj,
-  forwardRef,
-  useId,
-  useComposedRefs,
-  useCallbackRef,
-} from '@interop-ui/react-utils';
+import { createStyleObj, forwardRef, useId, useComposedRefs } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
@@ -30,20 +24,7 @@ const useLabelContext = <E extends HTMLElement>(ref?: React.RefObject<E>) => {
     const element = ref?.current;
 
     if (label && element) {
-      const handleClick = (event: MouseEvent) => {
-        /**
-         * When a label is wrapped around the element it labels, we make sure we manually trigger
-         * the element events only when clicking the label and not when clicking the element
-         * inside it.
-         */
-        if (!element.contains(event.target as Node)) {
-          element.click();
-          element.focus();
-        }
-      };
-
-      label.addEventListener('click', handleClick);
-      return () => label.removeEventListener('click', handleClick);
+      return addLabelClickEventListener(label, element);
     }
   }, [context, ref]);
 
@@ -51,16 +32,8 @@ const useLabelContext = <E extends HTMLElement>(ref?: React.RefObject<E>) => {
 };
 
 const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(props, forwardedRef) {
-  const {
-    htmlFor,
-    as: Comp = htmlFor ? 'label' : LABEL_DEFAULT_TAG,
-    id: idProp,
-    children,
-    ...labelProps
-  } = props;
-  // Using `any` because it could be a span or a label and
-  // we don't need to rely on a particular type internally
-  const labelRef = React.useRef<any>(null);
+  const { htmlFor, as: Comp = LABEL_DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
+  const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
   const generatedId = `label-${useId()}`;
   const id = idProp || generatedId;
@@ -79,21 +52,43 @@ const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(pr
     }
   }, [labelRef]);
 
+  React.useEffect(() => {
+    if (htmlFor) {
+      const element = document.getElementById(htmlFor);
+      const label = labelRef.current;
+
+      if (label && element) {
+        element.setAttribute('aria-labelledby', id);
+        return addLabelClickEventListener(label, element);
+      }
+    }
+  }, [id, htmlFor]);
+
   return (
-    <Comp
-      {...labelProps}
-      {...interopDataAttrObj('root')}
-      id={id}
-      ref={ref}
-      role="label"
-      htmlFor={htmlFor}
-    >
+    <Comp {...labelProps} {...interopDataAttrObj('root')} id={id} ref={ref} role="label">
       <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
         {children}
       </LabelContext.Provider>
     </Comp>
   );
 });
+
+function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement) {
+  const handleClick = (event: MouseEvent) => {
+    /**
+     * When a label is wrapped around the element it labels, we make sure we manually trigger
+     * the element events only when clicking the label and not when clicking the element
+     * inside it.
+     */
+    if (!element.contains(event.target as Node)) {
+      element.click();
+      element.focus();
+    }
+  };
+
+  label.addEventListener('click', handleClick);
+  return () => label.removeEventListener('click', handleClick);
+}
 
 /* ---------------------------------------------------------------------------------------------- */
 

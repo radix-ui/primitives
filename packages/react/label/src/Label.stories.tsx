@@ -20,7 +20,7 @@ export const SuppliedId = () => (
 
 export const WithHtmlFor = () => (
   <>
-    <Label htmlFor="test">This should render as a `label`</Label>
+    <Label htmlFor="test">This should add an `aria-labelledby` to the control</Label>
     <Control id="test" />
   </>
 );
