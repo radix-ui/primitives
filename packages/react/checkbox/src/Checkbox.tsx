@@ -50,11 +50,11 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
       onCheckedChange,
       ...checkboxProps
     } = props;
-    const labelId = useLabelContext();
-    const labelledBy = ariaLabelledby || labelId;
     const inputRef = React.useRef<HTMLInputElement>(null);
     const buttonRef = React.useRef<HTMLButtonElement>(null);
     const ref = useComposedRefs(forwardedRef, buttonRef);
+    const labelId = useLabelContext(buttonRef);
+    const labelledBy = ariaLabelledby || labelId;
     const [checked = false, setChecked] = useControlledState({
       prop: checkedProp,
       defaultProp: defaultChecked,
@@ -84,14 +84,6 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           hidden
           onChange={composeEventHandlers(onCheckedChange, (event) => {
             setChecked(event.target.checked);
-            /**
-             * When this component is wrapped in a label, clicking the label
-             * will not focus the button (but it will correctly trigger the input)
-             * so we manually focus it.
-             */
-            if (buttonRef.current?.ownerDocument.activeElement !== buttonRef.current) {
-              buttonRef.current?.focus();
-            }
           })}
         />
         <Comp
@@ -111,7 +103,9 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
            * The `input` is hidden, so when the button is clicked we trigger
            * the input manually
            */
-          onClick={() => inputRef.current?.click()}
+          onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
+            checkForDefaultPrevented: false,
+          })}
         >
           <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
         </Comp>

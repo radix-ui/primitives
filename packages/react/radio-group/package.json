@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/react-radio",
-  "version": "0.0.1-5",
+  "name": "@interop-ui/react-radio-group",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -12,12 +12,13 @@
   ],
   "scripts": {
     "build": "parcel build src/index.ts --no-cache && yarn build:styles",
-    "build:styles": "node ../../../scripts/build-styles radio",
+    "build:styles": "node ../../../scripts/build-styles radio-group",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
+    "@interop-ui/react-label": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },

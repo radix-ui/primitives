@@ -18,13 +18,20 @@ export const SuppliedId = () => (
   </Label>
 );
 
+export const WithHtmlFor = () => (
+  <>
+    <Label htmlFor="test">This should add an `aria-labelledby` to the control</Label>
+    <Control id="test" />
+  </>
+);
+
 /* -------------------------------------------------------------------------------------------------
  * Control
  * -----------------------------------------------------------------------------------------------*/
 
-const Control = () => {
+const Control = (props: any) => {
   const id = useLabelContext();
-  return <span>{id}</span>;
+  return <span {...props}>{id}</span>;
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -33,12 +40,12 @@ const Control = () => {
 
 const Root = React.forwardRef<HTMLLabelElement, React.ComponentProps<typeof Label>>(
   ({ children, ...props }, forwardedRef) => (
-    <label
+    <span
       {...props}
       style={{ ...styles.root, border: '1px solid gainsboro', margin: 10, padding: 10 }}
       ref={forwardedRef}
     >
       {children}
-    </label>
+    </span>
   )
 );
