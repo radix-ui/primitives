@@ -59,10 +59,22 @@ const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(pr
 
       if (label && element) {
         const removeLabelClickEventListener = addLabelClickEventListener(label, element);
-        element.setAttribute('aria-labelledby', id);
+        const getAriaLabel = () => element.getAttribute('aria-labelledby');
+        const ariaLabelledBy = [getAriaLabel(), id].filter(Boolean).join(' ');
+        element.setAttribute('aria-labelledby', ariaLabelledBy);
+
         return () => {
-          element.removeAttribute('aria-labelledby');
           removeLabelClickEventListener();
+          /**
+           * We get the latest attribute value because at the time that this cleanup fires,
+           * the values from the closure may have changed.
+           */
+          const ariaLabelledBy = getAriaLabel()?.replace(id, '');
+          if (ariaLabelledBy === '') {
+            element.removeAttribute('aria-labelledby');
+          } else if (ariaLabelledBy) {
+            element.setAttribute('aria-labelledby', ariaLabelledBy);
+          }
         };
       }
     }
