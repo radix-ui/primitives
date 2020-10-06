@@ -200,23 +200,6 @@ export const PopoverInDialog = () => (
     <ul style={{ listStyle: 'none', padding: 0, marginBottom: 30 }}>
       <li>✅ dismissing `Popover` by pressing escape should not dismiss `Dialog`</li>
       <li>✅ dismissing `Popover` by clicking outside should not dismiss `Dialog`</li>
-      <li>
-        ❌ there's an issue: clicking in `Popover` dismisses it
-        <div style={{ fontWeight: 600 }}>
-          <span style={{ marginLeft: 20 }}>notes:</span>
-          <ul>
-            <li>
-              any `DismissableLayer` will need to know if a parent has `disableOutsidePointerEvents:
-              true`
-            </li>
-            <li>
-              so we can set `pointerEvents: auto` (even thought itself might not have
-              `disableOutsidePointerEvents: true`)
-            </li>
-            <li>probably will do this via context</li>
-          </ul>
-        </div>
-      </li>
     </ul>
 
     <div style={{ display: 'flex', gap: 10 }}>
@@ -308,7 +291,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: any
                 disableOutsidePointerEvents
                 onDismiss={() => setOpen(false)}
               >
-                {({ ref: dismissableLayerContainerRef, styles }) => (
+                {({ ref: dismissableLayerContainerRef, style }) => (
                   <FocusScope trapped focusOnMount="auto" focusOnUnmount="auto">
                     {({ ref: focusScopeContainerRef }) => (
                       <div
@@ -329,7 +312,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: any
                           borderRadius: 10,
                           backgroundColor: 'white',
                           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
-                          ...styles,
+                          ...style,
                         }}
                       >
                         {children}
@@ -390,7 +373,7 @@ function DummyPopover({
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onDismiss={() => setOpen(false)}
               >
-                {({ ref: dismissableLayerContainerRef, styles }) => (
+                {({ ref: dismissableLayerContainerRef, style }) => (
                   <FocusScope trapped={trapped} focusOnMount="auto" focusOnUnmount="auto">
                     {({ ref: focusScopeContainerRef }) => (
                       <Popper
@@ -399,7 +382,7 @@ function DummyPopover({
                         style={{
                           ...popperStyles.root,
                           filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.12))',
-                          ...styles,
+                          ...style,
                         }}
                         side="top"
                         sideOffset={5}

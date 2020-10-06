@@ -70,7 +70,7 @@ export const Basic = () => {
           disableOutsidePointerEvents={disabledOutsidePointerEvents}
           onDismiss={() => setIsOpen(false)}
         >
-          {({ ref, styles }) => (
+          {({ ref, style }) => (
             <div
               ref={ref}
               style={{
@@ -83,7 +83,7 @@ export const Basic = () => {
                 backgroundColor: 'black',
                 borderRadius: 10,
                 marginBottom: 20,
-                ...styles,
+                ...style,
               }}
             >
               <input type="text" />
@@ -148,7 +148,7 @@ export const WithFocusScope = () => {
               disableOutsidePointerEvents
               onDismiss={() => setIsOpen(false)}
             >
-              {({ ref: dismissableLayerContainerRef, styles }) => (
+              {({ ref: dismissableLayerContainerRef, style }) => (
                 <div
                   ref={composeRefs(focusScopeContainerRef, dismissableLayerContainerRef)}
                   style={{
@@ -161,7 +161,7 @@ export const WithFocusScope = () => {
                     backgroundColor: 'black',
                     borderRadius: 10,
                     marginBottom: 20,
-                    ...styles,
+                    ...style,
                   }}
                 >
                   <input type="text" />
@@ -194,7 +194,7 @@ function DismissableBox({ onDismiss, dismissOnOutsideClick }: DismissableBoxProp
       dismissOnOutsideClick={dismissOnOutsideClick}
       onDismiss={onDismiss}
     >
-      {({ ref, styles }) => (
+      {({ ref, style }) => (
         <div
           ref={ref}
           style={{
@@ -204,7 +204,7 @@ function DismissableBox({ onDismiss, dismissOnOutsideClick }: DismissableBoxProp
             backgroundColor: 'rgba(0, 0, 0, 0.2)',
             borderRadius: 10,
             marginTop: 20,
-            ...styles,
+            ...style,
           }}
         >
           <div>

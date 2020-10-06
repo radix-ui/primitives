@@ -6,7 +6,7 @@ let layerStack: Array<React.RefObject<HTMLElement>> = [];
 type DismissableLayerProps = {
   children: (args: {
     ref: React.RefObject<any>;
-    styles: ReturnType<typeof usePreventOutsidePointerEvents>;
+    style: ReturnType<typeof usePreventOutsidePointerEvents>;
   }) => React.ReactElement;
 
   /** Whether pressing the escape key should dismiss */
@@ -55,8 +55,8 @@ function DismissableLayer(props: DismissableLayerProps) {
     };
   }, []);
 
-  // Prevent outside click
-  const styles = usePreventOutsidePointerEvents({
+  // Disable outside pointer events
+  const style = usePreventOutsidePointerEvents({
     containerRef,
     active: disableOutsidePointerEvents,
   });
@@ -95,7 +95,7 @@ function DismissableLayer(props: DismissableLayerProps) {
     }
   }, [dismissTopMostLayer, dismissOnOutsideBlur]);
 
-  return children({ ref: containerRef, styles });
+  return children({ ref: containerRef, style });
 }
 
 /**
@@ -124,7 +124,9 @@ function usePreventOutsidePointerEvents(options: {
     }
   }, [containerRef, active]);
 
-  return active ? { pointerEvents: 'auto' } : {};
+  // ensures events don't go through `DismissableLayer`s
+  // because we have disabled `pointerEvents` on the body.
+  return { pointerEvents: 'auto' };
 }
 
 /* -------------------------------------------------------------------------------------------------
