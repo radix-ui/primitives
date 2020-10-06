@@ -21,8 +21,12 @@ type DismissableLayerProps = {
   /** A function called when the `DismissableLayer` is dismissed */
   onDismiss?: () => void;
 
-  /** Whether pointer events happening outside the `DismissableLayer` should be prevented */
-  preventOutsideClick?: boolean;
+  /**
+   * When `true`, hover/focus/click interactions will be disabled on elements outside
+   * the `DismissableLayer`. Users will need to click twice on outside elements to interact
+   * with them – once to close the `DismissableLayer`, and again to trigger the element.
+   */
+  disableOutsidePointerEvents?: boolean;
 };
 
 function DismissableLayer(props: DismissableLayerProps) {
@@ -31,7 +35,7 @@ function DismissableLayer(props: DismissableLayerProps) {
     dismissOnEscape = false,
     dismissOnOutsideClick = false,
     dismissOnOutsideBlur = false,
-    preventOutsideClick = false,
+    disableOutsidePointerEvents = false,
     onDismiss,
   } = props;
   const containerRef = React.useRef<HTMLElement>(null);
@@ -68,7 +72,7 @@ function DismissableLayer(props: DismissableLayerProps) {
           : dismissOnOutsideClick;
 
         if (shouldDismiss) {
-          if (preventOutsideClick) {
+          if (disableOutsidePointerEvents) {
             // NOTE: As outside clicks are prevented, make sure nothing gains focus
             event.preventDefault();
           }
@@ -79,7 +83,7 @@ function DismissableLayer(props: DismissableLayerProps) {
         }
       });
     }
-  }, [dismissTopMostLayer, dismissOnOutsideClick, preventOutsideClick]);
+  }, [dismissTopMostLayer, dismissOnOutsideClick, disableOutsidePointerEvents]);
 
   // Dismiss on outside blur
   React.useEffect(() => {
@@ -92,7 +96,7 @@ function DismissableLayer(props: DismissableLayerProps) {
   // Prevent outside click
   const styles = usePreventOutsidePointerEvents({
     containerRef,
-    active: preventOutsideClick,
+    active: disableOutsidePointerEvents,
   });
 
   return children({ ref: containerRef, styles });

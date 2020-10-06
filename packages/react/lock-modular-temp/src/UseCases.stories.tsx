@@ -60,7 +60,7 @@ export const PopoverFullyModal = () => (
     </ul>
 
     <div style={{ display: 'flex', gap: 10 }}>
-      <DummyPopover preventOutsideClick preventScroll />
+      <DummyPopover disableOutsidePointerEvents preventScroll />
       <input type="text" defaultValue="some input" />
       <button type="button" onClick={() => window.alert('clicked!')}>
         Alert me
@@ -206,11 +206,12 @@ export const PopoverInDialog = () => (
           <span style={{ marginLeft: 20 }}>notes:</span>
           <ul>
             <li>
-              any `DismissableLayer` will need to know if a parent has `preventOutsideClick: true`
+              any `DismissableLayer` will need to know if a parent has `disableOutsidePointerEvents:
+              true`
             </li>
             <li>
               so we can set `pointerEvents: auto` (even thought itself might not have
-              `preventOutsideClick: true`)
+              `disableOutsidePointerEvents: true`)
             </li>
             <li>probably will do this via context</li>
           </ul>
@@ -304,7 +305,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: any
               <DismissableLayer
                 dismissOnEscape
                 dismissOnOutsideClick
-                preventOutsideClick
+                disableOutsidePointerEvents
                 onDismiss={() => setOpen(false)}
               >
                 {({ ref: dismissableLayerContainerRef, styles }) => (
@@ -358,7 +359,7 @@ function DummyPopover({
   dismissOnEscape = true,
   dismissOnOutsideClick = true,
   dismissOnOutsideBlur = false,
-  preventOutsideClick = false,
+  disableOutsidePointerEvents = false,
   preventScroll = false,
 }: any) {
   const [open, setOpen] = React.useState(false);
@@ -386,7 +387,7 @@ function DummyPopover({
                   }
                 }}
                 dismissOnOutsideBlur={dismissOnOutsideBlur}
-                preventOutsideClick={preventOutsideClick}
+                disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onDismiss={() => setOpen(false)}
               >
                 {({ ref: dismissableLayerContainerRef, styles }) => (

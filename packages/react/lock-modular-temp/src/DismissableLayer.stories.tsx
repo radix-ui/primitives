@@ -13,7 +13,7 @@ export const Basic = () => {
   const [dismissOnEscape, setDismissOnEscape] = React.useState(false);
   const [dismissOnOutsideClick, setDismissOnOutsideClick] = React.useState(false);
   const [dismissOnOutsideBlur, setDismissOnOutsideBlur] = React.useState(false);
-  const [preventOutsideClick, setPreventOutsideClick] = React.useState(false);
+  const [disabledOutsidePointerEvents, setDisableOutsidePointerEvents] = React.useState(false);
 
   return (
     <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
@@ -47,8 +47,8 @@ export const Basic = () => {
         <label style={{ display: 'block' }}>
           <input
             type="checkbox"
-            checked={preventOutsideClick}
-            onChange={(event) => setPreventOutsideClick(event.target.checked)}
+            checked={disabledOutsidePointerEvents}
+            onChange={(event) => setDisableOutsidePointerEvents(event.target.checked)}
           />{' '}
           Prevent outside click?
         </label>
@@ -67,7 +67,7 @@ export const Basic = () => {
             dismissOnOutsideClick && event.target !== openButtonRef.current
           }
           dismissOnOutsideBlur={dismissOnOutsideBlur}
-          preventOutsideClick={preventOutsideClick}
+          disableOutsidePointerEvents={disabledOutsidePointerEvents}
           onDismiss={() => setIsOpen(false)}
         >
           {({ ref, styles }) => (
@@ -145,7 +145,7 @@ export const WithFocusScope = () => {
             <DismissableLayer
               dismissOnEscape
               dismissOnOutsideClick={(event) => event.target !== openButtonRef.current}
-              preventOutsideClick
+              disableOutsidePointerEvents
               onDismiss={() => setIsOpen(false)}
             >
               {({ ref: dismissableLayerContainerRef, styles }) => (
