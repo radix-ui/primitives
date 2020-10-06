@@ -55,6 +55,12 @@ function DismissableLayer(props: DismissableLayerProps) {
     };
   }, []);
 
+  // Prevent outside click
+  const styles = usePreventOutsidePointerEvents({
+    containerRef,
+    active: disableOutsidePointerEvents,
+  });
+
   // Dismiss on escape
   React.useEffect(() => {
     if (dismissOnEscape) {
@@ -72,10 +78,6 @@ function DismissableLayer(props: DismissableLayerProps) {
           : dismissOnOutsideClick;
 
         if (shouldDismiss) {
-          if (disableOutsidePointerEvents) {
-            // NOTE: As outside clicks are prevented, make sure nothing gains focus
-            event.preventDefault();
-          }
           dismissTopMostLayer();
         } else {
           // NOTE: As we shouldn't dismiss, make sure nothing gains focus
@@ -83,7 +85,7 @@ function DismissableLayer(props: DismissableLayerProps) {
         }
       });
     }
-  }, [dismissTopMostLayer, dismissOnOutsideClick, disableOutsidePointerEvents]);
+  }, [dismissTopMostLayer, dismissOnOutsideClick]);
 
   // Dismiss on outside blur
   React.useEffect(() => {
@@ -92,12 +94,6 @@ function DismissableLayer(props: DismissableLayerProps) {
       return addOutsideBlurListener(container, () => dismissTopMostLayer());
     }
   }, [dismissTopMostLayer, dismissOnOutsideBlur]);
-
-  // Prevent outside click
-  const styles = usePreventOutsidePointerEvents({
-    containerRef,
-    active: disableOutsidePointerEvents,
-  });
 
   return children({ ref: containerRef, styles });
 }
@@ -156,7 +152,9 @@ function addEscapeKeydownListener(callback: (event: KeyboardEvent) => void) {
 
   document.addEventListener('keydown', handleKeydown, { capture: true });
 
-  return () => document.removeEventListener('keydown', handleKeydown, { capture: true });
+  return () => {
+    document.removeEventListener('keydown', handleKeydown, { capture: true });
+  };
 }
 
 /**
@@ -198,7 +196,9 @@ function addOutsideBlurListener(container: HTMLElement, callback: (event: FocusE
 
   document.addEventListener('blur', handleBlur, { capture: true });
 
-  return () => document.removeEventListener('blur', handleBlur, { capture: true });
+  return () => {
+    document.removeEventListener('blur', handleBlur, { capture: true });
+  };
 }
 
 export { DismissableLayer };
