@@ -58,7 +58,7 @@ function DismissableLayer(props: DismissableLayerProps) {
   // Dismiss on escape
   React.useEffect(() => {
     if (dismissOnEscape) {
-      return onEscapeKeydown(dismissTopMostLayer);
+      return addEscapeKeydownListener(dismissTopMostLayer);
     }
   }, [dismissTopMostLayer, dismissOnEscape]);
 
@@ -66,7 +66,7 @@ function DismissableLayer(props: DismissableLayerProps) {
   React.useEffect(() => {
     const container = containerRef.current;
     if (container && dismissOnOutsideClick) {
-      return onOutsidePointerDown(container, (event) => {
+      return addOutsideClickListener(container, (event) => {
         const shouldDismiss = isFunction(dismissOnOutsideClick)
           ? dismissOnOutsideClick(event)
           : dismissOnOutsideClick;
@@ -89,7 +89,7 @@ function DismissableLayer(props: DismissableLayerProps) {
   React.useEffect(() => {
     const container = containerRef.current;
     if (container && dismissOnOutsideBlur) {
-      return onOutsideBlur(container, () => dismissTopMostLayer());
+      return addOutsideBlurListener(container, () => dismissTopMostLayer());
     }
   }, [dismissTopMostLayer, dismissOnOutsideBlur]);
 
@@ -116,14 +116,14 @@ function usePreventOutsidePointerEvents(options: {
       const originalBodyPointerEvents = document.body.style.pointerEvents;
       document.body.style.pointerEvents = 'none';
 
-      const stopOutsidePointerDownListener = onOutsidePointerDown(container, (event) => {
+      const removeOutsideClickListener = addOutsideClickListener(container, (event) => {
         // NOTE: We do this to prevent focus event from happening
         event.preventDefault();
       });
 
       return () => {
         document.body.style.pointerEvents = originalBodyPointerEvents;
-        stopOutsidePointerDownListener();
+        removeOutsideClickListener();
       };
     }
   }, [containerRef, active]);
@@ -147,7 +147,7 @@ function isEventOutsideElement(event: Event, element: HTMLElement) {
  * Sets up a keydown listener which listens for the escape key.
  * Return a function to remove the listener.
  */
-function onEscapeKeydown(callback: (event: KeyboardEvent) => void) {
+function addEscapeKeydownListener(callback: (event: KeyboardEvent) => void) {
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       callback(event);
@@ -160,10 +160,16 @@ function onEscapeKeydown(callback: (event: KeyboardEvent) => void) {
 }
 
 /**
- * Sets up mousedown/touchstart listeners which listens for pointer down events outside the given container.
+ * Sets up mousedown/touchstart listeners which listens for pointer down events
+ * outside the given container.
+ *
+ * These actually use `mousedown` rather than click` for 2 reasons:
+ * - to mimic layer dismissing behaviour present in OS which usually happens on mousedown
+ * - to enable to us call `event.preventDefault()` and prevent focus from happening.
+ *
  * Return a function to remove the listeners.
  */
-function onOutsidePointerDown(
+function addOutsideClickListener(
   container: HTMLElement,
   callback: (event: MouseEvent | TouchEvent) => void
 ) {
@@ -182,7 +188,7 @@ function onOutsidePointerDown(
   };
 }
 
-function onOutsideBlur(container: HTMLElement, callback: (event: FocusEvent) => void) {
+function addOutsideBlurListener(container: HTMLElement, callback: (event: FocusEvent) => void) {
   function handleBlur(event: FocusEvent) {
     const relatedTarget = event.relatedTarget as Element | null;
     if (relatedTarget && isTargetOutsideElement(relatedTarget, container!)) {
