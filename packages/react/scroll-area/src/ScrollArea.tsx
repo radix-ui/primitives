@@ -75,14 +75,14 @@ const CSS_PROPS = {
 // TODO: RTL language testing for horizontal scrolling
 
 type ScrollAreaContextValue = {
-  buttonUpRef: NullableRefObject<HTMLDivElement>;
-  buttonDownRef: NullableRefObject<HTMLDivElement>;
-  buttonLeftRef: NullableRefObject<HTMLDivElement>;
-  buttonRightRef: NullableRefObject<HTMLDivElement>;
-  positionRef: NullableRefObject<HTMLDivElement>;
-  scrollAreaRef: NullableRefObject<HTMLDivElement>;
-  scrollbarYThumbRef: NullableRefObject<HTMLDivElement>;
-  scrollbarXThumbRef: NullableRefObject<HTMLDivElement>;
+  buttonUpRef: React.RefObject<HTMLDivElement>;
+  buttonDownRef: React.RefObject<HTMLDivElement>;
+  buttonLeftRef: React.RefObject<HTMLDivElement>;
+  buttonRightRef: React.RefObject<HTMLDivElement>;
+  positionRef: React.RefObject<HTMLDivElement>;
+  scrollAreaRef: React.RefObject<HTMLDivElement>;
+  scrollbarYThumbRef: React.RefObject<HTMLDivElement>;
+  scrollbarXThumbRef: React.RefObject<HTMLDivElement>;
   visibleToTotalHeightRatioRef: React.MutableRefObject<number>;
   visibleToTotalWidthRatioRef: React.MutableRefObject<number>;
   overflowX: OverflowBehavior;
@@ -128,16 +128,16 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       ...domProps
     } = props;
 
-    const scrollAreaRef = useRef<HTMLDivElement>();
-    const scrollbarYThumbRef = useRef<HTMLDivElement>();
-    const scrollbarXThumbRef = useRef<HTMLDivElement>();
+    const scrollAreaRef = React.useRef<HTMLDivElement>(null);
+    const scrollbarYThumbRef = React.useRef<HTMLDivElement>(null);
+    const scrollbarXThumbRef = React.useRef<HTMLDivElement>(null);
 
-    const buttonRightRef = useRef<HTMLDivElement>();
-    const buttonLeftRef = useRef<HTMLDivElement>();
-    const buttonUpRef = useRef<HTMLDivElement>();
-    const buttonDownRef = useRef<HTMLDivElement>();
+    const buttonRightRef = React.useRef<HTMLDivElement>(null);
+    const buttonLeftRef = React.useRef<HTMLDivElement>(null);
+    const buttonUpRef = React.useRef<HTMLDivElement>(null);
+    const buttonDownRef = React.useRef<HTMLDivElement>(null);
 
-    const positionRef = useRef<HTMLDivElement>();
+    const positionRef = React.useRef<HTMLDivElement>(null);
 
     const visibleToTotalHeightRatioRef = React.useRef(0);
     const visibleToTotalWidthRatioRef = React.useRef(0);
@@ -485,7 +485,7 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
       axis === 'x' ? SCROLLBAR_X_NAME : SCROLLBAR_Y_NAME
     );
     const ctx = React.useMemo(() => ({ axis }), [axis]);
-    const ownRef = useRef<HTMLDivElement>();
+    const ownRef = React.useRef<HTMLDivElement>(null);
     const ref = useComposedRefs(ownRef, forwardedRef);
 
     useLayoutEffect(() => {
@@ -592,7 +592,7 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
     const { axis } = useScrollbarContext(TRACK_NAME);
     const ctx = useScrollAreaContext(TRACK_NAME);
     const { scrollAreaRef, positionRef } = ctx;
-    const ownRef = useRef<HTMLDivElement>();
+    const ownRef = React.useRef<HTMLDivElement>(null);
     const ref = useComposedRefs(ownRef, forwardedRef);
     const documentRef = useDocumentRef(scrollAreaRef);
 
@@ -1232,16 +1232,4 @@ function clamp(val: number, min: number, max: number) {
 
 type LogicalDirection = 'start' | 'end';
 type ScrollDirection = 'up' | 'down' | 'left' | 'right';
-
-// Shortens and normalizes typing to consistently get a nullable MutableRefObject. Named `useRef` to
-// preserve identifying its output as a ref so that effect dependency lint rules are smart enough to
-// ignore them.
-// TODO: Consider adding to react-utils, might make DOM ref typing a lot simpler and
-// more consistent throughout. Would love team feedback on this!
-function useRef<T = any>(initial: null | T = null) {
-  return React.useRef<null | T>(null);
-}
-
-type NullableRefObject<T> = React.MutableRefObject<null | T>;
-
 type OverflowBehavior = 'auto' | 'hidden' | 'scroll' | 'visible';
