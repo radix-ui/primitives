@@ -206,6 +206,8 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       }
     });
 
+    // Observe the scroll area for changes and update computation variables used for components in
+    // the sub-tree.
     useLayoutEffect(() => {
       if (usesNative) return;
 
@@ -243,6 +245,9 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       };
     }, [documentRef, usesNative]);
 
+    // Listen to scroll events and update the thumb's positioning accordingly. This also adds a data
+    // attribute to the body element so an app can know when a scrollarea is active so we can
+    // disable pointer events on all other elements on the screen until scrolling stops.
     useLayoutEffect(() => {
       if (usesNative) return;
 
@@ -328,8 +333,6 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       }
     }, [documentRef, usesNative]);
 
-    // Add and cleanup after global listeners
-
     // NOTE: experiemtal, ignore for now plz!
     React.useImperativeHandle(forwardedRef, () => ({
       ...scrollAreaRef.current!,
@@ -387,6 +390,10 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
   }
 );
 
+/* -------------------------------------------------------------------------------------------------
+ * ScrollAreaPosition
+ * -----------------------------------------------------------------------------------------------*/
+
 const POSITION_DEFAULT_TAG = 'div';
 const POSITION_NAME = 'ScrollArea.Position';
 type ScrollAreaPositionDOMProps = React.ComponentPropsWithoutRef<typeof POSITION_DEFAULT_TAG>;
@@ -424,6 +431,10 @@ const ScrollAreaPosition = forwardRef<typeof POSITION_DEFAULT_TAG, ScrollAreaPos
   }
 );
 
+/* -------------------------------------------------------------------------------------------------
+ * ScrollAreaContentArea
+ * -----------------------------------------------------------------------------------------------*/
+
 const CONTENT_AREA_DEFAULT_TAG = 'div';
 const CONTENT_AREA_NAME = 'ScrollArea.ContentArea';
 type ScrollAreaContentAreaDOMProps = React.ComponentPropsWithoutRef<
@@ -439,6 +450,10 @@ const ScrollAreaContentArea = forwardRef<
   const { as: Comp = CONTENT_AREA_DEFAULT_TAG, ...domProps } = props;
   return <Comp {...interopDataAttrObj('contentArea')} ref={forwardedRef} {...domProps} />;
 });
+
+/* -------------------------------------------------------------------------------------------------
+ * ScrollAreaScrollbarX / ScrollAreaScrollbarY
+ * -----------------------------------------------------------------------------------------------*/
 
 const SCROLLBAR_DEFAULT_TAG = 'div';
 const SCROLLBAR_X_NAME = 'ScrollArea.ScrollbarX';
@@ -561,6 +576,10 @@ const ScrollAreaScrollbarY = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollArea
   }
 );
 
+/* -------------------------------------------------------------------------------------------------
+ * ScrollAreaTrack
+ * -----------------------------------------------------------------------------------------------*/
+
 const TRACK_DEFAULT_TAG = 'div';
 const TRACK_NAME = 'ScrollArea.Track';
 type ScrollAreaTrackDOMProps = React.ComponentPropsWithoutRef<typeof TRACK_DEFAULT_TAG>;
@@ -659,6 +678,10 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
     return <Comp {...interopDataAttrObj('track')} ref={ref} {...domProps} data-axis={axis} />;
   }
 );
+
+/* -------------------------------------------------------------------------------------------------
+ * ScrollAreaThumb
+ * -----------------------------------------------------------------------------------------------*/
 
 const THUMB_DEFAULT_TAG = 'div';
 const THUMB_NAME = 'ScrollArea.Thumb';
@@ -768,6 +791,10 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
   }
 );
 
+/* -------------------------------------------------------------------------------------------------
+ * ScrollAreaButtonStart / ScrollAreaButtonEnd
+ * -----------------------------------------------------------------------------------------------*/
+
 const BUTTON_DEFAULT_TAG = 'div';
 const BUTTON_START_NAME = 'ScrollArea.ButtonStart';
 const BUTTON_END_NAME = 'ScrollArea.ButtonEnd';
@@ -785,7 +812,7 @@ const BUTTON_SCROLL_INTERVAL_VALUES = [5, 7, 8, 9, 7, 7, 5, 2, 1];
 const BUTTON_SCROLL_INTERVAL = 16;
 
 function useScrollbarButton(
-  direction: 'start' | 'end',
+  direction: LogicalDirection,
   name: string,
   props: ScrollAreaButtonStartProps
 ) {
@@ -912,6 +939,10 @@ const ScrollAreaButtonEnd = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButt
   }
 );
 
+/* -------------------------------------------------------------------------------------------------
+ * ScrollAreaResizeHandle
+ * -----------------------------------------------------------------------------------------------*/
+
 const RESIZE_HANDLE_DEFAULT_TAG = 'div';
 const RESIZE_HANDLE_NAME = 'ScrollArea.ResizeHandle';
 type ScrollAreaResizeHandleDOMProps = React.ComponentPropsWithoutRef<
@@ -927,16 +958,6 @@ const ScrollAreaResizeHandle = forwardRef<
   const { as: Comp = RESIZE_HANDLE_DEFAULT_TAG, ...domProps } = props;
   return <Comp {...interopDataAttrObj('resizeHandle')} ref={forwardedRef} {...domProps} />;
 });
-
-type Point = {
-  x: number;
-  y: number;
-};
-
-type Vector = {
-  dx: number;
-  dy: number;
-};
 
 interface ScrollAreaStaticProps {
   Position: typeof ScrollAreaPosition;
@@ -969,6 +990,22 @@ ScrollArea.Thumb.displayName = THUMB_NAME;
 ScrollArea.ButtonStart.displayName = BUTTON_START_NAME;
 ScrollArea.ButtonEnd.displayName = BUTTON_END_NAME;
 ScrollArea.ResizeHandle.displayName = RESIZE_HANDLE_NAME;
+
+const commonScrollbarStyles = {
+  zIndex: 2,
+  position: 'absolute',
+  display: 'flex',
+  userSelect: 'none',
+} as const;
+
+const commonButtonStyles = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexGrow: 0,
+  flexShrink: 0,
+  flexBasis: 'auto',
+} as const;
 
 const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   root: {
@@ -1008,12 +1045,7 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   },
   scrollBarX: {
     ...cssReset(SCROLLBAR_DEFAULT_TAG),
-    zIndex: 2,
-    position: 'absolute',
-    display: 'flex',
-    userSelect: 'none',
-
-    // x styles
+    ...commonScrollbarStyles,
     height: `16px`,
     left: 0,
     bottom: 0,
@@ -1022,12 +1054,7 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   },
   scrollBarY: {
     ...cssReset(SCROLLBAR_DEFAULT_TAG),
-    zIndex: 2,
-    position: 'absolute',
-    display: 'flex',
-    userSelect: 'none',
-
-    // y styles
+    ...commonScrollbarStyles,
     width: '16px',
     right: 0,
     top: 0,
@@ -1053,21 +1080,11 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   },
   buttonStart: {
     ...cssReset(BUTTON_DEFAULT_TAG),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
+    ...commonButtonStyles,
   },
   buttonEnd: {
     ...cssReset(BUTTON_DEFAULT_TAG),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
+    ...commonButtonStyles,
   },
   resizeHandle: {
     ...cssReset(RESIZE_HANDLE_DEFAULT_TAG),
@@ -1087,6 +1104,8 @@ export type {
   ScrollAreaThumbProps,
 };
 
+/* ---------------------------------------------------------------------------------------------- */
+
 function addScrollingAttributes(scrollArea: HTMLElement) {
   const root = scrollArea.ownerDocument;
   root.body.setAttribute('data-interop-scrolling', '');
@@ -1099,11 +1118,6 @@ function removeScrollingAttributes(scrollArea: HTMLElement) {
   scrollArea.removeAttribute('data-scrolling');
 }
 
-/**
- * @param {number} count
- * @param {number} interval
- * @param {Function} fn
- */
 function repeat<Fn extends (...args: any[]) => any>(count: number, interval: number, fn: Fn) {
   if (count < 1 || isNaN(count)) return;
 
@@ -1149,7 +1163,7 @@ function ucFirst(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function getRealScrollDirection(dir: 'start' | 'end', axis: Axis): ScrollDirection {
+function getRealScrollDirection(dir: LogicalDirection, axis: Axis): ScrollDirection {
   if (dir === 'start') {
     return axis === 'x' ? 'left' : 'up';
   }
@@ -1216,19 +1230,18 @@ function clamp(val: number, min: number, max: number) {
   return val > max ? max : val < min ? min : val;
 }
 
+type LogicalDirection = 'start' | 'end';
 type ScrollDirection = 'up' | 'down' | 'left' | 'right';
-type ScrollAxisDirection = {
-  x: 'left' | 'right';
-  y: 'down' | 'up';
-};
 
-// Shortens and normalizes typing to consistently get a nullable MutableRefObject
+// Shortens and normalizes typing to consistently get a nullable MutableRefObject. Named `useRef` to
+// preserve identifying its output as a ref so that effect dependency lint rules are smart enough to
+// ignore them.
+// TODO: Consider adding to react-utils, might make DOM ref typing a lot simpler and
+// more consistent throughout. Would love team feedback on this!
 function useRef<T = any>(initial: null | T = null) {
   return React.useRef<null | T>(null);
 }
 
 type NullableRefObject<T> = React.MutableRefObject<null | T>;
-
-type HTMLEl<T extends keyof HTMLElementTagNameMap> = HTMLElementTagNameMap[T];
 
 type OverflowBehavior = 'auto' | 'hidden' | 'scroll' | 'visible';
