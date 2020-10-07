@@ -73,10 +73,9 @@ import {
 } from '@interop-ui/react-utils';
 import {
   cssReset,
-  isRightClick,
+  isMainClick,
   Axis,
   getResizeObserverEntryBorderBoxSize,
-  getResizeObserverEntryContentBoxSize,
 } from '@interop-ui/utils';
 
 const ROOT_DEFAULT_TAG = 'div';
@@ -98,6 +97,8 @@ const CSS_PROPS = {
   // TODO: Might not need these, TBD
   borderRight: '--interop-scroll-area-border-right',
   borderBottom: '--interop-scroll-area-border-bottom',
+  borderTop: '--interop-scroll-area-border-top',
+  borderLeft: '--interop-scroll-area-border-left',
   scrollAreaWidth: '--interop-scroll-area-width',
   scrollAreaHeight: '--interop-scroll-area-height',
   scrollbarXOffset: '--interop-scroll-area-scrollbar-x-offset',
@@ -117,7 +118,6 @@ type ScrollAreaContextValue = {
   scrollbarXThumbRef: NullableRefObject<HTMLDivElement>;
   visibleToTotalHeightRatioRef: React.MutableRefObject<number>;
   visibleToTotalWidthRatioRef: React.MutableRefObject<number>;
-  supportsCustomScrollbars: boolean;
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
 };
@@ -126,6 +126,13 @@ const [ScrollAreaContext, useScrollAreaContext] = createContext<ScrollAreaContex
   ROOT_NAME + 'Context',
   ROOT_NAME
 );
+
+// We render native scrollbars initially and switch to custom scrollbars after hydration if the
+// user's browser supports the neccessary features. Many internal components will return `null` when
+// using native scrollbars, so we keep implementation separate throughout and check support in this
+// context during render.
+const NativeScrollContext = React.createContext<boolean>(true);
+const useNativeScrollContext = () => React.useContext(NativeScrollContext);
 
 type ScrollAreaDOMProps = Omit<React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>, 'children'>;
 type ScrollAreaOwnProps = {
@@ -160,101 +167,112 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
     const buttonDownRef = useRef<HTMLDivElement>();
 
     const positionRef = useRef<HTMLDivElement>();
-    const contentAreaRef = useRef<HTMLDivElement>();
 
     const visibleToTotalHeightRatioRef = React.useRef(0);
     const visibleToTotalWidthRatioRef = React.useRef(0);
 
-    const [supportsCustomScrollbars, setSupportsCustomScrollbars] = React.useState(false);
+    const [usesNative, setUsesNative] = React.useState(true);
 
     const documentRef = useDocumentRef(scrollAreaRef);
 
-    useLayoutEffect(function () {
+    // Check to make sure the user's browser supports our custom scrollbar features. We use a layout
+    // effect here to avoid a visible flash when the custom scrollarea replaces the native version.
+    useLayoutEffect(() => {
+      const doc = documentRef.current;
+      const win = doc.defaultView || window;
+
+      const browserSupportOk =
+        'ResizeObserver' in win &&
+        'IntersectionObserver' in win &&
+        (('CSS' in win && 'supports' in win.CSS && win.CSS.supports('scrollbar-width: none')) ||
+          // I don't think it's possible to use CSS.supports to detect if a pseudo element is
+          // supported. We need to make sure `::-webkit-scrollbar` is valid if possible.
+          // TODO: Replace true with valid check or remove the block altogether
+          true);
+
+      setUsesNative(forceNative || !browserSupportOk);
+    }, [documentRef, forceNative]);
+
+    // Set initial values for CSS properties so they are defined in all circumstances. This is a bit
+    // more resiliant than leaving them undefined in case the consumer uses them in CSS functions
+    // like `calc` or `max`.
+    useLayoutEffect(() => {
       const scrollAreaEl = scrollAreaRef.current;
       if (scrollAreaEl) {
         scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarXOffset, '0px');
         scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarYOffset, '0px');
+        scrollAreaEl.style.setProperty(CSS_PROPS.borderTop, '0px');
+        scrollAreaEl.style.setProperty(CSS_PROPS.borderRight, '0px');
+        scrollAreaEl.style.setProperty(CSS_PROPS.borderBottom, '0px');
+        scrollAreaEl.style.setProperty(CSS_PROPS.borderLeft, '0px');
+        scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, 'auto');
+        scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, 'auto');
       }
     }, []);
 
-    useLayoutEffect(
-      function () {
-        const doc = documentRef.current;
-        const win = doc.defaultView || window;
+    // If the scroll area has a border, it increases
+    useLayoutEffect(() => {
+      if (usesNative) return;
 
-        if (
-          !forceNative &&
-          'ResizeObserver' in win &&
-          'IntersectionObserver' in win &&
-          (('CSS' in win && 'supports' in win.CSS && win.CSS.supports('scrollbar-width: none')) ||
-            // I don't think it's possible to use CSS.supports to detect if a pseudo element is
-            // supported. We need to make sure `::-webkit-scrollbar` is valid if possible.
-            // TODO: Replace true with valid check or remove the block altogether
-            true)
-        ) {
-          setSupportsCustomScrollbars(true);
-        }
-      },
-      [documentRef, forceNative]
-    );
-
-    useLayoutEffect(function () {
       const scrollAreaEl = scrollAreaRef.current;
       if (scrollAreaEl) {
         const doc = documentRef.current;
         const win = doc.defaultView || window;
         const computedStyle = win.getComputedStyle(scrollAreaEl);
 
+        scrollAreaEl.style.setProperty(CSS_PROPS.borderTop, computedStyle.borderTopWidth);
+        scrollAreaEl.style.setProperty(CSS_PROPS.borderLeft, computedStyle.borderLeftWidth);
         scrollAreaEl.style.setProperty(CSS_PROPS.borderRight, computedStyle.borderRightWidth);
         scrollAreaEl.style.setProperty(CSS_PROPS.borderBottom, computedStyle.borderBottomWidth);
       }
     });
 
-    useLayoutEffect(
-      function () {
-        let initialUpdateDone = false;
-        const scrollAreaEl = scrollAreaRef.current!;
+    useLayoutEffect(() => {
+      if (usesNative) return;
 
-        if (!scrollAreaEl) {
+      let initialUpdateDone = false;
+      const scrollAreaEl = scrollAreaRef.current!;
+
+      if (!scrollAreaEl) {
+        return;
+      }
+
+      const observer = new ResizeObserver((entries) => {
+        // Skip initial update, that's handled directly in the effect to prevent jank
+        if (!initialUpdateDone) {
+          initialUpdateDone = true;
           return;
         }
 
-        const observer = new ResizeObserver((entries) => {
-          // Skip initial update, that's handled directly in the effect to prevent jank
-          if (!initialUpdateDone) {
-            initialUpdateDone = true;
-            return;
-          }
+        // No need to loop, we're only observing a single element.
+        const entry = entries[0];
+        const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
+        updateScrollAreaSizeProperties(borderBoxSize.inlineSize, borderBoxSize.blockSize);
+      });
 
-          // No need to loop, we're only observing a single element.
-          const entry = entries[0];
-          const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
-          updateScrollAreaSizeProperties(borderBoxSize.inlineSize, borderBoxSize.blockSize);
-        });
+      const { width, height } = scrollAreaEl.getBoundingClientRect();
+      updateScrollAreaSizeProperties(width, height);
+      observer.observe(scrollAreaEl);
 
-        const { width, height } = scrollAreaEl.getBoundingClientRect();
-        updateScrollAreaSizeProperties(width, height);
-        observer.observe(scrollAreaEl);
+      function updateScrollAreaSizeProperties(width: number, height: number) {
+        scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, width + 'px');
+        scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, height + 'px');
+      }
 
-        function updateScrollAreaSizeProperties(width: number, height: number) {
-          scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, width + 'px');
-          scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, height + 'px');
-        }
-
-        return function () {
-          observer.disconnect();
-        };
-      },
-      [documentRef]
-    );
+      return function () {
+        observer.disconnect();
+      };
+    }, [documentRef, usesNative]);
 
     useLayoutEffect(
       function () {
+        if (usesNative) return;
+
         let initialUpdateDone = false;
         const scrollAreaEl = scrollAreaRef.current!;
         const positionEl = positionRef.current!;
 
-        if (!scrollAreaEl || !positionEl || !supportsCustomScrollbars) {
+        if (!scrollAreaEl || !positionEl) {
           // TODO: dev warnings, these parts are all required
           return;
         }
@@ -333,7 +351,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
           updateThumb('y');
         }
       },
-      [documentRef, supportsCustomScrollbars]
+      [documentRef, usesNative]
     );
 
     // Add and cleanup after global listeners
@@ -367,28 +385,30 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         scrollbarXThumbRef,
         visibleToTotalHeightRatioRef,
         visibleToTotalWidthRatioRef,
-        supportsCustomScrollbars,
       };
-    }, [overflowX, overflowY, supportsCustomScrollbars]);
+    }, [overflowX, overflowY]);
 
     return (
-      <ScrollAreaContext.Provider value={ctx}>
-        <Comp
-          ref={ref}
-          {...domProps}
-          style={
-            supportsCustomScrollbars
-              ? domProps.style
-              : {
-                  ...domProps.style,
-                  overflowX,
-                  overflowY,
-                }
-          }
-        >
-          {children}
-        </Comp>
-      </ScrollAreaContext.Provider>
+      <NativeScrollContext.Provider value={usesNative}>
+        <ScrollAreaContext.Provider value={ctx}>
+          <Comp
+            {...interopDataAttrObj('root')}
+            ref={ref}
+            {...domProps}
+            style={
+              usesNative
+                ? {
+                    ...domProps.style,
+                    overflowX,
+                    overflowY,
+                  }
+                : domProps.style
+            }
+          >
+            {children}
+          </Comp>
+        </ScrollAreaContext.Provider>
+      </NativeScrollContext.Provider>
     );
   }
 );
@@ -421,11 +441,11 @@ const ScrollAreaPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, ScrollAre
 
 const ScrollAreaPosition = forwardRef<typeof POSITION_DEFAULT_TAG, ScrollAreaPositionProps>(
   function ScrollAreaPosition(props, forwardedRef) {
-    const { supportsCustomScrollbars } = useScrollAreaContext(POSITION_NAME);
-    return supportsCustomScrollbars ? (
-      <ScrollAreaPositionImpl ref={forwardedRef} {...props} />
-    ) : (
+    const usesNative = useNativeScrollContext();
+    return usesNative ? (
       <React.Fragment>{props.children}</React.Fragment>
+    ) : (
+      <ScrollAreaPositionImpl ref={forwardedRef} {...props} />
     );
   }
 );
@@ -467,7 +487,7 @@ const [ScrollbarContext, useScrollbarContext] = createContext<ScrollbarContextVa
 const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollAreaScrollbarProps>(
   function ScrollAreaScrollbarImpl(props, forwardedRef) {
     const { as: Comp = SCROLLBAR_DEFAULT_TAG, axis, ...domProps } = props;
-    const { supportsCustomScrollbars, scrollAreaRef } = useScrollAreaContext(SCROLLBAR_NAME);
+    const { scrollAreaRef } = useScrollAreaContext(SCROLLBAR_NAME);
     const ctx = React.useMemo(() => ({ axis }), [axis]);
     const ownRef = useRef<HTMLDivElement>();
     const ref = useComposedRefs(ownRef, forwardedRef);
@@ -512,7 +532,7 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollA
 
     return (
       <ScrollbarContext.Provider value={ctx}>
-        <Comp {...domProps} {...interopDataAttrObj('scrollBar')} ref={ref} data-axis={axis} />
+        <Comp {...interopDataAttrObj('scrollBar')} ref={ref} {...domProps} data-axis={axis} />
       </ScrollbarContext.Provider>
     );
   }
@@ -520,14 +540,11 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollA
 
 const ScrollAreaScrollbar = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollAreaScrollbarProps>(
   function ScrollAreaScrollbar(props, forwardedRef) {
-    const { supportsCustomScrollbars } = useScrollAreaContext(SCROLLBAR_NAME);
+    const usesNative = useNativeScrollContext();
     if (!props.axis || !['x', 'y'].includes(props.axis)) {
       return null;
     }
-
-    return supportsCustomScrollbars ? (
-      <ScrollAreaScrollbarImpl {...props} ref={forwardedRef} />
-    ) : null;
+    return usesNative ? null : <ScrollAreaScrollbarImpl {...props} ref={forwardedRef} />;
   }
 );
 
@@ -570,8 +587,6 @@ const ScrollAreaTrackImpl = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrack
           doc.removeEventListener('pointerup', handlePointerUp);
         };
 
-        // fn's
-
         function handlePointerUp(event: PointerEvent) {
           trackEl && trackEl.releasePointerCapture(event.pointerId);
           removeScrollingAttributes(scrollAreaEl);
@@ -580,7 +595,7 @@ const ScrollAreaTrackImpl = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrack
         }
 
         function handlePointerDown(event: PointerEvent) {
-          if (isRightClick(event)) return;
+          if (!isMainClick(event)) return;
 
           console.log('track down');
 
@@ -628,14 +643,14 @@ const ScrollAreaTrackImpl = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrack
       [axis]
     );
 
-    return <Comp {...domProps} {...interopDataAttrObj('track')} data-axis={axis} ref={ref} />;
+    return <Comp {...interopDataAttrObj('track')} ref={ref} {...domProps} data-axis={axis} />;
   }
 );
 
 const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProps>(
   function ScrollAreaTrack(props, ref) {
-    const { supportsCustomScrollbars } = useScrollAreaContext(THUMB_NAME);
-    return supportsCustomScrollbars ? <ScrollAreaTrackImpl {...props} ref={ref} /> : null;
+    const usesNative = useNativeScrollContext();
+    return usesNative ? null : <ScrollAreaTrackImpl {...props} ref={ref} />;
   }
 );
 
@@ -701,7 +716,7 @@ const ScrollAreaThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumb
         }
 
         function handlePointerDown(event: PointerEvent) {
-          if (isRightClick(event)) return;
+          if (!isMainClick(event)) return;
 
           console.log('thumb down');
 
@@ -733,14 +748,14 @@ const ScrollAreaThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumb
       return null;
     }
 
-    return <Comp {...domProps} {...interopDataAttrObj('thumb')} data-axis={axis} ref={ref} />;
+    return <Comp {...interopDataAttrObj('thumb')} ref={ref} {...domProps} data-axis={axis} />;
   }
 );
 
 const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProps>(
   function ScrollAreaThumb(props, ref) {
-    const { supportsCustomScrollbars } = useScrollAreaContext(THUMB_NAME);
-    return supportsCustomScrollbars ? <ScrollAreaThumbImpl {...props} ref={ref} /> : null;
+    const usesNative = useNativeScrollContext();
+    return usesNative ? null : <ScrollAreaThumbImpl {...props} ref={ref} />;
   }
 );
 
@@ -831,7 +846,7 @@ const ScrollAreaButtonImpl = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaBut
       }
 
       function handlePointerDown(event: PointerEvent) {
-        if (isRightClick(event)) return;
+        if (!isMainClick(event)) return;
 
         console.log('button down');
 
@@ -863,11 +878,11 @@ const ScrollAreaButtonImpl = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaBut
 
     return (
       <Comp
-        {...domProps}
         {...interopDataAttrObj('button')}
+        ref={ref}
+        {...domProps}
         data-axis={axis}
         data-direction={direction}
-        ref={ref}
       />
     );
   }
@@ -875,8 +890,8 @@ const ScrollAreaButtonImpl = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaBut
 
 const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonProps>(
   function ScrollAreaButton(props, ref) {
-    const { supportsCustomScrollbars } = useScrollAreaContext(THUMB_NAME);
-    return supportsCustomScrollbars ? <ScrollAreaButtonImpl {...props} ref={ref} /> : null;
+    const usesNative = useNativeScrollContext();
+    return usesNative ? null : <ScrollAreaButtonImpl {...props} ref={ref} />;
   }
 );
 
@@ -948,8 +963,8 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   position: {
     ...cssReset(POSITION_DEFAULT_TAG),
     zIndex: 1,
-    width: `var(${CSS_PROPS.scrollAreaWidth})`,
-    height: `var(${CSS_PROPS.scrollAreaHeight})`,
+    width: `calc(var(${CSS_PROPS.scrollAreaWidth}) - var(${CSS_PROPS.borderRight}) - var(${CSS_PROPS.borderLeft}))`,
+    height: `calc(var(${CSS_PROPS.scrollAreaHeight}) - var(${CSS_PROPS.borderTop}) - var(${CSS_PROPS.borderBottom}))`,
     paddingBottom: `var(${CSS_PROPS.scrollbarXOffset})`,
     paddingRight: `var(${CSS_PROPS.scrollbarYOffset})`,
     scrollbarWidth: 'none',

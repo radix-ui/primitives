@@ -14,9 +14,13 @@ const { styled } = createStyled({
 });
 
 export function Basic() {
+  const [usesNative, setNative] = React.useState(true);
+  console.log({ usesNative });
   return (
     <div>
-      <ScrollArea as={Root}>
+      <button onClick={() => setNative(!usesNative)}>Toggle Native</button>
+      <hr />
+      <ScrollArea as={Root} unstable_forceNative={usesNative}>
         <ScrollArea.Scrollbar axis="y" as={Scrollbar}>
           <ScrollArea.Button direction="up" as={ScrollButton}>
             <Arrow direction="up" />
@@ -64,8 +68,9 @@ const Root = styled('div', {
   ...styles.root,
   width: '100%',
   height: '100%',
-  maxWidth: '400px',
+  maxWidth: '450px',
   maxHeight: '400px',
+  border: '6px solid crimson',
 });
 
 const Scrollbar = styled('div', {
@@ -163,7 +168,7 @@ function LongContent() {
   return (
     <div>
       <p>
-        Lacinia hendrerit auctor nam quisque augue suscipit feugiat, sit at imperdiet vitae lacus.
+        Llacinia hendrerit auctor nam quisque augue suscipit feugiat, sit at imperdiet vitae lacus.
         Dolor sit dui posuere faucibus non pharetra laoreet conubia, augue rhoncus cras nisl sodales
         proin hac ipsum, per hendrerit sed volutpat natoque curae consectetur. Curae blandit neque
         vehicula vel mauris vulputate per felis sociosqu, sodales integer sollicitudin id litora

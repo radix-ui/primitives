@@ -20,8 +20,8 @@ export function makeId(...args: (string | number | null | undefined)[]) {
   return args.filter((val) => val != null).join('-');
 }
 
-export function isRightClick(event: MouseEvent | PointerEvent | TouchEvent) {
-  return 'button' in event ? event.button === 2 : 'which' in event ? event.which === 3 : false;
+export function isMainClick(event: MouseEvent | PointerEvent) {
+  return event.button === 0;
 }
 
 export function getResizeObserverEntryBorderBoxSize(
@@ -37,18 +37,5 @@ export function getResizeObserverEntryBorderBoxSize(
   return {
     inlineSize: rect.width,
     blockSize: rect.height,
-  };
-}
-
-export function getResizeObserverEntryContentBoxSize(
-  entry: ResizeObserverEntry
-): ResizeObserverSize {
-  if ('contentBoxSize' in entry) {
-    return Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-  }
-
-  return {
-    inlineSize: (entry as ResizeObserverEntry).contentRect.width,
-    blockSize: (entry as ResizeObserverEntry).contentRect.height,
   };
 }
