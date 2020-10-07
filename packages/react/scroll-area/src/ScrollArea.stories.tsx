@@ -14,37 +14,24 @@ const { styled } = createStyled({
 });
 
 export function Basic() {
-  const [usesNative, setNative] = React.useState(true);
+  const [usesNative, setNative] = React.useState(false);
   console.log({ usesNative });
   return (
     <div>
       <button onClick={() => setNative(!usesNative)}>Toggle Native</button>
       <hr />
       <ScrollArea as={Root} unstable_forceNative={usesNative}>
-        <ScrollArea.Scrollbar axis="y" as={Scrollbar}>
-          <ScrollArea.Button direction="up" as={ScrollButton}>
+        <ScrollArea.ScrollbarY as={ScrollbarY}>
+          <ScrollArea.ButtonStart as={ScrollButtonStart}>
             <Arrow direction="up" />
-          </ScrollArea.Button>
+          </ScrollArea.ButtonStart>
           <ScrollArea.Track as={ScrollTrack}>
             <ScrollArea.Thumb as={ScrollThumb} />
           </ScrollArea.Track>
-          <ScrollArea.Button direction="down" as={ScrollButton}>
+          <ScrollArea.ButtonEnd as={ScrollButtonEnd}>
             <Arrow direction="down" />
-          </ScrollArea.Button>
-        </ScrollArea.Scrollbar>
-
-        {/*
-        <ScrollArea.Scrollbar axis="x" as={Scrollbar}>
-          <ScrollArea.Button direction="left" as={ScrollButton}>
-            <Arrow direction="left" />
-          </ScrollArea.Button>
-          <ScrollArea.Track as={ScrollTrack}>
-            <ScrollArea.Thumb as={ScrollThumb} />
-          </ScrollArea.Track>
-          <ScrollArea.Button direction="right" as={ScrollButton}>
-            <Arrow direction="right" />
-          </ScrollArea.Button>
-        </ScrollArea.Scrollbar> */}
+          </ScrollArea.ButtonEnd>
+        </ScrollArea.ScrollbarY>
 
         <ScrollArea.Position as={ScrollPosition}>
           <ScrollArea.ContentArea as={ScrollContent}>
@@ -73,18 +60,12 @@ const Root = styled('div', {
   border: '6px solid crimson',
 });
 
-const Scrollbar = styled('div', {
-  ...styles.scrollBar,
-  // '&[data-axis="x"]': {
-  //   width: '16px',
-  // },
-  // '&[data-axis="y"]': {
-  //   height: '16px',
-  // },
+const ScrollbarY = styled('div', {
+  ...styles.scrollBarY,
 });
 
-const ScrollButton = styled('div', {
-  ...styles.button,
+const ScrollButtonStart = styled('div', {
+  ...styles.buttonStart,
   position: 'relative',
   backgroundColor: '#c0c0c0',
   border: '2px solid white',
@@ -101,6 +82,24 @@ const ScrollButton = styled('div', {
   },
 });
 
+const ScrollButtonEnd = styled('div', {
+  ...styles.buttonEnd,
+  position: 'relative',
+  backgroundColor: '#c0c0c0',
+  border: '2px solid white',
+  borderTopColor: 'white',
+  borderLeftColor: 'white',
+  borderRightColor: '#858585',
+  borderBottomColor: '#858585',
+  padding: 3,
+  // '&[data-axis="x"]': {
+  //   width: '16px',
+  // },
+  // '&[data-axis="y"]': {
+  //   height: '16px',
+  // },
+});
+
 const ScrollThumb = styled('div', {
   ...styles.thumb,
   backgroundColor: '#c0c0c0',
@@ -109,12 +108,12 @@ const ScrollThumb = styled('div', {
   borderLeftColor: 'white',
   borderRightColor: '#858585',
   borderBottomColor: '#858585',
-  '&[data-axis="x"]': {
-    height: '100%',
-  },
-  '&[data-axis="y"]': {
-    width: '100%',
-  },
+  // '&[data-axis="x"]': {
+  //   height: '100%',
+  // },
+  // '&[data-axis="y"]': {
+  //   width: '100%',
+  // },
 });
 
 const ScrollTrack = styled('div', {

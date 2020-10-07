@@ -39,3 +39,16 @@ export function getResizeObserverEntryBorderBoxSize(
     blockSize: rect.height,
   };
 }
+
+// export function getResizeObserverEntryContentBoxSize(
+//   entry: ResizeObserverEntry
+// ): ResizeObserverSize {
+//   if ('contentBoxSize' in entry) {
+//     return Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
+//   }
+
+//   return {
+//     inlineSize: (entry as ResizeObserverEntry).contentRect.width,
+//     blockSize: (entry as ResizeObserverEntry).contentRect.height,
+//   };
+// }
