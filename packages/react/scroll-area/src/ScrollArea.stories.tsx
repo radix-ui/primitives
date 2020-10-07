@@ -74,12 +74,6 @@ const ScrollButtonStart = styled('div', {
   borderRightColor: '#858585',
   borderBottomColor: '#858585',
   padding: 3,
-  '&[data-axis="x"]': {
-    width: '16px',
-  },
-  '&[data-axis="y"]': {
-    height: '16px',
-  },
 });
 
 const ScrollButtonEnd = styled('div', {
@@ -92,12 +86,6 @@ const ScrollButtonEnd = styled('div', {
   borderRightColor: '#858585',
   borderBottomColor: '#858585',
   padding: 3,
-  // '&[data-axis="x"]': {
-  //   width: '16px',
-  // },
-  // '&[data-axis="y"]': {
-  //   height: '16px',
-  // },
 });
 
 const ScrollThumb = styled('div', {
@@ -108,12 +96,6 @@ const ScrollThumb = styled('div', {
   borderLeftColor: 'white',
   borderRightColor: '#858585',
   borderBottomColor: '#858585',
-  // '&[data-axis="x"]': {
-  //   height: '100%',
-  // },
-  // '&[data-axis="y"]': {
-  //   width: '100%',
-  // },
 });
 
 const ScrollTrack = styled('div', {
