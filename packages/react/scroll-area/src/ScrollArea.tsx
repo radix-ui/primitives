@@ -85,6 +85,13 @@ type ScrollAreaContextValue = {
   scrollbarXThumbRef: React.RefObject<HTMLDivElement>;
   visibleToTotalHeightRatioRef: React.MutableRefObject<number>;
   visibleToTotalWidthRatioRef: React.MutableRefObject<number>;
+  scrollAreaBorderBox: React.MutableRefObject<{ width: number; height: number }>;
+  scrollAreaBorderWidths: React.MutableRefObject<{
+    borderTopWidth: number;
+    borderLeftWidth: number;
+    borderRightWidth: number;
+    borderBottomWidth: number;
+  }>;
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
 };
@@ -190,6 +197,13 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
     // shouldn't re-render very often in a real app so I don't think this will be a bottleneck for
     // us. The computations will be more critical in the composer where we need style changes to
     // trigger re-renders.
+    const scrollAreaBorderBox = React.useRef({ width: 0, height: 0 });
+    const scrollAreaBorderWidths = React.useRef({
+      borderTopWidth: 0,
+      borderLeftWidth: 0,
+      borderRightWidth: 0,
+      borderBottomWidth: 0,
+    });
     useLayoutEffect(() => {
       if (usesNative) return;
 
@@ -203,6 +217,19 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         scrollAreaEl.style.setProperty(CSS_PROPS.borderLeft, computedStyle.borderLeftWidth);
         scrollAreaEl.style.setProperty(CSS_PROPS.borderRight, computedStyle.borderRightWidth);
         scrollAreaEl.style.setProperty(CSS_PROPS.borderBottom, computedStyle.borderBottomWidth);
+
+        // We'll also store the values in a ref, we'll need them for calculations in the track
+        const borderTopWidth = parseInt(computedStyle.borderTopWidth);
+        const borderLeftWidth = parseInt(computedStyle.borderLeftWidth);
+        const borderRightWidth = parseInt(computedStyle.borderRightWidth);
+        const borderBottomWidth = parseInt(computedStyle.borderBottomWidth);
+
+        scrollAreaBorderWidths.current = {
+          borderTopWidth: parseInt(computedStyle.borderTopWidth),
+          borderLeftWidth: parseInt(computedStyle.borderLeftWidth),
+          borderRightWidth: parseInt(computedStyle.borderRightWidth),
+          borderBottomWidth: parseInt(computedStyle.borderBottomWidth),
+        };
       }
     });
 
@@ -238,6 +265,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       function updateScrollAreaSizeProperties(width: number, height: number) {
         scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, width + 'px');
         scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, height + 'px');
+        scrollAreaBorderBox.current = { width, height };
       }
 
       return function () {
@@ -360,6 +388,8 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         scrollAreaRef,
         scrollbarYThumbRef,
         scrollbarXThumbRef,
+        scrollAreaBorderWidths,
+        scrollAreaBorderBox,
         visibleToTotalHeightRatioRef,
         visibleToTotalWidthRatioRef,
       };
@@ -591,10 +621,14 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
     const { as: Comp = TRACK_DEFAULT_TAG, ...domProps } = props;
     const { axis } = useScrollbarContext(TRACK_NAME);
     const ctx = useScrollAreaContext(TRACK_NAME);
-    const { scrollAreaRef, positionRef } = ctx;
+    const { scrollAreaRef, positionRef, scrollAreaBorderWidths, scrollAreaBorderBox } = ctx;
     const ownRef = React.useRef<HTMLDivElement>(null);
     const ref = useComposedRefs(ownRef, forwardedRef);
     const documentRef = useDocumentRef(scrollAreaRef);
+
+    const thumbRef: React.RefObject<HTMLDivElement> = (ctx as any)[
+      `scrollbar${axis.toUpperCase()}ThumbRef`
+    ];
 
     React.useEffect(
       () => {
@@ -604,15 +638,13 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
         const positionEl = positionRef.current!;
         const trackEl = ownRef.current!;
         const scrollAreaEl = scrollAreaRef.current!;
+        const thumbEl = thumbRef.current!;
 
-        console.log(positionEl);
-
-        if (!positionEl || !trackEl || !scrollAreaEl) {
+        if (!positionEl || !trackEl || !scrollAreaEl || !thumbEl) {
           // TODO: dev warnings
           return;
         }
 
-        console.log('adding track listener');
         trackEl.addEventListener('pointerdown', handlePointerDown);
         return function () {
           trackEl.removeEventListener('pointerdown', handlePointerDown);
@@ -631,42 +663,35 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
 
           console.log('track down');
 
-          // Handle track
-
           trackEl.setPointerCapture(event.pointerId);
+
           addScrollingAttributes(scrollAreaEl);
-
-          // const clickPos = event[propMap.clientCoord[axis]];
-          // const trackStartPos = trackEl[propMap.offsetPos[axis]];
-          // const trackSize = trackEl[propMap.clientSize[axis]];
-          // const relativeClickPos = clickPos - trackStartPos;
-
-          // 1. TODO: Check to see if clicking above or below the thumb, bail if neither
-
-          // let trackHeight = trackEl[propMap.clientSize[axis]];
-          // let trackTop = trackEl[propMap.clientPos[axis]];
-          // let clickedPositionRatio = trackTop - event[propMap.clientCoord[axis]];
-          // console.log(trackTop);
-          // //console.log(clickedPositionRatio);
-          // let totalHeight = positionEl[propMap.scrollSize[axis]];
-          // let visibleHeight = positionEl[propMap.clientSize[axis]];
-          // let scrollPos = positionEl[propMap.scrollPos[axis]];
-          // let thumbTop = scrollPos / totalHeight;
-          // visibleToTotalHeightRatio.current = visibleHeight / totalHeight;
 
           // 2. Listen for pointerup
           doc.addEventListener('pointerup', handlePointerUp);
 
-          // 3. TODO: Immediately scroll up/down by X%
+          // 3. Move scroll by PageUp/PageDown approximate value. See implementation of
+          //    `getPagedScrollPosition` for the mathy details
+          const visibleSize = positionEl[DOM_PROPS.clientSize[axis]];
+          const direction = determineScrollDirectionFromTrackClick({ event, axis, thumbEl });
+          const newPosition = getPagedScrollPosition({ direction, axis, positionEl, visibleSize });
+
+          // TODO: Move this as a bezier curve from the current position
+          positionEl.scrollTop = newPosition;
           //   (same percentage as a spacebar scroll)
 
-          // MAYBE DON'T DO THIS BUT.......
-          // 4. Set timeout ~400ms after which:
+          // 4. TODO: After some time (~400ms?), if the user still has the pointer down we'll start
+          //    to scroll further to some relative distance near the pointer in relation to the
+          //    track.
+
+          // 4a. Set timeout ~400ms after which:
           trackPointerDownTimeoutId = win.setTimeout(() => {
-            // - TODO: scrolls to a point near the pointer
-            // - TODO: clears itself after scroll
+            scrollRelativeToPointerPosition();
             win.clearTimeout(trackPointerDownTimeoutId!);
           }, 400);
+
+          // TODO: Implement this
+          function scrollRelativeToPointerPosition() {}
         }
       },
       // All dependencies are refs we only need to setup/teardown if the axis changes for whatever
@@ -700,7 +725,7 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
       visibleToTotalHeightRatioRef,
       visibleToTotalWidthRatioRef,
     } = ctx;
-    const thumbRef: React.MutableRefObject<null | HTMLDivElement> = (ctx as any)[
+    const thumbRef: React.RefObject<HTMLDivElement> = (ctx as any)[
       `scrollbar${axis.toUpperCase()}ThumbRef`
     ];
     const ref = useComposedRefs(thumbRef || null, forwardedRef);
@@ -817,7 +842,7 @@ function useScrollbarButton(
   props: ScrollAreaButtonStartProps
 ) {
   const { axis } = useScrollbarContext(name);
-  const actualDirection = getRealScrollDirection(direction, axis);
+  const actualDirection = getActualScrollDirection(direction, axis);
   const ctx = useScrollAreaContext(name);
   const buttonRef = (ctx as any)[
     `button${ucFirst(actualDirection)}Ref`
@@ -1163,34 +1188,14 @@ function ucFirst(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function getRealScrollDirection(dir: LogicalDirection, axis: Axis): ScrollDirection {
+function getActualScrollDirection(dir: LogicalDirection, axis: Axis): ScrollDirection {
   if (dir === 'start') {
     return axis === 'x' ? 'left' : 'up';
   }
   return axis === 'x' ? 'right' : 'down';
 }
 
-function getPointerPosition(event: TouchEvent, touchId: number): { x: number; y: number };
-function getPointerPosition(event: PointerEvent): { x: number; y: number };
-
-function getPointerPosition(event: PointerEvent | TouchEvent, touchId?: number) {
-  if (event instanceof TouchEvent) {
-    if (touchId === undefined) {
-      throw Error('getPointerPosition requires touchId if a touch event is passed');
-    }
-
-    for (let i = 0; i < event.changedTouches.length; i += 1) {
-      const touch = event.changedTouches[i];
-      if (touch.identifier === touchId) {
-        return {
-          x: touch.clientX,
-          y: touch.clientY,
-        };
-      }
-    }
-    return false;
-  }
-
+function getPointerPosition(event: PointerEvent) {
   return {
     x: event.clientX,
     y: event.clientY,
@@ -1228,6 +1233,54 @@ function percentToValue(percent: number, min: number, max: number) {
 
 function clamp(val: number, min: number, max: number) {
   return val > max ? max : val < min ? min : val;
+}
+
+function getPagedScrollPosition({
+  direction,
+  axis,
+  positionEl,
+  visibleSize,
+}: {
+  direction: LogicalDirection;
+  axis: Axis;
+  positionEl: Element;
+  visibleSize: number;
+}) {
+  const actualDirection = getActualScrollDirection(direction, axis);
+  const { [axis === 'x' ? 'scrollLeft' : 'scrollTop']: scrollPosition } = positionEl;
+
+  // How much does the scroll area scroll when a user presses spacebar or PageDown on a native
+  // scrollbar? The answer is: depends! It's 100% of the viewport heiht minus ... some mysterious
+  // value that differs from env to env. Whatever this value is should be the same value that is
+  // scrolled when the user presses the scrollbar track. Several env's do roughly 100% of the
+  // viewport height minus ~40px, so that's what I used to recreate the track functionality.
+  // https://vasilis.nl/nerd/high-scroll-height-scrolling-space-bar/
+  const maxDistanceToTravel = (visibleSize - 40) * (direction === 'end' ? 1 : -1);
+  const calculatedScrollPosition = scrollPosition + maxDistanceToTravel;
+  const boundary =
+    actualDirection === 'down'
+      ? getBottomScrollTopValue(positionEl)
+      : actualDirection === 'right'
+      ? getRightScrollLeftValue(positionEl)
+      : 0;
+  return direction === 'end'
+    ? Math.min(boundary, calculatedScrollPosition)
+    : Math.max(boundary, calculatedScrollPosition);
+}
+
+function determineScrollDirectionFromTrackClick({
+  event,
+  axis,
+  thumbEl,
+}: {
+  event: PointerEvent;
+  axis: Axis;
+  thumbEl: Element;
+}): LogicalDirection {
+  const { [axis]: scrollPosition } = getPointerPosition(event);
+  return scrollPosition < thumbEl.getBoundingClientRect()[axis === 'y' ? 'top' : 'left']
+    ? 'start'
+    : 'end';
 }
 
 type LogicalDirection = 'start' | 'end';
