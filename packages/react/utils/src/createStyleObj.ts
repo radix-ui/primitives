@@ -1,6 +1,6 @@
 import { interopDataAttrObj, interopDataAttrSelector } from '@interop-ui/utils';
 
-type StyleObject = any;
+type StyleObject = {};
 type PrimitiveStyles<Part extends string> = {
   root: StyleObject;
 } & Record<Part, StyleObject>;
