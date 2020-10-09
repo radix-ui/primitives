@@ -1,6 +1,6 @@
 {
   "name": "@interop-ui/react-use-size",
-  "version": "0.0.1-6",
+  "version": "0.0.1-7",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
