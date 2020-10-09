@@ -4,8 +4,8 @@ import React from 'react';
 import { Portal } from '@interop-ui/react-portal';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { RemoveScroll } from 'react-remove-scroll';
-import { DismissableLayer } from './DismissableLayer';
-import { FocusScope } from './FocusScope';
+import { DismissableLayer, DismissableLayerProps } from './DismissableLayer';
+import { FocusScope, FocusScopeProps } from './FocusScope';
 import { composeRefs } from '@interop-ui/react-utils';
 
 export default { title: 'Modular Lock (temp)/Use cases' };
@@ -19,20 +19,20 @@ export const DialogExample = () => (
     <ul style={{ listStyle: 'none', padding: 0, marginBottom: 30 }}>
       <li>✅ focus should move inside `Dialog` when mounted</li>
       <li>✅ focus should be trapped inside `Dialog`</li>
-      <li>✅ scrolling outside `Dialog` should be prevented</li>
+      <li>✅ scrolling outside `Dialog` should be disabled</li>
       <li>✅ should be able to dismiss `Dialog` on pressing escape</li>
       <li style={{ marginLeft: 30 }}>✅ focus should return to the open button</li>
       <li>
-        ✅ clicking outside `Dialog` should be prevented (clicking the "alert me" button shouldn't
+        ✅ interacting outside `Dialog` should be disabled (clicking the "alert me" button shouldn't
         do anything)
       </li>
       <li>➕</li>
-      <li>✅ should be able to Dismiss `Dialog` when clicking outside</li>
+      <li>✅ should be able to dismiss `Dialog` when interacting outside</li>
       <li style={{ marginLeft: 30 }}>✅ focus should return to the open button</li>
     </ul>
 
     <div style={{ display: 'flex', gap: 10 }}>
-      <DummyDialog />
+      <DummyDialog openLabel="Open Dialog" closeLabel="Close Dialog" />
       <input type="text" defaultValue="some input" />
       <button type="button" onClick={() => window.alert('clicked!')}>
         Alert me
@@ -47,20 +47,25 @@ export const PopoverFullyModal = () => (
     <ul style={{ listStyle: 'none', padding: 0, marginBottom: 30 }}>
       <li>✅ focus should move inside `Popover` when mounted</li>
       <li>✅ focus should be trapped inside `Popover`</li>
-      <li>✅ scrolling outside `Popover` should be prevented</li>
+      <li>✅ scrolling outside `Popover` should be disabled</li>
       <li>✅ should be able to dismiss `Popover` on pressing escape</li>
       <li style={{ marginLeft: 30 }}>✅ focus should return to the open button</li>
       <li>
-        ✅ clicking outside `Popover` should be prevented (clicking the "alert me" button shouldn't
-        do anything)
+        ✅ interacting outside `Popover` should be disabled (clicking the "alert me" button
+        shouldn't do anything)
       </li>
       <li>➕</li>
-      <li>✅ should be able to Dismiss `Popover` when clicking outside</li>
+      <li>✅ should be able to dismiss `Popover` when interacting outside</li>
       <li style={{ marginLeft: 30 }}>✅ focus should return to the open button</li>
     </ul>
 
     <div style={{ display: 'flex', gap: 10 }}>
-      <DummyPopover disableOutsidePointerEvents preventScroll />
+      <DummyPopover
+        openLabel="Open Popover"
+        closeLabel="Close Popover"
+        disableOutsidePointerEvents
+        preventScroll
+      />
       <input type="text" defaultValue="some input" />
       <button type="button" onClick={() => window.alert('clicked!')}>
         Alert me
@@ -82,31 +87,30 @@ export const PopoverSemiModal = () => {
         <li>✅ should be able to dismiss `Popover` on pressing escape</li>
         <li style={{ marginLeft: 30 }}>✅ focus should return to the open button</li>
         <li>
-          ✅ clicking outside `Popover` should work (clicking the "alert me" button should trigger)
+          ✅ interacting outside `Popover` should be allowed (clicking the "alert me" button should
+          trigger)
         </li>
         <li>➕</li>
         <li>
-          ✅ should be able to dismiss `Popover` when clicking outside{' '}
+          ✅ should be able to dismiss `Popover` when interacting outside{' '}
           <span style={{ fontWeight: 600 }}>unless specified (ie. change color button)</span>
         </li>
         <li style={{ marginLeft: 30 }}>
-          ✅ focus should <span style={{ fontWeight: 600 }}>NOT</span> return to the open button
+          ❌ focus should <span style={{ fontWeight: 600 }}>NOT</span> return to the open button
           when unmounted, natural focus should occur
-          <div style={{ fontWeight: 600 }}>
-            <span style={{ marginLeft: 20 }}>notes:</span>
-            <ul>
-              <li>this seems to work because of the order of events</li>
-              <li>focus is still returned but then moved</li>
-              <li>not sure if that's good enough…</li>
-            </ul>
-          </div>
         </li>
       </ul>
 
       <div style={{ display: 'flex', gap: 10 }}>
         <DummyPopover
           color={color}
-          dismissOnOutsideClick={(event: any) => event.target !== changeColorButtonRef.current}
+          openLabel="Open Popover"
+          closeLabel="Close Popover"
+          onInteractOutside={(event) => {
+            if (event.detail.target === changeColorButtonRef.current) {
+              event.preventDefault();
+            }
+          }}
         />
         <input type="text" defaultValue="some input" />
         <button type="button" onClick={() => window.alert('clicked!')}>
@@ -134,41 +138,20 @@ export const PopoverNonModal = () => (
       <li>
         ✅ focus should <span style={{ fontWeight: 600 }}>NOT</span> be trapped inside `Popover`
       </li>
-      <li>✅ scrolling outside `Popover` should be prevented</li>
+      <li>✅ scrolling outside `Popover` should be allowed</li>
       <li>✅ should be able to dismiss `Popover` on pressing escape</li>
       <li style={{ marginLeft: 30 }}>✅ focus should return to the open button</li>
       <li>
-        ✅ clicking outside `Popover` should work (clicking the "alert me" button should trigger)
+        ✅ interacting outside `Popover` should be allowed (clicking the "alert me" button should
+        trigger)
       </li>
       <li>➕</li>
-      <li>✅ should be able to Dismiss `Popover` when clicking outside</li>
+      <li>✅ should be able to dismiss `Popover` when clicking outside</li>
       <li style={{ marginLeft: 30 }}>
-        ✅ focus should <span style={{ fontWeight: 600 }}>NOT</span> return to the open button when
+        ❌ focus should <span style={{ fontWeight: 600 }}>NOT</span> return to the open button when
         unmounted, natural focus should occur
-        <div style={{ fontWeight: 600 }}>
-          <span style={{ marginLeft: 20 }}>notes:</span>
-          <ul>
-            <li>this seems to work because of the order of events</li>
-            <li>focus is still returned but then moved</li>
-            <li>not sure if that's good enough…</li>
-          </ul>
-        </div>
       </li>
-      <li>
-        ✅ should be able to Dismiss `Popover` when blurring outside (tabbing out of it)
-        <div style={{ fontWeight: 600 }}>
-          <span style={{ marginLeft: 20 }}>notes:</span>
-          <ul>
-            <li>this only works currently thanks to a hack</li>
-            <li>we add an extra tabbable element in a portal after the `Popover`</li>
-            <li>
-              this is because otherwise, we are at the edge of the DOM and focus goes onto the
-              browser chrome
-            </li>
-            <li>not sure if that's a viable trick…</li>
-          </ul>
-        </div>
-      </li>
+      <li>✅ should be able to dismiss `Popover` when focus moves out of it</li>
       <li style={{ marginLeft: 30 }}>
         ❌ focus should move to next tabbable element after open button when unmounted (via blur)
         <div style={{ fontWeight: 600 }}>
@@ -185,7 +168,7 @@ export const PopoverNonModal = () => (
     </ul>
 
     <div style={{ display: 'flex', gap: 10 }}>
-      <DummyPopover trapped={false} dismissOnOutsideBlur />
+      <DummyPopover openLabel="Open Popover" closeLabel="Close Popover" trapped={false} />
       <input type="text" defaultValue="some input" />
       <button type="button" onClick={() => window.alert('clicked!')}>
         Alert me
@@ -203,8 +186,8 @@ export const PopoverInDialog = () => (
     </ul>
 
     <div style={{ display: 'flex', gap: 10 }}>
-      <DummyDialog>
-        <DummyPopover />
+      <DummyDialog openLabel="Open Dialog" closeLabel="Close Dialog">
+        <DummyPopover openLabel="Open Popover" closeLabel="Close Popover" />
       </DummyDialog>
       <input type="text" defaultValue="some input" />
       <button type="button" onClick={() => window.alert('clicked!')}>
@@ -223,28 +206,36 @@ export const PopoverNested = () => (
         its parents
       </li>
       <li>
-        ❌ dismissing a `Popover` by clicking outside should dismiss it and its parents (as long as
-        click was outside of all)
-        <div style={{ fontWeight: 600 }}>
-          <span style={{ marginLeft: 20 }}>notes:</span>
-          <ul>
-            <li>
-              this does not work because of our layerStack approach which doesn't account for that
-            </li>
-            <li>each `DismissableLayer` will prob need to be aware of its parents</li>
-            <li>probably will do this via context</li>
-          </ul>
-        </div>
+        ✅ dismissing a `Popover` by clicking outside should dismiss it and its parents (as long as
+        click was outside of all — in this case, the red one is not disabling outside pointer
+        events, therefore, click outside should close both the red AND the blue)
       </li>
     </ul>
 
     <div style={{ display: 'flex', gap: 10 }}>
-      <DummyPopover>
-        <DummyPopover color="tomato" openLabel="Open red" closeLabel="Close red">
+      <DummyPopover
+        disableOutsidePointerEvents
+        onInteractOutside={(event) => {
+          console.log('interact outside black');
+        }}
+      >
+        <DummyPopover
+          color="tomato"
+          openLabel="Open red"
+          closeLabel="Close red"
+          disableOutsidePointerEvents
+          onInteractOutside={(event) => {
+            console.log('interact outside red');
+          }}
+        >
           <DummyPopover
             color="royalblue"
             openLabel="Open blue"
             closeLabel="Close blue"
+            // disableOutsidePointerEvents
+            onInteractOutside={(event) => {
+              console.log('interact outside blue');
+            }}
           ></DummyPopover>
         </DummyPopover>
       </DummyPopover>
@@ -260,7 +251,13 @@ export const PopoverNested = () => (
  * Dummy components
  * -----------------------------------------------------------------------------------------------*/
 
-function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: any) {
+type DummyDialogProps = {
+  children?: React.ReactNode;
+  openLabel?: string;
+  closeLabel?: string;
+};
+
+function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: DummyDialogProps) {
   const [open, setOpen] = React.useState(false);
   return (
     <>
@@ -285,17 +282,13 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: any
           </Portal>
           <Portal>
             <RemoveScroll>
-              <DismissableLayer
-                dismissOnEscape
-                dismissOnOutsideClick
-                disableOutsidePointerEvents
-                onDismiss={() => setOpen(false)}
-              >
-                {({ ref: dismissableLayerContainerRef, style }) => (
+              <DismissableLayer disableOutsidePointerEvents onDismiss={() => setOpen(false)}>
+                {(dismissableLayerProps) => (
                   <FocusScope trapped focusOnMount="auto" focusOnUnmount="auto">
-                    {({ ref: focusScopeContainerRef }) => (
+                    {(focusScopeProps) => (
                       <div
-                        ref={composeRefs(dismissableLayerContainerRef, focusScopeContainerRef)}
+                        {...dismissableLayerProps}
+                        ref={composeRefs(dismissableLayerProps.ref, focusScopeProps.ref)}
                         style={{
                           boxSizing: 'border-box',
                           display: 'flex',
@@ -312,7 +305,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: any
                           borderRadius: 10,
                           backgroundColor: 'white',
                           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
-                          ...style,
+                          ...dismissableLayerProps.style,
                         }}
                       >
                         {children}
@@ -333,18 +326,28 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: any
   );
 }
 
+type DummyPopoverOwnProps = {
+  children?: React.ReactNode;
+  openLabel?: string;
+  closeLabel?: string;
+  color?: string;
+  preventScroll?: boolean;
+};
+type DummyPopoverProps = DummyPopoverOwnProps &
+  Omit<FocusScopeProps, 'children'> &
+  Omit<DismissableLayerProps, 'children'>;
+
 function DummyPopover({
   children,
   openLabel = 'Open',
   closeLabel = 'Close',
   color = '#333',
   trapped = true,
-  dismissOnEscape = true,
-  dismissOnOutsideClick = true,
-  dismissOnOutsideBlur = false,
+  onEscapeKeyDown,
+  onInteractOutside,
   disableOutsidePointerEvents = false,
   preventScroll = false,
-}: any) {
+}: DummyPopoverProps) {
   const [open, setOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
   const ScrollContainer = preventScroll ? RemoveScroll : React.Fragment;
@@ -358,31 +361,28 @@ function DummyPopover({
           <Portal>
             <ScrollContainer>
               <DismissableLayer
-                dismissOnEscape={dismissOnEscape}
-                dismissOnOutsideClick={(event) => {
-                  if (event.target === openButtonRef.current) {
-                    return false;
+                onEscapeKeyDown={onEscapeKeyDown}
+                onInteractOutside={(event) => {
+                  if (event.detail.target === openButtonRef.current) {
+                    event.preventDefault();
+                    return;
                   }
-                  if (typeof dismissOnOutsideClick === 'function') {
-                    return dismissOnOutsideClick(event);
-                  } else {
-                    return dismissOnOutsideClick;
-                  }
+                  onInteractOutside?.(event);
                 }}
-                dismissOnOutsideBlur={dismissOnOutsideBlur}
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onDismiss={() => setOpen(false)}
               >
-                {({ ref: dismissableLayerContainerRef, style }) => (
+                {(dismissableLayerProps) => (
                   <FocusScope trapped={trapped} focusOnMount="auto" focusOnUnmount="auto">
-                    {({ ref: focusScopeContainerRef }) => (
+                    {(focusScopeProps) => (
                       <Popper
-                        ref={composeRefs(dismissableLayerContainerRef, focusScopeContainerRef)}
+                        {...dismissableLayerProps}
+                        ref={composeRefs(dismissableLayerProps.ref, focusScopeProps.ref)}
                         anchorRef={openButtonRef}
                         style={{
                           ...popperStyles.root,
                           filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.12))',
-                          ...style,
+                          ...dismissableLayerProps.style,
                         }}
                         side="top"
                         sideOffset={5}
@@ -419,10 +419,6 @@ function DummyPopover({
                 )}
               </DismissableLayer>
             </ScrollContainer>
-          </Portal>
-          <Portal>
-            {/* eslint-disable-next-line */}
-            <span tabIndex={0} />
           </Portal>
         </>
       ) : null}

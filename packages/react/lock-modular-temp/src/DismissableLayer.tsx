@@ -1,25 +1,33 @@
 import * as React from 'react';
-import { arrayRemove, isFunction } from '@interop-ui/utils';
+import { composeEventHandlers, useCallbackRef } from '@interop-ui/react-utils';
 
-let layerStack: Array<React.RefObject<HTMLElement>> = [];
+const INTERACT_OUTSIDE_EVENT_TYPE = 'dismissablelayer.interactoutside';
+type InteractOutsideEvent = CustomEvent<{ target: EventTarget | null; nativeEvent: Event }>;
+
+/* -------------------------------------------------------------------------------------------------
+ * Root level context
+ * -----------------------------------------------------------------------------------------------*/
+
+type DismissableLayerContextValue = {
+  setPreventDismissOnEscape: (can: boolean) => void;
+  setPreventDismissOnInteractOutside: (prevent: boolean) => void;
+};
+const DismissableLayerContext = React.createContext<DismissableLayerContextValue | undefined>(
+  undefined
+);
+DismissableLayerContext.displayName = 'DismissableLayerContext';
+
+/* -------------------------------------------------------------------------------------------------
+ * DismissableLayer
+ * -----------------------------------------------------------------------------------------------*/
 
 type DismissableLayerProps = {
-  children: (args: {
-    ref: React.RefObject<any>;
-    style: ReturnType<typeof usePreventOutsidePointerEvents>;
-  }) => React.ReactElement;
-
-  /** Whether pressing the escape key should dismiss */
-  dismissOnEscape?: boolean;
-
-  /** Whether clicking outside the `DismissableLayer` should dismiss */
-  dismissOnOutsideClick?: boolean | ((event: MouseEvent | TouchEvent) => boolean);
-
-  /** Whether blurring outside the `DismissableLayer` should dismiss */
-  dismissOnOutsideBlur?: boolean;
-
-  /** A function called when the `DismissableLayer` is dismissed */
-  onDismiss?: () => void;
+  children: (
+    args: {
+      ref: React.RefObject<any>;
+    } & ReturnType<typeof useDisableOutsidePointerEvents> &
+      ReturnType<typeof useInteractOutside>
+  ) => React.ReactElement;
 
   /**
    * When `true`, hover/focus/click interactions will be disabled on elements outside
@@ -27,179 +35,313 @@ type DismissableLayerProps = {
    * with them – once to close the `DismissableLayer`, and again to trigger the element.
    */
   disableOutsidePointerEvents?: boolean;
+
+  /** Handler called when the escape key is down */
+  onEscapeKeyDown?: React.KeyboardEventHandler;
+
+  /**
+   * Handler called when an interaction happened outside the `DismissableLayer`.
+   * Specifically, when focus leaves the `DismissableLayer` or a pointer event happens outside it.
+   */
+  onInteractOutside?: (event: InteractOutsideEvent) => void;
+
+  /** Handler called when the `DismissableLayer` should be dismissed */
+  onDismiss?: () => void;
 };
 
 function DismissableLayer(props: DismissableLayerProps) {
   const {
     children,
-    dismissOnEscape = false,
-    dismissOnOutsideClick = false,
-    dismissOnOutsideBlur = false,
     disableOutsidePointerEvents = false,
+    onEscapeKeyDown,
+    onInteractOutside,
     onDismiss,
   } = props;
-  const containerRef = React.useRef<HTMLElement>(null);
-
-  const dismissTopMostLayer = React.useCallback(() => {
-    const isTopMostLayer = layerStack[layerStack.length - 1] === containerRef;
-    if (isTopMostLayer) {
-      onDismiss?.();
-    }
-  }, [onDismiss]);
-
-  // Maintain stack of open `DismissableLayer`
-  React.useEffect(() => {
-    layerStack = [...layerStack, containerRef];
-    return () => {
-      layerStack = arrayRemove(layerStack, containerRef);
-    };
-  }, []);
+  const nodeRef = React.useRef<HTMLElement>(null);
 
   // Disable outside pointer events
-  const style = usePreventOutsidePointerEvents({
-    containerRef,
+  const disableOutsidePointerEventProps = useDisableOutsidePointerEvents({
     active: disableOutsidePointerEvents,
   });
 
-  // Dismiss on escape
-  React.useEffect(() => {
-    if (dismissOnEscape) {
-      return addEscapeKeydownListener(dismissTopMostLayer);
-    }
-  }, [dismissTopMostLayer, dismissOnEscape]);
+  // Dismiss on escape (one layer at the time)
+  const setPreventDismissOnEscape = useEscapableLayer({ onEscapeKeyDown, onDismiss });
 
-  // Dismiss on outside click
-  React.useEffect(() => {
-    const container = containerRef.current;
-    if (container && dismissOnOutsideClick) {
-      return addOutsideClickListener(container, (event) => {
-        const shouldDismiss = isFunction(dismissOnOutsideClick)
-          ? dismissOnOutsideClick(event)
-          : dismissOnOutsideClick;
+  // Dismiss on outside interaction (one layer at a time — depends on `disableOutsidePointerEvents`)
+  const {
+    props: interactOutsideProps,
+    setPreventDismissOnInteractOutside,
+  } = useInteractOutsideLayer({
+    nodeRef,
+    disableOutsidePointerEvents,
+    onInteractOutside,
+    onDismiss,
+  });
 
-        if (shouldDismiss) {
-          dismissTopMostLayer();
-        } else {
-          // NOTE: As we shouldn't dismiss, make sure nothing gains focus
-          event.preventDefault();
-        }
-      });
-    }
-  }, [dismissTopMostLayer, dismissOnOutsideClick]);
+  const layer = React.useMemo(
+    () => ({
+      setPreventDismissOnEscape,
+      setPreventDismissOnInteractOutside,
+    }),
+    [setPreventDismissOnEscape, setPreventDismissOnInteractOutside]
+  );
 
-  // Dismiss on outside blur
-  React.useEffect(() => {
-    const container = containerRef.current;
-    if (container && dismissOnOutsideBlur) {
-      return addOutsideBlurListener(container, () => dismissTopMostLayer());
-    }
-  }, [dismissTopMostLayer, dismissOnOutsideBlur]);
-
-  return children({ ref: containerRef, style });
+  return (
+    <DismissableLayerContext.Provider value={layer}>
+      <FocusEdgeGuard />
+      {children({
+        ref: nodeRef,
+        style: disableOutsidePointerEventProps.style,
+        ...interactOutsideProps,
+        onMouseDownCapture: composeEventHandlers(
+          disableOutsidePointerEventProps.onMouseDownCapture,
+          interactOutsideProps.onMouseDownCapture
+        ),
+        onTouchStartCapture: composeEventHandlers(
+          disableOutsidePointerEventProps.onTouchStartCapture,
+          interactOutsideProps.onTouchStartCapture
+        ),
+      })}
+      <FocusEdgeGuard />
+    </DismissableLayerContext.Provider>
+  );
 }
 
 /**
- * Encapsulates behaviour and styles to prevent outside pointer events.
+ * This component exists to ensure we can catch events
+ * even when the dismissable layer is at the edge of the DOM.
  */
-function usePreventOutsidePointerEvents(options: {
-  containerRef: React.RefObject<HTMLElement>;
-  active: boolean;
-}): React.CSSProperties {
-  const { containerRef, active } = options;
-  React.useEffect(() => {
-    const container = containerRef.current;
-    if (container && active) {
-      const originalBodyPointerEvents = document.body.style.pointerEvents;
-      document.body.style.pointerEvents = 'none';
-
-      const removeOutsideClickListener = addOutsideClickListener(container, (event) => {
-        // NOTE: We do this to prevent focus event from happening
-        event.preventDefault();
-      });
-
-      return () => {
-        document.body.style.pointerEvents = originalBodyPointerEvents;
-        removeOutsideClickListener();
-      };
-    }
-  }, [containerRef, active]);
-
-  // ensures events don't go through `DismissableLayer`s
-  // because we have disabled `pointerEvents` on the body.
-  return { pointerEvents: 'auto' };
+function FocusEdgeGuard() {
+  return (
+    <span
+      data-dismissable-layer-focus-edge-guard
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      tabIndex={0}
+      style={{ position: 'fixed', opacity: 0, pointerEvents: 'none' }}
+    />
+  );
 }
 
 /* -------------------------------------------------------------------------------------------------
- * Utils
+ * Hooks
  * -----------------------------------------------------------------------------------------------*/
 
-function isTargetOutsideElement(target: EventTarget | null, element: HTMLElement) {
-  return !element.contains(target as Node);
-}
-
-function isEventOutsideElement(event: Event, element: HTMLElement) {
-  return !element.contains(event.target as Node);
-}
-
 /**
- * Sets up a keydown listener which listens for the escape key.
- * Return a function to remove the listener.
+ * Disables pointer events outside a given node.
+ * Returns props to pass to the given node.
  */
-function addEscapeKeydownListener(callback: (event: KeyboardEvent) => void) {
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      callback(event);
+function useDisableOutsidePointerEvents({ active = false }) {
+  // disable pointer events on body
+  React.useEffect(() => {
+    if (active) {
+      const originalBodyPointerEvents = document.body.style.pointerEvents;
+      document.body.style.pointerEvents = 'none';
+      return () => {
+        document.body.style.pointerEvents = originalBodyPointerEvents;
+      };
     }
-  }
+  }, [active]);
 
-  document.addEventListener('keydown', handleKeydown, { capture: true });
+  const pointerDownOutsideProps = usePointerDownOutside((event) => {
+    if (active) {
+      // NOTE: We do this to prevent focus event from happening
+      event.preventDefault();
+    }
+  });
 
-  return () => {
-    document.removeEventListener('keydown', handleKeydown, { capture: true });
+  // ensures events don't go through `DismissableLayer`s
+  // because we have disabled `pointerEvents` on the body.
+  return {
+    ...pointerDownOutsideProps,
+    style: { pointerEvents: 'auto' } as React.CSSProperties,
   };
 }
 
 /**
- * Sets up mousedown/touchstart listeners which listens for pointer down events
- * outside the given container.
+ * Sets up dismissing when pressing escape, whilst ensuring only one layer is dismissed at one time.
+ * Returns functions to enable/disable dismissing on escape.
+ */
+function useEscapableLayer(options: {
+  onEscapeKeyDown?: React.KeyboardEventHandler;
+  onDismiss?: () => void;
+}) {
+  const { onEscapeKeyDown, onDismiss } = options;
+  const [preventDismiss, setPreventDismiss] = React.useState(false);
+  const parentLayer = React.useContext(DismissableLayerContext);
+
+  const handleEscapeKeyDown = useCallbackRef(onEscapeKeyDown);
+  const handleDismiss = useCallbackRef(onDismiss);
+
+  // if a layer has a parent layer, prevent the parent layer from dismissing on escape
+  // effectively only dismissing one layer at a time
+  React.useEffect(() => {
+    if (parentLayer) {
+      parentLayer.setPreventDismissOnEscape(true);
+      return () => parentLayer.setPreventDismissOnEscape(false);
+    }
+  }, [parentLayer]);
+
+  // add keydown event
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !preventDismiss) {
+        handleEscapeKeyDown?.(event);
+        if (!event.defaultPrevented) {
+          handleDismiss?.();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [preventDismiss, handleDismiss, handleEscapeKeyDown]);
+
+  return setPreventDismiss;
+}
+
+function useInteractOutsideLayer(options: {
+  nodeRef: React.RefObject<HTMLElement>;
+  disableOutsidePointerEvents?: boolean;
+  onInteractOutside?: (event: InteractOutsideEvent) => void;
+  onDismiss?: () => void;
+}) {
+  const { nodeRef, disableOutsidePointerEvents, onInteractOutside, onDismiss } = options;
+  const [preventDismiss, setPreventDismissOnInteractOutside] = React.useState(false);
+  const parentLayer = React.useContext(DismissableLayerContext);
+
+  // if a layer is disabling outside pointer events
+  // prevent all its parents from dismissing on outside interaction
+  React.useEffect(() => {
+    const preventParentDismiss = preventDismiss || disableOutsidePointerEvents;
+    if (parentLayer && preventParentDismiss) {
+      parentLayer.setPreventDismissOnInteractOutside(true);
+      return () => parentLayer.setPreventDismissOnInteractOutside(false);
+    }
+  }, [preventDismiss, disableOutsidePointerEvents, parentLayer]);
+
+  const interactOutsideProps = useInteractOutside(nodeRef, (event) => {
+    if (!preventDismiss) {
+      onInteractOutside?.(event);
+      if (!event.defaultPrevented) {
+        onDismiss?.();
+      }
+    }
+  });
+
+  return { props: interactOutsideProps, setPreventDismissOnInteractOutside };
+}
+
+/**
+ * Sets up dissmissing when interacting outside a given node.
+ * Returns props to pass to the given node.
+ */
+function useInteractOutside(
+  nodeRef: React.RefObject<HTMLElement>,
+  onInteractOutside?: (event: InteractOutsideEvent) => void
+) {
+  const handleInteractOutside = useCallbackRef(onInteractOutside);
+
+  const dispatchInteractOutsideCustomEvent = useCallbackRef(
+    (nativeEvent: Event, target: EventTarget | null) => {
+      const options = { bubbles: false, cancelable: true, detail: { target, nativeEvent } };
+      const interactOutsideEvent: InteractOutsideEvent = new CustomEvent(
+        INTERACT_OUTSIDE_EVENT_TYPE,
+        options
+      );
+
+      nodeRef.current?.dispatchEvent(interactOutsideEvent);
+
+      if (interactOutsideEvent.defaultPrevented) {
+        nativeEvent.preventDefault();
+      }
+    }
+  );
+
+  // listen for custom even dispatched
+  React.useEffect(() => {
+    const node = nodeRef.current;
+    if (node) {
+      node.addEventListener(INTERACT_OUTSIDE_EVENT_TYPE, handleInteractOutside);
+      return () => node.removeEventListener(INTERACT_OUTSIDE_EVENT_TYPE, handleInteractOutside);
+    }
+  }, [handleInteractOutside, nodeRef]);
+
+  const pointerDownOutsideProps = usePointerDownOutside((event) => {
+    dispatchInteractOutsideCustomEvent(event, event.target);
+  });
+
+  const focusLeave = useFocusLeave((event) => {
+    dispatchInteractOutsideCustomEvent(event, event.target);
+  });
+
+  return {
+    ...pointerDownOutsideProps,
+    ...focusLeave,
+  };
+}
+
+/**
+ * Sets up mousedown/touchstart listeners which listens for pointer down events outside a node.
+ * Also respects the react tree rather than just the DOM tree.
  *
- * These actually use `mousedown` rather than click` for 2 reasons:
+ * We use `mousedown` rather than click` for 2 reasons:
  * - to mimic layer dismissing behaviour present in OS which usually happens on mousedown
  * - to enable to us call `event.preventDefault()` and prevent focus from happening.
  *
- * Return a function to remove the listeners.
+ * Returns props to pass to the node we want to check for outside events.
  */
-function addOutsideClickListener(
-  container: HTMLElement,
-  callback: (event: MouseEvent | TouchEvent) => void
-) {
-  function handlePointerDown(event: MouseEvent | TouchEvent) {
-    if (isEventOutsideElement(event, container)) {
-      callback(event);
-    }
-  }
+function usePointerDownOutside(onOutsidePointerDown?: (event: MouseEvent | TouchEvent) => void) {
+  const handleOutsidePointerDown = useCallbackRef(onOutsidePointerDown);
+  const isEventInside = React.useRef(false);
 
-  document.addEventListener('mousedown', handlePointerDown, { capture: true });
-  document.addEventListener('touchstart', handlePointerDown, { capture: true });
+  React.useEffect(() => {
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (!isEventInside.current) {
+        handleOutsidePointerDown(event);
+      }
+      isEventInside.current = false;
+    };
 
-  return () => {
-    document.removeEventListener('mousedown', handlePointerDown, { capture: true });
-    document.removeEventListener('touchstart', handlePointerDown, { capture: true });
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [handleOutsidePointerDown]);
+
+  const markEventAsInside = () => {
+    isEventInside.current = true;
+  };
+
+  return {
+    // ensures we check React component tree (not just DOM tree)
+    onMouseDownCapture: markEventAsInside as React.MouseEventHandler,
+    onTouchStartCapture: markEventAsInside as React.TouchEventHandler,
   };
 }
 
-function addOutsideBlurListener(container: HTMLElement, callback: (event: FocusEvent) => void) {
-  function handleBlur(event: FocusEvent) {
-    const relatedTarget = event.relatedTarget as Element | null;
-    if (relatedTarget && isTargetOutsideElement(relatedTarget, container!)) {
-      callback(event);
-    }
-  }
-
-  document.addEventListener('blur', handleBlur, { capture: true });
-
-  return () => {
-    document.removeEventListener('blur', handleBlur, { capture: true });
+/**
+ * Listens for when focus leaves a given node.
+ * Also respects the react tree rather than just the DOM tree.
+ *
+ * Returns props to pass to the node we want to check.
+ */
+function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
+  const timerRef = React.useRef<number>(0);
+  return {
+    onBlurCapture: (event: React.FocusEvent) => {
+      event.persist();
+      timerRef.current = window.setTimeout(() => {
+        if (event.relatedTarget !== null) {
+          onFocusLeave?.(event);
+        }
+      }, 0);
+    },
+    onFocusCapture: () => {
+      window.clearTimeout(timerRef.current);
+    },
   };
 }
 

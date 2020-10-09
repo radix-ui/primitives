@@ -133,7 +133,12 @@ function createFocusScope({
     destroy: () => {
       makeContainerNonFocusable(container);
       focusScope.untrap();
-      maybeFocusOnDestroy();
+      // `destroy` will be called in a `React.useEffect` cleanup function in `FocusScope`
+      // when it unmounts. Because of this we hit a react bug (fixed in v17)
+      // We need to delay the focus a little to get around it for now.
+      //
+      // See: https://github.com/facebook/react/issues/17894
+      setTimeout(() => maybeFocusOnDestroy(), 0);
     },
   };
 

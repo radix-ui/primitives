@@ -11,8 +11,7 @@ export const Basic = () => {
   const openButtonRef = React.useRef(null);
 
   const [dismissOnEscape, setDismissOnEscape] = React.useState(false);
-  const [dismissOnOutsideClick, setDismissOnOutsideClick] = React.useState(false);
-  const [dismissOnOutsideBlur, setDismissOnOutsideBlur] = React.useState(false);
+  const [dismissOnOutsideInteraction, setDismissOnOutsideInteraction] = React.useState(false);
   const [disabledOutsidePointerEvents, setDisableOutsidePointerEvents] = React.useState(false);
 
   return (
@@ -28,29 +27,23 @@ export const Basic = () => {
           />{' '}
           Dismiss on escape?
         </label>
+
         <label style={{ display: 'block' }}>
           <input
             type="checkbox"
-            checked={dismissOnOutsideClick}
-            onChange={(event) => setDismissOnOutsideClick(event.target.checked)}
+            checked={dismissOnOutsideInteraction}
+            onChange={(event) => setDismissOnOutsideInteraction(event.target.checked)}
           />{' '}
-          Dismiss on outside click?
+          Dismiss on outside interaction?
         </label>
-        <label style={{ display: 'block' }}>
-          <input
-            type="checkbox"
-            checked={dismissOnOutsideBlur}
-            onChange={(event) => setDismissOnOutsideBlur(event.target.checked)}
-          />{' '}
-          Dismiss on outside blur?
-        </label>
+
         <label style={{ display: 'block' }}>
           <input
             type="checkbox"
             checked={disabledOutsidePointerEvents}
             onChange={(event) => setDisableOutsidePointerEvents(event.target.checked)}
           />{' '}
-          Prevent outside click?
+          Disable outside pointer events?
         </label>
       </div>
 
@@ -62,17 +55,25 @@ export const Basic = () => {
 
       {isOpen ? (
         <DismissableLayer
-          dismissOnEscape={dismissOnEscape}
-          dismissOnOutsideClick={(event) =>
-            dismissOnOutsideClick && event.target !== openButtonRef.current
-          }
-          dismissOnOutsideBlur={dismissOnOutsideBlur}
+          onEscapeKeyDown={(event) => {
+            if (dismissOnEscape === false) {
+              event.preventDefault();
+            }
+          }}
+          onInteractOutside={(event) => {
+            if (
+              dismissOnOutsideInteraction === false ||
+              event.detail.target === openButtonRef.current
+            ) {
+              event.preventDefault();
+            }
+          }}
           disableOutsidePointerEvents={disabledOutsidePointerEvents}
           onDismiss={() => setIsOpen(false)}
         >
-          {({ ref, style }) => (
+          {(props) => (
             <div
-              ref={ref}
+              {...props}
               style={{
                 display: 'inline-flex',
                 justifyContent: 'center',
@@ -83,7 +84,7 @@ export const Basic = () => {
                 backgroundColor: 'black',
                 borderRadius: 10,
                 marginBottom: 20,
-                ...style,
+                ...props.style,
               }}
             >
               <input type="text" />
@@ -118,7 +119,11 @@ export const Nested = () => {
 
       {isOpen ? (
         <DismissableBox
-          dismissOnOutsideClick={(event) => event.target !== openButtonRef.current}
+          onInteractOutside={(event) => {
+            if (event.detail.target === openButtonRef.current) {
+              event.preventDefault();
+            }
+          }}
           onDismiss={() => setIsOpen(false)}
         />
       ) : null}
@@ -143,14 +148,18 @@ export const WithFocusScope = () => {
         <FocusScope trapped focusOnMount="auto" focusOnUnmount="auto">
           {({ ref: focusScopeContainerRef }) => (
             <DismissableLayer
-              dismissOnEscape
-              dismissOnOutsideClick={(event) => event.target !== openButtonRef.current}
+              onInteractOutside={(event) => {
+                if (event.detail.target === openButtonRef.current) {
+                  event.preventDefault();
+                }
+              }}
               disableOutsidePointerEvents
               onDismiss={() => setIsOpen(false)}
             >
-              {({ ref: dismissableLayerContainerRef, style }) => (
+              {({ ref: dismissableLayerContainerRef, ...props }) => (
                 <div
                   ref={composeRefs(focusScopeContainerRef, dismissableLayerContainerRef)}
+                  {...props}
                   style={{
                     display: 'inline-flex',
                     justifyContent: 'center',
@@ -161,7 +170,7 @@ export const WithFocusScope = () => {
                     backgroundColor: 'black',
                     borderRadius: 10,
                     marginBottom: 20,
-                    ...style,
+                    ...props.style,
                   }}
                 >
                   <input type="text" />
@@ -184,19 +193,15 @@ export const WithFocusScope = () => {
 
 type DismissableBoxProps = Omit<DismissableLayerProps, 'children'>;
 
-function DismissableBox({ onDismiss, dismissOnOutsideClick }: DismissableBoxProps) {
+function DismissableBox({ onInteractOutside, onDismiss }: DismissableBoxProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
 
   return (
-    <DismissableLayer
-      dismissOnEscape
-      dismissOnOutsideClick={dismissOnOutsideClick}
-      onDismiss={onDismiss}
-    >
-      {({ ref, style }) => (
+    <DismissableLayer onInteractOutside={onInteractOutside} onDismiss={onDismiss}>
+      {(props) => (
         <div
-          ref={ref}
+          {...props}
           style={{
             display: 'inline-block',
             verticalAlign: 'middle',
@@ -204,7 +209,7 @@ function DismissableBox({ onDismiss, dismissOnOutsideClick }: DismissableBoxProp
             backgroundColor: 'rgba(0, 0, 0, 0.2)',
             borderRadius: 10,
             marginTop: 20,
-            ...style,
+            ...props.style,
           }}
         >
           <div>
@@ -219,7 +224,14 @@ function DismissableBox({ onDismiss, dismissOnOutsideClick }: DismissableBoxProp
 
           {isOpen ? (
             <DismissableBox
-              dismissOnOutsideClick={(event) => event.target !== openButtonRef.current}
+              onInteractOutside={(event) => {
+                if (
+                  event.detail.target === openButtonRef.current &&
+                  event.detail.nativeEvent.type === 'mousedown'
+                ) {
+                  event.preventDefault();
+                }
+              }}
               onDismiss={() => setIsOpen(false)}
             />
           ) : null}
