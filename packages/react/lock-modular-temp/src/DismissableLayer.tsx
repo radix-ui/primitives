@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers, useCallbackRef } from '@interop-ui/react-utils';
 
-const INTERACT_OUTSIDE_EVENT_TYPE = 'dismissablelayer.interactoutside';
-type InteractOutsideEvent = CustomEvent<{ target: EventTarget | null; nativeEvent: Event }>;
-
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
@@ -123,7 +120,7 @@ function FocusEdgeGuard() {
 }
 
 /* -------------------------------------------------------------------------------------------------
- * Hooks
+ * Main hooks
  * -----------------------------------------------------------------------------------------------*/
 
 /**
@@ -159,7 +156,7 @@ function useDisableOutsidePointerEvents({ active = false }) {
 
 /**
  * Sets up dismissing when pressing escape, whilst ensuring only one layer is dismissed at one time.
- * Returns functions to enable/disable dismissing on escape.
+ * Returns a setter to enable/disable dismissing on escape.
  */
 function useEscapableLayer(options: {
   onEscapeKeyDown?: React.KeyboardEventHandler;
@@ -199,6 +196,13 @@ function useEscapableLayer(options: {
   return setPreventDismiss;
 }
 
+/**
+ * Sets up dismissing when interacting outside, whilst ensuring only layers
+ * are dismissed at one time (when necessary, based on `disableOutsidePointerEvents`).
+ *
+ * Returns props to pass to the given node as well as a setter to enable/disable
+ * dismissing on outside interaction.
+ */
 function useInteractOutsideLayer(options: {
   nodeRef: React.RefObject<HTMLElement>;
   disableOutsidePointerEvents?: boolean;
@@ -230,6 +234,13 @@ function useInteractOutsideLayer(options: {
 
   return { props: interactOutsideProps, setPreventDismissOnInteractOutside };
 }
+
+/* -------------------------------------------------------------------------------------------------
+ * Utility hooks
+ * -----------------------------------------------------------------------------------------------*/
+
+const INTERACT_OUTSIDE_EVENT_TYPE = 'dismissablelayer.interactoutside';
+type InteractOutsideEvent = CustomEvent<{ target: EventTarget | null; nativeEvent: Event }>;
 
 /**
  * Sets up dissmissing when interacting outside a given node.
