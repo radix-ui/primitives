@@ -32,4 +32,5 @@ releases:
   "@interop-ui/react-visually-hidden": prerelease
 
 declined:
+  - interop-ui
   - "@interop-ui/docs"
