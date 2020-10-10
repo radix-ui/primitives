@@ -188,13 +188,11 @@ function DismissableLayerImpl(props: DismissableLayerProps) {
         [numParentLayers, numLayersDisablingOutsidePointerEventsAtLayer]
       )}
     >
-      <FocusEdgeGuard />
       {children({
         ref: nodeRef,
         style: shouldReEnablePointerEvents ? { pointerEvents: 'auto' } : {},
         ...interactOutside,
       })}
-      <FocusEdgeGuard />
     </ParentLayerContext.Provider>
   );
 }
@@ -211,21 +209,6 @@ function getNumLayersDisablingOutsidePointerEventsAtLayer(
   return (
     (parentLayer?.numLayersDisablingOutsidePointerEventsAtLayer ?? 0) +
     (layer.disableOutsidePointerEvents ? 1 : 0)
-  );
-}
-
-/**
- * This component exists to ensure we can catch events
- * even when the `DismissableLayer` is at the edges of the DOM.
- */
-function FocusEdgeGuard() {
-  return (
-    <span
-      data-dismissable-layer-focus-edge-guard
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-      tabIndex={0}
-      style={{ position: 'fixed', opacity: 0, pointerEvents: 'none' }}
-    />
   );
 }
 
@@ -342,9 +325,7 @@ function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
     onBlurCapture: (event: React.FocusEvent) => {
       event.persist();
       timerRef.current = window.setTimeout(() => {
-        if (event.relatedTarget !== null) {
-          onFocusLeave?.(event);
-        }
+        onFocusLeave?.(event);
       }, 0);
     },
     onFocusCapture: () => {
