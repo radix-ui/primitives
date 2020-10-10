@@ -234,7 +234,7 @@ function useEscapeKeydown(onEscapeKeyDown?: (event: React.KeyboardEvent) => void
 }
 
 const INTERACT_OUTSIDE_EVENT_TYPE = 'dismissablelayer.interactoutside';
-type InteractOutsideEvent = CustomEvent<{ target: EventTarget | null; nativeEvent: Event }>;
+type InteractOutsideEvent = CustomEvent<{ target: EventTarget | null; originalEvent: Event }>;
 
 /**
  * Sets up dissmissing when interacting outside a given node.
@@ -246,15 +246,15 @@ function useInteractOutside(
 ) {
   const handleInteractOutside = useCallbackRef(onInteractOutside);
 
-  const dispatchCustomEvent = (nativeEvent: Event, target: EventTarget | null) => {
+  const dispatchCustomEvent = (originalEvent: Event, target: EventTarget | null) => {
     const interactOutsideEvent: InteractOutsideEvent = new CustomEvent(
       INTERACT_OUTSIDE_EVENT_TYPE,
-      { bubbles: false, cancelable: true, detail: { target, nativeEvent } }
+      { bubbles: false, cancelable: true, detail: { target, originalEvent } }
     );
     nodeRef.current?.dispatchEvent(interactOutsideEvent);
 
     if (interactOutsideEvent.defaultPrevented) {
-      nativeEvent.preventDefault();
+      originalEvent.preventDefault();
     }
   };
 
@@ -269,7 +269,7 @@ function useInteractOutside(
 
   return {
     ...usePointerDownOutside((event) => dispatchCustomEvent(event, event.target)),
-    ...useFocusLeave((event) => dispatchCustomEvent(event.nativeEvent, event.target)),
+    ...useFocusLeave((event) => dispatchCustomEvent(event.nativeEvent, event.relatedTarget)),
   };
 }
 

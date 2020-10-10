@@ -375,7 +375,10 @@ function DummyPopover({
               <DismissableLayer
                 onEscapeKeyDown={onEscapeKeyDown}
                 onInteractOutside={(event) => {
-                  if (event.detail.target === openButtonRef.current) {
+                  if (
+                    event.detail.target === openButtonRef.current &&
+                    event.detail.originalEvent.type !== 'blur'
+                  ) {
                     event.preventDefault();
                     return;
                   }

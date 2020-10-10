@@ -225,10 +225,7 @@ function DismissableBox({ onInteractOutside, onDismiss }: DismissableBoxProps) {
           {isOpen ? (
             <DismissableBox
               onInteractOutside={(event) => {
-                if (
-                  event.detail.target === openButtonRef.current &&
-                  event.detail.nativeEvent.type === 'mousedown'
-                ) {
+                if (event.detail.target === openButtonRef.current) {
                   event.preventDefault();
                 }
               }}
