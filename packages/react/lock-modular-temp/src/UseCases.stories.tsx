@@ -151,16 +151,17 @@ export const PopoverNonModal = () => (
         ❌ focus should <span style={{ fontWeight: 600 }}>NOT</span> return to the open button when
         unmounted, natural focus should occur
       </li>
-      <li>✅ should be able to dismiss `Popover` when focus moves out of it</li>
+      <li>✅ should be able to dismiss `Popover` when focus leaves it</li>
       <li style={{ marginLeft: 30 }}>
-        ❌ focus should move to next tabbable element after open button when unmounted (via blur)
+        ❌ focus should move to next tabbable element after open button
         <div style={{ fontWeight: 600 }}>
           <span style={{ marginLeft: 20 }}>notes:</span>
           <ul>
             <li>right now focus is still returned to the open button when `FocusScope` unmounts</li>
+            <li>this is because `DismissableLayer` and `FocusScope` are not communicating</li>
             <li>
-              we'd have to do something to figure out how it should go on the next element on the
-              actual page (in this case the input)
+              we also would have to figure out how it should go on the next element on the actual
+              page (in this case the input), especially when used in `Portal`
             </li>
           </ul>
         </div>
@@ -179,10 +180,13 @@ export const PopoverNonModal = () => (
 
 export const PopoverInDialog = () => (
   <div style={{ height: '300vh', fontFamily: SYSTEM_FONT }}>
-    <h1>Popover (in Dialog)</h1>
+    <h1>Popover (semi-modal) in Dialog (fully modal)</h1>
     <ul style={{ listStyle: 'none', padding: 0, marginBottom: 30 }}>
-      <li>✅ dismissing `Popover` by pressing escape should not dismiss `Dialog`</li>
-      <li>✅ dismissing `Popover` by clicking outside should not dismiss `Dialog`</li>
+      <li>
+        ✅ dismissing `Popover` by pressing escape should{' '}
+        <span style={{ fontWeight: 600 }}>NOT</span> dismiss `Dialog`
+      </li>
+      <li>✅ dismissing `Popover` by clicking outside should also dismiss `Dialog`</li>
     </ul>
 
     <div style={{ display: 'flex', gap: 10 }}>
@@ -206,9 +210,17 @@ export const PopoverNested = () => (
         its parents
       </li>
       <li>
-        ✅ dismissing a `Popover` by clicking outside should dismiss it and its parents (as long as
-        click was outside of all — in this case, the red one is not disabling outside pointer
-        events, therefore, click outside should close both the red AND the blue)
+        ✅ interacting outside the blue `Popover` should only dismiss itself and not its parents
+      </li>
+      <li>✅ interacting outside the red `Popover` should dismiss itself and the black one</li>
+      <li>✅ unless the click wasn't outside the black one</li>
+      <li>
+        ✅ when the blue `Popover` is open, there should be{' '}
+        <span style={{ fontWeight: 600 }}>NO</span> text cursor above the red or black inputs
+      </li>
+      <li>
+        ✅ when the red `Popover` is open, there should be a text cursor above the black input but
+        not the one on the page behind
       </li>
     </ul>
 
@@ -223,7 +235,7 @@ export const PopoverNested = () => (
           color="tomato"
           openLabel="Open red"
           closeLabel="Close red"
-          disableOutsidePointerEvents
+          // disableOutsidePointerEvents
           onInteractOutside={(event) => {
             console.log('interact outside red');
           }}
@@ -232,7 +244,7 @@ export const PopoverNested = () => (
             color="royalblue"
             openLabel="Open blue"
             closeLabel="Close blue"
-            // disableOutsidePointerEvents
+            disableOutsidePointerEvents
             onInteractOutside={(event) => {
               console.log('interact outside blue');
             }}
@@ -384,14 +396,14 @@ function DummyPopover({
                           filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.12))',
                           ...dismissableLayerProps.style,
                         }}
-                        side="top"
-                        sideOffset={5}
+                        side="bottom"
+                        sideOffset={10}
                       >
                         <Popper.Content
                           style={{
                             ...popperStyles.content,
                             display: 'flex',
-                            alignItems: 'start',
+                            alignItems: 'flex-start',
                             gap: 10,
                             background: 'white',
                             minWidth: 200,
