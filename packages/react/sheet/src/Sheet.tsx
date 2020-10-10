@@ -86,9 +86,7 @@ const SheetRoot: React.FC<SheetRootProps> = (props) => {
     shouldCloseOnOutsideClick = true,
   } = props;
 
-  const onClose: () => void = useCallbackRef(() => {
-    onCloseProp && onCloseProp();
-  });
+  const onClose = useCallbackRef(onCloseProp);
 
   const ctx: SheetContextValue = React.useMemo(
     () => ({
