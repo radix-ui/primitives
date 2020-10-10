@@ -15,7 +15,6 @@ const { styled } = createStyled({
 
 export function Basic() {
   const [usesNative, setNative] = React.useState(false);
-  console.log({ usesNative });
   return (
     <div>
       <button onClick={() => setNative(!usesNative)}>Toggle Native</button>
@@ -25,6 +24,7 @@ export function Basic() {
           <ScrollArea.ButtonStart as={ScrollButtonStart}>
             <Arrow direction="up" />
           </ScrollArea.ButtonStart>
+
           <ScrollArea.Track as={ScrollTrack}>
             <ScrollArea.Thumb as={ScrollThumb} />
           </ScrollArea.Track>
@@ -35,6 +35,12 @@ export function Basic() {
 
         <ScrollArea.Position as={ScrollPosition}>
           <ScrollArea.ContentArea as={ScrollContent}>
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
             <LongContent />
           </ScrollArea.ContentArea>
         </ScrollArea.Position>

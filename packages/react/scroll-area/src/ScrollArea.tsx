@@ -2,19 +2,6 @@
 // I've got some helpers defined that I haven't used just yet.
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-// NOTES:
-//  - How much does the scroll area scroll when a user presses spacebar or PageDown on a native
-//    scrollbar? The answer is: depends! It's 100% of the viewport heiht minus ... some mysterious
-//    value that differs from env to env. Whatever this value is should be the same value that is
-//    scrolled when the user presses the scrollbar track. Several env's do roughly 100% of the
-//    viewport height minus ~40px, so that's what I used to recreate the track functionality.
-//    https://vasilis.nl/nerd/high-scroll-height-scrolling-space-bar/
-//  - The above logic applies to the initial response to clickin the scroll track, but if the user
-//    holds the pointer down for a short period of time the scroll area will move further in the
-//    same direction to some position that correlates with the percentage of the track that the
-//    pointer rests upon. I have not figured this out just yet, but this too appears to differ
-//    slightly on different platforms.
-
 // This component is a progressive enhancement that will fallback to a staandard div with overflow:
 // scroll for browsers that don't support features we rely on.
 
@@ -34,7 +21,10 @@ import {
   createStyleObj,
   useLayoutEffect,
   useComposedRefs,
-  useDocumentRef,
+  usePrefersReducedMotion,
+  getOwnerGlobals,
+  useConstant,
+  useCallbackRef,
 } from '@interop-ui/react-utils';
 import {
   cssReset,
@@ -42,6 +32,8 @@ import {
   Axis,
   getResizeObserverEntryBorderBoxSize,
 } from '@interop-ui/utils';
+import { bezier } from './bezier-easing';
+import { Queue } from './queue';
 
 const ROOT_DEFAULT_TAG = 'div';
 const ROOT_NAME = 'ScrollArea';
@@ -50,7 +42,6 @@ const ROOT_NAME = 'ScrollArea';
 // Should minify a bit better and hopefully make some repeated logic a bit simpler to follow.
 const DOM_PROPS = {
   size: { x: 'width', y: 'height' },
-  scrollSize: { x: 'scrollWidth', y: 'scrollHeight' },
   clientSize: { x: 'clientWidth', y: 'clientHeight' },
   clientCoord: { x: 'clientX', y: 'clientY' },
   scrollPos: { x: 'scrollLeft', y: 'scrollTop' },
@@ -59,12 +50,10 @@ const DOM_PROPS = {
 } as const;
 
 const CSS_PROPS = {
-  borderRight: '--interop-scroll-area-border-right',
-  borderBottom: '--interop-scroll-area-border-bottom',
-  borderTop: '--interop-scroll-area-border-top',
-  borderLeft: '--interop-scroll-area-border-left',
   scrollAreaWidth: '--interop-scroll-area-width',
   scrollAreaHeight: '--interop-scroll-area-height',
+  positionWidth: '--interop-scroll-area-position-width',
+  positionHeight: '--interop-scroll-area-position-height',
   scrollbarXOffset: '--interop-scroll-area-scrollbar-x-offset',
   scrollbarYOffset: '--interop-scroll-area-scrollbar-y-offset',
   scrollbarThumbWillChange: '--interop-scroll-area-scrollbar-thumb-will-change',
@@ -75,6 +64,13 @@ const CSS_PROPS = {
 // TODO: RTL language testing for horizontal scrolling
 
 type ScrollAreaContextValue = {
+  overflowX: OverflowBehavior;
+  overflowY: OverflowBehavior;
+  prefersReducedMotion: boolean;
+  scrollAnimationQueue: Queue<any>;
+};
+
+type ScrollAreaRefs = {
   buttonUpRef: React.RefObject<HTMLDivElement>;
   buttonDownRef: React.RefObject<HTMLDivElement>;
   buttonLeftRef: React.RefObject<HTMLDivElement>;
@@ -83,21 +79,15 @@ type ScrollAreaContextValue = {
   scrollAreaRef: React.RefObject<HTMLDivElement>;
   scrollbarYThumbRef: React.RefObject<HTMLDivElement>;
   scrollbarXThumbRef: React.RefObject<HTMLDivElement>;
-  visibleToTotalHeightRatioRef: React.MutableRefObject<number>;
-  visibleToTotalWidthRatioRef: React.MutableRefObject<number>;
-  scrollAreaBorderBox: React.MutableRefObject<{ width: number; height: number }>;
-  scrollAreaBorderWidths: React.MutableRefObject<{
-    borderTopWidth: number;
-    borderLeftWidth: number;
-    borderRightWidth: number;
-    borderBottomWidth: number;
-  }>;
-  overflowX: OverflowBehavior;
-  overflowY: OverflowBehavior;
 };
 
 const [ScrollAreaContext, useScrollAreaContext] = createContext<ScrollAreaContextValue>(
   ROOT_NAME + 'Context',
+  ROOT_NAME
+);
+
+const [ScrollAreaRefsContext, useScrollAreaRefsContext] = createContext<ScrollAreaRefs>(
+  ROOT_NAME + 'RefsContext',
   ROOT_NAME
 );
 
@@ -107,6 +97,9 @@ const [ScrollAreaContext, useScrollAreaContext] = createContext<ScrollAreaContex
 // context during render.
 const NativeScrollContext = React.createContext<boolean>(true);
 const useNativeScrollContext = () => React.useContext(NativeScrollContext);
+
+const DispatchContext = React.createContext<(event: ScrollAreaEvent) => void>(() => void null);
+const useDispatchContext = () => React.useContext(DispatchContext);
 
 /* -------------------------------------------------------------------------------------------------
  * ScrollArea
@@ -135,6 +128,11 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       ...domProps
     } = props;
 
+    // Animation effects triggered by button and track clicks are managed in a queue to prevent race
+    // conditions and invalid DOM measurements when the user clicks faster than the animation is
+    // able to be completed
+    const scrollAnimationQueue = useConstant(() => new Queue<any>());
+
     const scrollAreaRef = React.useRef<HTMLDivElement>(null);
     const scrollbarYThumbRef = React.useRef<HTMLDivElement>(null);
     const scrollbarXThumbRef = React.useRef<HTMLDivElement>(null);
@@ -146,132 +144,97 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
 
     const positionRef = React.useRef<HTMLDivElement>(null);
 
-    const visibleToTotalHeightRatioRef = React.useRef(0);
-    const visibleToTotalWidthRatioRef = React.useRef(0);
+    const prefersReducedMotion = usePrefersReducedMotion(scrollAreaRef);
 
     const [usesNative, setUsesNative] = React.useState(true);
 
-    const documentRef = useDocumentRef(scrollAreaRef);
+    // This is a useReducer-esque dispatch function, but we aren't using React state for our logic
+    // so we can opt-out of potentially expensive state comparisons in our events. This can probably
+    // be better expressed as a state machine, but I wanted to keep the implementation as simple as
+    // possible to start.
+    const dispatch = React.useCallback(function dispatch(event: ScrollAreaEvent) {
+      // We attach all refs to each dispatch event so that the reducer has access to (and can
+      // update) their current values
+      const refs: ScrollAreaRefs = {
+        buttonLeftRef,
+        buttonRightRef,
+        buttonUpRef,
+        buttonDownRef,
+        positionRef,
+        scrollAreaRef,
+        scrollbarYThumbRef,
+        scrollbarXThumbRef,
+      };
+
+      eventManager({
+        ...event,
+        // @ts-ignore
+        refs,
+      });
+    }, []);
+
+    const ctx: ScrollAreaContextValue = React.useMemo(() => {
+      return {
+        overflowX,
+        overflowY,
+        prefersReducedMotion,
+        scrollAnimationQueue,
+      };
+    }, [overflowX, overflowY, prefersReducedMotion, scrollAnimationQueue]);
+
+    const refsContext: ScrollAreaRefs = React.useMemo(() => {
+      return {
+        buttonLeftRef,
+        buttonRightRef,
+        buttonUpRef,
+        buttonDownRef,
+        positionRef,
+        scrollAreaRef,
+        scrollbarYThumbRef,
+        scrollbarXThumbRef,
+      };
+    }, []);
 
     // Check to make sure the user's browser supports our custom scrollbar features. We use a layout
     // effect here to avoid a visible flash when the custom scrollarea replaces the native version.
     useLayoutEffect(() => {
-      const doc = documentRef.current;
-      const win = doc.defaultView || window;
-
-      const fallbackToNative = !(
-        'ResizeObserver' in win &&
-        'IntersectionObserver' in win &&
-        (('CSS' in win && 'supports' in win.CSS && win.CSS.supports('scrollbar-width: none')) ||
-          // I don't think it's possible to use CSS.supports to detect if a pseudo element is
-          // supported. We need to make sure `::-webkit-scrollbar` is valid if possible.
-          // TODO: Replace true with valid check or remove the block altogether
-          true)
-      );
-
-      setUsesNative(forceNative || fallbackToNative);
-    }, [documentRef, forceNative]);
+      const { win } = getOwnerGlobals(scrollAreaRef);
+      setUsesNative(forceNative || shouldFallbackToNativeScroll(win));
+    }, [forceNative]);
 
     // Set initial values for CSS properties so they are defined in all circumstances. This is a bit
-    // more resiliant than leaving them undefined in case the consumer uses them in CSS functions
-    // like `calc` or `max`.
+    // more resiliant than leaving them undefined so we can still use them in CSS functions like
+    // `calc` or `max`.
     useLayoutEffect(() => {
-      const scrollAreaEl = scrollAreaRef.current;
-      if (scrollAreaEl) {
-        scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarXOffset, '0px');
-        scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarYOffset, '0px');
-        scrollAreaEl.style.setProperty(CSS_PROPS.borderTop, '0px');
-        scrollAreaEl.style.setProperty(CSS_PROPS.borderRight, '0px');
-        scrollAreaEl.style.setProperty(CSS_PROPS.borderBottom, '0px');
-        scrollAreaEl.style.setProperty(CSS_PROPS.borderLeft, '0px');
-        scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, 'auto');
-        scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, 'auto');
-      }
-    }, []);
-
-    // We need a fixed width for the position element based on the content box size of the scroll
-    // area. Since the inner elements rely on some absolute positioning, technically the content box
-    // size will always be zero so we need to calculate it ourselves with computed styles. We'll do
-    // this on every render to play it safe, since we can't really observe changes to computed
-    // styles unfortunately. Since scroll area doesn't update React state in response to events, it
-    // shouldn't re-render very often in a real app so I don't think this will be a bottleneck for
-    // us. The computations will be more critical in the composer where we need style changes to
-    // trigger re-renders.
-    const scrollAreaBorderBox = React.useRef({ width: 0, height: 0 });
-    const scrollAreaBorderWidths = React.useRef({
-      borderTopWidth: 0,
-      borderLeftWidth: 0,
-      borderRightWidth: 0,
-      borderBottomWidth: 0,
-    });
-    useLayoutEffect(() => {
-      if (usesNative) return;
-
-      const scrollAreaEl = scrollAreaRef.current;
-      if (scrollAreaEl) {
-        const doc = documentRef.current;
-        const win = doc.defaultView || window;
-        const computedStyle = win.getComputedStyle(scrollAreaEl);
-
-        scrollAreaEl.style.setProperty(CSS_PROPS.borderTop, computedStyle.borderTopWidth);
-        scrollAreaEl.style.setProperty(CSS_PROPS.borderLeft, computedStyle.borderLeftWidth);
-        scrollAreaEl.style.setProperty(CSS_PROPS.borderRight, computedStyle.borderRightWidth);
-        scrollAreaEl.style.setProperty(CSS_PROPS.borderBottom, computedStyle.borderBottomWidth);
-
-        // We'll also store the values in a ref, we'll need them for calculations in the track
-        const borderTopWidth = parseInt(computedStyle.borderTopWidth);
-        const borderLeftWidth = parseInt(computedStyle.borderLeftWidth);
-        const borderRightWidth = parseInt(computedStyle.borderRightWidth);
-        const borderBottomWidth = parseInt(computedStyle.borderBottomWidth);
-
-        scrollAreaBorderWidths.current = {
-          borderTopWidth: parseInt(computedStyle.borderTopWidth),
-          borderLeftWidth: parseInt(computedStyle.borderLeftWidth),
-          borderRightWidth: parseInt(computedStyle.borderRightWidth),
-          borderBottomWidth: parseInt(computedStyle.borderBottomWidth),
-        };
-      }
-    });
+      dispatch({ type: 'UNSET_CSS_VARS' });
+    }, [dispatch]);
 
     // Observe the scroll area for changes and update computation variables used for components in
     // the sub-tree.
     useLayoutEffect(() => {
       if (usesNative) return;
 
-      let initialUpdateDone = false;
       const scrollAreaEl = scrollAreaRef.current!;
-
       if (!scrollAreaEl) {
         return;
       }
 
-      const observer = new ResizeObserver((entries) => {
-        // Skip initial update, that's handled directly in the effect to prevent jank
-        if (!initialUpdateDone) {
-          initialUpdateDone = true;
-          return;
-        }
-
+      const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
         // No need to loop, we're only observing a single element.
         const entry = entries[0];
         const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
-        updateScrollAreaSizeProperties(borderBoxSize.inlineSize, borderBoxSize.blockSize);
+        dispatch({
+          type: 'HANDLE_SCROLL_AREA_RESIZE',
+          width: borderBoxSize.inlineSize,
+          height: borderBoxSize.blockSize,
+        });
       });
-
-      const { width, height } = scrollAreaEl.getBoundingClientRect();
-      updateScrollAreaSizeProperties(width, height);
       observer.observe(scrollAreaEl);
-
-      function updateScrollAreaSizeProperties(width: number, height: number) {
-        scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, width + 'px');
-        scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, height + 'px');
-        scrollAreaBorderBox.current = { width, height };
-      }
 
       return function () {
         observer.disconnect();
       };
-    }, [documentRef, usesNative]);
+    }, [usesNative, dispatch]);
 
     // Listen to scroll events and update the thumb's positioning accordingly. This also adds a data
     // attribute to the body element so an app can know when a scrollarea is active so we can
@@ -279,7 +242,6 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
     useLayoutEffect(() => {
       if (usesNative) return;
 
-      let initialUpdateDone = false;
       const scrollAreaEl = scrollAreaRef.current!;
       const positionEl = positionRef.current!;
 
@@ -295,17 +257,12 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         function handleScrollAreaViewChange(entries) {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              positionEl.addEventListener('scroll', updateThumbs);
-              // Skip initial update, that's handled directly in the effect to prevent jank
-              if (!initialUpdateDone) {
-                initialUpdateDone = true;
-                return;
-              }
-              updateThumbs();
+              positionEl.addEventListener('scroll', handleScroll);
+              handleScroll();
               return;
             }
             // Scroll area not in view, clean up scroll listener
-            removeListeners();
+            positionEl.removeEventListener('scroll', handleScroll);
           });
         },
         {
@@ -315,51 +272,19 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         }
       );
 
-      updateThumbs();
+      handleScroll();
       observer.observe(scrollAreaEl);
 
       return function cleanup() {
         observer.disconnect();
-        removeScrollingAttributes(scrollAreaEl);
-        removeListeners();
+        positionEl.removeEventListener('scroll', handleScroll);
+        dispatch({ type: 'REMOVE_SCROLLING_ATTRIBUTES' });
       };
 
-      function removeListeners() {
-        positionEl.removeEventListener('scroll', updateThumbs);
+      function handleScroll() {
+        dispatch({ type: 'UPDATE_THUMBS' });
       }
-
-      function updateThumb(axis: Axis) {
-        const thumbEl = axis === 'x' ? scrollbarXThumbRef.current : scrollbarYThumbRef.current;
-
-        if (positionEl && thumbEl && scrollAreaEl) {
-          const totalSize = positionEl[DOM_PROPS.scrollSize[axis]];
-          const visibleSize = positionEl[DOM_PROPS.clientSize[axis]];
-          const scrollPos = positionEl[DOM_PROPS.scrollPos[axis]];
-          const visibleToTotalRatioRef =
-            axis === 'x' ? visibleToTotalWidthRatioRef : visibleToTotalHeightRatioRef;
-          const thumbPos = scrollPos / totalSize;
-          visibleToTotalRatioRef.current = visibleSize / totalSize;
-
-          if (visibleToTotalRatioRef.current >= 1) {
-            // We're at 100% visible area, no need to show the scroll thumb:
-            thumbEl.style[DOM_PROPS.size[axis]] = '0px';
-          } else {
-            // Set the thumb top/left to the scroll percent:
-            thumbEl.style[DOM_PROPS.pos[axis]] = `${thumbPos * 100}%`;
-            // Set the thumb size based on the scroll ratio:
-            thumbEl.style[DOM_PROPS.size[axis]] = `${Math.max(
-              visibleToTotalRatioRef.current * 100,
-              10
-            )}%`;
-          }
-        }
-      }
-
-      function updateThumbs() {
-        updateThumb('x');
-        updateThumb('y');
-      }
-    }, [documentRef, usesNative]);
+    }, [usesNative, dispatch]);
 
     // NOTE: experiemtal, ignore for now plz!
     React.useImperativeHandle(forwardedRef, () => ({
@@ -376,45 +301,36 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
 
     const ref = useComposedRefs(scrollAreaRef, forwardedRef);
 
-    const ctx: ScrollAreaContextValue = React.useMemo(() => {
-      return {
-        buttonLeftRef,
-        buttonRightRef,
-        buttonUpRef,
-        buttonDownRef,
-        overflowX,
-        overflowY,
-        positionRef,
-        scrollAreaRef,
-        scrollbarYThumbRef,
-        scrollbarXThumbRef,
-        scrollAreaBorderWidths,
-        scrollAreaBorderBox,
-        visibleToTotalHeightRatioRef,
-        visibleToTotalWidthRatioRef,
-      };
-    }, [overflowX, overflowY]);
+    // TODO: Remove
+    const count = React.useRef(0);
+    React.useEffect(() => {
+      console.log('re-rendered ', count.current++);
+    });
 
     return (
       <NativeScrollContext.Provider value={usesNative}>
-        <ScrollAreaContext.Provider value={ctx}>
-          <Comp
-            {...interopDataAttrObj('root')}
-            ref={ref}
-            {...domProps}
-            style={
-              usesNative
-                ? {
-                    ...domProps.style,
-                    overflowX,
-                    overflowY,
-                  }
-                : domProps.style
-            }
-          >
-            {children}
-          </Comp>
-        </ScrollAreaContext.Provider>
+        <ScrollAreaRefsContext.Provider value={refsContext}>
+          <ScrollAreaContext.Provider value={ctx}>
+            <DispatchContext.Provider value={dispatch}>
+              <Comp
+                {...interopDataAttrObj('root')}
+                ref={ref}
+                {...domProps}
+                style={
+                  usesNative
+                    ? {
+                        ...domProps.style,
+                        overflowX,
+                        overflowY,
+                      }
+                    : domProps.style
+                }
+              >
+                {children}
+              </Comp>
+            </DispatchContext.Provider>
+          </ScrollAreaContext.Provider>
+        </ScrollAreaRefsContext.Provider>
       </NativeScrollContext.Provider>
     );
   }
@@ -433,7 +349,8 @@ type ScrollAreaPositionProps = ScrollAreaPositionDOMProps & ScrollAreaPositionOw
 const ScrollAreaPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, ScrollAreaPositionProps>(
   function ScrollAreaPositionImpl(props, forwardedRef) {
     const { as: Comp = POSITION_DEFAULT_TAG, ...domProps } = props;
-    const { positionRef, overflowX, overflowY } = useScrollAreaContext(POSITION_NAME);
+    const { positionRef } = useScrollAreaRefsContext(POSITION_NAME);
+    const { overflowX, overflowY } = useScrollAreaContext(POSITION_NAME);
     const ref = useComposedRefs(positionRef, forwardedRef);
     return (
       <Comp
@@ -499,7 +416,6 @@ type ScrollbarContextValue = {
 
 type InternalScrollbarProps = ScrollAreaScrollbarProps & {
   axis: Axis;
-  onResize(root: HTMLElement, size: { width: number; height: number }): void;
 };
 
 const [ScrollbarContext, useScrollbarContext] = createContext<ScrollbarContextValue>(
@@ -509,45 +425,46 @@ const [ScrollbarContext, useScrollbarContext] = createContext<ScrollbarContextVa
 
 const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, InternalScrollbarProps>(
   function ScrollAreaScrollbarImpl(props, forwardedRef) {
-    const { as: Comp = SCROLLBAR_DEFAULT_TAG, axis, onResize, ...domProps } = props;
+    const { as: Comp = SCROLLBAR_DEFAULT_TAG, axis, ...domProps } = props;
 
-    const { scrollAreaRef } = useScrollAreaContext(
+    const dispatch = useDispatchContext();
+    const { scrollAreaRef } = useScrollAreaRefsContext(
       axis === 'x' ? SCROLLBAR_X_NAME : SCROLLBAR_Y_NAME
     );
+
     const ctx = React.useMemo(() => ({ axis }), [axis]);
     const ownRef = React.useRef<HTMLDivElement>(null);
     const ref = useComposedRefs(ownRef, forwardedRef);
 
     useLayoutEffect(() => {
-      let initialUpdateDone = false;
       const scrollAreaEl = scrollAreaRef.current!;
       const scrollbarEl = ownRef.current!;
-
       if (!scrollAreaEl || !scrollbarEl) {
         return;
       }
 
       const observer = new ResizeObserver((entries) => {
-        // Skip initial update, that's handled directly in the effect to prevent jank
-        if (!initialUpdateDone) {
-          initialUpdateDone = true;
-          return;
-        }
-
         // No need to loop, we're only observing a single element.
         const entry = entries[0];
         const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
-        updateScrollbarSizeProperties(borderBoxSize.inlineSize, borderBoxSize.blockSize);
+        handleResize({
+          width: borderBoxSize.inlineSize,
+          height: borderBoxSize.blockSize,
+        });
       });
 
       const { width, height } = scrollbarEl.getBoundingClientRect();
-      updateScrollbarSizeProperties(width, height);
+      handleResize({ width, height });
       observer.observe(scrollbarEl);
 
-      function updateScrollbarSizeProperties(width: number, height: number) {
-        onResize(scrollAreaEl, { width, height });
+      function handleResize({ width, height }: { width: number; height: number }) {
+        if (axis === 'x') {
+          scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarXOffset, height + 'px');
+        } else {
+          scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarYOffset, width + 'px');
+        }
       }
-    }, [scrollAreaRef, onResize, axis]);
+    }, [scrollAreaRef, axis, dispatch]);
 
     return (
       <ScrollbarContext.Provider value={ctx}>
@@ -568,19 +485,12 @@ type ScrollAreaScrollbarXProps = ScrollAreaScrollbarProps;
 
 const ScrollAreaScrollbarX = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollAreaScrollbarXProps>(
   function ScrollAreaScrollbarX(props, forwardedRef) {
-    const handleResize: InternalScrollbarProps['onResize'] = React.useCallback(
-      function handleResize(rootEl, { height }) {
-        rootEl.style.setProperty(CSS_PROPS.scrollbarXOffset, height + 'px');
-      },
-      []
-    );
     return (
       <ScrollAreaScrollbar
         {...interopDataAttrObj('scrollBarX')}
         ref={forwardedRef}
         {...props}
         axis="x"
-        onResize={handleResize}
       />
     );
   }
@@ -590,17 +500,12 @@ type ScrollAreaScrollbarYProps = ScrollAreaScrollbarProps;
 
 const ScrollAreaScrollbarY = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollAreaScrollbarYProps>(
   function ScrollAreaScrollbarY(props, forwardedRef) {
-    const handleResize: InternalScrollbarProps['onResize'] = React.useCallback(
-      (rootEl, { width }) => rootEl.style.setProperty(CSS_PROPS.scrollbarYOffset, width + 'px'),
-      []
-    );
     return (
       <ScrollAreaScrollbar
         {...interopDataAttrObj('scrollBarY')}
         ref={forwardedRef}
         {...props}
         axis="y"
-        onResize={handleResize}
       />
     );
   }
@@ -620,85 +525,95 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
   function ScrollAreaTrack(props, forwardedRef) {
     const { as: Comp = TRACK_DEFAULT_TAG, ...domProps } = props;
     const { axis } = useScrollbarContext(TRACK_NAME);
-    const ctx = useScrollAreaContext(TRACK_NAME);
-    const { scrollAreaRef, positionRef, scrollAreaBorderWidths, scrollAreaBorderBox } = ctx;
+    const { scrollAnimationQueue, prefersReducedMotion } = useScrollAreaContext(TRACK_NAME);
+    const dispatch = useDispatchContext();
+
+    const refsContext = useScrollAreaRefsContext(TRACK_NAME);
+    const { scrollAreaRef, positionRef } = refsContext;
+    const thumbRef = getThumbRef(axis, refsContext);
+
     const ownRef = React.useRef<HTMLDivElement>(null);
     const ref = useComposedRefs(ownRef, forwardedRef);
-    const documentRef = useDocumentRef(scrollAreaRef);
 
-    const thumbRef: React.RefObject<HTMLDivElement> = (ctx as any)[
-      `scrollbar${axis.toUpperCase()}ThumbRef`
-    ];
+    React.useEffect(() => {
+      let trackPointerDownTimeoutId: number | null = null;
+      const { doc, win } = getOwnerGlobals(scrollAreaRef);
+      const positionEl = positionRef.current!;
+      const trackEl = ownRef.current!;
+      const scrollAreaEl = scrollAreaRef.current!;
+      const thumbEl = thumbRef.current!;
+      let rafId: number;
 
-    React.useEffect(
-      () => {
-        let trackPointerDownTimeoutId: number | null = null;
-        const doc = documentRef.current;
-        const win = doc.defaultView || window;
-        const positionEl = positionRef.current!;
-        const trackEl = ownRef.current!;
-        const scrollAreaEl = scrollAreaRef.current!;
-        const thumbEl = thumbRef.current!;
+      if (!positionEl || !trackEl || !scrollAreaEl || !thumbEl) {
+        // TODO: dev warnings
+        return;
+      }
 
-        if (!positionEl || !trackEl || !scrollAreaEl || !thumbEl) {
-          // TODO: dev warnings
-          return;
+      trackEl.addEventListener('pointerdown', handlePointerDown);
+      return function () {
+        trackEl.removeEventListener('pointerdown', handlePointerDown);
+        doc.removeEventListener('pointerup', handlePointerUp);
+      };
+
+      function handlePointerUp(event: PointerEvent) {
+        trackEl && trackEl.releasePointerCapture(event.pointerId);
+        dispatch({ type: 'REMOVE_SCROLLING_ATTRIBUTES' });
+        win.clearTimeout(trackPointerDownTimeoutId!);
+        doc.removeEventListener('pointerup', handlePointerUp);
+
+        // After the user has stopped clicking the track, we wan't to stop any queued animations
+        // from further updating the scroll position (after the current animation is finished).
+        rafId = win.requestAnimationFrame(scrollAnimationQueue.stop.bind(scrollAnimationQueue));
+      }
+
+      function handlePointerDown(event: PointerEvent) {
+        if (!isMainClick(event)) return;
+
+        trackEl.setPointerCapture(event.pointerId);
+        dispatch({ type: 'ADD_SCROLLING_ATTRIBUTES' });
+        doc.addEventListener('pointerup', handlePointerUp);
+
+        const direction = determineScrollDirectionFromTrackClick({ event, axis, thumbEl });
+        if (prefersReducedMotion) {
+          dispatch({ type: 'SCROLL_BY_PAGE_IMMEDIATELY', axis, direction });
+        } else {
+          dispatch({
+            type: 'SCROLL_BY_PAGE_QUEUE_ANIMATION',
+            axis,
+            direction,
+            scrollAnimationQueue,
+          });
         }
 
-        trackEl.addEventListener('pointerdown', handlePointerDown);
-        return function () {
-          trackEl.removeEventListener('pointerdown', handlePointerDown);
-          doc.removeEventListener('pointerup', handlePointerUp);
-        };
-
-        function handlePointerUp(event: PointerEvent) {
-          trackEl && trackEl.releasePointerCapture(event.pointerId);
-          removeScrollingAttributes(scrollAreaEl);
+        // TODO: After some time (~400ms?), if the user still has the pointer down we'll start to
+        //       scroll further to some relative distance near the pointer in relation to the
+        //       track.
+        trackPointerDownTimeoutId = win.setTimeout(() => {
+          dispatch({
+            type: 'SCROLL_RELATIVE_TO_POINTER_ON_TRACK',
+            axis,
+            direction,
+            pointerPosition: getPointerPosition(event),
+          });
           win.clearTimeout(trackPointerDownTimeoutId!);
-          doc.removeEventListener('pointerup', handlePointerUp);
-        }
+        }, 400);
 
-        function handlePointerDown(event: PointerEvent) {
-          if (!isMainClick(event)) return;
+        return function () {
+          win.clearTimeout(trackPointerDownTimeoutId!);
+          win.cancelAnimationFrame(rafId!);
+        };
+      }
+    }, [
+      axis,
+      prefersReducedMotion,
 
-          console.log('track down');
-
-          trackEl.setPointerCapture(event.pointerId);
-
-          addScrollingAttributes(scrollAreaEl);
-
-          // 2. Listen for pointerup
-          doc.addEventListener('pointerup', handlePointerUp);
-
-          // 3. Move scroll by PageUp/PageDown approximate value. See implementation of
-          //    `getPagedScrollPosition` for the mathy details
-          const visibleSize = positionEl[DOM_PROPS.clientSize[axis]];
-          const direction = determineScrollDirectionFromTrackClick({ event, axis, thumbEl });
-          const newPosition = getPagedScrollPosition({ direction, axis, positionEl, visibleSize });
-
-          // TODO: Move this as a bezier curve from the current position
-          positionEl.scrollTop = newPosition;
-          //   (same percentage as a spacebar scroll)
-
-          // 4. TODO: After some time (~400ms?), if the user still has the pointer down we'll start
-          //    to scroll further to some relative distance near the pointer in relation to the
-          //    track.
-
-          // 4a. Set timeout ~400ms after which:
-          trackPointerDownTimeoutId = win.setTimeout(() => {
-            scrollRelativeToPointerPosition();
-            win.clearTimeout(trackPointerDownTimeoutId!);
-          }, 400);
-
-          // TODO: Implement this
-          function scrollRelativeToPointerPosition() {}
-        }
-      },
-      // All dependencies are refs we only need to setup/teardown if the axis changes for whatever
-      // reason.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [axis]
-    );
+      // these references should be stable
+      dispatch,
+      positionRef,
+      scrollAnimationQueue,
+      scrollAreaRef,
+      thumbRef,
+    ]);
 
     return <Comp {...interopDataAttrObj('track')} ref={ref} {...domProps} data-axis={axis} />;
   }
@@ -718,18 +633,11 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
   function ScrollAreaThumb(props, forwardedRef) {
     const { as: Comp = THUMB_DEFAULT_TAG, ...domProps } = props;
     const { axis } = useScrollbarContext(THUMB_NAME);
-    const ctx = useScrollAreaContext(THUMB_NAME);
-    const {
-      scrollAreaRef,
-      positionRef,
-      visibleToTotalHeightRatioRef,
-      visibleToTotalWidthRatioRef,
-    } = ctx;
-    const thumbRef: React.RefObject<HTMLDivElement> = (ctx as any)[
-      `scrollbar${axis.toUpperCase()}ThumbRef`
-    ];
+    const refsContext = useScrollAreaRefsContext(THUMB_NAME);
+    const { scrollAreaRef, positionRef } = refsContext;
+    const thumbRef = getThumbRef(axis, refsContext);
     const ref = useComposedRefs(thumbRef || null, forwardedRef);
-    const documentRef = useDocumentRef(scrollAreaRef);
+    const dispatch = useDispatchContext();
 
     useLayoutEffect(() => {
       const thumbEl = thumbRef.current;
@@ -744,13 +652,10 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
     React.useEffect(
       () => {
         let pointerStartPoint = 0;
-        const doc = documentRef.current;
+        const { doc } = getOwnerGlobals(scrollAreaRef);
         const positionEl = positionRef.current!;
         const thumbEl = thumbRef.current!;
         const scrollAreaEl = scrollAreaRef.current!;
-
-        const visibleToTotalRatio =
-          axis === 'x' ? visibleToTotalWidthRatioRef.current : visibleToTotalHeightRatioRef.current;
 
         if (!thumbEl || !positionEl || !scrollAreaEl) {
           return;
@@ -764,6 +669,9 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
         };
 
         function handlePointerMove(event: PointerEvent) {
+          const totalScrollSize = getScrollSize({ element: positionEl, axis });
+          const visibleSize = getClientSize({ element: positionEl, axis });
+          const visibleToTotalRatio = visibleSize / totalScrollSize;
           const delta = pointerStartPoint - event[DOM_PROPS.clientCoord[axis]];
           if (delta === 0) {
             pointerStartPoint = event[DOM_PROPS.clientCoord[axis]];
@@ -782,10 +690,8 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
         function handlePointerDown(event: PointerEvent) {
           if (!isMainClick(event)) return;
 
-          console.log('thumb down');
-
           event.stopPropagation();
-          addScrollingAttributes(scrollAreaEl);
+          dispatch({ type: 'ADD_SCROLLING_ATTRIBUTES' });
           pointerStartPoint = event[DOM_PROPS.clientCoord[axis]];
           thumbEl.setPointerCapture(event.pointerId);
           doc.addEventListener('pointerup', handlePointerUp);
@@ -793,7 +699,7 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
         }
 
         function handlePointerUp(event: PointerEvent) {
-          removeScrollingAttributes(scrollAreaEl);
+          dispatch({ type: 'REMOVE_SCROLLING_ATTRIBUTES' });
           thumbEl && thumbEl.releasePointerCapture(event.pointerId);
           doc.removeEventListener('pointermove', handlePointerMove);
           doc.removeEventListener('pointerup', handlePointerUp);
@@ -802,7 +708,7 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
       // All dependencies are refs we only need to setup/teardown if the axis changes for whatever
       // reason.
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [axis]
+      [axis, dispatch]
     );
 
     // I don't think we'll ever reach this case, because if axis is invalid the parent scrollbar
@@ -833,8 +739,7 @@ type ScrollAreaButtonProps = ScrollAreaButtonDOMProps & ScrollAreaButtonOwnProps
 // represents the differences between the element's scrollTop value at each of these intervals. I
 // will likely rethink this approach tactically as it gets much more complicated for track clicks.
 // We are concerned more about the bezier curve effect this creates vs. the actual values.
-const BUTTON_SCROLL_INTERVAL_VALUES = [5, 7, 8, 9, 7, 7, 5, 2, 1];
-const BUTTON_SCROLL_INTERVAL = 16;
+const BUTTON_SCROLL_TIME = 135;
 
 function useScrollbarButton(
   direction: LogicalDirection,
@@ -843,16 +748,15 @@ function useScrollbarButton(
 ) {
   const { axis } = useScrollbarContext(name);
   const actualDirection = getActualScrollDirection(direction, axis);
-  const ctx = useScrollAreaContext(name);
-  const buttonRef = (ctx as any)[
-    `button${ucFirst(actualDirection)}Ref`
-  ] as ScrollAreaContextValue['buttonDownRef'];
+  const { prefersReducedMotion } = useScrollAreaContext(name);
+  const refsContext = useScrollAreaRefsContext(name);
+  const { positionRef, scrollAreaRef } = refsContext;
+  const buttonRef = getButtonRef(actualDirection, refsContext);
 
-  const { positionRef, scrollAreaRef } = ctx;
-  const documentRef = useDocumentRef(scrollAreaRef);
+  const dispatch = useDispatchContext();
 
   React.useEffect(() => {
-    const doc = documentRef.current;
+    const { doc } = getOwnerGlobals(scrollAreaRef);
     const positionEl = positionRef.current!;
     const buttonEl = buttonRef.current!;
     const scrollAreaEl = scrollAreaRef.current!;
@@ -870,51 +774,66 @@ function useScrollbarButton(
     };
 
     function scrollAfterButtonPress() {
-      // Based on native Windows scroll behavior. See notes at the
-      // top of the doc for more background.
-      // TODO: Check for prefers-reduced-motion and use a single
-      // scroll event for users with that preference.
-      let i = -1;
+      // TODO: Clean up for better readability
+      return prefersReducedMotion
+        ? (() => {
+            scrollPositionElement(51);
+            return () => void null;
+          })()
+        : animate({
+            duration: BUTTON_SCROLL_TIME,
+            timing: bezier(0.16, 0, 0.73, 1),
+            draw(progress) {
+              scrollPositionElement(progress * 15);
+            },
+          });
+    }
 
-      const cleanup = repeat(BUTTON_SCROLL_INTERVAL_VALUES.length, BUTTON_SCROLL_INTERVAL, () => {
-        if (positionEl === undefined) {
+    function scrollPositionElement(distance: number) {
+      if (positionEl === undefined) {
+        return;
+      }
+
+      let startingPos: number;
+      switch (actualDirection) {
+        case 'up':
+          if (isScrolledToTop(positionEl)) return;
+          startingPos = positionEl.scrollTop;
+          positionEl.scrollTop = Math.max(0, startingPos - distance);
+          break;
+
+        case 'down':
+          if (isScrolledToBottom(positionEl)) return;
+          startingPos = positionEl.scrollTop;
+          positionEl.scrollTop = Math.min(getMaxScrollTopValue(positionEl), startingPos + distance);
+          break;
+
+        case 'left':
+          startingPos = positionEl.scrollLeft;
+          if (isScrolledToLeft(positionEl)) return;
+          positionEl.scrollLeft = Math.max(0, startingPos - distance);
+          break;
+
+        case 'right':
+          if (isScrolledToRight(positionEl)) return;
+          startingPos = positionEl.scrollLeft;
+          positionEl.scrollLeft = Math.min(
+            getMaxScrollLeftValue(positionEl),
+            startingPos + distance
+          );
+          break;
+        default:
           return;
-        }
-
-        const distance = BUTTON_SCROLL_INTERVAL_VALUES[++i];
-        const startingPos = positionEl && positionEl.scrollTop;
-
-        switch (actualDirection) {
-          case 'up':
-            if (isScrolledToTop(positionEl)) return;
-            positionEl.scrollTop = Math.max(0, startingPos - distance);
-            break;
-
-          case 'down':
-            if (isScrolledToBottom(positionEl)) return;
-            positionEl.scrollTop = Math.min(
-              getBottomScrollTopValue(positionEl),
-              startingPos + distance
-            );
-            break;
-
-          case 'left':
-          case 'right':
-          default:
-            return;
-        }
-      });
-      return cleanup;
+      }
     }
 
     function handlePointerDown(event: PointerEvent) {
       if (!isMainClick(event)) return;
-
-      console.log('button down');
+      const start = performance.now();
 
       buttonEl.setPointerCapture(event.pointerId);
       doc.addEventListener('pointerup', handlePointerUp);
-      addScrollingAttributes(scrollAreaEl);
+      dispatch({ type: 'ADD_SCROLLING_ATTRIBUTES' });
       buttonPressCleanup = scrollAfterButtonPress();
 
       // TODO: Handle case for user holding down the button, in which case
@@ -927,10 +846,11 @@ function useScrollbarButton(
 
     function handlePointerUp(event: PointerEvent) {
       buttonEl && buttonEl.releasePointerCapture(event.pointerId);
-      removeScrollingAttributes(scrollAreaEl);
+      dispatch({ type: 'REMOVE_SCROLLING_ATTRIBUTES' });
+
       buttonEl.removeEventListener('pointerup', handlePointerUp);
     }
-  }, [buttonRef, positionRef, actualDirection, documentRef, scrollAreaRef]);
+  }, [buttonRef, dispatch, positionRef, actualDirection, scrollAreaRef, prefersReducedMotion]);
 
   // @ts-ignore
   const { as, ...restProps } = props;
@@ -1048,8 +968,8 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   position: {
     ...cssReset(POSITION_DEFAULT_TAG),
     zIndex: 1,
-    width: `calc(var(${CSS_PROPS.scrollAreaWidth}) - var(${CSS_PROPS.borderRight}) - var(${CSS_PROPS.borderLeft}))`,
-    height: `calc(var(${CSS_PROPS.scrollAreaHeight}) - var(${CSS_PROPS.borderTop}) - var(${CSS_PROPS.borderBottom}))`,
+    width: `var(${CSS_PROPS.positionWidth})`,
+    height: `var(${CSS_PROPS.positionHeight})`,
     paddingBottom: `var(${CSS_PROPS.scrollbarXOffset})`,
     paddingRight: `var(${CSS_PROPS.scrollbarYOffset})`,
     scrollbarWidth: 'none',
@@ -1131,41 +1051,12 @@ export type {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function addScrollingAttributes(scrollArea: HTMLElement) {
-  const root = scrollArea.ownerDocument;
-  root.body.setAttribute('data-interop-scrolling', '');
-  scrollArea.setAttribute('data-scrolling', '');
-}
-
-function removeScrollingAttributes(scrollArea: HTMLElement) {
-  const root = scrollArea.ownerDocument;
-  root.body.removeAttribute('data-interop-scrolling');
-  scrollArea.removeAttribute('data-scrolling');
-}
-
-function repeat<Fn extends (...args: any[]) => any>(count: number, interval: number, fn: Fn) {
-  if (count < 1 || isNaN(count)) return;
-
-  fn();
-  let counter = 1;
-  const id = setInterval(() => {
-    fn();
-    if (++counter === count) {
-      clear();
-    }
-  }, interval);
-  return clear;
-  function clear() {
-    clearInterval(id);
-  }
-}
-
 function isScrolledToBottom(node: Element | null) {
-  return !!(node && node.scrollTop === getBottomScrollTopValue(node));
+  return !!(node && node.scrollTop === getMaxScrollTopValue(node));
 }
 
 function isScrolledToRight(node: Element | null) {
-  return !!(node && node.scrollLeft === getRightScrollLeftValue(node));
+  return !!(node && node.scrollLeft === getMaxScrollLeftValue(node));
 }
 
 function isScrolledToTop(node: Element | null) {
@@ -1176,12 +1067,16 @@ function isScrolledToLeft(node: Element | null) {
   return !!(node && node.scrollLeft === 0);
 }
 
-function getBottomScrollTopValue(node: Element) {
+function getMaxScrollTopValue(node: Element) {
   return node.scrollHeight - node.clientHeight;
 }
 
-function getRightScrollLeftValue(node: Element) {
+function getMaxScrollLeftValue(node: Element) {
   return node.scrollWidth - node.clientWidth;
+}
+
+function getMaxScrollStartValue(node: Element, axis: Axis) {
+  return axis === 'x' ? getMaxScrollLeftValue(node) : getMaxScrollTopValue(node);
 }
 
 function ucFirst(string: string) {
@@ -1195,21 +1090,11 @@ function getActualScrollDirection(dir: LogicalDirection, axis: Axis): ScrollDire
   return axis === 'x' ? 'right' : 'down';
 }
 
-function getPointerPosition(event: PointerEvent) {
+function getPointerPosition(event: PointerEvent): PointerPosition {
   return {
     x: event.clientX,
     y: event.clientY,
   };
-}
-
-function getScrollbarOffset(doc: Document) {
-  const win = doc.defaultView || window;
-  try {
-    if (win.innerWidth > doc.documentElement.clientWidth) {
-      return win.innerWidth - doc.documentElement.clientWidth;
-    }
-  } catch (err) {}
-  return 0;
 }
 
 function getNewScrollRatio(
@@ -1220,9 +1105,7 @@ function getNewScrollRatio(
   if (!track || !pointerPosition) {
     return null;
   }
-
   const { left, width, bottom, height } = track.getBoundingClientRect();
-
   const delta = axis === 'y' ? bottom - pointerPosition.y : pointerPosition.x - left;
   return delta / (axis === 'y' ? height : width);
 }
@@ -1235,39 +1118,226 @@ function clamp(val: number, min: number, max: number) {
   return val > max ? max : val < min ? min : val;
 }
 
-function getPagedScrollPosition({
+function getThumbRef(axis: Axis, ctx: ScrollAreaRefs) {
+  return axis === 'x' ? ctx.scrollbarXThumbRef : ctx.scrollbarYThumbRef;
+}
+
+function getButtonRef(actualDirection: ScrollDirection, ctx: ScrollAreaRefs) {
+  switch (actualDirection) {
+    case 'down':
+      return ctx.buttonDownRef;
+    case 'up':
+      return ctx.buttonUpRef;
+    case 'left':
+      return ctx.buttonLeftRef;
+    case 'right':
+      return ctx.buttonRightRef;
+  }
+}
+
+// prettier-ignore
+type ScrollAreaEvent =  (
+  | { type: 'ADD_SCROLLING_ATTRIBUTES' }
+  | { type: 'REMOVE_SCROLLING_ATTRIBUTES' }
+  | { type: 'UNSET_CSS_VARS' }
+  | { type: 'HANDLE_SCROLL_AREA_RESIZE', width: number; height: number }
+  | { type: 'UPDATE_THUMBS' }
+  | { type: 'SCROLL_BY_PAGE_IMMEDIATELY'; axis: Axis; direction: LogicalDirection }
+  | { type: 'SCROLL_BY_PAGE_QUEUE_ANIMATION'; scrollAnimationQueue: Queue; axis: Axis; direction: LogicalDirection }
+  | { type: 'SCROLL_RELATIVE_TO_POINTER_ON_TRACK'; axis: Axis; direction: LogicalDirection; pointerPosition: PointerPosition });
+
+function eventManager(event: ScrollAreaEvent): void {
+  const refs: ScrollAreaRefs = (event as any).refs;
+  const positionEl = refs.positionRef.current!;
+  const scrollAreaEl = refs.scrollAreaRef.current!;
+  const { doc, win } = getOwnerGlobals(refs.scrollAreaRef);
+
+  if (!positionEl || !scrollAreaEl) {
+    return;
+  }
+
+  switch (event.type) {
+    case 'ADD_SCROLLING_ATTRIBUTES': {
+      doc.body.setAttribute('data-interop-scrolling', '');
+      scrollAreaEl.setAttribute('data-scrolling', '');
+      break;
+    }
+    case 'REMOVE_SCROLLING_ATTRIBUTES': {
+      doc.body.removeAttribute('data-interop-scrolling');
+      scrollAreaEl.removeAttribute('data-scrolling');
+      break;
+    }
+    case 'UNSET_CSS_VARS': {
+      scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarXOffset, '0px');
+      scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarYOffset, '0px');
+      scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, 'auto');
+      scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, 'auto');
+      scrollAreaEl.style.setProperty(CSS_PROPS.positionWidth, 'auto');
+      scrollAreaEl.style.setProperty(CSS_PROPS.positionHeight, 'auto');
+      break;
+    }
+    case 'HANDLE_SCROLL_AREA_RESIZE': {
+      // We need a fixed width for the position element based on the content box size of the scroll
+      // area. Since the inner elements rely on some absolute positioning, technically the content
+      // box size will always be zero so we need to calculate it ourselves with computed styles.
+      // Since scroll area doesn't update React state in response to events, it shouldn't re-render
+      // very often in a real app so I don't think this will be a bottleneck for us. The
+      // computations will be more critical in the composer where we need style changes to trigger
+      // re-renders.
+      const computedStyle = win.getComputedStyle(scrollAreaEl);
+      const borderTopWidth = parseInt(computedStyle.borderTopWidth);
+      const borderLeftWidth = parseInt(computedStyle.borderLeftWidth);
+      const borderRightWidth = parseInt(computedStyle.borderRightWidth);
+      const borderBottomWidth = parseInt(computedStyle.borderBottomWidth);
+
+      scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, event.width + 'px');
+      scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, event.height + 'px');
+      scrollAreaEl.style.setProperty(
+        CSS_PROPS.positionWidth,
+        event.width - borderLeftWidth - borderRightWidth + 'px'
+      );
+      scrollAreaEl.style.setProperty(
+        CSS_PROPS.positionHeight,
+        event.height - borderTopWidth - borderBottomWidth + 'px'
+      );
+      break;
+    }
+    case 'UPDATE_THUMBS': {
+      function updateThumb(axis: Axis) {
+        const thumbEl = (axis === 'x'
+          ? refs.scrollbarXThumbRef.current
+          : refs.scrollbarYThumbRef.current)!;
+
+        const totalScrollSize = getScrollSize({ element: positionEl, axis });
+        const visibleSize = getClientSize({ element: positionEl, axis });
+        const visibleToTotalRatio = visibleSize / totalScrollSize;
+        const scrollPos = positionEl[DOM_PROPS.scrollPos[axis]];
+        const thumbPos = scrollPos / totalScrollSize;
+
+        if (visibleToTotalRatio >= 1) {
+          // We're at 100% visible area, no need to show the scroll thumb:
+          thumbEl.style[DOM_PROPS.size[axis]] = '0px';
+        } else {
+          // Set the thumb top/left to the scroll percent:
+          thumbEl.style[DOM_PROPS.pos[axis]] = `${thumbPos * 100}%`;
+          // Set the thumb size based on the scroll ratio:
+          thumbEl.style[DOM_PROPS.size[axis]] = `${Math.max(visibleToTotalRatio * 100, 10)}%`;
+        }
+      }
+
+      if (refs.scrollbarXThumbRef.current) {
+        updateThumb('x');
+      }
+
+      if (refs.scrollbarYThumbRef.current) {
+        updateThumb('y');
+      }
+
+      break;
+    }
+
+    case 'SCROLL_BY_PAGE_IMMEDIATELY': {
+      const axis = event.axis;
+      const direction = event.direction;
+      const visibleSize = getClientSize({ element: positionEl, axis });
+      const distance = getPagedScrollDistance({ direction, visibleSize });
+      const newPosition = getNewScrollPosition({ direction, distance, axis, positionEl });
+      positionEl.scrollTop = newPosition;
+      break;
+    }
+    case 'SCROLL_BY_PAGE_QUEUE_ANIMATION': {
+      const axis = event.axis;
+      const direction = event.direction;
+      const visibleSize = getClientSize({ element: positionEl, axis });
+      event.scrollAnimationQueue.enqueue(() => {
+        let totalScrollDistance = getPagedScrollDistance({ direction, visibleSize });
+        return asyncAnimate({
+          duration: 200,
+          timing: bezier(0.16, 0, 0.73, 1),
+          draw(progress) {
+            const distance = totalScrollDistance * Math.min(progress, 1);
+            const newPosition = getNewScrollPosition({
+              direction,
+              distance,
+              axis,
+              positionEl,
+            });
+
+            totalScrollDistance -= distance;
+            positionEl.scrollTop = newPosition;
+          },
+        });
+      });
+      break;
+    }
+    case 'SCROLL_RELATIVE_TO_POINTER_ON_TRACK': {
+      // TODO
+      break;
+    }
+  }
+}
+
+/**
+ * Gets the distance of needed to move a scroll area when a PageUp/PageDown event occurs, which we
+ * need to determine when the user clicks on the scroll track.
+ *
+ * So how much does the scroll area scroll when a user presses spacebar or PageDown on a native
+ * scrollbar? The answer is: depends! It's 100% of the viewport heiht minus ... some mysterious
+ * value that differs from env to env. Whatever this value is should be the same value that is
+ * scrolled when the user presses the scrollbar track. Several env's do roughly 100% of the viewport
+ * height minus ~40px, so that's what I used to recreate the track functionality.
+ *
+ * @see https://vasilis.nl/nerd/high-scroll-height-scrolling-space-bar/
+ *
+ * @param props
+ */
+function getPagedScrollDistance({
   direction,
-  axis,
-  positionEl,
   visibleSize,
 }: {
   direction: LogicalDirection;
-  axis: Axis;
-  positionEl: Element;
   visibleSize: number;
 }) {
-  const actualDirection = getActualScrollDirection(direction, axis);
-  const { [axis === 'x' ? 'scrollLeft' : 'scrollTop']: scrollPosition } = positionEl;
+  return (visibleSize - 40) * (direction === 'end' ? 1 : -1);
+}
 
-  // How much does the scroll area scroll when a user presses spacebar or PageDown on a native
-  // scrollbar? The answer is: depends! It's 100% of the viewport heiht minus ... some mysterious
-  // value that differs from env to env. Whatever this value is should be the same value that is
-  // scrolled when the user presses the scrollbar track. Several env's do roughly 100% of the
-  // viewport height minus ~40px, so that's what I used to recreate the track functionality.
-  // https://vasilis.nl/nerd/high-scroll-height-scrolling-space-bar/
-  const maxDistanceToTravel = (visibleSize - 40) * (direction === 'end' ? 1 : -1);
-  const calculatedScrollPosition = scrollPosition + maxDistanceToTravel;
-  const boundary =
-    actualDirection === 'down'
-      ? getBottomScrollTopValue(positionEl)
-      : actualDirection === 'right'
-      ? getRightScrollLeftValue(positionEl)
-      : 0;
+function getClientSize({ element, axis }: { element: Element; axis: Axis }) {
+  return element[axis === 'x' ? 'clientWidth' : 'clientHeight'];
+}
+
+function getScrollSize({ element, axis }: { element: Element; axis: Axis }) {
+  return element[axis === 'x' ? 'scrollWidth' : 'scrollHeight'];
+}
+
+/**
+ * Determines the new scroll position (scrollTop/scrollLeft depending on the axis) for the scroll
+ * area based on a given distance we want to scroll.
+ * @param props
+ */
+function getNewScrollPosition({
+  direction,
+  distance,
+  axis,
+  positionEl,
+}: {
+  direction: LogicalDirection;
+  distance: number;
+  axis: Axis;
+  positionEl: Element;
+}) {
+  const { [axis === 'x' ? 'scrollLeft' : 'scrollTop']: scrollPosition } = positionEl;
+  const calculatedScrollPosition = scrollPosition + distance;
+  const boundary = direction === 'end' ? getMaxScrollStartValue(positionEl, axis) : 0;
   return direction === 'end'
     ? Math.min(boundary, calculatedScrollPosition)
     : Math.max(boundary, calculatedScrollPosition);
 }
 
+/**
+ * Determines whether or not the user is scrolling towards the end or start of a scrollbar when they
+ * click the track. Direction is determined by their click position in relation to the scroll thumb.
+ * @param props
+ */
 function determineScrollDirectionFromTrackClick({
   event,
   axis,
@@ -1283,6 +1353,71 @@ function determineScrollDirectionFromTrackClick({
     : 'end';
 }
 
+function animate({ duration, draw, timing, done }: AnimationOptions) {
+  let start = performance.now();
+  let stopped = false;
+  let rafId = requestAnimationFrame(function animate(time: number) {
+    // In some cases there are discrepencies between performance.now() and the timestamp in rAF. In
+    // those cases we reset the start time to the timestamp in the first frame.
+    // https://stackoverflow.com/questions/38360250/requestanimationframe-now-vs-performance-now-time-discrepancy
+    start = time < start ? time : start;
+
+    const timeFraction = clamp((time - start) / duration, 0, 1);
+    draw(timing(timeFraction));
+
+    if (timeFraction < 1) {
+      // If we haven't cancelled, keep the animation going
+      !stopped && (rafId = requestAnimationFrame(animate));
+    } else {
+      // Callback to `done` only if the animation wasn't cancelled early
+      done && done();
+      cleanup();
+    }
+  });
+
+  function cleanup() {
+    stopped = true;
+    cancelAnimationFrame(rafId);
+  }
+
+  return cleanup;
+}
+
+function asyncAnimate(opts: Omit<AnimationOptions, 'done'>) {
+  return new Promise((resolve) => {
+    animate({
+      ...opts,
+      done() {
+        resolve('done');
+      },
+    });
+  });
+}
+
+function shouldFallbackToNativeScroll(win: Window & typeof globalThis) {
+  return !(
+    'ResizeObserver' in win &&
+    'IntersectionObserver' in win &&
+    (('CSS' in win && 'supports' in win.CSS && win.CSS.supports('scrollbar-width: none')) ||
+      // I don't think it's possible to use CSS.supports to detect if a pseudo element is
+      // supported. We need to make sure `::-webkit-scrollbar` is valid if possible.
+      // TODO: Replace true with valid check or remove the block altogether
+      true)
+  );
+}
+
+type PointerPosition = { x: number; y: number };
 type LogicalDirection = 'start' | 'end';
 type ScrollDirection = 'up' | 'down' | 'left' | 'right';
 type OverflowBehavior = 'auto' | 'hidden' | 'scroll' | 'visible';
+type AnimationOptions = {
+  duration: number;
+  draw(progress: number): any;
+  timing(frac: number): number;
+  done?(): any;
+};
+
+// Ignore this, saving for my reference but I don't think we'll need them
+// const BUTTON_SCROLL_INTERVAL_VALUES = [5, 7, 8, 9, 7, 7, 5, 2, 1];
+// const BUTTON_SCROLL_INTERVAL = 15;
+// const TRACK_SCROLL_INTERVAL_VALUES = [8, 38, 52, 52, 53, 49, 38, 38, 24];

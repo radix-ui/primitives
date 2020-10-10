@@ -12,7 +12,7 @@ export function useCallbackRef<T extends (...args: any[]) => any>(callback?: T) 
     callbackRef.current = callback;
   });
 
-  return React.useCallback((...args) => {
+  return (React.useCallback((...args) => {
     callbackRef.current?.(...args);
-  }, []);
+  }, []) as unknown) as T;
 }
