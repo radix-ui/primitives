@@ -160,9 +160,11 @@ function DismissableLayerImpl(props: DismissableLayerProps) {
   const isDeepestLayer = numParentLayers === layers.numLayers - 1;
   useEscapeKeydown((event) => {
     if (isDeepestLayer) {
+      setDismissMethod('escape');
       onEscapeKeyDown?.(event);
-      if (!event.defaultPrevented) {
-        setDismissMethod('escape');
+      if (event.defaultPrevented) {
+        setDismissMethod(undefined);
+      } else {
         onDismiss?.();
       }
     }
@@ -174,13 +176,13 @@ function DismissableLayerImpl(props: DismissableLayerProps) {
   const canDismissOnInteractOutside = isDeepestLayerDisablingOutsidePointerEventsOrDeeper;
   const interactOutside = useInteractOutside(nodeRef, (event) => {
     if (canDismissOnInteractOutside) {
+      setDismissMethod(
+        event.detail.originalEvent.type === 'blur' ? 'interactOutsideBlur' : 'interactOutsideClick'
+      );
       onInteractOutside?.(event);
-      if (!event.defaultPrevented) {
-        setDismissMethod(
-          event.detail.originalEvent.type === 'blur'
-            ? 'interactOutsideBlur'
-            : 'interactOutsideClick'
-        );
+      if (event.defaultPrevented) {
+        setDismissMethod(undefined);
+      } else {
         onDismiss?.();
       }
     }
