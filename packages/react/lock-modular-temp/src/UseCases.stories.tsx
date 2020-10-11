@@ -96,7 +96,7 @@ export const PopoverSemiModal = () => {
           <span style={{ fontWeight: 600 }}>unless specified (ie. change color button)</span>
         </li>
         <li style={{ marginLeft: 30 }}>
-          ❌ focus should <span style={{ fontWeight: 600 }}>NOT</span> return to the open button
+          ✅ focus should <span style={{ fontWeight: 600 }}>NOT</span> return to the open button
           when unmounted, natural focus should occur
         </li>
       </ul>
@@ -148,21 +148,22 @@ export const PopoverNonModal = () => (
       <li>➕</li>
       <li>✅ should be able to dismiss `Popover` when clicking outside</li>
       <li style={{ marginLeft: 30 }}>
-        ❌ focus should <span style={{ fontWeight: 600 }}>NOT</span> return to the open button when
+        ✅ focus should <span style={{ fontWeight: 600 }}>NOT</span> return to the open button when
         unmounted, natural focus should occur
       </li>
       <li>✅ should be able to dismiss `Popover` when focus leaves it</li>
       <li style={{ marginLeft: 30 }}>
-        ❌ focus should move to next tabbable element after open button
+        ❓ focus should move to next tabbable element after open button
         <div style={{ fontWeight: 600 }}>
           <span style={{ marginLeft: 20 }}>notes:</span>
           <ul>
-            <li>right now focus is still returned to the open button when `FocusScope` unmounts</li>
-            <li>this is because `DismissableLayer` and `FocusScope` are not communicating</li>
             <li>
-              we also would have to figure out how it should go on the next element on the actual
-              page (in this case the input), especially when used in `Portal`
+              I have left this one out for now as I am still unsure in which case it should do this
             </li>
+            <li>
+              for the moment, focus will be returned to the open button when `FocusScope` unmounts
+            </li>
+            <li>Need to do some more thinking, in the meantime, I think this behavior is ok</li>
           </ul>
         </div>
       </li>
@@ -226,7 +227,7 @@ export const PopoverNested = () => (
 
     <div style={{ display: 'flex', gap: 10 }}>
       <DummyPopover
-        disableOutsidePointerEvents
+        // disableOutsidePointerEvents
         onInteractOutside={(event) => {
           console.log('interact outside black');
         }}
@@ -244,7 +245,7 @@ export const PopoverNested = () => (
             color="royalblue"
             openLabel="Open blue"
             closeLabel="Close blue"
-            disableOutsidePointerEvents
+            // disableOutsidePointerEvents
             onInteractOutside={(event) => {
               console.log('interact outside blue');
             }}
@@ -388,7 +389,7 @@ function DummyPopover({
                 onDismiss={() => setOpen(false)}
               >
                 {(dismissableLayerProps) => (
-                  <FocusScope trapped={trapped} focusOnMount="auto" focusOnUnmount="auto">
+                  <FocusScope trapped={trapped} focusOnMount="auto" focusOnUnmount={'auto'}>
                     {(focusScopeProps) => (
                       <Popper
                         {...dismissableLayerProps}
