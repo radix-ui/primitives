@@ -145,18 +145,18 @@ export const WithFocusScope = () => {
       </div>
 
       {isOpen ? (
-        <FocusScope trapped focusOnMount="auto" focusOnUnmount="auto">
-          {({ ref: focusScopeContainerRef }) => (
-            <DismissableLayer
-              onInteractOutside={(event) => {
-                if (event.detail.target === openButtonRef.current) {
-                  event.preventDefault();
-                }
-              }}
-              disableOutsidePointerEvents
-              onDismiss={() => setIsOpen(false)}
-            >
-              {({ ref: dismissableLayerContainerRef, ...props }) => (
+        <DismissableLayer
+          onInteractOutside={(event) => {
+            if (event.detail.target === openButtonRef.current) {
+              event.preventDefault();
+            }
+          }}
+          disableOutsidePointerEvents
+          onDismiss={() => setIsOpen(false)}
+        >
+          {({ ref: dismissableLayerContainerRef, ...props }) => (
+            <FocusScope trapped focusOnMount="auto" focusOnUnmount="auto">
+              {({ ref: focusScopeContainerRef }) => (
                 <div
                   ref={composeRefs(focusScopeContainerRef, dismissableLayerContainerRef)}
                   {...props}
@@ -176,9 +176,9 @@ export const WithFocusScope = () => {
                   <input type="text" />
                 </div>
               )}
-            </DismissableLayer>
+            </FocusScope>
           )}
-        </FocusScope>
+        </DismissableLayer>
       ) : null}
 
       <div style={{ marginBottom: 20 }}>
