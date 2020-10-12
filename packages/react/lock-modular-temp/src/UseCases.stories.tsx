@@ -385,9 +385,13 @@ function DummyPopover({
                     event.detail.originalEvent.type !== 'blur'
                   ) {
                     event.preventDefault();
+                    setSkipFocusOnUnmount(false);
                     return;
                   }
                   onInteractOutside?.(event);
+                  if (event.defaultPrevented) {
+                    setSkipFocusOnUnmount(false);
+                  }
                 }}
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onDismiss={() => setOpen(false)}
