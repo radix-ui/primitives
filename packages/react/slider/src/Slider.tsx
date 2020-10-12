@@ -263,16 +263,16 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       if (isDisabled) return;
       const slider = sliderRef.current!;
 
-      slider.addEventListener('mousedown', handleMouseDown);
-      slider.addEventListener('touchstart', handleTouchStart);
+      slider.addEventListener('mousedown', handleMouseDown as any);
+      slider.addEventListener('touchstart', handleTouchStart as any);
 
       if ('PointerEvent' in window) {
         slider.addEventListener('pointerdown', handlePointerDown);
       }
 
       return () => {
-        slider.removeEventListener('mousedown', handleMouseDown);
-        slider.removeEventListener('touchstart', handleTouchStart);
+        slider.removeEventListener('mousedown', handleMouseDown as any);
+        slider.removeEventListener('touchstart', handleTouchStart as any);
       };
     }, [isDisabled, handlePointerDown, handleMouseDown, handleTouchStart, slideEnd]);
 
