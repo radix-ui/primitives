@@ -227,7 +227,7 @@ export const PopoverNested = () => (
 
     <div style={{ display: 'flex', gap: 10 }}>
       <DummyPopover
-        // disableOutsidePointerEvents
+        disableOutsidePointerEvents
         onInteractOutside={(event) => {
           console.log('interact outside black');
         }}
@@ -245,7 +245,7 @@ export const PopoverNested = () => (
             color="royalblue"
             openLabel="Open blue"
             closeLabel="Close blue"
-            // disableOutsidePointerEvents
+            disableOutsidePointerEvents
             onInteractOutside={(event) => {
               console.log('interact outside blue');
             }}
@@ -361,6 +361,7 @@ function DummyPopover({
   disableOutsidePointerEvents = false,
   preventScroll = false,
 }: DummyPopoverProps) {
+  const [skipFocusOnUnmount, setSkipFocusOnUnmount] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
   const ScrollContainer = preventScroll ? RemoveScroll : React.Fragment;
@@ -376,6 +377,9 @@ function DummyPopover({
               <DismissableLayer
                 onEscapeKeyDown={onEscapeKeyDown}
                 onInteractOutside={(event) => {
+                  setSkipFocusOnUnmount(
+                    !disableOutsidePointerEvents && event.detail.originalEvent.type !== 'blur'
+                  );
                   if (
                     event.detail.target === openButtonRef.current &&
                     event.detail.originalEvent.type !== 'blur'
@@ -389,7 +393,11 @@ function DummyPopover({
                 onDismiss={() => setOpen(false)}
               >
                 {(dismissableLayerProps) => (
-                  <FocusScope trapped={trapped} focusOnMount="auto" focusOnUnmount={'auto'}>
+                  <FocusScope
+                    trapped={trapped}
+                    focusOnMount="auto"
+                    focusOnUnmount={skipFocusOnUnmount ? 'none' : 'auto'}
+                  >
                     {(focusScopeProps) => (
                       <Popper
                         {...dismissableLayerProps}

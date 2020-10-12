@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { createFocusScope } from './createFocusScope';
-import { useDismissalInfo } from './DismissableLayer';
 
 import type { FocusableTarget } from './createFocusScope';
 
@@ -90,16 +89,9 @@ function FocusScope(props: FocusScopeProps) {
   }, [trapped]);
 
   // Set `elementToFocusOnDestroy` in case things changes whilst mounted
-  const dismissalInfo = useDismissalInfo();
   React.useEffect(() => {
-    const overrideFocusOnUnmount =
-      dismissalInfo?.disableOutsidePointerEvents === false &&
-      dismissalInfo.dismissMethod === 'interactOutsideClick';
-
-    focusScopeRef.current?.setElementToFocusOnDestroy(
-      resolveFocusParam(overrideFocusOnUnmount ? 'none' : focusOnUnmount)
-    );
-  }, [focusOnUnmount, dismissalInfo]);
+    focusScopeRef.current?.setElementToFocusOnDestroy(resolveFocusParam(focusOnUnmount));
+  }, [focusOnUnmount]);
 
   return children({ ref: containerRef });
 }

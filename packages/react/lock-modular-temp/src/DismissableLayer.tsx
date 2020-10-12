@@ -77,15 +77,6 @@ const ParentLayerContext = React.createContext<ParentLayer | undefined>(undefine
 ParentLayerContext.displayName = 'ParentLayerContext';
 const useParentLayer = () => React.useContext(ParentLayerContext);
 
-// This context will help with letting `FocusScope` know about how a layer was dismissed
-type DismissalInfo = {
-  disableOutsidePointerEvents: boolean;
-  dismissMethod?: 'escape' | 'interactOutsideClick' | 'interactOutsideBlur';
-};
-const DismissalInfoContext = React.createContext<DismissalInfo | undefined>(undefined);
-DismissalInfoContext.displayName = 'DismissalInfoContext';
-const useDismissalInfo = () => React.useContext(DismissalInfoContext);
-
 type DismissableLayerProps = {
   children: (
     args: ReturnType<typeof useInteractOutside> & {
@@ -136,7 +127,6 @@ function DismissableLayerImpl(props: DismissableLayerProps) {
     onInteractOutside,
     onDismiss,
   } = props;
-  const [dismissMethod, setDismissMethod] = React.useState<DismissalInfo['dismissMethod']>();
   const nodeRef = React.useRef<HTMLElement>(null);
   const layer: LayerConfig = React.useMemo(() => ({ disableOutsidePointerEvents }), [
     disableOutsidePointerEvents,
@@ -160,11 +150,8 @@ function DismissableLayerImpl(props: DismissableLayerProps) {
   const isDeepestLayer = numParentLayers === layers.numLayers - 1;
   useEscapeKeydown((event) => {
     if (isDeepestLayer) {
-      setDismissMethod('escape');
       onEscapeKeyDown?.(event);
-      if (event.defaultPrevented) {
-        setDismissMethod(undefined);
-      } else {
+      if (!event.defaultPrevented) {
         onDismiss?.();
       }
     }
@@ -176,13 +163,8 @@ function DismissableLayerImpl(props: DismissableLayerProps) {
   const canDismissOnInteractOutside = isDeepestLayerDisablingOutsidePointerEventsOrDeeper;
   const interactOutside = useInteractOutside(nodeRef, (event) => {
     if (canDismissOnInteractOutside) {
-      setDismissMethod(
-        event.detail.originalEvent.type === 'blur' ? 'interactOutsideBlur' : 'interactOutsideClick'
-      );
       onInteractOutside?.(event);
-      if (event.defaultPrevented) {
-        setDismissMethod(undefined);
-      } else {
+      if (!event.defaultPrevented) {
         onDismiss?.();
       }
     }
@@ -203,23 +185,15 @@ function DismissableLayerImpl(props: DismissableLayerProps) {
         () => ({
           numParentLayers,
           numLayersDisablingOutsidePointerEventsAtLayer,
-          dismissMethod,
         }),
-        [numParentLayers, numLayersDisablingOutsidePointerEventsAtLayer, dismissMethod]
+        [numParentLayers, numLayersDisablingOutsidePointerEventsAtLayer]
       )}
     >
-      <DismissalInfoContext.Provider
-        value={React.useMemo(() => ({ disableOutsidePointerEvents, dismissMethod }), [
-          disableOutsidePointerEvents,
-          dismissMethod,
-        ])}
-      >
-        {children({
-          ref: nodeRef,
-          style: shouldReEnablePointerEvents ? { pointerEvents: 'auto' } : {},
-          ...interactOutside,
-        })}
-      </DismissalInfoContext.Provider>
+      {children({
+        ref: nodeRef,
+        style: shouldReEnablePointerEvents ? { pointerEvents: 'auto' } : {},
+        ...interactOutside,
+      })}
     </ParentLayerContext.Provider>
   );
 }
@@ -361,5 +335,5 @@ function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
   };
 }
 
-export { DismissableLayer, useDismissalInfo };
+export { DismissableLayer };
 export type { DismissableLayerProps };
