@@ -96,7 +96,7 @@ type DismissableLayerProps = {
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
-  onEscapeKeyDown?: React.KeyboardEventHandler;
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
 
   /**
    * Event handler called when an interaction happened outside the `DismissableLayer`.
@@ -220,7 +220,7 @@ function getNumLayersDisablingOutsidePointerEventsAtLayer(
 /**
  * Listens for when the escape key is down
  */
-function useEscapeKeydown(onEscapeKeyDown?: (event: React.KeyboardEvent) => void) {
+function useEscapeKeydown(onEscapeKeyDown?: (event: KeyboardEvent) => void) {
   const handleEscapeKeyDown = useCallbackRef(onEscapeKeyDown);
 
   React.useEffect(() => {
@@ -335,5 +335,5 @@ function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
   };
 }
 
-export { DismissableLayer };
-export type { DismissableLayerProps };
+export { DismissableLayer, INTERACT_OUTSIDE_EVENT_TYPE };
+export type { DismissableLayerProps, InteractOutsideEvent };
