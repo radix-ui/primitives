@@ -26,7 +26,6 @@
       "@interop-ui/react-progress-bar": ["./packages/react/progress-bar/src"],
       "@interop-ui/react-radio-group": ["./packages/react/radio-group/src"],
       "@interop-ui/react-separator": ["./packages/react/separator/src"],
-      "@interop-ui/react-sheet": ["./packages/react/sheet/src"],
       "@interop-ui/react-slider": ["./packages/react/slider/src"],
       "@interop-ui/react-switch": ["./packages/react/switch/src"],
       "@interop-ui/react-tabs": ["./packages/react/tabs/src"],

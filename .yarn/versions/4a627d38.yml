@@ -21,7 +21,6 @@ releases:
   "@interop-ui/react-progress-bar": prerelease
   "@interop-ui/react-radio-group": prerelease
   "@interop-ui/react-separator": prerelease
-  "@interop-ui/react-sheet": prerelease
   "@interop-ui/react-slider": prerelease
   "@interop-ui/react-switch": prerelease
   "@interop-ui/react-tabs": prerelease
