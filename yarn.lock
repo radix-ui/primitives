@@ -1919,12 +1919,13 @@ __metadata:
   resolution: "@interop-ui/react-dialog@workspace:packages/react/dialog"
   dependencies:
     "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-lock": "workspace:*"
+    "@interop-ui/react-lock-modular-temp": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
+    aria-hidden: ^1.1.1
     parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.3.0
+    react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1942,7 +1943,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp":
+"@interop-ui/react-lock-modular-temp@workspace:*, @interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp"
   dependencies:
@@ -1958,7 +1959,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-lock@workspace:*, @interop-ui/react-lock@workspace:packages/react/lock":
+"@interop-ui/react-lock@workspace:packages/react/lock":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-lock@workspace:packages/react/lock"
   dependencies:
@@ -1976,18 +1977,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-popover@workspace:*, @interop-ui/react-popover@workspace:packages/react/popover":
+"@interop-ui/react-popover@workspace:packages/react/popover":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-popover@workspace:packages/react/popover"
   dependencies:
     "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-lock": "workspace:*"
+    "@interop-ui/react-lock-modular-temp": "workspace:*"
     "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
+    aria-hidden: ^1.1.1
     parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.3.0
+    react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2122,7 +2124,7 @@ __metadata:
   dependencies:
     "@interop-ui/popper": "workspace:*"
     "@interop-ui/react-arrow": "workspace:*"
-    "@interop-ui/react-popover": "workspace:*"
+    "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/react-visually-hidden": "workspace:*"
@@ -16238,7 +16240,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-remove-scroll@npm:^2.3.0":
+"react-remove-scroll@npm:^2.3.0, react-remove-scroll@npm:^2.4.0":
   version: 2.4.0
   resolution: "react-remove-scroll@npm:2.4.0"
   dependencies:

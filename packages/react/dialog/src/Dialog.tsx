@@ -8,7 +8,6 @@ import {
   useControlledState,
   useId,
   composeRefs,
-  useLayoutEffect,
 } from '@interop-ui/react-utils';
 import { cssReset, makeId } from '@interop-ui/utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
@@ -164,8 +163,8 @@ type DialogContentOwnProps = {
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
 
   /**
-   * Event handler called when an interaction happened outside the `DismissableLayer`.
-   * Specifically, when focus leaves the `DismissableLayer` or a pointer event happens outside it.
+   * Event handler called when an interaction happened outside the `Dialog`.
+   * Specifically, when focus leaves the `Dialog` or a pointer event happens outside it.
    * Can be prevented.
    */
   onInteractOutside?: DismissableLayerProps['onInteractOutside'];
@@ -195,7 +194,7 @@ const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentPr
 
     // Hide everything from ARIA except the content
     const contentRef = React.useRef<HTMLDivElement>(null);
-    useLayoutEffect(() => {
+    React.useEffect(() => {
       const content = contentRef.current;
       if (content) return hideOthers(content);
     }, []);

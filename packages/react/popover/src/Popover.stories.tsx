@@ -33,7 +33,7 @@ export const Basic = () => {
 };
 
 export const Controlled = () => {
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(false);
   return (
     <div
       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
@@ -88,10 +88,6 @@ export const Nested = () => {
               borderRadius: 5,
             }}
           >
-            <Popover.Close type="button" style={{ marginRight: 10 }}>
-              close
-            </Popover.Close>
-
             <Popover>
               <Popover.Trigger type="button">Open nested popover</Popover.Trigger>
               <Popover.Position
@@ -113,6 +109,10 @@ export const Nested = () => {
                 <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'tomato' }} />
               </Popover.Position>
             </Popover>
+
+            <Popover.Close type="button" style={{ marginLeft: 10 }}>
+              close
+            </Popover.Close>
           </Popover.Content>
           <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'royalblue' }} />
         </Popover.Position>
