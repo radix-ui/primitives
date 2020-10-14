@@ -8,6 +8,7 @@ import {
   useComposedRefs,
   useId,
   useDocumentRef,
+  composeEventHandlers,
 } from '@interop-ui/react-utils';
 import type {
   DialogCloseProps,
@@ -221,7 +222,10 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
         aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
         aria-label={ariaLabel || undefined}
         {...dialogContentProps}
-        refToFocusOnOpen={cancelRef}
+        onOpenAutoFocus={composeEventHandlers(dialogContentProps.onOpenAutoFocus, (event) => {
+          event.preventDefault();
+          cancelRef.current?.focus({ preventScroll: true });
+        })}
       >
         <AlertDialogContentContext.Provider
           value={React.useMemo(() => {
