@@ -1946,6 +1946,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp"
   dependencies:
+    "@interop-ui/react-debug-context": "workspace:*"
     "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"

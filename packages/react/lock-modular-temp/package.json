@@ -22,6 +22,7 @@
     "tabbable": "5.0.0"
   },
   "devDependencies": {
+    "@interop-ui/react-debug-context": "workspace:*",
     "@interop-ui/react-popper": "workspace:*",
     "@interop-ui/react-portal": "workspace:*",
     "parcel": "^2.0.0-beta.1",

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { createContext, useCallbackRef, useLayoutEffect } from '@interop-ui/react-utils';
+import { useDebugContext } from '@interop-ui/react-debug-context';
 
 const increment = (n: number) => n + 1;
 const decrement = (n: number) => n - 1;
@@ -110,16 +111,25 @@ type DismissableLayerProps = {
 };
 
 function DismissableLayer(props: DismissableLayerProps) {
+  const debugContext = useDebugContext();
+  return debugContext.disableLock ? (
+    props.children({} as any)
+  ) : (
+    <DismissableLayerImpl1 {...props} />
+  );
+}
+
+function DismissableLayerImpl1(props: DismissableLayerProps) {
   const parentLayer = useParentLayer();
   const isRootLayer = parentLayer === undefined;
-  const layer = <DismissableLayerImpl {...props} />;
+  const layer = <DismissableLayerImpl2 {...props} />;
 
   // if it's the root layer, we wrap it (and effectively the whole tree of nested layers)
   // with our layers provider.
   return isRootLayer ? <LayersProvider>{layer}</LayersProvider> : layer;
 }
 
-function DismissableLayerImpl(props: DismissableLayerProps) {
+function DismissableLayerImpl2(props: DismissableLayerProps) {
   const {
     children,
     disableOutsidePointerEvents = false,
