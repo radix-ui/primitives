@@ -63,9 +63,6 @@ function tabbable(el: Element, options: TabbableOptions = {}) {
   return tabbableNodes;
 }
 
-tabbable.isTabbable = isTabbable;
-tabbable.isFocusable = isFocusable;
-
 function isNodeMatchingSelectorTabbable(node: Element) {
   if (!isNodeMatchingSelectorFocusable(node) || isNonTabbableRadio(node) || getTabindex(node) < 0) {
     return false;
@@ -73,32 +70,11 @@ function isNodeMatchingSelectorTabbable(node: Element) {
   return true;
 }
 
-function isTabbable(node: Element) {
-  if (!node) {
-    throw new Error('No node provided');
-  }
-  if (matches.call(node, candidateSelector) === false) {
-    return false;
-  }
-  return isNodeMatchingSelectorTabbable(node);
-}
-
 function isNodeMatchingSelectorFocusable(node: Element) {
   if ((node as any).disabled || isHiddenInput(node) || isHidden(node)) {
     return false;
   }
   return true;
-}
-
-const focusableCandidateSelector = candidateSelectors.concat('iframe').join(',');
-function isFocusable(node: Element) {
-  if (!node) {
-    throw new Error('No node provided');
-  }
-  if (matches.call(node, focusableCandidateSelector) === false) {
-    return false;
-  }
-  return isNodeMatchingSelectorFocusable(node);
 }
 
 function getTabindex(node: Element) {
@@ -169,8 +145,8 @@ function isHidden(node: Element) {
   return (node as any).offsetParent === null || getComputedStyle(node).visibility === 'hidden';
 }
 
-export { tabbable };
-
 interface TabbableOptions {
   includeContainer?: boolean;
 }
+
+export { tabbable };
