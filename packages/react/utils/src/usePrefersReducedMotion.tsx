@@ -4,21 +4,38 @@ import { getOwnerWindow } from './useDocumentRef';
 const QUERY = '(prefers-reduced-motion: no-preference)';
 
 export function usePrefersReducedMotion(nodeRef: React.RefObject<Element>) {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(
-    () => !(getOwnerWindow(nodeRef).matchMedia?.(QUERY).matches || true)
+  const [_prefersReducedMotion, setPrefersReducedMotion] = React.useState(() =>
+    prefersReducedMotion(getOwnerWindow(nodeRef))
   );
-
   React.useEffect(() => {
-    try {
-      const mediaQueryList = getOwnerWindow(nodeRef).matchMedia(QUERY);
-      function listener(event: MediaQueryListEvent) {
-        setPrefersReducedMotion(!event.matches);
-      }
-      mediaQueryList.addEventListener('change', listener);
-      return function () {
-        mediaQueryList.removeEventListener('change', listener);
-      };
-    } catch (e) {}
+    return onPrefersReducedMotionChange(setPrefersReducedMotion, getOwnerWindow(nodeRef));
   }, [nodeRef]);
-  return prefersReducedMotion;
+  return _prefersReducedMotion;
+}
+
+export function prefersReducedMotion(globalWindow: Window & typeof globalThis = window) {
+  try {
+    return !globalWindow.matchMedia(QUERY).matches;
+  } catch (err) {
+    return false;
+  }
+}
+
+export function onPrefersReducedMotionChange(
+  callback: (prefers: boolean) => any,
+  globalWindow: Window & typeof globalThis = window
+) {
+  try {
+    const mediaQueryList = globalWindow.matchMedia(QUERY);
+    mediaQueryList.addEventListener('change', listener);
+    return function () {
+      mediaQueryList.removeEventListener('change', listener);
+    };
+  } catch (e) {}
+
+  return function () {};
+
+  function listener(event: MediaQueryListEvent) {
+    callback(!event.matches);
+  }
 }
