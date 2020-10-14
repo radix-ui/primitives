@@ -220,21 +220,21 @@ function getNumLayersDisablingOutsidePointerEventsAtLayer(
 /**
  * Listens for when the escape key is down
  */
-function useEscapeKeydown(onEscapeKeyDown?: (event: KeyboardEvent) => void) {
-  const handleEscapeKeyDown = useCallbackRef(onEscapeKeyDown);
+function useEscapeKeydown(onEscapeKeyDownProp?: (event: KeyboardEvent) => void) {
+  const onEscapeKeyDown = useCallbackRef(onEscapeKeyDownProp);
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        handleEscapeKeyDown(event);
+        onEscapeKeyDown(event);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleEscapeKeyDown]);
+  }, [onEscapeKeyDown]);
 }
 
-const INTERACT_OUTSIDE_EVENT_TYPE = 'dismissablelayer.interactoutside';
+const INTERACT_OUTSIDE = 'dismissableLayer.interactOutside';
 type InteractOutsideEvent = CustomEvent<{ target: EventTarget | null; originalEvent: Event }>;
 
 /**
@@ -243,15 +243,16 @@ type InteractOutsideEvent = CustomEvent<{ target: EventTarget | null; originalEv
  */
 function useInteractOutside(
   nodeRef: React.RefObject<HTMLElement>,
-  onInteractOutside?: (event: InteractOutsideEvent) => void
+  onInteractOutsideProp?: (event: InteractOutsideEvent) => void
 ) {
-  const handleInteractOutside = useCallbackRef(onInteractOutside);
+  const onInteractOutside = useCallbackRef(onInteractOutsideProp);
 
   const dispatchCustomEvent = (originalEvent: Event, target: EventTarget | null) => {
-    const interactOutsideEvent: InteractOutsideEvent = new CustomEvent(
-      INTERACT_OUTSIDE_EVENT_TYPE,
-      { bubbles: false, cancelable: true, detail: { target, originalEvent } }
-    );
+    const interactOutsideEvent: InteractOutsideEvent = new CustomEvent(INTERACT_OUTSIDE, {
+      bubbles: false,
+      cancelable: true,
+      detail: { target, originalEvent },
+    });
     nodeRef.current?.dispatchEvent(interactOutsideEvent);
 
     if (interactOutsideEvent.defaultPrevented) {
@@ -263,10 +264,10 @@ function useInteractOutside(
   React.useEffect(() => {
     const node = nodeRef.current;
     if (node) {
-      node.addEventListener(INTERACT_OUTSIDE_EVENT_TYPE, handleInteractOutside);
-      return () => node.removeEventListener(INTERACT_OUTSIDE_EVENT_TYPE, handleInteractOutside);
+      node.addEventListener(INTERACT_OUTSIDE, onInteractOutside);
+      return () => node.removeEventListener(INTERACT_OUTSIDE, onInteractOutside);
     }
-  }, [handleInteractOutside, nodeRef]);
+  }, [onInteractOutside, nodeRef]);
 
   return {
     ...usePointerDownOutside((event) => dispatchCustomEvent(event, event.target)),
@@ -283,14 +284,16 @@ function useInteractOutside(
  *
  * Returns props to pass to the node we want to check for outside events.
  */
-function usePointerDownOutside(onOutsidePointerDown?: (event: MouseEvent | TouchEvent) => void) {
-  const handleOutsidePointerDown = useCallbackRef(onOutsidePointerDown);
+function usePointerDownOutside(
+  onOutsidePointerDownProp?: (event: MouseEvent | TouchEvent) => void
+) {
+  const onOutsidePointerDown = useCallbackRef(onOutsidePointerDownProp);
   const isEventInside = React.useRef(false);
 
   React.useEffect(() => {
     const handlePointerDown = (event: MouseEvent | TouchEvent) => {
       if (!isEventInside.current) {
-        handleOutsidePointerDown(event);
+        onOutsidePointerDown(event);
       }
       isEventInside.current = false;
     };
@@ -302,7 +305,7 @@ function usePointerDownOutside(onOutsidePointerDown?: (event: MouseEvent | Touch
       document.removeEventListener('mousedown', handlePointerDown);
       document.removeEventListener('touchstart', handlePointerDown);
     };
-  }, [handleOutsidePointerDown]);
+  }, [onOutsidePointerDown]);
 
   const markEventAsInside = () => {
     isEventInside.current = true;
@@ -335,5 +338,5 @@ function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
   };
 }
 
-export { DismissableLayer, INTERACT_OUTSIDE_EVENT_TYPE };
+export { DismissableLayer, INTERACT_OUTSIDE };
 export type { DismissableLayerProps, InteractOutsideEvent };

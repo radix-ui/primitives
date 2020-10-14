@@ -155,7 +155,7 @@ export const WithFocusScope = () => {
           onDismiss={() => setIsOpen(false)}
         >
           {({ ref: dismissableLayerContainerRef, ...props }) => (
-            <FocusScope trapped focusOnMount="auto" focusOnUnmount="auto">
+            <FocusScope trapped>
               {({ ref: focusScopeContainerRef }) => (
                 <div
                   ref={composeRefs(focusScopeContainerRef, dismissableLayerContainerRef)}

@@ -1,21 +1,21 @@
 import React from 'react';
 import { FocusScope } from './FocusScope';
-import type { FocusScopeProps } from './FocusScope';
 
 export default { title: 'Modular Lock (temp)/FocusScope' };
 
-type FocusParam = FocusScopeProps['focusOnMount'];
+// true => default focus, false => no focus, ref => focus element
+type FocusParam = boolean | React.RefObject<HTMLElement>;
 
 export const Basic = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isEmptyForm, setIsEmptyForm] = React.useState(false);
 
   const [trapFocus, setTrapFocus] = React.useState(false);
-  const [focusOnMount, setFocusOnMount] = React.useState<FocusParam>('none');
-  const [focusOnUnmount, setFocusOnUnmount] = React.useState<FocusParam>('none');
+  const [focusOnMount, setFocusOnMount] = React.useState<FocusParam>(false);
+  const [focusOnUnmount, setFocusOnUnmount] = React.useState<FocusParam>(false);
 
-  const ageFieldRef = React.useRef(null);
-  const nextButtonRef = React.useRef(null);
+  const ageFieldRef = React.useRef<HTMLInputElement>(null);
+  const nextButtonRef = React.useRef<HTMLButtonElement>(null);
 
   return (
     <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
@@ -33,29 +33,34 @@ export const Basic = () => {
         <label style={{ display: 'block' }}>
           <input
             type="checkbox"
-            checked={focusOnMount !== 'none'}
-            onChange={(event) => setFocusOnMount(event.target.checked ? 'auto' : 'none')}
+            checked={focusOnMount !== false}
+            onChange={(event) => {
+              setFocusOnMount(event.target.checked);
+              if (event.target.checked === false) {
+                setIsEmptyForm(false);
+              }
+            }}
           />{' '}
           Focus on mount?
         </label>
-        {focusOnMount !== 'none' && !isEmptyForm && (
+        {focusOnMount !== false && !isEmptyForm && (
           <label style={{ display: 'block', marginLeft: 20 }}>
             <input
               type="checkbox"
-              checked={focusOnMount !== 'auto'}
-              onChange={(event) => setFocusOnMount(event.target.checked ? ageFieldRef : 'auto')}
+              checked={focusOnMount !== true}
+              onChange={(event) => setFocusOnMount(event.target.checked ? ageFieldRef : true)}
             />{' '}
             on "age" field?
           </label>
         )}
-        {focusOnMount !== 'none' && (
+        {focusOnMount !== false && (
           <label style={{ display: 'block', marginLeft: 20 }}>
             <input
               type="checkbox"
               checked={isEmptyForm}
               onChange={(event) => {
                 setIsEmptyForm(event.target.checked);
-                setFocusOnMount('auto');
+                setFocusOnMount(true);
               }}
             />{' '}
             empty form?
@@ -64,17 +69,17 @@ export const Basic = () => {
         <label style={{ display: 'block' }}>
           <input
             type="checkbox"
-            checked={focusOnUnmount !== 'none'}
-            onChange={(event) => setFocusOnUnmount(event.target.checked ? 'auto' : 'none')}
+            checked={focusOnUnmount !== false}
+            onChange={(event) => setFocusOnUnmount(event.target.checked)}
           />{' '}
           Focus on unmount?
         </label>
-        {focusOnUnmount !== 'none' && (
+        {focusOnUnmount !== false && (
           <label style={{ display: 'block', marginLeft: 20 }}>
             <input
               type="checkbox"
-              checked={focusOnUnmount !== 'auto'}
-              onChange={(event) => setFocusOnUnmount(event.target.checked ? nextButtonRef : 'auto')}
+              checked={focusOnUnmount !== true}
+              onChange={(event) => setFocusOnUnmount(event.target.checked ? nextButtonRef : true)}
             />{' '}
             on "next" button?
           </label>
@@ -92,7 +97,21 @@ export const Basic = () => {
       </button>
 
       {isOpen ? (
-        <FocusScope trapped={trapFocus} focusOnMount={focusOnMount} focusOnUnmount={focusOnUnmount}>
+        <FocusScope
+          trapped={trapFocus}
+          onMountAutoFocus={(event) => {
+            if (focusOnMount !== true) {
+              event.preventDefault();
+              if (focusOnMount) focusOnMount.current?.focus();
+            }
+          }}
+          onUnmountAutoFocus={(event) => {
+            if (focusOnUnmount !== true) {
+              event.preventDefault();
+              if (focusOnUnmount) focusOnUnmount.current?.focus();
+            }
+          }}
+        >
           {({ ref }) => (
             <form
               ref={ref}

@@ -297,7 +297,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
             <RemoveScroll>
               <DismissableLayer disableOutsidePointerEvents onDismiss={() => setOpen(false)}>
                 {(dismissableLayerProps) => (
-                  <FocusScope trapped focusOnMount="auto" focusOnUnmount="auto">
+                  <FocusScope trapped>
                     {(focusScopeProps) => (
                       <div
                         {...dismissableLayerProps}
@@ -361,7 +361,7 @@ function DummyPopover({
   disableOutsidePointerEvents = false,
   preventScroll = false,
 }: DummyPopoverProps) {
-  const [skipFocusOnUnmount, setSkipFocusOnUnmount] = React.useState(false);
+  const [skipUnmountAutoFocus, setSkipUnmountAutoFocus] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
   const ScrollContainer = preventScroll ? RemoveScroll : React.Fragment;
@@ -377,7 +377,7 @@ function DummyPopover({
               <DismissableLayer
                 onEscapeKeyDown={onEscapeKeyDown}
                 onInteractOutside={(event) => {
-                  setSkipFocusOnUnmount(
+                  setSkipUnmountAutoFocus(
                     !disableOutsidePointerEvents && event.detail.originalEvent.type !== 'blur'
                   );
                   if (
@@ -385,12 +385,12 @@ function DummyPopover({
                     event.detail.originalEvent.type !== 'blur'
                   ) {
                     event.preventDefault();
-                    setSkipFocusOnUnmount(false);
+                    setSkipUnmountAutoFocus(false);
                     return;
                   }
                   onInteractOutside?.(event);
                   if (event.defaultPrevented) {
-                    setSkipFocusOnUnmount(false);
+                    setSkipUnmountAutoFocus(false);
                   }
                 }}
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
@@ -399,8 +399,11 @@ function DummyPopover({
                 {(dismissableLayerProps) => (
                   <FocusScope
                     trapped={trapped}
-                    focusOnMount="auto"
-                    focusOnUnmount={skipFocusOnUnmount ? 'none' : 'auto'}
+                    onUnmountAutoFocus={(event) => {
+                      if (skipUnmountAutoFocus) {
+                        event.preventDefault();
+                      }
+                    }}
                   >
                     {(focusScopeProps) => (
                       <Popper
