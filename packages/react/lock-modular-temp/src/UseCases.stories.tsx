@@ -107,7 +107,7 @@ export const PopoverSemiModal = () => {
           openLabel="Open Popover"
           closeLabel="Close Popover"
           onInteractOutside={(event) => {
-            if (event.detail.target === changeColorButtonRef.current) {
+            if (event.detail.relatedTarget === changeColorButtonRef.current) {
               event.preventDefault();
             }
           }}
@@ -381,7 +381,7 @@ function DummyPopover({
                     !disableOutsidePointerEvents && event.detail.originalEvent.type !== 'blur'
                   );
                   if (
-                    event.detail.target === openButtonRef.current &&
+                    event.detail.relatedTarget === openButtonRef.current &&
                     event.detail.originalEvent.type !== 'blur'
                   ) {
                     event.preventDefault();

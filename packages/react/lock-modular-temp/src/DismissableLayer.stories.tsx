@@ -63,7 +63,7 @@ export const Basic = () => {
           onInteractOutside={(event) => {
             if (
               dismissOnOutsideInteraction === false ||
-              event.detail.target === openButtonRef.current
+              event.detail.relatedTarget === openButtonRef.current
             ) {
               event.preventDefault();
             }
@@ -120,7 +120,7 @@ export const Nested = () => {
       {isOpen ? (
         <DismissableBox
           onInteractOutside={(event) => {
-            if (event.detail.target === openButtonRef.current) {
+            if (event.detail.relatedTarget === openButtonRef.current) {
               event.preventDefault();
             }
           }}
@@ -147,7 +147,7 @@ export const WithFocusScope = () => {
       {isOpen ? (
         <DismissableLayer
           onInteractOutside={(event) => {
-            if (event.detail.target === openButtonRef.current) {
+            if (event.detail.relatedTarget === openButtonRef.current) {
               event.preventDefault();
             }
           }}
@@ -225,7 +225,7 @@ function DismissableBox({ onInteractOutside, onDismiss }: DismissableBoxProps) {
           {isOpen ? (
             <DismissableBox
               onInteractOutside={(event) => {
-                if (event.detail.target === openButtonRef.current) {
+                if (event.detail.relatedTarget === openButtonRef.current) {
                   event.preventDefault();
                 }
               }}

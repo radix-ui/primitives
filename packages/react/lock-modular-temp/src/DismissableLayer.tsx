@@ -6,62 +6,71 @@ const increment = (n: number) => n + 1;
 const decrement = (n: number) => n - 1;
 
 /* -------------------------------------------------------------------------------------------------
- * LayersProvider (root of all layers)
+ * LayerTreeProvider (root of all layers)
  * -----------------------------------------------------------------------------------------------*/
-type LayerConfig = { disableOutsidePointerEvents: boolean };
-type LayersContextValue = {
+
+// This context will help with capturing information about the whole tree of layers
+type LayerTreeContextValue = {
+  totalLayerCount: number;
+  totalLayerCountWithDisabledOutsidePointerEvents: number;
+  isBodyPointerEventsDisabled: boolean;
   addLayer: (layer: LayerConfig) => void;
   removeLayer: (layer: LayerConfig) => void;
-  numLayers: number;
-  numLayersDisablingOutsidePointerEvents: number;
 };
-const [LayersContext, useLayers] = createContext<LayersContextValue>(
-  'LayersContext',
-  'LayersProvider'
+const [LayerTreeContext, useLayerTreeContext] = createContext<LayerTreeContextValue>(
+  'LayerTreeContext',
+  'LayerTreeProvider'
 );
 
-const LayersProvider: React.FC = ({ children }) => {
-  const [numLayers, setNumLayers] = React.useState(0);
+const LayerTreeProvider: React.FC = ({ children }) => {
+  const [totalLayerCount, setTotalLayerCount] = React.useState(0);
   const [
-    numLayersDisablingOutsidePointerEvents,
-    setNumLayersWithDisabledOutsidePointerEvents,
+    totalLayerCountWithDisabledOutsidePointerEvents,
+    setTotalLayerCountWithDisabledOutsidePointerEvents,
   ] = React.useState(0);
+
+  const isBodyPointerEventsDisabled = totalLayerCountWithDisabledOutsidePointerEvents > 0;
 
   // disable pointer-events on `document.body` when at least one layer is disabling outside pointer events
   useLayoutEffect(() => {
-    if (numLayersDisablingOutsidePointerEvents > 0) {
+    if (isBodyPointerEventsDisabled) {
       const originalBodyPointerEvents = document.body.style.pointerEvents;
       document.body.style.pointerEvents = 'none';
       return () => {
         document.body.style.pointerEvents = originalBodyPointerEvents;
       };
     }
-  }, [numLayersDisablingOutsidePointerEvents]);
+  }, [isBodyPointerEventsDisabled]);
 
   return (
-    <LayersContext.Provider
+    <LayerTreeContext.Provider
       value={React.useMemo(
         () => ({
-          numLayers,
-          numLayersDisablingOutsidePointerEvents,
+          totalLayerCount,
+          totalLayerCountWithDisabledOutsidePointerEvents,
+          isBodyPointerEventsDisabled,
           addLayer: (layer) => {
-            setNumLayers(increment);
+            setTotalLayerCount(increment);
             if (layer.disableOutsidePointerEvents) {
-              setNumLayersWithDisabledOutsidePointerEvents(increment);
+              setTotalLayerCountWithDisabledOutsidePointerEvents(increment);
             }
           },
           removeLayer: (layer) => {
-            setNumLayers(decrement);
+            setTotalLayerCount(decrement);
             if (layer.disableOutsidePointerEvents) {
-              setNumLayersWithDisabledOutsidePointerEvents(decrement);
+              setTotalLayerCountWithDisabledOutsidePointerEvents(decrement);
             }
           },
         }),
-        [numLayers, numLayersDisablingOutsidePointerEvents]
+        [
+          totalLayerCount,
+          totalLayerCountWithDisabledOutsidePointerEvents,
+          isBodyPointerEventsDisabled,
+        ]
       )}
     >
       {children}
-    </LayersContext.Provider>
+    </LayerTreeContext.Provider>
   );
 };
 
@@ -70,13 +79,14 @@ const LayersProvider: React.FC = ({ children }) => {
  * -----------------------------------------------------------------------------------------------*/
 
 // This context will help with capturing information about nested layers
-type ParentLayer = {
-  numParentLayers: number;
-  numLayersDisablingOutsidePointerEventsAtLayer: number;
+// passing them recursively down the tree.
+type ParentLayerContextValue = {
+  runningLayerCount: number;
+  runningLayerCountWithDisabledOutsidePointerEvents: number;
 };
-const ParentLayerContext = React.createContext<ParentLayer | undefined>(undefined);
+const ParentLayerContext = React.createContext<ParentLayerContextValue | undefined>(undefined);
 ParentLayerContext.displayName = 'ParentLayerContext';
-const useParentLayer = () => React.useContext(ParentLayerContext);
+const useParentLayerContext = () => React.useContext(ParentLayerContext);
 
 type DismissableLayerProps = {
   children: (
@@ -129,18 +139,23 @@ function DismissableLayer(props: DismissableLayerProps) {
 function DismissableLayerImpl1(
   props: DismissableLayerProps & { nodeRef: React.RefObject<HTMLElement> }
 ) {
-  const parentLayer = useParentLayer();
-  const isRootLayer = parentLayer === undefined;
-  const layer = <DismissableLayerImpl2 {...props} />;
+  const parentLayerContext = useParentLayerContext();
+  const isRootLayer = parentLayerContext === undefined;
 
-  // if it's the root layer, we wrap it (and effectively the whole tree of nested layers)
-  // with our layers provider.
-  return isRootLayer ? <LayersProvider>{layer}</LayersProvider> : layer;
+  // if it's the root layer, we wrap it with our `LayerTreeProvider`
+  // (effectively we wrap the whole tree of nested layers)
+  const RootLayerWrapper = isRootLayer ? LayerTreeProvider : React.Fragment;
+
+  return (
+    <RootLayerWrapper>
+      <DismissableLayerImpl2 {...props} />
+    </RootLayerWrapper>
+  );
 }
 
-function DismissableLayerImpl2(
-  props: DismissableLayerProps & { nodeRef: React.RefObject<HTMLElement> }
-) {
+type LayerConfig = { disableOutsidePointerEvents: boolean };
+
+function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLayerImpl1>) {
   const {
     nodeRef,
     children,
@@ -154,23 +169,36 @@ function DismissableLayerImpl2(
     disableOutsidePointerEvents,
   ]);
 
-  const layers = useLayers('DismissableLayer');
-  const parentLayer = useParentLayer();
-  const numParentLayers = getNumParentLayers(parentLayer);
-  const numLayersDisablingOutsidePointerEventsAtLayer = getNumLayersDisablingOutsidePointerEventsAtLayer(
-    layer,
-    parentLayer
-  );
+  const layersContext = useLayerTreeContext('DismissableLayer');
+  const parentLayerContext = useParentLayerContext();
+
+  // We compute a running count of all layers so we can compare it with
+  // the total count of layers in order to find which layer is the deepest one.
+  // This is use to only dismiss the deepest layer when using the escape key.
+  const runningLayerCount = !parentLayerContext ? 1 : parentLayerContext.runningLayerCount + 1;
+  const isDeepestLayer = runningLayerCount === layersContext.totalLayerCount;
+
+  // We compute a running count of all the layers which set `disableOutsidePointerEvents` to `true`
+  // so we can compare it with the total count of layers which set `disableOutsidePointerEvents` to `true`.
+  // This is used to determine which layers should be dismissed when interacting outside.
+  // (ie. all layers that do not have a child layer which sets `disableOutsidePointerEvents` to `true`)
+  //
+  // prettier-ignore
+  const runningLayerCountWithDisabledOutsidePointerEvents =
+    getRunningLayerCountWithDisabledOutsidePointerEvents(layer, parentLayerContext);
+  const containsChildLayerWithDisabledOutsidePointerEvents =
+    runningLayerCountWithDisabledOutsidePointerEvents <
+    layersContext.totalLayerCountWithDisabledOutsidePointerEvents;
 
   // Layer registration
   useLayoutEffect(() => {
-    layers.addLayer(layer);
-    return () => layers.removeLayer(layer);
-  }, [layers, layer]);
+    layersContext.addLayer(layer);
+    return () => layersContext.removeLayer(layer);
+  }, [layersContext, layer]);
 
-  // Dismiss on escape (one layer at the time)
-  const isDeepestLayer = numParentLayers === layers.numLayers - 1;
+  // Dismiss on escape
   useEscapeKeydown((event) => {
+    // only dismiss if it's the deepest layer
     if (isDeepestLayer) {
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented) {
@@ -179,12 +207,10 @@ function DismissableLayerImpl2(
     }
   });
 
-  // Dismiss on outside interaction (one layer at a time — depends on `disableOutsidePointerEvents`)
-  const isDeepestLayerDisablingOutsidePointerEventsOrDeeper =
-    numLayersDisablingOutsidePointerEventsAtLayer === layers.numLayersDisablingOutsidePointerEvents;
-  const canDismissOnInteractOutside = isDeepestLayerDisablingOutsidePointerEventsOrDeeper;
+  // Dismiss on outside interaction
   const interactOutside = useInteractOutside(nodeRef, (event) => {
-    if (canDismissOnInteractOutside) {
+    // only dismiss if there's no deeper layer which disabled pointer events outside itself
+    if (!containsChildLayerWithDisabledOutsidePointerEvents) {
       onInteractOutside?.(event);
       if (!event.defaultPrevented) {
         onDismiss?.();
@@ -192,23 +218,26 @@ function DismissableLayerImpl2(
     }
   });
 
-  // Because we MAY have set `pointerEvents: 'none'` on `document.body`
-  // we MAY need to set `pointerEvents: 'auto'` on some layers.
-  // This depends on which layers set `disableOutsidePointerEvents` to `true`.
+  // Because we MAY have set `pointerEvents: 'none'` on `document.body`, we MAY need
+  // to set `pointerEvents: 'auto'` on some layers. This depends on which layers set
+  // `disableOutsidePointerEvents` to `true`.
+  //
+  // NOTE: it's important we set it on ALL layers that need it as we cannot simply
+  // set it on the deepest layer which sets `disableOutsidePointerEvents` to `true` and rely
+  // on inheritence. This is because layers may be rendered in different portals where
+  // inheritece wouldn't apply, so we need to set it explicity on its children too.
   const shouldReEnablePointerEvents =
-    // no need to anything here, because pointer events wouldn't have been disabled on `document.body`
-    layers.numLayersDisablingOutsidePointerEvents > 0 &&
-    // need to re-enable from the deepest layer that disables outside pointer events
-    isDeepestLayerDisablingOutsidePointerEventsOrDeeper;
+    layersContext.isBodyPointerEventsDisabled &&
+    !containsChildLayerWithDisabledOutsidePointerEvents;
 
   return (
     <ParentLayerContext.Provider
       value={React.useMemo(
         () => ({
-          numParentLayers,
-          numLayersDisablingOutsidePointerEventsAtLayer,
+          runningLayerCount,
+          runningLayerCountWithDisabledOutsidePointerEvents,
         }),
-        [numParentLayers, numLayersDisablingOutsidePointerEventsAtLayer]
+        [runningLayerCount, runningLayerCountWithDisabledOutsidePointerEvents]
       )}
     >
       {children({
@@ -220,17 +249,13 @@ function DismissableLayerImpl2(
   );
 }
 
-function getNumParentLayers(parentLayer?: ParentLayer) {
-  return parentLayer ? parentLayer.numParentLayers + 1 : 0;
-}
-
-function getNumLayersDisablingOutsidePointerEventsAtLayer(
-  layer: LayerConfig,
-  parentLayer?: ParentLayer
+function getRunningLayerCountWithDisabledOutsidePointerEvents(
+  currentLayer: LayerConfig,
+  parentLayer?: ParentLayerContextValue
 ) {
   return (
-    (parentLayer?.numLayersDisablingOutsidePointerEventsAtLayer ?? 0) +
-    (layer.disableOutsidePointerEvents ? 1 : 0)
+    (parentLayer?.runningLayerCountWithDisabledOutsidePointerEvents ?? 0) +
+    (currentLayer.disableOutsidePointerEvents ? 1 : 0)
   );
 }
 
@@ -256,7 +281,10 @@ function useEscapeKeydown(onEscapeKeyDownProp?: (event: KeyboardEvent) => void) 
 }
 
 const INTERACT_OUTSIDE = 'dismissableLayer.interactOutside';
-type InteractOutsideEvent = CustomEvent<{ target: EventTarget | null; originalEvent: Event }>;
+type InteractOutsideEvent = CustomEvent<{
+  relatedTarget: EventTarget | null;
+  originalEvent: Event;
+}>;
 
 /**
  * Sets up dissmissing when interacting outside a given node.
@@ -268,11 +296,11 @@ function useInteractOutside(
 ) {
   const onInteractOutside = useCallbackRef(onInteractOutsideProp);
 
-  const dispatchCustomEvent = (originalEvent: Event, target: EventTarget | null) => {
+  const dispatchCustomEvent = (originalEvent: Event, relatedTarget: EventTarget | null) => {
     const interactOutsideEvent: InteractOutsideEvent = new CustomEvent(INTERACT_OUTSIDE, {
       bubbles: false,
       cancelable: true,
-      detail: { target, originalEvent },
+      detail: { relatedTarget, originalEvent },
     });
     nodeRef.current?.dispatchEvent(interactOutsideEvent);
 
