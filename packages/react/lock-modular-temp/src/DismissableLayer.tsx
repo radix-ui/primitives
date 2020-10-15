@@ -69,7 +69,7 @@ const LayersProvider: React.FC = ({ children }) => {
  * DismissableLayer
  * -----------------------------------------------------------------------------------------------*/
 
-// This context will help with capturing informating about nested layers
+// This context will help with capturing information about nested layers
 type ParentLayer = {
   numParentLayers: number;
   numLayersDisablingOutsidePointerEventsAtLayer: number;
