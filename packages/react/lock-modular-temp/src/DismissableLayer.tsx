@@ -169,14 +169,14 @@ function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLay
     disableOutsidePointerEvents,
   ]);
 
-  const layersContext = useLayerTreeContext('DismissableLayer');
+  const layerTreeContext = useLayerTreeContext('DismissableLayer');
   const parentLayerContext = useParentLayerContext();
 
   // We compute a running count of all layers so we can compare it with
   // the total count of layers in order to find which layer is the deepest one.
   // This is use to only dismiss the deepest layer when using the escape key.
   const runningLayerCount = !parentLayerContext ? 1 : parentLayerContext.runningLayerCount + 1;
-  const isDeepestLayer = runningLayerCount === layersContext.totalLayerCount;
+  const isDeepestLayer = runningLayerCount === layerTreeContext.totalLayerCount;
 
   // We compute a running count of all the layers which set `disableOutsidePointerEvents` to `true`
   // so we can compare it with the total count of layers which set `disableOutsidePointerEvents` to `true`.
@@ -188,13 +188,13 @@ function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLay
     getRunningLayerCountWithDisabledOutsidePointerEvents(layer, parentLayerContext);
   const containsChildLayerWithDisabledOutsidePointerEvents =
     runningLayerCountWithDisabledOutsidePointerEvents <
-    layersContext.totalLayerCountWithDisabledOutsidePointerEvents;
+    layerTreeContext.totalLayerCountWithDisabledOutsidePointerEvents;
 
   // Layer registration
   useLayoutEffect(() => {
-    layersContext.addLayer(layer);
-    return () => layersContext.removeLayer(layer);
-  }, [layersContext, layer]);
+    layerTreeContext.addLayer(layer);
+    return () => layerTreeContext.removeLayer(layer);
+  }, [layerTreeContext, layer]);
 
   // Dismiss on escape
   useEscapeKeydown((event) => {
@@ -227,7 +227,7 @@ function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLay
   // on inheritence. This is because layers may be rendered in different portals where
   // inheritece wouldn't apply, so we need to set it explicity on its children too.
   const shouldReEnablePointerEvents =
-    layersContext.isBodyPointerEventsDisabled &&
+    layerTreeContext.isBodyPointerEventsDisabled &&
     !containsChildLayerWithDisabledOutsidePointerEvents;
 
   return (
