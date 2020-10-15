@@ -112,14 +112,23 @@ type DismissableLayerProps = {
 
 function DismissableLayer(props: DismissableLayerProps) {
   const debugContext = useDebugContext();
-  return debugContext.disableLock ? (
-    props.children({} as any)
-  ) : (
-    <DismissableLayerImpl1 {...props} />
-  );
+  const nodeRef = React.useRef<HTMLElement>(null);
+  if (debugContext.disableLock) {
+    return props.children({
+      ref: nodeRef,
+      style: {},
+      onBlurCapture: () => {},
+      onFocusCapture: () => {},
+      onMouseDownCapture: () => {},
+      onTouchStartCapture: () => {},
+    });
+  }
+  return <DismissableLayerImpl1 nodeRef={nodeRef} {...props} />;
 }
 
-function DismissableLayerImpl1(props: DismissableLayerProps) {
+function DismissableLayerImpl1(
+  props: DismissableLayerProps & { nodeRef: React.RefObject<HTMLElement> }
+) {
   const parentLayer = useParentLayer();
   const isRootLayer = parentLayer === undefined;
   const layer = <DismissableLayerImpl2 {...props} />;
@@ -129,15 +138,18 @@ function DismissableLayerImpl1(props: DismissableLayerProps) {
   return isRootLayer ? <LayersProvider>{layer}</LayersProvider> : layer;
 }
 
-function DismissableLayerImpl2(props: DismissableLayerProps) {
+function DismissableLayerImpl2(
+  props: DismissableLayerProps & { nodeRef: React.RefObject<HTMLElement> }
+) {
   const {
+    nodeRef,
     children,
     disableOutsidePointerEvents = false,
     onEscapeKeyDown,
     onInteractOutside,
     onDismiss,
   } = props;
-  const nodeRef = React.useRef<HTMLElement>(null);
+
   const layer: LayerConfig = React.useMemo(() => ({ disableOutsidePointerEvents }), [
     disableOutsidePointerEvents,
   ]);
@@ -209,8 +221,7 @@ function DismissableLayerImpl2(props: DismissableLayerProps) {
 }
 
 function getNumParentLayers(parentLayer?: ParentLayer) {
-  if (!parentLayer) return 0;
-  return parentLayer.numParentLayers + 1;
+  return parentLayer ? parentLayer.numParentLayers + 1 : 0;
 }
 
 function getNumLayersDisablingOutsidePointerEventsAtLayer(

@@ -28,13 +28,16 @@ type FocusScopeProps = {
 
 function FocusScope(props: FocusScopeProps) {
   const debugContext = useDebugContext();
-  return debugContext.disableLock ? props.children({} as any) : <FocusScopeImpl {...props} />;
+  const containerRef = React.useRef<HTMLElement>(null);
+  if (debugContext.disableLock) {
+    return props.children({ ref: containerRef });
+  }
+  return <FocusScopeImpl containerRef={containerRef} {...props} />;
 }
 
-function FocusScopeImpl(props: FocusScopeProps) {
-  const { children, trapped = false } = props;
+function FocusScopeImpl(props: FocusScopeProps & { containerRef: React.RefObject<HTMLElement> }) {
+  const { children, trapped = false, containerRef } = props;
   const focusScopeRef = React.useRef<ReturnType<typeof createFocusScope>>();
-  const containerRef = React.useRef<HTMLElement>(null);
   const onMountAutoFocus = useCallbackRef(props.onMountAutoFocus);
   const onUnmountAutoFocus = useCallbackRef(props.onUnmountAutoFocus);
 
@@ -58,7 +61,7 @@ function FocusScopeImpl(props: FocusScopeProps) {
         }, 0);
       };
     }
-  }, [onMountAutoFocus, onUnmountAutoFocus]);
+  }, [containerRef, onMountAutoFocus, onUnmountAutoFocus]);
 
   // Sync `trapped` prop imperatively rather than passing as an argument to
   // `createFocusScope()` so that we do not risk executing side-effects run
