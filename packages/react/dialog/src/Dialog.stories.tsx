@@ -16,29 +16,27 @@ export const Basic = () => (
 );
 
 export const InlineStyle = () => (
-  <div style={{ height: '300vh' }}>
-    <Dialog>
-      <Dialog.Trigger>open</Dialog.Trigger>
-      <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
-      <Dialog.Content
-        style={{
-          ...styles.content,
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'white',
-          minWidth: 500,
-          minHeight: 300,
-          padding: 50,
-          borderRadius: 10,
-          backgroundColor: 'white',
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
-        }}
-      >
-        <Dialog.Close>close</Dialog.Close>
-      </Dialog.Content>
-    </Dialog>
-  </div>
+  <Dialog>
+    <Dialog.Trigger>open</Dialog.Trigger>
+    <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
+    <Dialog.Content
+      style={{
+        ...styles.content,
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        background: 'white',
+        minWidth: 500,
+        minHeight: 300,
+        padding: 50,
+        borderRadius: 10,
+        backgroundColor: 'white',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
+      }}
+    >
+      <Dialog.Close>close</Dialog.Close>
+    </Dialog.Content>
+  </Dialog>
 );
 
 export const Controlled = () => {
