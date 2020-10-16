@@ -18,13 +18,15 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
+    "@interop-ui/react-debug-context": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
-    "react-is": "16.13.1",
     "tabbable": "5.0.0"
   },
   "devDependencies": {
-    "@types/react-is": "16.7.1",
-    "parcel": "^2.0.0-beta.1"
+    "@interop-ui/react-popper": "workspace:*",
+    "@interop-ui/react-portal": "workspace:*",
+    "parcel": "^2.0.0-beta.1",
+    "react-remove-scroll": "^2.3.0"
   },
   "peerDependencies": {
     "react": ">=16"

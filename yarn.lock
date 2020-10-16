@@ -1946,10 +1946,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp"
   dependencies:
+    "@interop-ui/react-debug-context": "workspace:*"
+    "@interop-ui/react-popper": "workspace:*"
+    "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
-    "@types/react-is": 16.7.1
     parcel: ^2.0.0-beta.1
-    react-is: 16.13.1
+    react-remove-scroll: ^2.3.0
     tabbable: 5.0.0
   peerDependencies:
     react: ">=16"
@@ -4664,7 +4666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-is@npm:16.7.1, @types/react-is@npm:^16":
+"@types/react-is@npm:^16":
   version: 16.7.1
   resolution: "@types/react-is@npm:16.7.1"
   dependencies:

@@ -1,0 +1,362 @@
+import * as React from 'react';
+import { useCallbackRef, useDisableBodyPointerEvents } from '@interop-ui/react-utils';
+import { useDebugContext } from '@interop-ui/react-debug-context';
+
+// We need to compute the total count of layers AND a running count of all layers
+// in order to find which layer is the deepest one.
+// This is use to only dismiss the deepest layer when using the escape key
+// because we bind the key listener to document so cannot take advantage of event.stopPropagation()
+const [TotalLayerCountProvider, useTotalLayerCount] = createTotalLayerCount();
+const [RunningLayerCountProvider, usePreviousRunningLayerCount] = createRunningLayerCount();
+
+// We need to compute the total count of layers which set `disableOutsidePointerEvents` to `true` AND
+// a running count of all the layers which set `disableOutsidePointerEvents` to `true` in order to determine
+// which layers should be dismissed when interacting outside.
+// (ie. all layers that do not have a child layer which sets `disableOutsidePointerEvents` to `true`)
+const [
+  TotalLayerCountWithDisabledOutsidePointerEventsProvider,
+  useTotalLayerCountWithDisabledOutsidePointerEvents,
+] = createTotalLayerCount('TotalLayerCountWithDisabledOutsidePointerEventsProvider');
+const [
+  RunningLayerCountWithDisabledOutsidePointerEventsProvider,
+  usePreviousRunningLayerCountWithDisabledOutsidePointerEvents,
+] = createRunningLayerCount('RunningLayerCountWithDisabledOutsidePointerEventsProvider');
+
+/* -------------------------------------------------------------------------------------------------
+ * DismissableLayer
+ * -----------------------------------------------------------------------------------------------*/
+
+type DismissableLayerProps = {
+  children: (
+    args: ReturnType<typeof useInteractOutside> & {
+      ref: React.RefObject<any>;
+      style: React.CSSProperties;
+    }
+  ) => React.ReactElement;
+
+  /**
+   * When `true`, hover/focus/click interactions will be disabled on elements outside the `DismissableLayer`.
+   * Users will need to click twice on outside elements to interact with them:
+   * Once to close the `DismissableLayer`, and again to trigger the element.
+   */
+  disableOutsidePointerEvents?: boolean;
+
+  /**
+   * Event handler called when the escape key is down.
+   * Can be prevented.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+
+  /**
+   * Event handler called when an interaction happened outside the `DismissableLayer`.
+   * Specifically, when focus leaves the `DismissableLayer` or a pointer event happens outside it.
+   * Can be prevented.
+   */
+  onInteractOutside?: (event: InteractOutsideEvent) => void;
+
+  /** Callback called when the `DismissableLayer` should be dismissed */
+  onDismiss?: () => void;
+};
+
+function DismissableLayer(props: DismissableLayerProps) {
+  const debugContext = useDebugContext();
+  const nodeRef = React.useRef<HTMLElement>(null);
+  if (debugContext.disableLock) {
+    return props.children({
+      ref: nodeRef,
+      style: {},
+      onBlurCapture: () => {},
+      onFocusCapture: () => {},
+      onMouseDownCapture: () => {},
+      onTouchStartCapture: () => {},
+    });
+  }
+  return <DismissableLayerImpl1 nodeRef={nodeRef} {...props} />;
+}
+
+function DismissableLayerImpl1(
+  props: DismissableLayerProps & { nodeRef: React.RefObject<HTMLElement> }
+) {
+  const runningLayerCount = usePreviousRunningLayerCount();
+  const isRootLayer = runningLayerCount === 0;
+  const layer = <DismissableLayerImpl2 {...props} />;
+
+  // if it's the root layer, we wrap it with our necessary root providers
+  // (effectively we wrap the whole tree of nested layers)
+  return isRootLayer ? (
+    <TotalLayerCountProvider>
+      <TotalLayerCountWithDisabledOutsidePointerEventsProvider>
+        {layer}
+      </TotalLayerCountWithDisabledOutsidePointerEventsProvider>
+    </TotalLayerCountProvider>
+  ) : (
+    layer
+  );
+}
+
+function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLayerImpl1>) {
+  const {
+    nodeRef,
+    children,
+    disableOutsidePointerEvents = false,
+    onEscapeKeyDown,
+    onInteractOutside,
+    onDismiss,
+  } = props;
+
+  const totalLayerCount = useTotalLayerCount();
+  const prevRunningLayerCount = usePreviousRunningLayerCount();
+  const runningLayerCount = prevRunningLayerCount + 1;
+  const isDeepestLayer = runningLayerCount === totalLayerCount;
+
+  const totalLayerCountWithDisabledOutsidePointerEvents = useTotalLayerCountWithDisabledOutsidePointerEvents(
+    disableOutsidePointerEvents
+  );
+  const prevRunningLayerCountWithDisabledOutsidePointerEvents = usePreviousRunningLayerCountWithDisabledOutsidePointerEvents();
+  const runningLayerCountWithDisabledOutsidePointerEvents =
+    prevRunningLayerCountWithDisabledOutsidePointerEvents + (disableOutsidePointerEvents ? 1 : 0);
+  const containsChildLayerWithDisabledOutsidePointerEvents =
+    runningLayerCountWithDisabledOutsidePointerEvents <
+    totalLayerCountWithDisabledOutsidePointerEvents;
+
+  // Disable pointer-events on `document.body` when at least one layer is disabling outside pointer events
+  useDisableBodyPointerEvents({ disabled: disableOutsidePointerEvents });
+
+  // Dismiss on escape
+  useEscapeKeydown((event) => {
+    // Only dismiss if it's the deepest layer. his is effectively mimicking
+    // event.stopPropagation from the layer with disabled outside pointer events.
+    if (isDeepestLayer) {
+      onEscapeKeyDown?.(event);
+      if (!event.defaultPrevented) {
+        onDismiss?.();
+      }
+    }
+  });
+
+  // Dismiss on outside interaction
+  const interactOutside = useInteractOutside(nodeRef, (event) => {
+    // Only dismiss if there's no deeper layer which disabled pointer events outside itself
+    if (!containsChildLayerWithDisabledOutsidePointerEvents) {
+      onInteractOutside?.(event);
+      if (!event.defaultPrevented) {
+        onDismiss?.();
+      }
+    }
+  });
+
+  // If we have disabled pointer events on body, we need to reset `pointerEvents: 'auto'`
+  // on some layers. This depends on which layers set `disableOutsidePointerEvents` to `true`.
+  //
+  // NOTE: it's important we set it on ALL layers that need it as we cannot simply
+  // set it on the deepest layer which sets `disableOutsidePointerEvents` to `true` and rely
+  // on inheritence. This is because layers may be rendered in different portals where
+  // inheritence wouldn't apply, so we need to set it explicity on its children too.
+  const isBodyPointerEventsDisabled = totalLayerCountWithDisabledOutsidePointerEvents > 0;
+  const shouldReEnablePointerEvents =
+    isBodyPointerEventsDisabled && !containsChildLayerWithDisabledOutsidePointerEvents;
+
+  return (
+    <RunningLayerCountProvider runningCount={runningLayerCount}>
+      <RunningLayerCountWithDisabledOutsidePointerEventsProvider
+        runningCount={runningLayerCountWithDisabledOutsidePointerEvents}
+      >
+        {children({
+          ref: nodeRef,
+          style: shouldReEnablePointerEvents ? { pointerEvents: 'auto' } : {},
+          ...interactOutside,
+        })}
+      </RunningLayerCountWithDisabledOutsidePointerEventsProvider>
+    </RunningLayerCountProvider>
+  );
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Utility hooks
+ * -----------------------------------------------------------------------------------------------*/
+
+/**
+ * Listens for when the escape key is down
+ */
+function useEscapeKeydown(onEscapeKeyDownProp?: (event: KeyboardEvent) => void) {
+  const onEscapeKeyDown = useCallbackRef(onEscapeKeyDownProp);
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onEscapeKeyDown(event);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onEscapeKeyDown]);
+}
+
+const INTERACT_OUTSIDE = 'dismissableLayer.interactOutside';
+type InteractOutsideEvent = CustomEvent<{
+  relatedTarget: EventTarget | null;
+  originalEvent: Event;
+}>;
+
+/**
+ * Sets up dissmissing when interacting outside a given node.
+ * Returns props to pass to the given node.
+ */
+function useInteractOutside(
+  nodeRef: React.RefObject<HTMLElement>,
+  onInteractOutsideProp?: (event: InteractOutsideEvent) => void
+) {
+  const onInteractOutside = useCallbackRef(onInteractOutsideProp);
+
+  const dispatchCustomEvent = (originalEvent: Event, relatedTarget: EventTarget | null) => {
+    const interactOutsideEvent: InteractOutsideEvent = new CustomEvent(INTERACT_OUTSIDE, {
+      bubbles: false,
+      cancelable: true,
+      detail: { relatedTarget, originalEvent },
+    });
+    nodeRef.current?.dispatchEvent(interactOutsideEvent);
+
+    if (interactOutsideEvent.defaultPrevented) {
+      originalEvent.preventDefault();
+    }
+  };
+
+  // listen for custom event dispatched
+  React.useEffect(() => {
+    const node = nodeRef.current;
+    if (node) {
+      node.addEventListener(INTERACT_OUTSIDE, onInteractOutside);
+      return () => node.removeEventListener(INTERACT_OUTSIDE, onInteractOutside);
+    }
+  }, [onInteractOutside, nodeRef]);
+
+  return {
+    ...usePointerDownOutside((event) => dispatchCustomEvent(event, event.target)),
+    ...useFocusLeave((event) => dispatchCustomEvent(event.nativeEvent, event.relatedTarget)),
+  };
+}
+
+/**
+ * Sets up mousedown/touchstart listeners which listens for pointer down events outside a react subtree.
+ *
+ * We use `mousedown` rather than click` for 2 reasons:
+ * - to mimic layer dismissing behaviour present in OS which usually happens on mousedown
+ * - to enable to us call `event.preventDefault()` and prevent focus from happening.
+ *
+ * Returns props to pass to the node we want to check for outside events.
+ */
+function usePointerDownOutside(
+  onOutsidePointerDownProp?: (event: MouseEvent | TouchEvent) => void
+) {
+  const onOutsidePointerDown = useCallbackRef(onOutsidePointerDownProp);
+  const isEventInside = React.useRef(false);
+
+  React.useEffect(() => {
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (!isEventInside.current) {
+        onOutsidePointerDown(event);
+      }
+      isEventInside.current = false;
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [onOutsidePointerDown]);
+
+  const markEventAsInside = () => {
+    isEventInside.current = true;
+  };
+
+  return {
+    // ensures we check React component tree (not just DOM tree)
+    onMouseDownCapture: markEventAsInside as React.MouseEventHandler,
+    onTouchStartCapture: markEventAsInside as React.TouchEventHandler,
+  };
+}
+
+/**
+ * Listens for when focus leaves a react subtree.
+ * Returns props to pass to the root (node) of the subtree we want to check.
+ */
+function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
+  const timerRef = React.useRef<number>(0);
+
+  return {
+    onBlurCapture: (event: React.FocusEvent) => {
+      event.persist();
+      timerRef.current = window.setTimeout(() => {
+        onFocusLeave?.(event);
+      }, 0);
+    },
+    onFocusCapture: () => {
+      window.clearTimeout(timerRef.current);
+    },
+  };
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Layer counting utilities
+ * -----------------------------------------------------------------------------------------------*/
+
+function createTotalLayerCount(displayName?: string) {
+  const TotalLayerCountContext = React.createContext<{
+    total: number;
+    setTotal: React.Dispatch<React.SetStateAction<number>>;
+  }>({ total: 0, setTotal: () => {} });
+
+  const TotalLayerCountProvider: React.FC = ({ children }) => {
+    const [total, setTotal] = React.useState(0);
+    const context = React.useMemo(() => ({ total, setTotal }), [total, setTotal]);
+    return (
+      <TotalLayerCountContext.Provider value={context}>{children}</TotalLayerCountContext.Provider>
+    );
+  };
+  if (displayName) {
+    TotalLayerCountProvider.displayName = displayName;
+  }
+
+  function useTotalLayerCount(counted = true) {
+    const { total, setTotal } = React.useContext(TotalLayerCountContext);
+
+    React.useLayoutEffect(() => {
+      if (counted) {
+        setTotal((n) => n + 1);
+        return () => setTotal((n) => n - 1);
+      }
+    }, [counted, setTotal]);
+
+    return total;
+  }
+
+  return [TotalLayerCountProvider, useTotalLayerCount] as const;
+}
+
+function createRunningLayerCount(displayName?: string) {
+  const RunningLayerCountContext = React.createContext(0);
+
+  const RunningLayerCountProvider: React.FC<{ runningCount: number }> = (props) => {
+    const { children, runningCount } = props;
+    return (
+      <RunningLayerCountContext.Provider value={runningCount}>
+        {children}
+      </RunningLayerCountContext.Provider>
+    );
+  };
+  if (displayName) {
+    RunningLayerCountProvider.displayName = displayName;
+  }
+
+  function usePreviousRunningLayerCount() {
+    return React.useContext(RunningLayerCountContext) || 0;
+  }
+
+  return [RunningLayerCountProvider, usePreviousRunningLayerCount] as const;
+}
+
+export { DismissableLayer, INTERACT_OUTSIDE };
+export type { DismissableLayerProps, InteractOutsideEvent };

@@ -2,23 +2,14 @@ import { tabbable } from 'tabbable';
 
 type FocusableTarget = HTMLElement | { focus(): void };
 
+const AUTOFOCUS_ON_CREATE = 'focusScope.autoFocusOnCreate';
+const AUTOFOCUS_ON_DESTROY = 'focusScope.autoFocusOnDestroy';
+
 /* -------------------------------------------------------------------------------------------------
  * createFocusScope
  * -----------------------------------------------------------------------------------------------*/
 
-type CreateFocusScopeOptions = {
-  container: HTMLElement;
-  /** `null`: don't focus, `undefined`: default focus behaviour, `element` : focus that element */
-  elementToFocusOnCreate?: FocusableTarget | null;
-  /** `null`: don't focus, `undefined`: default focus behaviour, `element` : focus that element */
-  elementToFocusOnDestroy?: FocusableTarget | null;
-};
-
-function createFocusScope({
-  container,
-  elementToFocusOnCreate,
-  elementToFocusOnDestroy: elementToFocusOnDestroyParam,
-}: CreateFocusScopeOptions) {
+function createFocusScope(container: HTMLElement) {
   const PREVIOUSLY_FOCUSED_ELEMENT = getCurrentlyFocusedElement();
 
   // In order to contain focus, we create (and later inject) 2 focusable markers.
@@ -31,11 +22,10 @@ function createFocusScope({
 
   // We keep track of some internal state
   let lastFocusedElementInsideContainer: HTMLElement | null = null;
-  let elementToFocusOnDestroy: FocusableTarget | undefined | null = elementToFocusOnDestroyParam;
 
   // setup
   makeContainerFocusable(container);
-  maybeFocusOnCreate();
+  autoFocusOnCreate();
 
   // internal utils
   function addFocusScopeMarkers() {
@@ -49,16 +39,28 @@ function createFocusScope({
     END_MARKER.remove();
   }
 
-  function maybeFocusOnCreate() {
-    if (elementToFocusOnCreate === null) return;
-    const elementToFocus = elementToFocusOnCreate || getFirstTabbableElement(container);
-    attemptFocus(elementToFocus, FOCUS_ON_CREATE_ERROR, container);
+  function autoFocusOnCreate() {
+    const createEvent = new Event(AUTOFOCUS_ON_CREATE, {
+      bubbles: false,
+      cancelable: true,
+    });
+    container.dispatchEvent(createEvent);
+
+    if (!createEvent.defaultPrevented) {
+      attemptFocus(getFirstTabbableElement(container), FOCUS_ON_CREATE_ERROR, container);
+    }
   }
 
-  function maybeFocusOnDestroy() {
-    if (elementToFocusOnDestroy === null) return;
-    const elementToFocus = elementToFocusOnDestroy || PREVIOUSLY_FOCUSED_ELEMENT;
-    attemptFocus(elementToFocus, FOCUS_ON_DESTROY_ERROR);
+  function autoFocusOnDestroy() {
+    const destroyEvent = new Event(AUTOFOCUS_ON_DESTROY, {
+      bubbles: false,
+      cancelable: true,
+    });
+    container.dispatchEvent(destroyEvent);
+
+    if (!destroyEvent.defaultPrevented) {
+      attemptFocus(PREVIOUSLY_FOCUSED_ELEMENT, FOCUS_ON_DESTROY_ERROR);
+    }
   }
 
   function addFocusBlurListeners() {
@@ -126,14 +128,10 @@ function createFocusScope({
       removeFocusBlurListeners();
     },
 
-    setElementToFocusOnDestroy: (element?: FocusableTarget | null) => {
-      elementToFocusOnDestroy = element;
-    },
-
     destroy: () => {
       makeContainerNonFocusable(container);
       focusScope.untrap();
-      maybeFocusOnDestroy();
+      autoFocusOnDestroy();
     },
   };
 
@@ -222,7 +220,7 @@ function focus(element?: FocusableTarget | null) {
   if (element && element.focus) {
     // NOTE: we prevent scrolling on focus.
     // This is so we don't cause jarring transitions for users.
-    element.focus({ preventScroll: false });
+    element.focus({ preventScroll: true });
     if (isSelectableInput(element)) {
       element.select();
     }
@@ -231,16 +229,10 @@ function focus(element?: FocusableTarget | null) {
 }
 
 const FOCUS_ON_CREATE_ERROR = `Could not move focus to an element inside the focus scope (see details below).
-
-- your focus scope should contain at least one focusable element
-- or a focusable element should be provided to \`elementToMoveFocusTo\`
-`;
+Your focus scope should contain at least one focusable element.`;
 
 const FOCUS_ON_DESTROY_ERROR = `Could not return focus to an element outside the focus scope (see details below).
+The element that was focused before creating the focus scope should still exists.`;
 
-- the element that was focused before creating the focus scope should still exists
-- or a focusable element should be provided to \`elementToReturnFocusTo\`
-`;
-
-export { createFocusScope };
+export { createFocusScope, AUTOFOCUS_ON_CREATE, AUTOFOCUS_ON_DESTROY };
 export type { FocusableTarget };
