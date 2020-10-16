@@ -1919,13 +1919,43 @@ __metadata:
   resolution: "@interop-ui/react-dialog@workspace:packages/react/dialog"
   dependencies:
     "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-lock-modular-temp": "workspace:*"
+    "@interop-ui/react-dismissable-layer": "workspace:*"
+    "@interop-ui/react-focus-scope": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     aria-hidden: ^1.1.1
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
+  peerDependencies:
+    react: ">=16"
+  languageName: unknown
+  linkType: soft
+
+"@interop-ui/react-dismissable-layer@workspace:*, @interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
+  dependencies:
+    "@interop-ui/react-debug-context": "workspace:*"
+    "@interop-ui/react-focus-scope": "workspace:*"
+    "@interop-ui/react-popper": "workspace:*"
+    "@interop-ui/react-portal": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+    react-remove-scroll: ^2.4.0
+  peerDependencies:
+    react: ">=16"
+  languageName: unknown
+  linkType: soft
+
+"@interop-ui/react-focus-scope@workspace:*, @interop-ui/react-focus-scope@workspace:packages/react/focus-scope":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-focus-scope@workspace:packages/react/focus-scope"
+  dependencies:
+    "@interop-ui/react-debug-context": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+    tabbable: 5.0.0
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1943,28 +1973,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-lock-modular-temp@workspace:*, @interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp"
-  dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-popper": "workspace:*"
-    "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.3.0
-    tabbable: 5.0.0
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-popover@workspace:packages/react/popover":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-popover@workspace:packages/react/popover"
   dependencies:
     "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-lock-modular-temp": "workspace:*"
+    "@interop-ui/react-dismissable-layer": "workspace:*"
+    "@interop-ui/react-focus-scope": "workspace:*"
     "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
@@ -16205,7 +16220,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-remove-scroll@npm:^2.3.0, react-remove-scroll@npm:^2.4.0":
+"react-remove-scroll@npm:^2.4.0":
   version: 2.4.0
   resolution: "react-remove-scroll@npm:2.4.0"
   dependencies:

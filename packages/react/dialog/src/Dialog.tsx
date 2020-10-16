@@ -11,12 +11,14 @@ import {
 } from '@interop-ui/react-utils';
 import { cssReset, makeId } from '@interop-ui/utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import { FocusScope, DismissableLayer } from '@interop-ui/react-lock-modular-temp';
+import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
+import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
-import type { FocusScopeProps, DismissableLayerProps } from '@interop-ui/react-lock-modular-temp';
+import type { DismissableLayerProps } from '@interop-ui/react-dismissable-layer';
+import type { FocusScopeProps } from '@interop-ui/react-focus-scope';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context

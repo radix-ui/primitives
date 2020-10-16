@@ -12,13 +12,15 @@ import {
 import { cssReset } from '@interop-ui/utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import { FocusScope, DismissableLayer } from '@interop-ui/react-lock-modular-temp';
+import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
+import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
+import type { DismissableLayerProps } from '@interop-ui/react-dismissable-layer';
+import type { FocusScopeProps } from '@interop-ui/react-focus-scope';
 import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
-import type { FocusScopeProps, DismissableLayerProps } from '@interop-ui/react-lock-modular-temp';
 import type { Optional } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------

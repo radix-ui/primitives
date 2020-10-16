@@ -1,7 +1,7 @@
 import React from 'react';
 import { FocusScope } from './FocusScope';
 
-export default { title: 'Modular Lock (temp)/FocusScope' };
+export default { title: 'FocusScope' };
 
 // true => default focus, false => no focus, ref => focus element
 type FocusParam = boolean | React.RefObject<HTMLElement>;
