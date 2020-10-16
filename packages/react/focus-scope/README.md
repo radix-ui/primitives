@@ -18,7 +18,10 @@ function MyComponent(props) {
   const [open, setOpen] = React.useState(false);
   return (
     <>
-    <button type="button" onClick={() => setOpen(prev => !prev)}>
+      <button type="button" onClick={() => setOpen((prev) => !prev)}>
+        Open
+      </button>
+
       {open && (
         <FocusScope trapped>
           {({ ref }) => (
