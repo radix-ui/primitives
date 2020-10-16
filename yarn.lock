@@ -2153,14 +2153,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/tabbable@workspace:packages/core/tabbable":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/tabbable@workspace:packages/core/tabbable"
-  dependencies:
-    parcel: ^2.0.0-beta.1
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/utils@workspace:*, @interop-ui/utils@workspace:packages/core/utils":
   version: 0.0.0-use.local
   resolution: "@interop-ui/utils@workspace:packages/core/utils"
