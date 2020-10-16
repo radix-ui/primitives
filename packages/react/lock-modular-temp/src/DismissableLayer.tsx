@@ -1,88 +1,29 @@
 import * as React from 'react';
-import {
-  createContext,
-  useCallbackRef,
-  useDisableBodyPointerEvents,
-  useLayoutEffect,
-} from '@interop-ui/react-utils';
+import { useCallbackRef, useDisableBodyPointerEvents } from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
-const increment = (n: number) => n + 1;
-const decrement = (n: number) => n - 1;
+// We need to compute the total count of layers AND a running count of all layers
+// in order to find which layer is the deepest one.
+// This is use to only dismiss the deepest layer when using the escape key.
+const [TotalLayerCountProvider, useTotalLayerCount] = createTotalLayerCount();
+const [RunningLayerCountProvider, usePreviousRunningLayerCount] = createRunningLayerCount();
 
-/* -------------------------------------------------------------------------------------------------
- * LayerTreeProvider (root of all layers)
- * -----------------------------------------------------------------------------------------------*/
-
-// This context will help with capturing information about the whole tree of layers
-type LayerTreeContextValue = {
-  totalLayerCount: number;
-  totalLayerCountWithDisabledOutsidePointerEvents: number;
-  isBodyPointerEventsDisabled: boolean;
-  addLayer: (layer: LayerConfig) => void;
-  removeLayer: (layer: LayerConfig) => void;
-};
-const [LayerTreeContext, useLayerTreeContext] = createContext<LayerTreeContextValue>(
-  'LayerTreeContext',
-  'LayerTreeProvider'
-);
-
-const LayerTreeProvider: React.FC = ({ children }) => {
-  const [totalLayerCount, setTotalLayerCount] = React.useState(0);
-  const [
-    totalLayerCountWithDisabledOutsidePointerEvents,
-    setTotalLayerCountWithDisabledOutsidePointerEvents,
-  ] = React.useState(0);
-
-  // disable pointer-events on `document.body` when at least one layer is disabling outside pointer events
-  const isBodyPointerEventsDisabled = totalLayerCountWithDisabledOutsidePointerEvents > 0;
-  useDisableBodyPointerEvents({ disabled: isBodyPointerEventsDisabled });
-
-  return (
-    <LayerTreeContext.Provider
-      value={React.useMemo(
-        () => ({
-          totalLayerCount,
-          totalLayerCountWithDisabledOutsidePointerEvents,
-          isBodyPointerEventsDisabled,
-          addLayer: (layer) => {
-            setTotalLayerCount(increment);
-            if (layer.disableOutsidePointerEvents) {
-              setTotalLayerCountWithDisabledOutsidePointerEvents(increment);
-            }
-          },
-          removeLayer: (layer) => {
-            setTotalLayerCount(decrement);
-            if (layer.disableOutsidePointerEvents) {
-              setTotalLayerCountWithDisabledOutsidePointerEvents(decrement);
-            }
-          },
-        }),
-        [
-          totalLayerCount,
-          totalLayerCountWithDisabledOutsidePointerEvents,
-          isBodyPointerEventsDisabled,
-        ]
-      )}
-    >
-      {children}
-    </LayerTreeContext.Provider>
-  );
-};
+// We need to compute the total count of layers which set `disableOutsidePointerEvents` to `true` AND
+// a running count of all the layers which set `disableOutsidePointerEvents` to `true` in order to determine
+// which layers should be dismissed when interacting outside.
+// (ie. all layers that do not have a child layer which sets `disableOutsidePointerEvents` to `true`)
+const [
+  TotalLayerCountWithDisabledOutsidePointerEventsProvider,
+  useTotalLayerCountWithDisabledOutsidePointerEvents,
+] = createTotalLayerCount('TotalLayerCountWithDisabledOutsidePointerEventsProvider');
+const [
+  RunningLayerCountWithDisabledOutsidePointerEventsProvider,
+  usePreviousRunningLayerCountWithDisabledOutsidePointerEvents,
+] = createRunningLayerCount('RunningLayerCountWithDisabledOutsidePointerEventsProvider');
 
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayer
  * -----------------------------------------------------------------------------------------------*/
-
-// This context will help with capturing information about nested layers
-// passing them recursively down the tree.
-type ParentLayerContextValue = {
-  runningLayerCount: number;
-  runningLayerCountWithDisabledOutsidePointerEvents: number;
-};
-const ParentLayerContext = React.createContext<ParentLayerContextValue | undefined>(undefined);
-ParentLayerContext.displayName = 'ParentLayerContext';
-const useParentLayerContext = () => React.useContext(ParentLayerContext);
 
 type DismissableLayerProps = {
   children: (
@@ -135,21 +76,22 @@ function DismissableLayer(props: DismissableLayerProps) {
 function DismissableLayerImpl1(
   props: DismissableLayerProps & { nodeRef: React.RefObject<HTMLElement> }
 ) {
-  const parentLayerContext = useParentLayerContext();
-  const isRootLayer = parentLayerContext === undefined;
+  const runningLayerCount = usePreviousRunningLayerCount();
+  const isRootLayer = runningLayerCount === 0;
+  const layer = <DismissableLayerImpl2 {...props} />;
 
-  // if it's the root layer, we wrap it with our `LayerTreeProvider`
+  // if it's the root layer, we wrap it with our necessary root providers
   // (effectively we wrap the whole tree of nested layers)
-  const RootLayerWrapper = isRootLayer ? LayerTreeProvider : React.Fragment;
-
-  return (
-    <RootLayerWrapper>
-      <DismissableLayerImpl2 {...props} />
-    </RootLayerWrapper>
+  return isRootLayer ? (
+    <TotalLayerCountProvider>
+      <TotalLayerCountWithDisabledOutsidePointerEventsProvider>
+        {layer}
+      </TotalLayerCountWithDisabledOutsidePointerEventsProvider>
+    </TotalLayerCountProvider>
+  ) : (
+    layer
   );
 }
-
-type LayerConfig = { disableOutsidePointerEvents: boolean };
 
 function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLayerImpl1>) {
   const {
@@ -161,36 +103,23 @@ function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLay
     onDismiss,
   } = props;
 
-  const layer: LayerConfig = React.useMemo(() => ({ disableOutsidePointerEvents }), [
-    disableOutsidePointerEvents,
-  ]);
+  const totalLayerCount = useTotalLayerCount();
+  const prevRunningLayerCount = usePreviousRunningLayerCount();
+  const runningLayerCount = prevRunningLayerCount + 1;
+  const isDeepestLayer = runningLayerCount === totalLayerCount;
 
-  const layerTreeContext = useLayerTreeContext('DismissableLayer');
-  const parentLayerContext = useParentLayerContext();
-
-  // We compute a running count of all layers so we can compare it with
-  // the total count of layers in order to find which layer is the deepest one.
-  // This is use to only dismiss the deepest layer when using the escape key.
-  const runningLayerCount = !parentLayerContext ? 1 : parentLayerContext.runningLayerCount + 1;
-  const isDeepestLayer = runningLayerCount === layerTreeContext.totalLayerCount;
-
-  // We compute a running count of all the layers which set `disableOutsidePointerEvents` to `true`
-  // so we can compare it with the total count of layers which set `disableOutsidePointerEvents` to `true`.
-  // This is used to determine which layers should be dismissed when interacting outside.
-  // (ie. all layers that do not have a child layer which sets `disableOutsidePointerEvents` to `true`)
-  //
-  // prettier-ignore
+  const totalLayerCountWithDisabledOutsidePointerEvents = useTotalLayerCountWithDisabledOutsidePointerEvents(
+    disableOutsidePointerEvents
+  );
+  const prevRunningLayerCountWithDisabledOutsidePointerEvents = usePreviousRunningLayerCountWithDisabledOutsidePointerEvents();
   const runningLayerCountWithDisabledOutsidePointerEvents =
-    getRunningLayerCountWithDisabledOutsidePointerEvents(layer, parentLayerContext);
+    prevRunningLayerCountWithDisabledOutsidePointerEvents + (disableOutsidePointerEvents ? 1 : 0);
   const containsChildLayerWithDisabledOutsidePointerEvents =
     runningLayerCountWithDisabledOutsidePointerEvents <
-    layerTreeContext.totalLayerCountWithDisabledOutsidePointerEvents;
+    totalLayerCountWithDisabledOutsidePointerEvents;
 
-  // Layer registration
-  useLayoutEffect(() => {
-    layerTreeContext.addLayer(layer);
-    return () => layerTreeContext.removeLayer(layer);
-  }, [layerTreeContext, layer]);
+  // Disable pointer-events on `document.body` when at least one layer is disabling outside pointer events
+  useDisableBodyPointerEvents({ disabled: disableOutsidePointerEvents });
 
   // Dismiss on escape
   useEscapeKeydown((event) => {
@@ -214,44 +143,29 @@ function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLay
     }
   });
 
-  // Because we MAY have set `pointerEvents: 'none'` on `document.body`, we MAY need
-  // to set `pointerEvents: 'auto'` on some layers. This depends on which layers set
-  // `disableOutsidePointerEvents` to `true`.
+  // If we have disabled pointer events on body, we need to reset `pointerEvents: 'auto'`
+  // on some layers. This depends on which layers set `disableOutsidePointerEvents` to `true`.
   //
   // NOTE: it's important we set it on ALL layers that need it as we cannot simply
   // set it on the deepest layer which sets `disableOutsidePointerEvents` to `true` and rely
   // on inheritence. This is because layers may be rendered in different portals where
-  // inheritece wouldn't apply, so we need to set it explicity on its children too.
+  // inheritence wouldn't apply, so we need to set it explicity on its children too.
+  const isBodyPointerEventsDisabled = totalLayerCountWithDisabledOutsidePointerEvents > 0;
   const shouldReEnablePointerEvents =
-    layerTreeContext.isBodyPointerEventsDisabled &&
-    !containsChildLayerWithDisabledOutsidePointerEvents;
+    isBodyPointerEventsDisabled && !containsChildLayerWithDisabledOutsidePointerEvents;
 
   return (
-    <ParentLayerContext.Provider
-      value={React.useMemo(
-        () => ({
-          runningLayerCount,
-          runningLayerCountWithDisabledOutsidePointerEvents,
-        }),
-        [runningLayerCount, runningLayerCountWithDisabledOutsidePointerEvents]
-      )}
-    >
-      {children({
-        ref: nodeRef,
-        style: shouldReEnablePointerEvents ? { pointerEvents: 'auto' } : {},
-        ...interactOutside,
-      })}
-    </ParentLayerContext.Provider>
-  );
-}
-
-function getRunningLayerCountWithDisabledOutsidePointerEvents(
-  currentLayer: LayerConfig,
-  parentLayer?: ParentLayerContextValue
-) {
-  return (
-    (parentLayer?.runningLayerCountWithDisabledOutsidePointerEvents ?? 0) +
-    (currentLayer.disableOutsidePointerEvents ? 1 : 0)
+    <RunningLayerCountProvider runningCount={runningLayerCount}>
+      <RunningLayerCountWithDisabledOutsidePointerEventsProvider
+        runningCount={runningLayerCountWithDisabledOutsidePointerEvents}
+      >
+        {children({
+          ref: nodeRef,
+          style: shouldReEnablePointerEvents ? { pointerEvents: 'auto' } : {},
+          ...interactOutside,
+        })}
+      </RunningLayerCountWithDisabledOutsidePointerEventsProvider>
+    </RunningLayerCountProvider>
   );
 }
 
@@ -381,6 +295,65 @@ function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
       window.clearTimeout(timerRef.current);
     },
   };
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Layer counting utilities
+ * -----------------------------------------------------------------------------------------------*/
+
+function createTotalLayerCount(displayName?: string) {
+  const TotalLayerCountContext = React.createContext<{
+    total: number;
+    setTotal: React.Dispatch<React.SetStateAction<number>>;
+  }>({ total: 0, setTotal: () => {} });
+
+  const TotalLayerCountProvider: React.FC = ({ children }) => {
+    const [total, setTotal] = React.useState(0);
+    const context = React.useMemo(() => ({ total, setTotal }), [total, setTotal]);
+    return (
+      <TotalLayerCountContext.Provider value={context}>{children}</TotalLayerCountContext.Provider>
+    );
+  };
+  if (displayName) {
+    TotalLayerCountProvider.displayName = displayName;
+  }
+
+  function useTotalLayerCount(counted = true) {
+    const { total, setTotal } = React.useContext(TotalLayerCountContext);
+
+    React.useLayoutEffect(() => {
+      if (counted) {
+        setTotal((n) => n + 1);
+        return () => setTotal((n) => n - 1);
+      }
+    }, [counted, setTotal]);
+
+    return total;
+  }
+
+  return [TotalLayerCountProvider, useTotalLayerCount] as const;
+}
+
+function createRunningLayerCount(displayName?: string) {
+  const RunningLayerCountContext = React.createContext(0);
+
+  const RunningLayerCountProvider: React.FC<{ runningCount: number }> = (props) => {
+    const { children, runningCount } = props;
+    return (
+      <RunningLayerCountContext.Provider value={runningCount}>
+        {children}
+      </RunningLayerCountContext.Provider>
+    );
+  };
+  if (displayName) {
+    RunningLayerCountProvider.displayName = displayName;
+  }
+
+  function usePreviousRunningLayerCount() {
+    return React.useContext(RunningLayerCountContext) || 0;
+  }
+
+  return [RunningLayerCountProvider, usePreviousRunningLayerCount] as const;
 }
 
 export { DismissableLayer, INTERACT_OUTSIDE };
