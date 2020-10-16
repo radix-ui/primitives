@@ -229,7 +229,7 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
                 onEscapeKeyDown={onEscapeKeyDown}
                 onInteractOutside={(event) => {
                   const wasPointerDownOutside = event.detail.originalEvent.type !== 'blur';
-                  const wasTrigger = event.detail.target === context.triggerRef.current;
+                  const wasTrigger = event.detail.relatedTarget === context.triggerRef.current;
 
                   // prevent autofocus on close if clicking outside is allowed and happened
                   setSkipUnmountAutoFocus(!disableOutsidePointerEvents && wasPointerDownOutside);
