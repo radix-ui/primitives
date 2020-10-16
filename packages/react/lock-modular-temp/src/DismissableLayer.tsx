@@ -4,7 +4,8 @@ import { useDebugContext } from '@interop-ui/react-debug-context';
 
 // We need to compute the total count of layers AND a running count of all layers
 // in order to find which layer is the deepest one.
-// This is use to only dismiss the deepest layer when using the escape key.
+// This is use to only dismiss the deepest layer when using the escape key
+// because we bind the key listener to document so cannot take advantage of event.stopPropagation()
 const [TotalLayerCountProvider, useTotalLayerCount] = createTotalLayerCount();
 const [RunningLayerCountProvider, usePreviousRunningLayerCount] = createRunningLayerCount();
 
@@ -123,7 +124,8 @@ function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLay
 
   // Dismiss on escape
   useEscapeKeydown((event) => {
-    // only dismiss if it's the deepest layer
+    // Only dismiss if it's the deepest layer. his is effectively mimicking
+    // event.stopPropagation from the layer with disabled outside pointer events.
     if (isDeepestLayer) {
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented) {
@@ -134,7 +136,7 @@ function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLay
 
   // Dismiss on outside interaction
   const interactOutside = useInteractOutside(nodeRef, (event) => {
-    // only dismiss if there's no deeper layer which disabled pointer events outside itself
+    // Only dismiss if there's no deeper layer which disabled pointer events outside itself
     if (!containsChildLayerWithDisabledOutsidePointerEvents) {
       onInteractOutside?.(event);
       if (!event.defaultPrevented) {
