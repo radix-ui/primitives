@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { createContext, useCallbackRef, useLayoutEffect } from '@interop-ui/react-utils';
+import {
+  createContext,
+  useCallbackRef,
+  useDisableBodyPointerEvents,
+  useLayoutEffect,
+} from '@interop-ui/react-utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
 const increment = (n: number) => n + 1;
@@ -29,18 +34,9 @@ const LayerTreeProvider: React.FC = ({ children }) => {
     setTotalLayerCountWithDisabledOutsidePointerEvents,
   ] = React.useState(0);
 
-  const isBodyPointerEventsDisabled = totalLayerCountWithDisabledOutsidePointerEvents > 0;
-
   // disable pointer-events on `document.body` when at least one layer is disabling outside pointer events
-  useLayoutEffect(() => {
-    if (isBodyPointerEventsDisabled) {
-      const originalBodyPointerEvents = document.body.style.pointerEvents;
-      document.body.style.pointerEvents = 'none';
-      return () => {
-        document.body.style.pointerEvents = originalBodyPointerEvents;
-      };
-    }
-  }, [isBodyPointerEventsDisabled]);
+  const isBodyPointerEventsDisabled = totalLayerCountWithDisabledOutsidePointerEvents > 0;
+  useDisableBodyPointerEvents({ disabled: isBodyPointerEventsDisabled });
 
   return (
     <LayerTreeContext.Provider
