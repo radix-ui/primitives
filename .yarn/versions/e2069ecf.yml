@@ -1,10 +1,8 @@
 releases:
   "@interop-ui/react-alert-dialog": prerelease
   "@interop-ui/react-dialog": prerelease
-  "@interop-ui/react-lock": prerelease
   "@interop-ui/react-popover": prerelease
   "@interop-ui/react-tooltip": prerelease
-  "@interop-ui/tabbable": prerelease
 
 declined:
   - interop-ui
