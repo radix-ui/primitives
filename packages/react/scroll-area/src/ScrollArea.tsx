@@ -1,7 +1,3 @@
-// TODO: Reenable this rule, just keeping out the added noise for now.
-// I've got some helpers defined that I haven't used just yet.
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 // This component is a progressive enhancement that will fallback to a staandard div with overflow:
 // scroll for browsers that don't support features we rely on.
 
@@ -12,41 +8,33 @@
 //  - CSS scrollbar-width OR -webkit-scrollbar
 
 // TODO: Implement resize handle
-// TODO: Wrap event props with composeEventHandler
+// TODO: Autohide
+// TODO: Dragging functionality
+// TODO: Test inside popovers
+// TODO: I broke overflowX somewhere along the process of cleaning up code -- fiiiix it!
+// TODO: Wrap all event props with composeEventHandler
+// TODO: RTL language testing for horizontal scrolling
+// TODO: Replace all globals with globals relative to the root node
 
-import React from 'react';
 import {
-  forwardRef,
   createContext,
   createStyleObj,
-  useLayoutEffect,
+  forwardRef,
+  memo,
   useComposedRefs,
-  usePrefersReducedMotion,
-  getOwnerGlobals,
   useConstant,
-  useCallbackRef,
+  useLayoutEffect,
+  usePrefersReducedMotion,
 } from '@interop-ui/react-utils';
 import {
-  cssReset,
-  isMainClick,
   Axis,
+  cssReset,
   getResizeObserverEntryBorderBoxSize,
+  isMainClick,
 } from '@interop-ui/utils';
+import * as React from 'react';
 import { bezier } from './bezier-easing';
 import { Queue } from './queue';
-
-const ROOT_DEFAULT_TAG = 'div';
-const ROOT_NAME = 'ScrollArea';
-
-// DOM property key map based on the scroll axis
-// Should minify a bit better and hopefully make some repeated logic a bit simpler to follow.
-const DOM_PROPS = {
-  size: { x: 'width', y: 'height' },
-  clientSize: { x: 'clientWidth', y: 'clientHeight' },
-  scrollPos: { x: 'scrollLeft', y: 'scrollTop' },
-  offsetPos: { x: 'offsetLeft', y: 'offsetTop' },
-  pos: { x: 'left', y: 'top' },
-} as const;
 
 const CSS_PROPS = {
   scrollAreaWidth: '--interop-scroll-area-width',
@@ -55,38 +43,24 @@ const CSS_PROPS = {
   positionHeight: '--interop-scroll-area-position-height',
   scrollbarXOffset: '--interop-scroll-area-scrollbar-x-offset',
   scrollbarYOffset: '--interop-scroll-area-scrollbar-y-offset',
+  scrollbarXSize: '--interop-scroll-area-scrollbar-x-size',
+  scrollbarYSize: '--interop-scroll-area-scrollbar-y-size',
   scrollbarThumbWillChange: '--interop-scroll-area-scrollbar-thumb-will-change',
   scrollbarThumbHeight: '--interop-scroll-area-scrollbar-thumb-height',
   scrollbarThumbWidth: '--interop-scroll-area-scrollbar-thumb-width',
 } as const;
 
-// TODO: RTL language testing for horizontal scrolling
+const ROOT_DEFAULT_TAG = 'div';
+const ROOT_NAME = 'ScrollArea';
 
-type ScrollAreaContextValue = {
-  overflowX: OverflowBehavior;
-  overflowY: OverflowBehavior;
-  prefersReducedMotion: boolean;
-  scrollAnimationQueue: Queue<any>;
-};
-
-type ScrollAreaRefs = {
-  buttonUpRef: React.RefObject<HTMLDivElement>;
-  buttonDownRef: React.RefObject<HTMLDivElement>;
-  buttonLeftRef: React.RefObject<HTMLDivElement>;
-  buttonRightRef: React.RefObject<HTMLDivElement>;
-  positionRef: React.RefObject<HTMLDivElement>;
-  scrollAreaRef: React.RefObject<HTMLDivElement>;
-  scrollbarYThumbRef: React.RefObject<HTMLDivElement>;
-  scrollbarXThumbRef: React.RefObject<HTMLDivElement>;
-};
-
-const [ScrollAreaContext, useScrollAreaContext] = createContext<ScrollAreaContextValue>(
-  ROOT_NAME + 'Context',
+// Keeping refs in a separate context; should be a stable reference throughout the tree
+const [ScrollAreaRefsContext, useScrollAreaRefs] = createContext<ScrollAreaRefs>(
+  ROOT_NAME + 'RefsContext',
   ROOT_NAME
 );
 
-const [ScrollAreaRefsContext, useScrollAreaRefs] = createContext<ScrollAreaRefs>(
-  ROOT_NAME + 'RefsContext',
+const [ScrollAreaContext, useScrollAreaContext] = createContext<ScrollAreaContextValue>(
+  ROOT_NAME + 'Context',
   ROOT_NAME
 );
 
@@ -97,8 +71,34 @@ const [ScrollAreaRefsContext, useScrollAreaRefs] = createContext<ScrollAreaRefs>
 const NativeScrollContext = React.createContext<boolean>(true);
 const useNativeScrollArea = () => React.useContext(NativeScrollContext);
 
-const DispatchContext = React.createContext<(event: ScrollAreaEvent) => void>(() => void null);
-const useDispatchContext = () => React.useContext(DispatchContext);
+const [DispatchContext, useDispatchContext] = createContext<React.Dispatch<ScrollAreaEvent>>(
+  'DispatchContext',
+  ROOT_NAME
+);
+
+enum ScrollAreaState {
+  Idle,
+  Thumbing,
+  Tracking,
+  ButtonScrolling,
+}
+
+enum ScrollAreaEvents {
+  DeriveStateFromProps,
+  HandleScrollAreaResize,
+  HandleContentAreaResize,
+  HandleScrollbarResize,
+  HandleThumbResize,
+  HandleTrackResize,
+  MoveThumbWithPointer,
+  SetContentOverflowing,
+  StartTracking,
+  StopTracking,
+  StartThumbing,
+  StopThumbing,
+  StartButtonPress,
+  StopButtonPress,
+}
 
 /* -------------------------------------------------------------------------------------------------
  * ScrollArea
@@ -110,6 +110,20 @@ type ScrollAreaOwnProps = {
   overflowX?: OverflowBehavior;
   overflowY?: OverflowBehavior;
   /**
+   * Describes the nature of auto-hide, similar to how
+   * - `"never"`: Never hide automatically.
+   * - `"scroll"`: Hide automatically after scrolling stops.
+   *
+   * (default: `"never"`)
+   */
+  scrollbarAutoHide?: ScrollbarAutoHide;
+  /**
+   * Whether or not the user can scroll by dragging.
+   *
+   * (default: `false`)
+   */
+  scrollbarDragScrolling?: boolean;
+  /**
    * Mostly here for debugging, but this might be useful for consumers
    */
   unstable_forceNative?: boolean;
@@ -119,150 +133,197 @@ type ScrollAreaProps = ScrollAreaDOMProps & ScrollAreaOwnProps;
 const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAreaStaticProps>(
   function ScrollArea(props, forwardedRef) {
     const {
-      as: Comp = ROOT_DEFAULT_TAG,
+      as = ROOT_DEFAULT_TAG,
       children,
       overflowX = 'auto',
       overflowY = 'auto',
       unstable_forceNative: forceNative = false,
       ...domProps
     } = props;
+    const [usesNative, setUsesNative] = React.useState(true);
+    // Check to make sure the user's browser supports our custom scrollbar features. We use a layout
+    // effect here to avoid a visible flash when the custom scrollarea replaces the native version.
+    useLayoutEffect(() => {
+      setUsesNative(forceNative || shouldFallbackToNativeScroll());
+    }, [forceNative]);
+
+    const commonProps = {
+      ...interopDataAttrObj('root'),
+      ...domProps,
+      as,
+      children,
+      overflowX,
+      overflowY,
+    };
+
+    const Comp = usesNative ? ScrollAreaNative : ScrollAreaImpl;
+
+    return (
+      <NativeScrollContext.Provider value={usesNative}>
+        <Comp {...commonProps} ref={forwardedRef} />
+      </NativeScrollContext.Provider>
+    );
+  }
+);
+
+type ScrollAreaNativeProps = Omit<ScrollAreaProps, 'unstable_forceNative'> & {
+  overflowX: NonNullable<ScrollAreaProps['overflowX']>;
+  overflowY: NonNullable<ScrollAreaProps['overflowY']>;
+};
+
+const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativeProps>(
+  function ScrollAreaNative(props, forwardedRef) {
+    const { as: Comp, overflowX, overflowY, ...domProps } = props;
+    return (
+      <Comp
+        ref={forwardedRef}
+        {...domProps}
+        style={{
+          ...domProps.style,
+          // For native fallback, the scrollarea wrapper itself is scrollable
+          overflowX,
+          overflowY,
+        }}
+      />
+    );
+  }
+);
+
+type ScrollAreaImplProps = Omit<ScrollAreaProps, 'unstable_forceNative'> & {
+  overflowX: NonNullable<ScrollAreaProps['overflowX']>;
+  overflowY: NonNullable<ScrollAreaProps['overflowY']>;
+};
+
+const initialSize = { width: 0, height: 0 };
+const initialState: ScrollAreaReducerState = {
+  state: ScrollAreaState.Idle,
+  scrollAreaSize: initialSize,
+  contentAreaSize: initialSize,
+  positionSize: initialSize,
+  scrollbarYSize: initialSize,
+  scrollbarXSize: initialSize,
+  trackYSize: initialSize,
+  trackXSize: initialSize,
+  contentIsOverflowingX: false,
+  contentIsOverflowingY: false,
+};
+
+const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
+  function ScrollAreaImpl(props, forwardedRef) {
+    const {
+      as: Comp,
+      children,
+      overflowX,
+      overflowY,
+      scrollbarAutoHide = 'never',
+      scrollbarDragScrolling = false,
+      ...domProps
+    } = props;
+
+    const buttonDownRef = React.useRef<HTMLDivElement>(null);
+    const buttonLeftRef = React.useRef<HTMLDivElement>(null);
+    const buttonRightRef = React.useRef<HTMLDivElement>(null);
+    const buttonUpRef = React.useRef<HTMLDivElement>(null);
+    const contentAreaRef = React.useRef<HTMLDivElement>(null);
+    const positionRef = React.useRef<HTMLDivElement>(null);
+    const scrollAreaRef = React.useRef<HTMLDivElement>(null);
+    const scrollbarXRef = React.useRef<HTMLDivElement>(null);
+    const scrollbarYRef = React.useRef<HTMLDivElement>(null);
+    const thumbXRef = React.useRef<HTMLDivElement>(null);
+    const thumbYRef = React.useRef<HTMLDivElement>(null);
+    const trackXRef = React.useRef<HTMLDivElement>(null);
+    const trackYRef = React.useRef<HTMLDivElement>(null);
+    const refs: ScrollAreaRefs = React.useMemo(() => {
+      return {
+        buttonDownRef,
+        buttonLeftRef,
+        buttonRightRef,
+        buttonUpRef,
+        contentAreaRef,
+        positionRef,
+        scrollAreaRef,
+        scrollbarXRef,
+        scrollbarYRef,
+        thumbXRef,
+        thumbYRef,
+        trackXRef,
+        trackYRef,
+      };
+    }, []);
 
     // Animation effects triggered by button and track clicks are managed in a queue to prevent race
     // conditions and invalid DOM measurements when the user clicks faster than the animation is
     // able to be completed
     const scrollAnimationQueue = useConstant(() => new Queue<any>());
 
-    const scrollAreaRef = React.useRef<HTMLDivElement>(null);
-    const scrollbarYThumbRef = React.useRef<HTMLDivElement>(null);
-    const scrollbarXThumbRef = React.useRef<HTMLDivElement>(null);
-
-    const buttonRightRef = React.useRef<HTMLDivElement>(null);
-    const buttonLeftRef = React.useRef<HTMLDivElement>(null);
-    const buttonUpRef = React.useRef<HTMLDivElement>(null);
-    const buttonDownRef = React.useRef<HTMLDivElement>(null);
-
-    const positionRef = React.useRef<HTMLDivElement>(null);
-
     const prefersReducedMotion = usePrefersReducedMotion(scrollAreaRef);
 
-    const [usesNative, setUsesNative] = React.useState(true);
+    const [reducerState, _dispatch] = React.useReducer(reducer, initialState);
 
-    // This is a useReducer-esque dispatch function, but we aren't using React state for our logic
-    // so we can opt-out of potentially expensive state comparisons in our events. This can probably
-    // be better expressed as a state machine, but I wanted to keep the implementation as simple as
-    // possible to start.
-    const dispatch = React.useCallback(function dispatch(event: ScrollAreaEvent) {
-      // We attach all refs to each dispatch event so that the reducer has access to (and can
-      // update) their current values
-      const refs: ScrollAreaRefs = {
-        buttonLeftRef,
-        buttonRightRef,
-        buttonUpRef,
-        buttonDownRef,
-        positionRef,
-        scrollAreaRef,
-        scrollbarYThumbRef,
-        scrollbarXThumbRef,
-      };
+    const context: ScrollAreaContextValue = {
+      ...reducerState,
+      overflowX,
+      overflowY,
+      prefersReducedMotion,
+      scrollAnimationQueue,
+      scrollbarAutoHide,
+      scrollbarDragScrolling,
+    };
 
-      eventManager({
-        ...event,
-        // @ts-ignore
-        refs,
-      });
-    }, []);
-
-    const ctx: ScrollAreaContextValue = React.useMemo(() => {
-      return {
-        overflowX,
-        overflowY,
-        prefersReducedMotion,
-        scrollAnimationQueue,
-      };
-    }, [overflowX, overflowY, prefersReducedMotion, scrollAnimationQueue]);
-
-    const refsContext: ScrollAreaRefs = React.useMemo(() => {
-      return {
-        buttonLeftRef,
-        buttonRightRef,
-        buttonUpRef,
-        buttonDownRef,
-        positionRef,
-        scrollAreaRef,
-        scrollbarYThumbRef,
-        scrollbarXThumbRef,
-      };
-    }, []);
-
-    // Check to make sure the user's browser supports our custom scrollbar features. We use a layout
-    // effect here to avoid a visible flash when the custom scrollarea replaces the native version.
-    useLayoutEffect(() => {
-      const { win } = getOwnerGlobals(scrollAreaRef);
-      setUsesNative(forceNative || shouldFallbackToNativeScroll(win));
-    }, [forceNative]);
-
-    // Set initial values for CSS properties so they are defined in all circumstances. This is a bit
-    // more resiliant than leaving them undefined so we can still use them in CSS functions like
-    // `calc` or `max`.
-    useLayoutEffect(() => {
-      dispatch({ type: 'UNSET_CSS_VARS' });
-    }, [dispatch]);
-
-    // Observe the scroll area for changes and update computation variables used for components in
-    // the sub-tree.
-    useLayoutEffect(() => {
-      if (usesNative) return;
-
-      const scrollAreaEl = scrollAreaRef.current!;
-      if (!scrollAreaEl) {
-        return;
-      }
-
-      const observer = new ResizeObserver((entries) => {
-        // No need to loop, we're only observing a single element.
-        const entry = entries[0];
-        const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
-        dispatch({
-          type: 'HANDLE_SCROLL_AREA_RESIZE',
-          width: borderBoxSize.inlineSize,
-          height: borderBoxSize.blockSize,
+    // Attach all refs to each dispatch so we can ensure fresh references in our reducer without
+    // changing stateful data.
+    const dispatch: React.Dispatch<ScrollAreaEvent> = React.useCallback(
+      function dispatch(event: ScrollAreaEvent) {
+        return _dispatch({
+          ...event,
+          // @ts-ignore
+          refs,
         });
-      });
-      observer.observe(scrollAreaEl);
+      },
+      [refs]
+    );
 
-      return function () {
-        observer.disconnect();
-      };
-    }, [usesNative, dispatch]);
+    const ref = useComposedRefs(forwardedRef, scrollAreaRef);
 
-    // Listen to scroll events and update the thumb's positioning accordingly. This also adds a data
-    // attribute to the body element so an app can know when a scrollarea is active so we can
-    // disable pointer events on all other elements on the screen until scrolling stops.
+    // Make sure we have required checks. We can do this once early and throw a more helpful error
+    // rather than checking refs in every sub-component.
     useLayoutEffect(() => {
-      if (usesNative) return;
-
-      const scrollAreaEl = scrollAreaRef.current!;
-      const positionEl = positionRef.current!;
-
+      const scrollAreaEl = scrollAreaRef.current;
+      const positionEl = positionRef.current;
       if (!scrollAreaEl || !positionEl) {
-        // TODO: dev warnings, these parts are all required
-        return;
+        // TODO:
+        throw Error('Place the refs plz');
       }
+    });
 
-      // Scroll listeners can be expensive, and something outside of our control may scroll content
-      // while it's out of view. We only need to respond to those events when a scroll area is
-      // visibile in the viewport.
-      const observer = new IntersectionObserver(
-        function handleScrollAreaViewChange(entries) {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              positionEl.addEventListener('scroll', handleScroll);
-              handleScroll();
-              return;
-            }
-            // Scroll area not in view, clean up scroll listener
-            positionEl.removeEventListener('scroll', handleScroll);
-          });
+    // Observe the scroll area for size changes
+    const handleResize = React.useCallback(
+      (size: ResizeObserverSize) => {
+        dispatch({
+          type: ScrollAreaEvents.HandleScrollAreaResize,
+          width: size.inlineSize,
+          height: size.blockSize,
+        });
+      },
+      [dispatch]
+    );
+    useBorderBoxResizeObserver(scrollAreaRef, handleResize);
+
+    // Listen to scroll events and update the thumb's positioning accordingly.
+    useLayoutEffect(() => {
+      const scrollAreaEl = scrollAreaRef.current!;
+      const positionElement = positionRef.current!;
+
+      // We only need to respond to scroll events when a scroll area is visibile in the viewport.
+      const scrollAreaObserver = new IntersectionObserver(
+        function handleScrollAreaViewChange([entry]) {
+          if (entry.isIntersecting) {
+            positionElement.addEventListener('scroll', handleScroll);
+            handleScroll();
+            return;
+          }
+          // Scroll area not in view, clean up scroll listener
+          positionElement.removeEventListener('scroll', handleScroll);
         },
         {
           root: null,
@@ -271,68 +332,149 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         }
       );
 
-      handleScroll();
-      observer.observe(scrollAreaEl);
+      // Add listeners immediately if we're already in view.
+      if (isInViewport(scrollAreaEl)) {
+        handleScroll();
+      }
+
+      scrollAreaObserver.observe(scrollAreaEl);
 
       return function cleanup() {
-        observer.disconnect();
-        positionEl.removeEventListener('scroll', handleScroll);
-        dispatch({ type: 'REMOVE_SCROLLING_ATTRIBUTES' });
+        scrollAreaObserver.disconnect();
+        positionElement.removeEventListener('scroll', handleScroll);
       };
 
       function handleScroll() {
-        dispatch({ type: 'UPDATE_THUMBS' });
-      }
-    }, [usesNative, dispatch]);
-
-    // NOTE: experiemtal, ignore for now plz!
-    React.useImperativeHandle(forwardedRef, () => ({
-      ...scrollAreaRef.current!,
-      set scrollTop(val: number) {
-        if (positionRef.current) {
-          positionRef.current.scrollTop = val;
+        const thumbXElement = thumbXRef.current;
+        const thumbYElement = thumbYRef.current;
+        if (thumbXElement) {
+          updateThumbPosition({
+            thumbElement: thumbXElement,
+            axis: 'x',
+            positionElement,
+          });
         }
-      },
-      get scrollTop() {
-        return positionRef.current!.scrollTop;
-      },
-    }));
+        if (thumbYElement) {
+          updateThumbPosition({
+            thumbElement: thumbYElement,
+            axis: 'y',
+            positionElement,
+          });
+        }
+      }
+    }, [dispatch]);
 
-    const ref = useComposedRefs(scrollAreaRef, forwardedRef);
+    // Determine whether or not content is overflowing in either direction and update context
+    // accordingly.
+    useLayoutEffect(() => {
+      const contentIsOverflowingX = shouldOverflow(positionRef.current!, { axis: 'x' });
+      const contentIsOverflowingY = shouldOverflow(positionRef.current!, { axis: 'y' });
+      if (
+        contentIsOverflowingX !== context.contentIsOverflowingX ||
+        contentIsOverflowingY !== context.contentIsOverflowingY
+      ) {
+        dispatch({
+          type: ScrollAreaEvents.SetContentOverflowing,
+          x: contentIsOverflowingX,
+          y: contentIsOverflowingY,
+        });
+      }
+    }, [
+      context.contentIsOverflowingX,
+      context.contentIsOverflowingY,
+      dispatch,
+      positionRef,
 
-    // TODO: Remove
-    const count = React.useRef(0);
+      // trigger update when any size changes occur
+      context.scrollAreaSize,
+      context.contentAreaSize,
+      context.positionSize,
+      context.scrollbarYSize,
+      context.scrollbarXSize,
+      context.trackYSize,
+      context.trackXSize,
+    ]);
+
+    // Adds attribute to the body element so an app can know when a scrollarea is active, so we can
+    // disable pointer events on all other elements on the screen until scrolling stops.
+    const isScrolling = checkIsScrolling(reducerState.state);
     React.useEffect(() => {
-      console.log('re-rendered ', count.current++);
-    });
+      isScrolling
+        ? document.body.setAttribute('data-interop-scrolling', '')
+        : document.body.removeAttribute('data-interop-scrolling');
+      return function () {
+        document.body.removeAttribute('data-interop-scrolling');
+      };
+    }, [isScrolling]);
+
+    // Defined CSS custom properties to determine styles based on sizes and positioning of child
+    // elements.
+    //
+    // We need an offset value to determine whether or not the content area should add padding to
+    // account for the size of the scrollbar.
+    //
+    // Only offset if:
+    //  - overflow is `scroll` and scrollbar autohide is `never`
+    //  - overflow is `auto`, scrollbar autohide is `never`, and the axis has overflowing content
+    //
+    // Do not offset if:
+    //  - scrollbar autohide is `scroll` (scrollbars overlap content in this case)
+    //  - overflow is `auto` and scrollbar autohide is `never`
+    //  - overflow is `hidden` or `visible` (scrollbars are hidden no matter what in either case)
+    const shouldOffsetX =
+      (overflowX === 'scroll' && scrollbarAutoHide === 'never') ||
+      (overflowX === 'auto' && reducerState.contentIsOverflowingX);
+    const shouldOffsetY =
+      (overflowY === 'scroll' && scrollbarAutoHide === 'never') ||
+      (overflowY === 'auto' && reducerState.contentIsOverflowingY);
+
+    const style: any = {
+      [CSS_PROPS.scrollbarXOffset]:
+        shouldOffsetX && reducerState.scrollbarXSize.height
+          ? reducerState.scrollbarXSize.height + 'px'
+          : 0,
+      [CSS_PROPS.scrollbarYOffset]:
+        shouldOffsetY && reducerState.scrollbarYSize.width
+          ? reducerState.scrollbarYSize.width + 'px'
+          : 0,
+      [CSS_PROPS.scrollbarXSize]: reducerState.scrollbarXSize.height
+        ? reducerState.scrollbarXSize.height + 'px'
+        : 0,
+      [CSS_PROPS.scrollbarYSize]: reducerState.scrollbarYSize.width
+        ? reducerState.scrollbarYSize.width + 'px'
+        : 0,
+      [CSS_PROPS.scrollAreaWidth]: reducerState.scrollAreaSize.width
+        ? reducerState.scrollAreaSize.width + 'px'
+        : 'auto',
+      [CSS_PROPS.scrollAreaHeight]: reducerState.scrollAreaSize.height
+        ? reducerState.scrollAreaSize.height + 'px'
+        : 'auto',
+      [CSS_PROPS.positionWidth]: reducerState.positionSize.width
+        ? reducerState.positionSize.width + 'px'
+        : 'auto',
+      [CSS_PROPS.positionHeight]: reducerState.positionSize.height
+        ? reducerState.positionSize.height + 'px'
+        : 'auto',
+    };
 
     return (
-      <NativeScrollContext.Provider value={usesNative}>
-        <ScrollAreaRefsContext.Provider value={refsContext}>
-          <ScrollAreaContext.Provider value={ctx}>
-            <DispatchContext.Provider value={dispatch}>
-              <Comp
-                {...interopDataAttrObj('root')}
-                ref={ref}
-                {...domProps}
-                style={
-                  // For native fallback, the scrollarea wrapper itself is scrollable rather than
-                  // the position element.
-                  usesNative
-                    ? {
-                        ...domProps.style,
-                        overflowX,
-                        overflowY,
-                      }
-                    : domProps.style
-                }
-              >
-                {children}
-              </Comp>
-            </DispatchContext.Provider>
-          </ScrollAreaContext.Provider>
-        </ScrollAreaRefsContext.Provider>
-      </NativeScrollContext.Provider>
+      <ScrollAreaRefsContext.Provider value={refs}>
+        <ScrollAreaContext.Provider value={context}>
+          <DispatchContext.Provider value={dispatch}>
+            <Comp
+              {...domProps}
+              ref={ref}
+              data-scrolling={isScrolling ? '' : undefined}
+              style={{
+                ...domProps.style,
+                ...style,
+              }}
+            >
+              {children}
+            </Comp>
+          </DispatchContext.Provider>
+        </ScrollAreaContext.Provider>
+      </ScrollAreaRefsContext.Provider>
     );
   }
 );
@@ -368,14 +510,17 @@ const ScrollAreaPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, ScrollAre
   }
 );
 
-const ScrollAreaPosition = forwardRef<typeof POSITION_DEFAULT_TAG, ScrollAreaPositionProps>(
-  function ScrollAreaPosition(props, forwardedRef) {
+const ScrollAreaPosition = memo(
+  forwardRef<typeof POSITION_DEFAULT_TAG, ScrollAreaPositionProps>(function ScrollAreaPosition(
+    props,
+    forwardedRef
+  ) {
     return useNativeScrollArea() ? (
       <React.Fragment>{props.children}</React.Fragment>
     ) : (
       <ScrollAreaPositionImpl ref={forwardedRef} {...props} />
     );
-  }
+  })
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -390,12 +535,40 @@ type ScrollAreaContentAreaDOMProps = React.ComponentPropsWithoutRef<
 type ScrollAreaContentAreaOwnProps = {};
 type ScrollAreaContentAreaProps = ScrollAreaContentAreaDOMProps & ScrollAreaContentAreaOwnProps;
 
+const ScrollAreaContentAreaImpl = forwardRef<
+  typeof CONTENT_AREA_DEFAULT_TAG,
+  ScrollAreaContentAreaProps
+>(function ScrollAreaContentAreaImpl(props, forwardedRef) {
+  const { as: Comp = CONTENT_AREA_DEFAULT_TAG, ...domProps } = props;
+  const { contentAreaRef } = useScrollAreaRefs(CONTENT_AREA_NAME);
+  const dispatch = useDispatchContext(CONTENT_AREA_NAME);
+  const ref = useComposedRefs(forwardedRef, contentAreaRef);
+
+  const handleResize = React.useCallback(
+    (size: ResizeObserverSize) => {
+      dispatch({
+        type: ScrollAreaEvents.HandleContentAreaResize,
+        width: size.inlineSize,
+        height: size.blockSize,
+      });
+    },
+    [dispatch]
+  );
+  useBorderBoxResizeObserver(contentAreaRef, handleResize);
+
+  return <Comp {...interopDataAttrObj('contentArea')} ref={ref} {...domProps} />;
+});
+
 const ScrollAreaContentArea = forwardRef<
   typeof CONTENT_AREA_DEFAULT_TAG,
   ScrollAreaContentAreaProps
 >(function ScrollAreaContentArea(props, forwardedRef) {
   const { as: Comp = CONTENT_AREA_DEFAULT_TAG, ...domProps } = props;
-  return <Comp {...interopDataAttrObj('contentArea')} ref={forwardedRef} {...domProps} />;
+  return useNativeScrollArea() ? (
+    <Comp {...interopDataAttrObj('contentArea')} ref={forwardedRef} {...domProps} />
+  ) : (
+    <ScrollAreaContentAreaImpl ref={forwardedRef} {...domProps} />
+  );
 });
 
 /* -------------------------------------------------------------------------------------------------
@@ -410,54 +583,50 @@ type ScrollAreaScrollbarDOMProps = React.ComponentPropsWithoutRef<typeof SCROLLB
 type ScrollAreaScrollbarOwnProps = {};
 type ScrollAreaScrollbarProps = ScrollAreaScrollbarDOMProps & ScrollAreaScrollbarOwnProps;
 
-type ScrollbarContextValue = {
-  axis: Axis;
-};
-
 type InternalScrollbarProps = ScrollAreaScrollbarProps & {
   axis: Axis;
+  name: string;
 };
 
-const [ScrollbarContext, useScrollbarContext] = createContext<ScrollbarContextValue>(
+const [ScrollbarContext, useScrollbarContext] = createContext<Axis>(
   'ScrollbarContext',
   'ScrollAreaScrollbarImpl'
 );
 
 const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, InternalScrollbarProps>(
   function ScrollAreaScrollbarImpl(props, forwardedRef) {
-    const { as: Comp = SCROLLBAR_DEFAULT_TAG, axis, ...domProps } = props;
+    const { as: Comp = SCROLLBAR_DEFAULT_TAG, axis, name, ...domProps } = props;
+    const dispatch = useDispatchContext(name);
+    const {
+      [axis === 'x' ? 'contentIsOverflowingX' : 'contentIsOverflowingY']: contentIsOverflowing,
+    } = useScrollAreaContext(name);
+    const refsContext = useScrollAreaRefs(name);
+    const scrollbarRef = getScrollbarRef(axis, refsContext);
+    const ref = useComposedRefs(scrollbarRef, forwardedRef);
 
-    const dispatch = useDispatchContext();
-    const { scrollAreaRef } = useScrollAreaRefs(axis === 'x' ? SCROLLBAR_X_NAME : SCROLLBAR_Y_NAME);
-
-    const ctx = React.useMemo(() => ({ axis }), [axis]);
-    const ownRef = React.useRef<HTMLDivElement>(null);
-    const ref = useComposedRefs(ownRef, forwardedRef);
-
-    useLayoutEffect(() => {
-      const scrollAreaEl = scrollAreaRef.current!;
-      const scrollbarEl = ownRef.current!;
-      if (!scrollAreaEl || !scrollbarEl) {
-        return;
-      }
-
-      const observer = new ResizeObserver((entries) => {
-        // No need to loop, we're only observing a single element.
-        const entry = entries[0];
-        const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
+    const handleResize = React.useCallback(
+      (size: ResizeObserverSize) => {
         dispatch({
-          type: 'HANDLE_SCROLLBAR_AREA_RESIZE',
-          width: borderBoxSize.inlineSize,
-          height: borderBoxSize.blockSize,
+          type: ScrollAreaEvents.HandleScrollbarResize,
+          width: size.inlineSize,
+          height: size.blockSize,
           axis,
         });
-      });
-      observer.observe(scrollbarEl);
-    }, [scrollAreaRef, axis, dispatch]);
+      },
+      [dispatch, axis]
+    );
+    useBorderBoxResizeObserver(scrollbarRef, handleResize);
 
     return (
-      <ScrollbarContext.Provider value={ctx}>
-        <Comp ref={ref} {...domProps} />
+      <ScrollbarContext.Provider value={axis}>
+        <Comp
+          ref={ref}
+          {...domProps}
+          style={{
+            ...domProps.style,
+            display: !contentIsOverflowing ? 'none' : undefined,
+          }}
+        />
       </ScrollbarContext.Provider>
     );
   }
@@ -465,32 +634,40 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
 
 type ScrollAreaScrollbarXProps = ScrollAreaScrollbarProps;
 
-const ScrollAreaScrollbarX = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollAreaScrollbarXProps>(
-  function ScrollAreaScrollbarX(props, forwardedRef) {
+const ScrollAreaScrollbarX = memo(
+  forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollAreaScrollbarXProps>(function ScrollAreaScrollbarX(
+    props,
+    forwardedRef
+  ) {
     return useNativeScrollArea() ? null : (
       <ScrollAreaScrollbarImpl
-        {...interopDataAttrObj('scrollBarX')}
+        {...interopDataAttrObj('scrollbarX')}
         ref={forwardedRef}
         {...props}
         axis="x"
+        name={SCROLLBAR_X_NAME}
       />
     );
-  }
+  })
 );
 
 type ScrollAreaScrollbarYProps = ScrollAreaScrollbarProps;
 
-const ScrollAreaScrollbarY = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollAreaScrollbarYProps>(
-  function ScrollAreaScrollbarY(props, forwardedRef) {
+const ScrollAreaScrollbarY = memo(
+  forwardRef<typeof SCROLLBAR_DEFAULT_TAG, ScrollAreaScrollbarYProps>(function ScrollAreaScrollbarY(
+    props,
+    forwardedRef
+  ) {
     return useNativeScrollArea() ? null : (
       <ScrollAreaScrollbarImpl
-        {...interopDataAttrObj('scrollBarY')}
+        {...interopDataAttrObj('scrollbarY')}
         ref={forwardedRef}
         {...props}
         axis="y"
+        name={SCROLLBAR_Y_NAME}
       />
     );
-  }
+  })
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -506,35 +683,52 @@ type ScrollAreaTrackProps = ScrollAreaTrackDOMProps & ScrollAreaTrackOwnProps;
 const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProps>(
   function ScrollAreaTrack(props, forwardedRef) {
     const { as: Comp = TRACK_DEFAULT_TAG, ...domProps } = props;
-    const { axis } = useScrollbarContext(TRACK_NAME);
-    const { scrollAnimationQueue, prefersReducedMotion } = useScrollAreaContext(TRACK_NAME);
-    const dispatch = useDispatchContext();
+    const axis = useScrollbarContext(TRACK_NAME);
+    const dispatch = useDispatchContext(TRACK_NAME);
     const refsContext = useScrollAreaRefs(TRACK_NAME);
-    const { scrollAreaRef, positionRef } = refsContext;
+    const { prefersReducedMotion, scrollAnimationQueue } = useScrollAreaContext(TRACK_NAME);
+    const { positionRef } = refsContext;
+    const trackRef = getTrackRef(axis, refsContext);
     const thumbRef = getThumbRef(axis, refsContext);
+    const ref = useComposedRefs(trackRef, forwardedRef);
 
-    const ownRef = React.useRef<HTMLDivElement>(null);
-    const ref = useComposedRefs(ownRef, forwardedRef);
+    const handleResize = React.useCallback(
+      (size: ResizeObserverSize) => {
+        dispatch({
+          type: ScrollAreaEvents.HandleTrackResize,
+          width: size.inlineSize,
+          height: size.blockSize,
+          axis,
+        });
+      },
+      [axis, dispatch]
+    );
+    useBorderBoxResizeObserver(trackRef, handleResize);
+    const rafIdRef = React.useRef<number>();
 
     React.useEffect(() => {
       let trackPointerDownTimeoutId: number | null = null;
-      let stopAnimationRaf: number;
-      const { doc, win } = getOwnerGlobals(scrollAreaRef);
-      const positionEl = positionRef.current!;
-      const trackEl = ownRef.current!;
-      const scrollAreaEl = scrollAreaRef.current!;
+      let trackPointerUpTimeoutId: number | null = null;
+      const trackEl = trackRef.current!;
       const thumbEl = thumbRef.current!;
+      const positionElement = positionRef.current!;
 
-      if (!positionEl || !trackEl || !scrollAreaEl || !thumbEl) {
-        // TODO: dev warnings
-        return;
+      if (!trackEl || !thumbEl) {
+        // TODO:
+        throw Error('PAPA NEEDS SOME REFS!');
       }
 
       trackEl.addEventListener('pointerdown', handlePointerDown);
       return function () {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        window.cancelAnimationFrame(rafIdRef.current!);
+        window.clearTimeout(trackPointerDownTimeoutId!);
+        window.clearTimeout(trackPointerUpTimeoutId!);
         trackEl.removeEventListener('pointerdown', handlePointerDown);
-        doc.removeEventListener('pointerup', handlePointerUp);
-        win.cancelAnimationFrame(stopAnimationRaf);
+        document.removeEventListener('pointermove', handlePointerMove);
+        document.removeEventListener('pointerup', handlePointerUp);
+        dispatch({ type: ScrollAreaEvents.StopTracking });
+        scrollAnimationQueue.stop();
       };
 
       function handlePointerDown(event: PointerEvent) {
@@ -542,61 +736,144 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
 
         const direction = determineScrollDirectionFromTrackClick({ event, axis, thumbEl });
 
-        dispatch({ type: 'ADD_SCROLLING_ATTRIBUTES' });
-        trackEl.setPointerCapture(event.pointerId);
-        doc.addEventListener('pointerup', handlePointerUp);
+        document.addEventListener('pointermove', handlePointerMove);
+        document.addEventListener('pointerup', handlePointerUp);
 
+        dispatch({ type: ScrollAreaEvents.StartTracking });
+        trackEl.setPointerCapture(event.pointerId);
+        window.clearTimeout(trackPointerUpTimeoutId!);
+
+        const visibleSize = getClientSize(positionElement, { axis });
         if (prefersReducedMotion) {
-          dispatch({ type: 'SCROLL_BY_PAGE_IMMEDIATELY', axis, direction });
+          // Scroll immediately
+          const distance = getPagedScrollDistance({ direction, visibleSize });
+          const value = getNewScrollPosition(positionElement, { direction, distance, axis });
+          setScrollPosition(positionElement, { axis, value });
         } else {
-          dispatch({
-            type: 'SCROLL_BY_PAGE_QUEUE_ANIMATION',
-            axis,
-            direction,
-            scrollAnimationQueue,
+          // Queue scroll animation
+          scrollAnimationQueue.enqueue(() => {
+            let totalScrollDistance = getPagedScrollDistance({ direction, visibleSize });
+            return animate({
+              duration: 200,
+              timing: bezier(0.16, 0, 0.73, 1),
+              draw(progress) {
+                const distance = totalScrollDistance * Math.min(progress, 1);
+                const value = getNewScrollPosition(positionElement, {
+                  direction,
+                  distance,
+                  axis,
+                });
+                totalScrollDistance -= distance;
+                setScrollPosition(positionElement, { axis, value });
+              },
+              rafIdRef,
+            });
           });
         }
 
-        // TODO: After some time (~400ms?), if the user still has the pointer down we'll start to
-        //       scroll further to some relative distance near the pointer in relation to the track.
-        trackPointerDownTimeoutId = win.setTimeout(() => {
-          dispatch({
-            type: 'SCROLL_RELATIVE_TO_POINTER_ON_TRACK',
-            axis,
-            direction,
-            pointerPosition: getPointerPosition(event),
-          });
-          win.clearTimeout(trackPointerDownTimeoutId!);
+        // After some time 400ms, if the user still has the pointer down we'll start to scroll
+        // further to some relative distance near the pointer in relation to the track.
+        trackPointerDownTimeoutId = window.setTimeout(() => {
+          const pointerPosition = getPointerPosition(event);
+          const { position: trackPosition, size: trackSize } = getLogicalRect(trackEl, { axis });
+          const pointerPositionRelativeToTrack = Math.round(pointerPosition[axis] - trackPosition);
+          const viewportRatioFromPointer =
+            Math.round((pointerPositionRelativeToTrack / trackSize) * 100) / 100;
+          const scrollSize = getScrollSize(positionElement, { axis });
+          const visibleSize = getClientSize(positionElement, { axis });
+          const destScrollPosition =
+            direction === 'start'
+              ? viewportRatioFromPointer * scrollSize
+              : viewportRatioFromPointer * scrollSize - visibleSize;
+
+          const startPosition = getScrollPosition(positionElement, { axis });
+
+          let totalScrollDistance =
+            destScrollPosition < startPosition
+              ? destScrollPosition - startPosition - visibleSize / 2
+              : destScrollPosition - startPosition + visibleSize / 2;
+
+          const durationBasis = Math.round(Math.abs(totalScrollDistance));
+          const duration = clamp(durationBasis, 100, 500);
+
+          // If the initial scroll event already moved us past the point where we need to go
+          if (
+            (direction === 'start' && totalScrollDistance > 0) ||
+            (direction === 'end' && totalScrollDistance < 0)
+          ) {
+            return;
+          }
+
+          if (prefersReducedMotion) {
+            const newPosition = getNewScrollPosition(positionElement, {
+              direction,
+              distance: totalScrollDistance,
+              axis,
+            });
+            setScrollPosition(positionElement, { axis, value: newPosition });
+          } else {
+            scrollAnimationQueue.enqueue(() =>
+              animate({
+                duration,
+                timing: (n) => n,
+                draw(progress) {
+                  const distance = round(totalScrollDistance * Math.min(progress, 1), 3);
+                  const newPosition = getNewScrollPosition(positionElement, {
+                    direction,
+                    distance,
+                    axis,
+                  });
+                  totalScrollDistance -= distance;
+                  setScrollPosition(positionElement, { axis, value: newPosition });
+                },
+                rafIdRef,
+              })
+            );
+          }
+          window.clearTimeout(trackPointerDownTimeoutId!);
         }, 400);
 
         return function () {
-          win.clearTimeout(trackPointerDownTimeoutId!);
-          win.cancelAnimationFrame(stopAnimationRaf!);
+          window.clearTimeout(trackPointerDownTimeoutId!);
         };
       }
 
-      function handlePointerUp(event: PointerEvent) {
-        dispatch({ type: 'REMOVE_SCROLLING_ATTRIBUTES' });
-        trackEl && trackEl.releasePointerCapture(event.pointerId);
-        win.clearTimeout(trackPointerDownTimeoutId!);
-        doc.removeEventListener('pointerup', handlePointerUp);
+      /**
+       * If a mouse pointer leaves the bounds of the track before the track pointer timeout has been
+       * executed, we need to clear the timeout as if the pointer was released.
+       * @param event
+       */
+      function handlePointerMove(event: PointerEvent) {
+        if (event.pointerType === 'mouse' && pointerIsOutsideElement(event, trackEl)) {
+          window.clearTimeout(trackPointerDownTimeoutId!);
+          document.removeEventListener('pointermove', handlePointerMove);
+          scrollAnimationQueue.stop();
+        }
+      }
 
-        // After the user has stopped clicking the track, we wan't to stop any queued animations
-        // from further updating the scroll position (after the current animation is finished).
-        stopAnimationRaf = win.requestAnimationFrame(
-          scrollAnimationQueue.stop.bind(scrollAnimationQueue)
-        );
+      function handlePointerUp(event: PointerEvent) {
+        trackEl.releasePointerCapture(event.pointerId);
+        window.clearTimeout(trackPointerDownTimeoutId!);
+        document.removeEventListener('pointermove', handlePointerMove);
+        document.removeEventListener('pointerup', handlePointerUp);
+        // scrollAnimationQueue.stop();
+        dispatch({ type: ScrollAreaEvents.StopTracking });
+
+        // Rapid clicks on the track will result in janky repeat animation if we stop the queue
+        // immediately. Set a short timeout to make sure the user is finished clicking and then stop
+        // the queue.
+        trackPointerUpTimeoutId = window.setTimeout(() => {
+          scrollAnimationQueue.stop();
+        }, 200);
       }
     }, [
       axis,
-      prefersReducedMotion,
-
-      // these references should be stable
       dispatch,
       positionRef,
+      prefersReducedMotion,
       scrollAnimationQueue,
-      scrollAreaRef,
       thumbRef,
+      trackRef,
     ]);
 
     return <Comp {...interopDataAttrObj('track')} ref={ref} {...domProps} data-axis={axis} />;
@@ -616,75 +893,97 @@ type ScrollAreaThumbProps = ScrollAreaThumbDOMProps & ScrollAreaThumbOwnProps;
 const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProps>(
   function ScrollAreaThumb(props, forwardedRef) {
     const { as: Comp = THUMB_DEFAULT_TAG, ...domProps } = props;
-    const { axis } = useScrollbarContext(THUMB_NAME);
+    const axis = useScrollbarContext(THUMB_NAME);
     const refsContext = useScrollAreaRefs(THUMB_NAME);
-    const { scrollAreaRef, positionRef } = refsContext;
+    const dispatch = useDispatchContext(THUMB_NAME);
+    const { positionRef } = refsContext;
     const thumbRef = getThumbRef(axis, refsContext);
-    const ref = useComposedRefs(thumbRef || null, forwardedRef);
-    const dispatch = useDispatchContext();
+    const ref = useComposedRefs(thumbRef, forwardedRef);
     const pointerStartPointRef = React.useRef<number>(0);
+    const context = useScrollAreaContext(THUMB_NAME);
 
-    React.useEffect(
-      () => {
-        const { doc } = getOwnerGlobals(scrollAreaRef);
-        const positionEl = positionRef.current!;
-        const thumbEl = thumbRef.current!;
-        const scrollAreaEl = scrollAreaRef.current!;
-
-        if (!thumbEl || !positionEl || !scrollAreaEl) {
-          return;
-        }
-
-        thumbEl.addEventListener('pointerdown', handlePointerDown);
-        return function () {
-          dispatch({ type: 'REMOVE_SCROLLING_ATTRIBUTES' });
-          thumbEl.removeEventListener('pointerdown', handlePointerDown);
-          doc.removeEventListener('pointermove', handlePointerMove);
-          doc.removeEventListener('pointerup', handlePointerUp);
-        };
-
-        function handlePointerDown(event: PointerEvent) {
-          if (!isMainClick(event)) return;
-
-          event.stopPropagation();
-
-          const pointerPosition = getPointerPosition(event)[axis];
-          dispatch({ type: 'ADD_SCROLLING_ATTRIBUTES' });
-          pointerStartPointRef.current = pointerPosition;
-          thumbEl.setPointerCapture(event.pointerId);
-          doc.addEventListener('pointerup', handlePointerUp);
-          doc.addEventListener('pointermove', handlePointerMove);
-        }
-
-        function handlePointerMove(event: PointerEvent) {
-          const pointerPosition = getPointerPosition(event)[axis];
-          dispatch({
-            type: 'MOVE_THUMB_WITH_POINTER',
-            axis,
-            pointerPosition,
-            pointerStartPointRef,
-          });
-        }
-
-        function handlePointerUp(event: PointerEvent) {
-          dispatch({ type: 'REMOVE_SCROLLING_ATTRIBUTES' });
-          thumbEl && thumbEl.releasePointerCapture(event.pointerId);
-          doc.removeEventListener('pointermove', handlePointerMove);
-          doc.removeEventListener('pointerup', handlePointerUp);
-        }
+    const handleResize = React.useCallback(
+      (size: ResizeObserverSize) => {
+        dispatch({
+          type: ScrollAreaEvents.HandleThumbResize,
+          width: size.inlineSize,
+          height: size.blockSize,
+          axis,
+        });
       },
-      // All dependencies are refs we only need to setup/teardown if the axis changes for whatever
-      // reason.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [axis, dispatch]
+      [dispatch, axis]
     );
+    useBorderBoxResizeObserver(thumbRef, handleResize);
 
-    // I don't think we'll ever reach this case, because if axis is invalid the parent scrollbar
-    // will render null, and thumb should always be rendered inside of a scrollbar. Keeping for now
-    // as an extra safeguard but consider removing.
-    if (!thumbRef) {
-      return null;
-    }
+    const mounted = React.useRef(false);
+
+    // Update the thumb's size and position anytime any element in the scroll area tree is resized.
+    useLayoutEffect(() => {
+      if (!mounted.current) {
+        mounted.current = true;
+        return;
+      }
+      const thumbElement = thumbRef.current!;
+      const positionElement = positionRef.current!;
+      updateThumbSize({ thumbElement, positionElement, axis });
+      updateThumbPosition({ thumbElement, positionElement, axis });
+    }, [
+      thumbRef,
+      positionRef,
+      axis,
+
+      // trigger update when any size changes occur
+      context.scrollAreaSize,
+      context.contentAreaSize,
+      context.positionSize,
+      context.scrollbarYSize,
+      context.scrollbarXSize,
+      context.trackYSize,
+      context.trackXSize,
+    ]);
+
+    React.useEffect(() => {
+      const thumbEl = thumbRef.current!;
+
+      thumbEl.addEventListener('pointerdown', handlePointerDown);
+      return function () {
+        thumbEl.removeEventListener('pointerdown', handlePointerDown);
+        stopThumbing();
+      };
+
+      function stopThumbing() {
+        document.removeEventListener('pointermove', handlePointerMove);
+        document.removeEventListener('pointerup', handlePointerUp);
+        dispatch({ type: ScrollAreaEvents.StopThumbing });
+      }
+
+      function handlePointerDown(event: PointerEvent) {
+        if (!isMainClick(event)) return;
+
+        const pointerPosition = getPointerPosition(event)[axis];
+        event.stopPropagation();
+        pointerStartPointRef.current = pointerPosition;
+        thumbEl.setPointerCapture(event.pointerId);
+        document.addEventListener('pointerup', handlePointerUp);
+        document.addEventListener('pointermove', handlePointerMove);
+        dispatch({ type: ScrollAreaEvents.StartThumbing });
+      }
+
+      function handlePointerMove(event: PointerEvent) {
+        const pointerPosition = getPointerPosition(event)[axis];
+        dispatch({
+          type: ScrollAreaEvents.MoveThumbWithPointer,
+          axis,
+          pointerPosition,
+          pointerStartPointRef,
+        });
+      }
+
+      function handlePointerUp(event: PointerEvent) {
+        thumbEl.releasePointerCapture(event.pointerId);
+        stopThumbing();
+      }
+    }, [axis, dispatch, thumbRef]);
 
     return (
       <Comp
@@ -731,105 +1030,157 @@ type ScrollAreaButtonProps = ScrollAreaButtonDOMProps & ScrollAreaButtonOwnProps
 // We are concerned more about the bezier curve effect this creates vs. the actual values.
 const BUTTON_SCROLL_TIME = 135;
 
-function useScrollbarButton(
-  direction: LogicalDirection,
-  name: string,
-  props: ScrollAreaButtonStartProps
-) {
-  const { axis } = useScrollbarContext(name);
-  const actualDirection = getActualScrollDirection(direction, axis);
-  const { prefersReducedMotion } = useScrollAreaContext(name);
-  const refsContext = useScrollAreaRefs(name);
-  const { positionRef, scrollAreaRef } = refsContext;
-  const buttonRef = getButtonRef(actualDirection, refsContext);
+type ScrollAreaButtonInternalProps = ScrollAreaButtonStartProps & {
+  direction: LogicalDirection;
+  name: string;
+};
 
-  const dispatch = useDispatchContext();
+const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonInternalProps>(
+  function ScrollAreaButton(props, forwardedRef) {
+    const { as: Comp = BUTTON_DEFAULT_TAG, direction, name, ...domProps } = props;
+    const axis = useScrollbarContext(name);
+    const dispatch = useDispatchContext(name);
+    const refsContext = useScrollAreaRefs(name);
+    const { prefersReducedMotion, scrollAnimationQueue } = useScrollAreaContext(name);
+    const actualDirection = getActualScrollDirection(direction, axis);
+    const { positionRef } = refsContext;
+    const buttonRef = getButtonRef(actualDirection, refsContext);
+    const ref = useComposedRefs(buttonRef, forwardedRef);
+    const rafIdRef = React.useRef<number>();
 
-  React.useEffect(() => {
-    const { doc } = getOwnerGlobals(scrollAreaRef);
-    const positionEl = positionRef.current!;
-    const buttonEl = buttonRef.current!;
-    const scrollAreaEl = scrollAreaRef.current!;
-    let buttonPressCleanup: (() => void) | undefined;
+    React.useEffect(() => {
+      const buttonElement = buttonRef.current!;
+      const positionElement = positionRef.current!;
+      let buttonPointerDownTimeoutId: number;
 
-    if (!positionEl || !buttonEl || !scrollAreaEl) {
-      return;
-    }
-
-    buttonEl.addEventListener('pointerdown', handlePointerDown);
-    return function () {
-      buttonPressCleanup && buttonPressCleanup();
-      buttonEl.removeEventListener('pointerdown', handlePointerDown);
-      doc.removeEventListener('pointerup', handlePointerUp);
-    };
-
-    function scrollAfterButtonPress() {
-      const delta = direction === 'start' ? -1 : 1;
-
-      if (!canScroll({ element: positionEl, axis, delta })) {
-        return () => void null;
+      if (!buttonElement) {
+        // TODO:
+        throw Error('arrrrg ref feed me');
       }
 
-      // TODO: Clean up for better readability
-      return prefersReducedMotion
-        ? (() => {
-            // dispatch({ type: 'SCROLL_AFTER_BUTTON_PRESS_IMMEDIATELY' });
-            scrollBy({ element: positionEl, axis, value: 51 * delta });
-            return () => void null;
-          })()
-        : animate({
-            duration: BUTTON_SCROLL_TIME,
-            timing: bezier(0.16, 0, 0.73, 1),
-            draw(progress) {
-              scrollBy({ element: positionEl, axis, value: progress * 15 * delta });
-              // scrollPositionElement(progress * 15 * n);
-            },
-          });
-    }
+      buttonElement.addEventListener('pointerdown', handlePointerDown);
 
-    function handlePointerDown(event: PointerEvent) {
-      if (!isMainClick(event)) return;
-      const start = performance.now();
+      return function () {
+        buttonElement.removeEventListener('pointerdown', handlePointerDown);
+        document.removeEventListener('pointerup', handlePointerUp);
+        document.removeEventListener('pointermove', handlePointerMove);
+        window.clearTimeout(buttonPointerDownTimeoutId!);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        window.cancelAnimationFrame(rafIdRef.current!);
+        dispatch({ type: ScrollAreaEvents.StopButtonPress });
+      };
 
-      buttonEl.setPointerCapture(event.pointerId);
-      doc.addEventListener('pointerup', handlePointerUp);
-      dispatch({ type: 'ADD_SCROLLING_ATTRIBUTES' });
-      buttonPressCleanup = scrollAfterButtonPress();
+      function handlePointerDown(event: PointerEvent) {
+        if (!isMainClick(event)) return;
 
-      // TODO: Handle case for user holding down the button, in which case
-      // we will repeat the `scrollAfterButtonPress` call on a ~300 ms
-      // interval until they release the pointer. Scrolling will
-      // also need to pause if the pointer leaves the button, but
-      // it should resume should they mouse back over it before releasing
-      // the pointer.
-    }
+        buttonElement.setPointerCapture(event.pointerId);
+        document.addEventListener('pointerup', handlePointerUp);
+        document.addEventListener('pointermove', handlePointerMove);
+        dispatch({ type: ScrollAreaEvents.StartButtonPress });
 
-    function handlePointerUp(event: PointerEvent) {
-      buttonEl && buttonEl.releasePointerCapture(event.pointerId);
-      dispatch({ type: 'REMOVE_SCROLLING_ATTRIBUTES' });
+        if (prefersReducedMotion) {
+          const delta = direction === 'start' ? -1 : 1;
+          scrollBy(positionElement, { axis, value: 51 * delta });
+        } else {
+          const delta = direction === 'start' ? -1 : 1;
 
-      buttonEl.removeEventListener('pointerup', handlePointerUp);
-    }
-  }, [axis, buttonRef, direction, dispatch, positionRef, prefersReducedMotion, scrollAreaRef]);
+          if (
+            canScroll(positionElement, { axis, delta }) //  &&
+            // Only queue new animation if the queue's state isn't already adding to the queue or
+            // pending a current animation. The prevents fast button clicks from creating an effect
+            // where the last queued animation stops too long after the user has stopped clicking.
+            // !scrollAnimationQueue.isBusy
+          ) {
+            scrollAnimationQueue.enqueue(() =>
+              animate({
+                duration: BUTTON_SCROLL_TIME,
+                timing: bezier(0.16, 0, 0.73, 1),
+                draw(progress) {
+                  scrollBy(positionElement, { axis, value: progress * 15 * delta });
+                },
+                rafIdRef,
+              })
+            );
+          }
+        }
 
-  // @ts-ignore
-  const { as, ...restProps } = props;
-  const buttonProps = { ...restProps, 'data-axis': axis };
+        // Handle case for user holding down the button, in which case we will repeat the
+        // `scrollAfterButtonPress` call on a ~300 ms interval until they release the pointer.
+        // Scrolling will also need to pause if the pointer leaves the button, but it should resume
+        // should they mouse back over it before releasing the pointer. After some time (~400ms?),
+        // if the user still has the pointer down we'll start to scroll further to some relative
+        // distance near the pointer in relation to the track.
+        buttonPointerDownTimeoutId = window.setTimeout(() => {
+          if (prefersReducedMotion) {
+            // TODO:
+          } else {
+            const pointerId = event.pointerId;
+            (function keepScrolling() {
+              const delta = direction === 'start' ? -1 : 1;
+              if (canScroll(positionElement, { axis, delta })) {
+                scrollAnimationQueue.enqueue(() =>
+                  animate({
+                    duration: BUTTON_SCROLL_TIME,
+                    timing: (n) => n,
+                    draw(progress) {
+                      scrollBy(positionElement, { axis, value: progress * 15 * delta });
+                    },
+                    done: buttonElement.hasPointerCapture(pointerId) ? keepScrolling : undefined,
+                    rafIdRef,
+                  })
+                );
+              }
+            })();
+          }
+          window.clearTimeout(buttonPointerDownTimeoutId!);
+        }, 400);
+      }
 
-  return {
-    buttonRef,
-    buttonProps,
-  };
-}
+      /**
+       * If a mouse pointer leaves the bounds of the button before the track pointer timeout has been
+       * executed, we need to clear the timeout as if the pointer was released.
+       * @param event
+       */
+      function handlePointerMove(event: PointerEvent) {
+        if (event.pointerType === 'mouse' && pointerIsOutsideElement(event, buttonElement)) {
+          window.clearTimeout(buttonPointerDownTimeoutId!);
+          document.removeEventListener('pointermove', handlePointerMove);
+        }
+      }
+
+      function handlePointerUp(event: PointerEvent) {
+        window.clearTimeout(buttonPointerDownTimeoutId!);
+        buttonElement.releasePointerCapture(event.pointerId);
+        buttonElement.removeEventListener('pointerup', handlePointerUp);
+        dispatch({ type: ScrollAreaEvents.StopButtonPress });
+      }
+    }, [
+      buttonRef,
+      axis,
+      direction,
+      dispatch,
+      prefersReducedMotion,
+      scrollAnimationQueue,
+      positionRef,
+    ]);
+
+    return <Comp {...domProps} ref={ref} data-axis={axis} />;
+  }
+);
 
 type ScrollAreaButtonStartProps = ScrollAreaButtonProps;
 
 const ScrollAreaButtonStart = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonStartProps>(
   function ScrollAreaButtonStart(props, forwardedRef) {
-    const { as: Comp = BUTTON_DEFAULT_TAG } = props;
-    const { buttonRef, buttonProps } = useScrollbarButton('start', BUTTON_START_NAME, props);
-    const ref = useComposedRefs(buttonRef, forwardedRef);
-    return <Comp {...interopDataAttrObj('buttonStart')} ref={ref} {...buttonProps} />;
+    return (
+      <ScrollAreaButton
+        {...props}
+        name={BUTTON_START_NAME}
+        direction="start"
+        {...interopDataAttrObj('buttonStart')}
+        ref={forwardedRef}
+      />
+    );
   }
 );
 
@@ -837,10 +1188,15 @@ type ScrollAreaButtonEndProps = ScrollAreaButtonProps;
 
 const ScrollAreaButtonEnd = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonEndProps>(
   function ScrollAreaButtonEnd(props, forwardedRef) {
-    const { as: Comp = BUTTON_DEFAULT_TAG } = props;
-    const { buttonRef, buttonProps } = useScrollbarButton('end', BUTTON_END_NAME, props);
-    const ref = useComposedRefs(buttonRef, forwardedRef);
-    return <Comp {...interopDataAttrObj('buttonEnd')} ref={ref} {...buttonProps} />;
+    return (
+      <ScrollAreaButton
+        {...props}
+        name={BUTTON_END_NAME}
+        direction="end"
+        {...interopDataAttrObj('buttonEnd')}
+        ref={forwardedRef}
+      />
+    );
   }
 );
 
@@ -856,13 +1212,23 @@ type ScrollAreaResizeHandleDOMProps = React.ComponentPropsWithoutRef<
 type ScrollAreaResizeHandleOwnProps = {};
 type ScrollAreaResizeHandleProps = ScrollAreaResizeHandleDOMProps & ScrollAreaResizeHandleOwnProps;
 
-const ScrollAreaResizeHandle = forwardRef<
+const ScrollAreaResizeHandleImpl = forwardRef<
   typeof RESIZE_HANDLE_DEFAULT_TAG,
   ScrollAreaResizeHandleProps
->(function ScrollAreaResizeHandle(props, forwardedRef) {
+>(function ScrollAreaResizeHandleImpl(props, forwardedRef) {
   const { as: Comp = RESIZE_HANDLE_DEFAULT_TAG, ...domProps } = props;
   return <Comp {...interopDataAttrObj('resizeHandle')} ref={forwardedRef} {...domProps} />;
 });
+
+const ScrollAreaResizeHandle = memo(
+  forwardRef<typeof RESIZE_HANDLE_DEFAULT_TAG, ScrollAreaResizeHandleProps>(
+    function ScrollAreaResizeHandle(props, forwardedRef) {
+      return useNativeScrollArea() ? null : (
+        <ScrollAreaResizeHandleImpl ref={forwardedRef} {...props} />
+      );
+    }
+  )
+);
 
 interface ScrollAreaStaticProps {
   Position: typeof ScrollAreaPosition;
@@ -948,22 +1314,22 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
       pointerEvents: 'none !important',
     },
   },
-  scrollBarX: {
+  scrollbarX: {
     ...cssReset(SCROLLBAR_DEFAULT_TAG),
     ...commonScrollbarStyles,
     height: `16px`,
     left: 0,
     bottom: 0,
-    right: 0,
+    right: `var(${CSS_PROPS.scrollbarYOffset}, 0)`,
     flexDirection: 'row',
   },
-  scrollBarY: {
+  scrollbarY: {
     ...cssReset(SCROLLBAR_DEFAULT_TAG),
     ...commonScrollbarStyles,
     width: '16px',
     right: 0,
     top: 0,
-    bottom: 0,
+    bottom: `var(${CSS_PROPS.scrollbarXOffset}, 0)`,
     flexDirection: 'column',
   },
   track: {
@@ -1039,10 +1405,6 @@ function getMaxScrollStartValue(node: Element, axis: Axis) {
   return axis === 'x' ? getMaxScrollLeftValue(node) : getMaxScrollTopValue(node);
 }
 
-function ucFirst(string: string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 function getActualScrollDirection(dir: LogicalDirection, axis: Axis): ScrollDirection {
   if (dir === 'start') {
     return axis === 'x' ? 'left' : 'up';
@@ -1057,29 +1419,20 @@ function getPointerPosition(event: PointerEvent): PointerPosition {
   };
 }
 
-function getNewScrollRatio(
-  pointerPosition: { x: number; y: number } | false,
-  track: HTMLElement | null,
-  axis: Axis
-) {
-  if (!track || !pointerPosition) {
-    return null;
-  }
-  const { left, width, bottom, height } = track.getBoundingClientRect();
-  const delta = axis === 'y' ? bottom - pointerPosition.y : pointerPosition.x - left;
-  return delta / (axis === 'y' ? height : width);
-}
-
-function percentToValue(percent: number, min: number, max: number) {
-  return (max - min) * percent + min;
-}
-
 function clamp(val: number, min: number, max: number) {
   return val > max ? max : val < min ? min : val;
 }
 
+function getScrollbarRef(axis: Axis, ctx: ScrollAreaRefs) {
+  return axis === 'x' ? ctx.scrollbarXRef : ctx.scrollbarYRef;
+}
+
 function getThumbRef(axis: Axis, ctx: ScrollAreaRefs) {
-  return axis === 'x' ? ctx.scrollbarXThumbRef : ctx.scrollbarYThumbRef;
+  return axis === 'x' ? ctx.thumbXRef : ctx.thumbYRef;
+}
+
+function getTrackRef(axis: Axis, ctx: ScrollAreaRefs) {
+  return axis === 'x' ? ctx.trackXRef : ctx.trackYRef;
 }
 
 function getButtonRef(actualDirection: ScrollDirection, ctx: ScrollAreaRefs) {
@@ -1096,51 +1449,28 @@ function getButtonRef(actualDirection: ScrollDirection, ctx: ScrollAreaRefs) {
 }
 
 // prettier-ignore
-type ScrollAreaEvent =  (
-  | { type: 'ADD_SCROLLING_ATTRIBUTES' }
-  | { type: 'REMOVE_SCROLLING_ATTRIBUTES' }
-  | { type: 'UNSET_CSS_VARS' }
-  | { type: 'HANDLE_SCROLL_AREA_RESIZE', width: number; height: number }
-  | { type: 'HANDLE_SCROLLBAR_AREA_RESIZE', width: number; height: number; axis: Axis }
-  | { type: 'UPDATE_THUMBS' }
-  | { type: 'MOVE_THUMB_WITH_POINTER'; axis: Axis; pointerPosition: number; pointerStartPointRef: React.MutableRefObject<number> }
-  | { type: 'SCROLL_BY_PAGE_IMMEDIATELY'; axis: Axis; direction: LogicalDirection }
-  | { type: 'SCROLL_BY_PAGE_QUEUE_ANIMATION'; scrollAnimationQueue: Queue; axis: Axis; direction: LogicalDirection }
-  | { type: 'SCROLL_AFTER_BUTTON_PRESS_IMMEDIATELY'; }
-  | { type: 'SCROLL_AFTER_BUTTON_PRESS_QUEUE_ANIMATION'; }
-  | { type: 'SCROLL_RELATIVE_TO_POINTER_ON_TRACK'; axis: Axis; direction: LogicalDirection; pointerPosition: PointerPosition });
+type ScrollAreaEvent =
+  | { type: ScrollAreaEvents.HandleScrollAreaResize; width: number; height: number }
+  | { type: ScrollAreaEvents.HandleContentAreaResize; width: number; height: number }
+  | { type: ScrollAreaEvents.HandleScrollbarResize; axis: Axis; width: number; height: number }
+  | { type: ScrollAreaEvents.HandleThumbResize; axis: Axis; width: number; height: number }
+  | { type: ScrollAreaEvents.HandleTrackResize; axis: Axis; width: number; height: number }
+  | { type: ScrollAreaEvents.MoveThumbWithPointer; axis: Axis; pointerPosition: number; pointerStartPointRef: React.MutableRefObject<number> }
+  | { type: ScrollAreaEvents.StartTracking }
+  | { type: ScrollAreaEvents.StopTracking }
+  | { type: ScrollAreaEvents.StartThumbing }
+  | { type: ScrollAreaEvents.StopThumbing }
+  | { type: ScrollAreaEvents.StartButtonPress }
+  | { type: ScrollAreaEvents.StopButtonPress }
+  | { type: ScrollAreaEvents.SetContentOverflowing; x: boolean; y: boolean }
 
-function eventManager(event: ScrollAreaEvent): void {
+function reducer(context: ScrollAreaReducerState, event: ScrollAreaEvent): ScrollAreaReducerState {
   const refs: ScrollAreaRefs = (event as any).refs;
-  const positionEl = refs.positionRef.current!;
-  const scrollAreaEl = refs.scrollAreaRef.current!;
-  const { doc, win } = getOwnerGlobals(refs.scrollAreaRef);
-
-  if (!positionEl || !scrollAreaEl) {
-    return;
-  }
+  const positionElement = refs.positionRef.current!;
+  const scrollAreaElement = refs.scrollAreaRef.current!;
 
   switch (event.type) {
-    case 'ADD_SCROLLING_ATTRIBUTES': {
-      doc.body.setAttribute('data-interop-scrolling', '');
-      scrollAreaEl.setAttribute('data-scrolling', '');
-      break;
-    }
-    case 'REMOVE_SCROLLING_ATTRIBUTES': {
-      doc.body.removeAttribute('data-interop-scrolling');
-      scrollAreaEl.removeAttribute('data-scrolling');
-      break;
-    }
-    case 'UNSET_CSS_VARS': {
-      scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarXOffset, '0px');
-      scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarYOffset, '0px');
-      scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, 'auto');
-      scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, 'auto');
-      scrollAreaEl.style.setProperty(CSS_PROPS.positionWidth, 'auto');
-      scrollAreaEl.style.setProperty(CSS_PROPS.positionHeight, 'auto');
-      break;
-    }
-    case 'HANDLE_SCROLL_AREA_RESIZE': {
+    case ScrollAreaEvents.HandleScrollAreaResize: {
       // We need a fixed width for the position element based on the content box size of the scroll
       // area. Since the inner elements rely on some absolute positioning, technically the content
       // box size will always be zero so we need to calculate it ourselves with computed styles.
@@ -1148,126 +1478,123 @@ function eventManager(event: ScrollAreaEvent): void {
       // very often in a real app so I don't think this will be a bottleneck for us. The
       // computations will be more critical in the composer where we need style changes to trigger
       // re-renders.
-      const computedStyle = win.getComputedStyle(scrollAreaEl);
+      const computedStyle = window.getComputedStyle(scrollAreaElement);
       const borderTopWidth = parseInt(computedStyle.borderTopWidth);
-      const borderLeftWidth = parseInt(computedStyle.borderLeftWidth);
       const borderRightWidth = parseInt(computedStyle.borderRightWidth);
       const borderBottomWidth = parseInt(computedStyle.borderBottomWidth);
+      const borderLeftWidth = parseInt(computedStyle.borderLeftWidth);
+      const paddingTop = parseInt(computedStyle.paddingTop);
+      const paddingRight = parseInt(computedStyle.paddingRight);
+      const paddingBottom = parseInt(computedStyle.paddingBottom);
+      const paddingLeft = parseInt(computedStyle.paddingLeft);
 
-      scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaWidth, event.width + 'px');
-      scrollAreaEl.style.setProperty(CSS_PROPS.scrollAreaHeight, event.height + 'px');
-      scrollAreaEl.style.setProperty(
-        CSS_PROPS.positionWidth,
-        event.width - borderLeftWidth - borderRightWidth + 'px'
-      );
-      scrollAreaEl.style.setProperty(
-        CSS_PROPS.positionHeight,
-        event.height - borderTopWidth - borderBottomWidth + 'px'
-      );
-      break;
+      return {
+        ...context,
+        scrollAreaSize: {
+          width: event.width,
+          height: event.height,
+        },
+        positionSize: {
+          width: event.width - borderLeftWidth - borderRightWidth - paddingLeft - paddingRight,
+          height: event.height - borderTopWidth - borderBottomWidth - paddingTop - paddingBottom,
+        },
+      };
     }
-    case 'HANDLE_SCROLLBAR_AREA_RESIZE': {
-      if (event.axis === 'x') {
-        scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarXOffset, event.height + 'px');
-      } else {
-        scrollAreaEl.style.setProperty(CSS_PROPS.scrollbarYOffset, event.width + 'px');
-      }
-      break;
+    case ScrollAreaEvents.SetContentOverflowing: {
+      return {
+        ...context,
+        contentIsOverflowingX: event.x,
+        contentIsOverflowingY: event.y,
+      };
     }
-    case 'UPDATE_THUMBS': {
-      function updateThumb(axis: Axis) {
-        const thumbEl = (axis === 'x'
-          ? refs.scrollbarXThumbRef.current
-          : refs.scrollbarYThumbRef.current)!;
-
-        const totalScrollSize = getScrollSize({ element: positionEl, axis });
-        const visibleSize = getClientSize({ element: positionEl, axis });
-        const visibleToTotalRatio = visibleSize / totalScrollSize;
-        const scrollPos = positionEl[DOM_PROPS.scrollPos[axis]];
-        const thumbPos = scrollPos / totalScrollSize;
-
-        if (visibleToTotalRatio >= 1) {
-          // We're at 100% visible area, no need to show the scroll thumb:
-          thumbEl.style[DOM_PROPS.size[axis]] = '0px';
-        } else {
-          // Set the thumb top/left to the scroll percent:
-          thumbEl.style[DOM_PROPS.pos[axis]] = `${thumbPos * 100}%`;
-          // Set the thumb size based on the scroll ratio:
-          thumbEl.style[DOM_PROPS.size[axis]] = `${Math.max(visibleToTotalRatio * 100, 10)}%`;
-        }
-      }
-
-      if (refs.scrollbarXThumbRef.current) {
-        updateThumb('x');
-      }
-
-      if (refs.scrollbarYThumbRef.current) {
-        updateThumb('y');
-      }
-
-      break;
+    case ScrollAreaEvents.HandleContentAreaResize: {
+      return {
+        ...context,
+        contentAreaSize: {
+          width: event.width,
+          height: event.height,
+        },
+      };
     }
-
-    case 'MOVE_THUMB_WITH_POINTER': {
+    case ScrollAreaEvents.HandleScrollbarResize: {
+      return {
+        ...context,
+        [event.axis === 'x' ? 'scrollbarXSize' : 'scrollbarYSize']: {
+          height: event.height,
+          width: event.width,
+        },
+      };
+    }
+    case ScrollAreaEvents.HandleThumbResize: {
+      return context;
+    }
+    case ScrollAreaEvents.HandleTrackResize: {
+      return {
+        ...context,
+        [event.axis === 'x' ? 'trackYSize' : 'trackXSize']: {
+          height: event.height,
+          width: event.width,
+        },
+      };
+    }
+    case ScrollAreaEvents.StartTracking: {
+      return {
+        ...context,
+        state: ScrollAreaState.Tracking,
+      };
+    }
+    case ScrollAreaEvents.StopTracking: {
+      return {
+        ...context,
+        state: ScrollAreaState.Idle,
+      };
+    }
+    case ScrollAreaEvents.StartThumbing: {
+      return {
+        ...context,
+        state: ScrollAreaState.Thumbing,
+      };
+    }
+    case ScrollAreaEvents.MoveThumbWithPointer: {
       const { axis, pointerStartPointRef, pointerPosition } = event;
       const delta = pointerPosition - pointerStartPointRef.current;
-      const totalScrollSize = getScrollSize({ element: positionEl, axis });
-      const visibleSize = getClientSize({ element: positionEl, axis });
-      const visibleToTotalRatio = visibleSize / totalScrollSize;
+      if (canScroll(positionElement, { axis, delta })) {
+        const totalScrollSize = getScrollSize(positionElement, { axis });
+        const visibleSize = getClientSize(positionElement, { axis });
+        const visibleToTotalRatio = visibleSize / totalScrollSize;
 
-      if (!canScroll({ element: positionEl, axis, delta })) {
-        return;
+        scrollBy(positionElement, { axis, value: delta / visibleToTotalRatio });
+        pointerStartPointRef.current = pointerPosition;
+
+        return {
+          ...context,
+          state: ScrollAreaState.Thumbing,
+        };
       }
 
-      scrollBy({ element: positionEl, axis, value: delta / visibleToTotalRatio });
-      pointerStartPointRef.current = pointerPosition;
-      break;
+      return context;
     }
-    case 'SCROLL_BY_PAGE_IMMEDIATELY': {
-      const axis = event.axis;
-      const direction = event.direction;
-      const visibleSize = getClientSize({ element: positionEl, axis });
-      const distance = getPagedScrollDistance({ direction, visibleSize });
-      const newPosition = getNewScrollPosition({ direction, distance, axis, positionEl });
-      positionEl.scrollTop = newPosition;
-      break;
+    case ScrollAreaEvents.StopThumbing: {
+      return {
+        ...context,
+        state: ScrollAreaState.Idle,
+      };
     }
-    case 'SCROLL_BY_PAGE_QUEUE_ANIMATION': {
-      const axis = event.axis;
-      const direction = event.direction;
-      const visibleSize = getClientSize({ element: positionEl, axis });
-      event.scrollAnimationQueue.enqueue(() => {
-        let totalScrollDistance = getPagedScrollDistance({ direction, visibleSize });
-        return asyncAnimate({
-          duration: 200,
-          timing: bezier(0.16, 0, 0.73, 1),
-          draw(progress) {
-            const distance = totalScrollDistance * Math.min(progress, 1);
-            const newPosition = getNewScrollPosition({
-              direction,
-              distance,
-              axis,
-              positionEl,
-            });
-
-            totalScrollDistance -= distance;
-            positionEl.scrollTop = newPosition;
-          },
-        });
-      });
-      break;
+    case ScrollAreaEvents.StartButtonPress: {
+      return {
+        ...context,
+        state: ScrollAreaState.ButtonScrolling,
+      };
     }
-    case 'SCROLL_RELATIVE_TO_POINTER_ON_TRACK': {
-      // TODO
-      break;
-    }
-    case 'SCROLL_AFTER_BUTTON_PRESS_IMMEDIATELY': {
-      break;
-    }
-    case 'SCROLL_AFTER_BUTTON_PRESS_QUEUE_ANIMATION': {
-      break;
+    case ScrollAreaEvents.StopButtonPress: {
+      return {
+        ...context,
+        state: ScrollAreaState.Idle,
+      };
     }
   }
+
+  return context;
 }
 
 /**
@@ -1294,34 +1621,35 @@ function getPagedScrollDistance({
   return (visibleSize - 40) * (direction === 'end' ? 1 : -1);
 }
 
-function getClientSize({ element, axis }: { element: Element; axis: Axis }) {
+function getClientSize(element: Element, { axis }: { axis: Axis }) {
   return element[axis === 'x' ? 'clientWidth' : 'clientHeight'];
 }
 
-function getScrollSize({ element, axis }: { element: Element; axis: Axis }) {
+function getScrollSize(element: Element, { axis }: { axis: Axis }) {
   return element[axis === 'x' ? 'scrollWidth' : 'scrollHeight'];
 }
 
-function getScrollPosition({ element, axis }: { element: Element; axis: Axis }) {
+function getScrollPosition(element: Element, { axis }: { axis: Axis }) {
   return element[axis === 'x' ? 'scrollLeft' : 'scrollTop'];
 }
 
-function setScrollPosition({
-  element,
-  axis,
-  value,
-}: {
-  element: Element;
-  axis: Axis;
-  value: number;
-}) {
+function setScrollPosition(element: Element, { axis, value }: { axis: Axis; value: number }) {
   element[axis === 'x' ? 'scrollLeft' : 'scrollTop'] = value;
 }
 
-function scrollBy({ element, axis, value }: { element: Element; axis: Axis; value: number }) {
-  if (canScroll({ element: element, axis, delta: Math.round(clamp(value, -1, 1)) })) {
+function scrollBy(element: Element, { axis, value }: { axis: Axis; value: number }) {
+  if (canScroll(element, { axis, delta: Math.round(clamp(value, -1, 1)) })) {
     element[axis === 'x' ? 'scrollLeft' : 'scrollTop'] += Math.round(value);
   }
+}
+
+function getLogicalRect(element: Element, { axis }: { axis: Axis }) {
+  const {
+    [axis]: coord,
+    [axis === 'y' ? 'top' : 'left']: position,
+    [axis === 'y' ? 'height' : 'width']: size,
+  } = element.getBoundingClientRect();
+  return { coord, position, size };
 }
 
 /**
@@ -1329,20 +1657,21 @@ function scrollBy({ element, axis, value }: { element: Element; axis: Axis; valu
  * area based on a given distance we want to scroll.
  * @param props
  */
-function getNewScrollPosition({
-  direction,
-  distance,
-  axis,
-  positionEl,
-}: {
-  direction: LogicalDirection;
-  distance: number;
-  axis: Axis;
-  positionEl: Element;
-}) {
-  const { [axis === 'x' ? 'scrollLeft' : 'scrollTop']: scrollPosition } = positionEl;
+function getNewScrollPosition(
+  element: Element,
+  {
+    direction,
+    distance,
+    axis,
+  }: {
+    direction: LogicalDirection;
+    distance: number;
+    axis: Axis;
+  }
+) {
+  const { [axis === 'x' ? 'scrollLeft' : 'scrollTop']: scrollPosition } = element;
   const calculatedScrollPosition = scrollPosition + distance;
-  const boundary = direction === 'end' ? getMaxScrollStartValue(positionEl, axis) : 0;
+  const boundary = direction === 'end' ? getMaxScrollStartValue(element, axis) : 0;
   return direction === 'end'
     ? Math.min(boundary, calculatedScrollPosition)
     : Math.max(boundary, calculatedScrollPosition);
@@ -1368,52 +1697,43 @@ function determineScrollDirectionFromTrackClick({
     : 'end';
 }
 
-function animate({ duration, draw, timing, done }: AnimationOptions) {
-  let start = performance.now();
-  let stopped = false;
-  let rafId = requestAnimationFrame(function animate(time: number) {
-    // In some cases there are discrepencies between performance.now() and the timestamp in rAF. In
-    // those cases we reset the start time to the timestamp in the first frame.
-    // https://stackoverflow.com/questions/38360250/requestanimationframe-now-vs-performance-now-time-discrepancy
-    start = time < start ? time : start;
+function animate({ duration, draw, timing, done, rafIdRef }: AnimationOptions) {
+  return new Promise((resolve) => {
+    let start = performance.now();
+    let stopped = false;
+    rafIdRef.current = window.requestAnimationFrame(function animate(time: number) {
+      // In some cases there are discrepencies between performance.now() and the timestamp in rAF.
+      // In those cases we reset the start time to the timestamp in the first frame.
+      // https://stackoverflow.com/questions/38360250/requestanimationframe-now-vs-performance-now-time-discrepancy
+      start = time < start ? time : start;
+      const timeFraction = clamp((time - start) / duration, 0, 1);
+      draw(timing(timeFraction));
 
-    const timeFraction = clamp((time - start) / duration, 0, 1);
-    draw(timing(timeFraction));
+      if (timeFraction < 1) {
+        // If we haven't cancelled, keep the animation going
+        !stopped && (rafIdRef.current = window.requestAnimationFrame(animate));
+      } else {
+        // Callback to `done` only if the animation wasn't cancelled early
+        cleanup();
+        resolve('done');
+        done && done();
+      }
+    });
 
-    if (timeFraction < 1) {
-      // If we haven't cancelled, keep the animation going
-      !stopped && (rafId = requestAnimationFrame(animate));
-    } else {
-      // Callback to `done` only if the animation wasn't cancelled early
-      done && done();
-      cleanup();
+    function cleanup() {
+      stopped = true;
+      cancelAnimationFrame(rafIdRef.current!);
     }
   });
-
-  function cleanup() {
-    stopped = true;
-    cancelAnimationFrame(rafId);
-  }
-
-  return cleanup;
 }
 
-function asyncAnimate(opts: Omit<AnimationOptions, 'done'>) {
-  return new Promise((resolve) => {
-    animate({
-      ...opts,
-      done() {
-        resolve('done');
-      },
-    });
-  });
-}
-
-function shouldFallbackToNativeScroll(win: Window & typeof globalThis) {
+function shouldFallbackToNativeScroll() {
   return !(
-    'ResizeObserver' in win &&
-    'IntersectionObserver' in win &&
-    (('CSS' in win && 'supports' in win.CSS && win.CSS.supports('scrollbar-width: none')) ||
+    'ResizeObserver' in window &&
+    'IntersectionObserver' in window &&
+    (('CSS' in window &&
+      'supports' in window.CSS &&
+      window.CSS.supports('scrollbar-width: none')) ||
       // I don't think it's possible to use CSS.supports to detect if a pseudo element is
       // supported. We need to make sure `::-webkit-scrollbar` is valid if possible.
       // TODO: Replace true with valid check or remove the block altogether
@@ -1421,7 +1741,15 @@ function shouldFallbackToNativeScroll(win: Window & typeof globalThis) {
   );
 }
 
-function canScroll({ element, axis, delta }: { element: Element; axis: Axis; delta: number }) {
+// function getDistanceFromTop(el: Element) {
+//   return window.pageYOffset + el.getBoundingClientRect().top;
+// }
+
+function checkIsScrolling(state: ScrollAreaState) {
+  return state !== ScrollAreaState.Idle;
+}
+
+function canScroll(element: Element, { axis, delta }: { axis: Axis; delta: number }) {
   return !(
     delta === 0 || // No relevant directional change
     // Scroll area is already scrolled to the furthest possible point in the pointer movement's direction
@@ -1430,18 +1758,181 @@ function canScroll({ element, axis, delta }: { element: Element; axis: Axis; del
   );
 }
 
+function round(value: number, precision: number) {
+  const multiplier = Math.pow(10, precision || 0);
+  return Math.round(value * multiplier) / multiplier;
+}
+
+type Size = { width: number; height: number };
 type PointerPosition = { x: number; y: number };
 type LogicalDirection = 'start' | 'end';
 type ScrollDirection = 'up' | 'down' | 'left' | 'right';
+type ScrollbarAutoHide = 'never' | 'scroll';
 type OverflowBehavior = 'auto' | 'hidden' | 'scroll' | 'visible';
 type AnimationOptions = {
   duration: number;
   draw(progress: number): any;
   timing(frac: number): number;
   done?(): any;
+  rafIdRef: React.MutableRefObject<number | undefined>;
+};
+type BorderBoxCalcStyles = {
+  borderTop: number;
+  borderRight: number;
+  borderBottom: number;
+  borderLeft: number;
+  paddingTop: number;
+  paddingRight: number;
+  paddingBottom: number;
+  paddingLeft: number;
+};
+type ComputedStylesRef = React.MutableRefObject<{
+  scrollArea: BorderBoxCalcStyles;
+  thumbX: BorderBoxCalcStyles;
+  thumbY: BorderBoxCalcStyles;
+}>;
+type ScrollAreaReducerState = {
+  state: ScrollAreaState;
+  scrollAreaSize: Size;
+  contentAreaSize: Size;
+  positionSize: Size;
+  scrollbarYSize: Size;
+  scrollbarXSize: Size;
+  trackYSize: Size;
+  trackXSize: Size;
+  contentIsOverflowingX: boolean;
+  contentIsOverflowingY: boolean;
+};
+type ScrollAreaContextValue = ScrollAreaReducerState & {
+  overflowX: OverflowBehavior;
+  overflowY: OverflowBehavior;
+  prefersReducedMotion: boolean;
+  scrollAnimationQueue: Queue<any>;
+  scrollbarAutoHide: ScrollbarAutoHide;
+  scrollbarDragScrolling: boolean;
+};
+type ScrollAreaRefs = {
+  buttonLeftRef: React.RefObject<HTMLDivElement>;
+  buttonRightRef: React.RefObject<HTMLDivElement>;
+  buttonUpRef: React.RefObject<HTMLDivElement>;
+  buttonDownRef: React.RefObject<HTMLDivElement>;
+  contentAreaRef: React.RefObject<HTMLDivElement>;
+  positionRef: React.RefObject<HTMLDivElement>;
+  scrollAreaRef: React.RefObject<HTMLDivElement>;
+  scrollbarYRef: React.RefObject<HTMLDivElement>;
+  scrollbarXRef: React.RefObject<HTMLDivElement>;
+  thumbYRef: React.RefObject<HTMLDivElement>;
+  thumbXRef: React.RefObject<HTMLDivElement>;
+  trackYRef: React.RefObject<HTMLDivElement>;
+  trackXRef: React.RefObject<HTMLDivElement>;
 };
 
 // Ignore this, saving for my reference but I don't think we'll need them
 // const BUTTON_SCROLL_INTERVAL_VALUES = [5, 7, 8, 9, 7, 7, 5, 2, 1];
 // const BUTTON_SCROLL_INTERVAL = 15;
 // const TRACK_SCROLL_INTERVAL_VALUES = [8, 38, 52, 52, 53, 49, 38, 38, 24];
+
+function isInViewport(elem: Element) {
+  const rect = elem.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+}
+
+function getVisibleToTotalRatio(positionElement: HTMLElement, { axis }: { axis: Axis }) {
+  const totalScrollSize = getScrollSize(positionElement, { axis });
+  const visibleSize = getClientSize(positionElement, { axis });
+  return visibleSize / totalScrollSize;
+}
+
+function shouldOverflow(positionElement: HTMLElement, { axis }: { axis: Axis }) {
+  return getVisibleToTotalRatio(positionElement, { axis }) < 1;
+}
+
+function updateThumbSize(args: {
+  thumbElement: HTMLElement | null | undefined;
+  positionElement: HTMLElement;
+  axis: Axis;
+}) {
+  const { thumbElement, positionElement, axis } = args;
+  if (!thumbElement) {
+    return;
+  }
+
+  const visibleToTotalRatio = getVisibleToTotalRatio(positionElement, { axis });
+
+  if (!shouldOverflow(positionElement, { axis })) {
+    // We're at 100% visible area, no need to show the scroll thumb:
+    thumbElement.style.display = 'none';
+    thumbElement.style.width = '0px';
+    thumbElement.style.height = '0px';
+  } else if (axis === 'x') {
+    thumbElement.style.width = `${visibleToTotalRatio * 100}%`;
+  } else if (axis === 'y') {
+    thumbElement.style.height = `${visibleToTotalRatio * 100}%`;
+  }
+}
+
+function updateThumbPosition(args: {
+  thumbElement: HTMLElement;
+  positionElement: HTMLElement;
+  axis: Axis;
+}) {
+  const { thumbElement, positionElement, axis } = args;
+  const totalScrollSize = getScrollSize(positionElement, { axis });
+  const visibleSize = getClientSize(positionElement, { axis });
+  const scrollPos = getScrollPosition(positionElement, { axis });
+  const visibleToTotalRatio = visibleSize / totalScrollSize;
+  const thumbPos = scrollPos / totalScrollSize;
+
+  if (visibleToTotalRatio >= 1) {
+    // We're at 100% visible area, the scroll thumb is invisible so we don't need to do anything:
+  } else if (axis === 'x') {
+    thumbElement.style.left = `${thumbPos * 100}%`;
+  } else if (axis === 'y') {
+    thumbElement.style.top = `${thumbPos * 100}%`;
+  }
+}
+
+function useBorderBoxResizeObserver(
+  ref: React.RefObject<HTMLElement>,
+  callback: (size: ResizeObserverSize) => void
+) {
+  useLayoutEffect(() => {
+    let initialUpdate = true;
+    const element = ref.current!;
+    if (!element) {
+      // TODO:
+      throw Error('GIMME DAT REF');
+    }
+
+    const observer = new ResizeObserver(([entry]) => {
+      if (initialUpdate) {
+        initialUpdate = false;
+        return;
+      }
+      const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
+      callback(borderBoxSize);
+    });
+
+    const initialRect = element.getBoundingClientRect();
+    callback({
+      inlineSize: initialRect.width,
+      blockSize: initialRect.height,
+    });
+    observer.observe(element);
+
+    return function () {
+      observer.disconnect();
+    };
+  }, [callback, ref]);
+}
+
+function pointerIsOutsideElement(event: PointerEvent, element: Element) {
+  const pos = getPointerPosition(event);
+  const bounds = element.getBoundingClientRect();
+  return pos.x < bounds.left || pos.x > bounds.right || pos.y < bounds.top || pos.y > bounds.bottom;
+}

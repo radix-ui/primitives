@@ -37,6 +37,10 @@ export class Queue<T = any> {
     }
   }
 
+  public get isBusy() {
+    return this.state === 'QUEUING' || this.state === 'PENDING';
+  }
+
   enqueue(promise: () => Promise<T>) {
     this.restart();
     return new Promise((resolve, reject) => {

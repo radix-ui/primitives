@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { getOwnerWindow } from './useDocumentRef';
 
 const QUERY = '(prefers-reduced-motion: no-preference)';
 
 export function usePrefersReducedMotion(nodeRef: React.RefObject<Element>) {
-  const [_prefersReducedMotion, setPrefersReducedMotion] = React.useState(() =>
-    prefersReducedMotion(getOwnerWindow(nodeRef))
-  );
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
   React.useEffect(() => {
-    return onPrefersReducedMotionChange(setPrefersReducedMotion, getOwnerWindow(nodeRef));
+    return onPrefersReducedMotionChange(
+      setPrefersReducedMotion,
+      nodeRef.current?.ownerDocument.defaultView || window
+    );
   }, [nodeRef]);
-  return _prefersReducedMotion;
+  return prefersReducedMotion;
 }
 
 export function prefersReducedMotion(globalWindow: Window & typeof globalThis = window) {

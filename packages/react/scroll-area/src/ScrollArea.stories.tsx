@@ -19,7 +19,7 @@ export function Basic() {
     <div>
       <button onClick={() => setNative(!usesNative)}>Toggle Native</button>
       <hr />
-      <ScrollArea as={Root} unstable_forceNative={usesNative}>
+      <ScrollArea as={Root} unstable_forceNative={usesNative} overflowX="scroll">
         <ScrollArea.ScrollbarY as={ScrollbarY}>
           <ScrollArea.ButtonStart as={ScrollButtonStart}>
             <Arrow direction="up" />
@@ -32,6 +32,19 @@ export function Basic() {
             <Arrow direction="down" />
           </ScrollArea.ButtonEnd>
         </ScrollArea.ScrollbarY>
+
+        <ScrollArea.ScrollbarX as={ScrollbarX}>
+          <ScrollArea.ButtonStart as={ScrollButtonStart}>
+            <Arrow direction="left" />
+          </ScrollArea.ButtonStart>
+
+          <ScrollArea.Track as={ScrollTrack}>
+            <ScrollArea.Thumb as={ScrollThumb} />
+          </ScrollArea.Track>
+          <ScrollArea.ButtonEnd as={ScrollButtonEnd}>
+            <Arrow direction="right" />
+          </ScrollArea.ButtonEnd>
+        </ScrollArea.ScrollbarX>
 
         <ScrollArea.Position as={ScrollPosition}>
           <ScrollArea.ContentArea as={ScrollContent}>
@@ -49,10 +62,6 @@ export function Basic() {
   );
 }
 
-export function StitchesStyle() {
-  return <div></div>;
-}
-
 /* -------------------------------------------------------------------------------------------------
  * Reset components
  * -----------------------------------------------------------------------------------------------*/
@@ -63,43 +72,51 @@ const Root = styled('div', {
   height: '100%',
   maxWidth: '450px',
   maxHeight: '400px',
-  border: '6px solid crimson',
+  border: '2px solid #FFF',
+  borderTopColor: '#858585',
+  borderLeftColor: '#858585',
+  borderRightColor: '#C0C0C0',
+  borderBottomColor: '#C0C0C0',
+  fontFamily: 'sans-serif',
 });
 
 const ScrollbarY = styled('div', {
-  ...styles.scrollBarY,
+  ...styles.scrollbarY,
+  width: `16px`,
 });
 
-const ScrollButtonStart = styled('div', {
+const ScrollbarX = styled('div', {
+  ...styles.scrollbarX,
+  height: `16px`,
+});
+
+const ScrollButton = styled('div', {
+  position: 'relative',
+  backgroundColor: '#C0C0C0',
+  border: '2px solid #FFF',
+  borderTopColor: '#FFF',
+  borderLeftColor: '#FFF',
+  borderRightColor: '#858585',
+  borderBottomColor: '#858585',
+  width: '16px',
+  height: '16px',
+  padding: 3,
+});
+
+const ScrollButtonStart = styled(ScrollButton, {
   ...styles.buttonStart,
-  position: 'relative',
-  backgroundColor: '#c0c0c0',
-  border: '2px solid white',
-  borderTopColor: 'white',
-  borderLeftColor: 'white',
-  borderRightColor: '#858585',
-  borderBottomColor: '#858585',
-  padding: 3,
 });
 
-const ScrollButtonEnd = styled('div', {
+const ScrollButtonEnd = styled(ScrollButton, {
   ...styles.buttonEnd,
-  position: 'relative',
-  backgroundColor: '#c0c0c0',
-  border: '2px solid white',
-  borderTopColor: 'white',
-  borderLeftColor: 'white',
-  borderRightColor: '#858585',
-  borderBottomColor: '#858585',
-  padding: 3,
 });
 
 const ScrollThumb = styled('div', {
   ...styles.thumb,
-  backgroundColor: '#c0c0c0',
-  border: '2px solid white',
-  borderTopColor: 'white',
-  borderLeftColor: 'white',
+  backgroundColor: '#C0C0C0',
+  border: '2px solid #FFF',
+  borderTopColor: '#FFF',
+  borderLeftColor: '#FFF',
   borderRightColor: '#858585',
   borderBottomColor: '#858585',
 });
@@ -115,6 +132,16 @@ const ScrollPosition = styled('div', {
 
 const ScrollContent = styled('div', {
   ...styles.contentArea,
+  width: '2000px',
+  padding: 20,
+
+  '& > :first-child': {
+    marginTop: 0,
+  },
+
+  '& > :last-child': {
+    marginBottom: 0,
+  },
 });
 
 const Arrow = React.forwardRef<SVGSVGElement, any>(function Arrow(
@@ -126,9 +153,9 @@ const Arrow = React.forwardRef<SVGSVGElement, any>(function Arrow(
       ? undefined
       : `rotate(${
           direction === 'left'
-            ? '-90deg'
-            : direction === 'right'
             ? '90deg'
+            : direction === 'right'
+            ? '-90deg'
             : direction === 'up'
             ? '180deg'
             : '0'
@@ -153,7 +180,7 @@ const Arrow = React.forwardRef<SVGSVGElement, any>(function Arrow(
 
 function LongContent() {
   return (
-    <div>
+    <React.Fragment>
       <p>
         Lacinia hendrerit auctor nam quisque augue suscipit feugiat, sit at imperdiet vitae lacus.
         Dolor sit dui posuere faucibus non pharetra laoreet conubia, augue rhoncus cras nisl sodales
@@ -196,6 +223,6 @@ function LongContent() {
         ac auctor pellentesque luctus morbi potenti, viverra varius commodo venenatis vestibulum
         erat sagittis laoreet.
       </p>
-    </div>
+    </React.Fragment>
   );
 }
