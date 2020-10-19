@@ -2056,7 +2056,6 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     "@stitches/react": 0.0.3-canary.3
     parcel: ^2.0.0-beta.1
-    use-effect-reducer: ^0.6.1
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -12986,7 +12985,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^10.0.8, lint-staged@npm:^10.1.6":
+"lint-staged@npm:^10.0.8":
   version: 10.4.0
   resolution: "lint-staged@npm:10.4.0"
   dependencies:
@@ -19023,17 +19022,6 @@ typescript@^3.9.7:
   peerDependencies:
     react: ^16.8.0
   checksum: 7fe5dd89e5a06a8869779e329938a223e7ff26b80b679d1b578251f792aefbb816704573373582ea118e852d156467fc1c718afdf95efaf37723958fc2407690
-  languageName: node
-  linkType: hard
-
-"use-effect-reducer@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "use-effect-reducer@npm:0.6.1"
-  dependencies:
-    lint-staged: ^10.1.6
-  peerDependencies:
-    react: ">=16"
-  checksum: 2feedf2c28f2bad315f4ba11834ac3ddd7a17a87b9b0c126e525f98621129b7ac2725bf156f50f576477b11a80331fec5c79d3e4738f27aab52969b1a4fa4704
   languageName: node
   linkType: hard
 
