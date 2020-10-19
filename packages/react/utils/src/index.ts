@@ -8,6 +8,7 @@ export * from './useCallbackRef';
 export * from './useComposedRefs';
 export * from './useConstant';
 export * from './useControlledState';
+export * from './useDisableBodyPointerEvents';
 export * from './useDocumentRef';
 export * from './useId';
 export * from './useLayoutEffect';

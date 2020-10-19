@@ -1,14 +1,11 @@
 import * as React from 'react';
-import * as ReactIs from 'react-is';
-import { useComposedRefs } from '@interop-ui/react-utils';
-import { createFocusScope } from './createFocusScope';
+import { createFocusScope, AUTOFOCUS_ON_CREATE, AUTOFOCUS_ON_DESTROY } from './createFocusScope';
+import { useDebugContext } from '@interop-ui/react-debug-context';
 
-import type { FocusableTarget } from './createFocusScope';
-
-type FocusParam = 'none' | 'auto' | React.RefObject<FocusableTarget | null | undefined>;
+import { useCallbackRef } from '@interop-ui/react-utils';
 
 type FocusScopeProps = {
-  children: React.ReactElement;
+  children: (args: { ref: React.RefObject<any> }) => React.ReactElement;
 
   /**
    * Whether focus should be trapped within the FocusScope
@@ -17,79 +14,58 @@ type FocusScopeProps = {
   trapped?: boolean;
 
   /**
-   * Whether to move focus inside the `FocusScope` on mount
-   * - `'none'`: Do not focus
-   * - `'auto'`: first focusable element inside the FocusScope, if none the container itself
-   * - `ref`: Focus that element
-   *
-   * (default: `'none'`)
+   * Event handler called when auto-focusing on mount.
+   * Can be prevented.
    */
-  focusOnMount?: FocusParam;
+  onMountAutoFocus?: (event: Event) => void;
 
   /**
-   * Whether to return focus outside the `FocusScope` on unmount
-   * - `'none'`: Do not focus
-   * - `'auto'`: last focused element before the FocusScope was mounted
-   * - `ref`: Focus that element
-   *
-   * (default: `'none'`)
-   **/
-  focusOnUnmount?: FocusParam;
+   * Event handler called when auto-focusing on unmount.
+   * Can be prevented.
+   */
+  onUnmountAutoFocus?: (event: Event) => void;
 };
 
-const FocusScope = React.forwardRef<HTMLElement, FocusScopeProps>((props, forwardedRef) => {
-  const { children, trapped = false, focusOnMount = 'none', focusOnUnmount = 'none' } = props;
-  const child = React.Children.only(children);
-  if (ReactIs.isFragment(child)) {
-    throw new Error(
-      'FocusScope needs to have a single valid React child that renders a DOM element.'
-    );
-  }
-  const focusScopeRef = React.useRef<ReturnType<typeof createFocusScope>>();
+function FocusScope(props: FocusScopeProps) {
+  const debugContext = useDebugContext();
   const containerRef = React.useRef<HTMLElement>(null);
-  const ref = useComposedRefs((child as any).ref, forwardedRef, containerRef);
+  if (debugContext.disableLock) {
+    return props.children({ ref: containerRef });
+  }
+  return <FocusScopeImpl containerRef={containerRef} {...props} />;
+}
+
+function FocusScopeImpl(props: FocusScopeProps & { containerRef: React.RefObject<HTMLElement> }) {
+  const { children, trapped = false, containerRef } = props;
+  const focusScopeRef = React.useRef<ReturnType<typeof createFocusScope>>();
+  const onMountAutoFocus = useCallbackRef(props.onMountAutoFocus);
+  const onUnmountAutoFocus = useCallbackRef(props.onUnmountAutoFocus);
 
   // Create the focus scope on mount and destroy it on unmount
   React.useEffect(() => {
     const container = containerRef.current;
     if (container) {
-      focusScopeRef.current = createFocusScope({
-        container,
-        elementToFocusOnCreate: resolveFocusParam(focusOnMount),
-        elementToFocusOnDestroy: resolveFocusParam(focusOnUnmount),
-      });
+      container.addEventListener(AUTOFOCUS_ON_CREATE, onMountAutoFocus);
+      container.addEventListener(AUTOFOCUS_ON_DESTROY, onUnmountAutoFocus);
+      focusScopeRef.current = createFocusScope(container);
 
-      return () => focusScopeRef.current?.destroy();
+      return () => {
+        container.removeEventListener(AUTOFOCUS_ON_CREATE, onMountAutoFocus);
+        // We hit a react bug (fixed in v17) with focusing in unmount.
+        // We need to delay the focus a little to get around it for now.
+        // See: https://github.com/facebook/react/issues/17894
+        setTimeout(() => {
+          focusScopeRef.current?.destroy();
+          // this needs to come after calling `destroy()` to make sure we can catch the event on time.
+          container.removeEventListener(AUTOFOCUS_ON_DESTROY, onUnmountAutoFocus);
+        }, 0);
+      };
     }
-    // NOTE: `createFocusScope` has couple major side-effects:
-    // - when created, it may move focus inside
-    // - when destroyed, it may move focus back outside
-    //
-    // Because of this, we need to ensure we don't destroy/re-create when some config changes
-    // as this would potentially run some side-effects we don't intend to.
-    //
-    // This is why we disable the `react-hooks/exhaustive-deps` rule and skip dependencies.
-    // We can safely do so because of the following reasons:
-    //
-    // There are potentially 3 parameters that can change:
-    //
-    // - `trapped`:
-    //    This is synced manually in the first `useEffect` below using imperative
-    //    `trap()` and `untrap()` methods on the instance returned by `createFocusScope`.
-    //
-    // - `focusOnMount`:
-    //    Even if this changed throughout the component's lifecycle we can safely ignore it
-    //    as its intent is solely to run a side-effect after being mounted.
-    //
-    // - `focusOnUnmount`:
-    //    This could change throughout the component's lifecycle and cannot be safely ignored
-    //    because it runs a side-effect when unmounting. This is why we run a setter in the
-    //    second `useEffect` below to update the configuration without side-effect.
-    //
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [containerRef, onMountAutoFocus, onUnmountAutoFocus]);
 
-  // Sync `trapped` prop
+  // Sync `trapped` prop imperatively rather than passing as an argument to
+  // `createFocusScope()` so that we do not risk executing side-effects run
+  // on create and destroy (focus side-effects) if it ever changes live.
   React.useEffect(() => {
     if (trapped) {
       focusScopeRef.current?.trap();
@@ -97,18 +73,7 @@ const FocusScope = React.forwardRef<HTMLElement, FocusScopeProps>((props, forwar
     }
   }, [trapped]);
 
-  // Set `elementToFocusOnDestroy` in case things changes whilst mounted
-  React.useEffect(() => {
-    focusScopeRef.current?.setElementToFocusOnDestroy(resolveFocusParam(focusOnUnmount));
-  }, [focusOnUnmount]);
-
-  return React.cloneElement(child, { ref });
-});
-
-function resolveFocusParam(param: FocusParam) {
-  if (param === 'none') return null;
-  if (param === 'auto') return undefined;
-  return param.current ?? null;
+  return children({ ref: containerRef });
 }
 
 export { FocusScope };
