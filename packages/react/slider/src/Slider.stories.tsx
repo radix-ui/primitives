@@ -91,7 +91,7 @@ const Range = React.forwardRef((props: any, ref) => (
   <span {...props} ref={ref} style={{ ...styles.range, ...props.style, background: 'black' }} />
 ));
 
-const Thumb = React.forwardRef((props: any, ref) => (
+const Thumb = React.forwardRef(({ focused, ...props }: any, ref) => (
   <span
     {...props}
     ref={ref}
@@ -102,7 +102,7 @@ const Thumb = React.forwardRef((props: any, ref) => (
       width: 15,
       height: 15,
       background: 'black',
-      outline: props.focused ? `2px solid red` : undefined,
+      outline: focused ? `2px solid red` : undefined,
     }}
   />
 ));
