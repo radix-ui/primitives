@@ -343,7 +343,7 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps, Slider
             document.addEventListener('mouseup', handleMouseUp);
           }
         })}
-        onTouchStart={composeEventHandlers((event) => {
+        onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
           function handleTouchMove(event: TouchEvent) {
             onSlideTouchMove?.(event);
           }
