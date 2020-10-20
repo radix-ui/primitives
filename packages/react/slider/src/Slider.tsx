@@ -70,7 +70,6 @@ type SliderContextValue = {
   values: number[];
   activeValueIndexRef: React.MutableRefObject<number>;
   orientation: SliderOwnProps['orientation'];
-  isDisabled: boolean;
 };
 
 const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
@@ -101,7 +100,6 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
     const activeValueIndexRef = React.useRef<number>(0);
     const SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
-    const isDisabled = disabled;
 
     const [values = [], setValues] = useControlledState({
       prop: value === undefined ? undefined : toArray(value),
@@ -191,9 +189,8 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
               activeValueIndexRef,
               values,
               orientation,
-              isDisabled,
             }),
-            [min, max, values, orientation, isDisabled]
+            [min, max, values, orientation]
           )}
         >
           <SliderCollectionProvider>{children}</SliderCollectionProvider>
