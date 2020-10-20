@@ -320,37 +320,40 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps, Slider
       onSlideTouchMove,
       ...sliderProps
     } = props;
+    const handleSlideMouseMove = useCallbackRef(onSlideMouseMove);
+    const handleSlideTouchMove = useCallbackRef(onSlideTouchMove);
+    const removeMouseEventListeners = useCallbackRef(() => {
+      document.removeEventListener('mousemove', handleSlideMouseMove);
+      document.removeEventListener('mouseup', removeMouseEventListeners);
+    });
+    const removeTouchEventListeners = useCallbackRef(() => {
+      document.removeEventListener('touchmove', handleSlideTouchMove);
+      document.removeEventListener('touchend', removeTouchEventListeners);
+    });
+
+    React.useEffect(() => {
+      return () => {
+        removeMouseEventListeners();
+        removeTouchEventListeners();
+      };
+    }, [removeMouseEventListeners, removeTouchEventListeners]);
 
     return (
       <Comp
         {...sliderProps}
         ref={forwardedRef}
         onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
-          function handleMouseMove(event: MouseEvent) {
-            onSlideMouseMove?.(event);
-          }
-          function handleMouseUp() {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-          }
           // Slide only if main mouse button was clicked
           if (event.button === 0) {
             if (!isThumb(event.target)) onSlideMouseDown?.(event);
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
+            document.addEventListener('mousemove', handleSlideMouseMove);
+            document.addEventListener('mouseup', removeMouseEventListeners);
           }
         })}
         onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
-          function handleTouchMove(event: TouchEvent) {
-            onSlideTouchMove?.(event);
-          }
-          function handleTouchEnd() {
-            document.removeEventListener('touchmove', handleTouchMove);
-            document.removeEventListener('touchend', handleTouchEnd);
-          }
           if (!isThumb(event.target)) onSlideTouchStart?.(event);
-          document.addEventListener('touchmove', handleTouchMove);
-          document.addEventListener('touchend', handleTouchEnd);
+          document.addEventListener('touchmove', handleSlideTouchMove);
+          document.addEventListener('touchend', removeTouchEventListeners);
           // Prevent scrolling for touch events
           event.preventDefault();
         })}
