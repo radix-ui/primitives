@@ -121,12 +121,6 @@ const POSITION_DEFAULT_TAG = 'div';
 type PopoverPositionDOMProps = React.ComponentPropsWithoutRef<typeof POSITION_DEFAULT_TAG>;
 type PopoverPositionOwnProps = {
   /**
-   * Whether the Popover should render in a Portal
-   * (default: `true`)
-   */
-  renderInPortal?: boolean;
-
-  /**
    * Whether focus should be trapped within the `Popover`
    * (default: false)
    */
@@ -186,7 +180,6 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
     const {
       children,
       anchorRef,
-      renderInPortal = true,
       trapFocus = true,
       onOpenAutoFocus,
       onCloseAutoFocus,
@@ -198,11 +191,10 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
     } = props;
     const context = usePopoverContext(POSITION_NAME);
     const debugContext = useDebugContext();
-    const [skipUnmountAutoFocus, setSkipUnmountAutoFocus] = React.useState(false);
+    const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
 
     const ScrollLockWrapper =
       disableOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
-    const PortalWrapper = renderInPortal ? Portal : React.Fragment;
 
     // If focus is trapped, hide everything from ARIA except the popper
     const popperRef = React.useRef<HTMLDivElement>(null);
@@ -212,13 +204,13 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
     }, [trapFocus]);
 
     return (
-      <PortalWrapper>
+      <Portal>
         <ScrollLockWrapper>
           <FocusScope
             trapped={trapFocus}
             onMountAutoFocus={onOpenAutoFocus}
             onUnmountAutoFocus={(event) => {
-              if (skipUnmountAutoFocus) {
+              if (skipCloseAutoFocus) {
                 event.preventDefault();
               } else {
                 onCloseAutoFocus?.(event);
@@ -233,20 +225,15 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
                   const wasPointerDownOutside = event.detail.originalEvent.type !== 'blur';
                   const wasTrigger = event.detail.relatedTarget === context.triggerRef.current;
 
-                  // prevent autofocus on close if clicking outside is allowed and happened
-                  setSkipUnmountAutoFocus(!disableOutsidePointerEvents && wasPointerDownOutside);
+                  // prevent autofocus on close if clicking outside is allowed and it happened
+                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && wasPointerDownOutside);
 
                   // prevent dismissing when clicking the trigger
                   // as it's already setup to close, otherwise it would close and immediately open.
-                  if (wasPointerDownOutside && wasTrigger) {
+                  if (wasTrigger) {
                     event.preventDefault();
                   } else {
                     onInteractOutside?.(event);
-                  }
-
-                  if (event.defaultPrevented) {
-                    // reset this because the event was prevented
-                    setSkipUnmountAutoFocus(false);
                   }
                 }}
                 onDismiss={() => context.setIsOpen(false)}
@@ -297,7 +284,7 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
             )}
           </FocusScope>
         </ScrollLockWrapper>
-      </PortalWrapper>
+      </Portal>
     );
   }
 );
