@@ -13,8 +13,7 @@ export const Basic = () => (
 );
 
 export const Horizontal = () => {
-  const [isFocus, setIsFocus] = React.useState([false, false]);
-  const handleBlur = () => setIsFocus([false, false]);
+  const [isFocus, setIsFocus] = React.useState(false);
 
   return (
     <Slider as={Root} defaultValue={10} style={{ height: 15 }}>
@@ -24,24 +23,16 @@ export const Horizontal = () => {
       <Slider.Thumb
         as={Thumb}
         style={{ top: '50%' }}
-        focused={isFocus[0]}
-        onFocus={() => setIsFocus([true, false])}
-        onBlur={handleBlur}
-      />
-      <Slider.Thumb
-        as={Thumb}
-        focused={isFocus[1]}
-        style={{ top: '50%' }}
-        onFocus={() => setIsFocus([false, true])}
-        onBlur={handleBlur}
+        focused={isFocus}
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
       />
     </Slider>
   );
 };
 
 export const Vertical = () => {
-  const [isFocus, setIsFocus] = React.useState([false, false]);
-  const handleBlur = () => setIsFocus([false, false]);
+  const [isFocus, setIsFocus] = React.useState(false);
 
   return (
     <Slider
@@ -56,16 +47,9 @@ export const Vertical = () => {
       <Slider.Thumb
         as={Thumb}
         style={{ left: '50%' }}
-        focused={isFocus[0]}
-        onFocus={() => setIsFocus([true, false])}
-        onBlur={handleBlur}
-      />
-      <Slider.Thumb
-        as={Thumb}
-        focused={isFocus[1]}
-        style={{ left: '50%' }}
-        onFocus={() => setIsFocus([false, true])}
-        onBlur={handleBlur}
+        focused={isFocus}
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
       />
     </Slider>
   );
