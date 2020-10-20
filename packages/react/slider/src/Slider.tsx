@@ -204,7 +204,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
 );
 
 /* -------------------------------------------------------------------------------------------------
- * SliderHorizontal / SliderVeritcal
+ * SliderHorizontal / SliderVertical
  * -----------------------------------------------------------------------------------------------*/
 
 const SliderOrientationContext = React.createContext<{
