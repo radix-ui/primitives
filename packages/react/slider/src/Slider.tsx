@@ -456,9 +456,13 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     const focusTimerRef = React.useRef<number>(0);
     const size = useSize(thumbRef);
     const percent = getValuePercent(value, context.min, context.max);
+    const label = getLabel(index, context.values.length);
+    /**
+     * We offset the thumb centre point while sliding to ensure it remains
+     * within the bounds of the slider when it reaches the edges
+     */
     const orientationSize = size?.[orientation.size];
     const offset = orientationSize ? getElementOffset(orientationSize, percent) : 0;
-    const label = getLabel(index, context.values.length);
 
     useChangeEffect(() => {
       /**
