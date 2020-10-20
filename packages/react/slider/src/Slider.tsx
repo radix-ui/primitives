@@ -545,7 +545,6 @@ const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
   range: {
     ...cssReset(RANGE_DEFAULT_TAG),
     position: 'absolute',
-    borderRadius: 'inherit',
   },
   thumb: {
     ...cssReset(THUMB_DEFAULT_TAG),
