@@ -239,12 +239,12 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientation
         onSlideMouseDown={(event) => handleSlideStart(event.clientX)}
         onSlideMouseMove={(event) => handleSlideMove(event.clientX)}
         onSlideTouchStart={(event) => {
-          const touches = event.targetTouches[0];
-          handleSlideStart(touches.clientX);
+          const touch = event.targetTouches[0];
+          handleSlideStart(touch.clientX);
         }}
         onSlideTouchMove={(event) => {
-          const touches = event.targetTouches[0];
-          handleSlideMove(touches.clientX);
+          const touch = event.targetTouches[0];
+          handleSlideMove(touch.clientX);
         }}
       >
         <SliderOrientationContext.Provider
@@ -279,12 +279,12 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientationPr
         onSlideMouseDown={(event) => handleSlideStart(event.clientY)}
         onSlideMouseMove={(event) => handleSlideMove(event.clientY)}
         onSlideTouchStart={(event) => {
-          const touches = event.targetTouches[0];
-          handleSlideStart(touches.clientY);
+          const touch = event.targetTouches[0];
+          handleSlideStart(touch.clientY);
         }}
         onSlideTouchMove={(event) => {
-          const touches = event.targetTouches[0];
-          handleSlideMove(touches.clientY);
+          const touch = event.targetTouches[0];
+          handleSlideMove(touch.clientY);
         }}
       >
         <SliderOrientationContext.Provider
