@@ -9,6 +9,7 @@ import {
   useComposedRefs,
   useControlledState,
   useCallbackRef,
+  useRect,
 } from '@interop-ui/react-utils';
 import { createCollection } from '@interop-ui/react-collection';
 import { useSize } from '@interop-ui/react-use-size';
@@ -221,15 +222,14 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientation
     const { onSlideStart, onSlideMove, children, ...sliderProps } = props;
     const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
+    const rect = useRect(sliderRef);
 
     function handleSlideStart(pointerPosition: number) {
-      const sliderRect = sliderRef.current!.getBoundingClientRect();
-      onSlideStart?.(pointerPosition, sliderRect.width, sliderRect.left);
+      if (rect) onSlideStart?.(pointerPosition, rect.width, rect.left);
     }
 
     function handleSlideMove(pointerPosition: number) {
-      const sliderRect = sliderRef.current!.getBoundingClientRect();
-      onSlideMove?.(pointerPosition, sliderRect.width, sliderRect.left);
+      if (rect) onSlideMove?.(pointerPosition, rect.width, rect.left);
     }
 
     return (
@@ -262,15 +262,14 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientationPr
     const { onSlideStart, onSlideMove, children, ...sliderProps } = props;
     const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
+    const rect = useRect(sliderRef);
 
     function handleSlideStart(pointerPosition: number) {
-      const sliderRect = sliderRef.current!.getBoundingClientRect();
-      onSlideStart?.(pointerPosition, sliderRect.height, sliderRect.top);
+      if (rect) onSlideStart?.(pointerPosition, rect.height, rect.top);
     }
 
     function handleSlideMove(pointerPosition: number) {
-      const sliderRect = sliderRef.current!.getBoundingClientRect();
-      onSlideMove?.(pointerPosition, sliderRect.height, sliderRect.top);
+      if (rect) onSlideMove?.(pointerPosition, rect.height, rect.top);
     }
 
     return (
