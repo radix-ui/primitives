@@ -181,6 +181,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
               hidden
             />
           ))}
+
         <SliderContext.Provider
           value={React.useMemo(
             () => ({
