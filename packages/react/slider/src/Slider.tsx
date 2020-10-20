@@ -375,11 +375,8 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   forwardedRef
 ) {
   const { as: Comp = TRACK_DEFAULT_TAG, children, ...trackProps } = props;
-  const ref = React.useRef<HTMLSpanElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
-
   return (
-    <Comp {...interopDataAttrObj('track')} {...trackProps} ref={composedRefs}>
+    <Comp {...interopDataAttrObj('track')} {...trackProps} ref={forwardedRef}>
       {children}
     </Comp>
   );
