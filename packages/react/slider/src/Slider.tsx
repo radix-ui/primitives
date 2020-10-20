@@ -453,6 +453,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     const orientation = React.useContext(SliderOrientationContext);
     const thumbRef = React.useRef<HTMLSpanElement>(null);
     const ref = useComposedRefs(forwardedRef, thumbRef);
+    const focusTimerRef = React.useRef<number>(0);
     const size = useSize(thumbRef);
     const percent = getValuePercent(value, context.min, context.max);
     const orientationSize = size?.[orientation.size];
@@ -470,7 +471,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
        * We use a `setTimeout` here to move the focus to the next tick (after the
        * mousedown) to ensure focus on mousedown.
        */
-      setTimeout(() => {
+      focusTimerRef.current = window.setTimeout(() => {
         const thumb = thumbRef.current;
         const activeThumbIndex = context.activeValueIndexRef.current;
         const isActive = activeThumbIndex === index;
@@ -478,6 +479,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
           thumb.focus();
         }
       }, 0);
+      return () => window.clearTimeout(focusTimerRef.current);
     }, context.values);
 
     return (
