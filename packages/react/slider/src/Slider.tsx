@@ -434,9 +434,10 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
 const THUMB_NAME = 'Slider.Thumb';
 const THUMB_DEFAULT_TAG = 'span';
 
-type SliderThumbDOMProps = React.ComponentProps<typeof THUMB_DEFAULT_TAG>;
+type SliderThumbDOMProps = React.ComponentPropsWithoutRef<typeof THUMB_DEFAULT_TAG>;
 type SliderThumbOwnProps = {};
 type SliderThumbProps = SliderThumbDOMProps & SliderThumbOwnProps;
+type SliderThumbImplProps = SliderThumbProps & { value: number; index: number };
 
 const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(function SliderThumb(
   props,
@@ -450,8 +451,6 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
     <SliderThumbImpl {...props} ref={ref} index={index} value={value} />
   ) : null;
 });
-
-type SliderThumbImplProps = SliderThumbProps & { value: number; index: number };
 
 const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProps>(
   function SliderThumbImpl(props, forwardedRef) {
@@ -489,7 +488,9 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
 
     return (
       <Comp
+        {...thumbProps}
         {...interopDataAttrObj('thumb')}
+        ref={ref}
         aria-label={props['aria-label'] || label}
         aria-valuemin={context.min}
         aria-valuenow={value}
@@ -497,8 +498,6 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
         aria-orientation={context.orientation}
         role="slider"
         tabIndex={0}
-        {...thumbProps}
-        ref={ref}
         style={{ ...style, [orientation.startEdge]: `calc(${percent}% + ${offset}px)` }}
         onFocus={composeEventHandlers(props.onFocus, () => {
           context.activeValueIndexRef.current = index;
@@ -591,7 +590,7 @@ const BubbleInput = (props: React.ComponentProps<'input'>) => {
    * wrap it will not be able to access its value via the FormData API.
    *
    * We purposefully do not add the `value` attribute here to allow the value
-   * to be set programatically and bubbled to any parent form `onChange` event.
+   * to be set programatically and bubble to any parent form `onChange` event.
    * Adding the `value` will cause React to consider the programatic
    * dispatch a duplicate and it will get swallowed.
    */
