@@ -14,14 +14,9 @@ import {
 import { createCollection } from '@interop-ui/react-collection';
 import { useSize } from '@interop-ui/react-use-size';
 
-const [createSliderCollection, useSliderCollectionItem] = createCollection('Slider');
-const SliderCollectionProvider = createSliderCollection((props: { children: React.ReactNode }) => (
-  <>{props.children}</>
-));
-
+type Direction = 'ltr' | 'rtl';
 const PAGE_KEYS = ['PageUp', 'PageDown'];
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-const BACK_KEYS = ['ArrowUp', 'ArrowLeft', 'Home', 'PageUp'];
 const SLIDER_KEYS = [
   'Home',
   'End',
@@ -33,6 +28,16 @@ const SLIDER_KEYS = [
   'ArrowLeft',
 ];
 
+const BACK_KEYS: Record<Direction, string[]> = {
+  ltr: ['ArrowDown', 'Home', 'ArrowLeft', 'PageUp'],
+  rtl: ['ArrowDown', 'Home', 'ArrowRight', 'PageDown'],
+};
+
+const [createSliderCollection, useSliderCollectionItem] = createCollection('Slider');
+const SliderCollectionProvider = createSliderCollection((props: { children: React.ReactNode }) => (
+  <>{props.children}</>
+));
+
 /* -------------------------------------------------------------------------------------------------
  * Slider
  * -----------------------------------------------------------------------------------------------*/
@@ -43,7 +48,7 @@ const SLIDER_DEFAULT_TAG = 'span';
 type SliderBoundsProps = { min?: number; max?: number; step?: number };
 type SliderDOMProps = Omit<
   React.ComponentPropsWithoutRef<typeof SLIDER_DEFAULT_TAG>,
-  'defaultValue' | 'onChange'
+  'defaultValue' | 'onChange' | 'dir'
 >;
 type SliderControlledProps = { value: number; onChange?: (value: number) => void };
 type SliderUncontrolledProps = { defaultValue: number; onChange?: (value: number) => void };
@@ -56,6 +61,7 @@ type SliderOwnProps = {
   name?: string;
   disabled?: boolean;
   orientation?: SliderDOMProps['aria-orientation'];
+  dir?: Direction;
 } & SliderBoundsProps &
   (
     | SliderControlledProps
@@ -87,6 +93,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       max = 100,
       step: stepProp = 1,
       orientation = 'horizontal',
+      dir,
       disabled = false,
       onChange = () => {},
       ...restProps
@@ -100,6 +107,9 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
     const activeValueIndexRef = React.useRef<number>(0);
     const SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
+    const direction = useDirection(dir);
+    const isDirectionLTR = direction === 'ltr';
+    const Direction = isDirectionLTR ? React.Fragment : Transform180Degrees;
 
     const [values = [], setValues] = useControlledState({
       prop: value === undefined ? undefined : toArray(value),
@@ -133,14 +143,14 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
         } else if (event.key === 'End') {
           updateValues(max, values.length - 1);
         } else {
-          const isBackKey = BACK_KEYS.includes(event.key);
+          const isBackKey = BACK_KEYS[direction].includes(event.key);
           const isPageKey = PAGE_KEYS.includes(event.key);
           const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
-          const direction = isBackKey ? -1 : 1;
+          const stepDirection = isBackKey ? -1 : 1;
           const multiplier = isSkipKey ? 10 : 1;
           const atIndex = activeValueIndexRef.current;
           const value = values[atIndex];
-          const stepInDirection = step * multiplier * direction;
+          const stepInDirection = step * multiplier * stepDirection;
           updateValues(value + stepInDirection, atIndex);
         }
         // Prevent scrolling for key events
@@ -153,7 +163,9 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       sliderSize: number,
       sliderOffset: number
     ) {
-      const value = linearScale([0, sliderSize], [min, max]);
+      const input = [0, sliderSize];
+      const output = isDirectionLTR ? [min, max] : [max, min];
+      const value = linearScale(input, output);
       return value(pointerPosition - sliderOffset);
     }
 
@@ -205,11 +217,17 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
             [min, max, values, orientation]
           )}
         >
-          <SliderCollectionProvider>{children}</SliderCollectionProvider>
+          <SliderCollectionProvider>
+            <Direction>{children}</Direction>
+          </SliderCollectionProvider>
         </SliderContext.Provider>
       </SliderOrientation>
     );
   }
+);
+
+const Transform180Degrees = (props: any) => (
+  <span style={{ flexGrow: 1, display: 'flex', transform: 'rotate(180deg)' }} {...props} />
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -622,6 +640,26 @@ function useChangeEffect<T>(onChange = () => {}, value: T) {
   }, [value, handleOnChange]);
 }
 
+function useDirection(directionProp?: Direction) {
+  const [direction, setDirection] = React.useState(directionProp);
+
+  React.useEffect(() => {
+    if (directionProp === undefined) {
+      const observer = new MutationObserver((mutations) => {
+        if (mutations.some((mutation) => mutation.type === 'attributes')) {
+          setDirection(document.dir as Direction);
+        }
+      });
+
+      setDirection(document.dir as Direction);
+      observer.observe(document.documentElement, { attributes: true });
+      return () => observer.disconnect();
+    }
+  }, [directionProp]);
+
+  return direction || 'ltr';
+}
+
 function sort(values: number[]) {
   return [...values].sort((a, b) => a - b);
 }
@@ -685,7 +723,7 @@ function getElementOffset(width: number, left: number) {
 }
 
 // https://github.com/tmcw-up-for-adoption/simple-linear-scale/blob/master/index.js
-function linearScale(domain: [number, number], range: [number, number]) {
+function linearScale(domain: number[], range: number[]) {
   return (value: number) => {
     if (domain[0] === domain[1] || range[0] === range[1]) return range[0];
     const ratio = (range[1] - range[0]) / (domain[1] - domain[0]);

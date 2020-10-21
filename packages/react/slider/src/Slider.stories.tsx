@@ -72,7 +72,11 @@ const Track = React.forwardRef((props: any, ref) => (
 ));
 
 const Range = React.forwardRef((props: any, ref) => (
-  <span {...props} ref={ref} style={{ ...styles.range, ...props.style, background: 'black' }} />
+  <span
+    {...props}
+    ref={ref}
+    style={{ ...styles.range, ...props.style, background: 'black', borderRadius: 'inherit' }}
+  />
 ));
 
 const Thumb = React.forwardRef(({ focused, ...props }: any, ref) => (
