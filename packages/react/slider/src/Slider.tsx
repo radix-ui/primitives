@@ -75,7 +75,7 @@ type SliderContextValue = {
   min: number;
   max: number;
   values: number[];
-  activeValueIndexRef: React.MutableRefObject<number>;
+  activeValueIndexRef: React.MutableRefObject<number | undefined>;
   orientation: SliderOwnProps['orientation'];
 };
 
@@ -105,7 +105,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     const sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderDOMProps;
     const sliderRef = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
-    const activeValueIndexRef = React.useRef<number>(0);
+    const activeValueIndexRef = React.useRef<number>();
     const SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
     const direction = useDirection(dir);
     const isDirectionLTR = direction === 'ltr';
@@ -133,7 +133,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
 
     function handleSlideMove(pointerPosition: number, sliderSize: number, sliderOffset: number) {
       const value = convertPointerPositionToValue(pointerPosition, sliderSize, sliderOffset);
-      updateValues(value, activeValueIndexRef.current);
+      updateValues(value, activeValueIndexRef.current || 0);
     }
 
     const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
@@ -148,7 +148,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
           const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
           const stepDirection = isBackKey ? -1 : 1;
           const multiplier = isSkipKey ? 10 : 1;
-          const atIndex = activeValueIndexRef.current;
+          const atIndex = activeValueIndexRef.current || 0;
           const value = values[atIndex];
           const stepInDirection = step * multiplier * stepDirection;
           updateValues(value + stepInDirection, atIndex);
@@ -498,7 +498,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     const orientationSize = size?.[orientation.size];
     const offset = orientationSize ? getElementOffset(orientationSize, percent) : 0;
 
-    useChangeEffect(() => {
+    React.useEffect(() => {
       /**
        * Browsers fire event handlers before executing their event implementation
        * so they can check if `preventDefault` was called first. Therefore,
@@ -518,7 +518,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
         }
       }, 0);
       return () => window.clearTimeout(focusTimerRef.current);
-    }, context.values);
+    }, [context.activeValueIndexRef, context.values, index]);
 
     return (
       <Comp
@@ -629,18 +629,6 @@ const BubbleInput = (props: React.ComponentProps<'input'>) => {
    */
   return <input hidden {...inputProps} ref={ref} />;
 };
-
-function useChangeEffect<T>(onChange = () => {}, value: T) {
-  const ref = React.useRef(value);
-  const handleOnChange = useCallbackRef(onChange);
-
-  React.useEffect(() => {
-    if (ref.current !== value) {
-      ref.current = value;
-      handleOnChange();
-    }
-  }, [value, handleOnChange]);
-}
 
 function useDirection(directionProp?: Direction) {
   const [direction, setDirection] = React.useState(directionProp);
