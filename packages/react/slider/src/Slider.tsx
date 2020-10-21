@@ -106,10 +106,10 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     const sliderRef = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
     const activeValueIndexRef = React.useRef<number>();
-    const SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
     const direction = useDirection(dir);
+    const isHorizontal = orientation === 'horizontal';
     const isDirectionLTR = direction === 'ltr';
-    const Direction = isDirectionLTR ? React.Fragment : Transform180Degrees;
+    const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
     const [values = [], setValues] = useControlledState({
       prop: value === undefined ? undefined : toArray(value),
@@ -164,7 +164,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       sliderOffset: number
     ) {
       const input = [0, sliderSize];
-      const output = isDirectionLTR ? [min, max] : [max, min];
+      const output = isDirectionLTR && isHorizontal ? [min, max] : [max, min];
       const value = linearScale(input, output);
       return value(pointerPosition - sliderOffset);
     }
@@ -186,6 +186,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       <SliderOrientation
         {...sliderProps}
         {...interopDataAttrObj('root')}
+        {...(isHorizontal ? { direction } : undefined)}
         ref={composedRefs}
         aria-disabled={disabled}
         data-disabled={disabled}
@@ -219,9 +220,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
             [min, max, values, orientation]
           )}
         >
-          <SliderCollectionProvider>
-            <Direction>{children}</Direction>
-          </SliderCollectionProvider>
+          <SliderCollectionProvider>{children}</SliderCollectionProvider>
         </SliderContext.Provider>
       </SliderOrientation>
     );
@@ -229,7 +228,10 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
 );
 
 const Transform180Degrees = (props: any) => (
-  <span style={{ flexGrow: 1, display: 'flex', transform: 'rotate(180deg)' }} {...props} />
+  <span
+    style={{ flexGrow: 1, display: 'flex', alignItems: 'center', transform: 'rotate(180deg)' }}
+    {...props}
+  />
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -237,8 +239,8 @@ const Transform180Degrees = (props: any) => (
  * -----------------------------------------------------------------------------------------------*/
 
 const SliderOrientationContext = React.createContext<{
-  startEdge: 'top' | 'left';
-  endEdge: 'bottom' | 'right';
+  startEdge: 'bottom' | 'left';
+  endEdge: 'top' | 'right';
   size: keyof NonNullable<ReturnType<typeof useSize>>;
 }>({} as any);
 
@@ -247,12 +249,17 @@ type SliderOrientationProps = SliderPartDOMProps & {
   onSlideMove?: (pointerPosition: number, sliderSize: number, sliderOffset: number) => void;
 };
 
-const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientationProps>(
+type SliderHorizontalProps = SliderOrientationProps & {
+  direction?: Direction;
+};
+
+const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalProps>(
   function SliderHorizontal(props, forwardedRef) {
-    const { onSlideStart, onSlideMove, children, ...sliderProps } = props;
+    const { onSlideStart, onSlideMove, direction = 'ltr', children, ...sliderProps } = props;
     const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
     const rect = useRect(sliderRef);
+    const Direction = direction === 'ltr' ? React.Fragment : Transform180Degrees;
 
     function handleSlideStart(pointerPosition: number) {
       if (rect) onSlideStart?.(pointerPosition, rect.width, rect.left);
@@ -266,6 +273,10 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientation
       <SliderPart
         {...sliderProps}
         ref={ref}
+        style={{
+          ...sliderProps.style,
+          ['--thumb-transform' as any]: 'translateX(-50%)',
+        }}
         onSlideMouseDown={(event) => handleSlideStart(event.clientX)}
         onSlideMouseMove={(event) => handleSlideMove(event.clientX)}
         onSlideTouchStart={(event) => {
@@ -280,7 +291,7 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientation
         <SliderOrientationContext.Provider
           value={React.useMemo(() => ({ startEdge: 'left', endEdge: 'right', size: 'width' }), [])}
         >
-          {children}
+          <Direction>{children}</Direction>
         </SliderOrientationContext.Provider>
       </SliderPart>
     );
@@ -306,6 +317,10 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientationPr
       <SliderPart
         {...sliderProps}
         ref={ref}
+        style={{
+          ...sliderProps.style,
+          ['--thumb-transform' as any]: 'translateY(50%)',
+        }}
         onSlideMouseDown={(event) => handleSlideStart(event.clientY)}
         onSlideMouseMove={(event) => handleSlideMove(event.clientY)}
         onSlideTouchStart={(event) => {
@@ -318,7 +333,7 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientationPr
         }}
       >
         <SliderOrientationContext.Provider
-          value={React.useMemo(() => ({ startEdge: 'top', endEdge: 'bottom', size: 'height' }), [])}
+          value={React.useMemo(() => ({ startEdge: 'bottom', endEdge: 'top', size: 'height' }), [])}
         >
           {children}
         </SliderOrientationContext.Provider>
@@ -482,7 +497,7 @@ const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(funct
 
 const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProps>(
   function SliderThumbImpl(props, forwardedRef) {
-    const { as: Comp = THUMB_DEFAULT_TAG, style, index, value, ...thumbProps } = props;
+    const { as: Comp = THUMB_DEFAULT_TAG, index, value, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME);
     const orientation = React.useContext(SliderOrientationContext);
     const thumbRef = React.useRef<HTMLSpanElement>(null);
@@ -521,22 +536,29 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     }, [context.activeValueIndexRef, context.values, index]);
 
     return (
-      <Comp
-        {...thumbProps}
-        {...interopDataAttrObj('thumb')}
-        ref={ref}
-        aria-label={props['aria-label'] || label}
-        aria-valuemin={context.min}
-        aria-valuenow={value}
-        aria-valuemax={context.max}
-        aria-orientation={context.orientation}
-        role="slider"
-        tabIndex={0}
-        style={{ ...style, [orientation.startEdge]: `calc(${percent}% + ${offset}px)` }}
-        onFocus={composeEventHandlers(props.onFocus, () => {
-          context.activeValueIndexRef.current = index;
-        })}
-      />
+      <span
+        style={{
+          transform: 'var(--thumb-transform)',
+          position: 'absolute',
+          [orientation.startEdge]: `calc(${percent}% + ${offset}px)`,
+        }}
+      >
+        <Comp
+          {...thumbProps}
+          {...interopDataAttrObj('thumb')}
+          ref={ref}
+          aria-label={props['aria-label'] || label}
+          aria-valuemin={context.min}
+          aria-valuenow={value}
+          aria-valuemax={context.max}
+          aria-orientation={context.orientation}
+          role="slider"
+          tabIndex={0}
+          onFocus={composeEventHandlers(props.onFocus, () => {
+            context.activeValueIndexRef.current = index;
+          })}
+        />
+      </span>
     );
   }
 );
@@ -566,7 +588,6 @@ const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
     flexShrink: 0,
     userSelect: 'none',
     touchAction: 'none', // Prevent parent/window scroll when sliding on touch devices
-    zIndex: 0, // create new stacking context
   },
   track: {
     ...cssReset(TRACK_DEFAULT_TAG),
@@ -580,9 +601,6 @@ const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
   thumb: {
     ...cssReset(THUMB_DEFAULT_TAG),
     display: 'block',
-    position: 'absolute',
-    transform: 'translate(-50%, -50%)',
-    zIndex: 1,
     outline: 'none',
 
     // Add recommended target size regardless of styled size
