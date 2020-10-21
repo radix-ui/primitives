@@ -95,7 +95,6 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     const { defaultValue } = props as SliderUncontrolledProps | SliderRangeUncontrolledProps;
     const { value } = props as SliderControlledProps | SliderRangeControlledProps;
     const step = Math.max(stepProp, 1);
-    const sliderBounds = { min, max, step };
     const sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderDOMProps;
     const sliderRef = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
@@ -117,13 +116,13 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     });
 
     function handleSlideStart(pointerPosition: number, sliderSize: number, sliderOffset: number) {
-      const value = getValueFromPointer(pointerPosition, sliderSize, sliderOffset, sliderBounds);
+      const value = convertPointerPositionToValue(pointerPosition, sliderSize, sliderOffset);
       const closestIndex = getClosestValueIndex(values, value);
       updateValues(value, closestIndex);
     }
 
     function handleSlideMove(pointerPosition: number, sliderSize: number, sliderOffset: number) {
-      const value = getValueFromPointer(pointerPosition, sliderSize, sliderOffset, sliderBounds);
+      const value = convertPointerPositionToValue(pointerPosition, sliderSize, sliderOffset);
       updateValues(value, activeValueIndexRef.current);
     }
 
@@ -149,13 +148,24 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       }
     });
 
+    function convertPointerPositionToValue(
+      pointerPosition: number,
+      sliderSize: number,
+      sliderOffset: number
+    ) {
+      const value = linearScale([0, sliderSize], [min, max]);
+      return value(pointerPosition - sliderOffset);
+    }
+
     function updateValues(value: number, atIndex: number) {
-      const snappedValue = getSnappedValue(value, sliderBounds);
+      const snapToStep = Math.round((value - min) / step) * step + min;
+      const clampedValue = clamp(snapToStep, [min, max]);
 
       setValues((prevValues = []) => {
-        const nextValues = sort(getUpdatedValues(atIndex, prevValues, snappedValue));
-        const activeIndex = nextValues.indexOf(snappedValue);
-        activeValueIndexRef.current = activeIndex;
+        let nextValues = [...prevValues];
+        nextValues[atIndex] = clampedValue;
+        nextValues = sort(nextValues);
+        activeValueIndexRef.current = nextValues.indexOf(clampedValue);
         return nextValues;
       });
     }
@@ -320,6 +330,7 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps, Slider
       onSlideTouchMove,
       ...sliderProps
     } = props;
+
     const handleSlideMouseMove = useCallbackRef(onSlideMouseMove);
     const handleSlideTouchMove = useCallbackRef(onSlideTouchMove);
     const removeMouseEventListeners = useCallbackRef(() => {
@@ -405,7 +416,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const valuesCount = context.values.length;
   const percentages = context.values.map((value) =>
-    getValuePercent(value, context.min, context.max)
+    convertValueToPercentage(value, context.min, context.max)
   );
   const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
   const offsetEnd = 100 - Math.max(...percentages);
@@ -458,7 +469,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     const ref = useComposedRefs(forwardedRef, thumbRef);
     const focusTimerRef = React.useRef<number>(0);
     const size = useSize(thumbRef);
-    const percent = getValuePercent(value, context.min, context.max);
+    const percent = convertValueToPercentage(value, context.min, context.max);
     const label = getLabel(index, context.values.length);
     /**
      * We offset the thumb centre point while sliding to ensure it remains
@@ -622,23 +633,39 @@ function toArray(value: number | number[]): number[] {
 function isThumb(node: any): node is HTMLElement {
   const thumbAttributeName = interopDataAttr(THUMB_NAME);
   const thumbAttribute = node.getAttribute(thumbAttributeName);
+  // `getAttribute` returns the attribute value and since we add the
+  // attribute without a value, we must check it is an empty string
+  // to determine its existence
   return thumbAttribute === '';
 }
 
+function convertValueToPercentage(value: number, min: number, max: number) {
+  const maxSteps = max - min;
+  const percentPerStep = 100 / maxSteps;
+  return percentPerStep * (value - min);
+}
+
+/**
+ * Returns a label for each thumb when there are two or more thumbs
+ */
 function getLabel(index: number, totalValues: number) {
   if (totalValues > 2) {
     return `Value ${index + 1} of ${totalValues}`;
-  } else {
+  } else if (totalValues === 2) {
     return ['Minimum', 'Maximum'][index];
+  } else {
+    return undefined;
   }
 }
 
-function getUpdatedValues(valueIndex: number, prevValues: number[], value: number) {
-  const nextValues = [...prevValues];
-  nextValues[valueIndex] = value;
-  return nextValues;
-}
-
+/**
+ * Given a `values` array and a `nextValue`, determine which value in
+ * the array is closest to `nextValue` and return its index.
+ *
+ * @example
+ * // returns 1
+ * getClosestValueIndex([10, 30], 25);
+ */
 function getClosestValueIndex(values: number[], nextValue: number) {
   if (values.length === 1) return 0;
   const distances = values.map((value) => Math.abs(value - nextValue));
@@ -646,30 +673,10 @@ function getClosestValueIndex(values: number[], nextValue: number) {
   return distances.indexOf(closestDistance);
 }
 
-function getValueFromPointer(
-  pointerPosition: number,
-  sliderSize: number,
-  sliderOffset: number,
-  sliderBounds: Required<SliderBoundsProps>
-) {
-  const { min, max } = sliderBounds;
-  const value = linearScale([0, sliderSize], [min, max]);
-  return value(pointerPosition - sliderOffset);
-}
-
-function getSnappedValue(value: number, sliderBounds: Required<SliderBoundsProps>) {
-  const { min, max, step } = sliderBounds;
-  const snapToStep = Math.round((value - min) / step) * step + min;
-  return clamp(snapToStep, [min, max]);
-}
-
-function getValuePercent(value: number, min: number, max: number) {
-  const maxSteps = max - min;
-  const percentPerStep = 100 / maxSteps;
-  return percentPerStep * (value - min);
-}
-
-// Prevents element positioning from breaking outside of slider bounds
+/**
+ * Offsets the thumb centre point while sliding to ensure it remains
+ * within the bounds of the slider when reaching the edges
+ */
 function getElementOffset(width: number, left: number) {
   const halfWidth = width / 2;
   const halfPercent = 50;
