@@ -115,7 +115,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       prop: value === undefined ? undefined : toArray(value),
       defaultProp: defaultValue === undefined ? undefined : toArray(defaultValue),
       onChange: (values) => {
-        if (Array.isArray(value)) {
+        if (Array.isArray(value || defaultValue)) {
           const onRangeChange = onChange as SliderRangeControlledProps['onChange'];
           onRangeChange?.(values);
         } else {
@@ -171,14 +171,13 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
 
     function updateValues(value: number, atIndex: number) {
       const snapToStep = Math.round((value - min) / step) * step + min;
-      const clampedValue = clamp(snapToStep, [min, max]);
+      const nextValue = clamp(snapToStep, [min, max]);
 
       setValues((prevValues = []) => {
-        let nextValues = [...prevValues];
-        nextValues[atIndex] = clampedValue;
-        nextValues = sort(nextValues);
-        activeValueIndexRef.current = nextValues.indexOf(clampedValue);
-        return nextValues;
+        const prevValue = prevValues[atIndex];
+        const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
+        activeValueIndexRef.current = nextValues.indexOf(nextValue);
+        return nextValues[atIndex] !== prevValue ? nextValues : prevValues;
       });
     }
 
@@ -668,8 +667,10 @@ function useDirection(directionProp?: Direction) {
   return direction || 'ltr';
 }
 
-function sort(values: number[]) {
-  return [...values].sort((a, b) => a - b);
+function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number) {
+  const nextValues = [...prevValues];
+  nextValues[atIndex] = nextValue;
+  return nextValues.sort((a, b) => a - b);
 }
 
 function toArray(value: number | number[]): number[] {
