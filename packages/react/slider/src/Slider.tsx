@@ -187,6 +187,8 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
         {...sliderProps}
         {...interopDataAttrObj('root')}
         ref={composedRefs}
+        aria-disabled={disabled}
+        data-disabled={disabled}
         onSlideStart={disabled ? undefined : handleSlideStart}
         onSlideMove={disabled ? undefined : handleSlideMove}
         onKeyDown={disabled ? undefined : handleKeyDown}
