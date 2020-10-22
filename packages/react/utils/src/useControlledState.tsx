@@ -12,6 +12,8 @@ export function useControlledState<T>({
   defaultProp,
   onChange = () => {},
 }: UseControlledStateParams<T>) {
+  // If `defaultProp` is undefined (so not uncontrolled),
+  // `value` will fallback to `prop` every render (controlled)
   const [value = prop, setValue] = React.useState(defaultProp);
   const prevValueRef = React.useRef(value);
   const handleChange = useCallbackRef(onChange);
