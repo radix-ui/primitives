@@ -28,6 +28,7 @@ import {
 } from '@interop-ui/react-utils';
 import {
   Axis,
+  clamp,
   cssReset,
   getResizeObserverEntryBorderBoxSize,
   isMainClick,
@@ -49,7 +50,6 @@ import {
   animate,
   canScroll,
   checkIsScrolling,
-  clamp,
   determineScrollDirectionFromTrackClick,
   getActualScrollDirection,
   getButtonRef,
@@ -785,7 +785,7 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
               : destScrollPosition - startPosition + visibleSize / 2;
 
           const durationBasis = Math.round(Math.abs(totalScrollDistance));
-          const duration = clamp(durationBasis, 100, 500);
+          const duration = clamp(durationBasis, [100, 500]);
 
           // If the initial scroll event already moved us past the point where we need to go
           if (

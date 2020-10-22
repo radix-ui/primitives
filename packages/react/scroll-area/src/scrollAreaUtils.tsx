@@ -1,4 +1,4 @@
-import { Axis } from '@interop-ui/utils';
+import { Axis, clamp } from '@interop-ui/utils';
 import { ScrollAreaState } from './scrollAreaState';
 import { ScrollDirection, LogicalDirection, PointerPosition, ScrollAreaRefs } from './types';
 
@@ -42,10 +42,6 @@ export function getPointerPosition(event: PointerEvent): PointerPosition {
     x: event.clientX,
     y: event.clientY,
   };
-}
-
-export function clamp(val: number, min: number, max: number) {
-  return val > max ? max : val < min ? min : val;
 }
 
 export function getScrollbarRef(axis: Axis, ctx: ScrollAreaRefs) {
@@ -123,7 +119,7 @@ export function setScrollPosition(
 }
 
 export function scrollBy(element: Element, { axis, value }: { axis: Axis; value: number }) {
-  if (canScroll(element, { axis, delta: Math.round(clamp(value, -1, 1)) })) {
+  if (canScroll(element, { axis, delta: Math.round(clamp(value, [-1, 1])) })) {
     element[axis === 'x' ? 'scrollLeft' : 'scrollTop'] += Math.round(value);
   }
 }
@@ -208,7 +204,7 @@ export function animate({ duration, draw, timing, done, rafIdRef }: AnimationOpt
       // In those cases we reset the start time to the timestamp in the first frame.
       // https://stackoverflow.com/questions/38360250/requestanimationframe-now-vs-performance-now-time-discrepancy
       start = time < start ? time : start;
-      const timeFraction = clamp((time - start) / duration, 0, 1);
+      const timeFraction = clamp((time - start) / duration, [0, 1]);
       draw(timing(timeFraction));
 
       if (timeFraction < 1) {
