@@ -17,16 +17,6 @@ import { useSize } from '@interop-ui/react-use-size';
 type Direction = 'ltr' | 'rtl';
 const PAGE_KEYS = ['PageUp', 'PageDown'];
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-const SLIDER_KEYS = [
-  'Home',
-  'End',
-  'PageUp',
-  'PageDown',
-  'ArrowUp',
-  'ArrowRight',
-  'ArrowDown',
-  'ArrowLeft',
-];
 
 const BACK_KEYS: Record<Direction, string[]> = {
   ltr: ['ArrowDown', 'Home', 'ArrowLeft', 'PageUp'],
@@ -47,9 +37,9 @@ const SLIDER_DEFAULT_TAG = 'span';
 
 type SliderBoundsProps = { min?: number; max?: number; step?: number };
 type SliderDOMProps = Omit<SliderPartDOMProps, 'defaultValue' | 'onChange' | 'dir'>;
-type SliderControlledProps = { value: number; onChange?: (value: number) => void };
-type SliderUncontrolledProps = { defaultValue: number; onChange?: (value: number) => void };
-type SliderRangeControlledProps = { value: number[]; onChange?: (value: number[]) => void };
+type SliderControlledProps = { value: number; onChange?(value: number): void };
+type SliderUncontrolledProps = { defaultValue: number; onChange?(value: number): void };
+type SliderRangeControlledProps = { value: number[]; onChange?(value: number[]): void };
 type SliderRangeUncontrolledProps = {
   defaultValue: number[];
   onChange?: (value: number[]) => void;
@@ -90,7 +80,6 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       max = 100,
       step: stepProp = 1,
       orientation = 'horizontal',
-      dir,
       disabled = false,
       onChange = () => {},
       ...restProps
@@ -103,7 +92,6 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     const sliderRef = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
     const activeValueIndexRef = React.useRef<number>();
-    const direction = useDirection(dir);
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
@@ -130,30 +118,6 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       updateValues(value, activeValueIndexRef.current || 0);
     }
 
-    // Todo: Try to split this so the directional stuff is in the
-    // relevant `SliderHorizontal` component only
-    const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
-      if (SLIDER_KEYS.includes(event.key)) {
-        if (event.key === 'Home') {
-          updateValues(min, 0);
-        } else if (event.key === 'End') {
-          updateValues(max, values.length - 1);
-        } else {
-          const isBackKey = BACK_KEYS[direction].includes(event.key);
-          const isPageKey = PAGE_KEYS.includes(event.key);
-          const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
-          const stepDirection = isBackKey ? -1 : 1;
-          const multiplier = isSkipKey ? 10 : 1;
-          const atIndex = activeValueIndexRef.current || 0;
-          const value = values[atIndex];
-          const stepInDirection = step * multiplier * stepDirection;
-          updateValues(value + stepInDirection, atIndex);
-        }
-        // Prevent scrolling for key events
-        event.preventDefault();
-      }
-    });
-
     function updateValues(value: number, atIndex: number) {
       const snapToStep = Math.round((value - min) / step) * step + min;
       const nextValue = clamp(snapToStep, [min, max]);
@@ -170,7 +134,6 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       <SliderOrientation
         {...sliderProps}
         {...interopDataAttrObj('root')}
-        {...(isHorizontal ? { dir } : undefined)}
         ref={composedRefs}
         min={min}
         max={max}
@@ -178,7 +141,19 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
         data-disabled={disabled}
         onSlideStart={disabled ? undefined : handleSlideStart}
         onSlideMove={disabled ? undefined : handleSlideMove}
-        onKeyDown={disabled ? undefined : handleKeyDown}
+        onHomeKeyDown={() => !disabled && updateValues(min, 0)}
+        onEndKeyDown={() => !disabled && updateValues(max, values.length - 1)}
+        onStepKeyDown={({ event, direction: stepDirection }) => {
+          if (!disabled) {
+            const isPageKey = PAGE_KEYS.includes(event.key);
+            const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
+            const multiplier = isSkipKey ? 10 : 1;
+            const atIndex = activeValueIndexRef.current || 0;
+            const value = values[atIndex];
+            const stepInDirection = step * multiplier * stepDirection;
+            updateValues(value + stepInDirection, atIndex);
+          }
+        }}
       >
         {/**
          * When consumer provides `name`, they are most likely uncontrolling so
@@ -226,8 +201,11 @@ const SliderOrientationContext = React.createContext<{
 type SliderOrientationProps = SliderPartDOMProps & {
   min: number;
   max: number;
-  onSlideStart?: (value: number) => void;
-  onSlideMove?: (value: number) => void;
+  onSlideStart?(value: number): void;
+  onSlideMove?(value: number): void;
+  onHomeKeyDown(event: React.KeyboardEvent): void;
+  onEndKeyDown(event: React.KeyboardEvent): void;
+  onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
 };
 
 type SliderHorizontalProps = SliderOrientationProps & {
@@ -236,7 +214,16 @@ type SliderHorizontalProps = SliderOrientationProps & {
 
 const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalProps>(
   function SliderHorizontal(props, forwardedRef) {
-    const { min, max, dir, children, onSlideStart, onSlideMove, ...sliderProps } = props;
+    const {
+      min,
+      max,
+      dir,
+      children,
+      onSlideStart,
+      onSlideMove,
+      onStepKeyDown,
+      ...sliderProps
+    } = props;
     const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
     const rect = useRect(sliderRef);
@@ -276,16 +263,9 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
           const value = getValueFromPointer(touch.clientX);
           onSlideMove?.(value);
         }}
-        /**
-         * Prevent pointer events on other elements on the page while sliding.
-         * For example, stops hover states from triggering on buttons if
-         * mouse moves over a button during slide.
-         */
-        onPointerDown={(event) => {
-          sliderRef.current!.setPointerCapture(event.pointerId);
-        }}
-        onPointerUp={(event) => {
-          sliderRef.current!.releasePointerCapture(event.pointerId);
+        onStepKeyDown={(event) => {
+          const isBackKey = BACK_KEYS[direction].includes(event.key);
+          onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
         }}
       >
         <SliderOrientationContext.Provider
@@ -319,7 +299,7 @@ type SliderVerticalProps = SliderOrientationProps;
 
 const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps>(
   function SliderVertical(props, forwardedRef) {
-    const { min, max, onSlideStart, onSlideMove, children, ...sliderProps } = props;
+    const { min, max, children, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
     const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
     const rect = useRect(sliderRef);
@@ -357,6 +337,10 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps
           const value = getValueFromPointer(touch.clientY);
           onSlideMove?.(value);
         }}
+        onStepKeyDown={(event) => {
+          const isBackKey = BACK_KEYS.ltr.includes(event.key);
+          onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
+        }}
       >
         <SliderOrientationContext.Provider
           value={React.useMemo(() => ({ startEdge: 'bottom', endEdge: 'top', size: 'height' }), [])}
@@ -378,6 +362,9 @@ type SliderPartOwnProps = {
   onSlideMouseMove(event: MouseEvent): void;
   onSlideTouchStart(event: React.TouchEvent): void;
   onSlideTouchMove(event: TouchEvent): void;
+  onHomeKeyDown(event: React.KeyboardEvent): void;
+  onEndKeyDown(event: React.KeyboardEvent): void;
+  onStepKeyDown(event: React.KeyboardEvent): void;
 };
 type SliderPartProps = SliderPartDOMProps & SliderPartOwnProps;
 
@@ -391,6 +378,9 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(functi
     onSlideMouseMove,
     onSlideTouchStart,
     onSlideTouchMove,
+    onHomeKeyDown,
+    onEndKeyDown,
+    onStepKeyDown,
     ...sliderProps
   } = props;
 
@@ -419,17 +409,28 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(functi
       onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
         // Slide only if main mouse button was clicked
         if (event.button === 0) {
-          if (!isThumb(event.target)) onSlideMouseDown?.(event);
+          if (!isThumb(event.target)) onSlideMouseDown(event);
           document.addEventListener('mousemove', handleSlideMouseMove);
           document.addEventListener('mouseup', removeMouseEventListeners);
         }
       })}
       onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
-        if (!isThumb(event.target)) onSlideTouchStart?.(event);
+        if (!isThumb(event.target)) onSlideTouchStart(event);
         document.addEventListener('touchmove', handleSlideTouchMove);
         document.addEventListener('touchend', removeTouchEventListeners);
         // Prevent scrolling for touch events
         event.preventDefault();
+      })}
+      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        if (event.key === 'Home') {
+          onHomeKeyDown(event);
+        } else if (event.key === 'End') {
+          onEndKeyDown(event);
+        } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(event.key)) {
+          onStepKeyDown(event);
+          // Prevent scrolling for directional key presses
+          event.preventDefault();
+        }
       })}
     />
   );
