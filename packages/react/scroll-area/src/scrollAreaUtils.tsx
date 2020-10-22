@@ -6,6 +6,10 @@ export function isScrolledToBottom(node: Element | null) {
   return !!(node && node.scrollTop === getMaxScrollTopValue(node));
 }
 
+export function getDistanceFromTop(el: Element) {
+  return window.pageYOffset + el.getBoundingClientRect().top;
+}
+
 export function isScrolledToRight(node: Element | null) {
   return !!(node && node.scrollLeft === getMaxScrollLeftValue(node));
 }

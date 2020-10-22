@@ -172,18 +172,17 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       setUsesNative(forceNative || shouldFallbackToNativeScroll());
     }, [forceNative]);
 
-    const commonProps = {
-      ...interopDataAttrObj('root'),
-      ...domProps,
-      as,
-      overflowX,
-      overflowY,
-    };
-
     const Comp = usesNative ? ScrollAreaNative : ScrollAreaImpl;
 
     return (
-      <Comp {...commonProps} ref={forwardedRef}>
+      <Comp
+        {...interopDataAttrObj('root')}
+        {...domProps}
+        as={as}
+        overflowX={overflowX}
+        overflowY={overflowY}
+        ref={forwardedRef}
+      >
         <NativeScrollContext.Provider value={usesNative}>{children}</NativeScrollContext.Provider>
       </Comp>
     );
@@ -1440,10 +1439,6 @@ function shouldFallbackToNativeScroll() {
       true)
   );
 }
-
-// function getDistanceFromTop(el: Element) {
-//   return window.pageYOffset + el.getBoundingClientRect().top;
-// }
 
 type ScrollAreaContextValue = ScrollAreaReducerState & {
   isRTL: boolean;
