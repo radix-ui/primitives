@@ -432,6 +432,17 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(functi
           event.preventDefault();
         }
       })}
+      /**
+       * Prevent pointer events on other elements on the page while sliding.
+       * For example, stops hover states from triggering on buttons if
+       * mouse moves over a button during slide.
+       */
+      onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      })}
+      onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      })}
     />
   );
 });
