@@ -46,10 +46,7 @@ const SLIDER_NAME = 'Slider';
 const SLIDER_DEFAULT_TAG = 'span';
 
 type SliderBoundsProps = { min?: number; max?: number; step?: number };
-type SliderDOMProps = Omit<
-  React.ComponentPropsWithoutRef<typeof SLIDER_DEFAULT_TAG>,
-  'defaultValue' | 'onChange' | 'dir'
->;
+type SliderDOMProps = Omit<SliderPartDOMProps, 'defaultValue' | 'onChange' | 'dir'>;
 type SliderControlledProps = { value: number; onChange?: (value: number) => void };
 type SliderUncontrolledProps = { defaultValue: number; onChange?: (value: number) => void };
 type SliderRangeControlledProps = { value: number[]; onChange?: (value: number[]) => void };
@@ -286,6 +283,17 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
           const touch = event.targetTouches[0];
           handleSlideMove(touch.clientX);
         }}
+        /**
+         * Prevent pointer events on other elements on the page while sliding.
+         * For example, stops hover states from triggering on buttons if
+         * mouse moves over a button during slide.
+         */
+        onPointerDown={(event) => {
+          sliderRef.current!.setPointerCapture(event.pointerId);
+        }}
+        onPointerUp={(event) => {
+          sliderRef.current!.releasePointerCapture(event.pointerId);
+        }}
       >
         <SliderOrientationContext.Provider
           value={React.useMemo(() => ({ startEdge: 'left', endEdge: 'right', size: 'width' }), [])}
@@ -345,7 +353,7 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderOrientationPr
  * SliderPart
  * -----------------------------------------------------------------------------------------------*/
 
-type SliderPartDOMProps = React.ComponentProps<typeof SLIDER_DEFAULT_TAG>;
+type SliderPartDOMProps = React.ComponentPropsWithoutRef<typeof SLIDER_DEFAULT_TAG>;
 type SliderPartOwnProps = {
   onSlideMouseDown(event: React.MouseEvent): void;
   onSlideMouseMove(event: MouseEvent): void;
