@@ -6,3 +6,10 @@ body[data-interop-dragging] * {
   */
   pointer-events: none !important;
 }
+
+.resizable {
+  padding: 10px;
+  border: 1px solid gray;
+  resize: both;
+  overflow: auto;
+}

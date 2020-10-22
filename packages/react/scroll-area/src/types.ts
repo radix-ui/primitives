@@ -1,0 +1,25 @@
+export type { Axis } from '@interop-ui/utils';
+export type { ScrollAreaEvent } from './scrollAreaState';
+export type { ScrollAreaReducerState } from './scrollAreaState';
+export type Size = { width: number; height: number };
+export type PointerPosition = { x: number; y: number };
+export type ResizeBehavior = 'none' | 'both' | 'horizontal' | 'vertical' | 'initial' | 'inherit';
+export type LogicalDirection = 'start' | 'end';
+export type ScrollDirection = 'up' | 'down' | 'left' | 'right';
+export type ScrollbarAutoHide = 'never' | 'scroll';
+export type OverflowBehavior = 'auto' | 'hidden' | 'scroll' | 'visible';
+export type ScrollAreaRefs = {
+  buttonLeftRef: React.RefObject<HTMLDivElement>;
+  buttonRightRef: React.RefObject<HTMLDivElement>;
+  buttonUpRef: React.RefObject<HTMLDivElement>;
+  buttonDownRef: React.RefObject<HTMLDivElement>;
+  contentAreaRef: React.RefObject<HTMLDivElement>;
+  positionRef: React.RefObject<HTMLDivElement>;
+  scrollAreaRef: React.RefObject<HTMLDivElement>;
+  scrollbarYRef: React.RefObject<HTMLDivElement>;
+  scrollbarXRef: React.RefObject<HTMLDivElement>;
+  thumbYRef: React.RefObject<HTMLDivElement>;
+  thumbXRef: React.RefObject<HTMLDivElement>;
+  trackYRef: React.RefObject<HTMLDivElement>;
+  trackXRef: React.RefObject<HTMLDivElement>;
+};

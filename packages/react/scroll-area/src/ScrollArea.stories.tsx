@@ -19,45 +19,47 @@ export function Basic() {
     <div>
       <button onClick={() => setNative(!usesNative)}>Toggle Native</button>
       <hr />
-      <ScrollArea as={Root} unstable_forceNative={usesNative} overflowX="scroll">
-        <ScrollArea.ScrollbarY as={ScrollbarY}>
-          <ScrollArea.ButtonStart as={ScrollButtonStart}>
-            <Arrow direction="up" />
-          </ScrollArea.ButtonStart>
+      <div className="resizable">
+        <ScrollArea as={Root} unstable_forceNative={usesNative} overflowX="scroll" resize="both">
+          <ScrollArea.ScrollbarY as={ScrollbarY}>
+            <ScrollArea.ButtonStart as={ScrollButtonStart}>
+              <Arrow direction="up" />
+            </ScrollArea.ButtonStart>
 
-          <ScrollArea.Track as={ScrollTrack}>
-            <ScrollArea.Thumb as={ScrollThumb} />
-          </ScrollArea.Track>
-          <ScrollArea.ButtonEnd as={ScrollButtonEnd}>
-            <Arrow direction="down" />
-          </ScrollArea.ButtonEnd>
-        </ScrollArea.ScrollbarY>
+            <ScrollArea.Track as={ScrollTrack}>
+              <ScrollArea.Thumb as={ScrollThumb} />
+            </ScrollArea.Track>
+            <ScrollArea.ButtonEnd as={ScrollButtonEnd}>
+              <Arrow direction="down" />
+            </ScrollArea.ButtonEnd>
+          </ScrollArea.ScrollbarY>
+          <ScrollArea.ScrollbarX as={ScrollbarX}>
+            <ScrollArea.ButtonStart as={ScrollButtonStart}>
+              <Arrow direction="left" />
+            </ScrollArea.ButtonStart>
 
-        <ScrollArea.ScrollbarX as={ScrollbarX}>
-          <ScrollArea.ButtonStart as={ScrollButtonStart}>
-            <Arrow direction="left" />
-          </ScrollArea.ButtonStart>
+            <ScrollArea.Track as={ScrollTrack}>
+              <ScrollArea.Thumb as={ScrollThumb} />
+            </ScrollArea.Track>
+            <ScrollArea.ButtonEnd as={ScrollButtonEnd}>
+              <Arrow direction="right" />
+            </ScrollArea.ButtonEnd>
+          </ScrollArea.ScrollbarX>
+          <ScrollArea.ResizeHandle as={ResizeHandle} />
 
-          <ScrollArea.Track as={ScrollTrack}>
-            <ScrollArea.Thumb as={ScrollThumb} />
-          </ScrollArea.Track>
-          <ScrollArea.ButtonEnd as={ScrollButtonEnd}>
-            <Arrow direction="right" />
-          </ScrollArea.ButtonEnd>
-        </ScrollArea.ScrollbarX>
-
-        <ScrollArea.Position as={ScrollPosition}>
-          <ScrollArea.ContentArea as={ScrollContent}>
-            <LongContent />
-            <LongContent />
-            <LongContent />
-            <LongContent />
-            <LongContent />
-            <LongContent />
-            <LongContent />
-          </ScrollArea.ContentArea>
-        </ScrollArea.Position>
-      </ScrollArea>
+          <ScrollArea.Position as={ScrollPosition}>
+            <ScrollArea.ContentArea as={ScrollContent}>
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+            </ScrollArea.ContentArea>
+          </ScrollArea.Position>
+        </ScrollArea>
+      </div>
     </div>
   );
 }
@@ -68,10 +70,10 @@ export function Basic() {
 
 const Root = styled('div', {
   ...styles.root,
-  width: '100%',
-  height: '100%',
-  maxWidth: '450px',
-  maxHeight: '400px',
+  width: '400px',
+  height: '400px',
+  maxWidth: '100%',
+  maxHeight: '100%',
   border: '2px solid #FFF',
   borderTopColor: '#858585',
   borderLeftColor: '#858585',
@@ -142,6 +144,11 @@ const ScrollContent = styled('div', {
   '& > :last-child': {
     marginBottom: 0,
   },
+});
+
+const ResizeHandle = styled('div', {
+  ...styles.resizeHandle,
+  backgroundColor: '#C0C0C0',
 });
 
 const Arrow = React.forwardRef<SVGSVGElement, any>(function Arrow(
