@@ -545,12 +545,8 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     const size = useSize(thumbRef);
     const percent = convertValueToPercentage(value, context.min, context.max);
     const label = getLabel(index, context.values.length);
-    /**
-     * We offset the thumb centre point while sliding to ensure it remains
-     * within the bounds of the slider when it reaches the edges
-     */
     const orientationSize = size?.[orientation.size];
-    const offset = orientationSize ? getElementOffset(orientationSize, percent) : 0;
+    const thumbInBoundsOffset = orientationSize ? getElementOffset(orientationSize, percent) : 0;
 
     React.useEffect(() => {
       /**
@@ -579,7 +575,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
         style={{
           transform: 'var(--thumb-transform)',
           position: 'absolute',
-          [orientation.startEdge]: `calc(${percent}% + ${offset}px)`,
+          [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
         }}
       >
         <Comp
