@@ -137,16 +137,6 @@ export function getLogicalRect(element: Element, { axis }: { axis: Axis }) {
   return { coord, position, size };
 }
 
-export function isInViewport(elem: Element) {
-  const rect = elem.getBoundingClientRect();
-  return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  );
-}
-
 export function getVisibleToTotalRatio(positionElement: HTMLElement, { axis }: { axis: Axis }) {
   const totalScrollSize = getScrollSize(positionElement, { axis });
   const visibleSize = getClientSize(positionElement, { axis });

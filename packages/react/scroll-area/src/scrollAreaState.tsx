@@ -11,7 +11,7 @@ export enum ScrollAreaState {
 export enum ScrollAreaEvents {
   DeriveStateFromProps,
   HandleScrollAreaResize,
-  HandleContentAreaResize,
+  HandleViewportResize,
   HandleScrollbarResize,
   HandleThumbResize,
   HandleTrackResize,
@@ -30,7 +30,7 @@ export enum ScrollAreaEvents {
 export type ScrollAreaEvent =
   | { type: ScrollAreaEvents.SetExplicitResize; value: ResizeBehavior }
   | { type: ScrollAreaEvents.HandleScrollAreaResize; width: number; height: number }
-  | { type: ScrollAreaEvents.HandleContentAreaResize; width: number; height: number }
+  | { type: ScrollAreaEvents.HandleViewportResize; width: number; height: number }
   | { type: ScrollAreaEvents.HandleScrollbarResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.HandleThumbResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.HandleTrackResize; axis: Axis; width: number; height: number }
@@ -46,7 +46,7 @@ export type ScrollAreaEvent =
 export type ScrollAreaReducerState = {
   state: ScrollAreaState;
   scrollAreaSize: Size;
-  contentAreaSize: Size;
+  viewportSize: Size;
   positionSize: Size;
   scrollbarYSize: Size;
   scrollbarXSize: Size;
@@ -109,10 +109,10 @@ export function reducer(
         contentIsOverflowingY: event.y,
       };
     }
-    case ScrollAreaEvents.HandleContentAreaResize: {
+    case ScrollAreaEvents.HandleViewportResize: {
       return {
         ...context,
-        contentAreaSize: {
+        viewportSize: {
           width: event.width,
           height: event.height,
         },

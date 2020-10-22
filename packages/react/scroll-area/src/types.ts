@@ -13,7 +13,7 @@ export type ScrollAreaRefs = {
   buttonRightRef: React.RefObject<HTMLDivElement>;
   buttonUpRef: React.RefObject<HTMLDivElement>;
   buttonDownRef: React.RefObject<HTMLDivElement>;
-  contentAreaRef: React.RefObject<HTMLDivElement>;
+  viewportRef: React.RefObject<HTMLDivElement>;
   positionRef: React.RefObject<HTMLDivElement>;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
   scrollbarYRef: React.RefObject<HTMLDivElement>;

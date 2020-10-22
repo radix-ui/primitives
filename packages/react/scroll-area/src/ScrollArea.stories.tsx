@@ -20,7 +20,7 @@ export function Basic() {
       <button onClick={() => setNative(!usesNative)}>Toggle Native</button>
       <hr />
       <div className="resizable">
-        <ScrollArea as={Root} unstable_forceNative={usesNative} overflowX="scroll" resize="both">
+        <ScrollArea as={Root} unstable_forceNative={usesNative} overflowX="scroll">
           <ScrollArea.ScrollbarY as={ScrollbarY}>
             <ScrollArea.ButtonStart as={ScrollButtonStart}>
               <Arrow direction="up" />
@@ -45,19 +45,17 @@ export function Basic() {
               <Arrow direction="right" />
             </ScrollArea.ButtonEnd>
           </ScrollArea.ScrollbarX>
-          <ScrollArea.ResizeHandle as={ResizeHandle} />
+          <ScrollArea.Corner as={Corner} />
 
-          <ScrollArea.Position as={ScrollPosition}>
-            <ScrollArea.ContentArea as={ScrollContent}>
-              <LongContent />
-              <LongContent />
-              <LongContent />
-              <LongContent />
-              <LongContent />
-              <LongContent />
-              <LongContent />
-            </ScrollArea.ContentArea>
-          </ScrollArea.Position>
+          <ScrollArea.Viewport as={ScrollViewport}>
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+          </ScrollArea.Viewport>
         </ScrollArea>
       </div>
     </div>
@@ -128,12 +126,8 @@ const ScrollTrack = styled('div', {
   background: 'rgba(65, 105, 225, 0.3)',
 });
 
-const ScrollPosition = styled('div', {
-  ...styles.position,
-});
-
-const ScrollContent = styled('div', {
-  ...styles.contentArea,
+const ScrollViewport = styled('div', {
+  ...styles.viewport,
   width: '2000px',
   padding: 20,
 
@@ -146,8 +140,8 @@ const ScrollContent = styled('div', {
   },
 });
 
-const ResizeHandle = styled('div', {
-  ...styles.resizeHandle,
+const Corner = styled('div', {
+  ...styles.corner,
   backgroundColor: '#C0C0C0',
 });
 

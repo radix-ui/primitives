@@ -7,23 +7,20 @@
 //  - PointerEvents
 //  - CSS scrollbar-width OR -webkit-scrollbar
 
-// TODO: Implement resize handle
 // TODO: Autohide
 // TODO: Dragging functionality
 // TODO: Test inside popovers
-// TODO: I broke overflowX somewhere along the process of cleaning up code -- fiiiix it!
 // TODO: Wrap all event props with composeEventHandler
 // TODO: Replace all globals with globals relative to the root node
 // TODO: RTL language testing for horizontal scrolling
-//
-// - Notes about RTL support:
-//     - Default placement for the resize handle is bottom left instead of bottom right in RTL mode
 
 import {
+  composeEventHandlers,
   createContext,
   createStyleObj,
   forwardRef,
   memo,
+  useCallbackRef,
   useComposedRefs,
   useConstant,
   useLayoutEffect,
@@ -67,7 +64,6 @@ import {
   getThumbRef,
   getTrackRef,
   getVisibleToTotalRatio,
-  isInViewport,
   pointerIsOutsideElement,
   round,
   scrollBy,
@@ -87,9 +83,9 @@ const CSS_PROPS = {
   scrollbarThumbWillChange: '--interop-scroll-area-scrollbar-thumb-will-change',
   scrollbarThumbHeight: '--interop-scroll-area-scrollbar-thumb-height',
   scrollbarThumbWidth: '--interop-scroll-area-scrollbar-thumb-width',
-  resizeHandleLeft: '--interop-scroll-area-resize-handle-left',
-  resizeHandleRight: '--interop-scroll-area-resize-handle-right',
-  resizeHandleCursor: '--interop-scroll-area-resize-handle-cursor',
+  cornerLeft: '--interop-scroll-area-corner-left',
+  cornerRight: '--interop-scroll-area-corner-right',
+  // cornerCursor: '--interop-scroll-area-corner-cursor',
 } as const;
 
 const ROOT_DEFAULT_TAG = 'div';
@@ -137,7 +133,6 @@ type ScrollAreaOwnProps = {
    * (default: `"auto"`)
    */
   overflowY?: OverflowBehavior;
-  resize?: ResizeBehavior;
   /**
    * Describes the nature of auto-hide, similar to how
    * - `"never"`: Never hide automatically.
@@ -156,6 +151,7 @@ type ScrollAreaOwnProps = {
    * Mostly here for debugging, but this might be useful for consumers
    */
   unstable_forceNative?: boolean;
+  isRTL?: boolean;
 };
 type ScrollAreaProps = ScrollAreaDOMProps & ScrollAreaOwnProps;
 
@@ -166,7 +162,6 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       children,
       overflowX = 'auto',
       overflowY = 'auto',
-      resize = 'none',
       unstable_forceNative: forceNative = false,
       ...domProps
     } = props;
@@ -184,7 +179,6 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       children,
       overflowX,
       overflowY,
-      resize,
     };
 
     const Comp = usesNative ? ScrollAreaNative : ScrollAreaImpl;
@@ -204,7 +198,7 @@ type ScrollAreaNativeProps = Omit<ScrollAreaProps, 'unstable_forceNative'> & {
 
 const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativeProps>(
   function ScrollAreaNative(props, forwardedRef) {
-    const { as: Comp, overflowX, overflowY, resize, ...domProps } = props;
+    const { as: Comp, overflowX, overflowY, ...domProps } = props;
     return (
       <Comp
         ref={forwardedRef}
@@ -214,7 +208,10 @@ const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativePro
           // For native fallback, the scrollarea wrapper itself is scrollable
           overflowX,
           overflowY,
-          resize,
+
+          // Set this inline since we don't currently support resizable scroll areas. This feature
+          // will come later.
+          resize: 'none',
         }}
       />
     );
@@ -224,7 +221,6 @@ const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativePro
 type ScrollAreaImplProps = Omit<ScrollAreaProps, 'unstable_forceNative'> & {
   overflowX: NonNullable<ScrollAreaProps['overflowX']>;
   overflowY: NonNullable<ScrollAreaProps['overflowY']>;
-  resize: NonNullable<ScrollAreaProps['resize']>;
 };
 
 const initialSize = { width: 0, height: 0 };
@@ -232,7 +228,7 @@ const initialState: ScrollAreaReducerState = {
   state: ScrollAreaState.Idle,
   explicitResize: 'initial',
   scrollAreaSize: initialSize,
-  contentAreaSize: initialSize,
+  viewportSize: initialSize,
   positionSize: initialSize,
   scrollbarYSize: initialSize,
   scrollbarXSize: initialSize,
@@ -247,22 +243,25 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
     const {
       as: Comp,
       children,
+      onScroll,
       overflowX,
       overflowY,
-      resize,
       scrollbarAutoHide = 'never',
+      isRTL = false,
       scrollbarDragScrolling = false,
       ...domProps
     } = props;
 
-    // TODO:
-    const isRTL = false;
+    // That we call `onScroll` in the viewport component is an implementation detail that the
+    // consumer probably shouldn't need to think about. Passing it down from the top means that the
+    // event handler would work the same way in the native fallback as well.
+    const userOnScroll = useCallbackRef(onScroll);
 
     const buttonDownRef = React.useRef<HTMLDivElement>(null);
     const buttonLeftRef = React.useRef<HTMLDivElement>(null);
     const buttonRightRef = React.useRef<HTMLDivElement>(null);
     const buttonUpRef = React.useRef<HTMLDivElement>(null);
-    const contentAreaRef = React.useRef<HTMLDivElement>(null);
+    const viewportRef = React.useRef<HTMLDivElement>(null);
     const positionRef = React.useRef<HTMLDivElement>(null);
     const scrollAreaRef = React.useRef<HTMLDivElement>(null);
     const scrollbarXRef = React.useRef<HTMLDivElement>(null);
@@ -277,7 +276,7 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
         buttonLeftRef,
         buttonRightRef,
         buttonUpRef,
-        contentAreaRef,
+        viewportRef,
         positionRef,
         scrollAreaRef,
         scrollbarXRef,
@@ -304,10 +303,10 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       overflowX,
       overflowY,
       prefersReducedMotion,
-      resize,
       scrollAnimationQueue,
       scrollbarAutoHide,
       scrollbarDragScrolling,
+      userOnScroll,
     };
 
     // Attach all refs to each dispatch so we can ensure fresh references in our reducer without
@@ -325,34 +324,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
 
     const ref = useComposedRefs(forwardedRef, scrollAreaRef);
 
-    // Make sure we have required checks. We can do this once early and throw a more helpful error
-    // rather than checking refs in every sub-component.
-    useLayoutEffect(() => {
-      const scrollAreaEl = scrollAreaRef.current;
-      const positionEl = positionRef.current;
-      if (!scrollAreaEl || !positionEl) {
-        // TODO:
-        throw Error('Place the refs plz');
-      }
-    });
-
-    /**
-     * The resize handle is placed, by default, in the bottom right corner of the scroll area. In RTL
-     * writing mode it should be placed on the bottom left. Its cursor depends on the direction in
-     * which the user is able to resize the container.
-     */
-    useLayoutEffect(() => {
-      // We need to rely on computed styles because the resize
-      // value can be `initial` or `inherit` which don't give us the direct information we need here.
-      if (positionRef.current) {
-        const computedStyles = window.getComputedStyle(positionRef.current!);
-        dispatch({
-          type: ScrollAreaEvents.SetExplicitResize,
-          value: computedStyles.resize as ResizeBehavior,
-        });
-      }
-    }, [resize, isRTL, dispatch]);
-
     // Observe the scroll area for size changes
     const handleResize = React.useCallback(
       (size: ResizeObserverSize) => {
@@ -365,92 +336,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       [dispatch]
     );
     useBorderBoxResizeObserver(scrollAreaRef, handleResize);
-
-    // Listen to scroll events and update the thumb's positioning accordingly.
-    useLayoutEffect(() => {
-      const scrollAreaEl = scrollAreaRef.current!;
-      const positionElement = positionRef.current!;
-
-      // We only need to respond to scroll events when a scroll area is visibile in the viewport.
-      const scrollAreaObserver = new IntersectionObserver(
-        function handleScrollAreaViewChange([entry]) {
-          if (entry.isIntersecting) {
-            positionElement.addEventListener('scroll', handleScroll);
-            handleScroll();
-            return;
-          }
-          // Scroll area not in view, clean up scroll listener
-          positionElement.removeEventListener('scroll', handleScroll);
-        },
-        {
-          root: null,
-          rootMargin: '0px',
-          threshold: [0, 1],
-        }
-      );
-
-      // Add listeners immediately if we're already in view.
-      if (isInViewport(scrollAreaEl)) {
-        handleScroll();
-      }
-
-      scrollAreaObserver.observe(scrollAreaEl);
-
-      return function cleanup() {
-        scrollAreaObserver.disconnect();
-        positionElement.removeEventListener('scroll', handleScroll);
-      };
-
-      function handleScroll() {
-        const thumbXElement = thumbXRef.current;
-        const thumbYElement = thumbYRef.current;
-        if (thumbXElement) {
-          updateThumbPosition({
-            thumbElement: thumbXElement,
-            axis: 'x',
-            positionElement,
-          });
-        }
-        if (thumbYElement) {
-          updateThumbPosition({
-            thumbElement: thumbYElement,
-            axis: 'y',
-            positionElement,
-          });
-        }
-      }
-    }, [dispatch]);
-
-    // Determine whether or not content is overflowing in either direction and update context
-    // accordingly.
-    useLayoutEffect(() => {
-      const contentIsOverflowingX = shouldOverflow(positionRef.current!, { axis: 'x' });
-      const contentIsOverflowingY = shouldOverflow(positionRef.current!, { axis: 'y' });
-      if (
-        contentIsOverflowingX !== context.contentIsOverflowingX ||
-        contentIsOverflowingY !== context.contentIsOverflowingY
-      ) {
-        dispatch({
-          type: ScrollAreaEvents.SetContentOverflowing,
-          x: contentIsOverflowingX,
-          y: contentIsOverflowingY,
-        });
-      }
-    }, [
-      context.contentIsOverflowingX,
-      context.contentIsOverflowingY,
-      dispatch,
-      positionRef,
-
-      // trigger update when any size changes occur
-      context.scrollAreaSize,
-      context.contentAreaSize,
-      context.positionSize,
-      context.scrollbarYSize,
-      context.scrollbarXSize,
-      context.trackYSize,
-      context.trackXSize,
-    ]);
 
     // Adds attribute to the body element so an app can know when a scrollarea is active, so we can
     // disable pointer events on all other elements on the screen until scrolling stops.
@@ -537,97 +422,139 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
 );
 
 /* -------------------------------------------------------------------------------------------------
- * ScrollAreaPosition
+ * ScrollAreaViewport
  * -----------------------------------------------------------------------------------------------*/
 
-const POSITION_DEFAULT_TAG = 'div';
-const POSITION_NAME = 'ScrollArea.Position';
-type ScrollAreaPositionDOMProps = React.ComponentPropsWithoutRef<typeof POSITION_DEFAULT_TAG>;
-type ScrollAreaPositionOwnProps = {};
-type ScrollAreaPositionProps = ScrollAreaPositionDOMProps & ScrollAreaPositionOwnProps;
+const VIEWPORT_DEFAULT_TAG = 'div';
+const VIEWPORT_NAME = 'ScrollArea.Viewport';
+type ScrollAreaViewportDOMProps = React.ComponentPropsWithoutRef<typeof VIEWPORT_DEFAULT_TAG>;
+type ScrollAreaViewportOwnProps = {};
+type ScrollAreaViewportProps = ScrollAreaViewportDOMProps & ScrollAreaViewportOwnProps;
 
-const ScrollAreaPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, ScrollAreaPositionProps>(
-  function ScrollAreaPositionImpl(props, forwardedRef) {
-    const { as: Comp = POSITION_DEFAULT_TAG, ...domProps } = props;
-    const { positionRef } = useScrollAreaRefs(POSITION_NAME);
-    const { overflowX, overflowY, resize } = useScrollAreaContext(POSITION_NAME);
-    const ref = useComposedRefs(positionRef, forwardedRef);
+const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAreaViewportProps>(
+  function ScrollAreaViewportImpl(props, forwardedRef) {
+    const { as: Comp = VIEWPORT_DEFAULT_TAG, ...domProps } = props;
+    const { positionRef, thumbXRef, thumbYRef, viewportRef } = useScrollAreaRefs(VIEWPORT_NAME);
+    const { userOnScroll, overflowX, overflowY, ...context } = useScrollAreaContext(VIEWPORT_NAME);
+    const dispatch = useDispatchContext(VIEWPORT_NAME);
+    const ref = useComposedRefs(forwardedRef, viewportRef);
+
+    const handleResize = React.useCallback(
+      (size: ResizeObserverSize) => {
+        dispatch({
+          type: ScrollAreaEvents.HandleViewportResize,
+          width: size.inlineSize,
+          height: size.blockSize,
+        });
+      },
+      [dispatch]
+    );
+    useBorderBoxResizeObserver(viewportRef, handleResize);
+
+    const syncThumbsWithScrollPosition = React.useCallback(
+      function syncThumbsWithScrollPosition() {
+        const positionElement = positionRef.current;
+        const thumbXElement = thumbXRef.current;
+        const thumbYElement = thumbYRef.current;
+        if (thumbXElement && positionElement) {
+          updateThumbPosition({
+            thumbElement: thumbXElement,
+            axis: 'x',
+            positionElement,
+          });
+        }
+        if (thumbYElement && positionElement) {
+          updateThumbPosition({
+            thumbElement: thumbYElement,
+            axis: 'y',
+            positionElement,
+          });
+        }
+      },
+      [positionRef, thumbXRef, thumbYRef]
+    );
+
+    const handleScroll = useCallbackRef(
+      composeEventHandlers(userOnScroll, syncThumbsWithScrollPosition)
+    );
+
+    // Listen to scroll events and update each thumb's positioning accordingly.
+    useLayoutEffect(() => {
+      syncThumbsWithScrollPosition();
+    }, [dispatch, positionRef, thumbXRef, thumbYRef, handleScroll, syncThumbsWithScrollPosition]);
+
+    // Determine whether or not content is overflowing in either direction and update context
+    // accordingly.
+    useLayoutEffect(() => {
+      const positionElement = positionRef.current;
+      if (!positionElement) {
+        // TODO:
+        throw Error('Place the refs plz');
+      }
+
+      const contentIsOverflowingX = shouldOverflow(positionElement, { axis: 'x' });
+      const contentIsOverflowingY = shouldOverflow(positionElement, { axis: 'y' });
+      if (
+        contentIsOverflowingX !== context.contentIsOverflowingX ||
+        contentIsOverflowingY !== context.contentIsOverflowingY
+      ) {
+        dispatch({
+          type: ScrollAreaEvents.SetContentOverflowing,
+          x: contentIsOverflowingX,
+          y: contentIsOverflowingY,
+        });
+      }
+    }, [
+      context.contentIsOverflowingX,
+      context.contentIsOverflowingY,
+      dispatch,
+      positionRef,
+
+      // trigger update when any size changes occur
+      context.scrollAreaSize,
+      context.viewportSize,
+      context.positionSize,
+      context.scrollbarYSize,
+      context.scrollbarXSize,
+      context.trackYSize,
+      context.trackXSize,
+    ]);
+
     return (
-      <Comp
-        {...interopDataAttrObj('position')}
-        ref={ref}
-        {...domProps}
+      <div
+        data-interop-scroll-area-position=""
+        ref={positionRef}
+        onScroll={handleScroll}
         style={{
-          ...domProps.style,
-          resize,
+          ...cssReset('div'),
+          zIndex: 1,
+          width: `var(${CSS_PROPS.positionWidth})`,
+          height: `var(${CSS_PROPS.positionHeight})`,
+          paddingBottom: `var(${CSS_PROPS.scrollbarXOffset})`,
+          paddingRight: `var(${CSS_PROPS.scrollbarYOffset})`,
+          scrollbarWidth: 'none',
+          overflowScrolling: 'touch',
+          resize: 'none',
           overflowX,
           overflowY,
         }}
-      />
+      >
+        <Comp {...interopDataAttrObj('viewport')} ref={ref} {...domProps} />
+      </div>
     );
   }
 );
 
-const ScrollAreaPosition = memo(
-  forwardRef<typeof POSITION_DEFAULT_TAG, ScrollAreaPositionProps>(function ScrollAreaPosition(
-    props,
-    forwardedRef
-  ) {
+const ScrollAreaViewport = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAreaViewportProps>(
+  function ScrollAreaViewport(props, forwardedRef) {
+    const { as: Comp = VIEWPORT_DEFAULT_TAG, ...domProps } = props;
     return useNativeScrollArea() ? (
-      <React.Fragment>{props.children}</React.Fragment>
+      <Comp {...interopDataAttrObj('viewport')} ref={forwardedRef} {...domProps} />
     ) : (
-      <ScrollAreaPositionImpl ref={forwardedRef} {...props} />
+      <ScrollAreaViewportImpl ref={forwardedRef} as={Comp} {...domProps} />
     );
-  })
+  }
 );
-
-/* -------------------------------------------------------------------------------------------------
- * ScrollAreaContentArea
- * -----------------------------------------------------------------------------------------------*/
-
-const CONTENT_AREA_DEFAULT_TAG = 'div';
-const CONTENT_AREA_NAME = 'ScrollArea.ContentArea';
-type ScrollAreaContentAreaDOMProps = React.ComponentPropsWithoutRef<
-  typeof CONTENT_AREA_DEFAULT_TAG
->;
-type ScrollAreaContentAreaOwnProps = {};
-type ScrollAreaContentAreaProps = ScrollAreaContentAreaDOMProps & ScrollAreaContentAreaOwnProps;
-
-const ScrollAreaContentAreaImpl = forwardRef<
-  typeof CONTENT_AREA_DEFAULT_TAG,
-  ScrollAreaContentAreaProps
->(function ScrollAreaContentAreaImpl(props, forwardedRef) {
-  const { as: Comp = CONTENT_AREA_DEFAULT_TAG, ...domProps } = props;
-  const { contentAreaRef } = useScrollAreaRefs(CONTENT_AREA_NAME);
-  const dispatch = useDispatchContext(CONTENT_AREA_NAME);
-  const ref = useComposedRefs(forwardedRef, contentAreaRef);
-
-  const handleResize = React.useCallback(
-    (size: ResizeObserverSize) => {
-      dispatch({
-        type: ScrollAreaEvents.HandleContentAreaResize,
-        width: size.inlineSize,
-        height: size.blockSize,
-      });
-    },
-    [dispatch]
-  );
-  useBorderBoxResizeObserver(contentAreaRef, handleResize);
-
-  return <Comp {...interopDataAttrObj('contentArea')} ref={ref} {...domProps} />;
-});
-
-const ScrollAreaContentArea = forwardRef<
-  typeof CONTENT_AREA_DEFAULT_TAG,
-  ScrollAreaContentAreaProps
->(function ScrollAreaContentArea(props, forwardedRef) {
-  const { as: Comp = CONTENT_AREA_DEFAULT_TAG, ...domProps } = props;
-  return useNativeScrollArea() ? (
-    <Comp {...interopDataAttrObj('contentArea')} ref={forwardedRef} {...domProps} />
-  ) : (
-    <ScrollAreaContentAreaImpl ref={forwardedRef} as={Comp} {...domProps} />
-  );
-});
 
 /* -------------------------------------------------------------------------------------------------
  * ScrollAreaScrollbarX / ScrollAreaScrollbarY
@@ -767,22 +694,22 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
     React.useEffect(() => {
       let trackPointerDownTimeoutId: number | null = null;
       let trackPointerUpTimeoutId: number | null = null;
-      const trackEl = trackRef.current!;
-      const thumbEl = thumbRef.current!;
+      const trackElement = trackRef.current!;
+      const thumbElement = thumbRef.current!;
       const positionElement = positionRef.current!;
 
-      if (!trackEl || !thumbEl) {
+      if (!trackElement || !thumbElement || !positionElement) {
         // TODO:
         throw Error('PAPA NEEDS SOME REFS!');
       }
 
-      trackEl.addEventListener('pointerdown', handlePointerDown);
+      trackElement.addEventListener('pointerdown', handlePointerDown);
       return function () {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         window.cancelAnimationFrame(rafIdRef.current!);
         window.clearTimeout(trackPointerDownTimeoutId!);
         window.clearTimeout(trackPointerUpTimeoutId!);
-        trackEl.removeEventListener('pointerdown', handlePointerDown);
+        trackElement.removeEventListener('pointerdown', handlePointerDown);
         document.removeEventListener('pointermove', handlePointerMove);
         document.removeEventListener('pointerup', handlePointerUp);
         dispatch({ type: ScrollAreaEvents.StopTracking });
@@ -792,13 +719,17 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
       function handlePointerDown(event: PointerEvent) {
         if (!isMainClick(event)) return;
 
-        const direction = determineScrollDirectionFromTrackClick({ event, axis, thumbEl });
+        const direction = determineScrollDirectionFromTrackClick({
+          event,
+          axis,
+          thumbEl: thumbElement,
+        });
 
         document.addEventListener('pointermove', handlePointerMove);
         document.addEventListener('pointerup', handlePointerUp);
 
         dispatch({ type: ScrollAreaEvents.StartTracking });
-        trackEl.setPointerCapture(event.pointerId);
+        trackElement.setPointerCapture(event.pointerId);
         window.clearTimeout(trackPointerUpTimeoutId!);
 
         const visibleSize = getClientSize(positionElement, { axis });
@@ -833,7 +764,9 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
         // further to some relative distance near the pointer in relation to the track.
         trackPointerDownTimeoutId = window.setTimeout(() => {
           const pointerPosition = getPointerPosition(event);
-          const { position: trackPosition, size: trackSize } = getLogicalRect(trackEl, { axis });
+          const { position: trackPosition, size: trackSize } = getLogicalRect(trackElement, {
+            axis,
+          });
           const pointerPositionRelativeToTrack = Math.round(pointerPosition[axis] - trackPosition);
           const viewportRatioFromPointer =
             Math.round((pointerPositionRelativeToTrack / trackSize) * 100) / 100;
@@ -902,7 +835,7 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
        * @param event
        */
       function handlePointerMove(event: PointerEvent) {
-        if (event.pointerType === 'mouse' && pointerIsOutsideElement(event, trackEl)) {
+        if (event.pointerType === 'mouse' && pointerIsOutsideElement(event, trackElement)) {
           window.clearTimeout(trackPointerDownTimeoutId!);
           document.removeEventListener('pointermove', handlePointerMove);
           scrollAnimationQueue.stop();
@@ -910,7 +843,7 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
       }
 
       function handlePointerUp(event: PointerEvent) {
-        trackEl.releasePointerCapture(event.pointerId);
+        trackElement.releasePointerCapture(event.pointerId);
         window.clearTimeout(trackPointerDownTimeoutId!);
         document.removeEventListener('pointermove', handlePointerMove);
         document.removeEventListener('pointerup', handlePointerUp);
@@ -981,8 +914,14 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
         mounted.current = true;
         return;
       }
-      const thumbElement = thumbRef.current!;
-      const positionElement = positionRef.current!;
+
+      const thumbElement = thumbRef.current;
+      const positionElement = positionRef.current;
+      if (!thumbElement || !positionElement) {
+        // TODO:
+        throw Error('why no refs 😢');
+      }
+
       updateThumbSize({ thumbElement, positionElement, axis });
       updateThumbPosition({ thumbElement, positionElement, axis });
     }, [
@@ -992,7 +931,7 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
 
       // trigger update when any size changes occur
       context.scrollAreaSize,
-      context.contentAreaSize,
+      context.viewportSize,
       context.positionSize,
       context.scrollbarYSize,
       context.scrollbarXSize,
@@ -1002,6 +941,10 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
 
     React.useEffect(() => {
       const thumbEl = thumbRef.current!;
+      if (!thumbEl) {
+        // TODO:
+        throw Error('why no refs 😢');
+      }
 
       thumbEl.addEventListener('pointerdown', handlePointerDown);
       return function () {
@@ -1109,13 +1052,12 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
     React.useEffect(() => {
       const buttonElement = buttonRef.current!;
       const positionElement = positionRef.current!;
-      let buttonPointerDownTimeoutId: number;
-
-      if (!buttonElement) {
+      if (!buttonElement || !positionElement) {
         // TODO:
         throw Error('arrrrg ref feed me');
       }
 
+      let buttonPointerDownTimeoutId: number;
       buttonElement.addEventListener('pointerdown', handlePointerDown);
 
       return function () {
@@ -1259,100 +1201,119 @@ const ScrollAreaButtonEnd = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButt
 );
 
 /* -------------------------------------------------------------------------------------------------
- * ScrollAreaResizeHandle
+ * ScrollAreaCorner
  * -----------------------------------------------------------------------------------------------*/
 
-const RESIZE_HANDLE_DEFAULT_TAG = 'div';
-const RESIZE_HANDLE_NAME = 'ScrollArea.ResizeHandle';
-type ScrollAreaResizeHandleDOMProps = React.ComponentPropsWithoutRef<
-  typeof RESIZE_HANDLE_DEFAULT_TAG
->;
-type ScrollAreaResizeHandleOwnProps = {};
-type ScrollAreaResizeHandleProps = ScrollAreaResizeHandleDOMProps & ScrollAreaResizeHandleOwnProps;
+const CORNER_DEFAULT_TAG = 'div';
+const CORNER_NAME = 'ScrollArea.Corner';
+type ScrollAreaCornerDOMProps = React.ComponentPropsWithoutRef<typeof CORNER_DEFAULT_TAG>;
+type ScrollAreaCornerOwnProps = {};
+type ScrollAreaCornerProps = ScrollAreaCornerDOMProps & ScrollAreaCornerOwnProps;
 
-const ScrollAreaResizeHandleImpl = forwardRef<
-  typeof RESIZE_HANDLE_DEFAULT_TAG,
-  ScrollAreaResizeHandleProps
->(function ScrollAreaResizeHandleImpl(props, forwardedRef) {
-  const { as: Comp = RESIZE_HANDLE_DEFAULT_TAG, ...domProps } = props;
+const ScrollAreaCornerImpl = forwardRef<typeof CORNER_DEFAULT_TAG, ScrollAreaCornerProps>(
+  function ScrollAreaCornerImpl(props, forwardedRef) {
+    const { as: Comp = CORNER_DEFAULT_TAG, ...domProps } = props;
 
-  const { resize, isRTL } = useScrollAreaContext(RESIZE_HANDLE_NAME);
+    const { positionRef } = useScrollAreaRefs(CORNER_NAME);
+    const dispatch = useDispatchContext(CORNER_NAME);
+    const { isRTL } = useScrollAreaContext(CORNER_NAME);
 
-  const style: any = {
-    // The resize handle is placed, by default, in the bottom right corner of the scroll area. In
-    // RTL writing mode it should be placed on the bottom left. Vertical reading modes have no
-    // impact on handle placement.
-    [CSS_PROPS.resizeHandleLeft]: isRTL ? 0 : 'unset',
-    [CSS_PROPS.resizeHandleRight]: isRTL ? 'unset' : 0,
-    // Cursor depends on the direction in which the user is able to resize the container. If the
-    // container can be resized in either direction, the cursor will be either 'sw-resize' or
-    // 'se-resize' depending on the writing mode.
-    [CSS_PROPS.resizeHandleCursor]:
-      resize === 'horizontal'
-        ? 'ew-resize'
-        : resize === 'vertical'
-        ? 'ns-resize'
-        : resize === 'both'
-        ? isRTL
-          ? 'sw-resize'
-          : 'se-resize'
-        : 'initial',
-  };
+    const style: any = {
+      // The resize handle is placed, by default, in the bottom right corner of the scroll area. In
+      // RTL writing mode it should be placed on the bottom left. Vertical reading modes have no
+      // impact on handle placement.
+      [CSS_PROPS.cornerLeft]: isRTL ? 0 : 'unset',
+      [CSS_PROPS.cornerRight]: isRTL ? 'unset' : 0,
 
-  return (
-    <Comp
-      {...interopDataAttrObj('resizeHandle')}
-      ref={forwardedRef}
-      {...domProps}
-      style={{
-        ...domProps.style,
-        ...style,
-      }}
-    />
-  );
-});
+      // Cursor depends on the direction in which the user is able to resize the container. If the
+      // container can be resized in either direction, the cursor will be either 'sw-resize' or
+      // 'se-resize' depending on the writing mode.
+      //
+      // TODO:L This code will be useful when resize handles are properly supported. We can safely
+      // remove this before merging but keeping it for now for my own reference!
 
-const ScrollAreaResizeHandle = memo(
-  forwardRef<typeof RESIZE_HANDLE_DEFAULT_TAG, ScrollAreaResizeHandleProps>(
-    function ScrollAreaResizeHandle(props, forwardedRef) {
-      return useNativeScrollArea() ? null : (
-        <ScrollAreaResizeHandleImpl ref={forwardedRef} {...props} />
-      );
-    }
-  )
+      // [CSS_PROPS.cornerCursor]:
+      //   resize === 'horizontal'
+      //     ? 'ew-resize'
+      //     : resize === 'vertical'
+      //     ? 'ns-resize'
+      //     : resize === 'both'
+      //     ? isRTL
+      //       ? 'sw-resize'
+      //       : 'se-resize'
+      //     : 'initial',
+    };
+
+    /**
+     * The corner element is placed, by default, in the bottom right corner of the scroll area. In
+     * RTL writing mode it should be placed on the bottom left. Its cursor depends on the direction
+     * in which the user is able to resize the container.
+     *
+     * We rely on computed styles because the `resize` prop value can be `initial` or `inherit`
+     * which don't give us the direct information we need to derive the correct style for the
+     * cursor.
+     */
+    useLayoutEffect(() => {
+      if (positionRef.current) {
+        const computedStyles = window.getComputedStyle(positionRef.current);
+        dispatch({
+          type: ScrollAreaEvents.SetExplicitResize,
+          value: computedStyles.resize as ResizeBehavior,
+        });
+      }
+    }, [isRTL, dispatch, positionRef]);
+
+    return (
+      <Comp
+        {...interopDataAttrObj('corner')}
+        ref={forwardedRef}
+        {...domProps}
+        style={{
+          ...domProps.style,
+          ...style,
+        }}
+      />
+    );
+  }
+);
+
+const ScrollAreaCorner = memo(
+  forwardRef<typeof CORNER_DEFAULT_TAG, ScrollAreaCornerProps>(function ScrollAreaCorner(
+    props,
+    forwardedRef
+  ) {
+    return useNativeScrollArea() ? null : <ScrollAreaCornerImpl ref={forwardedRef} {...props} />;
+  })
 );
 
 interface ScrollAreaStaticProps {
-  Position: typeof ScrollAreaPosition;
-  ContentArea: typeof ScrollAreaContentArea;
+  Viewport: typeof ScrollAreaViewport;
   ScrollbarX: typeof ScrollAreaScrollbarX;
   ScrollbarY: typeof ScrollAreaScrollbarY;
   Track: typeof ScrollAreaTrack;
   Thumb: typeof ScrollAreaThumb;
   ButtonStart: typeof ScrollAreaButtonStart;
   ButtonEnd: typeof ScrollAreaButtonEnd;
-  ResizeHandle: typeof ScrollAreaResizeHandle;
+  Corner: typeof ScrollAreaCorner;
 }
 
-ScrollArea.Position = ScrollAreaPosition;
-ScrollArea.ContentArea = ScrollAreaContentArea;
+ScrollArea.Viewport = ScrollAreaViewport;
 ScrollArea.ScrollbarX = ScrollAreaScrollbarX;
 ScrollArea.ScrollbarY = ScrollAreaScrollbarY;
 ScrollArea.Track = ScrollAreaTrack;
 ScrollArea.Thumb = ScrollAreaThumb;
 ScrollArea.ButtonStart = ScrollAreaButtonStart;
 ScrollArea.ButtonEnd = ScrollAreaButtonEnd;
-ScrollArea.ResizeHandle = ScrollAreaResizeHandle;
+ScrollArea.Corner = ScrollAreaCorner;
 
-ScrollArea.Position.displayName = POSITION_NAME;
-ScrollArea.ContentArea.displayName = CONTENT_AREA_NAME;
+ScrollArea.Viewport.displayName = VIEWPORT_NAME;
 ScrollArea.ScrollbarX.displayName = SCROLLBAR_X_NAME;
 ScrollArea.ScrollbarY.displayName = SCROLLBAR_Y_NAME;
 ScrollArea.Track.displayName = TRACK_NAME;
 ScrollArea.Thumb.displayName = THUMB_NAME;
 ScrollArea.ButtonStart.displayName = BUTTON_START_NAME;
 ScrollArea.ButtonEnd.displayName = BUTTON_END_NAME;
-ScrollArea.ResizeHandle.displayName = RESIZE_HANDLE_NAME;
+ScrollArea.Corner.displayName = CORNER_NAME;
 
 const commonScrollbarStyles = {
   zIndex: 2,
@@ -1382,25 +1343,12 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
     '&[data-dragging], &[data-scrolling]': {
       pointerEvents: 'auto !important',
     },
+    '& [data-interop-scroll-area-position]::-webkit-scrollbar': {
+      display: 'none',
+    },
   },
-  position: {
-    ...cssReset(POSITION_DEFAULT_TAG),
-    zIndex: 1,
-    width: `var(${CSS_PROPS.positionWidth})`,
-    height: `var(${CSS_PROPS.positionHeight})`,
-    paddingBottom: `var(${CSS_PROPS.scrollbarXOffset})`,
-    paddingRight: `var(${CSS_PROPS.scrollbarYOffset})`,
-    scrollbarWidth: 'none',
-    overflowScrolling: 'touch',
-    // '&::-webkit-scrollbar': {
-    //   display: 'none',
-    // },
-    // '&::-webkit-resizer': {
-    //   display: 'none',
-    // },
-  },
-  contentArea: {
-    ...cssReset(CONTENT_AREA_DEFAULT_TAG),
+  viewport: {
+    ...cssReset(VIEWPORT_DEFAULT_TAG),
     zIndex: 1,
     position: 'relative',
 
@@ -1452,15 +1400,15 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
     ...cssReset(BUTTON_DEFAULT_TAG),
     ...commonButtonStyles,
   },
-  resizeHandle: {
-    ...cssReset(RESIZE_HANDLE_DEFAULT_TAG),
+  corner: {
+    ...cssReset(CORNER_DEFAULT_TAG),
     userSelect: 'none',
     zIndex: 2,
     position: 'absolute',
     bottom: '0',
-    right: `var(${CSS_PROPS.resizeHandleRight})`,
-    left: `var(${CSS_PROPS.resizeHandleLeft})`,
-    cursor: `var(${CSS_PROPS.resizeHandleCursor})`,
+    right: `var(${CSS_PROPS.cornerRight})`,
+    left: `var(${CSS_PROPS.cornerLeft})`,
+    // cursor: `var(${CSS_PROPS.cornerCursor})`,
     width: `max(var(${CSS_PROPS.scrollbarYSize}, 0), var(${CSS_PROPS.scrollbarXSize}))`,
     height: `max(var(${CSS_PROPS.scrollbarXSize}, 0), var(${CSS_PROPS.scrollbarYSize}))`,
   },
@@ -1469,8 +1417,7 @@ const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
 export { ScrollArea, styles };
 export type {
   ScrollAreaProps,
-  ScrollAreaPositionProps,
-  ScrollAreaContentAreaProps,
+  ScrollAreaViewportProps,
   ScrollAreaScrollbarXProps,
   ScrollAreaScrollbarYProps,
   ScrollAreaButtonStartProps,
@@ -1503,11 +1450,11 @@ type ScrollAreaContextValue = ScrollAreaReducerState & {
   isRTL: boolean;
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
-  resize: ResizeBehavior;
   prefersReducedMotion: boolean;
   scrollAnimationQueue: Queue<any>;
   scrollbarAutoHide: ScrollbarAutoHide;
   scrollbarDragScrolling: boolean;
+  userOnScroll: React.ComponentProps<'div'>['onScroll'];
 };
 
 // Ignore this, saving for my reference but I don't think we'll need them
@@ -1565,7 +1512,7 @@ function useBorderBoxResizeObserver(
   callback: (size: ResizeObserverSize) => void
 ) {
   useLayoutEffect(() => {
-    const element = ref.current!;
+    const element = ref.current;
     if (!element) {
       // TODO:
       throw Error('GIMME DAT REF');
