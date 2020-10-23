@@ -1,5 +1,0 @@
-declined:
-  - interop-ui
-  - "@interop-ui/react-progress-bar"
-  - "@interop-ui/react-separator"
-  - "@interop-ui/react-switch"
