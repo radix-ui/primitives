@@ -1,16 +1,8 @@
 import * as React from 'react';
 import { Separator, styles } from './Separator';
-import { createStyled } from '@stitches/react';
+import { styled } from '../../../../stitches.config';
 
 export default { title: 'Separator' };
-
-const { styled } = createStyled({
-  tokens: {
-    colors: {
-      $gray300: '#aaa',
-    },
-  },
-});
 
 export const Basic = () => <Separator />;
 
