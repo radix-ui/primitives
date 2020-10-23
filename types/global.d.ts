@@ -1,5 +1,5 @@
-import { INTERACT_OUTSIDE } from '../packages/react/lock-modular-temp/src/DismissableLayer';
-import type { InteractOutsideEvent } from '../packages/react/lock-modular-temp/src/DismissableLayer';
+import { INTERACT_OUTSIDE } from '../packages/react/dismissable-layer/src/DismissableLayer';
+import type { InteractOutsideEvent } from '../packages/react/dismissable-layer/src/DismissableLayer';
 
 export {};
 

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { createFocusScope, AUTOFOCUS_ON_CREATE, AUTOFOCUS_ON_DESTROY } from './createFocusScope';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-
 import { useCallbackRef } from '@interop-ui/react-utils';
 
 type FocusScopeProps = {

@@ -19,11 +19,13 @@
   },
   "dependencies": {
     "@interop-ui/react-debug-context": "workspace:*",
-    "@interop-ui/react-lock": "workspace:*",
+    "@interop-ui/react-dismissable-layer": "workspace:*",
+    "@interop-ui/react-focus-scope": "workspace:*",
     "@interop-ui/react-portal": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*",
-    "react-remove-scroll": "^2.3.0"
+    "aria-hidden": "^1.1.1",
+    "react-remove-scroll": "^2.4.0"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"

@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/react-lock",
-  "version": "0.0.1-7",
+  "name": "@interop-ui/react-dismissable-layer",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -18,16 +18,15 @@
   },
   "dependencies": {
     "@interop-ui/react-debug-context": "workspace:*",
-    "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/tabbable": "workspace:*",
-    "@interop-ui/utils": "workspace:*",
-    "aria-hidden": "^1.1.1"
+    "@interop-ui/react-utils": "workspace:*"
   },
   "devDependencies": {
-    "@types/styled-components": "^5.1.2",
-    "conditional-wrap": "^1.0.2",
+    "@interop-ui/react-focus-scope": "workspace:*",
+    "@interop-ui/react-popper": "workspace:*",
+    "@interop-ui/react-portal": "workspace:*",
+    "@interop-ui/react-utils": "workspace:*",
     "parcel": "^2.0.0-beta.1",
-    "styled-components": "^5.1.1"
+    "react-remove-scroll": "^2.4.0"
   },
   "peerDependencies": {
     "react": ">=16"

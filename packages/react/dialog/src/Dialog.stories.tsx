@@ -40,7 +40,7 @@ export const InlineStyle = () => (
 );
 
 export const Controlled = () => {
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(false);
   return (
     <Dialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
       <Dialog.Trigger>{isOpen ? 'close' : 'open'}</Dialog.Trigger>
@@ -78,8 +78,8 @@ export const FocusTrap = () => (
 );
 
 export const CustomFocus = () => {
-  const lastButtonRef = React.useRef<HTMLInputElement>(null);
   const firstNameRef = React.useRef<HTMLInputElement>(null);
+  const searchFieldRef = React.useRef<HTMLInputElement>(null);
   return (
     <>
       <Dialog>
@@ -87,8 +87,14 @@ export const CustomFocus = () => {
         <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
         <Dialog.Content
           as={Content}
-          refToFocusOnOpen={firstNameRef}
-          refToFocusOnClose={lastButtonRef}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            firstNameRef.current?.focus();
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            searchFieldRef.current?.focus();
+          }}
         >
           <Dialog.Close>close</Dialog.Close>
 
@@ -107,11 +113,31 @@ export const CustomFocus = () => {
 
       <div>
         <p>The search input will receive the focus after closing the dialog.</p>
-        <input type="text" placeholder="Search…" ref={lastButtonRef} />
+        <input type="text" placeholder="Search…" ref={searchFieldRef} />
       </div>
     </>
   );
 };
+
+export const NoEscapeDismiss = () => (
+  <Dialog>
+    <Dialog.Trigger>open</Dialog.Trigger>
+    <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
+    <Dialog.Content as={Content} onEscapeKeyDown={(event) => event.preventDefault()}>
+      <Dialog.Close>close</Dialog.Close>
+    </Dialog.Content>
+  </Dialog>
+);
+
+export const NoInteractOutsideDismiss = () => (
+  <Dialog>
+    <Dialog.Trigger>open</Dialog.Trigger>
+    <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
+    <Dialog.Content as={Content} onInteractOutside={(event) => event.preventDefault()}>
+      <Dialog.Close>close</Dialog.Close>
+    </Dialog.Content>
+  </Dialog>
+);
 
 const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(function Content(
   props,
@@ -119,6 +145,7 @@ const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(function Co
 ) {
   return (
     <div
+      {...props}
       ref={forwardedRef}
       style={{
         ...styles.content,
@@ -134,7 +161,6 @@ const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(function Co
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
         ...props.style,
       }}
-      {...props}
     />
   );
 });
