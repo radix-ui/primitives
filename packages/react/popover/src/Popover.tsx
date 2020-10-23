@@ -152,17 +152,23 @@ type PopoverPositionOwnProps = {
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
 
   /**
-   * Event handler called when an interaction happened outside the `Dialog`.
-   * Specifically, when focus leaves the `Dialog` or a pointer event happens outside it.
+   * Event handler called when an interaction happened outside the `Popover`.
+   * Specifically, when focus leaves the `Popover` or a pointer event happens outside it.
    * Can be prevented.
    */
   onInteractOutside?: DismissableLayerProps['onInteractOutside'];
 
   /**
-   * Whether scrolling outside the Popover should be prevented
+   * Whether scrolling outside the `Popover` should be prevented
    * (default: `false`)
    */
   disableOutsideScroll?: boolean;
+
+  /**
+   * Whether the `Popover` should render in a `Portal`
+   * (default: `true`)
+   */
+  shouldPortal?: boolean;
 };
 type PopoverPositionProps = Optional<PopperProps, 'anchorRef'> &
   PopoverPositionDOMProps &
@@ -187,24 +193,26 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
       onEscapeKeyDown,
       onInteractOutside,
       disableOutsideScroll = false,
+      shouldPortal = true,
       ...popperProps
     } = props;
     const context = usePopoverContext(POSITION_NAME);
     const debugContext = useDebugContext();
     const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
 
+    const PortalWrapper = shouldPortal ? Portal : React.Fragment;
     const ScrollLockWrapper =
       disableOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
 
-    // If focus is trapped, hide everything from ARIA except the popper
+    // Hide everything from ARIA except the popper
     const popperRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
       const popper = popperRef.current;
-      if (popper && trapFocus) return hideOthers(popper);
-    }, [trapFocus]);
+      if (popper) return hideOthers(popper);
+    }, []);
 
     return (
-      <Portal>
+      <PortalWrapper>
         <ScrollLockWrapper>
           <FocusScope
             trapped={trapFocus}
@@ -235,6 +243,11 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
                   } else {
                     onInteractOutside?.(event);
                   }
+
+                  if (event.defaultPrevented) {
+                    // reset this because the event was prevented
+                    setSkipCloseAutoFocus(false);
+                  }
                 }}
                 onDismiss={() => context.setIsOpen(false)}
               >
@@ -242,7 +255,7 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
                   <Popper
                     {...interopDataAttrObj('position')}
                     role="dialog"
-                    aria-modal={trapFocus ? true : undefined}
+                    aria-modal
                     {...popperProps}
                     ref={composeRefs(
                       forwardedRef,
@@ -284,7 +297,7 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
             )}
           </FocusScope>
         </ScrollLockWrapper>
-      </Portal>
+      </PortalWrapper>
     );
   }
 );
