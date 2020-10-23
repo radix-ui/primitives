@@ -1,21 +1,10 @@
 import * as React from 'react';
+import { styled } from '../../../../stitches.config';
 import { ProgressBar, styles } from './ProgressBar';
-import { createStyled } from '@stitches/react';
 
-export default { title: 'ProgressBar' };
-
-const { styled } = createStyled({
-  tokens: {
-    colors: {
-      $white: '#fff',
-      $gray100: '#ccc',
-      $gray300: '#aaa',
-      $black: '#111',
-      $red: 'crimson',
-      $green: 'green',
-    },
-  },
-});
+export default {
+  title: 'ProgressBar',
+};
 
 export const Basic = () => {
   const [value, percentage, setValue] = useProgressValueState(0);
@@ -86,7 +75,7 @@ const Root = styled('div', {
   width: `${WIDTH}px`,
   maxWidth: '100%',
   border: `${BORDER}px solid $black`,
-  backgroundColor: '$gray100',
+  backgroundColor: '$gray200',
 });
 
 const Indicator = styled('div', {
