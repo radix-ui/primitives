@@ -1,6 +1,6 @@
 {
   "name": "@interop-ui/react-popover",
-  "version": "0.0.1-8",
+  "version": "0.0.1-9",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
