@@ -1,0 +1,7 @@
+releases:
+  "@interop-ui/react-progress-bar": prerelease
+  "@interop-ui/react-separator": prerelease
+  "@interop-ui/react-switch": prerelease
+
+declined:
+  - interop-ui

@@ -2029,7 +2029,7 @@ __metadata:
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
-    "@stitches/react": 0.0.3-canary.4
+    "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
@@ -2055,7 +2055,7 @@ __metadata:
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
-    "@stitches/react": 0.0.3-canary.4
+    "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
@@ -2084,7 +2084,7 @@ __metadata:
     "@interop-ui/react-label": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
-    "@stitches/react": 0.0.3-canary.4
+    "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
@@ -3564,7 +3564,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stitches/react@npm:0.0.3-canary.4":
+"@stitches/react@npm:canary":
   version: 0.0.3-canary.4
   resolution: "@stitches/react@npm:0.0.3-canary.4"
   dependencies:
