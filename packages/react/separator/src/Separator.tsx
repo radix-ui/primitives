@@ -64,7 +64,7 @@ Separator.propTypes = {
   orientation(props, propName, componentName) {
     const propValue = props[propName];
     const strVal = String(propValue);
-    if (!isValidOrientation(props[propName])) {
+    if (propValue && !isValidOrientation(propValue)) {
       return new Error(getInvalidOrientationError(strVal, componentName));
     }
     return null;
