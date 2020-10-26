@@ -1,6 +1,6 @@
 {
   "name": "@interop-ui/react-progress-bar",
-  "version": "0.0.1-5",
+  "version": "0.0.1-7",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -22,7 +22,7 @@
     "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
-    "@stitches/react": "0.0.3-canary.1",
+    "@stitches/react": "0.0.3-canary.4",
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {

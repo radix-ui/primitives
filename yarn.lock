@@ -1919,12 +1919,43 @@ __metadata:
   resolution: "@interop-ui/react-dialog@workspace:packages/react/dialog"
   dependencies:
     "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-lock": "workspace:*"
+    "@interop-ui/react-dismissable-layer": "workspace:*"
+    "@interop-ui/react-focus-scope": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
+    aria-hidden: ^1.1.1
     parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.3.0
+    react-remove-scroll: ^2.4.0
+  peerDependencies:
+    react: ">=16"
+  languageName: unknown
+  linkType: soft
+
+"@interop-ui/react-dismissable-layer@workspace:*, @interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
+  dependencies:
+    "@interop-ui/react-debug-context": "workspace:*"
+    "@interop-ui/react-focus-scope": "workspace:*"
+    "@interop-ui/react-popper": "workspace:*"
+    "@interop-ui/react-portal": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+    react-remove-scroll: ^2.4.0
+  peerDependencies:
+    react: ">=16"
+  languageName: unknown
+  linkType: soft
+
+"@interop-ui/react-focus-scope@workspace:*, @interop-ui/react-focus-scope@workspace:packages/react/focus-scope":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-focus-scope@workspace:packages/react/focus-scope"
+  dependencies:
+    "@interop-ui/react-debug-context": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+    tabbable: 5.0.0
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -1942,52 +1973,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-lock-modular-temp@workspace:packages/react/lock-modular-temp"
-  dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-popper": "workspace:*"
-    "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.3.0
-    tabbable: 5.0.0
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-lock@workspace:*, @interop-ui/react-lock@workspace:packages/react/lock":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-lock@workspace:packages/react/lock"
-  dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/tabbable": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    "@types/styled-components": ^5.1.2
-    aria-hidden: ^1.1.1
-    conditional-wrap: ^1.0.2
-    parcel: ^2.0.0-beta.1
-    styled-components: ^5.1.1
-  peerDependencies:
-    react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-popover@workspace:*, @interop-ui/react-popover@workspace:packages/react/popover":
+"@interop-ui/react-popover@workspace:packages/react/popover":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-popover@workspace:packages/react/popover"
   dependencies:
     "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-lock": "workspace:*"
+    "@interop-ui/react-dismissable-layer": "workspace:*"
+    "@interop-ui/react-focus-scope": "workspace:*"
     "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
+    aria-hidden: ^1.1.1
     parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.3.0
+    react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ">=16"
   languageName: unknown
@@ -2030,7 +2029,7 @@ __metadata:
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
-    "@stitches/react": 0.0.3-canary.1
+    "@stitches/react": 0.0.3-canary.4
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
@@ -2056,7 +2055,7 @@ __metadata:
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
-    "@stitches/react": 0.0.3-canary.3
+    "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
@@ -2069,7 +2068,7 @@ __metadata:
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
-    "@stitches/react": 0.0.3-canary.1
+    "@stitches/react": 0.0.3-canary.4
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
@@ -2098,7 +2097,7 @@ __metadata:
     "@interop-ui/react-label": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
-    "@stitches/react": 0.0.3-canary.1
+    "@stitches/react": 0.0.3-canary.4
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
@@ -2135,7 +2134,7 @@ __metadata:
   dependencies:
     "@interop-ui/popper": "workspace:*"
     "@interop-ui/react-arrow": "workspace:*"
-    "@interop-ui/react-popover": "workspace:*"
+    "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/react-visually-hidden": "workspace:*"
@@ -2179,14 +2178,6 @@ __metadata:
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/tabbable@workspace:*, @interop-ui/tabbable@workspace:packages/core/tabbable":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/tabbable@workspace:packages/core/tabbable"
-  dependencies:
-    parcel: ^2.0.0-beta.1
   languageName: unknown
   linkType: soft
 
@@ -3579,45 +3570,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stitches/core@npm:^0.0.3-canary.1":
-  version: 0.0.3-canary.1
-  resolution: "@stitches/core@npm:0.0.3-canary.1"
-  dependencies:
-    "@types/node": ^13.11.1
-    tslib: ^1.11.1
-  checksum: 4e5e4b7066cd3777ca77f5d643b75cbc626c9b910e6c4c1b44af5a7045fb053ac218200a1eba65bfe3f087a68855cd0302033f0d2575cb511faf063f9e16e6be
+"@stitches/core@npm:^0.0.3-canary.4":
+  version: 0.0.3-canary.4
+  resolution: "@stitches/core@npm:0.0.3-canary.4"
+  checksum: 0af4fdf9321cda5fe38c6018d88e345f0c6efe7eda2d2c4651df12cd01958de3eefc7c0d933d64349f41a5b6b8dbde290bec55277633e905f252cab5fd0b35b8
   languageName: node
   linkType: hard
 
-"@stitches/core@npm:^0.0.3-canary.2":
-  version: 0.0.3-canary.2
-  resolution: "@stitches/core@npm:0.0.3-canary.2"
-  checksum: 79fff5a9f54a00193861590bb3334f0fdd64b3f01140d1a54303a3c380e13c43f8bae53b88c605b9ea9f7fda6907e1aafec4b1593d271b5ce8dbe2803eeb436a
-  languageName: node
-  linkType: hard
-
-"@stitches/react@npm:0.0.3-canary.1":
-  version: 0.0.3-canary.1
-  resolution: "@stitches/react@npm:0.0.3-canary.1"
+"@stitches/react@npm:0.0.3-canary.4, @stitches/react@npm:canary":
+  version: 0.0.3-canary.4
+  resolution: "@stitches/react@npm:0.0.3-canary.4"
   dependencies:
-    "@stitches/core": ^0.0.3-canary.1
-    "@types/node": ^13.11.1
-    "@types/react-test-renderer": ^16.9.3
-    tslib: ^1.11.1
+    "@stitches/core": ^0.0.3-canary.4
   peerDependencies:
     react: ^16.13.1
-  checksum: 8361276821cdfbbb55b6185cf54109da0c285edc03467e61435ff07f75cff0305295181b5c6916003410aac3b89c862bc96ab4672a4cd6cef7140f47c347db68
-  languageName: node
-  linkType: hard
-
-"@stitches/react@npm:0.0.3-canary.3":
-  version: 0.0.3-canary.3
-  resolution: "@stitches/react@npm:0.0.3-canary.3"
-  dependencies:
-    "@stitches/core": ^0.0.3-canary.2
-  peerDependencies:
-    react: ^16.13.1
-  checksum: 1a072602e446c4ca419af0c88e9488ffe658e352e40176e94d45d14f686b7c192eae0c185e42619253058cd6663e986368f273d4458f2ac58d660f8b32047e05
+  checksum: 095b01622a2781d543242d5fa48a1acb8c80521d6c6d00c457afd522a22e9f5e1bfb5613c5096dd73eefdfbc4027bb5f64e174cd1493b4e81eb3e64608f201d7
   languageName: node
   linkType: hard
 
@@ -4589,7 +4556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^13.11.1":
+"@types/node@npm:*":
   version: 13.13.21
   resolution: "@types/node@npm:13.13.21"
   checksum: 8e88d06fa585e932d3158644d2aefb9dcd3a3e0383594d820044b5264f912126c0fe32b33cdb83e2e1d11560240c64e5b1ac72bbe5bb0f96936f3bd1bb76aeb3
@@ -7547,15 +7514,6 @@ __metadata:
     readable-stream: ^2.2.2
     typedarray: ^0.0.6
   checksum: 7a97b7a7d0938e36800bdb6f5caf938bac8c523a6ec15df1f2ac41d3785541be30a6671c9f4c0d1ac9609e6ab29dcab8f54d1c84035e3e3b7b24f9336da68ab0
-  languageName: node
-  linkType: hard
-
-"conditional-wrap@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "conditional-wrap@npm:1.0.2"
-  peerDependencies:
-    react: 16.x
-  checksum: 7f759e803b4a3455dca09c23e234f1426bd32853f6cabf6e697462a3e137a4dfe107991bc94f0503ad83f7b1d9d4129787046672da25bae6de875ad903eb95ea
   languageName: node
   linkType: hard
 
@@ -16269,7 +16227,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-remove-scroll@npm:^2.3.0":
+"react-remove-scroll@npm:^2.4.0":
   version: 2.4.0
   resolution: "react-remove-scroll@npm:2.4.0"
   dependencies:
@@ -18639,7 +18597,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.0.0, tslib@npm:^1.10.0, tslib@npm:^1.11.1, tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
+"tslib@npm:^1.0.0, tslib@npm:^1.10.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
   version: 1.13.0
   resolution: "tslib@npm:1.13.0"
   checksum: 5dc3bdaea3b67c76ef4a14c28fcb2171da7bcf292fd9c59a260098729626b1ce766c52b588f08e324ed9a0c52ea8a93a815920f980d75981abc9d850fbf310fb

@@ -1,24 +1,32 @@
 import * as React from 'react';
 import { useLayoutEffect } from './useLayoutEffect';
 
-export function useDocumentRef(
-  forwardedRef: React.RefObject<Element | null | undefined>
+/**
+ * Get a reference to the global document object relative to a specific node ref
+ * @param forwardedRef
+ */
+export function useDocumentRef<T extends Element>(
+  forwardedRef: React.RefObject<T | null>
 ): React.MutableRefObject<Document> {
-  const ownerDocumentRef = React.useRef(getOwnerDocument(forwardedRef));
+  const ownerDocumentRef = React.useRef(typeof document !== 'undefined' ? document : undefined);
   useLayoutEffect(() => {
-    if (forwardedRef.current instanceof Element) {
-      ownerDocumentRef.current = getOwnerDocument(forwardedRef);
-    }
+    ownerDocumentRef.current = getOwnerDocument(forwardedRef);
   });
-  return ownerDocumentRef;
+  return ownerDocumentRef as React.MutableRefObject<Document>;
 }
 
 export function getOwnerDocument(nodeRef: React.RefObject<Element | null | undefined>) {
-  return nodeRef.current?.ownerDocument || document;
+  if (nodeRef.current instanceof Element) {
+    return nodeRef.current.ownerDocument || document;
+  }
+  return document;
 }
 
 export function getOwnerWindow(nodeRef: React.RefObject<Element | null | undefined>) {
-  return getOwnerDocument(nodeRef).defaultView || window;
+  if (nodeRef.current instanceof Element) {
+    return getOwnerDocument(nodeRef).defaultView || window;
+  }
+  return window;
 }
 
 export function getOwnerGlobals(nodeRef: React.RefObject<Element | null | undefined>) {

@@ -7,14 +7,18 @@ import {
   composeEventHandlers,
   useControlledState,
   useId,
+  composeRefs,
 } from '@interop-ui/react-utils';
 import { cssReset, makeId } from '@interop-ui/utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import { Lock } from '@interop-ui/react-lock';
-import { RemoveScroll } from 'react-remove-scroll';
+import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
+import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
+import { RemoveScroll } from 'react-remove-scroll';
+import { hideOthers } from 'aria-hidden';
 
-import type { LockProps } from '@interop-ui/react-lock';
+import type { DismissableLayerProps } from '@interop-ui/react-dismissable-layer';
+import type { FocusScopeProps } from '@interop-ui/react-focus-scope';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -143,30 +147,29 @@ const CONTENT_DEFAULT_TAG = 'div';
 type DialogContentDOMProps = Omit<React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>, 'id'>;
 type DialogContentOwnProps = {
   /**
-   * A ref to an element to focus on inside the Dialog after it is opened.
-   * (default: first focusable element inside the Dialog)
-   * (fallback: first focusable element inside the Dialog, then the Dialog's content container)
+   * Event handler called when auto-focusing on open.
+   * Can be prevented.
    */
-  refToFocusOnOpen?: LockProps['refToFocusOnActivation'];
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
 
   /**
-   * A ref to an element to focus on outside the Dialog after it is closed.
-   * (default: last focused element before the Dialog was opened)
-   * (fallback: none)
+   * Event handler called when auto-focusing on close.
+   * Can be prevented.
    */
-  refToFocusOnClose?: LockProps['refToFocusOnDeactivation'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 
   /**
-   * Whether pressing the `Escape` key should close the Dialog
-   * (default: `true`)
+   * Event handler called when the escape key is down.
+   * Can be prevented.
    */
-  shouldCloseOnEscape?: LockProps['shouldDeactivateOnEscape'];
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
 
   /**
-   * Whether clicking outside the Dialog should close it
-   * (default: `true`)
+   * Event handler called when an interaction happened outside the `Dialog`.
+   * Specifically, when focus leaves the `Dialog` or a pointer event happens outside it.
+   * Can be prevented.
    */
-  shouldCloseOnOutsideClick?: LockProps['shouldDeactivateOnOutsideClick'];
+  onInteractOutside?: DismissableLayerProps['onInteractOutside'];
 };
 type DialogContentProps = DialogContentDOMProps & DialogContentOwnProps;
 
@@ -181,36 +184,80 @@ const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentPr
   function DialogContentImpl(props, forwardedRef) {
     const {
       as: Comp = CONTENT_DEFAULT_TAG,
-      refToFocusOnOpen,
-      refToFocusOnClose,
-      shouldCloseOnEscape = true,
-      shouldCloseOnOutsideClick = true,
+      onOpenAutoFocus,
+      onCloseAutoFocus,
+      onEscapeKeyDown,
+      onInteractOutside,
       ...contentProps
     } = props;
     const context = useDialogContext(CONTENT_NAME);
     const debugContext = useDebugContext();
     const ScrollLockWrapper = !debugContext.disableLock ? RemoveScroll : React.Fragment;
 
+    // Hide everything from ARIA except the content
+    const contentRef = React.useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+      const content = contentRef.current;
+      if (content) return hideOthers(content);
+    }, []);
+
     return (
       <Portal>
         <ScrollLockWrapper>
-          <Lock
-            onDeactivate={() => context.setIsOpen(false)}
-            refToFocusOnActivation={refToFocusOnOpen}
-            refToFocusOnDeactivation={refToFocusOnClose ?? context.triggerRef}
-            shouldDeactivateOnEscape={shouldCloseOnEscape}
-            shouldDeactivateOnOutsideClick={shouldCloseOnOutsideClick}
-            shouldPreventOutsideClick
+          <FocusScope
+            trapped
+            onMountAutoFocus={onOpenAutoFocus}
+            onUnmountAutoFocus={onCloseAutoFocus}
           >
-            <Comp
-              {...interopDataAttrObj('content')}
-              ref={forwardedRef}
-              role="dialog"
-              aria-modal
-              {...contentProps}
-              id={context.id}
-            />
-          </Lock>
+            {(focusScopeProps) => (
+              <DismissableLayer
+                disableOutsidePointerEvents
+                onEscapeKeyDown={onEscapeKeyDown}
+                onInteractOutside={onInteractOutside}
+                onDismiss={() => context.setIsOpen(false)}
+              >
+                {(dismissableLayerProps) => (
+                  <Comp
+                    {...interopDataAttrObj('content')}
+                    role="dialog"
+                    aria-modal
+                    {...contentProps}
+                    ref={composeRefs(
+                      forwardedRef,
+                      contentRef,
+                      focusScopeProps.ref,
+                      dismissableLayerProps.ref
+                    )}
+                    id={context.id}
+                    style={{
+                      ...dismissableLayerProps.style,
+                      ...contentProps.style,
+                    }}
+                    onBlurCapture={composeEventHandlers(
+                      contentProps.onBlurCapture,
+                      dismissableLayerProps.onBlurCapture,
+                      { checkForDefaultPrevented: false }
+                    )}
+                    onFocusCapture={composeEventHandlers(
+                      contentProps.onFocusCapture,
+                      dismissableLayerProps.onFocusCapture,
+                      { checkForDefaultPrevented: false }
+                    )}
+                    onMouseDownCapture={composeEventHandlers(
+                      contentProps.onMouseDownCapture,
+                      dismissableLayerProps.onMouseDownCapture,
+                      { checkForDefaultPrevented: false }
+                    )}
+                    onTouchStartCapture={composeEventHandlers(
+                      contentProps.onTouchStartCapture,
+                      dismissableLayerProps.onTouchStartCapture,
+                      { checkForDefaultPrevented: false }
+                    )}
+                  />
+                )}
+              </DismissableLayer>
+            )}
+          </FocusScope>
         </ScrollLockWrapper>
       </Portal>
     );

@@ -179,6 +179,7 @@ const Content = React.forwardRef<HTMLDivElement, AlertDialogContentProps>(functi
   return (
     <div
       ref={forwardedRef}
+      {...props}
       style={{
         ...styles.content,
         top: '50%',
@@ -193,7 +194,6 @@ const Content = React.forwardRef<HTMLDivElement, AlertDialogContentProps>(functi
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
         ...props.style,
       }}
-      {...props}
     />
   );
 });

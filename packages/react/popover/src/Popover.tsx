@@ -7,16 +7,20 @@ import {
   composeEventHandlers,
   useControlledState,
   useId,
+  composeRefs,
 } from '@interop-ui/react-utils';
-import { cssReset, isFunction } from '@interop-ui/utils';
+import { cssReset } from '@interop-ui/utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
-import { Lock } from '@interop-ui/react-lock';
-import { RemoveScroll } from 'react-remove-scroll';
+import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
+import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
+import { RemoveScroll } from 'react-remove-scroll';
+import { hideOthers } from 'aria-hidden';
 
+import type { DismissableLayerProps } from '@interop-ui/react-dismissable-layer';
+import type { FocusScopeProps } from '@interop-ui/react-focus-scope';
 import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
-import type { LockProps } from '@interop-ui/react-lock';
 import type { Optional } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -117,45 +121,51 @@ const POSITION_DEFAULT_TAG = 'div';
 type PopoverPositionDOMProps = React.ComponentPropsWithoutRef<typeof POSITION_DEFAULT_TAG>;
 type PopoverPositionOwnProps = {
   /**
-   * A ref to an element to focus on inside the Popover after it is opened.
-   * (default: first focusable element inside the Popover)
-   * (fallback: first focusable element inside the Popover, then the Popover's content container)
+   * Whether focus should be trapped within the `Popover`
+   * (default: false)
    */
-  refToFocusOnOpen?: LockProps['refToFocusOnActivation'];
+  trapFocus?: FocusScopeProps['trapped'];
 
   /**
-   * A ref to an element to focus on outside the Popover after it is closed.
-   * (default: last focused element before the Popover was opened)
-   * (fallback: none)
+   * Event handler called when auto-focusing on open.
+   * Can be prevented.
    */
-  refToFocusOnClose?: LockProps['refToFocusOnDeactivation'];
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
 
   /**
-   * Whether pressing the `Escape` key should close the Popover
-   * (default: `true`)
+   * Event handler called when auto-focusing on close.
+   * Can be prevented.
    */
-  shouldCloseOnEscape?: LockProps['shouldDeactivateOnEscape'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 
   /**
-   * Whether clicking outside the Popover should close it
-   * (default: `true`)
+   * When `true`, hover/focus/click interactions will be disabled on elements outside the `Popover`.
+   * Users will need to click twice on outside elements to interact with them:
+   * Once to close the `Popover`, and again to trigger the element.
    */
-  shouldCloseOnOutsideClick?: LockProps['shouldDeactivateOnOutsideClick'];
+  disableOutsidePointerEvents?: DismissableLayerProps['disableOutsidePointerEvents'];
 
   /**
-   * Whether pointer events happening outside the Popover should be prevented
+   * Event handler called when the escape key is down.
+   * Can be prevented.
+   */
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+
+  /**
+   * Event handler called when an interaction happened outside the `Popover`.
+   * Specifically, when focus leaves the `Popover` or a pointer event happens outside it.
+   * Can be prevented.
+   */
+  onInteractOutside?: DismissableLayerProps['onInteractOutside'];
+
+  /**
+   * Whether scrolling outside the `Popover` should be prevented
    * (default: `false`)
    */
-  shouldPreventOutsideClick?: LockProps['shouldPreventOutsideClick'];
+  disableOutsideScroll?: boolean;
 
   /**
-   * Whether scrolling outside the Popover should be prevented
-   * (default: `false`)
-   */
-  shouldPreventOutsideScroll?: boolean;
-
-  /**
-   * Whether the Popover should render in a Portal
+   * Whether the `Popover` should render in a `Portal`
    * (default: `true`)
    */
   shouldPortal?: boolean;
@@ -176,53 +186,116 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
     const {
       children,
       anchorRef,
-      refToFocusOnOpen,
-      refToFocusOnClose,
-      shouldCloseOnEscape = true,
-      shouldCloseOnOutsideClick = true,
-      shouldPreventOutsideClick = false,
-      shouldPreventOutsideScroll = false,
+      trapFocus = true,
+      onOpenAutoFocus,
+      onCloseAutoFocus,
+      disableOutsidePointerEvents = false,
+      onEscapeKeyDown,
+      onInteractOutside,
+      disableOutsideScroll = false,
       shouldPortal = true,
-      ...popoverProps
+      ...popperProps
     } = props;
     const context = usePopoverContext(POSITION_NAME);
     const debugContext = useDebugContext();
+    const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
 
-    const ScrollLockWrapper =
-      shouldPreventOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
+    const ScrollLockWrapper =
+      disableOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
+
+    // Hide everything from ARIA except the popper
+    const popperRef = React.useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+      const popper = popperRef.current;
+      if (popper) return hideOthers(popper);
+    }, []);
 
     return (
       <PortalWrapper>
         <ScrollLockWrapper>
-          <Lock
-            onDeactivate={() => context.setIsOpen(false)}
-            refToFocusOnActivation={refToFocusOnOpen}
-            refToFocusOnDeactivation={refToFocusOnClose ?? context.triggerRef}
-            shouldDeactivateOnEscape={shouldCloseOnEscape}
-            shouldDeactivateOnOutsideClick={(event) => {
-              if (event.target === context.triggerRef.current) {
-                return false;
+          <FocusScope
+            trapped={trapFocus}
+            onMountAutoFocus={onOpenAutoFocus}
+            onUnmountAutoFocus={(event) => {
+              if (skipCloseAutoFocus) {
+                event.preventDefault();
+              } else {
+                onCloseAutoFocus?.(event);
               }
-              if (isFunction(shouldCloseOnOutsideClick)) {
-                return shouldCloseOnOutsideClick(event);
-              } else return shouldCloseOnOutsideClick;
             }}
-            shouldPreventOutsideClick={shouldPreventOutsideClick}
           >
-            <Popper
-              {...interopDataAttrObj('position')}
-              anchorRef={anchorRef || context.triggerRef}
-              ref={forwardedRef}
-              role="dialog"
-              // I believe this depends on whether we trap focus or not (always for now)
-              aria-modal="true"
-              {...popoverProps}
-              id={context.id}
-            >
-              {children}
-            </Popper>
-          </Lock>
+            {(focusScopeProps) => (
+              <DismissableLayer
+                disableOutsidePointerEvents={disableOutsidePointerEvents}
+                onEscapeKeyDown={onEscapeKeyDown}
+                onInteractOutside={(event) => {
+                  const wasPointerDownOutside = event.detail.originalEvent.type !== 'blur';
+                  const wasTrigger = event.detail.relatedTarget === context.triggerRef.current;
+
+                  // prevent autofocus on close if clicking outside is allowed and it happened
+                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && wasPointerDownOutside);
+
+                  // prevent dismissing when clicking the trigger
+                  // as it's already setup to close, otherwise it would close and immediately open.
+                  if (wasTrigger) {
+                    event.preventDefault();
+                  } else {
+                    onInteractOutside?.(event);
+                  }
+
+                  if (event.defaultPrevented) {
+                    // reset this because the event was prevented
+                    setSkipCloseAutoFocus(false);
+                  }
+                }}
+                onDismiss={() => context.setIsOpen(false)}
+              >
+                {(dismissableLayerProps) => (
+                  <Popper
+                    {...interopDataAttrObj('position')}
+                    role="dialog"
+                    aria-modal
+                    {...popperProps}
+                    ref={composeRefs(
+                      forwardedRef,
+                      popperRef,
+                      focusScopeProps.ref,
+                      dismissableLayerProps.ref
+                    )}
+                    id={context.id}
+                    anchorRef={anchorRef || context.triggerRef}
+                    style={{
+                      ...dismissableLayerProps.style,
+                      ...popperProps.style,
+                    }}
+                    onBlurCapture={composeEventHandlers(
+                      popperProps.onBlurCapture,
+                      dismissableLayerProps.onBlurCapture,
+                      { checkForDefaultPrevented: false }
+                    )}
+                    onFocusCapture={composeEventHandlers(
+                      popperProps.onFocusCapture,
+                      dismissableLayerProps.onFocusCapture,
+                      { checkForDefaultPrevented: false }
+                    )}
+                    onMouseDownCapture={composeEventHandlers(
+                      popperProps.onMouseDownCapture,
+                      dismissableLayerProps.onMouseDownCapture,
+                      { checkForDefaultPrevented: false }
+                    )}
+                    onTouchStartCapture={composeEventHandlers(
+                      popperProps.onTouchStartCapture,
+                      dismissableLayerProps.onTouchStartCapture,
+                      { checkForDefaultPrevented: false }
+                    )}
+                  >
+                    {children}
+                  </Popper>
+                )}
+              </DismissableLayer>
+            )}
+          </FocusScope>
         </ScrollLockWrapper>
       </PortalWrapper>
     );

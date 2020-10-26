@@ -1,20 +1,9 @@
 import * as React from 'react';
 import { Switch, styles } from './Switch';
 import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
-import { createStyled } from '@stitches/react';
+import { styled } from '../../../../stitches.config';
 
 export default { title: 'Switch' };
-
-const { styled } = createStyled({
-  tokens: {
-    colors: {
-      $white: '#fff',
-      $gray100: '#ccc',
-      $gray300: '#aaa',
-      $red: 'crimson',
-    },
-  },
-});
 
 export const Basic = () => (
   <Switch style={styles.root}>
