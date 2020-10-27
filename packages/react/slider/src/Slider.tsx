@@ -227,15 +227,18 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
     } = props;
     const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
-    const rect = useRect(sliderRef);
+    const rectRef = React.useRef<ClientRect>();
     const direction = useDirection({ ref: sliderRef, directionProp: dir });
     const isDirectionLTR = direction === 'ltr';
 
     function getValueFromPointer(pointerPosition: number) {
-      const input: [number, number] = [0, rect!.width];
+      const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
+      const input: [number, number] = [0, rect.width];
       const output: [number, number] = isDirectionLTR ? [min, max] : [max, min];
       const value = linearScale(input, output);
-      return value(pointerPosition - rect!.left);
+
+      rectRef.current = rect;
+      return value(pointerPosition - rect.left);
     }
 
     return (
@@ -254,6 +257,7 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
           const value = getValueFromPointer(event.clientX);
           onSlideMove?.(value);
         }}
+        onSlideMouseUp={() => (rectRef.current = undefined)}
         onSlideTouchStart={(event) => {
           const touch = event.targetTouches[0];
           const value = getValueFromPointer(touch.clientX);
@@ -264,6 +268,7 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
           const value = getValueFromPointer(touch.clientX);
           onSlideMove?.(value);
         }}
+        onSlideTouchEnd={() => (rectRef.current = undefined)}
         onStepKeyDown={(event) => {
           const isBackKey = BACK_KEYS[direction].includes(event.key);
           onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
@@ -303,13 +308,16 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps
     const { min, max, children, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
     const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
-    const rect = useRect(sliderRef);
+    const rectRef = React.useRef<ClientRect>();
 
     function getValueFromPointer(pointerPosition: number) {
-      const input: [number, number] = [0, rect!.height];
+      const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
+      const input: [number, number] = [0, rect.height];
       const output: [number, number] = [max, min];
       const value = linearScale(input, output);
-      return value(pointerPosition - rect!.top);
+
+      rectRef.current = rect;
+      return value(pointerPosition - rect.top);
     }
 
     return (
@@ -328,6 +336,7 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps
           const value = getValueFromPointer(event.clientY);
           onSlideMove?.(value);
         }}
+        onSlideMouseUp={() => (rectRef.current = undefined)}
         onSlideTouchStart={(event) => {
           const touch = event.targetTouches[0];
           const value = getValueFromPointer(touch.clientY);
@@ -338,6 +347,7 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps
           const value = getValueFromPointer(touch.clientY);
           onSlideMove?.(value);
         }}
+        onSlideTouchEnd={() => (rectRef.current = undefined)}
         onStepKeyDown={(event) => {
           const isBackKey = BACK_KEYS.ltr.includes(event.key);
           onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
@@ -361,8 +371,10 @@ type SliderPartDOMProps = React.ComponentPropsWithoutRef<typeof SLIDER_DEFAULT_T
 type SliderPartOwnProps = {
   onSlideMouseDown(event: React.MouseEvent): void;
   onSlideMouseMove(event: MouseEvent): void;
+  onSlideMouseUp(): void;
   onSlideTouchStart(event: React.TouchEvent): void;
   onSlideTouchMove(event: TouchEvent): void;
+  onSlideTouchEnd(): void;
   onHomeKeyDown(event: React.KeyboardEvent): void;
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(event: React.KeyboardEvent): void;
@@ -377,8 +389,10 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(functi
     as: Comp = SLIDER_DEFAULT_TAG,
     onSlideMouseDown,
     onSlideMouseMove,
+    onSlideMouseUp,
     onSlideTouchStart,
     onSlideTouchMove,
+    onSlideTouchEnd,
     onHomeKeyDown,
     onEndKeyDown,
     onStepKeyDown,
@@ -390,10 +404,12 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(functi
   const removeMouseEventListeners = useCallbackRef(() => {
     document.removeEventListener('mousemove', handleSlideMouseMove);
     document.removeEventListener('mouseup', removeMouseEventListeners);
+    onSlideMouseUp();
   });
   const removeTouchEventListeners = useCallbackRef(() => {
     document.removeEventListener('touchmove', handleSlideTouchMove);
     document.removeEventListener('touchend', removeTouchEventListeners);
+    onSlideTouchEnd();
   });
 
   React.useEffect(() => {
