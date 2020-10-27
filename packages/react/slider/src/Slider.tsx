@@ -35,7 +35,6 @@ const SliderCollectionProvider = createSliderCollection((props: { children: Reac
 const SLIDER_NAME = 'Slider';
 const SLIDER_DEFAULT_TAG = 'span';
 
-type SliderBoundsProps = { min?: number; max?: number; step?: number };
 type SliderDOMProps = Omit<SliderPartDOMProps, 'defaultValue' | 'onChange' | 'dir'>;
 type SliderControlledProps = { value: number; onChange?(value: number): void };
 type SliderUncontrolledProps = { defaultValue: number; onChange?(value: number): void };
@@ -49,13 +48,15 @@ type SliderOwnProps = {
   disabled?: boolean;
   orientation?: SliderDOMProps['aria-orientation'];
   dir?: Direction;
-} & SliderBoundsProps &
-  (
-    | SliderControlledProps
-    | SliderUncontrolledProps
-    | SliderRangeControlledProps
-    | SliderRangeUncontrolledProps
-  );
+  min?: number;
+  max?: number;
+  step?: number;
+} & (
+  | SliderControlledProps
+  | SliderUncontrolledProps
+  | SliderRangeControlledProps
+  | SliderRangeUncontrolledProps
+);
 type SliderProps = SliderDOMProps & SliderOwnProps;
 
 type SliderContextValue = {
@@ -231,8 +232,8 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
     const isDirectionLTR = direction === 'ltr';
 
     function getValueFromPointer(pointerPosition: number) {
-      const input = [0, rect!.width];
-      const output = isDirectionLTR ? [min, max] : [max, min];
+      const input: [number, number] = [0, rect!.width];
+      const output: [number, number] = isDirectionLTR ? [min, max] : [max, min];
       const value = linearScale(input, output);
       return value(pointerPosition - rect!.left);
     }
@@ -305,8 +306,8 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps
     const rect = useRect(sliderRef);
 
     function getValueFromPointer(pointerPosition: number) {
-      const input = [0, rect!.height];
-      const output = [max, min];
+      const input: [number, number] = [0, rect!.height];
+      const output: [number, number] = [max, min];
       const value = linearScale(input, output);
       return value(pointerPosition - rect!.top);
     }
@@ -543,10 +544,13 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     const ref = useComposedRefs(forwardedRef, thumbRef);
     const focusTimerRef = React.useRef<number>(0);
     const size = useSize(thumbRef);
+    const isActive = context.activeValueIndexRef.current === index;
     const percent = convertValueToPercentage(value, context.min, context.max);
     const label = getLabel(index, context.values.length);
     const orientationSize = size?.[orientation.size];
-    const thumbInBoundsOffset = orientationSize ? getElementOffset(orientationSize, percent) : 0;
+    const thumbInBoundsOffset = orientationSize
+      ? getThumbInBoundsOffset(orientationSize, percent)
+      : 0;
 
     React.useEffect(() => {
       /**
@@ -561,14 +565,12 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
        */
       focusTimerRef.current = window.setTimeout(() => {
         const thumb = thumbRef.current;
-        const activeThumbIndex = context.activeValueIndexRef.current;
-        const isActive = activeThumbIndex === index;
-        if (thumb && isActive && document.activeElement !== thumb) {
+        if (isActive && thumb && document.activeElement !== thumb) {
           thumb.focus();
         }
       }, 0);
       return () => window.clearTimeout(focusTimerRef.current);
-    }, [context.activeValueIndexRef, context.values, index]);
+    }, [isActive]);
 
     return (
       <span
@@ -690,14 +692,16 @@ function useDirection({
   ref: React.RefObject<any>;
   directionProp?: Direction;
 }) {
-  const [direction = 'ltr', setDirection] = React.useState<Direction | undefined>(directionProp);
+  const [direction, setDirection] = React.useState<Direction>('ltr');
   const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
   const rAFRef = React.useRef<number>(0);
 
   React.useEffect(() => {
-    const computedStyle = getComputedStyle(ref.current);
-    setComputedStyle(computedStyle);
-  }, [ref]);
+    if (directionProp === undefined) {
+      const computedStyle = getComputedStyle(ref.current);
+      setComputedStyle(computedStyle);
+    }
+  }, [directionProp, ref]);
 
   React.useEffect(() => {
     function getDirection() {
@@ -712,7 +716,7 @@ function useDirection({
     return () => cancelAnimationFrame(rAFRef.current);
   }, [computedStyle, directionProp, setDirection]);
 
-  return direction;
+  return directionProp || direction;
 }
 
 function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number) {
@@ -772,7 +776,7 @@ function getClosestValueIndex(values: number[], nextValue: number) {
  * Offsets the thumb centre point while sliding to ensure it remains
  * within the bounds of the slider when reaching the edges
  */
-function getElementOffset(width: number, left: number) {
+function getThumbInBoundsOffset(width: number, left: number) {
   const halfWidth = width / 2;
   const halfPercent = 50;
   const offset = linearScale([0, halfPercent], [0, halfWidth]);
@@ -780,7 +784,7 @@ function getElementOffset(width: number, left: number) {
 }
 
 // https://github.com/tmcw-up-for-adoption/simple-linear-scale/blob/master/index.js
-function linearScale(domain: number[], range: number[]) {
+function linearScale(domain: [number, number], range: [number, number]) {
   return (value: number) => {
     if (domain[0] === domain[1] || range[0] === range[1]) return range[0];
     const ratio = (range[1] - range[0]) / (domain[1] - domain[0]);
