@@ -12,9 +12,9 @@ releases:
   "@interop-ui/react-collection": prerelease
   "@interop-ui/react-debug-context": prerelease
   "@interop-ui/react-dialog": prerelease
+  "@interop-ui/react-dismissable-layer": prerelease
+  "@interop-ui/react-focus-scope": prerelease
   "@interop-ui/react-label": prerelease
-  "@interop-ui/react-lock": prerelease
-  "@interop-ui/react-lock-modular-temp": prerelease
   "@interop-ui/react-popover": prerelease
   "@interop-ui/react-popper": prerelease
   "@interop-ui/react-portal": prerelease
