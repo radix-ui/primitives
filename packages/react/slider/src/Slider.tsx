@@ -227,7 +227,7 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
     const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
     const rect = useRect(sliderRef);
-    const direction = useDirection(dir);
+    const direction = useDirection({ ref: sliderRef, directionProp: dir });
     const isDirectionLTR = direction === 'ltr';
 
     function getValueFromPointer(pointerPosition: number) {
@@ -683,24 +683,36 @@ const BubbleInput = (props: React.ComponentProps<'input'>) => {
   return <input hidden {...inputProps} ref={ref} />;
 };
 
-function useDirection(directionProp?: Direction) {
-  const [direction, setDirection] = React.useState(directionProp);
+function useDirection({
+  ref,
+  directionProp,
+}: {
+  ref: React.RefObject<any>;
+  directionProp?: Direction;
+}) {
+  const [direction = 'ltr', setDirection] = React.useState<Direction | undefined>(directionProp);
+  const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
+  const rAFRef = React.useRef<number>(0);
 
   React.useEffect(() => {
-    if (directionProp === undefined) {
-      const observer = new MutationObserver((mutations) => {
-        if (mutations.some((mutation) => mutation.type === 'attributes')) {
-          setDirection(document.dir as Direction);
-        }
+    const computedStyle = getComputedStyle(ref.current);
+    setComputedStyle(computedStyle);
+  }, [ref]);
+
+  React.useEffect(() => {
+    function getDirection() {
+      rAFRef.current = requestAnimationFrame(() => {
+        const dir = computedStyle?.direction as Direction | '' | undefined;
+        if (dir) setDirection(dir);
+        getDirection();
       });
-
-      setDirection(document.dir as Direction);
-      observer.observe(document.documentElement, { attributes: true });
-      return () => observer.disconnect();
     }
-  }, [directionProp]);
 
-  return direction || 'ltr';
+    if (directionProp === undefined) getDirection();
+    return () => cancelAnimationFrame(rAFRef.current);
+  }, [computedStyle, directionProp, setDirection]);
+
+  return direction;
 }
 
 function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number) {
