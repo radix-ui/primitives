@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@interop-ui/react-portal": "workspace:*",
+    "@stitches/react": "canary",
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
