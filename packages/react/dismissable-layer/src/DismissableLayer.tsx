@@ -288,6 +288,14 @@ function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
 
   return {
     onBlurCapture: (event: React.FocusEvent) => {
+      // When used within FocusScope, the blur event may be captured in the event that focus lands
+      // on a focus scope marker that is outside of the React tree just before the component
+      // attempts to loop focus to the beginning or end of the element contained within the scope.
+      // We can ignore these events to prevent from dismissing layers when cycling focus.
+      const relatedTarget = event.relatedTarget as HTMLElement;
+      if (relatedTarget && relatedTarget.getAttribute('data-interop-focus-scope-marker')) {
+        return;
+      }
       event.persist();
       timerRef.current = window.setTimeout(() => {
         onFocusLeave?.(event);
