@@ -12,16 +12,13 @@ const AUTOFOCUS_ON_DESTROY = 'focusScope.autoFocusOnDestroy';
 function createFocusScope(container: HTMLElement) {
   const PREVIOUSLY_FOCUSED_ELEMENT = getCurrentlyFocusedElement();
 
-  // In order to contain focus, we create (and later inject) 2 focusable markers.
-  // One is injected just before the container, and the other just after it.
-  // Their function is twofold:
-  // - when focus escapes the container, it ensures one of these will be the focus recipient
-  // - they serve as markers to know which direction the user was tabbing through
+  // To contain focus, we create (and later inject) 2 focusable markers.
+  // One is injected as the first child of the container, and the other as the last child.
+  // They are used to:
+  // - determine the direction the focus is attempting to leave the container.
+  // - when focused, forward focus to the first/last tabbable alement as appropriate.
   const START_MARKER = createFocusScopeMarker('start');
   const END_MARKER = createFocusScopeMarker('end');
-
-  // We keep track of some internal state
-  let lastFocusedElementInsideContainer: HTMLElement | null = null;
 
   // setup
   makeContainerFocusable(container);
@@ -29,12 +26,15 @@ function createFocusScope(container: HTMLElement) {
 
   // internal utils
   function addFocusScopeMarkers() {
-    const parent = container.parentNode;
-    parent?.insertBefore(START_MARKER, container);
-    parent?.insertBefore(END_MARKER, container.nextSibling);
+    container.insertAdjacentElement('afterbegin', START_MARKER);
+    container.insertAdjacentElement('beforeend', END_MARKER);
+    START_MARKER.addEventListener('focus', handleStartMarkerFocus, true);
+    END_MARKER.addEventListener('focus', handleEndMarkerFocus, true);
   }
 
   function removeFocusScopeMarkers() {
+    START_MARKER.removeEventListener('focus', handleStartMarkerFocus, true);
+    END_MARKER.removeEventListener('focus', handleEndMarkerFocus, true);
     START_MARKER.remove();
     END_MARKER.remove();
   }
@@ -47,7 +47,8 @@ function createFocusScope(container: HTMLElement) {
     container.dispatchEvent(createEvent);
 
     if (!createEvent.defaultPrevented) {
-      attemptFocus(getFirstTabbableElement(container), FOCUS_ON_CREATE_ERROR, container);
+      const tabbableElements = getTabbableElements(container);
+      attemptFocus(tabbableElements[0] as HTMLElement, FOCUS_ON_CREATE_ERROR, container);
     }
   }
 
@@ -63,70 +64,31 @@ function createFocusScope(container: HTMLElement) {
     }
   }
 
-  function addFocusBlurListeners() {
-    document.addEventListener('blur', handleBlur, { capture: true });
-    document.addEventListener('focus', handleFocus, { capture: true });
+  function handleStartMarkerFocus() {
+    const tabbableElements = getTabbableElements(container);
+    const endMarkerIndex = tabbableElements.length - 1;
+    const tabbableBeforeEndMarker = tabbableElements[endMarkerIndex - 1];
+    attemptFocus(
+      tabbableBeforeEndMarker as HTMLElement,
+      'Could not focus last tabbable element',
+      container
+    );
   }
 
-  function removeFocusBlurListeners() {
-    document.removeEventListener('blur', handleBlur, { capture: true });
-    document.removeEventListener('focus', handleFocus, { capture: true });
-  }
-
-  function handleBlur(event: FocusEvent) {
-    const relatedTarget = event.relatedTarget as Element | null;
-    // We only need to respond to a blur event if another element outside is receiving focus.
-    // https://github.com/modulz/modulz/pull/1215
-    if (relatedTarget && isTargetOutsideElement(relatedTarget, container)) {
-      handleFocusOutside(relatedTarget);
-    }
-  }
-
-  function handleFocus({ target }: FocusEvent) {
-    if (isTargetOutsideElement(target, container)) {
-      handleFocusOutside(target as Element);
-    } else {
-      lastFocusedElementInsideContainer = target as HTMLElement;
-    }
-  }
-
-  function handleFocusOutside(elementReceivingFocus: Element | null) {
-    // If we got here, it means the focus event was technically outside the container.
-    // We do an extra check for focus within any focus scope container.
-    // This is because focus scope containers are not always truly nested in the DOM
-    // (ie. when used within a Portal)
-    if (elementReceivingFocus?.closest('[data-focus-scope-container=true]')) {
-      // in such case we allow manually focusing into parent locks (via click)
-      return;
-    }
-
-    if (elementReceivingFocus === START_MARKER) {
-      const lastTabbableElement = getLastTabbableElement(container);
-      attemptFocus(lastTabbableElement, 'Could not focus last tabbable element', container);
-    } else if (elementReceivingFocus === END_MARKER) {
-      const firstTabbableElement = getFirstTabbableElement(container);
-      attemptFocus(firstTabbableElement, 'Could not focus first tabbable element', container);
-    } else {
-      const firstTabbableElement = getFirstTabbableElement(container);
-      attemptFocus(
-        lastFocusedElementInsideContainer ?? firstTabbableElement,
-        'Could not re-focus last focused element (or first tabbable element)',
-        container
-      );
-    }
+  function handleEndMarkerFocus() {
+    const tabbableElements = getTabbableElements(container);
+    const tabbableAfterStartMarker = tabbableElements[1];
+    attemptFocus(
+      tabbableAfterStartMarker as HTMLElement,
+      'Could not focus first tabbable element',
+      container
+    );
   }
 
   // create focus scope instance
   const focusScope = {
-    trap: () => {
-      addFocusScopeMarkers();
-      addFocusBlurListeners();
-    },
-
-    untrap: () => {
-      removeFocusScopeMarkers();
-      removeFocusBlurListeners();
-    },
+    trap: addFocusScopeMarkers,
+    untrap: removeFocusScopeMarkers,
 
     destroy: () => {
       makeContainerNonFocusable(container);
@@ -160,22 +122,12 @@ function makeContainerNonFocusable(container: HTMLElement) {
   container.removeAttribute('tabIndex');
 }
 
-function isTargetOutsideElement(target: EventTarget | null, element: HTMLElement) {
-  return !element.contains(target as Node);
-}
-
 function getCurrentlyFocusedElement() {
   return document.activeElement as HTMLElement | null;
 }
 
-function getFirstTabbableElement(container: HTMLElement) {
-  const tabbableElements = tabbable(container, { includeContainer: false });
-  return tabbableElements[0] as HTMLElement;
-}
-
-function getLastTabbableElement(container: HTMLElement) {
-  const tabbableElements = tabbable(container, { includeContainer: false });
-  return tabbableElements[tabbableElements.length - 1] as HTMLElement;
+function getTabbableElements(container: HTMLElement) {
+  return tabbable(container, { includeContainer: false });
 }
 
 function isHTMLElement(element: any): element is HTMLElement {

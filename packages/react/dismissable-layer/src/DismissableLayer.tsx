@@ -284,17 +284,22 @@ function usePointerDownOutside(
  * Returns props to pass to the root (node) of the subtree we want to check.
  */
 function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
-  const timerRef = React.useRef<number>(0);
+  const timersRef = React.useRef<number[]>([]);
 
   return {
     onBlurCapture: (event: React.FocusEvent) => {
       event.persist();
-      timerRef.current = window.setTimeout(() => {
-        onFocusLeave?.(event);
-      }, 0);
+      const timer = window.setTimeout(() => onFocusLeave?.(event), 0);
+      /**
+       * We append timer to array of timers because multiple blur events can fire
+       * before the focus event e.g. when user manually blurs and then we instantly
+       * programattically blur the new focused element. This ensures that when we
+       * focus, we're preventing *all* focusleave attempts
+       */
+      timersRef.current = [...timersRef.current, timer];
     },
     onFocusCapture: () => {
-      window.clearTimeout(timerRef.current);
+      timersRef.current.forEach(window.clearTimeout);
     },
   };
 }
