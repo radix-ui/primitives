@@ -60,10 +60,26 @@ export function getTrackRef(axis: Axis, ctx: ScrollAreaRefs) {
   return axis === 'x' ? ctx.trackXRef : ctx.trackYRef;
 }
 
-export function pointerIsOutsideElement(event: PointerEvent, element: Element) {
+export function pointerIsOutsideElement(event: PointerEvent, element: Element, rect?: DOMRect) {
+  rect = rect || element.getBoundingClientRect();
+  return (
+    pointerIsOutsideElementByAxis(event, element, 'x', rect) ||
+    pointerIsOutsideElementByAxis(event, element, 'y', rect)
+  );
+}
+
+export function pointerIsOutsideElementByAxis(
+  event: PointerEvent,
+  element: Element,
+  axis: Axis,
+  rect?: DOMRect
+) {
   const pos = getPointerPosition(event);
-  const bounds = element.getBoundingClientRect();
-  return pos.x < bounds.left || pos.x > bounds.right || pos.y < bounds.top || pos.y > bounds.bottom;
+  rect = rect || element.getBoundingClientRect();
+  return (
+    pos[axis] < rect[axis === 'x' ? 'left' : 'top'] ||
+    pos[axis] > rect[axis === 'x' ? 'right' : 'bottom']
+  );
 }
 
 export function getButtonRef(actualDirection: ScrollDirection, ctx: ScrollAreaRefs) {

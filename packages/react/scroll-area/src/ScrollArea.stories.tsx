@@ -1,17 +1,9 @@
 import * as React from 'react';
-import { createStyled } from '@stitches/react';
+import { styled } from '../../../../stitches.config';
 import { ScrollArea, styles } from './ScrollArea';
 import './ScrollArea.stories.css';
 
 export default { title: 'ScrollArea' };
-
-const { styled } = createStyled({
-  tokens: {
-    colors: {
-      //
-    },
-  },
-});
 
 export function Basic() {
   const [usesNative, setNative] = React.useState(false);

@@ -65,6 +65,7 @@ import {
   getTrackRef,
   getVisibleToTotalRatio,
   pointerIsOutsideElement,
+  pointerIsOutsideElementByAxis,
   round,
   scrollBy,
   setScrollPosition,
@@ -103,7 +104,7 @@ const [ScrollAreaContext, useScrollAreaContext] = createContext<ScrollAreaContex
 );
 
 // We render native scrollbars initially and switch to custom scrollbars after hydration if the
-// user's browser supports the neccessary features. Many internal components will return `null` when
+// user's browser supports the necessary features. Many internal components will return `null` when
 // using native scrollbars, so we keep implementation separate throughout and check support in this
 // context during render.
 const NativeScrollContext = React.createContext<boolean>(true);
@@ -167,7 +168,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
     } = props;
     const [usesNative, setUsesNative] = React.useState(true);
     // Check to make sure the user's browser supports our custom scrollbar features. We use a layout
-    // effect here to avoid a visible flash when the custom scrollarea replaces the native version.
+    // effect here to avoid a visible flash when the custom scroll area replaces the native version.
     useLayoutEffect(() => {
       setUsesNative(forceNative || shouldFallbackToNativeScroll());
     }, [forceNative]);
@@ -203,7 +204,7 @@ const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativePro
         {...domProps}
         style={{
           ...domProps.style,
-          // For native fallback, the scrollarea wrapper itself is scrollable
+          // For native fallback, the scroll area wrapper itself is scrollable
           overflowX,
           overflowY,
 
@@ -888,8 +889,10 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
     const { positionRef } = refsContext;
     const thumbRef = getThumbRef(axis, refsContext);
     const ref = useComposedRefs(thumbRef, forwardedRef);
-    const pointerStartPointRef = React.useRef<number>(0);
     const context = useScrollAreaContext(THUMB_NAME);
+
+    const pointerStartPointRef = React.useRef<number>(0);
+    const pointerThumbRelationshipPointRef = React.useRef<number>(0);
 
     const handleResize = React.useCallback(
       (size: ResizeObserverSize) => {
@@ -938,15 +941,16 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
     ]);
 
     React.useEffect(() => {
-      const thumbEl = thumbRef.current!;
-      if (!thumbEl) {
+      const thumbElement = thumbRef.current!;
+      const trackElement = thumbRef.current!;
+      if (!thumbElement || !trackElement) {
         // TODO:
         throw Error('why no refs 😢');
       }
 
-      thumbEl.addEventListener('pointerdown', handlePointerDown);
+      thumbElement.addEventListener('pointerdown', handlePointerDown);
       return function () {
-        thumbEl.removeEventListener('pointerdown', handlePointerDown);
+        thumbElement.removeEventListener('pointerdown', handlePointerDown);
         stopThumbing();
       };
 
@@ -962,7 +966,7 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
         const pointerPosition = getPointerPosition(event)[axis];
         event.stopPropagation();
         pointerStartPointRef.current = pointerPosition;
-        thumbEl.setPointerCapture(event.pointerId);
+        thumbElement.setPointerCapture(event.pointerId);
         document.addEventListener('pointerup', handlePointerUp);
         document.addEventListener('pointermove', handlePointerMove);
         dispatch({ type: ScrollAreaEvents.StartThumbing });
@@ -979,7 +983,7 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
       }
 
       function handlePointerUp(event: PointerEvent) {
-        thumbEl.releasePointerCapture(event.pointerId);
+        thumbElement.releasePointerCapture(event.pointerId);
         stopThumbing();
       }
     }, [axis, dispatch, thumbRef]);
