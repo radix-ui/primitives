@@ -23,10 +23,13 @@ export const Controlled = () => {
       <Tooltip.Trigger style={{ margin: 100 }}>
         I'm controlled, look I'm {isOpen ? 'open' : 'closed'}
       </Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
-        <Tooltip.Content as={Content}>Nicely done!</Tooltip.Content>
-        <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+
+      {isOpen && (
+        <Tooltip.Position sideOffset={5}>
+          <Tooltip.Content as={Content}>Nicely done!</Tooltip.Content>
+          <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
+        </Tooltip.Position>
+      )}
     </Tooltip>
   );
 };

@@ -28,6 +28,7 @@ type TooltipContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
   isOpen: boolean;
+  isControlled: boolean;
 };
 
 const [TooltipContext, useTooltipContext] = createContext<TooltipContextValue>(
@@ -64,6 +65,7 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(pr
   const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `tooltip-${useId()}`;
+  const isControlled = isOpenProp !== undefined;
   const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
@@ -98,7 +100,11 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(pr
     }
   }, [id, isOpenProp]);
 
-  const context = React.useMemo(() => ({ triggerRef, id, isOpen }), [id, isOpen]);
+  const context = React.useMemo(() => ({ triggerRef, id, isOpen, isControlled }), [
+    id,
+    isOpen,
+    isControlled,
+  ]);
 
   return <TooltipContext.Provider value={context}>{children}</TooltipContext.Provider>;
 };
@@ -193,7 +199,8 @@ type TooltipPositionProps = Optional<PopperProps, 'anchorRef'> &
 const TooltipPosition = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPositionProps>(
   (props, forwardedRef) => {
     const context = useTooltipContext(POSITION_NAME);
-    return context.isOpen ? <TooltipPositionImpl ref={forwardedRef} {...props} /> : null;
+    const isOpen = context.isControlled || context.isOpen;
+    return isOpen ? <TooltipPositionImpl ref={forwardedRef} {...props} /> : null;
   }
 );
 
