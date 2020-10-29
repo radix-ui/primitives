@@ -40,14 +40,17 @@ export const Controlled = () => {
     >
       <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
         <Popover.Trigger as={Button}>{isOpen ? 'close' : 'open'}</Popover.Trigger>
-        <Popover.Position style={{ ...styles.position }}>
-          <Popover.Content
-            style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
-          >
-            <Popover.Close as={Button}>close</Popover.Close>
-          </Popover.Content>
-          <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
-        </Popover.Position>
+
+        {isOpen && (
+          <Popover.Position style={{ ...styles.position }}>
+            <Popover.Content
+              style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
+            >
+              <Popover.Close as={Button}>close</Popover.Close>
+            </Popover.Content>
+            <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
+          </Popover.Position>
+        )}
       </Popover>
     </div>
   );

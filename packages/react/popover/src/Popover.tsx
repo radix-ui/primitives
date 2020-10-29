@@ -31,6 +31,7 @@ type PopoverContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
   isOpen: boolean;
+  isControlled: boolean;
   setIsOpen: (isOpen: boolean | ((prevIsOpen?: boolean) => boolean)) => void;
 };
 
@@ -63,14 +64,16 @@ const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(pr
   const { children, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `popover-${useId()}`;
+  const isControlled = isOpenProp !== undefined;
   const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
     onChange: onIsOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, id, isOpen, setIsOpen }), [
+  const context = React.useMemo(() => ({ triggerRef, id, isOpen, isControlled, setIsOpen }), [
     id,
     isOpen,
+    isControlled,
     setIsOpen,
   ]);
 
@@ -177,7 +180,8 @@ type PopoverPositionProps = Optional<PopperProps, 'anchorRef'> &
 const PopoverPosition = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPositionProps>(
   function PopoverPosition(props, forwardedRef) {
     const context = usePopoverContext(POSITION_NAME);
-    return context.isOpen ? <PopoverPositionImpl ref={forwardedRef} {...props} /> : null;
+    const isOpen = context.isControlled || context.isOpen;
+    return isOpen ? <PopoverPositionImpl ref={forwardedRef} {...props} /> : null;
   }
 );
 
