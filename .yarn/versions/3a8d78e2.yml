@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-tooltip": prerelease
+
+declined:
+  - interop-ui
