@@ -12,7 +12,12 @@ export function Basic() {
       <button onClick={() => setNative(!usesNative)}>Toggle Native</button>
       <hr />
       <div className="resizable">
-        <ScrollArea as={Root} unstable_forceNative={usesNative} overflowX="scroll">
+        <ScrollArea
+          as={Root}
+          unstable_forceNative={usesNative}
+          overflowX="scroll"
+          scrollbarAutoHide="scroll"
+        >
           <ScrollArea.ScrollbarY as={ScrollbarY}>
             <ScrollArea.ButtonStart as={ScrollButtonStart}>
               <Arrow direction="up" />
@@ -74,11 +79,13 @@ const Root = styled('div', {
 
 const ScrollbarY = styled('div', {
   ...styles.scrollbarY,
+  transition: '300ms opacity ease',
   width: `16px`,
 });
 
 const ScrollbarX = styled('div', {
   ...styles.scrollbarX,
+  transition: '300ms opacity ease',
   height: `16px`,
 });
 

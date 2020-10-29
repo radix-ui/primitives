@@ -2,36 +2,50 @@ import { Axis, clamp } from '@interop-ui/utils';
 import { ScrollAreaState } from './scrollAreaState';
 import { ScrollDirection, LogicalDirection, PointerPosition, ScrollAreaRefs } from './types';
 
-export function isScrolledToBottom(node: Element | null) {
-  return !!(node && node.scrollTop === getMaxScrollTopValue(node));
+export function isScrolledToBottom(element: Element | null) {
+  return !!(element && element.scrollTop === getMaxScrollTopValue(element));
 }
 
-export function getDistanceFromTop(el: Element) {
-  return window.pageYOffset + el.getBoundingClientRect().top;
+export function getElementClientRectData(element: Element, { axis }: { axis: Axis }) {
+  const rect = element.getBoundingClientRect();
+  return {
+    positionStart: axis === 'x' ? rect.left : rect.top,
+    positionEnd: axis === 'x' ? rect.right : rect.bottom,
+    size: axis === 'x' ? rect.width : rect.height,
+  };
 }
 
-export function isScrolledToRight(node: Element | null) {
-  return !!(node && node.scrollLeft === getMaxScrollLeftValue(node));
+export function getElementCenterPoint(element: Element, { axis }: { axis: Axis }) {
+  const rectData = getElementClientRectData(element, { axis });
+  return rectData.positionStart + rectData.size / 2;
 }
 
-export function isScrolledToTop(node: Element | null) {
-  return !!(node && node.scrollTop === 0);
+export function getDistanceFromTop(element: Element) {
+  return window.pageYOffset + element.getBoundingClientRect().top;
 }
 
-export function isScrolledToLeft(node: Element | null) {
-  return !!(node && node.scrollLeft === 0);
+export function isScrolledToRight(element: Element | null) {
+  return !!(element && element.scrollLeft === getMaxScrollLeftValue(element));
 }
 
-export function getMaxScrollTopValue(node: Element) {
-  return node.scrollHeight - node.clientHeight;
+export function isScrolledToTop(element: Element | null) {
+  return !!(element && element.scrollTop === 0);
 }
 
-export function getMaxScrollLeftValue(node: Element) {
-  return node.scrollWidth - node.clientWidth;
+export function isScrolledToLeft(element: Element | null) {
+  return !!(element && element.scrollLeft === 0);
 }
 
-export function getMaxScrollStartValue(node: Element, axis: Axis) {
-  return axis === 'x' ? getMaxScrollLeftValue(node) : getMaxScrollTopValue(node);
+export function getMaxScrollTopValue(element: Element) {
+  return element.scrollHeight - element.clientHeight;
+}
+
+export function getMaxScrollLeftValue(element: Element) {
+  return element.scrollWidth - element.clientWidth;
+}
+
+export function getMaxScrollStartValue(element: Element, axis: Axis) {
+  return axis === 'x' ? getMaxScrollLeftValue(element) : getMaxScrollTopValue(element);
 }
 
 export function getActualScrollDirection(dir: LogicalDirection, axis: Axis): ScrollDirection {
@@ -139,9 +153,7 @@ export function setScrollPosition(
 }
 
 export function scrollBy(element: Element, { axis, value }: { axis: Axis; value: number }) {
-  if (canScroll(element, { axis, delta: Math.round(clamp(value, [-1, 1])) })) {
-    element[axis === 'x' ? 'scrollLeft' : 'scrollTop'] += Math.round(value);
-  }
+  element[axis === 'x' ? 'scrollLeft' : 'scrollTop'] += value;
 }
 
 export function getLogicalRect(element: Element, { axis }: { axis: Axis }) {

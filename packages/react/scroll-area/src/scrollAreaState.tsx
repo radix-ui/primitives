@@ -1,5 +1,11 @@
 import { Axis, Size, ResizeBehavior, ScrollAreaRefs } from './types';
-import { canScroll, getScrollSize, getClientSize, scrollBy } from './scrollAreaUtils';
+import {
+  canScroll,
+  getScrollSize,
+  setScrollPosition,
+  getTrackRef,
+  getThumbRef,
+} from './scrollAreaUtils';
 
 export enum ScrollAreaState {
   Idle,
@@ -24,6 +30,8 @@ export enum ScrollAreaEvents {
   StopThumbing,
   StartButtonPress,
   StopButtonPress,
+  SetScrollbarVisibility,
+  SetScrollInteracting,
 }
 
 // prettier-ignore
@@ -34,7 +42,7 @@ export type ScrollAreaEvent =
   | { type: ScrollAreaEvents.HandleScrollbarResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.HandleThumbResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.HandleTrackResize; axis: Axis; width: number; height: number }
-  | { type: ScrollAreaEvents.MoveThumbWithPointer; axis: Axis; pointerPosition: number; pointerStartPointRef: React.MutableRefObject<number> }
+  | { type: ScrollAreaEvents.MoveThumbWithPointer; axis: Axis; pointerPosition: number; pointerStartPointRef: React.MutableRefObject<number>; pointerInitialStartPointRef: React.MutableRefObject<number>; thumbInitialData: React.MutableRefObject<{ size: number; position: number }>; trackInitialData: React.MutableRefObject<{ size: number; position: number }> }
   | { type: ScrollAreaEvents.StartTracking }
   | { type: ScrollAreaEvents.StopTracking }
   | { type: ScrollAreaEvents.StartThumbing }
@@ -42,6 +50,8 @@ export type ScrollAreaEvent =
   | { type: ScrollAreaEvents.StartButtonPress }
   | { type: ScrollAreaEvents.StopButtonPress }
   | { type: ScrollAreaEvents.SetContentOverflowing; x: boolean; y: boolean }
+  | { type: ScrollAreaEvents.SetScrollbarVisibility; x?: boolean; y?: boolean }
+  | { type: ScrollAreaEvents.SetScrollInteracting; x?: boolean; y?: boolean }
 
 export type ScrollAreaReducerState = {
   state: ScrollAreaState;
@@ -55,6 +65,10 @@ export type ScrollAreaReducerState = {
   explicitResize: ResizeBehavior;
   contentIsOverflowingX: boolean;
   contentIsOverflowingY: boolean;
+  scrollbarIsVisibleX: boolean;
+  scrollbarIsVisibleY: boolean;
+  scrollInteractingX: boolean;
+  scrollInteractingY: boolean;
 };
 
 export function reducer(
@@ -109,6 +123,20 @@ export function reducer(
         contentIsOverflowingY: event.y,
       };
     }
+    case ScrollAreaEvents.SetScrollbarVisibility: {
+      return {
+        ...context,
+        scrollbarIsVisibleX: event.x ?? context.scrollbarIsVisibleX,
+        scrollbarIsVisibleY: event.y ?? context.scrollbarIsVisibleY,
+      };
+    }
+    case ScrollAreaEvents.SetScrollInteracting: {
+      return {
+        ...context,
+        scrollInteractingX: event.x ?? context.scrollInteractingX,
+        scrollInteractingY: event.y ?? context.scrollbarIsVisibleY,
+      };
+    }
     case ScrollAreaEvents.HandleViewportResize: {
       return {
         ...context,
@@ -133,7 +161,7 @@ export function reducer(
     case ScrollAreaEvents.HandleTrackResize: {
       return {
         ...context,
-        [event.axis === 'x' ? 'trackYSize' : 'trackXSize']: {
+        [event.axis === 'x' ? 'trackXSize' : 'trackYSize']: {
           height: event.height,
           width: event.width,
         },
@@ -158,14 +186,39 @@ export function reducer(
       };
     }
     case ScrollAreaEvents.MoveThumbWithPointer: {
-      const { axis, pointerStartPointRef, pointerPosition } = event;
-      const delta = pointerPosition - pointerStartPointRef.current;
-      if (canScroll(positionElement, { axis, delta })) {
-        const totalScrollSize = getScrollSize(positionElement, { axis });
-        const visibleSize = getClientSize(positionElement, { axis });
-        const visibleToTotalRatio = visibleSize / totalScrollSize;
+      const {
+        axis,
+        pointerStartPointRef,
+        pointerInitialStartPointRef,
+        thumbInitialData,
+        trackInitialData,
+        pointerPosition,
+      } = event;
+      const trackElement = getTrackRef(axis, refs).current;
+      const thumbElement = getThumbRef(axis, refs).current;
 
-        scrollBy(positionElement, { axis, value: delta / visibleToTotalRatio });
+      if (!trackElement || !thumbElement) {
+        return context;
+      }
+
+      const delta = pointerPosition - pointerStartPointRef.current;
+
+      if (canScroll(positionElement, { axis, delta })) {
+        // Offset by the distance between the initial pointer's distance from the initial
+        // position of the thumb
+        const { position: trackPosition } = trackInitialData.current;
+        const { position: thumbInitialPosition } = thumbInitialData.current;
+        const pointerOffset = pointerInitialStartPointRef.current - thumbInitialPosition;
+
+        const trackSize = axis === 'x' ? context.trackXSize.width : context.trackYSize.height;
+        const pointerPositionRelativeToTrack = Math.round(pointerPosition - trackPosition);
+        const viewportRatioFromPointer =
+          Math.round(((pointerPositionRelativeToTrack - pointerOffset) / trackSize) * 100) / 100;
+        const scrollSize = getScrollSize(positionElement, { axis });
+        const value = viewportRatioFromPointer * scrollSize;
+        setScrollPosition(positionElement, { axis, value });
+
+        // Reset the pointer start point for the next pointer movement
         pointerStartPointRef.current = pointerPosition;
 
         return {
