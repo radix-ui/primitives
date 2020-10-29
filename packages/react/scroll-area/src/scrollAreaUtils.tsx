@@ -1,58 +1,19 @@
-import { Axis, clamp } from '@interop-ui/utils';
-import { ScrollAreaState } from './scrollAreaState';
+import { Axis, clamp, getResizeObserverEntryBorderBoxSize } from '@interop-ui/utils';
+import { useLayoutEffect } from '@interop-ui/react-utils';
 import { ScrollDirection, LogicalDirection, PointerPosition, ScrollAreaRefs } from './types';
 
-export function isScrolledToBottom(element: Element | null) {
-  return !!(element && element.scrollTop === getMaxScrollTopValue(element));
-}
-
-export function getElementClientRectData(element: Element, { axis }: { axis: Axis }) {
-  const rect = element.getBoundingClientRect();
-  return {
-    positionStart: axis === 'x' ? rect.left : rect.top,
-    positionEnd: axis === 'x' ? rect.right : rect.bottom,
-    size: axis === 'x' ? rect.width : rect.height,
-  };
-}
-
-export function getElementCenterPoint(element: Element, { axis }: { axis: Axis }) {
-  const rectData = getElementClientRectData(element, { axis });
-  return rectData.positionStart + rectData.size / 2;
-}
-
-export function getDistanceFromTop(element: Element) {
-  return window.pageYOffset + element.getBoundingClientRect().top;
-}
-
-export function isScrolledToRight(element: Element | null) {
-  return !!(element && element.scrollLeft === getMaxScrollLeftValue(element));
-}
-
-export function isScrolledToTop(element: Element | null) {
-  return !!(element && element.scrollTop === 0);
-}
-
-export function isScrolledToLeft(element: Element | null) {
-  return !!(element && element.scrollLeft === 0);
-}
-
-export function getMaxScrollTopValue(element: Element) {
-  return element.scrollHeight - element.clientHeight;
-}
-
-export function getMaxScrollLeftValue(element: Element) {
-  return element.scrollWidth - element.clientWidth;
-}
-
-export function getMaxScrollStartValue(element: Element, axis: Axis) {
-  return axis === 'x' ? getMaxScrollLeftValue(element) : getMaxScrollTopValue(element);
-}
-
-export function getActualScrollDirection(dir: LogicalDirection, axis: Axis): ScrollDirection {
-  if (dir === 'start') {
-    return axis === 'x' ? 'left' : 'up';
-  }
-  return axis === 'x' ? 'right' : 'down';
+export function shouldFallbackToNativeScroll() {
+  return !(
+    'ResizeObserver' in window &&
+    'IntersectionObserver' in window &&
+    (('CSS' in window &&
+      'supports' in window.CSS &&
+      window.CSS.supports('scrollbar-width: none')) ||
+      // I don't think it's possible to use CSS.supports to detect if a pseudo element is
+      // supported. We need to make sure `::-webkit-scrollbar` is valid if possible.
+      // TODO: Replace true with valid check or remove the block altogether
+      true)
+  );
 }
 
 export function getPointerPosition(event: PointerEvent): PointerPosition {
@@ -74,29 +35,8 @@ export function getTrackRef(axis: Axis, ctx: ScrollAreaRefs) {
   return axis === 'x' ? ctx.trackXRef : ctx.trackYRef;
 }
 
-export function pointerIsOutsideElement(event: PointerEvent, element: Element, rect?: DOMRect) {
-  rect = rect || element.getBoundingClientRect();
-  return (
-    pointerIsOutsideElementByAxis(event, element, 'x', rect) ||
-    pointerIsOutsideElementByAxis(event, element, 'y', rect)
-  );
-}
-
-export function pointerIsOutsideElementByAxis(
-  event: PointerEvent,
-  element: Element,
-  axis: Axis,
-  rect?: DOMRect
-) {
-  const pos = getPointerPosition(event);
-  rect = rect || element.getBoundingClientRect();
-  return (
-    pos[axis] < rect[axis === 'x' ? 'left' : 'top'] ||
-    pos[axis] > rect[axis === 'x' ? 'right' : 'bottom']
-  );
-}
-
-export function getButtonRef(actualDirection: ScrollDirection, ctx: ScrollAreaRefs) {
+export function getButtonRef(direction: LogicalDirection, axis: Axis, ctx: ScrollAreaRefs) {
+  const actualDirection = getActualScrollDirection(direction, axis);
   switch (actualDirection) {
     case 'down':
       return ctx.buttonDownRef;
@@ -107,6 +47,12 @@ export function getButtonRef(actualDirection: ScrollDirection, ctx: ScrollAreaRe
     case 'right':
       return ctx.buttonRightRef;
   }
+}
+
+export function pointerIsOutsideElement(event: PointerEvent, element: Element, rect?: DOMRect) {
+  rect = rect || element.getBoundingClientRect();
+  const pos = getPointerPosition(event);
+  return pos.x < rect.left || pos.x > rect.right || pos.y < rect.top || pos.y > rect.bottom;
 }
 
 /**
@@ -120,17 +66,53 @@ export function getButtonRef(actualDirection: ScrollDirection, ctx: ScrollAreaRe
  * height minus ~40px, so that's what I used to recreate the track functionality.
  *
  * @see https://vasilis.nl/nerd/high-scroll-height-scrolling-space-bar/
- *
- * @param props
  */
 export function getPagedScrollDistance({
+  axis,
   direction,
-  visibleSize,
+  positionElement,
 }: {
+  axis: Axis;
   direction: LogicalDirection;
-  visibleSize: number;
+  positionElement: Element;
 }) {
+  const visibleSize = getClientSize(positionElement, { axis });
   return (visibleSize - 40) * (direction === 'end' ? 1 : -1);
+}
+
+/**
+ * Gets the distance of needed to move a scroll area when a the user holds the pointer down on a
+ * track for and extended period of time, and the scroll handle jumps to the pointer.
+ */
+export function getLongPagedScrollDistance({
+  axis,
+  direction,
+  pointerPosition,
+  positionElement,
+  trackElement,
+}: {
+  axis: Axis;
+  direction: LogicalDirection;
+  pointerPosition: PointerPosition;
+  positionElement: Element;
+  trackElement: Element;
+}) {
+  const startPosition = getScrollPosition(positionElement, { axis });
+  const scrollSize = getScrollSize(positionElement, { axis });
+  const visibleSize = getClientSize(positionElement, { axis });
+  const { positionStart: trackPosition, size: trackSize } = getLogicalRect(trackElement, {
+    axis,
+  });
+  const pointerPositionRelativeToTrack = Math.round(pointerPosition[axis] - trackPosition);
+  const viewportRatioFromPointer =
+    Math.round((pointerPositionRelativeToTrack / trackSize) * 100) / 100;
+  const destScrollPosition =
+    direction === 'start'
+      ? viewportRatioFromPointer * scrollSize
+      : viewportRatioFromPointer * scrollSize - visibleSize;
+  return destScrollPosition < startPosition
+    ? destScrollPosition - startPosition - visibleSize / 2
+    : destScrollPosition - startPosition + visibleSize / 2;
 }
 
 export function getClientSize(element: Element, { axis }: { axis: Axis }) {
@@ -159,10 +141,11 @@ export function scrollBy(element: Element, { axis, value }: { axis: Axis; value:
 export function getLogicalRect(element: Element, { axis }: { axis: Axis }) {
   const {
     [axis]: coord,
-    [axis === 'y' ? 'top' : 'left']: position,
+    [axis === 'y' ? 'top' : 'left']: positionStart,
+    [axis === 'y' ? 'bottom' : 'right']: positionEnd,
     [axis === 'y' ? 'height' : 'width']: size,
   } = element.getBoundingClientRect();
-  return { coord, position, size };
+  return { coord, positionStart, positionEnd, size };
 }
 
 export function getVisibleToTotalRatio(positionElement: HTMLElement, { axis }: { axis: Axis }) {
@@ -208,14 +191,14 @@ export function getNewScrollPosition(
 export function determineScrollDirectionFromTrackClick({
   event,
   axis,
-  thumbEl,
+  thumbElement,
 }: {
   event: PointerEvent;
   axis: Axis;
-  thumbEl: Element;
+  thumbElement: Element;
 }): LogicalDirection {
   const { [axis]: scrollPosition } = getPointerPosition(event);
-  return scrollPosition < thumbEl.getBoundingClientRect()[axis === 'y' ? 'top' : 'left']
+  return scrollPosition < thumbElement.getBoundingClientRect()[axis === 'y' ? 'top' : 'left']
     ? 'start'
     : 'end';
 }
@@ -227,11 +210,12 @@ type AnimationOptions = {
   done?(): any;
   rafIdRef: React.MutableRefObject<number | undefined>;
 };
+
 export function animate({ duration, draw, timing, done, rafIdRef }: AnimationOptions) {
   return new Promise((resolve) => {
     let start = performance.now();
     let stopped = false;
-    rafIdRef.current = window.requestAnimationFrame(function animate(time: number) {
+    rafIdRef.current = requestAnimationFrame(function animate(time: number) {
       // In some cases there are discrepencies between performance.now() and the timestamp in rAF.
       // In those cases we reset the start time to the timestamp in the first frame.
       // https://stackoverflow.com/questions/38360250/requestanimationframe-now-vs-performance-now-time-discrepancy
@@ -241,7 +225,7 @@ export function animate({ duration, draw, timing, done, rafIdRef }: AnimationOpt
 
       if (timeFraction < 1) {
         // If we haven't cancelled, keep the animation going
-        !stopped && (rafIdRef.current = window.requestAnimationFrame(animate));
+        !stopped && (rafIdRef.current = requestAnimationFrame(animate));
       } else {
         // Callback to `done` only if the animation wasn't cancelled early
         cleanup();
@@ -257,8 +241,64 @@ export function animate({ duration, draw, timing, done, rafIdRef }: AnimationOpt
   });
 }
 
-export function checkIsScrolling(state: ScrollAreaState) {
-  return state !== ScrollAreaState.Idle;
+/**
+ * Returns the animation draw function for PageUp/PageDown movements
+ * @param param0
+ */
+export function getPagedDraw({
+  axis,
+  direction,
+  positionElement,
+}: {
+  axis: Axis;
+  direction: LogicalDirection;
+  positionElement: Element;
+}) {
+  let totalScrollDistance = getPagedScrollDistance({ axis, direction, positionElement });
+  return function draw(progress: number) {
+    const distance = totalScrollDistance * Math.min(progress, 1);
+    const value = getNewScrollPosition(positionElement, {
+      direction,
+      distance,
+      axis,
+    });
+    totalScrollDistance -= distance;
+    setScrollPosition(positionElement, { axis, value });
+  };
+}
+
+export function getLongPagedDraw({
+  axis,
+  direction,
+  pointerPosition,
+  positionElement,
+  trackElement,
+}: {
+  axis: Axis;
+  direction: LogicalDirection;
+  pointerPosition: PointerPosition;
+  positionElement: Element;
+  trackElement: Element;
+}) {
+  let totalScrollDistance = getLongPagedScrollDistance({
+    axis,
+    direction,
+    pointerPosition,
+    positionElement,
+    trackElement,
+  });
+  return function draw(progress: number) {
+    const multiplier = Math.pow(10, 3 || 0);
+    const distance =
+      Math.round(totalScrollDistance * Math.min(progress, 1) * multiplier) / multiplier;
+    const newPosition = getNewScrollPosition(positionElement, {
+      direction,
+      distance,
+      axis,
+    });
+    totalScrollDistance -= distance;
+    setScrollPosition(positionElement, { axis, value: newPosition });
+  };
 }
 
 export function canScroll(element: Element, { axis, delta }: { axis: Axis; delta: number }) {
@@ -270,7 +310,66 @@ export function canScroll(element: Element, { axis, delta }: { axis: Axis; delta
   );
 }
 
-export function round(value: number, precision: number) {
-  const multiplier = Math.pow(10, precision || 0);
-  return Math.round(value * multiplier) / multiplier;
+export function useBorderBoxResizeObserver(
+  ref: React.RefObject<HTMLElement>,
+  callback: (size: ResizeObserverSize) => void
+) {
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) {
+      // TODO:
+      throw Error('GIMME DAT REF');
+    }
+
+    const observer = new ResizeObserver(([entry]) => {
+      const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
+      callback(borderBoxSize);
+    });
+
+    const initialRect = element.getBoundingClientRect();
+    callback({
+      inlineSize: initialRect.width,
+      blockSize: initialRect.height,
+    });
+    observer.observe(element);
+
+    return function () {
+      observer.disconnect();
+    };
+  }, [callback, ref]);
+}
+
+function isScrolledToTop(element: Element | null) {
+  return !!(element && element.scrollTop === 0);
+}
+
+function isScrolledToRight(element: Element | null) {
+  return !!(element && element.scrollLeft === getMaxScrollLeftValue(element));
+}
+
+function isScrolledToBottom(element: Element | null) {
+  return !!(element && element.scrollTop === getMaxScrollTopValue(element));
+}
+
+function isScrolledToLeft(element: Element | null) {
+  return !!(element && element.scrollLeft === 0);
+}
+
+function getMaxScrollTopValue(element: Element) {
+  return element.scrollHeight - element.clientHeight;
+}
+
+function getMaxScrollLeftValue(element: Element) {
+  return element.scrollWidth - element.clientWidth;
+}
+
+function getMaxScrollStartValue(element: Element, axis: Axis) {
+  return axis === 'x' ? getMaxScrollLeftValue(element) : getMaxScrollTopValue(element);
+}
+
+function getActualScrollDirection(dir: LogicalDirection, axis: Axis): ScrollDirection {
+  if (dir === 'start') {
+    return axis === 'x' ? 'left' : 'up';
+  }
+  return axis === 'x' ? 'right' : 'down';
 }

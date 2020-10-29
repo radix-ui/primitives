@@ -1,4 +1,4 @@
-import { Axis, Size, ResizeBehavior, ScrollAreaRefs } from './types';
+import { Axis, Size, ResizeBehavior, ScrollAreaRefs, ScrollbarAutoHide } from './types';
 import {
   canScroll,
   getScrollSize,
@@ -30,8 +30,7 @@ export enum ScrollAreaEvents {
   StopThumbing,
   StartButtonPress,
   StopButtonPress,
-  SetScrollbarVisibility,
-  SetScrollInteracting,
+  SetScrollbarIsVisible,
 }
 
 // prettier-ignore
@@ -42,7 +41,7 @@ export type ScrollAreaEvent =
   | { type: ScrollAreaEvents.HandleScrollbarResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.HandleThumbResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.HandleTrackResize; axis: Axis; width: number; height: number }
-  | { type: ScrollAreaEvents.MoveThumbWithPointer; axis: Axis; pointerPosition: number; pointerStartPointRef: React.MutableRefObject<number>; pointerInitialStartPointRef: React.MutableRefObject<number>; thumbInitialData: React.MutableRefObject<{ size: number; position: number }>; trackInitialData: React.MutableRefObject<{ size: number; position: number }> }
+  | { type: ScrollAreaEvents.MoveThumbWithPointer; axis: Axis; pointerPosition: number; pointerStartPointRef: React.MutableRefObject<number>; pointerInitialStartPointRef: React.MutableRefObject<number>; thumbInitialData: React.MutableRefObject<{ size: number; positionStart: number }>; trackInitialData: React.MutableRefObject<{ size: number; positionStart: number }> }
   | { type: ScrollAreaEvents.StartTracking }
   | { type: ScrollAreaEvents.StopTracking }
   | { type: ScrollAreaEvents.StartThumbing }
@@ -50,25 +49,24 @@ export type ScrollAreaEvent =
   | { type: ScrollAreaEvents.StartButtonPress }
   | { type: ScrollAreaEvents.StopButtonPress }
   | { type: ScrollAreaEvents.SetContentOverflowing; x: boolean; y: boolean }
-  | { type: ScrollAreaEvents.SetScrollbarVisibility; x?: boolean; y?: boolean }
-  | { type: ScrollAreaEvents.SetScrollInteracting; x?: boolean; y?: boolean }
+  | { type: ScrollAreaEvents.SetScrollbarIsVisible; scrollbarAutoHide: ScrollbarAutoHide; x?: boolean; y?: boolean }
 
 export type ScrollAreaReducerState = {
   state: ScrollAreaState;
-  scrollAreaSize: Size;
-  viewportSize: Size;
-  positionSize: Size;
-  scrollbarYSize: Size;
-  scrollbarXSize: Size;
-  trackYSize: Size;
-  trackXSize: Size;
   explicitResize: ResizeBehavior;
   contentIsOverflowingX: boolean;
   contentIsOverflowingY: boolean;
   scrollbarIsVisibleX: boolean;
   scrollbarIsVisibleY: boolean;
-  scrollInteractingX: boolean;
-  scrollInteractingY: boolean;
+  domSizes: {
+    scrollArea: Size;
+    viewport: Size;
+    position: Size;
+    scrollbarY: Size;
+    scrollbarX: Size;
+    trackY: Size;
+    trackX: Size;
+  };
 };
 
 export function reducer(
@@ -106,13 +104,16 @@ export function reducer(
 
       return {
         ...context,
-        scrollAreaSize: {
-          width: event.width,
-          height: event.height,
-        },
-        positionSize: {
-          width: event.width - borderLeftWidth - borderRightWidth - paddingLeft - paddingRight,
-          height: event.height - borderTopWidth - borderBottomWidth - paddingTop - paddingBottom,
+        domSizes: {
+          ...context.domSizes,
+          scrollArea: {
+            width: event.width,
+            height: event.height,
+          },
+          position: {
+            width: event.width - borderLeftWidth - borderRightWidth - paddingLeft - paddingRight,
+            height: event.height - borderTopWidth - borderBottomWidth - paddingTop - paddingBottom,
+          },
         },
       };
     }
@@ -123,35 +124,41 @@ export function reducer(
         contentIsOverflowingY: event.y,
       };
     }
-    case ScrollAreaEvents.SetScrollbarVisibility: {
+    case ScrollAreaEvents.SetScrollbarIsVisible: {
+      if (event.scrollbarAutoHide === 'never') {
+        return {
+          ...context,
+          scrollbarIsVisibleX: true,
+          scrollbarIsVisibleY: true,
+        };
+      }
       return {
         ...context,
         scrollbarIsVisibleX: event.x ?? context.scrollbarIsVisibleX,
         scrollbarIsVisibleY: event.y ?? context.scrollbarIsVisibleY,
       };
     }
-    case ScrollAreaEvents.SetScrollInteracting: {
-      return {
-        ...context,
-        scrollInteractingX: event.x ?? context.scrollInteractingX,
-        scrollInteractingY: event.y ?? context.scrollbarIsVisibleY,
-      };
-    }
     case ScrollAreaEvents.HandleViewportResize: {
       return {
         ...context,
-        viewportSize: {
-          width: event.width,
-          height: event.height,
+        domSizes: {
+          ...context.domSizes,
+          viewport: {
+            width: event.width,
+            height: event.height,
+          },
         },
       };
     }
     case ScrollAreaEvents.HandleScrollbarResize: {
       return {
         ...context,
-        [event.axis === 'x' ? 'scrollbarXSize' : 'scrollbarYSize']: {
-          height: event.height,
-          width: event.width,
+        domSizes: {
+          ...context.domSizes,
+          [event.axis === 'x' ? 'scrollbarX' : 'scrollbarY']: {
+            height: event.height,
+            width: event.width,
+          },
         },
       };
     }
@@ -161,9 +168,12 @@ export function reducer(
     case ScrollAreaEvents.HandleTrackResize: {
       return {
         ...context,
-        [event.axis === 'x' ? 'trackXSize' : 'trackYSize']: {
-          height: event.height,
-          width: event.width,
+        domSizes: {
+          ...context.domSizes,
+          [event.axis === 'x' ? 'trackX' : 'trackY']: {
+            height: event.height,
+            width: event.width,
+          },
         },
       };
     }
@@ -206,11 +216,12 @@ export function reducer(
       if (canScroll(positionElement, { axis, delta })) {
         // Offset by the distance between the initial pointer's distance from the initial
         // position of the thumb
-        const { position: trackPosition } = trackInitialData.current;
-        const { position: thumbInitialPosition } = thumbInitialData.current;
+        const { positionStart: trackPosition } = trackInitialData.current;
+        const { positionStart: thumbInitialPosition } = thumbInitialData.current;
         const pointerOffset = pointerInitialStartPointRef.current - thumbInitialPosition;
 
-        const trackSize = axis === 'x' ? context.trackXSize.width : context.trackYSize.height;
+        const trackSize =
+          axis === 'x' ? context.domSizes.trackX.width : context.domSizes.trackY.height;
         const pointerPositionRelativeToTrack = Math.round(pointerPosition - trackPosition);
         const viewportRatioFromPointer =
           Math.round(((pointerPositionRelativeToTrack - pointerOffset) / trackSize) * 100) / 100;

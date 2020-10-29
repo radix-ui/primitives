@@ -1,22 +1,55 @@
 import * as React from 'react';
 import { styled } from '../../../../stitches.config';
-import { ScrollArea, styles } from './ScrollArea';
+import { ScrollArea, ScrollAreaProps, styles } from './ScrollArea';
+import { Popover as PopoverPrimitive, styles as popoverStyles } from '@interop-ui/react-popover';
 import './ScrollArea.stories.css';
+import { TrackClickBehavior, ScrollbarAutoHide } from './types';
 
 export default { title: 'ScrollArea' };
 
 export function Basic() {
   const [usesNative, setNative] = React.useState(false);
+  const [autoHide, setAutoHide] = React.useState<ScrollbarAutoHide>('never');
+  const [trackClickBehavior, setTrackClickBehavior] = React.useState<TrackClickBehavior>('page');
   return (
     <div>
       <button onClick={() => setNative(!usesNative)}>Toggle Native</button>
+
+      <div style={{ display: 'flex', margin: '10px 0' }}>
+        <RadioGroup
+          name="autoHide"
+          legend="Set autohide behavior"
+          fields={[
+            { value: 'never', label: 'Never', disabled: usesNative },
+            { value: 'scroll', label: 'Scroll', disabled: usesNative },
+          ]}
+          checked={autoHide}
+          handleChange={(newValue) => {
+            setAutoHide(newValue as ScrollbarAutoHide);
+          }}
+        />
+        <RadioGroup
+          name="trackClickBehavior"
+          legend="Set trick click behavior"
+          fields={[
+            { value: 'page', label: 'Jump to the next page', disabled: usesNative },
+            { value: 'relative', label: "Jump to the spot that's clicked", disabled: usesNative },
+          ]}
+          checked={trackClickBehavior}
+          handleChange={(newValue) => {
+            setTrackClickBehavior(newValue as TrackClickBehavior);
+          }}
+        />
+      </div>
+
       <hr />
       <div className="resizable">
         <ScrollArea
           as={Root}
           unstable_forceNative={usesNative}
           overflowX="scroll"
-          scrollbarAutoHide="scroll"
+          scrollbarAutoHide={autoHide}
+          trackClickBehavior={trackClickBehavior}
         >
           <ScrollArea.ScrollbarY as={ScrollbarY}>
             <ScrollArea.ButtonStart as={ScrollButtonStart}>
@@ -54,6 +87,57 @@ export function Basic() {
             <LongContent />
           </ScrollArea.Viewport>
         </ScrollArea>
+      </div>
+    </div>
+  );
+}
+
+export function InsidePopover() {
+  const [isOpen, setIsOpen] = React.useState(false);
+  return (
+    <div>
+      <p>TODO: Not sure I've composed this right but there are some issues!</p>
+      <div
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
+      >
+        <PopoverPrimitive isOpen={isOpen} onIsOpenChange={setIsOpen}>
+          <PopoverPrimitive.Trigger as="button">
+            {isOpen ? 'close' : 'open'}
+          </PopoverPrimitive.Trigger>
+          <PopoverPrimitive.Position style={{ ...popoverStyles.position }}>
+            <PopoverPrimitive.Content
+              style={{ ...popoverStyles.content, backgroundColor: '#eee', width: 250, height: 150 }}
+            >
+              <ScrollArea
+                overflowX="scroll"
+                scrollbarAutoHide="scroll"
+                trackClickBehavior="page"
+                style={{
+                  ...styles.root,
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  fontFamily: 'sans-serif',
+                }}
+              >
+                <ScrollArea.ScrollbarY as={ScrollbarY} style={{ bottom: 0 }}>
+                  <ScrollArea.Track as={ScrollTrack}>
+                    <ScrollArea.Thumb as={ScrollThumb} />
+                  </ScrollArea.Track>
+                </ScrollArea.ScrollbarY>
+
+                <ScrollArea.Viewport
+                  style={{
+                    ...styles.viewport,
+                    padding: 10,
+                  }}
+                >
+                  <LongContent />
+                </ScrollArea.Viewport>
+              </ScrollArea>
+            </PopoverPrimitive.Content>
+            <PopoverPrimitive.Arrow width={50} height={20} style={{ ...popoverStyles.arrow }} />
+          </PopoverPrimitive.Position>
+        </PopoverPrimitive>
       </div>
     </div>
   );
@@ -224,5 +308,38 @@ function LongContent() {
         erat sagittis laoreet.
       </p>
     </React.Fragment>
+  );
+}
+
+function RadioGroup(props: {
+  name: string;
+  legend?: string;
+  fields: { value: string; label: string; disabled?: boolean }[];
+  checked: string;
+  handleChange: (checked: string) => void;
+}) {
+  return (
+    <fieldset>
+      {props.legend && <legend>{props.legend}</legend>}
+      {props.fields.map((field) => (
+        <div key={field.value}>
+          <label>
+            <input
+              type="radio"
+              name={props.name}
+              value={field.value}
+              checked={props.checked === field.value}
+              disabled={field.disabled}
+              onChange={(event) => {
+                if (event.target.checked) {
+                  props.handleChange(field.value);
+                }
+              }}
+            />
+            <span>{field.label}</span>
+          </label>
+        </div>
+      ))}
+    </fieldset>
   );
 }
