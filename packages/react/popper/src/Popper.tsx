@@ -75,7 +75,7 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     const arrowSize = useSize(arrowRef);
     const debugContext = useDebugContext();
 
-    const { popperStyles, arrowStyles } = getPlacementData({
+    const { popperStyles, arrowStyles, adjustedSide } = getPlacementData({
       anchorRect,
       popperSize: contentSize,
       arrowSize,
@@ -102,7 +102,12 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
 
     return (
       <div style={popperStyles}>
-        <Comp {...interopDataAttrObj('root')} {...popperProps} ref={forwardedRef}>
+        <Comp
+          {...interopDataAttrObj('root')}
+          {...popperProps}
+          ref={forwardedRef}
+          data-side={adjustedSide}
+        >
           <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
         </Comp>
       </div>
