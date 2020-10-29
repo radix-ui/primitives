@@ -115,7 +115,7 @@ const REST_THRESHOLD_DURATION = 300;
 // How much time does the user has to move from one tooltip to another without incurring the rest wait
 const SKIP_REST_THRESHOLD_DURATION = 300;
 
-type TooltipState =
+export type TooltipState =
   // tooltip is closed
   | 'CLOSED'
 
