@@ -9,7 +9,6 @@ import {
   useComposedRefs,
   useControlledState,
   useCallbackRef,
-  useRect,
 } from '@interop-ui/react-utils';
 import { createCollection } from '@interop-ui/react-collection';
 import { useSize } from '@interop-ui/react-use-size';
