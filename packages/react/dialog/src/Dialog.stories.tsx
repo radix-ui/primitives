@@ -41,13 +41,19 @@ export const InlineStyle = () => (
 
 export const Controlled = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+
   return (
     <Dialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
       <Dialog.Trigger>{isOpen ? 'close' : 'open'}</Dialog.Trigger>
-      <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
-      <Dialog.Content as={Content}>
-        <Dialog.Close>close</Dialog.Close>
-      </Dialog.Content>
+
+      {isOpen && (
+        <>
+          <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
+          <Dialog.Content as={Content}>
+            <Dialog.Close>close</Dialog.Close>
+          </Dialog.Content>
+        </>
+      )}
     </Dialog>
   );
 };

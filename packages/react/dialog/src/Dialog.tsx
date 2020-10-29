@@ -28,6 +28,7 @@ type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
   isOpen: boolean;
+  isControlled: boolean;
   setIsOpen: (isOpen: boolean) => void;
 };
 
@@ -61,16 +62,23 @@ const Dialog: React.FC<DialogProps> & DialogStaticProps = function Dialog(props)
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const generatedId = makeId('dialog', useId());
   const id = idProp || generatedId;
+  const isControlled = isOpenProp !== undefined;
   const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
     onChange: onIsOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, id, isOpen, setIsOpen }), [
-    id,
-    isOpen,
-    setIsOpen,
-  ]);
+
+  const context = React.useMemo(
+    () => ({
+      triggerRef,
+      id,
+      isOpen,
+      isControlled,
+      setIsOpen,
+    }),
+    [id, isOpen, isControlled, setIsOpen]
+  );
 
   return <DialogContext.Provider value={context}>{children}</DialogContext.Provider>;
 };
@@ -121,7 +129,8 @@ type DialogOverlayProps = DialogOverlayDOMProps & DialogOverlayOwnProps;
 const DialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayProps>(
   function DialogOverlay(props, forwardedRef) {
     const context = useDialogContext(OVERLAY_NAME);
-    return context.isOpen ? <DialogOverlayImpl ref={forwardedRef} {...props} /> : null;
+    const isOpen = context.isControlled || context.isOpen;
+    return isOpen ? <DialogOverlayImpl ref={forwardedRef} {...props} /> : null;
   }
 );
 
@@ -176,7 +185,8 @@ type DialogContentProps = DialogContentDOMProps & DialogContentOwnProps;
 const DialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentProps>(
   function DialogContent(props, forwardedRef) {
     const context = useDialogContext(CONTENT_NAME);
-    return context.isOpen ? <DialogContentImpl ref={forwardedRef} {...props} /> : null;
+    const isOpen = context.isControlled || context.isOpen;
+    return isOpen ? <DialogContentImpl ref={forwardedRef} {...props} /> : null;
   }
 );
 

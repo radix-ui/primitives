@@ -105,18 +105,23 @@ export const Controlled = () => {
         >
           {housePurchased ? 'You bought the house! Sell it!' : 'Buy this house'}
         </AlertDialog.Trigger>
-        <AlertDialog.Overlay as={Overlay} />
-        <AlertDialog.Content as={Content}>
-          <AlertDialog.Title>Are you sure?</AlertDialog.Title>
-          <AlertDialog.Description>
-            Houses are very expensive and it looks like you only have €20 in the bank. Maybe consult
-            with a financial advisor?
-          </AlertDialog.Description>
-          <AlertDialog.Action as={WarningButton} onClick={() => setHousePurchased(true)}>
-            buy it anyway
-          </AlertDialog.Action>
-          <AlertDialog.Cancel as={Button}>good point, I'll reconsider</AlertDialog.Cancel>
-        </AlertDialog.Content>
+
+        {isOpen && (
+          <>
+            <AlertDialog.Overlay as={Overlay} />
+            <AlertDialog.Content as={Content}>
+              <AlertDialog.Title>Are you sure?</AlertDialog.Title>
+              <AlertDialog.Description>
+                Houses are very expensive and it looks like you only have €20 in the bank. Maybe
+                consult with a financial advisor?
+              </AlertDialog.Description>
+              <AlertDialog.Action as={WarningButton} onClick={() => setHousePurchased(true)}>
+                buy it anyway
+              </AlertDialog.Action>
+              <AlertDialog.Cancel as={Button}>good point, I'll reconsider</AlertDialog.Cancel>
+            </AlertDialog.Content>
+          </>
+        )}
       </AlertDialog>
     </div>
   );
