@@ -19,7 +19,6 @@ export enum ScrollAreaEvents {
   HandleScrollAreaResize,
   HandleViewportResize,
   HandleScrollbarResize,
-  HandleThumbResize,
   HandleTrackResize,
   MoveThumbWithPointer,
   SetContentOverflowing,
@@ -39,7 +38,6 @@ export type ScrollAreaEvent =
   | { type: ScrollAreaEvents.HandleScrollAreaResize; width: number; height: number }
   | { type: ScrollAreaEvents.HandleViewportResize; width: number; height: number }
   | { type: ScrollAreaEvents.HandleScrollbarResize; axis: Axis; width: number; height: number }
-  | { type: ScrollAreaEvents.HandleThumbResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.HandleTrackResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.MoveThumbWithPointer; axis: Axis; pointerPosition: number; pointerStartPointRef: React.MutableRefObject<number>; pointerInitialStartPointRef: React.MutableRefObject<number>; thumbInitialData: React.MutableRefObject<{ size: number; positionStart: number }>; trackInitialData: React.MutableRefObject<{ size: number; positionStart: number }> }
   | { type: ScrollAreaEvents.StartTracking }
@@ -161,9 +159,6 @@ export function reducer(
           },
         },
       };
-    }
-    case ScrollAreaEvents.HandleThumbResize: {
-      return context;
     }
     case ScrollAreaEvents.HandleTrackResize: {
       return {

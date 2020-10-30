@@ -362,10 +362,10 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
     //  - overflow is `hidden` or `visible` (scrollbars are hidden no matter what in either case)
     const shouldOffsetX =
       (overflowX === 'scroll' && scrollbarAutoHide === 'never') ||
-      (overflowX === 'auto' && reducerState.contentIsOverflowingX);
+      (overflowX === 'auto' && scrollbarAutoHide === 'never' && reducerState.contentIsOverflowingX);
     const shouldOffsetY =
       (overflowY === 'scroll' && scrollbarAutoHide === 'never') ||
-      (overflowY === 'auto' && reducerState.contentIsOverflowingY);
+      (overflowY === 'auto' && scrollbarAutoHide === 'never' && reducerState.contentIsOverflowingY);
 
     const { domSizes } = reducerState;
 

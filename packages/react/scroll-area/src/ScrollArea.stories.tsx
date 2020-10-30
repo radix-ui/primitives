@@ -53,7 +53,7 @@ export function Basic() {
       <hr />
       <div className="resizable">
         <ScrollArea
-          as={Root}
+          as={FixedSizeRoot}
           unstable_forceNative={usesNative}
           // unstable_prefersReducedMotion={prefersReducedMotion}
           overflowX="scroll"
@@ -86,7 +86,7 @@ export function Basic() {
           </ScrollArea.ScrollbarX>
           <ScrollArea.Corner as={Corner} />
 
-          <ScrollArea.Viewport as={ScrollViewport}>
+          <ScrollArea.Viewport as={ScrollViewportFixedLargeWidth}>
             <LongContent />
             <LongContent />
             <LongContent />
@@ -109,7 +109,7 @@ export function InsidePopover() {
       <div
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
       >
-        <PopoverPrimitive isOpen={isOpen} onIsOpenChange={setIsOpen}>
+        <PopoverPrimitive isOpen={true} onIsOpenChange={setIsOpen}>
           <PopoverPrimitive.Trigger as="button">
             {isOpen ? 'close' : 'open'}
           </PopoverPrimitive.Trigger>
@@ -121,12 +121,7 @@ export function InsidePopover() {
                 overflowX="scroll"
                 scrollbarAutoHide="scroll"
                 trackClickBehavior="page"
-                style={{
-                  ...styles.root,
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  fontFamily: 'sans-serif',
-                }}
+                as={AnySizeRoot}
               >
                 <ScrollArea.ScrollbarY as={ScrollbarY} style={{ bottom: 0 }}>
                   <ScrollArea.Track as={ScrollTrack}>
@@ -134,12 +129,7 @@ export function InsidePopover() {
                   </ScrollArea.Track>
                 </ScrollArea.ScrollbarY>
 
-                <ScrollArea.Viewport
-                  style={{
-                    ...styles.viewport,
-                    padding: 10,
-                  }}
-                >
+                <ScrollArea.Viewport as={ScrollViewportAnySize}>
                   <LongContent />
                 </ScrollArea.Viewport>
               </ScrollArea>
@@ -156,7 +146,7 @@ export function InsidePopover() {
  * Reset components
  * -----------------------------------------------------------------------------------------------*/
 
-const Root = styled('div', {
+const FixedSizeRoot = styled('div', {
   ...styles.root,
   width: '400px',
   height: '400px',
@@ -167,6 +157,13 @@ const Root = styled('div', {
   borderLeftColor: '#858585',
   borderRightColor: '#C0C0C0',
   borderBottomColor: '#C0C0C0',
+  fontFamily: 'sans-serif',
+});
+
+const AnySizeRoot = styled('div', {
+  ...styles.root,
+  maxWidth: '100%',
+  maxHeight: '100%',
   fontFamily: 'sans-serif',
 });
 
@@ -218,10 +215,23 @@ const ScrollTrack = styled('div', {
   background: 'rgba(65, 105, 225, 0.3)',
 });
 
-const ScrollViewport = styled('div', {
+const ScrollViewportFixedLargeWidth = styled('div', {
   ...styles.viewport,
   width: '2000px',
   padding: 20,
+
+  '& > :first-child': {
+    marginTop: 0,
+  },
+
+  '& > :last-child': {
+    marginBottom: 0,
+  },
+});
+
+const ScrollViewportAnySize = styled('div', {
+  ...styles.viewport,
+  padding: 10,
 
   '& > :first-child': {
     marginTop: 0,
