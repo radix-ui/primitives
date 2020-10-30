@@ -63,9 +63,10 @@ export type ScrollAreaOwnProps = {
    */
   trackClickBehavior?: TrackClickBehavior;
   /**
-   * Mostly here for debugging, but this might be useful for consumers
+   * Mostly here for debugging, but these might be useful for consumers
    */
   unstable_forceNative?: boolean;
+  unstable_prefersReducedMotion?: boolean;
   isRTL?: boolean;
 };
 

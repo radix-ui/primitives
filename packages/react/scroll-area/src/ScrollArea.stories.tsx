@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { styled } from '../../../../stitches.config';
-import { ScrollArea, ScrollAreaProps, styles } from './ScrollArea';
+import { ScrollArea, styles } from './ScrollArea';
 import { Popover as PopoverPrimitive, styles as popoverStyles } from '@interop-ui/react-popover';
 import './ScrollArea.stories.css';
 import { TrackClickBehavior, ScrollbarAutoHide } from './types';
@@ -9,11 +9,19 @@ export default { title: 'ScrollArea' };
 
 export function Basic() {
   const [usesNative, setNative] = React.useState(false);
+  // const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
   const [autoHide, setAutoHide] = React.useState<ScrollbarAutoHide>('never');
   const [trackClickBehavior, setTrackClickBehavior] = React.useState<TrackClickBehavior>('page');
   return (
     <div>
-      <button onClick={() => setNative(!usesNative)}>Toggle Native</button>
+      <button onClick={() => setNative((n) => !n)}>
+        Show {usesNative ? 'Custom' : 'Native'} Scrollbars
+      </button>
+      {/*
+      // TODO: This does not work and I'm unsure why :(
+      <button onClick={() => setPrefersReducedMotion((p) => !p)}>
+        Demo {prefersReducedMotion ? 'with no motion preference' : 'prefers reduced motion'}
+      </button> */}
 
       <div style={{ display: 'flex', margin: '10px 0' }}>
         <RadioGroup
@@ -47,6 +55,7 @@ export function Basic() {
         <ScrollArea
           as={Root}
           unstable_forceNative={usesNative}
+          // unstable_prefersReducedMotion={prefersReducedMotion}
           overflowX="scroll"
           scrollbarAutoHide={autoHide}
           trackClickBehavior={trackClickBehavior}

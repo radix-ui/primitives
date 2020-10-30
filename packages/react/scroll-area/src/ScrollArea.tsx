@@ -10,7 +10,7 @@
 //  - CSS scrollbar-width OR -webkit-scrollbar
 
 // TODO: Dragging functionality
-// TODO: Test inside popovers
+// TODO: Debug issues with `prefersReducedMotion`
 // TODO: Wrap all event props with composeEventHandler
 // TODO: Replace all globals with globals relative to the root node
 // TODO: RTL language testing for horizontal scrolling
@@ -135,6 +135,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       scrollbarDragScrolling = false,
       trackClickBehavior = 'relative',
       unstable_forceNative: forceNative = false,
+      unstable_prefersReducedMotion = false,
       ...domProps
     } = props;
     const [usesNative, setUsesNative] = React.useState(true);
@@ -157,6 +158,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         isRTL={isRTL}
         scrollbarDragScrolling={scrollbarDragScrolling}
         trackClickBehavior={trackClickBehavior}
+        unstable_prefersReducedMotion={unstable_prefersReducedMotion}
         ref={forwardedRef}
       >
         <NativeScrollContext.Provider value={usesNative}>{children}</NativeScrollContext.Provider>
@@ -180,6 +182,7 @@ const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativePro
       isRTL,
       scrollbarDragScrolling,
       trackClickBehavior,
+      unstable_prefersReducedMotion,
       ...domProps
     } = props;
     return (
@@ -235,6 +238,7 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       isRTL,
       scrollbarDragScrolling,
       trackClickBehavior,
+      unstable_prefersReducedMotion,
       ...domProps
     } = props;
 
@@ -279,7 +283,8 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
     // able to be completed
     const scrollAnimationQueue = useConstant(() => new Queue<any>());
 
-    const prefersReducedMotion = usePrefersReducedMotion(scrollAreaRef);
+    const _prefersReducedMotion = usePrefersReducedMotion(scrollAreaRef);
+    const prefersReducedMotion = unstable_prefersReducedMotion ?? _prefersReducedMotion;
 
     const [reducerState, _dispatch] = React.useReducer(reducer, {
       ...initialState,
@@ -619,7 +624,16 @@ const [ScrollbarContext, useScrollbarContext] = createContext<Axis>(
 
 const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, InternalScrollbarProps>(
   function ScrollAreaScrollbarImpl(props, forwardedRef) {
-    const { as: Comp = SCROLLBAR_DEFAULT_TAG, axis, name, onWheel, ...domProps } = props;
+    const {
+      as: Comp = SCROLLBAR_DEFAULT_TAG,
+      axis,
+      name,
+      onWheel,
+      onPointerDown,
+      onPointerUp,
+      onPointerMove,
+      ...domProps
+    } = props;
     const dispatch = useDispatchContext(name);
     const {
       [axis === 'x' ? 'contentIsOverflowingX' : 'contentIsOverflowingY']: contentIsOverflowing,
@@ -686,12 +700,29 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
       }, 400);
     }
 
+    // Not capturing the pointer because the user may be clicking on the thumb, but we need to know
+    // whether or not it's down on pointer move so we just use a ref.
     const pointerDown = React.useRef(false);
+
+    const handlePointerDown = composeEventHandlers(onPointerDown, (event) => {
+      pointerDown.current = true;
+      window.clearTimeout(timeoutId.current);
+    });
+
+    const handlePointerUp = composeEventHandlers(onPointerUp, (event) => {
+      pointerDown.current = false;
+      resetInteractiveTimer();
+    });
+
+    const handlePointerMove = composeEventHandlers(onPointerMove, (event) => {
+      if (!pointerDown.current) {
+        resetInteractiveTimer();
+      }
+    });
 
     return (
       <ScrollbarContext.Provider value={axis}>
         <Comp
-          onWheel={handleWheel}
           ref={ref}
           {...domProps}
           style={{
@@ -710,19 +741,10 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
                   : 'none'
                 : domProps.style?.pointerEvents,
           }}
-          onPointerDown={(event) => {
-            pointerDown.current = true;
-            window.clearTimeout(timeoutId.current);
-          }}
-          onPointerUp={(event) => {
-            pointerDown.current = false;
-            resetInteractiveTimer();
-          }}
-          onPointerMove={(event) => {
-            if (!pointerDown.current) {
-              resetInteractiveTimer();
-            }
-          }}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerMove={handlePointerMove}
+          onWheel={handleWheel}
         />
       </ScrollbarContext.Provider>
     );
@@ -775,7 +797,7 @@ type ScrollAreaTrackProps = ScrollAreaTrackDOMProps & ScrollAreaTrackOwnProps;
 
 const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProps>(
   function ScrollAreaTrack(props, forwardedRef) {
-    const { as: Comp = TRACK_DEFAULT_TAG, ...domProps } = props;
+    const { as: Comp = TRACK_DEFAULT_TAG, onPointerDown: onPointerDownProp, ...domProps } = props;
     const axis = useScrollbarContext(TRACK_NAME);
     const dispatch = useDispatchContext(TRACK_NAME);
     const refsContext = useScrollAreaRefs(TRACK_NAME);
@@ -786,6 +808,8 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
     const trackRef = getTrackRef(axis, refsContext);
     const thumbRef = getThumbRef(axis, refsContext);
     const ref = useComposedRefs(trackRef, forwardedRef);
+
+    const onPointerDown = useCallbackRef(onPointerDownProp);
 
     useBorderBoxResizeObserver(
       trackRef,
@@ -815,7 +839,10 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
         throw Error('PAPA NEEDS SOME REFS!');
       }
 
-      trackElement.addEventListener('pointerdown', handlePointerDown);
+      trackElement.addEventListener(
+        'pointerdown',
+        composeEventHandlers(onPointerDown as any, handlePointerDown)
+      );
       return function () {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         window.cancelAnimationFrame(rafIdRef.current!);
@@ -857,7 +884,7 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
             // Scroll immediately
             const distance = getPagedScrollDistance({ direction, positionElement, axis });
             const value = getNewScrollPosition(positionElement, { direction, distance, axis });
-            setScrollPosition(positionElement, { axis, value });
+            // setScrollPosition(positionElement, { axis, value });
           } else {
             // Queue scroll animation
             scrollAnimationQueue.enqueue(() => {
@@ -976,12 +1003,14 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
       }
     }, [
       axis,
-      dispatch,
-      positionRef,
       prefersReducedMotion,
+      trackClickBehavior,
+      // these should be stable references
+      dispatch,
+      onPointerDown,
+      positionRef,
       scrollAnimationQueue,
       thumbRef,
-      trackClickBehavior,
       trackRef,
     ]);
 
@@ -1001,7 +1030,7 @@ type ScrollAreaThumbProps = ScrollAreaThumbDOMProps & ScrollAreaThumbOwnProps;
 
 const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProps>(
   function ScrollAreaThumb(props, forwardedRef) {
-    const { as: Comp = THUMB_DEFAULT_TAG, ...domProps } = props;
+    const { as: Comp = THUMB_DEFAULT_TAG, onPointerDown: onPointerDownProp, ...domProps } = props;
     const axis = useScrollbarContext(THUMB_NAME);
     const refsContext = useScrollAreaRefs(THUMB_NAME);
     const dispatch = useDispatchContext(THUMB_NAME);
@@ -1010,6 +1039,7 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
     const trackRef = getTrackRef(axis, refsContext);
     const ref = useComposedRefs(thumbRef, forwardedRef);
     const context = useScrollAreaContext(THUMB_NAME);
+    const onPointerDown = useCallbackRef(onPointerDownProp);
 
     const pointerInitialStartPointRef = React.useRef<number>(0);
     const pointerStartPointRef = React.useRef<number>(0);
@@ -1052,7 +1082,10 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
         throw Error('why no refs 😢');
       }
 
-      thumbElement.addEventListener('pointerdown', handlePointerDown);
+      thumbElement.addEventListener(
+        'pointerdown',
+        composeEventHandlers(onPointerDown as any, handlePointerDown)
+      );
       return function () {
         thumbElement.removeEventListener('pointerdown', handlePointerDown);
         stopThumbing();
@@ -1104,7 +1137,14 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
         thumbElement.releasePointerCapture(event.pointerId);
         stopThumbing();
       }
-    }, [axis, dispatch, thumbRef, trackRef]);
+    }, [
+      axis,
+      // these should be stable references
+      onPointerDown,
+      dispatch,
+      thumbRef,
+      trackRef,
+    ]);
 
     const [thumbStyles, setThumbStyles] = React.useState<React.CSSProperties>({});
 
@@ -1177,7 +1217,13 @@ type ScrollAreaButtonInternalProps = ScrollAreaButtonStartProps & {
 
 const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonInternalProps>(
   function ScrollAreaButton(props, forwardedRef) {
-    const { as: Comp = BUTTON_DEFAULT_TAG, direction, name, ...domProps } = props;
+    const {
+      as: Comp = BUTTON_DEFAULT_TAG,
+      direction,
+      name,
+      onPointerDown: onPointerDownProp,
+      ...domProps
+    } = props;
     const axis = useScrollbarContext(name);
     const dispatch = useDispatchContext(name);
     const refsContext = useScrollAreaRefs(name);
@@ -1186,6 +1232,7 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
     const buttonRef = getButtonRef(direction, axis, refsContext);
     const ref = useComposedRefs(buttonRef, forwardedRef);
     const rafIdRef = React.useRef<number>();
+    const onPointerDown = useCallbackRef(onPointerDownProp);
 
     React.useEffect(() => {
       const buttonElement = buttonRef.current!;
@@ -1196,7 +1243,10 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
       }
 
       let buttonPointerDownTimeoutId: number;
-      buttonElement.addEventListener('pointerdown', handlePointerDown);
+      buttonElement.addEventListener(
+        'pointerdown',
+        composeEventHandlers(onPointerDown as any, handlePointerDown)
+      );
 
       return function () {
         buttonElement.removeEventListener('pointerdown', handlePointerDown);
@@ -1248,11 +1298,10 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
         // distance near the pointer in relation to the track.
         buttonPointerDownTimeoutId = window.setTimeout(() => {
           if (prefersReducedMotion) {
-            // TODO:
+            scrollBy(positionElement, { axis, value: 15 * delta });
           } else {
             const pointerId = event.pointerId;
             (function keepScrolling() {
-              const delta = direction === 'start' ? -1 : 1;
               if (canScroll(positionElement, { axis, delta })) {
                 scrollAnimationQueue.enqueue(() =>
                   animate({
@@ -1291,11 +1340,13 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
         dispatch({ type: ScrollAreaEvents.StopButtonPress });
       }
     }, [
-      buttonRef,
       axis,
       direction,
-      dispatch,
       prefersReducedMotion,
+      // these should be stable references
+      buttonRef,
+      dispatch,
+      onPointerDown,
       scrollAnimationQueue,
       positionRef,
     ]);
