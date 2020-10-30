@@ -7,21 +7,36 @@ import { TrackClickBehavior, ScrollbarAutoHide } from './types';
 
 export default { title: 'ScrollArea' };
 
+// type ScrollbarVisibility = 'always' | 'scroll' | 'hover' | 'enter-scroll'
+// type scrollbarVisibilityTimeout = 600;
+
 export function Basic() {
   const [usesNative, setNative] = React.useState(false);
-  // const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
   const [autoHide, setAutoHide] = React.useState<ScrollbarAutoHide>('never');
   const [trackClickBehavior, setTrackClickBehavior] = React.useState<TrackClickBehavior>('page');
+
   return (
     <div>
-      <button onClick={() => setNative((n) => !n)}>
-        Show {usesNative ? 'Custom' : 'Native'} Scrollbars
-      </button>
-      {/*
-      // TODO: This does not work and I'm unsure why :(
-      <button onClick={() => setPrefersReducedMotion((p) => !p)}>
-        Demo {prefersReducedMotion ? 'with no motion preference' : 'prefers reduced motion'}
-      </button> */}
+      <label>
+        <input
+          name="usesNative"
+          type="checkbox"
+          checked={usesNative}
+          onChange={(e) => setNative(e.target.checked)}
+        />
+        <span>Force native scrollbars</span>
+      </label>
+      <label>
+        <input
+          name="prefersReducedMotion"
+          type="checkbox"
+          checked={prefersReducedMotion}
+          onChange={(e) => setPrefersReducedMotion(e.target.checked)}
+          disabled={usesNative}
+        />
+        <span>Simulate preference for reduced motion</span>
+      </label>
 
       <div style={{ display: 'flex', margin: '10px 0' }}>
         <RadioGroup
@@ -32,7 +47,7 @@ export function Basic() {
             { value: 'scroll', label: 'Scroll', disabled: usesNative },
           ]}
           checked={autoHide}
-          handleChange={(newValue) => {
+          onChange={(newValue) => {
             setAutoHide(newValue as ScrollbarAutoHide);
           }}
         />
@@ -44,7 +59,7 @@ export function Basic() {
             { value: 'relative', label: "Jump to the spot that's clicked", disabled: usesNative },
           ]}
           checked={trackClickBehavior}
-          handleChange={(newValue) => {
+          onChange={(newValue) => {
             setTrackClickBehavior(newValue as TrackClickBehavior);
           }}
         />
@@ -55,7 +70,7 @@ export function Basic() {
         <ScrollArea
           as={FixedSizeRoot}
           unstable_forceNative={usesNative}
-          // unstable_prefersReducedMotion={prefersReducedMotion}
+          unstable_prefersReducedMotion={prefersReducedMotion}
           overflowX="scroll"
           scrollbarAutoHide={autoHide}
           trackClickBehavior={trackClickBehavior}
@@ -109,7 +124,7 @@ export function InsidePopover() {
       <div
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
       >
-        <PopoverPrimitive isOpen={true} onIsOpenChange={setIsOpen}>
+        <PopoverPrimitive isOpen={isOpen} onIsOpenChange={setIsOpen}>
           <PopoverPrimitive.Trigger as="button">
             {isOpen ? 'close' : 'open'}
           </PopoverPrimitive.Trigger>
@@ -150,8 +165,6 @@ const FixedSizeRoot = styled('div', {
   ...styles.root,
   width: '400px',
   height: '400px',
-  maxWidth: '100%',
-  maxHeight: '100%',
   border: '2px solid #FFF',
   borderTopColor: '#858585',
   borderLeftColor: '#858585',
@@ -162,8 +175,6 @@ const FixedSizeRoot = styled('div', {
 
 const AnySizeRoot = styled('div', {
   ...styles.root,
-  maxWidth: '100%',
-  maxHeight: '100%',
   fontFamily: 'sans-serif',
 });
 
@@ -335,7 +346,7 @@ function RadioGroup(props: {
   legend?: string;
   fields: { value: string; label: string; disabled?: boolean }[];
   checked: string;
-  handleChange: (checked: string) => void;
+  onChange: (checked: string) => void;
 }) {
   return (
     <fieldset>
@@ -351,7 +362,7 @@ function RadioGroup(props: {
               disabled={field.disabled}
               onChange={(event) => {
                 if (event.target.checked) {
-                  props.handleChange(field.value);
+                  props.onChange(field.value);
                 }
               }}
             />

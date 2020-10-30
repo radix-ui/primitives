@@ -70,7 +70,7 @@ export type ScrollAreaOwnProps = {
   isRTL?: boolean;
 };
 
-export type ScrollAreaContextValue = ScrollAreaReducerState & {
+export type ScrollAreaContextValue = {
   isRTL: boolean;
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
