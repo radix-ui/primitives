@@ -16,7 +16,7 @@ function createFocusScope(container: HTMLElement) {
   // One is injected as the first child of the container, and the other as the last child.
   // They are used to:
   // - determine the direction the focus is attempting to leave the container.
-  // - when focused, forward focus to the first/last tabbable alement as appropriate.
+  // - forward focus to the first/last tabbable alement as appropriate when focused.
   const START_MARKER = createFocusScopeMarker('start');
   const END_MARKER = createFocusScopeMarker('end');
 
