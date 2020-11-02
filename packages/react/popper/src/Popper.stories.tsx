@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { Popper, styles } from './Popper';
 import { Portal } from '@interop-ui/react-portal';
-import { createStyled } from '@stitches/react';
-
-const { styled, css } = createStyled({});
+import { styled, css } from '../../../../stitches.config';
 
 export default { title: 'Popper' };
 
