@@ -101,14 +101,11 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     );
 
     return (
-      <Comp
-        {...interopDataAttrObj('root')}
-        {...popperProps}
-        style={{ ...popperStyles, ...props.style }}
-        ref={forwardedRef}
-      >
-        <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
-      </Comp>
+      <div style={popperStyles}>
+        <Comp {...interopDataAttrObj('root')} {...popperProps} ref={forwardedRef}>
+          <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
+        </Comp>
+      </div>
     );
   }
 );
