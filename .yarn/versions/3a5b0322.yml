@@ -1,4 +1,5 @@
 releases:
+  "@interop-ui/popper": prerelease
   "@interop-ui/react-alert-dialog": prerelease
   "@interop-ui/react-dialog": prerelease
   "@interop-ui/react-dismissable-layer": prerelease
