@@ -85,7 +85,7 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
         {...interopDataAttrObj('item')}
         ref={forwardedRef}
         data-state={isOpen ? 'open' : 'closed'}
-        data-disabled={disabled}
+        data-disabled={disabled || undefined}
         disabled={disabled}
         isOpen={isOpen}
         onToggle={() => accordionContext.setValue(value)}
