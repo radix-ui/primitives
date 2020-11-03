@@ -62,7 +62,7 @@ type SliderContextValue = {
   min: number;
   max: number;
   values: number[];
-  activeValueIndexRef: React.MutableRefObject<number | undefined>;
+  valueIndexToChangeRef: React.MutableRefObject<number>;
   orientation: SliderOwnProps['orientation'];
 };
 
@@ -91,7 +91,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     const sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderDOMProps;
     const sliderRef = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
-    const activeValueIndexRef = React.useRef<number>();
+    const valueIndexToChangeRef = React.useRef<number>(0);
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
@@ -115,7 +115,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     }
 
     function handleSlideMove(value: number) {
-      updateValues(value, activeValueIndexRef.current || 0);
+      updateValues(value, valueIndexToChangeRef.current);
     }
 
     function updateValues(value: number, atIndex: number) {
@@ -125,7 +125,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       setValues((prevValues = []) => {
         const prevValue = prevValues[atIndex];
         const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
-        activeValueIndexRef.current = nextValues.indexOf(nextValue);
+        valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
         return nextValues[atIndex] !== prevValue ? nextValues : prevValues;
       });
     }
@@ -148,7 +148,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
             const isPageKey = PAGE_KEYS.includes(event.key);
             const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
             const multiplier = isSkipKey ? 10 : 1;
-            const atIndex = activeValueIndexRef.current || 0;
+            const atIndex = valueIndexToChangeRef.current;
             const value = values[atIndex];
             const stepInDirection = step * multiplier * stepDirection;
             updateValues(value + stepInDirection, atIndex);
@@ -174,7 +174,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
             () => ({
               min,
               max,
-              activeValueIndexRef,
+              valueIndexToChangeRef,
               values,
               orientation,
             }),
@@ -558,8 +558,8 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     const thumbRef = React.useRef<HTMLSpanElement>(null);
     const ref = useComposedRefs(forwardedRef, thumbRef);
     const focusTimerRef = React.useRef<number>(0);
+    const prevValuesRef = React.useRef(context.values);
     const size = useSize(thumbRef);
-    const isActive = context.activeValueIndexRef.current === index;
     const percent = convertValueToPercentage(value, context.min, context.max);
     const label = getLabel(index, context.values.length);
     const orientationSize = size?.[orientation.size];
@@ -580,12 +580,17 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
        */
       focusTimerRef.current = window.setTimeout(() => {
         const thumb = thumbRef.current;
-        if (isActive && thumb && document.activeElement !== thumb) {
+        const hasValuesChanged = prevValuesRef.current !== context.values;
+        const isActive = context.valueIndexToChangeRef.current === index;
+        const isFocused = document.activeElement === thumb;
+
+        if (thumb && hasValuesChanged && isActive && !isFocused) {
           thumb.focus();
+          prevValuesRef.current = context.values;
         }
       }, 0);
       return () => window.clearTimeout(focusTimerRef.current);
-    }, [isActive]);
+    }, [context.values, context.valueIndexToChangeRef, index]);
 
     return (
       <span
@@ -607,7 +612,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
           role="slider"
           tabIndex={0}
           onFocus={composeEventHandlers(props.onFocus, () => {
-            context.activeValueIndexRef.current = index;
+            context.valueIndexToChangeRef.current = index;
           })}
         />
       </span>
