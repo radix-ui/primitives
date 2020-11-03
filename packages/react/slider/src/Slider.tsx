@@ -63,6 +63,7 @@ type SliderContextValue = {
   max: number;
   values: number[];
   valueIndexToChangeRef: React.MutableRefObject<number>;
+  thumbs: Set<React.ElementRef<typeof SliderThumb>>;
   orientation: SliderOwnProps['orientation'];
 };
 
@@ -91,6 +92,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     const sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderDOMProps;
     const sliderRef = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
+    const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
@@ -111,23 +113,43 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
 
     function handleSlideStart(value: number) {
       const closestIndex = getClosestValueIndex(values, value);
-      updateValues(value, closestIndex);
+      updateValues(value, closestIndex).then((valueIndexToChange) => {
+        /**
+         * Browsers fire event handlers before executing their event implementation
+         * so they can check if `preventDefault` was called first. Therefore,
+         * if we focus the thumb on slide start (`mousedown`), the browser will execute
+         * their `mousedown` implementation after our focus which will instantly
+         * `blur` the thumb again (because it effectively clicks off the thumb).
+         *
+         * We use a `setTimeout`  to move the focus to the next tick (after the
+         * mousedown) to ensure focus on mousedown.
+         */
+        window.setTimeout(() => focusThumb(valueIndexToChange), 0);
+      });
     }
 
     function handleSlideMove(value: number) {
-      updateValues(value, valueIndexToChangeRef.current);
+      updateValues(value, valueIndexToChangeRef.current).then(focusThumb);
     }
 
-    function updateValues(value: number, atIndex: number) {
+    function updateValues(value: number, atIndex: number): Promise<number> {
       const snapToStep = Math.round((value - min) / step) * step + min;
       const nextValue = clamp(snapToStep, [min, max]);
 
-      setValues((prevValues = []) => {
-        const prevValue = prevValues[atIndex];
-        const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
-        valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
-        return nextValues[atIndex] !== prevValue ? nextValues : prevValues;
+      return new Promise((resolve) => {
+        setValues((prevValues = []) => {
+          const prevValue = prevValues[atIndex];
+          const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
+          valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
+          resolve(valueIndexToChangeRef.current);
+          return nextValues[atIndex] !== prevValue ? nextValues : prevValues;
+        });
       });
+    }
+
+    function focusThumb(index: number) {
+      const thumbs = [...thumbRefs.current];
+      thumbs[index]?.focus();
     }
 
     return (
@@ -175,6 +197,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
               min,
               max,
               valueIndexToChangeRef,
+              thumbs: thumbRefs.current,
               values,
               orientation,
             }),
@@ -429,9 +452,18 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(functi
           document.addEventListener('mousemove', handleSlideMouseMove);
           document.addEventListener('mouseup', removeMouseEventListeners);
         }
+        // We purpoesfully avoid calling `event.preventDefault` here as it will
+        // also prevent PointerEvents which we need.
       })}
       onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
-        if (!isThumb(event.target)) onSlideTouchStart(event);
+        if (isThumb(event.target)) {
+          // Touch devices have a delay before focusing and won't focus if mouse
+          // immediatedly moves away from target. We want thumb to focus regardless.
+          event.target.focus();
+        } else {
+          onSlideTouchStart(event);
+        }
+
         document.addEventListener('touchmove', handleSlideTouchMove);
         document.addEventListener('touchend', removeTouchEventListeners);
         // Prevent scrolling for touch events
@@ -452,6 +484,9 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(functi
        * Prevent pointer events on other elements on the page while sliding.
        * For example, stops hover states from triggering on buttons if
        * mouse moves over a button during slide.
+       *
+       * Also ensures that slider receives all pointer events after mouse down
+       * even when mouse moves outside the document.
        */
       onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
         event.currentTarget.setPointerCapture(event.pointerId);
@@ -557,8 +592,6 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     const orientation = React.useContext(SliderOrientationContext);
     const thumbRef = React.useRef<HTMLSpanElement>(null);
     const ref = useComposedRefs(forwardedRef, thumbRef);
-    const focusTimerRef = React.useRef<number>(0);
-    const prevValuesRef = React.useRef(context.values);
     const size = useSize(thumbRef);
     const percent = convertValueToPercentage(value, context.min, context.max);
     const label = getLabel(index, context.values.length);
@@ -568,29 +601,14 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
       : 0;
 
     React.useEffect(() => {
-      /**
-       * Browsers fire event handlers before executing their event implementation
-       * so they can check if `preventDefault` was called first. Therefore,
-       * if we focus the thumb during `mousedown`, the browser will execute
-       * their `mousedown` implementation after our focus which will instantly
-       * `blur` the thumb again (because it effectively clicks off the thumb).
-       *
-       * We use a `setTimeout` here to move the focus to the next tick (after the
-       * mousedown) to ensure focus on mousedown.
-       */
-      focusTimerRef.current = window.setTimeout(() => {
-        const thumb = thumbRef.current;
-        const hasValuesChanged = prevValuesRef.current !== context.values;
-        const isActive = context.valueIndexToChangeRef.current === index;
-        const isFocused = document.activeElement === thumb;
-
-        if (thumb && hasValuesChanged && isActive && !isFocused) {
-          thumb.focus();
-          prevValuesRef.current = context.values;
-        }
-      }, 0);
-      return () => window.clearTimeout(focusTimerRef.current);
-    }, [context.values, context.valueIndexToChangeRef, index]);
+      const thumb = thumbRef.current;
+      if (thumb) {
+        context.thumbs.add(thumb);
+        return () => {
+          context.thumbs.delete(thumb);
+        };
+      }
+    }, [context.thumbs]);
 
     return (
       <span
@@ -644,7 +662,7 @@ const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
     display: 'inline-flex',
     flexShrink: 0,
     userSelect: 'none',
-    touchAction: 'none', // Prevent parent/window scroll when sliding on touch devices
+    touchAction: 'none', // Disable browser handling of all panning and zooming gestures on touch devices
   },
   track: {
     ...cssReset(TRACK_DEFAULT_TAG),
