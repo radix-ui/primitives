@@ -457,7 +457,7 @@ const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(functi
       })}
       onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
         if (isThumb(event.target)) {
-          // Touch devices have a delay before focusing and won't focus if mouse
+          // Touch devices have a delay before focusing and won't focus if touch
           // immediatedly moves away from target. We want thumb to focus regardless.
           event.target.focus();
         } else {
