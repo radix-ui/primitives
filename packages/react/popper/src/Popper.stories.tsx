@@ -88,12 +88,7 @@ export const Animated = () => {
 
 const Scrollable = (props: any) => (
   <div
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '200vh',
-    }}
+    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
     {...props}
   />
 );
