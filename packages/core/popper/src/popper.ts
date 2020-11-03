@@ -97,7 +97,10 @@ export function getPlacementData({
     const transformOrigin = getTransformOrigin(popperSize, side, align, arrowOffset, arrowSize);
 
     return {
-      popperStyles: { ...popperStyles, ['--transformOrigin' as any]: transformOrigin },
+      popperStyles: {
+        ...popperStyles,
+        ['--interop-popper-transform-origin' as any]: transformOrigin,
+      },
       arrowStyles,
       placedSide: side,
       placedAlign: align,
@@ -161,7 +164,10 @@ export function getPlacementData({
   );
 
   return {
-    popperStyles: { ...popperStyles, ['--transformOrigin' as any]: transformOrigin },
+    popperStyles: {
+      ...popperStyles,
+      ['--interop-popper-transform-origin' as any]: transformOrigin,
+    },
     arrowStyles,
     placedSide,
     placedAlign,

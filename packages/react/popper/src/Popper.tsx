@@ -191,7 +191,7 @@ Popper.Arrow.displayName = ARROW_NAME;
 const [styles, interopDataAttrObj] = createStyleObj(POPPER_NAME, {
   root: {
     ...cssReset(POPPER_DEFAULT_TAG),
-    transformOrigin: 'var(--transformOrigin)',
+    transformOrigin: 'var(--interop-popper-transform-origin)',
   },
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),
