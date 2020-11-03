@@ -48,11 +48,11 @@ export function Basic() {
             [
               { value: 'always', label: 'Always', disabled: usesNative },
               { value: 'scroll', label: 'When scrolling', disabled: usesNative },
-              // {
-              //   value: 'enter-scroll',
-              //   label: 'When scrolling and when the pointer enters the scrollable area',
-              //   disabled: usesNative,
-              // },
+              {
+                value: 'enter-scroll',
+                label: 'When scrolling and when the pointer enters the scrollable area',
+                disabled: usesNative,
+              },
             ] as { value: ScrollbarVisibility; label: string; disabled: boolean }[]
           }
           checked={scrollbarVisibility}

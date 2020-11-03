@@ -8,28 +8,34 @@ import {
 } from './scrollAreaUtils';
 
 export enum ScrollAreaState {
-  Idle,
-  Thumbing,
-  Tracking,
-  ButtonScrolling,
+  Idle = 'Idle',
+  Entered = 'Entered',
+  Scrolling = 'Scrolling',
+  Thumbing = 'Thumbing',
+  Tracking = 'Tracking',
+  ButtonScrolling = 'ButtonScrolling',
 }
 
 export enum ScrollAreaEvents {
   DeriveStateFromProps,
   HandleScrollAreaResize,
-  HandleViewportResize,
   HandleScrollbarResize,
   HandleTrackResize,
+  HandleViewportResize,
   MoveThumbWithPointer,
+  PointerEnter,
+  PointerLeave,
   SetContentOverflowing,
   SetExplicitResize,
-  StartTracking,
-  StopTracking,
-  StartThumbing,
-  StopThumbing,
-  StartButtonPress,
-  StopButtonPress,
   SetScrollbarIsVisible,
+  StartButtonPress,
+  StartScrolling,
+  StartThumbing,
+  StartTracking,
+  StopButtonPress,
+  StopScrolling,
+  StopThumbing,
+  StopTracking,
 }
 
 // prettier-ignore
@@ -40,6 +46,10 @@ export type ScrollAreaEvent =
   | { type: ScrollAreaEvents.HandleScrollbarResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.HandleTrackResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.MoveThumbWithPointer; axis: Axis; pointerPosition: number; pointerStartPointRef: React.MutableRefObject<number>; pointerInitialStartPointRef: React.MutableRefObject<number>; thumbInitialData: React.MutableRefObject<{ size: number; positionStart: number }>; trackInitialData: React.MutableRefObject<{ size: number; positionStart: number }> }
+  | { type: ScrollAreaEvents.PointerEnter; scrollbarVisibility: ScrollbarVisibility }
+  | { type: ScrollAreaEvents.PointerLeave; scrollbarVisibility: ScrollbarVisibility }
+  | { type: ScrollAreaEvents.StartScrolling }
+  | { type: ScrollAreaEvents.StopScrolling }
   | { type: ScrollAreaEvents.StartTracking }
   | { type: ScrollAreaEvents.StopTracking }
   | { type: ScrollAreaEvents.StartThumbing }
@@ -115,6 +125,31 @@ export function reducer(
         },
       };
     }
+    case ScrollAreaEvents.PointerEnter: {
+      if (event.scrollbarVisibility === 'enter-scroll' && context.state === ScrollAreaState.Idle) {
+        return {
+          ...context,
+          state: ScrollAreaState.Entered,
+          scrollbarIsVisibleX: true,
+          scrollbarIsVisibleY: true,
+        };
+      }
+      return context;
+    }
+    case ScrollAreaEvents.PointerLeave: {
+      if (
+        event.scrollbarVisibility === 'enter-scroll' &&
+        (context.state === ScrollAreaState.Entered || context.state === ScrollAreaState.Idle)
+      ) {
+        return {
+          ...context,
+          state: ScrollAreaState.Idle,
+          scrollbarIsVisibleX: false,
+          scrollbarIsVisibleY: false,
+        };
+      }
+      return context;
+    }
     case ScrollAreaEvents.SetContentOverflowing: {
       return {
         ...context,
@@ -124,6 +159,15 @@ export function reducer(
     }
     case ScrollAreaEvents.SetScrollbarIsVisible: {
       if (event.scrollbarVisibility === 'always') {
+        return {
+          ...context,
+          scrollbarIsVisibleX: true,
+          scrollbarIsVisibleY: true,
+        };
+      } else if (
+        event.scrollbarVisibility === 'enter-scroll' &&
+        context.state === ScrollAreaState.Entered
+      ) {
         return {
           ...context,
           scrollbarIsVisibleX: true,
@@ -179,10 +223,13 @@ export function reducer(
       };
     }
     case ScrollAreaEvents.StopTracking: {
-      return {
-        ...context,
-        state: ScrollAreaState.Idle,
-      };
+      if (context.state === ScrollAreaState.Tracking) {
+        return {
+          ...context,
+          state: ScrollAreaState.Idle,
+        };
+      }
+      return context;
     }
     case ScrollAreaEvents.StartThumbing: {
       return {
@@ -235,11 +282,32 @@ export function reducer(
 
       return context;
     }
+    case ScrollAreaEvents.StartScrolling: {
+      if (context.state === ScrollAreaState.Idle || context.state === ScrollAreaState.Entered) {
+        return {
+          ...context,
+          state: ScrollAreaState.Scrolling,
+        };
+      }
+      return context;
+    }
+    case ScrollAreaEvents.StopScrolling: {
+      if (context.state === ScrollAreaState.Scrolling) {
+        return {
+          ...context,
+          state: ScrollAreaState.Idle,
+        };
+      }
+      return context;
+    }
     case ScrollAreaEvents.StopThumbing: {
-      return {
-        ...context,
-        state: ScrollAreaState.Idle,
-      };
+      if (context.state === ScrollAreaState.Thumbing) {
+        return {
+          ...context,
+          state: ScrollAreaState.Idle,
+        };
+      }
+      return context;
     }
     case ScrollAreaEvents.StartButtonPress: {
       return {
@@ -248,6 +316,12 @@ export function reducer(
       };
     }
     case ScrollAreaEvents.StopButtonPress: {
+      if (context.state === ScrollAreaState.ButtonScrolling) {
+        return {
+          ...context,
+          state: ScrollAreaState.Idle,
+        };
+      }
       return {
         ...context,
         state: ScrollAreaState.Idle,
