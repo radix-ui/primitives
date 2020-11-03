@@ -1,5 +1,5 @@
-body[data-interop-block-pointer-events] *,
-body[data-interop-block-pointer-events] * {
+body[data-interop-scrolling] *,
+body[data-interop-dragging] * {
   /*
 	Prevents all pointer events on the body while the user is scrolling or dragging, which also stops
 	selection-based scrolling on parent elements. We override this in the scroll area's wrapper only.

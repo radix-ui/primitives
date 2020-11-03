@@ -68,7 +68,7 @@ import {
   useBorderBoxResizeObserver,
 } from './scrollAreaUtils';
 
-const BLOCK_POINTER_BODY_ATTR = 'data-interop-block-pointer-events';
+const SCROLLING_BODY_ATTR = 'data-interop-scrolling';
 
 const CSS_PROPS = {
   scrollAreaWidth: '--interop-scroll-area-width',
@@ -350,19 +350,15 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
 
     // Adds attribute to the body element so an app can know when a scrollarea is active, so we can
     // disable pointer events on all other elements on the screen until scrolling stops.
-    const shouldBlockPointerEvents = [
-      ScrollAreaState.ButtonScrolling,
-      ScrollAreaState.Thumbing,
-      ScrollAreaState.Tracking,
-    ].includes(reducerState.state);
+    const isScrolling = reducerState.state !== ScrollAreaState.Idle;
     React.useEffect(() => {
-      shouldBlockPointerEvents
-        ? document.body.setAttribute(BLOCK_POINTER_BODY_ATTR, '')
-        : document.body.removeAttribute(BLOCK_POINTER_BODY_ATTR);
+      isScrolling
+        ? document.body.setAttribute(SCROLLING_BODY_ATTR, '')
+        : document.body.removeAttribute(SCROLLING_BODY_ATTR);
       return function () {
-        document.body.removeAttribute(BLOCK_POINTER_BODY_ATTR);
+        document.body.removeAttribute(SCROLLING_BODY_ATTR);
       };
-    }, [shouldBlockPointerEvents]);
+    }, [isScrolling]);
 
     // Defined CSS custom properties to determine styles based on sizes and positioning of child
     // elements.
@@ -425,18 +421,12 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
             <ScrollAreaStateContext.Provider value={reducerState}>
               <Comp
                 {...domProps}
-                data-state={reducerState.state.toLowerCase()}
                 ref={ref}
+                data-scrolling={isScrolling ? '' : undefined}
                 style={{
                   ...domProps.style,
                   ...style,
                 }}
-                onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
-                  dispatch({ type: ScrollAreaEvents.PointerEnter, scrollbarVisibility });
-                })}
-                onPointerLeave={composeEventHandlers(props.onPointerLeave, () => {
-                  dispatch({ type: ScrollAreaEvents.PointerLeave, scrollbarVisibility });
-                })}
               >
                 {children}
               </Comp>
@@ -549,38 +539,11 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
       lastScrollLeft.current = scrollLeft <= 0 ? 0 : scrollLeft;
     }
 
-    const scrollTimer = React.useRef<number>(undefined!);
     const handleScroll = composeEventHandlers(userOnScroll, function handleScroll() {
       if (!positionRef.current) return;
-
       updateThumbsWithScrollPosition();
       setScrollbarVisibilityOnScroll();
-      scroll();
-
-      function scroll() {
-        if (scrollTimer.current != null) {
-          window.clearTimeout(scrollTimer.current);
-        }
-
-        // We don't want to dispatch events on every single scroll event because it would be costly,
-        // but we do want to know when the user is scrolling and roughly when they have stopped.
-        if (
-          stateContext.state === ScrollAreaState.Idle ||
-          stateContext.state === ScrollAreaState.Entered
-        ) {
-          dispatch({ type: ScrollAreaEvents.StartScrolling });
-        }
-        scrollTimer.current = window.setTimeout(function () {
-          dispatch({ type: ScrollAreaEvents.StopScrolling });
-        }, 150);
-      }
     });
-
-    React.useEffect(() => {
-      return function () {
-        window.clearTimeout(scrollTimer.current);
-      };
-    }, []);
 
     useLayoutEffect(() => {
       updateThumbsWithScrollPosition();
@@ -708,7 +671,6 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
     const {
       [axis === 'x' ? 'contentIsOverflowingX' : 'contentIsOverflowingY']: contentIsOverflowing,
       [axis === 'x' ? 'scrollbarIsVisibleX' : 'scrollbarIsVisibleY']: scrollbarIsVisible,
-      state,
     } = useScrollAreaStateContext(name);
     const refsContext = useScrollAreaRefs(name);
     const { positionRef } = refsContext;
@@ -745,7 +707,7 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
 
     const timeoutId = React.useRef<number>(undefined!);
     React.useEffect(() => {
-      if (scrollbarVisibility && state === ScrollAreaState.Idle) {
+      if (scrollbarIsVisible) {
         timeoutId.current = window.setTimeout(() => {
           dispatch({
             type: ScrollAreaEvents.SetScrollbarIsVisible,
@@ -757,7 +719,7 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
           window.clearTimeout(timeoutId.current);
         };
       }
-    }, [axis, dispatch, scrollbarVisibility, state, scrollbarIsVisible]);
+    }, [axis, dispatch, scrollbarVisibility, scrollbarIsVisible]);
 
     function resetInteractiveTimer() {
       window.clearTimeout(timeoutId.current);
