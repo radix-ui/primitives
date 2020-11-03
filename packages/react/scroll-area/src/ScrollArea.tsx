@@ -133,7 +133,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       children,
       overflowX = 'auto',
       overflowY = 'auto',
-      scrollbarAutoHide = 'never',
+      scrollbarVisibility = 'always',
       isRTL = false,
       scrollbarDragScrolling = false,
       trackClickBehavior = 'relative',
@@ -157,7 +157,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         as={as}
         overflowX={overflowX}
         overflowY={overflowY}
-        scrollbarAutoHide={scrollbarAutoHide}
+        scrollbarVisibility={scrollbarVisibility}
         isRTL={isRTL}
         scrollbarDragScrolling={scrollbarDragScrolling}
         trackClickBehavior={trackClickBehavior}
@@ -179,13 +179,13 @@ const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativePro
   function ScrollAreaNative(props, forwardedRef) {
     const {
       as: Comp,
-      overflowX = 'auto',
-      overflowY = 'auto',
-      scrollbarAutoHide = 'never',
-      isRTL = false,
-      scrollbarDragScrolling = false,
-      trackClickBehavior = 'relative',
-      unstable_prefersReducedMotion = false,
+      overflowX,
+      overflowY,
+      scrollbarVisibility,
+      isRTL,
+      scrollbarDragScrolling,
+      trackClickBehavior,
+      unstable_prefersReducedMotion,
       ...domProps
     } = props;
     return (
@@ -235,13 +235,13 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       as: Comp,
       children,
       onScroll,
-      overflowX = 'auto',
-      overflowY = 'auto',
-      scrollbarAutoHide = 'never',
-      isRTL = false,
-      scrollbarDragScrolling = false,
-      trackClickBehavior = 'relative',
-      unstable_prefersReducedMotion = false,
+      overflowX,
+      overflowY,
+      scrollbarVisibility,
+      isRTL,
+      scrollbarDragScrolling,
+      trackClickBehavior,
+      unstable_prefersReducedMotion,
       ...domProps
     } = props;
 
@@ -291,8 +291,8 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
 
     const [reducerState, _dispatch] = React.useReducer(reducer, {
       ...initialState,
-      scrollbarIsVisibleX: scrollbarAutoHide === 'never',
-      scrollbarIsVisibleY: scrollbarAutoHide === 'never',
+      scrollbarIsVisibleX: scrollbarVisibility === 'always',
+      scrollbarIsVisibleY: scrollbarVisibility === 'always',
     });
 
     const context: ScrollAreaContextValue = React.useMemo(() => {
@@ -302,7 +302,7 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
         overflowY,
         prefersReducedMotion,
         scrollAnimationQueue,
-        scrollbarAutoHide,
+        scrollbarVisibility,
         scrollbarDragScrolling,
         trackClickBehavior,
         userOnScroll,
@@ -313,7 +313,7 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       overflowY,
       prefersReducedMotion,
       scrollAnimationQueue,
-      scrollbarAutoHide,
+      scrollbarVisibility,
       scrollbarDragScrolling,
       trackClickBehavior,
       userOnScroll,
@@ -375,10 +375,10 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
     //  - overflow is `auto` and scrollbar autohide is `never`
     //  - overflow is `hidden` or `visible` (scrollbars are hidden no matter what in either case)
     const shouldOffsetX =
-      scrollbarAutoHide === 'never' &&
+      scrollbarVisibility === 'always' &&
       (overflowX === 'scroll' || (overflowX === 'auto' && reducerState.contentIsOverflowingX));
     const shouldOffsetY =
-      scrollbarAutoHide === 'never' &&
+      scrollbarVisibility === 'always' &&
       (overflowY === 'scroll' || (overflowY === 'auto' && reducerState.contentIsOverflowingY));
 
     const { domSizes } = reducerState;
@@ -463,7 +463,7 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
       userOnScroll,
       overflowX,
       overflowY,
-      scrollbarAutoHide,
+      scrollbarVisibility,
       ...context
     } = useScrollAreaContext(VIEWPORT_NAME);
     const stateContext = useScrollAreaStateContext(VIEWPORT_NAME);
@@ -530,7 +530,7 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
       ) {
         dispatch({
           type: ScrollAreaEvents.SetScrollbarIsVisible,
-          scrollbarAutoHide,
+          scrollbarVisibility,
           x: scrollbarIsVisibleX,
           y: scrollbarIsVisibleY,
         });
@@ -667,7 +667,7 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
       ...domProps
     } = props;
     const dispatch = useDispatchContext(name);
-    const { scrollbarAutoHide } = useScrollAreaContext(name);
+    const { scrollbarVisibility } = useScrollAreaContext(name);
     const {
       [axis === 'x' ? 'contentIsOverflowingX' : 'contentIsOverflowingY']: contentIsOverflowing,
       [axis === 'x' ? 'scrollbarIsVisibleX' : 'scrollbarIsVisibleY']: scrollbarIsVisible,
@@ -711,7 +711,7 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
         timeoutId.current = window.setTimeout(() => {
           dispatch({
             type: ScrollAreaEvents.SetScrollbarIsVisible,
-            scrollbarAutoHide,
+            scrollbarVisibility,
             [axis]: false,
           });
         }, 600);
@@ -719,14 +719,14 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
           window.clearTimeout(timeoutId.current);
         };
       }
-    }, [axis, dispatch, scrollbarAutoHide, scrollbarIsVisible]);
+    }, [axis, dispatch, scrollbarVisibility, scrollbarIsVisible]);
 
     function resetInteractiveTimer() {
       window.clearTimeout(timeoutId.current);
       timeoutId.current = window.setTimeout(() => {
         dispatch({
           type: ScrollAreaEvents.SetScrollbarIsVisible,
-          scrollbarAutoHide,
+          scrollbarVisibility,
           [axis]: false,
         });
       }, 400);
@@ -761,13 +761,13 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
             ...domProps.style,
             display: !contentIsOverflowing ? 'none' : domProps.style?.display,
             opacity:
-              scrollbarAutoHide === 'scroll'
+              scrollbarVisibility !== 'always'
                 ? scrollbarIsVisible
                   ? domProps.style?.opacity || 1
                   : 0
                 : domProps.style?.opacity,
             pointerEvents:
-              scrollbarAutoHide === 'scroll'
+              scrollbarVisibility !== 'always'
                 ? scrollbarIsVisible
                   ? 'auto'
                   : 'none'

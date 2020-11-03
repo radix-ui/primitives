@@ -3,7 +3,7 @@ import { styled } from '../../../../stitches.config';
 import { ScrollArea, styles } from './ScrollArea';
 import { Popover as PopoverPrimitive, styles as popoverStyles } from '@interop-ui/react-popover';
 import './ScrollArea.stories.css';
-import { TrackClickBehavior, ScrollbarAutoHide } from './types';
+import { TrackClickBehavior, ScrollbarVisibility } from './types';
 
 export default { title: 'ScrollArea' };
 
@@ -13,7 +13,9 @@ export default { title: 'ScrollArea' };
 export function Basic() {
   const [usesNative, setNative] = React.useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
-  const [autoHide, setAutoHide] = React.useState<ScrollbarAutoHide>('never');
+  const [scrollbarVisibility, setScrollbarVisibility] = React.useState<ScrollbarVisibility>(
+    'always'
+  );
   const [trackClickBehavior, setTrackClickBehavior] = React.useState<TrackClickBehavior>('page');
 
   return (
@@ -41,19 +43,26 @@ export function Basic() {
       <div style={{ display: 'flex', margin: '10px 0' }}>
         <RadioGroup
           name="autoHide"
-          legend="Set autohide behavior"
-          fields={[
-            { value: 'never', label: 'Never', disabled: usesNative },
-            { value: 'scroll', label: 'Scroll', disabled: usesNative },
-          ]}
-          checked={autoHide}
+          legend="Show scrollbars:"
+          fields={
+            [
+              { value: 'always', label: 'Always', disabled: usesNative },
+              { value: 'scroll', label: 'When scrolling', disabled: usesNative },
+              // {
+              //   value: 'enter-scroll',
+              //   label: 'When scrolling and when the pointer enters the scrollable area',
+              //   disabled: usesNative,
+              // },
+            ] as { value: ScrollbarVisibility; label: string; disabled: boolean }[]
+          }
+          checked={scrollbarVisibility}
           onChange={(newValue) => {
-            setAutoHide(newValue as ScrollbarAutoHide);
+            setScrollbarVisibility(newValue as ScrollbarVisibility);
           }}
         />
         <RadioGroup
           name="trackClickBehavior"
-          legend="Set trick click behavior"
+          legend="Click the scrollbar track to:"
           fields={[
             { value: 'page', label: 'Jump to the next page', disabled: usesNative },
             { value: 'relative', label: "Jump to the spot that's clicked", disabled: usesNative },
@@ -72,7 +81,7 @@ export function Basic() {
           unstable_forceNative={usesNative}
           unstable_prefersReducedMotion={prefersReducedMotion}
           overflowX="scroll"
-          scrollbarAutoHide={autoHide}
+          scrollbarVisibility={scrollbarVisibility}
           trackClickBehavior={trackClickBehavior}
         >
           <ScrollArea.ScrollbarY as={ScrollbarY}>
@@ -134,7 +143,7 @@ export function InsidePopover() {
             >
               <ScrollArea
                 overflowX="scroll"
-                scrollbarAutoHide="scroll"
+                scrollbarVisibility="scroll"
                 trackClickBehavior="page"
                 as={AnySizeRoot}
               >

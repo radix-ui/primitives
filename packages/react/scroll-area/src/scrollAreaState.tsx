@@ -1,4 +1,4 @@
-import { Axis, Size, ResizeBehavior, ScrollAreaRefs, ScrollbarAutoHide } from './types';
+import { Axis, Size, ResizeBehavior, ScrollAreaRefs, ScrollbarVisibility } from './types';
 import {
   canScroll,
   getScrollSize,
@@ -47,7 +47,7 @@ export type ScrollAreaEvent =
   | { type: ScrollAreaEvents.StartButtonPress }
   | { type: ScrollAreaEvents.StopButtonPress }
   | { type: ScrollAreaEvents.SetContentOverflowing; x: boolean; y: boolean }
-  | { type: ScrollAreaEvents.SetScrollbarIsVisible; scrollbarAutoHide: ScrollbarAutoHide; x?: boolean; y?: boolean }
+  | { type: ScrollAreaEvents.SetScrollbarIsVisible; scrollbarVisibility: ScrollbarVisibility; x?: boolean; y?: boolean; }
 
 export type ScrollAreaReducerState = {
   state: ScrollAreaState;
@@ -123,7 +123,7 @@ export function reducer(
       };
     }
     case ScrollAreaEvents.SetScrollbarIsVisible: {
-      if (event.scrollbarAutoHide === 'never') {
+      if (event.scrollbarVisibility === 'always') {
         return {
           ...context,
           scrollbarIsVisibleX: true,
