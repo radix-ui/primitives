@@ -37,9 +37,14 @@ const SLIDER_DEFAULT_TAG = 'span';
 type SliderDOMProps = Omit<SliderPartDOMProps, 'defaultValue' | 'onChange' | 'dir'>;
 type SliderControlledProps = { value: number; onChange?(value: number): void };
 type SliderUncontrolledProps = { defaultValue: number; onChange?(value: number): void };
-type SliderRangeControlledProps = { value: number[]; onChange?(value: number[]): void };
+type SliderRangeControlledProps = {
+  value: number[];
+  minStepsBetweenThumbs?: number;
+  onChange?(value: number[]): void;
+};
 type SliderRangeUncontrolledProps = {
   defaultValue: number[];
+  minStepsBetweenThumbs?: number;
   onChange?: (value: number[]) => void;
 };
 type SliderOwnProps = {
@@ -88,8 +93,17 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
 
     const { defaultValue } = props as SliderUncontrolledProps | SliderRangeUncontrolledProps;
     const { value } = props as SliderControlledProps | SliderRangeControlledProps;
+    const { minStepsBetweenThumbs = 0 } = props as
+      | SliderRangeControlledProps
+      | SliderRangeUncontrolledProps;
+
+    const sliderProps = omit(restProps, [
+      'defaultValue',
+      'value',
+      'minStepsBetweenThumbs',
+    ]) as SliderDOMProps;
+
     const step = Math.max(stepProp, 1);
-    const sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderDOMProps;
     const sliderRef = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
@@ -138,11 +152,16 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
 
       return new Promise((resolve) => {
         setValues((prevValues = []) => {
-          const prevValue = prevValues[atIndex];
           const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
-          valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
-          resolve(valueIndexToChangeRef.current);
-          return nextValues[atIndex] !== prevValue ? nextValues : prevValues;
+
+          if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
+            valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
+            resolve(valueIndexToChangeRef.current);
+            return nextValues[atIndex] !== prevValues[atIndex] ? nextValues : prevValues;
+          } else {
+            resolve(valueIndexToChangeRef.current);
+            return prevValues;
+          }
         });
       });
     }
@@ -819,6 +838,38 @@ function getThumbInBoundsOffset(width: number, left: number) {
   const halfPercent = 50;
   const offset = linearScale([0, halfPercent], [0, halfWidth]);
   return halfWidth - offset(left);
+}
+
+/**
+ * Gets an array of steps between each value.
+ *
+ * @example
+ * // returns [1, 9]
+ * getStepsBetweenValues([10, 11, 20]);
+ */
+function getStepsBetweenValues(values: number[]) {
+  return values.slice(0, -1).map((value, index) => values[index + 1] - value);
+}
+
+/**
+ * Verifies the minimum steps between all values is greater than or equal
+ * to the expected minimum steps.
+ *
+ * @example
+ * // returns false
+ * hasMinStepsBetweenValues([1,2,3], 2);
+ *
+ * @example
+ * // returns true
+ * hasMinStepsBetweenValues([1,2,3], 1);
+ */
+function hasMinStepsBetweenValues(values: number[], minStepsBetweenValues: number) {
+  if (minStepsBetweenValues > 0) {
+    const stepsBetweenValues = getStepsBetweenValues(values);
+    const actualMinStepsBetweenValues = Math.min(...stepsBetweenValues);
+    return actualMinStepsBetweenValues >= minStepsBetweenValues;
+  }
+  return true;
 }
 
 // https://github.com/tmcw-up-for-adoption/simple-linear-scale/blob/master/index.js

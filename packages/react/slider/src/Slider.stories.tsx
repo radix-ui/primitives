@@ -24,14 +24,12 @@ export const Horizontal = () => {
         </Slider.Track>
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusRange[0]}
           onFocus={() => setIsFocusRange([true, false])}
           onBlur={() => setIsFocusRange([false, false])}
         />
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusRange[1]}
           onFocus={() => setIsFocusRange([false, true])}
           onBlur={() => setIsFocusRange([false, false])}
@@ -46,7 +44,6 @@ export const Horizontal = () => {
         </Slider.Track>
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusSingle}
           onFocus={() => setIsFocusSingle(true)}
           onBlur={() => setIsFocusSingle(false)}
@@ -73,14 +70,12 @@ export const Vertical = () => {
         </Slider.Track>
         <Slider.Thumb
           as={Thumb}
-          style={{ left: '50%' }}
           focused={isFocusRange[0]}
           onFocus={() => setIsFocusRange([true, false])}
           onBlur={() => setIsFocusRange([false, false])}
         />
         <Slider.Thumb
           as={Thumb}
-          style={{ left: '50%' }}
           focused={isFocusRange[1]}
           onFocus={() => setIsFocusRange([false, true])}
           onBlur={() => setIsFocusRange([false, false])}
@@ -100,10 +95,90 @@ export const Vertical = () => {
         </Slider.Track>
         <Slider.Thumb
           as={Thumb}
-          style={{ left: '50%' }}
           focused={isFocusSingle}
           onFocus={() => setIsFocusSingle(true)}
           onBlur={() => setIsFocusSingle(false)}
+        />
+      </Slider>
+    </>
+  );
+};
+
+export const WithMinimumStepsBetweenThumbs = () => {
+  const [isFocusRange, setIsFocusRange] = React.useState([false, false]);
+
+  return (
+    <Slider as={Root} defaultValue={[10, 30]} style={{ height: 15 }} minStepsBetweenThumbs={3}>
+      <Slider.Track as={Track} style={{ height: 4 }}>
+        <Slider.Range as={Range} style={{ height: '100%' }} />
+      </Slider.Track>
+      <Slider.Thumb
+        as={Thumb}
+        focused={isFocusRange[0]}
+        onFocus={() => setIsFocusRange([true, false])}
+        onBlur={() => setIsFocusRange([false, false])}
+      />
+      <Slider.Thumb
+        as={Thumb}
+        focused={isFocusRange[1]}
+        onFocus={() => setIsFocusRange([false, true])}
+        onBlur={() => setIsFocusRange([false, false])}
+      />
+    </Slider>
+  );
+};
+
+export const WithMultipleRanges = () => {
+  const [isFocusRange, setIsFocusRange] = React.useState([false, false, false, false]);
+  const [minStepsBetweenThumbs, setMinStepsBetweenThumbs] = React.useState(0);
+
+  return (
+    <>
+      <label>
+        Minimum steps between thumbs:{' '}
+        <input
+          type="number"
+          value={minStepsBetweenThumbs}
+          onChange={(event) => setMinStepsBetweenThumbs(Number(event.target.value))}
+          style={{ width: 30 }}
+        />
+      </label>
+
+      <br />
+      <br />
+
+      <Slider
+        as={Root}
+        defaultValue={[10, 15, 20, 80]}
+        style={{ height: 15 }}
+        minStepsBetweenThumbs={minStepsBetweenThumbs}
+      >
+        <Slider.Track as={Track} style={{ height: 4 }}>
+          <Slider.Range as={Range} style={{ height: '100%' }} />
+        </Slider.Track>
+        <Slider.Thumb
+          as={Thumb}
+          focused={isFocusRange[0]}
+          onFocus={() => setIsFocusRange([true, false, false, false])}
+          onBlur={() => setIsFocusRange([false, false, false, false])}
+        />
+        <Slider.Thumb
+          as={Thumb}
+          focused={isFocusRange[1]}
+          onFocus={() => setIsFocusRange([false, true, false, false])}
+          onBlur={() => setIsFocusRange([false, false, false, false])}
+        />
+        <Slider.Thumb
+          as={Thumb}
+          focused={isFocusRange[2]}
+          onFocus={() => setIsFocusRange([false, false, true, false])}
+          onBlur={() => setIsFocusRange([false, false, false, false])}
+        />
+        <Slider.Thumb
+          as={Thumb}
+          focused={isFocusRange[3]}
+          onFocus={() => setIsFocusRange([false, false, false, true])}
+          onBlur={() => setIsFocusRange([false, false, false, false])}
         />
       </Slider>
     </>
