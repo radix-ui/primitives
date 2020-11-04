@@ -110,6 +110,32 @@ export const Vertical = () => {
   );
 };
 
+export const WithMinimumStep = () => {
+  const [isFocusRange, setIsFocusRange] = React.useState([false, false]);
+
+  return (
+    <Slider as={Root} defaultValue={[10, 30]} style={{ height: 15 }} minStep={3}>
+      <Slider.Track as={Track} style={{ height: 4 }}>
+        <Slider.Range as={Range} style={{ height: '100%' }} />
+      </Slider.Track>
+      <Slider.Thumb
+        as={Thumb}
+        style={{ top: '50%' }}
+        focused={isFocusRange[0]}
+        onFocus={() => setIsFocusRange([true, false])}
+        onBlur={() => setIsFocusRange([false, false])}
+      />
+      <Slider.Thumb
+        as={Thumb}
+        style={{ top: '50%' }}
+        focused={isFocusRange[1]}
+        onFocus={() => setIsFocusRange([false, true])}
+        onBlur={() => setIsFocusRange([false, false])}
+      />
+    </Slider>
+  );
+};
+
 const Root = React.forwardRef((props: any, ref) => (
   <span
     {...props}
