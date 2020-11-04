@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Tooltip, styles } from './Tooltip';
+import { styled, css } from '../../../../stitches.config';
 
 export default { title: 'Tooltip' };
 
@@ -346,6 +347,19 @@ export const Unmount = () => {
   );
 };
 
+export const Animated = () => {
+  return (
+    <div style={{ padding: 100 }}>
+      <SimpleTooltip as={AnimatedPosition} label="Hello world 1">
+        <Tooltip.Trigger style={{ marginRight: 10 }}>Hello 1</Tooltip.Trigger>
+      </SimpleTooltip>
+      <SimpleTooltip as={AnimatedPosition} label="Hello world 2" side="top">
+        <Tooltip.Trigger>Hello 2</Tooltip.Trigger>
+      </SimpleTooltip>
+    </div>
+  );
+};
+
 function SimpleTooltip({
   children,
   label,
@@ -357,7 +371,7 @@ function SimpleTooltip({
   return (
     <Tooltip isOpen={isOpen} onIsOpenChange={onOpenChange}>
       {children}
-      <Tooltip.Position sideOffset={5} {...props}>
+      <Tooltip.Position sideOffset={5} {...props} style={{ ...props.style, ...styles.position }}>
         <Tooltip.Content as={Content} aria-label={ariaLabel}>
           {label}
         </Tooltip.Content>
@@ -394,3 +408,22 @@ const PositionButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsW
     />
   )
 );
+
+const scaleIn = css.keyframes({
+  '0%': { opacity: 0, transform: 'scale(0)' },
+  '100%': { opacity: 1, transform: 'scale(1)' },
+});
+
+const fadeIn = css.keyframes({
+  '0%': { opacity: 0 },
+  '100%': { opacity: 1 },
+});
+
+const AnimatedPosition = styled('div', {
+  '&[data-state="delayed-open"]': {
+    animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
+  },
+  '&[data-state="instant-open"]': {
+    animation: `${fadeIn} 0.2s ease-out`,
+  },
+});

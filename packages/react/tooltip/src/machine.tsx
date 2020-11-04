@@ -23,10 +23,12 @@ export function createStateMachine<State extends string, Event extends string, C
   stateChart: StateChart<State, Event, Context>,
   { debug = false, warnOnUnknownTransitions = !isProduction } = {}
 ) {
+  let PREVIOUS_STATE: State | undefined;
   let CURRENT_STATE = stateChart.initial;
+  let PREVIOUS_CONTEXT: Context | undefined;
   let CURRENT_CONTEXT = stateChart.context;
 
-  type CallbackFn = (state: State, context: Context) => void;
+  type CallbackFn = (args: { state: State; previousState?: State; context: Context }) => void;
   const subscriptions: Array<CallbackFn> = [];
 
   function subscribe(callback: CallbackFn) {
@@ -37,7 +39,13 @@ export function createStateMachine<State extends string, Event extends string, C
   }
 
   function notify() {
-    subscriptions.forEach((callback) => callback(CURRENT_STATE, CURRENT_CONTEXT));
+    subscriptions.forEach((callback) =>
+      callback({
+        state: CURRENT_STATE,
+        previousState: PREVIOUS_STATE,
+        context: CURRENT_CONTEXT,
+      })
+    );
   }
 
   const transition: TransitionFn<Event, Context> = (event, context) => {
@@ -55,8 +63,8 @@ export function createStateMachine<State extends string, Event extends string, C
         console.warn(`From state: "${CURRENT_STATE}", event "${event}" does not lead to any state`);
       }
     } else {
-      const previousState = CURRENT_STATE;
-      const previousContext = CURRENT_CONTEXT;
+      PREVIOUS_STATE = CURRENT_STATE;
+      PREVIOUS_CONTEXT = CURRENT_CONTEXT;
 
       if (stateDefinition.onLeaveState) {
         stateDefinition.onLeaveState(transition);
@@ -76,8 +84,8 @@ export function createStateMachine<State extends string, Event extends string, C
 
       if (debug) {
         console.log({
-          previousState,
-          previousContext,
+          previousState: PREVIOUS_STATE,
+          previousContext: PREVIOUS_CONTEXT,
           event,
           state: CURRENT_STATE,
           context: CURRENT_CONTEXT,

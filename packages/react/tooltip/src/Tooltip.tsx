@@ -24,10 +24,13 @@ import type { Optional } from '@interop-ui/utils';
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
 
+type StateAttribute = 'closed' | 'delayed-open' | 'instant-open';
+
 type TooltipContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
   isOpen: boolean;
+  stateAttribute: StateAttribute;
 };
 
 const [TooltipContext, useTooltipContext] = createContext<TooltipContextValue>(
@@ -69,10 +72,13 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(pr
     defaultProp: defaultIsOpen,
     onChange: onIsOpenChange,
   });
+  const [stateAttribute, setStateAttribute] = React.useState<StateAttribute>(
+    isOpenProp ? 'instant-open' : 'closed'
+  );
 
   // control open state using state machine subscription
   React.useEffect(() => {
-    const unsubscribe = stateMachine.subscribe((state, context) => {
+    const unsubscribe = stateMachine.subscribe(({ state, context }) => {
       if (state === 'OPEN' && context.id === id) {
         setIsOpen(true);
       } else {
@@ -82,6 +88,28 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(pr
 
     return unsubscribe;
   }, [id, setIsOpen]);
+
+  // sync state attribute with using state machine subscription
+  React.useEffect(() => {
+    const unsubscribe = stateMachine.subscribe(({ state, previousState }) => {
+      if (state === 'OPEN') {
+        if (previousState === 'WAITING_FOR_REST') {
+          setStateAttribute('delayed-open');
+        }
+        if (
+          previousState === 'CHECKING_IF_SHOULD_SKIP_REST_THRESHOLD' ||
+          previousState === 'CLOSED'
+        ) {
+          setStateAttribute('instant-open');
+        }
+      }
+      if (state === 'CLOSED') {
+        setStateAttribute('closed');
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   // send transition if the component unmounts
   React.useEffect(() => {
@@ -98,7 +126,11 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(pr
     }
   }, [id, isOpenProp]);
 
-  const context = React.useMemo(() => ({ triggerRef, id, isOpen }), [id, isOpen]);
+  const context = React.useMemo(() => ({ triggerRef, id, isOpen, stateAttribute }), [
+    id,
+    isOpen,
+    stateAttribute,
+  ]);
 
   return <TooltipContext.Provider value={context}>{children}</TooltipContext.Provider>;
 };
@@ -209,6 +241,7 @@ const TooltipPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPosit
         <Popper
           {...interopDataAttrObj('position')}
           {...popperProps}
+          data-state={context.stateAttribute}
           ref={forwardedRef}
           anchorRef={anchorRef || context.triggerRef}
         >
@@ -325,5 +358,11 @@ const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   },
 });
 
-export type { TooltipProps, TooltipTriggerProps, TooltipContentProps, TooltipArrowProps };
+export type {
+  TooltipProps,
+  TooltipTriggerProps,
+  TooltipPositionProps,
+  TooltipContentProps,
+  TooltipArrowProps,
+};
 export { Tooltip, styles };
