@@ -8,10 +8,10 @@ import {
 } from './scrollAreaUtils';
 
 export enum ScrollAreaState {
-  Idle,
-  Thumbing,
-  Tracking,
-  ButtonScrolling,
+  Idle = 'Idle',
+  Thumbing = 'Thumbing',
+  Tracking = 'Tracking',
+  ButtonScrolling = 'ButtonScrolling',
 }
 
 export enum ScrollAreaEvents {

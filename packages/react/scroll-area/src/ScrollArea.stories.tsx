@@ -7,12 +7,10 @@ import { TrackClickBehavior, ScrollbarVisibility } from './types';
 
 export default { title: 'ScrollArea' };
 
-// type ScrollbarVisibility = 'always' | 'scroll' | 'hover' | 'enter-scroll'
-// type scrollbarVisibilityTimeout = 600;
-
 export function Basic() {
   const [usesNative, setNative] = React.useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
+  const [restTimeout, setRestTimeout] = React.useState(600);
   const [scrollbarVisibility, setScrollbarVisibility] = React.useState<ScrollbarVisibility>(
     'always'
   );
@@ -48,11 +46,11 @@ export function Basic() {
             [
               { value: 'always', label: 'Always', disabled: usesNative },
               { value: 'scroll', label: 'When scrolling', disabled: usesNative },
-              // {
-              //   value: 'enter-scroll',
-              //   label: 'When scrolling and when the pointer enters the scrollable area',
-              //   disabled: usesNative,
-              // },
+              {
+                value: 'hover',
+                label: 'When scrolling and when the pointer is over the scrollable area',
+                disabled: usesNative,
+              },
             ] as { value: ScrollbarVisibility; label: string; disabled: boolean }[]
           }
           checked={scrollbarVisibility}
@@ -72,6 +70,19 @@ export function Basic() {
             setTrackClickBehavior(newValue as TrackClickBehavior);
           }}
         />
+        <label>
+          <span>Rest timeout (Min: 100ms, Max: 2000ms)</span>
+          <input
+            value={restTimeout}
+            onChange={(e) => {
+              setRestTimeout(Number(e.target.value));
+            }}
+            type="range"
+            min={100}
+            max={2000}
+            disabled={scrollbarVisibility !== 'scroll'}
+          />
+        </label>
       </div>
 
       <hr />
@@ -82,6 +93,7 @@ export function Basic() {
           unstable_prefersReducedMotion={prefersReducedMotion}
           overflowX="scroll"
           scrollbarVisibility={scrollbarVisibility}
+          scrollbarVisibilityRestTimeout={restTimeout}
           trackClickBehavior={trackClickBehavior}
         >
           <ScrollArea.ScrollbarY as={ScrollbarY}>

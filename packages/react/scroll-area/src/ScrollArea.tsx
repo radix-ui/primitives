@@ -67,6 +67,7 @@ import {
   shouldOverflow,
   useBorderBoxResizeObserver,
 } from './scrollAreaUtils';
+import { useHover } from './useHover';
 
 const SCROLLING_BODY_ATTR = 'data-interop-scrolling';
 
@@ -134,6 +135,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       overflowX = 'auto',
       overflowY = 'auto',
       scrollbarVisibility = 'always',
+      scrollbarVisibilityRestTimeout = 600,
       isRTL = false,
       scrollbarDragScrolling = false,
       trackClickBehavior = 'relative',
@@ -158,6 +160,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         overflowX={overflowX}
         overflowY={overflowY}
         scrollbarVisibility={scrollbarVisibility}
+        scrollbarVisibilityRestTimeout={scrollbarVisibilityRestTimeout}
         isRTL={isRTL}
         scrollbarDragScrolling={scrollbarDragScrolling}
         trackClickBehavior={trackClickBehavior}
@@ -182,6 +185,7 @@ const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativePro
       overflowX,
       overflowY,
       scrollbarVisibility,
+      scrollbarVisibilityRestTimeout,
       isRTL,
       scrollbarDragScrolling,
       trackClickBehavior,
@@ -238,6 +242,7 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       overflowX,
       overflowY,
       scrollbarVisibility,
+      scrollbarVisibilityRestTimeout,
       isRTL,
       scrollbarDragScrolling,
       trackClickBehavior,
@@ -295,25 +300,34 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       scrollbarIsVisibleY: scrollbarVisibility === 'always',
     });
 
+    const {
+      hoverProps: { onPointerEnter, onPointerLeave },
+      isHovered,
+    } = useHover();
+
     const context: ScrollAreaContextValue = React.useMemo(() => {
       return {
+        isHovered,
         isRTL,
         overflowX,
         overflowY,
         prefersReducedMotion,
         scrollAnimationQueue,
         scrollbarVisibility,
+        scrollbarVisibilityRestTimeout,
         scrollbarDragScrolling,
         trackClickBehavior,
         userOnScroll,
       };
     }, [
+      isHovered,
       isRTL,
       overflowX,
       overflowY,
       prefersReducedMotion,
       scrollAnimationQueue,
       scrollbarVisibility,
+      scrollbarVisibilityRestTimeout,
       scrollbarDragScrolling,
       trackClickBehavior,
       userOnScroll,
@@ -427,6 +441,8 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
                   ...domProps.style,
                   ...style,
                 }}
+                onPointerEnter={composeEventHandlers(props.onPointerEnter, onPointerEnter)}
+                onPointerLeave={composeEventHandlers(props.onPointerLeave, onPointerLeave)}
               >
                 {children}
               </Comp>
@@ -667,7 +683,9 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
       ...domProps
     } = props;
     const dispatch = useDispatchContext(name);
-    const { scrollbarVisibility } = useScrollAreaContext(name);
+    const { scrollbarVisibility, scrollbarVisibilityRestTimeout, isHovered } = useScrollAreaContext(
+      name
+    );
     const {
       [axis === 'x' ? 'contentIsOverflowingX' : 'contentIsOverflowingY']: contentIsOverflowing,
       [axis === 'x' ? 'scrollbarIsVisibleX' : 'scrollbarIsVisibleY']: scrollbarIsVisible,
@@ -714,12 +732,12 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
             scrollbarVisibility,
             [axis]: false,
           });
-        }, 600);
+        }, scrollbarVisibilityRestTimeout);
         return function () {
           window.clearTimeout(timeoutId.current);
         };
       }
-    }, [axis, dispatch, scrollbarVisibility, scrollbarIsVisible]);
+    }, [axis, dispatch, scrollbarVisibility, scrollbarVisibilityRestTimeout, scrollbarIsVisible]);
 
     function resetInteractiveTimer() {
       window.clearTimeout(timeoutId.current);
@@ -729,7 +747,7 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
           scrollbarVisibility,
           [axis]: false,
         });
-      }, 400);
+      }, scrollbarVisibilityRestTimeout);
     }
 
     // Not capturing the pointer because the user may be clicking on the thumb, but we need to know
@@ -752,6 +770,30 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
       }
     });
 
+    const opacity = (function () {
+      const defaultVisible = domProps.style?.opacity || 1;
+      switch (scrollbarVisibility) {
+        case 'always':
+          return domProps.style?.opacity;
+        case 'scroll':
+          return scrollbarIsVisible ? defaultVisible : 0;
+        case 'hover':
+          return isHovered ? defaultVisible : scrollbarIsVisible ? defaultVisible : 0;
+      }
+    })();
+
+    const pointerEvents = (function () {
+      const defaultVisible = domProps.style?.pointerEvents || 'auto';
+      switch (scrollbarVisibility) {
+        case 'always':
+          return domProps.style?.pointerEvents;
+        case 'scroll':
+          return scrollbarIsVisible ? defaultVisible : 'none';
+        case 'hover':
+          return isHovered ? defaultVisible : scrollbarIsVisible ? defaultVisible : 'none';
+      }
+    })();
+
     return (
       <ScrollbarContext.Provider value={axis}>
         <Comp
@@ -760,18 +802,8 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
           style={{
             ...domProps.style,
             display: !contentIsOverflowing ? 'none' : domProps.style?.display,
-            opacity:
-              scrollbarVisibility !== 'always'
-                ? scrollbarIsVisible
-                  ? domProps.style?.opacity || 1
-                  : 0
-                : domProps.style?.opacity,
-            pointerEvents:
-              scrollbarVisibility !== 'always'
-                ? scrollbarIsVisible
-                  ? 'auto'
-                  : 'none'
-                : domProps.style?.pointerEvents,
+            opacity,
+            pointerEvents,
           }}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}

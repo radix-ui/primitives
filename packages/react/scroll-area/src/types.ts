@@ -6,7 +6,7 @@ export type LogicalDirection = 'start' | 'end';
 export type OverflowBehavior = 'auto' | 'hidden' | 'scroll' | 'visible';
 export type PointerPosition = { x: number; y: number };
 export type ResizeBehavior = 'none' | 'both' | 'horizontal' | 'vertical' | 'initial' | 'inherit';
-export type ScrollbarVisibility = 'always' | 'scroll' | 'enter-scroll';
+export type ScrollbarVisibility = 'always' | 'scroll' | 'hover';
 export type ScrollDirection = 'up' | 'down' | 'left' | 'right';
 export type TrackClickBehavior = 'page' | 'relative';
 export type ScrollAreaRefs = {
@@ -43,12 +43,20 @@ export type ScrollAreaOwnProps = {
    * Describes the nature of auto-hide, similar to how
    * - `"always"`: Scrollbars are always visible when content is overflowing
    * - `"scroll"`: Scrollbars are visible when the user is scrolling along its corresponding axis
-   * - `"enter-scroll"`: Scrollbars are visible when the user is scrolling along its corresponding
-   *   axis and when the user's pointer first enters the scrollable area
+   * - `"hover"`: Scrollbars are visible when the user is scrolling along its corresponding axis and
+   *   when the user is hovering over scrollable area
    *
    * (default: `"always"`)
    */
   scrollbarVisibility?: ScrollbarVisibility;
+  /**
+   * If `scrollbarVisibility` is set to either `"scroll"`, this prop determines the length of time,
+   * in milliseconds, before the scrollbars are hidden after the user stops interacting with
+   * scrollbars.
+   *
+   * (default: 600)
+   */
+  scrollbarVisibilityRestTimeout?: number;
   /**
    * Whether or not the user can scroll by dragging.
    *
@@ -79,7 +87,9 @@ export type ScrollAreaContextValue = {
   prefersReducedMotion: boolean;
   scrollAnimationQueue: Queue<any>;
   scrollbarVisibility: ScrollbarVisibility;
+  scrollbarVisibilityRestTimeout: number;
   scrollbarDragScrolling: boolean;
   trackClickBehavior: TrackClickBehavior;
   userOnScroll: React.ComponentProps<'div'>['onScroll'];
+  isHovered: boolean;
 };
