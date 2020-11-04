@@ -858,11 +858,11 @@ function getStepsBetweenValues(values: number[]) {
  *
  * @example
  * // returns false
- * hasMinStepsBetweenValues([1,2,3], 1, 2);
+ * hasMinStepsBetweenValues([1,2,3], 2);
  *
  * @example
  * // returns true
- * hasMinStepsBetweenValues([1,2,3], 1, 1);
+ * hasMinStepsBetweenValues([1,2,3], 1);
  */
 function hasMinStepsBetweenValues(values: number[], minStepsBetweenValues: number) {
   if (minStepsBetweenValues > 0) {
