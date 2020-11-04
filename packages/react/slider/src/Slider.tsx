@@ -1,50 +1,31 @@
 import * as React from 'react';
 import omit from 'lodash.omit';
-import { Size, cssReset, clamp, interopDataAttr, isUndefined } from '@interop-ui/utils';
+import { cssReset, clamp, interopDataAttr } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
   createStyleObj,
   forwardRef,
-  useCallbackRef,
   useComposedRefs,
-  usePrevious,
+  useControlledState,
+  useCallbackRef,
 } from '@interop-ui/react-utils';
+import { createCollection } from '@interop-ui/react-collection';
 import { useSize } from '@interop-ui/react-use-size';
 
+type Direction = 'ltr' | 'rtl';
 const PAGE_KEYS = ['PageUp', 'PageDown'];
-const BACK_KEYS = ['ArrowDown', 'ArrowLeft', 'Home', 'PageDown'];
-const SLIDER_KEYS = [
-  'Home',
-  'End',
-  'PageUp',
-  'PageDown',
-  'ArrowUp',
-  'ArrowRight',
-  'ArrowDown',
-  'ArrowLeft',
-];
+const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-/* -------------------------------------------------------------------------------------------------
- * Root level context
- * -----------------------------------------------------------------------------------------------*/
-
-type SliderContextValue = {
-  min: number;
-  max: number;
-  values: number[];
-  thumbNodes: Set<React.ElementRef<typeof SliderThumb>>;
-  isDisabled: boolean;
-  updateSize: (part: SliderParts, size: Size) => void;
-  addThumb: (node: React.ElementRef<typeof SliderThumb>) => void;
-  removeThumb: (node: React.ElementRef<typeof SliderThumb>) => void;
-  selectThumb: (node: React.ElementRef<typeof SliderThumb>) => void;
+const BACK_KEYS: Record<Direction, string[]> = {
+  ltr: ['ArrowDown', 'Home', 'ArrowLeft', 'PageUp'],
+  rtl: ['ArrowDown', 'Home', 'ArrowRight', 'PageDown'],
 };
 
-const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
-  'SliderContext',
-  'Slider'
-);
+const [createSliderCollection, useSliderCollectionItem] = createCollection('Slider');
+const SliderCollectionProvider = createSliderCollection((props: { children: React.ReactNode }) => (
+  <>{props.children}</>
+));
 
 /* -------------------------------------------------------------------------------------------------
  * Slider
@@ -53,323 +34,469 @@ const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
 const SLIDER_NAME = 'Slider';
 const SLIDER_DEFAULT_TAG = 'span';
 
-type SliderDOMProps = Omit<
-  React.ComponentPropsWithoutRef<typeof SLIDER_DEFAULT_TAG>,
-  'defaultValue' | 'onChange'
->;
-type SliderControlledProps = { value: number; onChange: (value: number) => void };
-type SliderUncontrolledProps = { defaultValue?: number; onChange?: (value: number) => void };
-type SliderRangeControlledProps = { value: number[]; onChange: (value: number[]) => void };
+type SliderDOMProps = Omit<SliderPartDOMProps, 'defaultValue' | 'onChange' | 'dir'>;
+type SliderControlledProps = { value: number; onChange?(value: number): void };
+type SliderUncontrolledProps = { defaultValue: number; onChange?(value: number): void };
+type SliderRangeControlledProps = { value: number[]; onChange?(value: number[]): void };
 type SliderRangeUncontrolledProps = {
-  defaultValue?: number[];
+  defaultValue: number[];
   onChange?: (value: number[]) => void;
 };
-type SliderProps = SliderDOMProps &
-  Partial<SliderBounds> & {
-    name?: string;
-    disabled?: boolean;
-  } & (
-    | SliderControlledProps
-    | SliderUncontrolledProps
-    | SliderRangeControlledProps
-    | SliderRangeUncontrolledProps
-  );
+type SliderOwnProps = {
+  name?: string;
+  disabled?: boolean;
+  orientation?: SliderDOMProps['aria-orientation'];
+  dir?: Direction;
+  min?: number;
+  max?: number;
+  step?: number;
+} & (
+  | SliderControlledProps
+  | SliderUncontrolledProps
+  | SliderRangeControlledProps
+  | SliderRangeUncontrolledProps
+);
+type SliderProps = SliderDOMProps & SliderOwnProps;
+
+type SliderContextValue = {
+  min: number;
+  max: number;
+  values: number[];
+  valueIndexToChangeRef: React.MutableRefObject<number>;
+  thumbs: Set<React.ElementRef<typeof SliderThumb>>;
+  orientation: SliderOwnProps['orientation'];
+};
+
+const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
+  'SliderContext',
+  SLIDER_NAME
+);
 
 const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticProps>(
   function Slider(props, forwardedRef) {
     const {
-      as: Comp = SLIDER_DEFAULT_TAG,
       children,
       name,
       min = 0,
       max = 100,
       step: stepProp = 1,
+      orientation = 'horizontal',
       disabled = false,
       onChange = () => {},
-      style,
       ...restProps
     } = props;
 
     const { defaultValue } = props as SliderUncontrolledProps | SliderRangeUncontrolledProps;
-    const { value: valueProp } = props as SliderControlledProps | SliderRangeControlledProps;
-
+    const { value } = props as SliderControlledProps | SliderRangeControlledProps;
+    const step = Math.max(stepProp, 1);
     const sliderProps = omit(restProps, ['defaultValue', 'value']) as SliderDOMProps;
     const sliderRef = React.useRef<HTMLSpanElement>(null);
-    const inputRefs = React.useRef<HTMLInputElement[]>([]);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
+    const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
+    const valueIndexToChangeRef = React.useRef<number>(0);
+    const isHorizontal = orientation === 'horizontal';
+    const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
-    const [partSizes, setPartSizes] = React.useState<{ [part in SliderParts]?: Size }>({});
-    const [thumbNodes, setThumbNodes] = React.useState<SliderContextValue['thumbNodes']>(new Set());
-    const [valuesState, setValuesState] = React.useState<number[]>(() => toArray(defaultValue));
-
-    const activeValueIndexRef = React.useRef<number>(0);
-    const isSlidingRef = React.useRef(false);
-    const isControlled = valueProp !== undefined;
-    const isDisabled = disabled;
-    const step = Math.max(stepProp, 1);
-    const values = toArray(isControlled ? valueProp : valuesState);
-    const prevValues = usePrevious(values);
-    const isRange = values.length > 1;
-
-    // Ensure slider is as tall as its tallest part
-    const partHeights = valuesOf(partSizes).map((size) => size?.height);
-    const partHeightsValues = partHeights.filter(Boolean) as number[];
-    const height = partHeightsValues.length ? Math.max(...partHeightsValues) : undefined;
-
-    function updateValue(value: number, atIndex = activeValueIndexRef.current) {
-      const sliderBounds = { min, max, step };
-      const nextValue = getSnappedValue(value, sliderBounds);
-
-      if (isRange) {
-        const nextValues = sort(getUpdatedValues(atIndex, values, nextValue));
-        const onValueRangeChange = onChange as SliderRangeControlledProps['onChange'];
-        if (!isControlled) setValuesState(nextValues);
-        activeValueIndexRef.current = nextValues.indexOf(nextValue);
-        onValueRangeChange(nextValues);
-      } else {
-        const onValueChange = onChange as SliderControlledProps['onChange'];
-        if (!isControlled) setValuesState([nextValue]);
-        activeValueIndexRef.current = atIndex;
-        onValueChange(nextValue);
-      }
-
-      return Promise.resolve(activeValueIndexRef.current);
-    }
-
-    function slideStart(target: HTMLElement, pointerLeft: number) {
-      const thumbAttributeName = interopDataAttr(THUMB_NAME);
-      const thumbAttribute = target.getAttribute(thumbAttributeName);
-      isSlidingRef.current = true;
-
-      if (!isUndefined(thumbAttribute)) {
-        const thumbIndex = Array.from(thumbNodes).findIndex((node) => node.contains(target));
-        activeValueIndexRef.current = thumbIndex;
-        return;
-      }
-
-      const targetValue = getTargetValueFromPx(sliderRef.current!, pointerLeft, { min, max });
-      const closestIndex = getClosestValueIndex(values, targetValue);
-
-      updateValue(targetValue, closestIndex).then((activeValueIndex) => {
-        /**
-         * Browsers fire handlers before executing their event implementation so
-         * they can check if `preventDefault` was called first. Therefore,
-         * if we focus the thumb during `mousedown`, the browser will execute
-         * their `mousedown` implementation after the focus which will instantly
-         * `blur` the thumb again (because it effectively clicks off the thumb).
-         * We use a `setTimeout` here to move the focus to the next tick (after the
-         * mousedown) to prevent this.
-         *
-         * We cannot use `event.preventDefault()` to prevent the blur because it
-         * also prevents PointerEvents which we need to maintain.
-         */
-        setTimeout(() => focusThumb(thumbNodes, activeValueIndex), 0);
-      });
-    }
-
-    const slideMove = useCallbackRef((pointerLeft: number) => {
-      if (!isSlidingRef.current) return;
-      const targetValue = getTargetValueFromPx(sliderRef.current!, pointerLeft, { min, max });
-      updateValue(targetValue).then(focusThumb.bind(null, thumbNodes));
-    });
-
-    const slideEnd = useCallbackRef(() => (isSlidingRef.current = false));
-
-    const handleTouchStart = useCallbackRef(
-      composeEventHandlers(props.onTouchStart, (event) => {
-        document.addEventListener('touchmove', handleTouchMove);
-        document.addEventListener('touchend', handleTouchEnd);
-        slideStart(event.target as HTMLElement, event.targetTouches[0].clientX);
-        // Prevent scrolling for touch events
-        event.preventDefault();
-      })
-    );
-
-    const handleMouseDown = useCallbackRef(
-      composeEventHandlers(props.onMouseDown, (event) => {
-        // Prevent sliding if main mouse button didn't trigger event (e.g. right click)
-        if (event.button !== 0) return;
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-        slideStart(event.target as HTMLElement, event.clientX);
-      })
-    );
-
-    const handleTouchMove = useCallbackRef((event: TouchEvent) =>
-      slideMove(event.targetTouches[0].clientX)
-    );
-    const handleMouseMove = useCallbackRef((event: MouseEvent) => slideMove(event.clientX));
-
-    const handleTouchEnd = useCallbackRef(() => {
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('mouseup', handleTouchEnd);
-      slideEnd();
-    });
-
-    const handleMouseUp = useCallbackRef(() => {
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('mousemove', handleMouseMove);
-      slideEnd();
-    });
-
-    /**
-     * When sliding this will make the slider capture all subsequent pointer events.
-     * This is to avoid page scrolling/text selection during slide and to cancel the
-     * slide interaction if pointer is lifted outside of the current frame.
-     */
-    const handlePointerDown = useCallbackRef((event: PointerEvent) => {
-      const slider = sliderRef.current!;
-      slider.setPointerCapture(event.pointerId);
-      slider.addEventListener('pointerup', handlePointerUp);
-    });
-
-    // Ensures slide is cancelled if pointer is lifted outside of document
-    const handlePointerUp = (event: PointerEvent) => {
-      const slider = sliderRef.current!;
-      slider.removeEventListener('pointerdown', handlePointerDown);
-      slider.removeEventListener('pointerup', handlePointerUp);
-      slider.releasePointerCapture(event.pointerId);
-      slideEnd();
-    };
-
-    const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
-      if (!SLIDER_KEYS.includes(event.key)) return;
-      let atIndex;
-      let nextValue;
-
-      if (event.key === 'Home') {
-        atIndex = 0;
-        nextValue = min;
-      } else if (event.key === 'End') {
-        atIndex = values.length - 1;
-        nextValue = max;
-      } else {
-        const value = values[activeValueIndexRef.current];
-        const isSkipPageKey = PAGE_KEYS.includes(event.key);
-        const isSkipShiftKey = event.shiftKey && ['ArrowLeft', 'ArrowRight'].includes(event.key);
-        const isSkipSteps = isSkipPageKey || isSkipShiftKey;
-        const isBackKey = BACK_KEYS.includes(event.key);
-        const direction = isBackKey ? -1 : 1;
-        const multiplier = isSkipSteps ? 10 : 1;
-        const stepInDirection = step * multiplier * direction;
-        const toValue = value + stepInDirection;
-        nextValue = toValue;
-      }
-
-      updateValue(nextValue, atIndex).then(focusThumb.bind(null, thumbNodes));
-    });
-
-    React.useEffect(() => {
-      if (isDisabled) return;
-      const slider = sliderRef.current!;
-
-      slider.addEventListener('mousedown', handleMouseDown as any);
-      slider.addEventListener('touchstart', handleTouchStart as any);
-
-      if ('PointerEvent' in window) {
-        slider.addEventListener('pointerdown', handlePointerDown);
-      }
-
-      return () => {
-        slider.removeEventListener('mousedown', handleMouseDown as any);
-        slider.removeEventListener('touchstart', handleTouchStart as any);
-      };
-    }, [isDisabled, handlePointerDown, handleMouseDown, handleTouchStart, slideEnd]);
-
-    // Bubble value change to parents (for uncontrolled forms)
-    React.useEffect(() => {
-      const hasValuesChanged = prevValues && prevValues !== values;
-      // If there is no name, the consumer isn't expecting this field to be part of form data
-      if (!hasValuesChanged || !name) return;
-
-      const inputProto = window.HTMLInputElement.prototype;
-      const { set } = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
-
-      inputRefs.current.forEach((input, index) => {
-        if (set) {
-          const event = new Event('input', { bubbles: true });
-          set.call(input, values[index]);
-          input.dispatchEvent(event);
+    const [values = [], setValues] = useControlledState({
+      prop: value === undefined ? undefined : toArray(value),
+      defaultProp: defaultValue === undefined ? undefined : toArray(defaultValue),
+      onChange: (values) => {
+        if (Array.isArray(value || defaultValue)) {
+          const onRangeChange = onChange as SliderRangeControlledProps['onChange'];
+          onRangeChange?.(values);
+        } else {
+          const onValueChange = onChange as SliderControlledProps['onChange'];
+          onValueChange?.(values[0]);
         }
-      });
-    }, [name, prevValues, values]);
-
-    const updateSize = React.useCallback((part: SliderParts, size: Size) => {
-      setPartSizes((prevPartSizes) => ({ ...prevPartSizes, [part]: size }));
-    }, []);
-
-    const addThumb = React.useCallback((node: React.ElementRef<typeof SliderThumb>) => {
-      setThumbNodes((prevNodes) => new Set(prevNodes.add(node)));
-    }, []);
-
-    const removeThumb = React.useCallback((node: React.ElementRef<typeof SliderThumb>) => {
-      setThumbNodes((prevNodes) => {
-        const nextNodes = new Set(prevNodes);
-        nextNodes.delete(node);
-        return nextNodes;
-      });
-    }, []);
-
-    const selectThumb = React.useCallback(
-      (node: React.ElementRef<typeof SliderThumb>) => {
-        const index = Array.from(thumbNodes).findIndex((thumbNode) => thumbNode === node);
-        activeValueIndexRef.current = index;
       },
-      [thumbNodes]
-    );
+    });
 
-    const context = React.useMemo(
-      () => ({
-        min,
-        max,
-        values,
-        thumbNodes,
-        isDisabled,
-        updateSize,
-        addThumb,
-        removeThumb,
-        selectThumb,
-      }),
-      [min, max, values, thumbNodes, isDisabled, updateSize, addThumb, removeThumb, selectThumb]
-    );
+    function handleSlideStart(value: number) {
+      const closestIndex = getClosestValueIndex(values, value);
+      updateValues(value, closestIndex).then((valueIndexToChange) => {
+        /**
+         * Browsers fire event handlers before executing their event implementation
+         * so they can check if `preventDefault` was called first. Therefore,
+         * if we focus the thumb on slide start (`mousedown`), the browser will execute
+         * their `mousedown` implementation after our focus which will instantly
+         * `blur` the thumb again (because it effectively clicks off the thumb).
+         *
+         * We use a `setTimeout`  to move the focus to the next tick (after the
+         * mousedown) to ensure focus on mousedown.
+         */
+        window.setTimeout(() => focusThumb(valueIndexToChange), 0);
+      });
+    }
+
+    function handleSlideMove(value: number) {
+      updateValues(value, valueIndexToChangeRef.current).then(focusThumb);
+    }
+
+    function updateValues(value: number, atIndex: number): Promise<number> {
+      const snapToStep = Math.round((value - min) / step) * step + min;
+      const nextValue = clamp(snapToStep, [min, max]);
+
+      return new Promise((resolve) => {
+        setValues((prevValues = []) => {
+          const prevValue = prevValues[atIndex];
+          const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
+          valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
+          resolve(valueIndexToChangeRef.current);
+          return nextValues[atIndex] !== prevValue ? nextValues : prevValues;
+        });
+      });
+    }
+
+    function focusThumb(index: number) {
+      const thumbs = [...thumbRefs.current];
+      thumbs[index]?.focus();
+    }
 
     return (
-      <SliderContext.Provider value={context}>
-        <Comp
-          {...interopDataAttrObj('root')}
-          {...sliderProps}
-          ref={composedRefs}
-          onKeyDown={isDisabled ? undefined : handleKeyDown}
-          style={{ height, ...style }}
-        >
-          {children}
+      <SliderOrientation
+        {...sliderProps}
+        {...interopDataAttrObj('root')}
+        ref={composedRefs}
+        min={min}
+        max={max}
+        aria-disabled={disabled}
+        data-disabled={disabled}
+        onSlideStart={disabled ? undefined : handleSlideStart}
+        onSlideMove={disabled ? undefined : handleSlideMove}
+        onHomeKeyDown={() => !disabled && updateValues(min, 0)}
+        onEndKeyDown={() => !disabled && updateValues(max, values.length - 1)}
+        onStepKeyDown={({ event, direction: stepDirection }) => {
+          if (!disabled) {
+            const isPageKey = PAGE_KEYS.includes(event.key);
+            const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
+            const multiplier = isSkipKey ? 10 : 1;
+            const atIndex = valueIndexToChangeRef.current;
+            const value = values[atIndex];
+            const stepInDirection = step * multiplier * stepDirection;
+            updateValues(value + stepInDirection, atIndex);
+          }
+        }}
+      >
+        {/**
+         * When consumer provides `name`, they are most likely uncontrolling so
+         * we render `input`s that will bubble the value change.
+         */}
+        {name &&
+          values.map((value, index) => (
+            <BubbleInput
+              key={index}
+              name={name + (values.length > 1 ? '[]' : '')}
+              value={value}
+              hidden
+            />
+          ))}
 
-          {/**
-           * When consumer provides `name`, they are most likely uncontrolling so
-           * we render `input`s that will dispatch the values.
-           *
-           * We purposefully do not use `type="hidden"` here otherwise forms that
-           * wrap it will not be able to access its value via the FormData API.
-           *
-           * We purposefully do not add the `value` attribute here to allow the value
-           * to be set programatically and bubbled to any parent form `onChange` event.
-           * Adding the `value` will cause React to consider the programatic
-           * dispatch a duplicate and it will get swallowed.
-           */}
-          {name &&
-            values.map((value, index) => (
-              <input
-                key={index}
-                name={name + (isRange ? '[]' : '')}
-                ref={(ref) => ref && (inputRefs.current[index] = ref)}
-                hidden
-              />
-            ))}
-        </Comp>
-      </SliderContext.Provider>
+        <SliderContext.Provider
+          value={React.useMemo(
+            () => ({
+              min,
+              max,
+              valueIndexToChangeRef,
+              thumbs: thumbRefs.current,
+              values,
+              orientation,
+            }),
+            [min, max, values, orientation]
+          )}
+        >
+          <SliderCollectionProvider>{children}</SliderCollectionProvider>
+        </SliderContext.Provider>
+      </SliderOrientation>
     );
   }
 );
+
+/* -------------------------------------------------------------------------------------------------
+ * SliderHorizontal
+ * -----------------------------------------------------------------------------------------------*/
+
+const SliderOrientationContext = React.createContext<{
+  startEdge: 'bottom' | 'left';
+  endEdge: 'top' | 'right';
+  size: keyof NonNullable<ReturnType<typeof useSize>>;
+}>({} as any);
+
+type SliderOrientationProps = SliderPartDOMProps & {
+  min: number;
+  max: number;
+  onSlideStart?(value: number): void;
+  onSlideMove?(value: number): void;
+  onHomeKeyDown(event: React.KeyboardEvent): void;
+  onEndKeyDown(event: React.KeyboardEvent): void;
+  onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
+};
+
+type SliderHorizontalProps = SliderOrientationProps & {
+  dir?: Direction;
+};
+
+const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalProps>(
+  function SliderHorizontal(props, forwardedRef) {
+    const {
+      min,
+      max,
+      dir,
+      children,
+      onSlideStart,
+      onSlideMove,
+      onStepKeyDown,
+      ...sliderProps
+    } = props;
+    const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
+    const ref = useComposedRefs(forwardedRef, sliderRef);
+    const rectRef = React.useRef<ClientRect>();
+    const direction = useDirection({ ref: sliderRef, directionProp: dir });
+    const isDirectionLTR = direction === 'ltr';
+
+    function getValueFromPointer(pointerPosition: number) {
+      const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
+      const input: [number, number] = [0, rect.width];
+      const output: [number, number] = isDirectionLTR ? [min, max] : [max, min];
+      const value = linearScale(input, output);
+
+      rectRef.current = rect;
+      return value(pointerPosition - rect.left);
+    }
+
+    return (
+      <SliderPart
+        {...sliderProps}
+        ref={ref}
+        style={{
+          ...sliderProps.style,
+          ['--thumb-transform' as any]: 'translateX(-50%)',
+        }}
+        onSlideMouseDown={(event) => {
+          const value = getValueFromPointer(event.clientX);
+          onSlideStart?.(value);
+        }}
+        onSlideMouseMove={(event) => {
+          const value = getValueFromPointer(event.clientX);
+          onSlideMove?.(value);
+        }}
+        onSlideMouseUp={() => (rectRef.current = undefined)}
+        onSlideTouchStart={(event) => {
+          const touch = event.targetTouches[0];
+          const value = getValueFromPointer(touch.clientX);
+          onSlideStart?.(value);
+        }}
+        onSlideTouchMove={(event) => {
+          const touch = event.targetTouches[0];
+          const value = getValueFromPointer(touch.clientX);
+          onSlideMove?.(value);
+        }}
+        onSlideTouchEnd={() => (rectRef.current = undefined)}
+        onStepKeyDown={(event) => {
+          const isBackKey = BACK_KEYS[direction].includes(event.key);
+          onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
+        }}
+      >
+        <SliderOrientationContext.Provider
+          value={React.useMemo(() => ({ startEdge: 'left', endEdge: 'right', size: 'width' }), [])}
+        >
+          {isDirectionLTR ? (
+            children
+          ) : (
+            <span
+              style={{
+                flexGrow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                transform: 'rotate(180deg)',
+              }}
+            >
+              {children}
+            </span>
+          )}
+        </SliderOrientationContext.Provider>
+      </SliderPart>
+    );
+  }
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * SliderVertical
+ * -----------------------------------------------------------------------------------------------*/
+
+type SliderVerticalProps = SliderOrientationProps;
+
+const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps>(
+  function SliderVertical(props, forwardedRef) {
+    const { min, max, children, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
+    const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
+    const ref = useComposedRefs(forwardedRef, sliderRef);
+    const rectRef = React.useRef<ClientRect>();
+
+    function getValueFromPointer(pointerPosition: number) {
+      const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
+      const input: [number, number] = [0, rect.height];
+      const output: [number, number] = [max, min];
+      const value = linearScale(input, output);
+
+      rectRef.current = rect;
+      return value(pointerPosition - rect.top);
+    }
+
+    return (
+      <SliderPart
+        {...sliderProps}
+        ref={ref}
+        style={{
+          ...sliderProps.style,
+          ['--thumb-transform' as any]: 'translateY(50%)',
+        }}
+        onSlideMouseDown={(event) => {
+          const value = getValueFromPointer(event.clientY);
+          onSlideStart?.(value);
+        }}
+        onSlideMouseMove={(event) => {
+          const value = getValueFromPointer(event.clientY);
+          onSlideMove?.(value);
+        }}
+        onSlideMouseUp={() => (rectRef.current = undefined)}
+        onSlideTouchStart={(event) => {
+          const touch = event.targetTouches[0];
+          const value = getValueFromPointer(touch.clientY);
+          onSlideStart?.(value);
+        }}
+        onSlideTouchMove={(event) => {
+          const touch = event.targetTouches[0];
+          const value = getValueFromPointer(touch.clientY);
+          onSlideMove?.(value);
+        }}
+        onSlideTouchEnd={() => (rectRef.current = undefined)}
+        onStepKeyDown={(event) => {
+          const isBackKey = BACK_KEYS.ltr.includes(event.key);
+          onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
+        }}
+      >
+        <SliderOrientationContext.Provider
+          value={React.useMemo(() => ({ startEdge: 'bottom', endEdge: 'top', size: 'height' }), [])}
+        >
+          {children}
+        </SliderOrientationContext.Provider>
+      </SliderPart>
+    );
+  }
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * SliderPart
+ * -----------------------------------------------------------------------------------------------*/
+
+type SliderPartDOMProps = React.ComponentPropsWithoutRef<typeof SLIDER_DEFAULT_TAG>;
+type SliderPartOwnProps = {
+  onSlideMouseDown(event: React.MouseEvent): void;
+  onSlideMouseMove(event: MouseEvent): void;
+  onSlideMouseUp(): void;
+  onSlideTouchStart(event: React.TouchEvent): void;
+  onSlideTouchMove(event: TouchEvent): void;
+  onSlideTouchEnd(): void;
+  onHomeKeyDown(event: React.KeyboardEvent): void;
+  onEndKeyDown(event: React.KeyboardEvent): void;
+  onStepKeyDown(event: React.KeyboardEvent): void;
+};
+type SliderPartProps = SliderPartDOMProps & SliderPartOwnProps;
+
+const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(function SliderPart(
+  props,
+  forwardedRef
+) {
+  const {
+    as: Comp = SLIDER_DEFAULT_TAG,
+    onSlideMouseDown,
+    onSlideMouseMove,
+    onSlideMouseUp,
+    onSlideTouchStart,
+    onSlideTouchMove,
+    onSlideTouchEnd,
+    onHomeKeyDown,
+    onEndKeyDown,
+    onStepKeyDown,
+    ...sliderProps
+  } = props;
+
+  const handleSlideMouseMove = useCallbackRef(onSlideMouseMove);
+  const handleSlideTouchMove = useCallbackRef(onSlideTouchMove);
+  const removeMouseEventListeners = useCallbackRef(() => {
+    document.removeEventListener('mousemove', handleSlideMouseMove);
+    document.removeEventListener('mouseup', removeMouseEventListeners);
+    onSlideMouseUp();
+  });
+  const removeTouchEventListeners = useCallbackRef(() => {
+    document.removeEventListener('touchmove', handleSlideTouchMove);
+    document.removeEventListener('touchend', removeTouchEventListeners);
+    onSlideTouchEnd();
+  });
+
+  React.useEffect(() => {
+    return () => {
+      removeMouseEventListeners();
+      removeTouchEventListeners();
+    };
+  }, [removeMouseEventListeners, removeTouchEventListeners]);
+
+  return (
+    <Comp
+      {...sliderProps}
+      ref={forwardedRef}
+      onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
+        // Slide only if main mouse button was clicked
+        if (event.button === 0) {
+          if (!isThumb(event.target)) onSlideMouseDown(event);
+          document.addEventListener('mousemove', handleSlideMouseMove);
+          document.addEventListener('mouseup', removeMouseEventListeners);
+        }
+        // We purpoesfully avoid calling `event.preventDefault` here as it will
+        // also prevent PointerEvents which we need.
+      })}
+      onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
+        if (isThumb(event.target)) {
+          // Touch devices have a delay before focusing and won't focus if touch
+          // immediatedly moves away from target. We want thumb to focus regardless.
+          event.target.focus();
+        } else {
+          onSlideTouchStart(event);
+        }
+
+        document.addEventListener('touchmove', handleSlideTouchMove);
+        document.addEventListener('touchend', removeTouchEventListeners);
+        // Prevent scrolling for touch events
+        event.preventDefault();
+      })}
+      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        if (event.key === 'Home') {
+          onHomeKeyDown(event);
+        } else if (event.key === 'End') {
+          onEndKeyDown(event);
+        } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(event.key)) {
+          onStepKeyDown(event);
+          // Prevent scrolling for directional key presses
+          event.preventDefault();
+        }
+      })}
+      /**
+       * Prevent pointer events on other elements on the page while sliding.
+       * For example, stops hover states from triggering on buttons if
+       * mouse moves over a button during slide.
+       *
+       * Also ensures that slider receives all pointer events after mouse down
+       * even when mouse moves outside the document.
+       */
+      onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      })}
+      onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      })}
+    />
+  );
+});
 
 /* -------------------------------------------------------------------------------------------------
  * SliderTrack
@@ -387,31 +514,9 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   forwardedRef
 ) {
   const { as: Comp = TRACK_DEFAULT_TAG, children, ...trackProps } = props;
-  const context = useSliderContext(TRACK_NAME);
-  const ref = React.useRef<HTMLSpanElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
-  const size = useSize(ref);
-  const prevSize = usePrevious(size);
-
-  React.useLayoutEffect(() => {
-    if (size && prevSize !== size) {
-      context.updateSize('track', size);
-    }
-  }, [context, prevSize, size]);
-
   return (
-    <Comp {...interopDataAttrObj('track')} {...trackProps} ref={composedRefs}>
-      <span
-        style={{
-          display: 'block',
-          height: '100%',
-          position: 'relative',
-          borderRadius: 'inherit',
-          overflow: 'hidden',
-        }}
-      >
-        {children}
-      </span>
+    <Comp {...interopDataAttrObj('track')} {...trackProps} ref={forwardedRef}>
+      {children}
     </Comp>
   );
 });
@@ -431,21 +536,26 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
 ) {
   const { as: Comp = RANGE_DEFAULT_TAG, style, ...rangeProps } = props;
   const context = useSliderContext(RANGE_NAME);
+  const orientation = React.useContext(SliderOrientationContext);
   const ref = React.useRef<HTMLSpanElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const valuesCount = context.values.length;
   const percentages = context.values.map((value) =>
-    getValuePercent(value, context.min, context.max)
+    convertValueToPercentage(value, context.min, context.max)
   );
-  const left = valuesCount > 1 ? Math.min(...percentages) : 0;
-  const right = 100 - Math.max(...percentages);
+  const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
+  const offsetEnd = 100 - Math.max(...percentages);
 
   return (
     <Comp
       {...interopDataAttrObj('range')}
       {...rangeProps}
       ref={composedRefs}
-      style={{ left: left + '%', right: right + '%', ...style }}
+      style={{
+        ...style,
+        [orientation.startEdge]: offsetStart + '%',
+        [orientation.endEdge]: offsetEnd + '%',
+      }}
     />
   );
 });
@@ -460,70 +570,73 @@ const THUMB_DEFAULT_TAG = 'span';
 type SliderThumbDOMProps = React.ComponentPropsWithoutRef<typeof THUMB_DEFAULT_TAG>;
 type SliderThumbOwnProps = {};
 type SliderThumbProps = SliderThumbDOMProps & SliderThumbOwnProps;
+type SliderThumbImplProps = SliderThumbProps & { value: number; index: number };
 
 const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(function SliderThumb(
   props,
   forwardedRef
 ) {
-  const { as: Comp = THUMB_DEFAULT_TAG, onFocus, style, ...thumbProps } = props;
+  const { ref: collectionRef, index } = useSliderCollectionItem();
+  const ref = useComposedRefs(forwardedRef, collectionRef);
   const context = useSliderContext(THUMB_NAME);
-
-  // destructure for references so that we don't need `context` as effect dependency
-  const { updateSize, addThumb, removeThumb, thumbNodes } = context;
-  const ref = React.useRef<HTMLSpanElement>(null);
-  const size = useSize(ref);
-  const prevSize = usePrevious(size);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
-
-  const index = [...thumbNodes].findIndex((node) => node === ref.current);
-  const value = context.values[index] ?? context.min;
-  const left = getValuePercent(value, context.min, context.max);
-  const xOffset = size?.width ? getElementOffset(size.width, left) : 0;
-  const label = getLabel();
-
-  function getLabel() {
-    if (context.values.length === 2) {
-      return index === 0 ? 'Minimum' : 'Maximum';
-    } else if (context.values.length > 2) {
-      // Not perfect but gives user some context
-      return `Value ${index + 1} of ${context.values.length}`;
-    }
-    return undefined;
-  }
-
-  function handleFocus(event: React.FocusEvent<any>) {
-    context.selectThumb(event.currentTarget);
-  }
-
-  React.useLayoutEffect(() => {
-    const node = ref.current as HTMLSpanElement;
-    addThumb(node);
-    return () => removeThumb(node);
-  }, [addThumb, removeThumb]);
-
-  React.useLayoutEffect(() => {
-    if (size && prevSize !== size) {
-      updateSize('thumb', size);
-    }
-  }, [updateSize, prevSize, size]);
-
-  return (
-    <Comp
-      {...interopDataAttrObj('thumb')}
-      aria-label={props['aria-label'] || label}
-      aria-valuemin={context.min}
-      aria-valuenow={value}
-      aria-valuemax={context.max}
-      aria-orientation="horizontal"
-      role="slider"
-      tabIndex={0}
-      {...thumbProps}
-      ref={composedRefs}
-      style={{ left: `calc(${left}% + ${xOffset}px)`, ...style }}
-      onFocus={composeEventHandlers(onFocus, handleFocus)}
-    />
-  );
+  const value = context.values[index];
+  return value !== undefined ? (
+    <SliderThumbImpl {...props} ref={ref} index={index} value={value} />
+  ) : null;
 });
+
+const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProps>(
+  function SliderThumbImpl(props, forwardedRef) {
+    const { as: Comp = THUMB_DEFAULT_TAG, index, value, ...thumbProps } = props;
+    const context = useSliderContext(THUMB_NAME);
+    const orientation = React.useContext(SliderOrientationContext);
+    const thumbRef = React.useRef<HTMLSpanElement>(null);
+    const ref = useComposedRefs(forwardedRef, thumbRef);
+    const size = useSize(thumbRef);
+    const percent = convertValueToPercentage(value, context.min, context.max);
+    const label = getLabel(index, context.values.length);
+    const orientationSize = size?.[orientation.size];
+    const thumbInBoundsOffset = orientationSize
+      ? getThumbInBoundsOffset(orientationSize, percent)
+      : 0;
+
+    React.useEffect(() => {
+      const thumb = thumbRef.current;
+      if (thumb) {
+        context.thumbs.add(thumb);
+        return () => {
+          context.thumbs.delete(thumb);
+        };
+      }
+    }, [context.thumbs]);
+
+    return (
+      <span
+        style={{
+          transform: 'var(--thumb-transform)',
+          position: 'absolute',
+          [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
+        }}
+      >
+        <Comp
+          {...thumbProps}
+          {...interopDataAttrObj('thumb')}
+          ref={ref}
+          aria-label={props['aria-label'] || label}
+          aria-valuemin={context.min}
+          aria-valuenow={value}
+          aria-valuemax={context.max}
+          aria-orientation={context.orientation}
+          role="slider"
+          tabIndex={0}
+          onFocus={composeEventHandlers(props.onFocus, () => {
+            context.valueIndexToChangeRef.current = index;
+          })}
+        />
+      </span>
+    );
+  }
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -547,32 +660,22 @@ const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
     ...cssReset(SLIDER_DEFAULT_TAG),
     position: 'relative',
     display: 'inline-flex',
-    alignItems: 'center',
-    width: '100%',
     flexShrink: 0,
     userSelect: 'none',
-    touchAction: 'none', // Prevent parent/window scroll when sliding on touch devices
-    zIndex: 0, // create new stacking context
+    touchAction: 'none', // Disable browser handling of all panning and zooming gestures on touch devices
   },
   track: {
     ...cssReset(TRACK_DEFAULT_TAG),
-    display: 'block',
     position: 'relative',
     flexGrow: 1,
   },
   range: {
     ...cssReset(RANGE_DEFAULT_TAG),
-    display: 'block',
     position: 'absolute',
-    height: '100%',
   },
   thumb: {
     ...cssReset(THUMB_DEFAULT_TAG),
     display: 'block',
-    position: 'absolute',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    zIndex: 1,
     outline: 'none',
 
     // Add recommended target size regardless of styled size
@@ -589,37 +692,117 @@ const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
   },
 });
 
-export type { SliderProps, SliderRangeProps, SliderTrackProps, SliderThumbProps };
-export { Slider, styles };
-
 /* -----------------------------------------------------------------------------------------------*/
 
-function valuesOf<T>(object: T) {
-  return typeof Object.values !== 'undefined'
-    ? Object.values(object)
-    : Object.keys(object).map((key) => object[key as keyof T]);
+const BubbleInput = (props: React.ComponentProps<'input'>) => {
+  const { value, ...inputProps } = props;
+  const ref = React.useRef<HTMLInputElement>(null);
+
+  // Bubble value change to parents (e.g form change event)
+  React.useEffect(() => {
+    const input = ref.current!;
+    const inputProto = window.HTMLInputElement.prototype;
+    const { set } = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
+
+    if (set) {
+      const event = new Event('input', { bubbles: true });
+      set.call(input, value);
+      input.dispatchEvent(event);
+    }
+  }, [value]);
+
+  /**
+   * We purposefully do not use `type="hidden"` here otherwise forms that
+   * wrap it will not be able to access its value via the FormData API.
+   *
+   * We purposefully do not add the `value` attribute here to allow the value
+   * to be set programatically and bubble to any parent form `onChange` event.
+   * Adding the `value` will cause React to consider the programatic
+   * dispatch a duplicate and it will get swallowed.
+   */
+  return <input hidden {...inputProps} ref={ref} />;
+};
+
+function useDirection({
+  ref,
+  directionProp,
+}: {
+  ref: React.RefObject<any>;
+  directionProp?: Direction;
+}) {
+  const [direction, setDirection] = React.useState<Direction>('ltr');
+  const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
+  const rAFRef = React.useRef<number>(0);
+
+  React.useEffect(() => {
+    if (directionProp === undefined) {
+      const computedStyle = getComputedStyle(ref.current);
+      setComputedStyle(computedStyle);
+    }
+  }, [directionProp, ref]);
+
+  React.useEffect(() => {
+    function getDirection() {
+      rAFRef.current = requestAnimationFrame(() => {
+        const dir = computedStyle?.direction as Direction | '' | undefined;
+        if (dir) setDirection(dir);
+        getDirection();
+      });
+    }
+
+    if (directionProp === undefined) getDirection();
+    return () => cancelAnimationFrame(rAFRef.current);
+  }, [computedStyle, directionProp, setDirection]);
+
+  return directionProp || direction;
 }
 
-function sort(values: number[]) {
-  return [...values].sort((a, b) => a - b);
+function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number) {
+  const nextValues = [...prevValues];
+  nextValues[atIndex] = nextValue;
+  return nextValues.sort((a, b) => a - b);
 }
 
-function toArray(value?: number | number[]): number[] {
-  if (value === undefined) return [];
+function toArray(value: number | number[]): number[] {
   return Array.isArray(value) ? value : [value];
 }
 
-function focusThumb(thumbNodes: Set<HTMLElement>, thumbIndex: number) {
-  const activeThumb = Array.from(thumbNodes)[thumbIndex];
-  if (activeThumb) activeThumb.focus();
+function isThumb(node: any): node is HTMLElement {
+  const thumbAttributeName = interopDataAttr(THUMB_NAME);
+  const thumbAttribute = node.getAttribute(thumbAttributeName);
+  // `getAttribute` returns the attribute value and since we add the
+  // attribute without a value, we must check it is an empty string
+  // to determine its existence
+  return thumbAttribute === '';
 }
 
-function getUpdatedValues(valueIndex: number, prevValues: number[], value: number) {
-  const nextValues = [...prevValues];
-  nextValues[valueIndex] = value;
-  return nextValues;
+function convertValueToPercentage(value: number, min: number, max: number) {
+  const maxSteps = max - min;
+  const percentPerStep = 100 / maxSteps;
+  return percentPerStep * (value - min);
 }
 
+/**
+ * Returns a label for each thumb when there are two or more thumbs
+ */
+function getLabel(index: number, totalValues: number) {
+  if (totalValues > 2) {
+    return `Value ${index + 1} of ${totalValues}`;
+  } else if (totalValues === 2) {
+    return ['Minimum', 'Maximum'][index];
+  } else {
+    return undefined;
+  }
+}
+
+/**
+ * Given a `values` array and a `nextValue`, determine which value in
+ * the array is closest to `nextValue` and return its index.
+ *
+ * @example
+ * // returns 1
+ * getClosestValueIndex([10, 30], 25);
+ */
 function getClosestValueIndex(values: number[], nextValue: number) {
   if (values.length === 1) return 0;
   const distances = values.map((value) => Math.abs(value - nextValue));
@@ -627,31 +810,11 @@ function getClosestValueIndex(values: number[], nextValue: number) {
   return distances.indexOf(closestDistance);
 }
 
-function getSnappedValue(value: number, sliderBounds: SliderBounds) {
-  const { min, max, step } = sliderBounds;
-  const snapToStep = Math.round((value - min) / step) * step + min;
-  return clamp(snapToStep, [min, max]);
-}
-
-function getTargetValueFromPx(
-  slider: HTMLElement,
-  pointerLeft: number,
-  sliderBounds: Pick<SliderBounds, 'min' | 'max'>
-) {
-  const { min, max } = sliderBounds;
-  const sliderRect = slider.getBoundingClientRect();
-  const value = linearScale([0, sliderRect.width], [min, max]);
-  return value(pointerLeft - sliderRect.left);
-}
-
-function getValuePercent(value: number, min: number, max: number) {
-  const maxSteps = max - min;
-  const percentPerStep = 100 / maxSteps;
-  return percentPerStep * (value - min);
-}
-
-// Prevents element positioning from breaking outside of slider bounds
-function getElementOffset(width: number, left: number) {
+/**
+ * Offsets the thumb centre point while sliding to ensure it remains
+ * within the bounds of the slider when reaching the edges
+ */
+function getThumbInBoundsOffset(width: number, left: number) {
   const halfWidth = width / 2;
   const halfPercent = 50;
   const offset = linearScale([0, halfPercent], [0, halfWidth]);
@@ -667,10 +830,5 @@ function linearScale(domain: [number, number], range: [number, number]) {
   };
 }
 
-type SliderParts = 'track' | 'range' | 'thumb';
-
-type SliderBounds = {
-  min: number;
-  max: number;
-  step: number;
-};
+export type { SliderProps, SliderRangeProps, SliderTrackProps, SliderThumbProps };
+export { Slider, styles };
