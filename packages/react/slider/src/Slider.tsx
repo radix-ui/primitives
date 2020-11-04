@@ -848,7 +848,7 @@ function getThumbInBoundsOffset(width: number, left: number) {
  * getStepsBetweenValues([10, 11, 20]);
  */
 function getStepsBetweenValues(values: number[]) {
-  return values.slice(0, -1).map((value: number, index: number) => values[index + 1] - value);
+  return values.slice(0, -1).map((value, index) => values[index + 1] - value);
 }
 
 /**
