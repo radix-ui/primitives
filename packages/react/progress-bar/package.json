@@ -1,6 +1,6 @@
 {
   "name": "@interop-ui/react-progress-bar",
-  "version": "0.0.1-7",
+  "version": "0.0.1-8",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
