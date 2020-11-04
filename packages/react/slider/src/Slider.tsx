@@ -867,8 +867,8 @@ function getStepsBetweenValues(values: number[]) {
 function hasMinStepsBetweenValues(values: number[], minStepsBetweenValues: number) {
   if (minStepsBetweenValues > 0) {
     const stepsBetweenValues = getStepsBetweenValues(values);
-    const stepsBetweenActiveRange = Math.min(...stepsBetweenValues);
-    return stepsBetweenActiveRange >= minStepsBetweenValues;
+    const actualMinStepsBetweenValues = Math.min(...stepsBetweenValues);
+    return actualMinStepsBetweenValues >= minStepsBetweenValues;
   }
   return true;
 }
