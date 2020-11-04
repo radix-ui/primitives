@@ -110,11 +110,11 @@ export const Vertical = () => {
   );
 };
 
-export const WithMinimumStep = () => {
+export const WithMinimumStepsBetweenThumbs = () => {
   const [isFocusRange, setIsFocusRange] = React.useState([false, false]);
 
   return (
-    <Slider as={Root} defaultValue={[10, 30]} style={{ height: 15 }} minStep={3}>
+    <Slider as={Root} defaultValue={[10, 30]} style={{ height: 15 }} minStepsBetweenThumbs={3}>
       <Slider.Track as={Track} style={{ height: 4 }}>
         <Slider.Range as={Range} style={{ height: '100%' }} />
       </Slider.Track>

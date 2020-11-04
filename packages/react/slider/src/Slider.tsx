@@ -39,12 +39,12 @@ type SliderControlledProps = { value: number; onChange?(value: number): void };
 type SliderUncontrolledProps = { defaultValue: number; onChange?(value: number): void };
 type SliderRangeControlledProps = {
   value: number[];
-  minStep?: number;
+  minStepsBetweenThumbs?: number;
   onChange?(value: number[]): void;
 };
 type SliderRangeUncontrolledProps = {
   defaultValue: number[];
-  minStep?: number;
+  minStepsBetweenThumbs?: number;
   onChange?: (value: number[]) => void;
 };
 type SliderOwnProps = {
@@ -93,9 +93,17 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
 
     const { defaultValue } = props as SliderUncontrolledProps | SliderRangeUncontrolledProps;
     const { value } = props as SliderControlledProps | SliderRangeControlledProps;
-    const { minStep = 0 } = props as SliderRangeControlledProps | SliderRangeUncontrolledProps;
+    const { minStepsBetweenThumbs = 0 } = props as
+      | SliderRangeControlledProps
+      | SliderRangeUncontrolledProps;
+
+    const sliderProps = omit(restProps, [
+      'defaultValue',
+      'value',
+      'minStepsBetweenThumbs',
+    ]) as SliderDOMProps;
+
     const step = Math.max(stepProp, 1);
-    const sliderProps = omit(restProps, ['defaultValue', 'value', 'minStep']) as SliderDOMProps;
     const sliderRef = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, sliderRef);
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
@@ -147,7 +155,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
           const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
           const prevValue = prevValues[atIndex];
 
-          if (hasMinStepsBetweenValues(nextValues, minStep * step)) {
+          if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
             valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
             resolve(valueIndexToChangeRef.current);
             return nextValues[atIndex] !== prevValue ? nextValues : prevValues;
