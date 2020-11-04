@@ -42,7 +42,7 @@ const [TooltipContext, useTooltipContext] = createContext<TooltipContextValue>(
  * State machine
  * -----------------------------------------------------------------------------------------------*/
 
-const stateMachine = createStateMachine(stateChart, { debug: true });
+const stateMachine = createStateMachine(stateChart);
 
 /* -------------------------------------------------------------------------------------------------
  * Tooltip
