@@ -64,16 +64,6 @@ export const WithCustomArrow = () => {
   );
 };
 
-const slideDown = css.keyframes({
-  '0%': { transform: 'translateY(-100px)', opacity: 0 },
-  '100%': { transform: 'translateY(0)', opacity: 1 },
-});
-
-const AnimatedPopper = styled('div', {
-  ...styles.root,
-  animation: `${slideDown} 200ms`,
-});
-
 export const Animated = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
@@ -84,11 +74,11 @@ export const Animated = () => {
 
       {isOpen && (
         <Portal>
-          <Popper as={AnimatedPopper} anchorRef={anchorRef}>
+          <Popper as={AnimatedPopper} anchorRef={anchorRef} sideOffset={10}>
             <Popper.Content as={Content}>
               <button onClick={() => setIsOpen(false)}>close</button>
             </Popper.Content>
-            <Popper.Arrow width={50} height={20} style={styles.arrow} />
+            <Popper.Arrow width={50} height={20} style={styles.arrow} offset={25} />
           </Popper>
         </Portal>
       )}
@@ -132,3 +122,15 @@ function MyArrow(props: any) {
     />
   );
 }
+
+const rotateIn = css.keyframes({
+  '0%': { transform: 'scale(0) rotateZ(calc(var(--direction, 0) * 45deg))' },
+  '100%': { transform: 'scale(1)' },
+});
+
+const AnimatedPopper = styled('div', {
+  ...styles.root,
+  '&[data-side="top"]': { '--direction': '1' },
+  '&[data-side="bottom"]': { '--direction': '-1' },
+  animation: `${rotateIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
+});

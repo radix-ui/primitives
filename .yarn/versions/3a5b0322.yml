@@ -1,0 +1,12 @@
+releases:
+  "@interop-ui/popper": prerelease
+  "@interop-ui/react-alert-dialog": prerelease
+  "@interop-ui/react-aspect-ratio": prerelease
+  "@interop-ui/react-dialog": prerelease
+  "@interop-ui/react-dismissable-layer": prerelease
+  "@interop-ui/react-popover": prerelease
+  "@interop-ui/react-popper": prerelease
+  "@interop-ui/react-tooltip": prerelease
+
+declined:
+  - interop-ui

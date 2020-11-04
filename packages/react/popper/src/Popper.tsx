@@ -75,7 +75,7 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     const arrowSize = useSize(arrowRef);
     const debugContext = useDebugContext();
 
-    const { popperStyles, arrowStyles } = getPlacementData({
+    const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
       anchorRect,
       popperSize: contentSize,
       arrowSize,
@@ -89,20 +89,27 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
       collisionTolerance,
       shouldAvoidCollisions: shouldAvoidCollisions && !debugContext.disableCollisionChecking,
     });
+    const isPlaced = placedSide !== undefined;
 
-    const context = React.useMemo(
-      () => ({
-        contentRef,
-        arrowRef,
-        arrowStyles,
-        setArrowOffset,
-      }),
-      [arrowStyles]
-    );
+    const context = React.useMemo(() => ({ contentRef, arrowRef, arrowStyles, setArrowOffset }), [
+      arrowStyles,
+    ]);
 
     return (
       <div style={popperStyles}>
-        <Comp {...interopDataAttrObj('root')} {...popperProps} ref={forwardedRef}>
+        <Comp
+          {...interopDataAttrObj('root')}
+          {...popperProps}
+          style={{
+            ...popperProps.style,
+            // if the Popper hasn't been placed yet (not all measurements done)
+            // we prevent animations so that users's animation don't kick in too early referring wrong sides
+            animation: !isPlaced ? 'none' : undefined,
+          }}
+          ref={forwardedRef}
+          data-side={placedSide}
+          data-align={placedAlign}
+        >
           <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
         </Comp>
       </div>
@@ -184,6 +191,7 @@ Popper.Arrow.displayName = ARROW_NAME;
 const [styles, interopDataAttrObj] = createStyleObj(POPPER_NAME, {
   root: {
     ...cssReset(POPPER_DEFAULT_TAG),
+    transformOrigin: 'var(--interop-popper-transform-origin)',
   },
   content: {
     ...cssReset(CONTENT_DEFAULT_TAG),

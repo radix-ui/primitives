@@ -37,9 +37,8 @@ type GetPlacementDataOptions = {
 type PlacementData = {
   popperStyles: CSS.Properties;
   arrowStyles: CSS.Properties;
-  transformOriginStyles: CSS.Properties;
-  adjustedSide: Side;
-  adjustedAlign: Align;
+  placedSide?: Side;
+  placedAlign?: Align;
 };
 
 /**
@@ -48,11 +47,10 @@ type PlacementData = {
  *
  * It will return:
  *
- * - the styles to apply to the popper
+ * - the styles to apply to the popper (including a custom property that is useful to set the transform origin in the right place)
  * - the styles to apply to the arrow
- * - some styles that could be useful to set the transform origin in the right place
- * - the adjusted side (because it might have changed because of collisions)
- * - the adjusted align (because it might have changed because of collisions)
+ * - the placed side (because it might have changed because of collisions)
+ * - the placed align (because it might have changed because of collisions)
  */
 export function getPlacementData({
   anchorRect,
@@ -72,9 +70,6 @@ export function getPlacementData({
     return {
       popperStyles: UNMEASURED_POPPER_STYLES,
       arrowStyles: UNMEASURED_ARROW_STYLES,
-      transformOriginStyles: {},
-      adjustedSide: side,
-      adjustedAlign: align,
     };
   }
 
@@ -99,20 +94,16 @@ export function getPlacementData({
       arrowStyles = getPopperArrowStyles({ popperSize, arrowSize, arrowOffset, side, align });
     }
 
-    const transformOriginStyles = getTransformOriginStyles(
-      popperSize,
-      side,
-      align,
-      arrowOffset,
-      arrowSize
-    );
+    const transformOrigin = getTransformOrigin(popperSize, side, align, arrowOffset, arrowSize);
 
     return {
-      popperStyles,
+      popperStyles: {
+        ...popperStyles,
+        ['--interop-popper-transform-origin' as any]: transformOrigin,
+      },
       arrowStyles,
-      transformOriginStyles,
-      adjustedSide: side,
-      adjustedAlign: align,
+      placedSide: side,
+      placedAlign: align,
     };
   }
 
@@ -133,14 +124,14 @@ export function getPlacementData({
   );
 
   // adjust side accounting for collisions / opposite side collisions
-  const adjustedSide = getSideAccountingForCollisions(
+  const placedSide = getSideAccountingForCollisions(
     side,
     popperCollisions,
     oppositeSidePopperCollisions
   );
 
   // adjust alignnment accounting for collisions
-  const adjustedAlign = getAlignAccountingForCollisions(
+  const placedAlign = getAlignAccountingForCollisions(
     popperSize,
     anchorRect,
     side,
@@ -148,10 +139,10 @@ export function getPlacementData({
     popperCollisions
   );
 
-  const adjustedPopperPoint = allPlacementPoints[adjustedSide][adjustedAlign];
+  const placedPopperPoint = allPlacementPoints[placedSide][placedAlign];
 
-  // compute adjusted popper / arrow / transform origin styles
-  const popperStyles = getPlacementStylesForPoint(adjustedPopperPoint);
+  // compute adjusted popper / arrow styles
+  const popperStyles = getPlacementStylesForPoint(placedPopperPoint);
 
   let arrowStyles = UNMEASURED_ARROW_STYLES;
   if (arrowSize) {
@@ -159,25 +150,27 @@ export function getPlacementData({
       popperSize,
       arrowSize,
       arrowOffset,
-      side: adjustedSide,
-      align: adjustedAlign,
+      side: placedSide,
+      align: placedAlign,
     });
   }
 
-  const transformOriginStyles = getTransformOriginStyles(
+  const transformOrigin = getTransformOrigin(
     popperSize,
-    adjustedSide,
-    adjustedAlign,
+    placedSide,
+    placedAlign,
     arrowOffset,
     arrowSize
   );
 
   return {
-    popperStyles,
+    popperStyles: {
+      ...popperStyles,
+      ['--interop-popper-transform-origin' as any]: transformOrigin,
+    },
     arrowStyles,
-    transformOriginStyles,
-    adjustedSide,
-    adjustedAlign,
+    placedSide,
+    placedAlign,
   };
 }
 
@@ -310,13 +303,13 @@ function getPlacementStylesForPoint(point: Point): CSS.Properties {
   };
 }
 
-function getTransformOriginStyles(
+function getTransformOrigin(
   popperSize: Size,
   side: Side,
   align: Align,
   arrowOffset: number,
   arrowSize?: Size
-): CSS.Properties {
+): CSS.Properties['transformOrigin'] {
   const isHorizontalSide = side === 'top' || side === 'bottom';
 
   const arrowBaseLength = arrowSize ? arrowSize.width : 0;
@@ -345,9 +338,7 @@ function getTransformOriginStyles(
     }[align];
   }
 
-  return {
-    transformOrigin: `${x} ${y}`,
-  };
+  return `${x} ${y}`;
 }
 
 const UNMEASURED_POPPER_STYLES: CSS.Properties = {
