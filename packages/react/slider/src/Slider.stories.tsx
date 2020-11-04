@@ -24,14 +24,12 @@ export const Horizontal = () => {
         </Slider.Track>
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusRange[0]}
           onFocus={() => setIsFocusRange([true, false])}
           onBlur={() => setIsFocusRange([false, false])}
         />
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusRange[1]}
           onFocus={() => setIsFocusRange([false, true])}
           onBlur={() => setIsFocusRange([false, false])}
@@ -46,7 +44,6 @@ export const Horizontal = () => {
         </Slider.Track>
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusSingle}
           onFocus={() => setIsFocusSingle(true)}
           onBlur={() => setIsFocusSingle(false)}
@@ -73,14 +70,12 @@ export const Vertical = () => {
         </Slider.Track>
         <Slider.Thumb
           as={Thumb}
-          style={{ left: '50%' }}
           focused={isFocusRange[0]}
           onFocus={() => setIsFocusRange([true, false])}
           onBlur={() => setIsFocusRange([false, false])}
         />
         <Slider.Thumb
           as={Thumb}
-          style={{ left: '50%' }}
           focused={isFocusRange[1]}
           onFocus={() => setIsFocusRange([false, true])}
           onBlur={() => setIsFocusRange([false, false])}
@@ -100,7 +95,6 @@ export const Vertical = () => {
         </Slider.Track>
         <Slider.Thumb
           as={Thumb}
-          style={{ left: '50%' }}
           focused={isFocusSingle}
           onFocus={() => setIsFocusSingle(true)}
           onBlur={() => setIsFocusSingle(false)}
@@ -120,14 +114,12 @@ export const WithMinimumStepsBetweenThumbs = () => {
       </Slider.Track>
       <Slider.Thumb
         as={Thumb}
-        style={{ top: '50%' }}
         focused={isFocusRange[0]}
         onFocus={() => setIsFocusRange([true, false])}
         onBlur={() => setIsFocusRange([false, false])}
       />
       <Slider.Thumb
         as={Thumb}
-        style={{ top: '50%' }}
         focused={isFocusRange[1]}
         onFocus={() => setIsFocusRange([false, true])}
         onBlur={() => setIsFocusRange([false, false])}
@@ -166,28 +158,24 @@ export const WithMultipleRanges = () => {
         </Slider.Track>
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusRange[0]}
           onFocus={() => setIsFocusRange([true, false, false, false])}
           onBlur={() => setIsFocusRange([false, false, false, false])}
         />
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusRange[1]}
           onFocus={() => setIsFocusRange([false, true, false, false])}
           onBlur={() => setIsFocusRange([false, false, false, false])}
         />
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusRange[2]}
           onFocus={() => setIsFocusRange([false, false, true, false])}
           onBlur={() => setIsFocusRange([false, false, false, false])}
         />
         <Slider.Thumb
           as={Thumb}
-          style={{ top: '50%' }}
           focused={isFocusRange[3]}
           onFocus={() => setIsFocusRange([false, false, false, true])}
           onBlur={() => setIsFocusRange([false, false, false, false])}
