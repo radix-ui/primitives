@@ -153,12 +153,11 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       return new Promise((resolve) => {
         setValues((prevValues = []) => {
           const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
-          const prevValue = prevValues[atIndex];
 
           if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
             valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
             resolve(valueIndexToChangeRef.current);
-            return nextValues[atIndex] !== prevValue ? nextValues : prevValues;
+            return nextValues[atIndex] !== prevValues[atIndex] ? nextValues : prevValues;
           } else {
             resolve(valueIndexToChangeRef.current);
             return prevValues;
