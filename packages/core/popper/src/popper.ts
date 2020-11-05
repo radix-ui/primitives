@@ -441,7 +441,7 @@ function getPopperArrowStyles({
 /**
  * Adjusts the arrow's CSS direction (`ltr` / `rtl`)
  */
-function getArrowCssDirection(side: Side, align: Align): CSS.DirectionProperty {
+function getArrowCssDirection(side: Side, align: Align): CSS.Properties['direction'] {
   if ((side === 'top' || side === 'right') && align === 'end') {
     return 'rtl';
   }
