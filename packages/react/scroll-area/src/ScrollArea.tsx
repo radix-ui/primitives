@@ -21,11 +21,10 @@ import {
   memo,
   useCallbackRef,
   useComposedRefs,
-  useConstant,
   useLayoutEffect,
   usePrefersReducedMotion,
 } from '@interop-ui/react-utils';
-import { clamp, cssReset, isMainClick } from '@interop-ui/utils';
+import { cssReset, isMainClick } from '@interop-ui/utils';
 import * as React from 'react';
 import {
   Axis,
@@ -39,19 +38,14 @@ import {
   Size,
 } from './types';
 import { ScrollAreaState, ScrollAreaEvents, reducer } from './scrollAreaState';
-import { bezier } from './bezier-easing';
-import { Queue } from './queue';
 import {
-  animate,
   canScroll,
   determineScrollDirectionFromTrackClick,
   getButtonRef,
   getClientSize,
   getLogicalRect,
-  getLongPagedDraw,
   getLongPagedScrollDistance,
   getNewScrollPosition,
-  getPagedDraw,
   getPagedScrollDistance,
   getPointerPosition,
   getScrollbarRef,
@@ -286,11 +280,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       };
     }, []);
 
-    // Animation effects triggered by button and track clicks are managed in a queue to prevent race
-    // conditions and invalid DOM measurements when the user clicks faster than the animation is
-    // able to be completed
-    const scrollAnimationQueue = useConstant(() => new Queue<any>());
-
     const _prefersReducedMotion = usePrefersReducedMotion(scrollAreaRef);
     const prefersReducedMotion = unstable_prefersReducedMotion ?? _prefersReducedMotion;
 
@@ -312,7 +301,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
         overflowX,
         overflowY,
         prefersReducedMotion,
-        scrollAnimationQueue,
         scrollbarVisibility,
         scrollbarVisibilityRestTimeout,
         scrollbarDragScrolling,
@@ -325,7 +313,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       overflowX,
       overflowY,
       prefersReducedMotion,
-      scrollAnimationQueue,
       scrollbarVisibility,
       scrollbarVisibilityRestTimeout,
       scrollbarDragScrolling,
@@ -484,7 +471,7 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
     } = useScrollAreaContext(VIEWPORT_NAME);
     const stateContext = useScrollAreaStateContext(VIEWPORT_NAME);
     const dispatch = useDispatchContext(VIEWPORT_NAME);
-    const ref = useComposedRefs(forwardedRef, viewportRef);
+    const ref = useComposedRefs(forwardedRef, positionRef);
 
     useBorderBoxResizeObserver(
       viewportRef,
@@ -600,7 +587,7 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
     return (
       <div
         data-interop-scroll-area-position=""
-        ref={positionRef}
+        ref={ref}
         onScroll={handleScroll}
         style={{
           ...cssReset('div'),
@@ -612,6 +599,7 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
           resize: 'none',
           overflowX,
           overflowY,
+          scrollBehavior: context.trackClickBehavior === 'page' ? 'smooth' : 'auto',
         }}
       >
         <div
@@ -627,7 +615,7 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
             paddingRight: `var(${CSS_PROPS.scrollbarYOffset})`,
           }}
         >
-          <Comp {...interopDataAttrObj('viewport')} ref={ref} {...domProps} />
+          <Comp {...interopDataAttrObj('viewport')} ref={viewportRef} {...domProps} />
         </div>
       </div>
     );
@@ -865,9 +853,7 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
     const axis = useScrollbarContext(TRACK_NAME);
     const dispatch = useDispatchContext(TRACK_NAME);
     const refsContext = useScrollAreaRefs(TRACK_NAME);
-    const { trackClickBehavior, prefersReducedMotion, scrollAnimationQueue } = useScrollAreaContext(
-      TRACK_NAME
-    );
+    const { trackClickBehavior, prefersReducedMotion } = useScrollAreaContext(TRACK_NAME);
     const { positionRef } = refsContext;
     const trackRef = getTrackRef(axis, refsContext);
     const thumbRef = getThumbRef(axis, refsContext);
@@ -893,7 +879,7 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
 
     React.useEffect(() => {
       let trackPointerDownTimeoutId: number | null = null;
-      let trackPointerUpTimeoutId: number | null = null;
+      const trackPointerUpTimeoutId: number | null = null;
       const trackElement = trackRef.current!;
       const thumbElement = thumbRef.current!;
       const positionElement = positionRef.current!;
@@ -929,23 +915,9 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
             document.addEventListener('pointerup', handlePointerUp);
             trackElement.setPointerCapture(event.pointerId);
 
-            // Handle immediate scroll event.
-            if (prefersReducedMotion) {
-              // Scroll immediately
-              const distance = getPagedScrollDistance({ direction, positionElement, axis });
-              const value = getNewScrollPosition(positionElement, { direction, distance, axis });
-              setScrollPosition(positionElement, { axis, value });
-            } else {
-              // Queue scroll animation
-              scrollAnimationQueue.enqueue(() => {
-                return animate({
-                  duration: 200,
-                  timing: bezier(0.16, 0, 0.73, 1),
-                  draw: getPagedDraw({ positionElement, direction, axis }),
-                  rafIdRef,
-                });
-              });
-            }
+            const distance = getPagedScrollDistance({ direction, positionElement, axis });
+            const value = getNewScrollPosition(positionElement, { direction, distance, axis });
+            setScrollPosition(positionElement, { axis, value });
 
             // After some time 400ms, if the user still has the pointer down we'll start to scroll
             // further to some relative distance near the pointer in relation to the track.
@@ -967,31 +939,12 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
                 return;
               }
 
-              if (prefersReducedMotion) {
-                const newPosition = getNewScrollPosition(positionElement, {
-                  direction,
-                  distance: totalScrollDistance,
-                  axis,
-                });
-                setScrollPosition(positionElement, { axis, value: newPosition });
-              } else {
-                const durationBasis = Math.round(Math.abs(totalScrollDistance));
-                const duration = clamp(durationBasis, [100, 500]);
-                scrollAnimationQueue.enqueue(() =>
-                  animate({
-                    duration,
-                    timing: (n) => n,
-                    draw: getLongPagedDraw({
-                      axis,
-                      direction,
-                      pointerPosition,
-                      positionElement,
-                      trackElement,
-                    }),
-                    rafIdRef,
-                  })
-                );
-              }
+              const newPosition = getNewScrollPosition(positionElement, {
+                direction,
+                distance: totalScrollDistance,
+                axis,
+              });
+              setScrollPosition(positionElement, { axis, value: newPosition });
               window.clearTimeout(trackPointerDownTimeoutId!);
             }, 400);
 
@@ -1034,7 +987,6 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
         document.removeEventListener('pointermove', handlePointerMove);
         document.removeEventListener('pointerup', handlePointerUp);
         dispatch({ type: ScrollAreaEvents.StopTracking });
-        scrollAnimationQueue.stop();
       };
 
       /**
@@ -1046,7 +998,6 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
         if (event.pointerType === 'mouse' && pointerIsOutsideElement(event, trackElement)) {
           window.clearTimeout(trackPointerDownTimeoutId!);
           document.removeEventListener('pointermove', handlePointerMove);
-          scrollAnimationQueue.stop();
         }
       }
 
@@ -1055,15 +1006,7 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
         window.clearTimeout(trackPointerDownTimeoutId!);
         document.removeEventListener('pointermove', handlePointerMove);
         document.removeEventListener('pointerup', handlePointerUp);
-        scrollAnimationQueue.stop();
         dispatch({ type: ScrollAreaEvents.StopTracking });
-
-        // Rapid clicks on the track will result in janky repeat animation if we stop the queue
-        // immediately. Set a short timeout to make sure the user is finished clicking and then stop
-        // the queue.
-        trackPointerUpTimeoutId = window.setTimeout(() => {
-          scrollAnimationQueue.stop();
-        }, 200);
       }
     }, [
       axis,
@@ -1073,7 +1016,6 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
       dispatch,
       onPointerDown,
       positionRef,
-      scrollAnimationQueue,
       thumbRef,
       trackRef,
     ]);
@@ -1151,9 +1093,6 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
         onPointerDown as any,
         function handlePointerDown(event: PointerEvent) {
           if (!isMainClick(event)) return;
-
-          // const pointerPosition = getPointerPosition(event)[axis];
-
           const pointerPosition = getPointerPosition(event)[axis];
 
           // As the user moves the pointer, we want the thumb to stay positioned relative to the
@@ -1292,7 +1231,7 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
     const axis = useScrollbarContext(name);
     const dispatch = useDispatchContext(name);
     const refsContext = useScrollAreaRefs(name);
-    const { prefersReducedMotion, scrollAnimationQueue } = useScrollAreaContext(name);
+    const { prefersReducedMotion } = useScrollAreaContext(name);
     const { positionRef } = refsContext;
     const buttonRef = getButtonRef(direction, axis, refsContext);
     const ref = useComposedRefs(buttonRef, forwardedRef);
@@ -1321,28 +1260,7 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
           dispatch({ type: ScrollAreaEvents.StartButtonPress });
 
           const delta = direction === 'start' ? -1 : 1;
-          if (prefersReducedMotion) {
-            scrollBy(positionElement, { axis, value: 51 * delta });
-          } else {
-            if (
-              canScroll(positionElement, { axis, delta }) //  &&
-              // Only queue new animation if the queue's state isn't already adding to the queue or
-              // pending a current animation. The prevents fast button clicks from creating an effect
-              // where the last queued animation stops too long after the user has stopped clicking.
-              // !scrollAnimationQueue.isBusy
-            ) {
-              scrollAnimationQueue.enqueue(() =>
-                animate({
-                  duration: BUTTON_SCROLL_TIME,
-                  timing: bezier(0.16, 0, 0.73, 1),
-                  draw(progress) {
-                    scrollBy(positionElement, { axis, value: progress * 15 * delta });
-                  },
-                  rafIdRef,
-                })
-              );
-            }
-          }
+          scrollBy(positionElement, { axis, value: 51 * delta });
 
           // Handle case for user holding down the button, in which case we will repeat the
           // `scrollAfterButtonPress` call on a ~300 ms interval until they release the pointer.
@@ -1351,32 +1269,13 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
           // if the user still has the pointer down we'll start to scroll further to some relative
           // distance near the pointer in relation to the track.
           buttonPointerDownTimeoutId = window.setTimeout(() => {
-            if (prefersReducedMotion) {
-              buttonIntervalId = window.setInterval(() => {
-                if (canScroll(positionElement, { axis, delta })) {
-                  scrollBy(positionElement, { axis, value: 60 * delta });
-                } else {
-                  window.clearInterval(buttonIntervalId);
-                }
-              }, BUTTON_SCROLL_TIME);
-            } else {
-              const pointerId = event.pointerId;
-              (function keepScrolling() {
-                if (canScroll(positionElement, { axis, delta })) {
-                  scrollAnimationQueue.enqueue(() =>
-                    animate({
-                      duration: BUTTON_SCROLL_TIME,
-                      timing: (n) => n,
-                      draw(progress) {
-                        scrollBy(positionElement, { axis, value: progress * (15 * delta) });
-                      },
-                      done: buttonElement.hasPointerCapture(pointerId) ? keepScrolling : undefined,
-                      rafIdRef,
-                    })
-                  );
-                }
-              })();
-            }
+            buttonIntervalId = window.setInterval(() => {
+              if (canScroll(positionElement, { axis, delta })) {
+                scrollBy(positionElement, { axis, value: 60 * delta });
+              } else {
+                window.clearInterval(buttonIntervalId);
+              }
+            }, BUTTON_SCROLL_TIME);
             window.clearTimeout(buttonPointerDownTimeoutId!);
           }, 400);
         }
@@ -1422,7 +1321,6 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
       buttonRef,
       dispatch,
       onPointerDown,
-      scrollAnimationQueue,
       positionRef,
     ]);
 

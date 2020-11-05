@@ -1,4 +1,3 @@
-import { Queue } from './queue';
 import { ScrollAreaReducerState, ScrollAreaEvent } from './scrollAreaState';
 import type { Axis, Size } from '@interop-ui/utils';
 export type { Axis, Size, ScrollAreaReducerState, ScrollAreaEvent };
@@ -85,7 +84,6 @@ export type ScrollAreaContextValue = {
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
   prefersReducedMotion: boolean;
-  scrollAnimationQueue: Queue<any>;
   scrollbarVisibility: ScrollbarVisibility;
   scrollbarVisibilityRestTimeout: number;
   scrollbarDragScrolling: boolean;

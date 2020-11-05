@@ -1,4 +1,4 @@
-import { Axis, clamp, getResizeObserverEntryBorderBoxSize } from '@interop-ui/utils';
+import { Axis, getResizeObserverEntryBorderBoxSize } from '@interop-ui/utils';
 import { useLayoutEffect } from '@interop-ui/react-utils';
 import { ScrollDirection, LogicalDirection, PointerPosition, ScrollAreaRefs } from './types';
 
@@ -201,104 +201,6 @@ export function determineScrollDirectionFromTrackClick({
   return scrollPosition < thumbElement.getBoundingClientRect()[axis === 'y' ? 'top' : 'left']
     ? 'start'
     : 'end';
-}
-
-type AnimationOptions = {
-  duration: number;
-  draw(progress: number): any;
-  timing(frac: number): number;
-  done?(): any;
-  rafIdRef: React.MutableRefObject<number | undefined>;
-};
-
-export function animate({ duration, draw, timing, done, rafIdRef }: AnimationOptions) {
-  return new Promise((resolve) => {
-    let start = performance.now();
-    let stopped = false;
-    rafIdRef.current = requestAnimationFrame(function animate(time: number) {
-      // In some cases there are discrepencies between performance.now() and the timestamp in rAF.
-      // In those cases we reset the start time to the timestamp in the first frame.
-      // https://stackoverflow.com/questions/38360250/requestanimationframe-now-vs-performance-now-time-discrepancy
-      start = time < start ? time : start;
-      const timeFraction = clamp((time - start) / duration, [0, 1]);
-      draw(timing(timeFraction));
-
-      if (timeFraction < 1) {
-        // If we haven't cancelled, keep the animation going
-        !stopped && (rafIdRef.current = requestAnimationFrame(animate));
-      } else {
-        // Callback to `done` only if the animation wasn't cancelled early
-        cleanup();
-        resolve('done');
-        done && done();
-      }
-    });
-
-    function cleanup() {
-      stopped = true;
-      cancelAnimationFrame(rafIdRef.current!);
-    }
-  });
-}
-
-/**
- * Returns the animation draw function for PageUp/PageDown movements
- * @param param0
- */
-export function getPagedDraw({
-  axis,
-  direction,
-  positionElement,
-}: {
-  axis: Axis;
-  direction: LogicalDirection;
-  positionElement: Element;
-}) {
-  let totalScrollDistance = getPagedScrollDistance({ axis, direction, positionElement });
-  return function draw(progress: number) {
-    const distance = totalScrollDistance * Math.min(progress, 1);
-    const value = getNewScrollPosition(positionElement, {
-      direction,
-      distance,
-      axis,
-    });
-    totalScrollDistance -= distance;
-    setScrollPosition(positionElement, { axis, value });
-  };
-}
-
-export function getLongPagedDraw({
-  axis,
-  direction,
-  pointerPosition,
-  positionElement,
-  trackElement,
-}: {
-  axis: Axis;
-  direction: LogicalDirection;
-  pointerPosition: PointerPosition;
-  positionElement: Element;
-  trackElement: Element;
-}) {
-  let totalScrollDistance = getLongPagedScrollDistance({
-    axis,
-    direction,
-    pointerPosition,
-    positionElement,
-    trackElement,
-  });
-  return function draw(progress: number) {
-    const multiplier = Math.pow(10, 3 || 0);
-    const distance =
-      Math.round(totalScrollDistance * Math.min(progress, 1) * multiplier) / multiplier;
-    const newPosition = getNewScrollPosition(positionElement, {
-      direction,
-      distance,
-      axis,
-    });
-    totalScrollDistance -= distance;
-    setScrollPosition(positionElement, { axis, value: newPosition });
-  };
 }
 
 export function canScroll(element: Element, { axis, delta }: { axis: Axis; delta: number }) {
