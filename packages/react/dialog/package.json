@@ -23,6 +23,7 @@
     "@interop-ui/react-focus-scope": "workspace:*",
     "@interop-ui/react-polymorphic": "workspace:*",
     "@interop-ui/react-portal": "workspace:*",
+    "@interop-ui/react-presence": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*",
     "aria-hidden": "^1.1.1",

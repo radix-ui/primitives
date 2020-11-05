@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogClose } from './Dialog';
-import { styled } from '../../../../stitches.config';
+import { styled, css } from '../../../../stitches.config';
 
 export default { title: 'Components/Dialog' };
 
@@ -114,6 +114,26 @@ export const NoInteractOutsideDismiss = () => (
   </Dialog>
 );
 
+export const Animated = () => (
+  <Dialog>
+    <DialogTrigger>open</DialogTrigger>
+    <DialogOverlay as={AnimatedOverlay} />
+    <DialogContent as={AnimatedContent}>
+      <DialogClose>close</DialogClose>
+    </DialogContent>
+  </Dialog>
+);
+
+export const ForcedMount = () => (
+  <Dialog>
+    <DialogTrigger>open</DialogTrigger>
+    <DialogOverlay as={StyledOverlay} forceMount />
+    <DialogContent as={StyledContent} forceMount>
+      <DialogClose>close</DialogClose>
+    </DialogContent>
+  </Dialog>
+);
+
 const StyledTrigger = styled('button', {});
 
 const RECOMMENDED_CSS__DIALOG__OVERLAY: any = {
@@ -127,8 +147,7 @@ const RECOMMENDED_CSS__DIALOG__OVERLAY: any = {
 
 const StyledOverlay = styled('div', {
   ...RECOMMENDED_CSS__DIALOG__OVERLAY,
-  backgroundColor: 'black',
-  opacity: 0.2,
+  backgroundColor: 'rgba(0,0,0,0.2)',
 });
 
 const RECOMMENDED_CSS__DIALOG__CONTENT: any = {
@@ -153,3 +172,31 @@ const StyledContent = styled('div', {
 });
 
 const StyledClose = styled('button', {});
+
+const fadeIn = css.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+});
+
+const fadeOut = css.keyframes({
+  from: { opacity: 1 },
+  to: { opacity: 0 },
+});
+
+const AnimatedOverlay = styled(StyledOverlay, {
+  '&[data-state="open"]': {
+    animation: `${fadeIn} 300ms ease-out`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${fadeOut} 300ms ease-in`,
+  },
+});
+
+const AnimatedContent = styled(StyledContent, {
+  '&[data-state="open"]': {
+    animation: `${fadeIn} 300ms ease-out`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${fadeOut} 300ms ease-in`,
+  },
+});
