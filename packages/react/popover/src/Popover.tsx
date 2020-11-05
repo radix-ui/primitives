@@ -15,6 +15,7 @@ import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
 import { useFocusGuards } from '@interop-ui/react-focus-guards';
+import { Presence } from '@interop-ui/react-presence';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
@@ -171,7 +172,15 @@ type PopoverPopperOwnProps = {
 
 const PopoverPopper = forwardRefWithAs<typeof PopoverPopperImpl>((props, forwardedRef) => {
   const context = usePopoverContext(POPPER_NAME);
-  return context.isOpen ? <PopoverPopperImpl ref={forwardedRef} {...props} /> : null;
+  return (
+    <Presence present={context.isOpen}>
+      <PopoverPopperImpl
+        {...props}
+        ref={forwardedRef}
+        data-state={context.isOpen ? 'open' : 'closed'}
+      />
+    </Presence>
+  );
 });
 
 const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverPopperOwnProps>(
