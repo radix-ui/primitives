@@ -79,7 +79,7 @@ function createFocusScope(container: HTMLElement) {
     // https://github.com/modulz/modulz/pull/1215
     if (relatedTarget && isTargetOutsideElement(relatedTarget, container)) {
       // we're intercepting the blur event and will re-focus in
-      // so we also pretend that the blur haven't didn't happen by stop propagation
+      // so we also pretend that the blur event didn't happen by stopping propagation.
       event.stopImmediatePropagation();
 
       handleFocusOutside(relatedTarget);
