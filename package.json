@@ -30,8 +30,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "@storybook/addon-storysource": "6.1.0-beta.3",
-    "@storybook/react": "6.1.0-beta.3",
+    "@storybook/addon-storysource": "6.1.0-beta.4",
+    "@storybook/react": "6.1.0-beta.4",
     "@testing-library/jest-dom": "^5.11.3",
     "@testing-library/react": "^10.4.8",
     "@types/eslint": "^7",
