@@ -67,6 +67,24 @@ export const Animated = () => {
   );
 };
 
+export const ForcedMount = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
+    >
+      <Popover>
+        <PopoverTrigger as={StyledTrigger}>open</PopoverTrigger>
+        <PopoverPopper as={StyledPopper} sideOffset={10} forceMount>
+          <PopoverContent as={StyledContent}>
+            <PopoverClose as={StyledClose}>close</PopoverClose>
+          </PopoverContent>
+          <PopoverArrow as={StyledArrow} width={20} height={10} />
+        </PopoverPopper>
+      </Popover>
+    </div>
+  );
+};
+
 export const Nested = () => {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 

@@ -167,15 +167,22 @@ type PopoverPopperOwnProps = {
    */
   shouldPortal?: boolean;
 
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+
   anchorRef?: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
 };
 
 const PopoverPopper = forwardRefWithAs<typeof PopoverPopperImpl>((props, forwardedRef) => {
+  const { forceMount, ...popperProps } = props;
   const context = usePopoverContext(POPPER_NAME);
   return (
-    <Presence present={context.isOpen}>
+    <Presence present={forceMount || context.isOpen}>
       <PopoverPopperImpl
-        {...props}
+        {...popperProps}
         ref={forwardedRef}
         data-state={context.isOpen ? 'open' : 'closed'}
       />
