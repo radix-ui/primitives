@@ -2776,15 +2776,15 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@modulz/radix": 0.0.1-beta.44
     "@modulz/radix-icons": ^2.4.1
-    "@types/react": ^16.9.44
-    "@types/react-dom": ^16.9.8
-    "@types/react-is": ^16
+    "@types/react": ^16.9.56
+    "@types/react-dom": ^16.9.9
+    "@types/react-is": ^16.7.1
     "@types/styled-components": ^5.1.2
     babel-plugin-styled-components: ^1.11.1
     next: ^9.5.1
     next-transpile-modules: ^4.0.2
-    react: ^16.13.1
-    react-dom: ^16.13.1
+    react: ^17.0.1
+    react-dom: ^17.0.1
     react-is: ^16.13.1
     react-live: ^2.2.2
     styled-components: ^5.1.1
@@ -5758,15 +5758,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^16.9.8":
-  version: 16.9.8
-  resolution: "@types/react-dom@npm:16.9.8"
-  dependencies:
-    "@types/react": "*"
-  checksum: 53a223c0266178bca9161301d18ee6199e8f75f88caed5c4601c5aaedaf4c68f03bd72f6aafa979254beb20759f0b68a542ce04295d704eb67ae179769c50813
-  languageName: node
-  linkType: hard
-
 "@types/react-dom@npm:^16.9.9":
   version: 16.9.9
   resolution: "@types/react-dom@npm:16.9.9"
@@ -5776,7 +5767,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-is@npm:^16":
+"@types/react-is@npm:^16.7.1":
   version: 16.7.1
   resolution: "@types/react-is@npm:16.7.1"
   dependencies:
@@ -5812,7 +5803,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^16.9.44":
+"@types/react@npm:*":
   version: 16.9.49
   resolution: "@types/react@npm:16.9.49"
   dependencies:
@@ -5829,6 +5820,16 @@ __metadata:
     "@types/prop-types": "*"
     csstype: ^3.0.2
   checksum: aadc5636d6b58e33422d0f3d275daf25b5456f715a0426ea08399f577ba0229dead47d41dc2c6e1f1659fb01e42c005045f97ed535b3695e05f209bd0b7076c5
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^16.9.56":
+  version: 16.9.56
+  resolution: "@types/react@npm:16.9.56"
+  dependencies:
+    "@types/prop-types": "*"
+    csstype: ^3.0.2
+  checksum: 139867e2b3d577723b9361234f105d0cf1b143202f51fef207355332f972dd74030cfb3918037cb311eefd203ee06e0a370c37755204eefdd35734f0fde070a1
   languageName: node
   linkType: hard
 
@@ -17500,20 +17501,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^16.13.1":
-  version: 16.13.1
-  resolution: "react-dom@npm:16.13.1"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    prop-types: ^15.6.2
-    scheduler: ^0.19.1
-  peerDependencies:
-    react: ^16.13.1
-  checksum: fb5c3ad41360c6a8674f33916aa895d05e79d063d31a6963074220c1cda9e07e880799d01670b4ebd570b4d3457584f13cc898b5033a05641e8e801f5611607e
-  languageName: node
-  linkType: hard
-
 "react-dom@npm:^17.0.1":
   version: 17.0.1
   resolution: "react-dom@npm:17.0.1"
@@ -17780,17 +17767,6 @@ fsevents@^1.2.7:
     react: ">=16.6.0"
     react-dom: ">=16.6.0"
   checksum: e14446123f820e804335c64be5270333c29e8cfaa43dfc33387e132c5d521cf4a0a7c2408058a147b254ae82a6569f373394d83e977ef340d6937bc2f4ff7d6c
-  languageName: node
-  linkType: hard
-
-"react@npm:^16.13.1":
-  version: 16.13.1
-  resolution: "react@npm:16.13.1"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    prop-types: ^15.6.2
-  checksum: 13dcc9ba8a7521ecc3d7e69998dbc5703ae9515308d06a94a474ad34b42f1fc109372265e924a8c9b11d20fa1828407c290b8f61617c36734c4ca907ae7e5f45
   languageName: node
   linkType: hard
 
