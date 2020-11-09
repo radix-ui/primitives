@@ -190,10 +190,11 @@ function NavPanel({
   heading: string;
   children: React.ReactNode;
 }) {
-  const { openPanel, setOpenPanel } = React.useContext(NavContext);
+  const router = useRouter();
+  const defaultOpenedAccordion = getOpenedPanelFromUrl(router.pathname);
   return (
-    <Collapsible isOpen={openPanel === id} onToggle={(open) => setOpenPanel(open ? id : null)}>
-      <CollapsibleButton isOpen={openPanel === id}>{heading}</CollapsibleButton>
+    <Collapsible defaultIsOpen={defaultOpenedAccordion === id}>
+      <CollapsibleButton isOpen={true}>{heading}</CollapsibleButton>
       <Collapsible.Content>
         <List sx={{ py: 0 }} aria-label={heading}>
           {children}
