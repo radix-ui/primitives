@@ -15,6 +15,7 @@ import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
+import { useFocusGuards } from '@interop-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
@@ -204,6 +205,10 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
     const ScrollLockWrapper =
       disableOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
 
+    // Make sure the whole tree has focus guards as our `Popover` may be
+    // the last element in the DOM (beacuse of the `Portal`)
+    useFocusGuards();
+
     // Hide everything from ARIA except the popper
     const popperRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
@@ -230,7 +235,7 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onEscapeKeyDown={onEscapeKeyDown}
                 onInteractOutside={(event) => {
-                  const wasPointerDownOutside = event.detail.originalEvent.type !== 'blur';
+                  const wasPointerDownOutside = event.detail.originalEvent.type !== 'focusout';
                   const wasTrigger = event.detail.relatedTarget === context.triggerRef.current;
 
                   // prevent autofocus on close if clicking outside is allowed and it happened

@@ -614,11 +614,11 @@ function DummyPopover({
                 onEscapeKeyDown={onEscapeKeyDown}
                 onInteractOutside={(event) => {
                   setSkipUnmountAutoFocus(
-                    !disableOutsidePointerEvents && event.detail.originalEvent.type !== 'blur'
+                    !disableOutsidePointerEvents && event.detail.originalEvent.type !== 'focusout'
                   );
                   if (
                     event.detail.relatedTarget === openButtonRef.current &&
-                    event.detail.originalEvent.type !== 'blur'
+                    event.detail.originalEvent.type !== 'focusout'
                   ) {
                     event.preventDefault();
                     setSkipUnmountAutoFocus(false);
@@ -639,6 +639,7 @@ function DummyPopover({
                       if (skipUnmountAutoFocus) {
                         event.preventDefault();
                       }
+                      setSkipUnmountAutoFocus(false);
                     }}
                   >
                     {(focusScopeProps) => (
