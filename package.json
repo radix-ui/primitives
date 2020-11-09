@@ -13,6 +13,8 @@
     "test": "jest",
     "test:ci": "jest --ci",
     "storybook": "start-storybook -p 9009 --ci",
+    "dev": "yarn storybook",
+    "dev:docs": "yarn workspace @interop-ui/docs dev",
     "build-storybook": "build-storybook",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
