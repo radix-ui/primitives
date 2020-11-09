@@ -27,28 +27,21 @@ function createFocusScope(container: HTMLElement) {
   }
 
   function addListeners() {
-    document.addEventListener('focusout', handleFocusOut, { capture: true });
-    document.addEventListener('focusin', handleFocusIn, { capture: true });
+    document.addEventListener('focusout', handleFocusInOrFocusOut, { capture: true });
+    document.addEventListener('focusin', handleFocusInOrFocusOut, { capture: true });
   }
 
   function removeListeners() {
-    document.removeEventListener('focusout', handleFocusOut, { capture: true });
-    document.removeEventListener('focusin', handleFocusIn, { capture: true });
+    document.removeEventListener('focusout', handleFocusInOrFocusOut, { capture: true });
+    document.removeEventListener('focusin', handleFocusInOrFocusOut, { capture: true });
   }
 
-  function handleFocusOut(event: FocusEvent) {
-    handleTargetFocus(event, 'relatedTarget');
-  }
-
-  function handleFocusIn(event: FocusEvent) {
-    handleTargetFocus(event, 'target');
-  }
-
-  function handleTargetFocus(event: FocusEvent, targetProperty: 'target' | 'relatedTarget') {
+  function handleFocusInOrFocusOut(event: FocusEvent) {
     if (focusScope.paused) return;
 
-    const focusedTarget = event[targetProperty] as Element | null;
-    if (focusedTarget && !container.contains(focusedTarget)) {
+    const isFocusOut = event.type === 'focusout';
+    const focusedTarget = (isFocusOut ? event.relatedTarget : event.target) as Element | null;
+    if (!container.contains(focusedTarget)) {
       // we're intercepting the event and will re-focus in
       // so we also pretend that the event didn't happen by stopping propagation.
       event.stopImmediatePropagation();
