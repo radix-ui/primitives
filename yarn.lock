@@ -2977,6 +2977,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-focus-guards@workspace:packages/react/focus-guards":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-focus-guards@workspace:packages/react/focus-guards"
+  dependencies:
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ">=16"
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-focus-scope@workspace:*, @interop-ui/react-focus-scope@workspace:packages/react/focus-scope":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-focus-scope@workspace:packages/react/focus-scope"

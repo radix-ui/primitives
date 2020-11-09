@@ -5,6 +5,7 @@ import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
 import { composeRefs } from '@interop-ui/react-utils';
+import { FocusGuards } from '@interop-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from './DismissableLayer';
 
@@ -513,7 +514,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
         {openLabel}
       </button>
       {open ? (
-        <>
+        <FocusGuards>
           <Portal>
             <div
               style={{
@@ -568,7 +569,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
               </DismissableLayer>
             </RemoveScroll>
           </Portal>
-        </>
+        </FocusGuards>
       ) : null}
     </>
   );
@@ -606,7 +607,7 @@ function DummyPopover({
         {openLabel}
       </button>
       {open ? (
-        <>
+        <FocusGuards>
           <Portal>
             <ScrollContainer>
               <DismissableLayer
@@ -686,7 +687,7 @@ function DummyPopover({
               </DismissableLayer>
             </ScrollContainer>
           </Portal>
-        </>
+        </FocusGuards>
       ) : null}
     </>
   );
