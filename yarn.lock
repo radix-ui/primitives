@@ -1780,9 +1780,8 @@ __metadata:
     "@types/react-dom": ^16.9.9
     "@types/react-is": ^16.7.1
     "@types/styled-components": ^5.1.4
+    babel-plugin-import-glob-array: ^0.2.0
     babel-plugin-styled-components: ^1.11.1
-    glob: ^7.1.6
-    is-glob: ^4.0.1
     next: ^10.0.1
     next-mdx-enhanced: 5.0.0
     next-transpile-modules: ^4.1.0
@@ -6174,6 +6173,16 @@ __metadata:
   dependencies:
     "@babel/helper-plugin-utils": 7.10.4
   checksum: 5ed4b2f8e4beb7e8e97eae0b7abf855ae49feaf76731078c4ad1aa0209c62f85178c6d696e25bccc3c50a865b988e694ec5433b828390c3aeff3247318fccaf8
+  languageName: node
+  linkType: hard
+
+"babel-plugin-import-glob-array@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "babel-plugin-import-glob-array@npm:0.2.0"
+  dependencies:
+    glob: ^7.1.3
+    is-glob: ^4.0.0
+  checksum: 2c1b23fb1274e6d90026a88667550105084386464b7498cf81483bb641805f5154a69cf6f70e4798857470f0c9c5dbaeef1c51fc45392a1d632c5c59055a2843
   languageName: node
   linkType: hard
 
