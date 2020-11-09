@@ -64,25 +64,29 @@ function createFocusScope(container: HTMLElement) {
   }
 
   function addFocusBlurListeners() {
-    document.addEventListener('blur', handleBlur, { capture: true });
-    document.addEventListener('focus', handleFocus, { capture: true });
+    document.addEventListener('focusout', handleFocusOut, { capture: true });
+    document.addEventListener('focusin', handleFocusIn, { capture: true });
   }
 
   function removeFocusBlurListeners() {
-    document.removeEventListener('blur', handleBlur, { capture: true });
-    document.removeEventListener('focus', handleFocus, { capture: true });
+    document.removeEventListener('focusout', handleFocusOut, { capture: true });
+    document.removeEventListener('focusin', handleFocusIn, { capture: true });
   }
 
-  function handleBlur(event: FocusEvent) {
+  function handleFocusOut(event: FocusEvent) {
     const relatedTarget = event.relatedTarget as Element | null;
     // We only need to respond to a blur event if another element outside is receiving focus.
     // https://github.com/modulz/modulz/pull/1215
     if (relatedTarget && isTargetOutsideElement(relatedTarget, container)) {
+      // we're intercepting the blur event and will re-focus in
+      // so we also pretend that the blur event didn't happen by stopping propagation.
+      event.stopImmediatePropagation();
+
       handleFocusOutside(relatedTarget);
     }
   }
 
-  function handleFocus({ target }: FocusEvent) {
+  function handleFocusIn({ target }: FocusEvent) {
     if (isTargetOutsideElement(target, container)) {
       handleFocusOutside(target as Element);
     } else {
