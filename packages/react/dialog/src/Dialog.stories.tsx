@@ -133,7 +133,7 @@ export const NoInteractOutsideDismiss = () => (
   <Dialog>
     <Dialog.Trigger>open</Dialog.Trigger>
     <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
-    <Dialog.Content as={Content} onInteractOutside={(event) => event.preventDefault()}>
+    <Dialog.Content as={Content} onPointerDownOutside={(event) => event.preventDefault()}>
       <Dialog.Close>close</Dialog.Close>
     </Dialog.Content>
   </Dialog>

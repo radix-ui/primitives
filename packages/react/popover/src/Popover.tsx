@@ -153,8 +153,20 @@ type PopoverPositionOwnProps = {
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
 
   /**
-   * Event handler called when an interaction happened outside the `Popover`.
-   * Specifically, when focus leaves the `Popover` or a pointer event happens outside it.
+   * Event handler called when the a pointer event happens outside of the `Popover`.
+   * Can be prevented.
+   */
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
+
+  /**
+   * Event handler called when the focus moves outside of the `Popover`.
+   * Can be prevented.
+   */
+  onFocusOutside?: DismissableLayerProps['onFocusOutside'];
+
+  /**
+   * Event handler called when an interaction happens outside the `Popover`.
+   * Specifically, when a pointer event happens outside of the `Popover` or focus moves outside of it.
    * Can be prevented.
    */
   onInteractOutside?: DismissableLayerProps['onInteractOutside'];
@@ -192,6 +204,8 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
       onCloseAutoFocus,
       disableOutsidePointerEvents = false,
       onEscapeKeyDown,
+      onPointerDownOutside,
+      onFocusOutside,
       onInteractOutside,
       disableOutsideScroll = false,
       shouldPortal = true,
@@ -234,12 +248,11 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
               <DismissableLayer
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onEscapeKeyDown={onEscapeKeyDown}
-                onInteractOutside={(event) => {
-                  const wasPointerDownOutside = event.detail.originalEvent.type !== 'focusout';
-                  const wasTrigger = event.detail.relatedTarget === context.triggerRef.current;
+                onPointerDownOutside={(event) => {
+                  const wasTrigger = event.target === context.triggerRef.current;
 
-                  // prevent autofocus on close if clicking outside is allowed and it happened
-                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && wasPointerDownOutside);
+                  // skip autofocus on close if clicking outside is allowed and it happened
+                  setSkipCloseAutoFocus(!disableOutsidePointerEvents);
 
                   // prevent dismissing when clicking the trigger
                   // as it's already setup to close, otherwise it would close and immediately open.
@@ -254,6 +267,8 @@ const PopoverPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, PopoverPosit
                     setSkipCloseAutoFocus(false);
                   }
                 }}
+                onFocusOutside={onFocusOutside}
+                onInteractOutside={onInteractOutside}
                 onDismiss={() => context.setIsOpen(false)}
               >
                 {(dismissableLayerProps) => (

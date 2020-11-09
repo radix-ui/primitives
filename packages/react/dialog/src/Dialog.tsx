@@ -166,11 +166,10 @@ type DialogContentOwnProps = {
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
 
   /**
-   * Event handler called when an interaction happened outside the `Dialog`.
-   * Specifically, when focus leaves the `Dialog` or a pointer event happens outside it.
+   * Event handler called when the a pointer event happens outside of the `Dialog`.
    * Can be prevented.
    */
-  onInteractOutside?: DismissableLayerProps['onInteractOutside'];
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 };
 type DialogContentProps = DialogContentDOMProps & DialogContentOwnProps;
 
@@ -188,7 +187,7 @@ const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentPr
       onOpenAutoFocus,
       onCloseAutoFocus,
       onEscapeKeyDown,
-      onInteractOutside,
+      onPointerDownOutside,
       ...contentProps
     } = props;
     const context = useDialogContext(CONTENT_NAME);
@@ -218,7 +217,7 @@ const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentPr
               <DismissableLayer
                 disableOutsidePointerEvents
                 onEscapeKeyDown={onEscapeKeyDown}
-                onInteractOutside={onInteractOutside}
+                onPointerDownOutside={onPointerDownOutside}
                 onDismiss={() => context.setIsOpen(false)}
               >
                 {(dismissableLayerProps) => (
