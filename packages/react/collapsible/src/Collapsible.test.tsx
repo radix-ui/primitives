@@ -19,11 +19,13 @@ describe('given a default Collapsible', () => {
   let rendered: RenderResult;
   let button: HTMLElement;
   let content: HTMLElement | null;
+  let collapsible: Node | null;
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest />);
     button = rendered.getByText(BUTTON_TEXT);
     content = rendered.queryByText(CONTENT_TEXT);
+    collapsible = rendered.container.firstChild;
   });
 
   it('should have no accessibility violations', async () => {
@@ -31,13 +33,20 @@ describe('given a default Collapsible', () => {
   });
 
   it('should have an interop attribute on the container', () => {
-    const collapsible = rendered.container.firstChild;
     const interopAttr = interopDataAttr('Collapsible');
     expect(collapsible).toHaveAttribute(interopAttr);
   });
 
+  it('should have a data-state attribute on the container set to `closed`', () => {
+    expect(collapsible).toHaveAttribute('data-state', 'closed');
+  });
+
   it('should render a button', () => {
     expect(button).toBeVisible();
+  });
+
+  it('should have a data-state attribute on the button set to `closed`', () => {
+    expect(button).toHaveAttribute('data-state', 'closed');
   });
 
   it('should have an interop attribute on the button', () => {
@@ -53,6 +62,8 @@ describe('given a default Collapsible', () => {
     beforeEach(() => {
       fireEvent.click(button);
       content = rendered.getByText(CONTENT_TEXT);
+      button = rendered.getByText(BUTTON_TEXT);
+      collapsible = rendered.container.firstChild;
     });
 
     it('should open the content', () => {
@@ -64,6 +75,14 @@ describe('given a default Collapsible', () => {
       expect(content).toHaveAttribute(interopAttr);
     });
 
+    it('should have a data-state attribute on the container set to `open`', () => {
+      expect(collapsible).toHaveAttribute('data-state', 'open');
+    });
+
+    it('should have a data-state attribute on the button set to `open`', () => {
+      expect(button).toHaveAttribute('data-state', 'open');
+    });
+
     describe('and clicking the button again', () => {
       beforeEach(() => {
         fireEvent.click(button);
@@ -71,6 +90,14 @@ describe('given a default Collapsible', () => {
 
       it('should close the content', () => {
         expect(content).not.toBeVisible();
+      });
+
+      it('should have a data-state attribute on the container set to `closed`', () => {
+        expect(collapsible).toHaveAttribute('data-state', 'closed');
+      });
+
+      it('should have a data-state attribute on the button set to `closed`', () => {
+        expect(button).toHaveAttribute('data-state', 'closed');
       });
     });
   });
