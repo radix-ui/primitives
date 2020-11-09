@@ -1,0 +1,10 @@
+releases:
+  "@interop-ui/react-alert-dialog": prerelease
+  "@interop-ui/react-dialog": prerelease
+  "@interop-ui/react-dismissable-layer": prerelease
+  "@interop-ui/react-focus-guards": prerelease
+  "@interop-ui/react-focus-scope": prerelease
+  "@interop-ui/react-popover": prerelease
+
+declined:
+  - interop-ui
