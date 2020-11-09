@@ -25,21 +25,21 @@
     "bump:check": "yarn version check"
   },
   "dependencies": {
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "@storybook/addon-storysource": "^6.0.21",
-    "@storybook/react": "^6.0.16",
+    "@storybook/addon-storysource": "6.1.0-beta.4",
+    "@storybook/react": "6.1.0-beta.4",
     "@testing-library/jest-dom": "^5.11.3",
     "@testing-library/react": "^10.4.8",
     "@types/eslint": "^7",
     "@types/jest": "^26.0.10",
     "@types/jest-axe": "^3.5.0",
     "@types/parcel-bundler": "^1.12.1",
-    "@types/react": "^16.9.43",
-    "@types/react-dom": "^16.9.8",
+    "@types/react": "^16.9.55",
+    "@types/react-dom": "^16.9.9",
     "@types/react-test-renderer": "^16.9.3",
     "@typescript-eslint/eslint-plugin": "2.x",
     "@typescript-eslint/parser": "2.x",
