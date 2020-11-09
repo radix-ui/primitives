@@ -2813,7 +2813,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2826,7 +2826,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2852,8 +2852,8 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
+    react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2865,7 +2865,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2877,7 +2877,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2890,7 +2890,7 @@ __metadata:
     "@modulz/radix-icons": ^2.4.1
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2903,7 +2903,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2915,7 +2915,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2927,7 +2927,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2939,7 +2939,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2957,7 +2957,7 @@ __metadata:
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2973,7 +2973,7 @@ __metadata:
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2986,7 +2986,7 @@ __metadata:
     parcel: ^2.0.0-beta.1
     tabbable: 5.0.0
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -2998,7 +2998,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3017,7 +3017,7 @@ __metadata:
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3035,7 +3035,7 @@ __metadata:
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3048,8 +3048,8 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
+    react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3062,7 +3062,7 @@ __metadata:
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3075,7 +3075,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3088,7 +3088,7 @@ __metadata:
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3103,7 +3103,7 @@ __metadata:
     lodash.omit: ^4.5.0
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3117,7 +3117,7 @@ __metadata:
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3129,7 +3129,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3141,7 +3141,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3158,7 +3158,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3171,7 +3171,7 @@ __metadata:
     parcel: ^2.0.0-beta.1
     resize-observer-polyfill: ^1.5.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3182,7 +3182,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3194,7 +3194,7 @@ __metadata:
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
