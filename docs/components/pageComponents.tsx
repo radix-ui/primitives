@@ -86,7 +86,7 @@ function Paragraph({ sx, ...props }: TextProps) {
 }
 
 function Divider() {
-  return <RadixDivider size={2} sx={{ mx: 'auto', my: 8 }} />;
+  return <RadixDivider size={2} sx={{ mx: 'auto', my: 8 }} aria-hidden />;
 }
 
 export {

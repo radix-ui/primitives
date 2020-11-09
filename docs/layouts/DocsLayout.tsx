@@ -5,16 +5,18 @@ import { Title, Description } from '../components/pageComponents';
 
 export default function DocsLayout({ children: content, frontMatter }: MdxLayoutProps) {
   return (
-    <main>
-      <article>
-        <header>
-          <MetaTags title={frontMatter.title} description={frontMatter.description!} />
-          <Title>{frontMatter.title}</Title>
-          {frontMatter.description && <Description>{frontMatter.description}</Description>}
-        </header>
+    <article>
+      <header>
+        <MetaTags title={frontMatter.title} description={frontMatter.description!} />
+        <Title>{frontMatter.title}</Title>
+        {frontMatter.description && (
+          <Description as="div" role="doc-subtitle">
+            {frontMatter.description}
+          </Description>
+        )}
+      </header>
 
-        <div>{content}</div>
-      </article>
-    </main>
+      <div>{content}</div>
+    </article>
   );
 }

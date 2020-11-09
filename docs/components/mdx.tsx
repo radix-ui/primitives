@@ -16,8 +16,8 @@ import { CodeBlock } from './CodeBlock';
 
 export const MDXComponents = {
   h1: Title,
-  h2: Heading,
-  h3: SubHeading,
+  h2: (props: any) => <Heading {...props} as="h2" />,
+  h3: (props: any) => <SubHeading {...props} as="h3" />,
   hr: Divider,
   p: Paragraph,
   code: (props: any) => <CodeBlock {...props} />,

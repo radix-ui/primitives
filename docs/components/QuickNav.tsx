@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Heading, Link, Text } from '@modulz/radix';
+import { Box, Heading, Link, Text, BoxProps } from '@modulz/radix';
 import { useLayoutEffect } from '@interop-ui/react-utils';
 
 type QuickNavItem = {
@@ -57,7 +57,7 @@ function QuickNavItem({
   );
 }
 
-function QuickNav() {
+function QuickNav({ as: asProp = 'div', sx = {} }: { as?: BoxProps['as']; sx?: BoxProps['sx'] }) {
   const { items } = useQuickNavContext();
 
   if (items.length === 0) return null;
@@ -66,15 +66,9 @@ function QuickNav() {
 
   return (
     <Box
+      as={asProp}
       sx={{
-        position: 'fixed',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        width: '245px',
-        flexShrink: 0,
-        pt: 7,
-        pr: 4,
+        ...sx,
       }}
     >
       <Heading as="h4" size={1} sx={{ lineHeight: 2, mb: 5, mt: 3 }}>

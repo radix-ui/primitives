@@ -1,7 +1,7 @@
 import React from 'react';
 import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { Text, Flex, List, Box, ListItem, Divider } from '@modulz/radix';
+import { Text, Flex, List, Box, ListItem, Divider, BoxProps } from '@modulz/radix';
 import { PlusIcon } from '@modulz/radix-icons';
 import { Collapsible } from '@interop-ui/react-collapsible';
 import { useId } from '@interop-ui/react-utils';
@@ -15,7 +15,7 @@ const NavContext = React.createContext<{
   setOpenPanel: React.Dispatch<React.SetStateAction<string | null>>;
 }>(null as any);
 
-function MainNavigation() {
+function MainNavigation({ sx = {} }: { sx?: BoxProps['sx'] }) {
   const router = useRouter();
   const defaultOpenedAccordion = getOpenedPanelFromUrl(router.pathname);
   const [openPanel, setOpenPanel] = React.useState<string | null>(defaultOpenedAccordion);
@@ -28,7 +28,7 @@ function MainNavigation() {
 
   return (
     <ScrollArea>
-      <Box sx={{ pb: 7 }}>
+      <Box sx={sx}>
         {/* @ts-ignore */}
         <Box as="a" href="/" sx={{ display: 'inline-flex', m: 3 }}>
           <Logo />
@@ -126,7 +126,7 @@ function StyledCollapsibleButton(props: FlexProps) {
         pr: 2,
 
         '&:focus': {
-          boxShadow: '0 0 0 2px hsl(210,10%,85%)',
+          boxShadow: (t) => `0 0 0 2px ${t.colors.gray300}`,
         },
       }}
       {...props}
