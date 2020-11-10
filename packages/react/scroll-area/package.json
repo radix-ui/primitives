@@ -11,10 +11,10 @@
     "README.md"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts && yarn build:styles",
+    "build": "parcel build src/index.ts --no-cache && yarn build:styles",
     "build:styles": "node ../../../scripts/build-styles scroll-area",
     "clean": "rm -rf dist",
-    "bump": "yarn version --deferred",
+    "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
@@ -26,6 +26,6 @@
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
-    "react": ">=16"
+    "react": "^16.8 || ^17.0"
   }
 }

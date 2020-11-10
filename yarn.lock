@@ -3100,7 +3100,7 @@ __metadata:
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
-    react: ">=16"
+    react: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
