@@ -59,7 +59,7 @@
     "json-to-css": "^0.1.0",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
-    "react-test-renderer": "^16.13.1",
+    "react-test-renderer": "^17.0.1",
     "ts-jest": "^26.2.0",
     "typescript": "^3.9.7"
   },
