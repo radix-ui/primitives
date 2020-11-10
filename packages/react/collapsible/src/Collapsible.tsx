@@ -192,6 +192,6 @@ const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
 export type { CollapsibleProps, CollapsibleButtonProps, CollapsibleContentProps };
 export { Collapsible, styles };
 
-function getState(isOpen: boolean | undefined): 'open' | 'closed' {
+function getState(isOpen?: boolean) {
   return isOpen ? 'open' : 'closed';
 }
