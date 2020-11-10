@@ -150,10 +150,10 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       setUsesNative(forceNative || shouldFallbackToNativeScroll());
     }, [forceNative]);
 
-    const Comp = usesNative ? ScrollAreaNative : ScrollAreaImpl;
+    const ScrollAreaCustomOrNative = usesNative ? ScrollAreaNative : ScrollAreaImpl;
 
     return (
-      <Comp
+      <ScrollAreaCustomOrNative
         {...interopDataAttrObj('root')}
         {...domProps}
         as={as}
@@ -168,7 +168,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         ref={forwardedRef}
       >
         <NativeScrollContext.Provider value={usesNative}>{children}</NativeScrollContext.Provider>
-      </Comp>
+      </ScrollAreaCustomOrNative>
     );
   }
 );
