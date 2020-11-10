@@ -1,6 +1,6 @@
 {
   "name": "@interop-ui/react-utils",
-  "version": "0.0.1-10",
+  "version": "0.0.1-11",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",

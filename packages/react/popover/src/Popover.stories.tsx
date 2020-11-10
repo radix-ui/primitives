@@ -189,6 +189,32 @@ export const CustomAnchor = () => {
   );
 };
 
+export const NonModal = () => {
+  return (
+    <>
+      <Popover>
+        <Popover.Trigger as={Button}>open</Popover.Trigger>
+        <Popover.Position style={{ ...styles.position }} sideOffset={10} trapFocus={false}>
+          <Popover.Content
+            style={{
+              ...styles.content,
+              backgroundColor: '#eee',
+              width: 250,
+              height: 150,
+              padding: 20,
+              border: '10px solid tomato',
+            }}
+          >
+            <Popover.Close as={Button}>close</Popover.Close>
+          </Popover.Content>
+          <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
+        </Popover.Position>
+      </Popover>
+      <input style={{ marginLeft: 10 }} />
+    </>
+  );
+};
+
 const Button = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(function Button(
   props,
   forwardedRef

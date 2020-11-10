@@ -3,10 +3,127 @@ import { FocusScope } from './FocusScope';
 
 export default { title: 'FocusScope' };
 
+export const Basic = () => {
+  const [trapped, setTrapped] = React.useState(false);
+
+  return (
+    <>
+      <div>
+        <button type="button" onClick={() => setTrapped(true)}>
+          Trap
+        </button>{' '}
+        <input /> <input />
+      </div>
+      {trapped ? (
+        <FocusScope trapped={trapped}>
+          {(props) => (
+            <form
+              {...props}
+              style={{
+                display: 'inline-flex',
+                flexDirection: 'column',
+                gap: 20,
+                padding: 20,
+                margin: 50,
+                maxWidth: 500,
+                border: '2px solid',
+              }}
+            >
+              <input type="text" placeholder="First name" />
+              <input type="text" placeholder="Last name" />
+              <input type="number" placeholder="Age" />
+              <button type="button" onClick={() => setTrapped(false)}>
+                Close
+              </button>
+            </form>
+          )}
+        </FocusScope>
+      ) : null}
+      <div>
+        <input /> <input />
+      </div>
+    </>
+  );
+};
+
+export const Multiple = () => {
+  const [trapped1, setTrapped1] = React.useState(false);
+  const [trapped2, setTrapped2] = React.useState(false);
+
+  return (
+    <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 10 }}>
+      <div>
+        <button type="button" onClick={() => setTrapped1(true)}>
+          Trap 1
+        </button>
+      </div>
+      {trapped1 ? (
+        <FocusScope trapped={trapped1}>
+          {(props) => (
+            <form
+              {...props}
+              style={{
+                display: 'inline-flex',
+                flexDirection: 'column',
+                gap: 20,
+                padding: 20,
+                maxWidth: 500,
+                border: '2px solid',
+              }}
+            >
+              <h1>One</h1>
+              <input type="text" placeholder="First name" />
+              <input type="text" placeholder="Last name" />
+              <input type="number" placeholder="Age" />
+              <button type="button" onClick={() => setTrapped1(false)}>
+                Close
+              </button>
+            </form>
+          )}
+        </FocusScope>
+      ) : null}
+
+      <div>
+        <button type="button" onClick={() => setTrapped2(true)}>
+          Trap 2
+        </button>
+      </div>
+      {trapped2 ? (
+        <FocusScope trapped={trapped2}>
+          {(props) => (
+            <form
+              {...props}
+              style={{
+                display: 'inline-flex',
+                flexDirection: 'column',
+                gap: 20,
+                padding: 20,
+                maxWidth: 500,
+                border: '2px solid',
+              }}
+            >
+              <h1>Two</h1>
+              <input type="text" placeholder="First name" />
+              <input type="text" placeholder="Last name" />
+              <input type="number" placeholder="Age" />
+              <button type="button" onClick={() => setTrapped2(false)}>
+                Close
+              </button>
+            </form>
+          )}
+        </FocusScope>
+      ) : null}
+      <div>
+        <input />
+      </div>
+    </div>
+  );
+};
+
 // true => default focus, false => no focus, ref => focus element
 type FocusParam = boolean | React.RefObject<HTMLElement>;
 
-export const Basic = () => {
+export const WithOptions = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isEmptyForm, setIsEmptyForm] = React.useState(false);
 
