@@ -36,6 +36,7 @@ import {
   ScrollAreaOwnProps,
   ScrollAreaReducerState,
   ScrollAreaRefs,
+  ScrollbarContextValue,
   Size,
 } from './types';
 import { ScrollAreaState, ScrollAreaEvents, reducer } from './scrollAreaState';
@@ -286,11 +287,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       };
     }, []);
 
-    // Animation effects triggered by button and track clicks are managed in a queue to prevent race
-    // conditions and invalid DOM measurements when the user clicks faster than the animation is
-    // able to be completed
-    const scrollAnimationQueue = useConstant(() => new Queue<any>());
-
     const _prefersReducedMotion = usePrefersReducedMotion(scrollAreaRef);
     const prefersReducedMotion = unstable_prefersReducedMotion ?? _prefersReducedMotion;
 
@@ -312,7 +308,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
         overflowX,
         overflowY,
         prefersReducedMotion,
-        scrollAnimationQueue,
         scrollbarVisibility,
         scrollbarVisibilityRestTimeout,
         scrollbarDragScrolling,
@@ -325,7 +320,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       overflowX,
       overflowY,
       prefersReducedMotion,
-      scrollAnimationQueue,
       scrollbarVisibility,
       scrollbarVisibilityRestTimeout,
       scrollbarDragScrolling,
@@ -652,7 +646,7 @@ type InternalScrollbarProps = ScrollAreaScrollbarProps & {
   name: string;
 };
 
-const [ScrollbarContext, useScrollbarContext] = createContext<Axis>(
+const [ScrollbarContext, useScrollbarContext] = createContext<ScrollbarContextValue>(
   'ScrollbarContext',
   'ScrollAreaScrollbarImpl'
 );
@@ -681,6 +675,11 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
     const { positionRef } = refsContext;
     const scrollbarRef = getScrollbarRef(axis, refsContext);
     const ref = useComposedRefs(scrollbarRef, forwardedRef);
+
+    // Animation effects triggered by button and track clicks are managed in a queue to prevent race
+    // conditions and invalid DOM measurements when the user clicks faster than the animation is
+    // able to be completed
+    const scrollAnimationQueue = useConstant(() => new Queue<any>());
 
     useBorderBoxResizeObserver(
       scrollbarRef,
@@ -781,8 +780,15 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
       }
     })();
 
+    const context: ScrollbarContextValue = React.useMemo(() => {
+      return {
+        axis,
+        scrollAnimationQueue,
+      };
+    }, [axis, scrollAnimationQueue]);
+
     return (
-      <ScrollbarContext.Provider value={axis}>
+      <ScrollbarContext.Provider value={context}>
         <Comp
           ref={ref}
           {...domProps}
@@ -849,12 +855,10 @@ type ScrollAreaTrackProps = ScrollAreaTrackDOMProps & ScrollAreaTrackOwnProps;
 const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProps>(
   function ScrollAreaTrack(props, forwardedRef) {
     const { as: Comp = TRACK_DEFAULT_TAG, onPointerDown: onPointerDownProp, ...domProps } = props;
-    const axis = useScrollbarContext(TRACK_NAME);
+    const { axis, scrollAnimationQueue } = useScrollbarContext(TRACK_NAME);
     const dispatch = useDispatchContext(TRACK_NAME);
     const refsContext = useScrollAreaRefs(TRACK_NAME);
-    const { trackClickBehavior, prefersReducedMotion, scrollAnimationQueue } = useScrollAreaContext(
-      TRACK_NAME
-    );
+    const { trackClickBehavior, prefersReducedMotion } = useScrollAreaContext(TRACK_NAME);
     const { positionRef } = refsContext;
     const trackRef = getTrackRef(axis, refsContext);
     const thumbRef = getThumbRef(axis, refsContext);
@@ -1082,7 +1086,7 @@ type ScrollAreaThumbProps = ScrollAreaThumbDOMProps & ScrollAreaThumbOwnProps;
 const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProps>(
   function ScrollAreaThumb(props, forwardedRef) {
     const { as: Comp = THUMB_DEFAULT_TAG, onPointerDown: onPointerDownProp, ...domProps } = props;
-    const axis = useScrollbarContext(THUMB_NAME);
+    const { axis } = useScrollbarContext(THUMB_NAME);
     const refsContext = useScrollAreaRefs(THUMB_NAME);
     const dispatch = useDispatchContext(THUMB_NAME);
     const { positionRef } = refsContext;
@@ -1276,10 +1280,10 @@ const ScrollAreaButton = forwardRef<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonI
       onPointerDown: onPointerDownProp,
       ...domProps
     } = props;
-    const axis = useScrollbarContext(name);
+    const { axis, scrollAnimationQueue } = useScrollbarContext(name);
     const dispatch = useDispatchContext(name);
     const refsContext = useScrollAreaRefs(name);
-    const { prefersReducedMotion, scrollAnimationQueue } = useScrollAreaContext(name);
+    const { prefersReducedMotion } = useScrollAreaContext(name);
     const { positionRef } = refsContext;
     const buttonRef = getButtonRef(direction, axis, refsContext);
     const ref = useComposedRefs(buttonRef, forwardedRef);

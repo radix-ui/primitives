@@ -325,6 +325,8 @@ export function useBorderBoxResizeObserver(
       throw Error('GIMME DAT REF');
     }
 
+    // TODO:
+    // @ts-ignore
     const observer = new ResizeObserver(([entry]) => {
       const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
       callback(borderBoxSize);
@@ -391,13 +393,6 @@ interface ResizeObserverEntry {
   readonly borderBoxSize: ResizeObserverSize[] | ResizeObserverSize;
   readonly contentBoxSize: ResizeObserverSize[] | ResizeObserverSize;
   readonly devicePixelContentBoxSize: ResizeObserverSize[];
-}
-
-declare class ResizeObserver {
-  constructor(callback: ResizeObserverCallback);
-  observe: (target: Element, options?: ResizeObserverOptions) => void;
-  unobserve: (target: Element) => void;
-  disconnect: () => void;
 }
 
 type ResizeObserverBoxOptions = 'border-box' | 'content-box' | 'device-pixel-content-box';

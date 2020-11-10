@@ -85,11 +85,15 @@ export type ScrollAreaContextValue = {
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
   prefersReducedMotion: boolean;
-  scrollAnimationQueue: Queue<any>;
   scrollbarVisibility: ScrollbarVisibility;
   scrollbarVisibilityRestTimeout: number;
   scrollbarDragScrolling: boolean;
   trackClickBehavior: TrackClickBehavior;
   userOnScroll: React.ComponentProps<'div'>['onScroll'];
   isHovered: boolean;
+};
+
+export type ScrollbarContextValue = {
+  axis: Axis;
+  scrollAnimationQueue: Queue<any>;
 };
