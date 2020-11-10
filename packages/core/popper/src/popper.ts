@@ -292,8 +292,8 @@ export function getAlignAccountingForCollisions(
 }
 
 function getPlacementStylesForPoint(point: Point): CSS.Properties {
-  const x = Math.round(point.x + window.pageXOffset);
-  const y = Math.round(point.y + window.pageYOffset);
+  const x = Math.round(point.x + window.scrollX);
+  const y = Math.round(point.y + window.scrollY);
   return {
     position: 'absolute',
     top: 0,
