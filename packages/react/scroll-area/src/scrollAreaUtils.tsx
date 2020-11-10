@@ -1,19 +1,23 @@
-import { Axis, clamp, getResizeObserverEntryBorderBoxSize } from '@interop-ui/utils';
+import { Axis, clamp, getResizeObserverEntryBorderBoxSize, canUseDOM } from '@interop-ui/utils';
 import { useLayoutEffect } from '@interop-ui/react-utils';
 import { ScrollDirection, LogicalDirection, PointerPosition, ScrollAreaRefs } from './types';
 
+export function supportsCustomScrollbars() {
+  if (!canUseDOM()) return false;
+  let supportsWebkitScrollbarSelector = false;
+  try {
+    // We cannot rely on `CSS.supports('selector(::-webkit-scrollbar)')` because the selector syntax
+    // isn't supported in Safari. document.querySelector will throw if it receives an invalid
+    // selector, so we can use that instead and swallow the error.
+    document.querySelector('::-webkit-scrollbar');
+    supportsWebkitScrollbarSelector = true;
+  } catch (error) {}
+
+  return !!(window.CSS?.supports?.('scrollbar-width: none') || supportsWebkitScrollbarSelector);
+}
+
 export function shouldFallbackToNativeScroll() {
-  return !(
-    'ResizeObserver' in window &&
-    'IntersectionObserver' in window &&
-    (('CSS' in window &&
-      'supports' in window.CSS &&
-      window.CSS.supports('scrollbar-width: none')) ||
-      // I don't think it's possible to use CSS.supports to detect if a pseudo element is
-      // supported. We need to make sure `::-webkit-scrollbar` is valid if possible.
-      // TODO: Replace true with valid check or remove the block altogether
-      true)
-  );
+  return !('ResizeObserver' in window && supportsCustomScrollbars());
 }
 
 export function getPointerPosition(event: PointerEvent): PointerPosition {
