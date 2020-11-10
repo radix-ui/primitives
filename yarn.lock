@@ -2785,7 +2785,7 @@ __metadata:
     next-transpile-modules: ^4.0.2
     react: ^17.0.1
     react-dom: ^17.0.1
-    react-is: ^16.13.1
+    react-is: ^17.0.1
     react-live: ^2.2.2
     styled-components: ^5.1.1
     typescript: ^3.9.7
@@ -12652,7 +12652,7 @@ fsevents@^1.2.7:
     pretty-quick: ^2.0.1
     react: ^17.0.1
     react-dom: ^17.0.1
-    react-test-renderer: ^16.13.1
+    react-test-renderer: ^17.0.1
     ts-jest: ^26.2.0
     typescript: ^3.9.7
   languageName: unknown
@@ -17565,10 +17565,17 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-is@npm:16.13.1, react-is@npm:^16.12.0, react-is@npm:^16.13.1, react-is@npm:^16.7.0, react-is@npm:^16.8.1, react-is@npm:^16.8.6":
+"react-is@npm:16.13.1, react-is@npm:^16.12.0, react-is@npm:^16.13.1, react-is@npm:^16.7.0, react-is@npm:^16.8.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 11bcf1267a314a522615f626f3ce3727a3a24cdbf61c4d452add3550a7875326669631326cfb1ba3e92b6f72244c32ffecf93ad21c0cad8455d3e169d0e3f060
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^16.12.0 || ^17.0.0, react-is@npm:^17.0.1":
+  version: 17.0.1
+  resolution: "react-is@npm:17.0.1"
+  checksum: 5a83dfc78e7adcb93d632bf367b0733db650e3abd2e9c57c33b87e50d201212c1884b0d7bcf13e692f1556189fa1b87f9f3e0ba10fe858fd6aebe83ed4fcd1ea
   languageName: node
   linkType: hard
 
@@ -17671,6 +17678,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-shallow-renderer@npm:^16.13.1":
+  version: 16.14.1
+  resolution: "react-shallow-renderer@npm:16.14.1"
+  dependencies:
+    object-assign: ^4.1.1
+    react-is: ^16.12.0 || ^17.0.0
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0
+  checksum: d52cb869e25605b00d4a67ff16598dbbf2826b0f09535de499b2f21a339cabf8b954d4b8855e0e6bdaf0a95603a2b6702e2b47eca8797a7d6bf7e6170ab8b2f3
+  languageName: node
+  linkType: hard
+
 "react-simple-code-editor@npm:^0.10.0":
   version: 0.10.0
   resolution: "react-simple-code-editor@npm:0.10.0"
@@ -17728,17 +17747,17 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-test-renderer@npm:^16.13.1":
-  version: 16.13.1
-  resolution: "react-test-renderer@npm:16.13.1"
+"react-test-renderer@npm:^17.0.1":
+  version: 17.0.1
+  resolution: "react-test-renderer@npm:17.0.1"
   dependencies:
     object-assign: ^4.1.1
-    prop-types: ^15.6.2
-    react-is: ^16.8.6
-    scheduler: ^0.19.1
+    react-is: ^17.0.1
+    react-shallow-renderer: ^16.13.1
+    scheduler: ^0.20.1
   peerDependencies:
-    react: ^16.13.1
-  checksum: e9c3c068d09a4252103eed270635d05897e23cbb86c6f0f74beced9345ed1b94a0fff44f16f97526e6f7a8337669156616e1e02eacb6d7b8f40295c92d91be12
+    react: 17.0.1
+  checksum: 6ec269430beea4356180d90868a9959399781a03ae8de6a29f2edc29d6ca41432653d4103991467ebcc47be5bd2d9197789411e913da66369c2aa2f13311105f
   languageName: node
   linkType: hard
 
@@ -18457,16 +18476,6 @@ fsevents@^1.2.7:
   dependencies:
     xmlchars: ^2.2.0
   checksum: 6ad14be68da9b84af0fa3de346fd78bd3a8e8a73a462e2852279a1fff1e2619988919294001abe3ecef3783f9498962a0619d960ccca4ec2ca914526fde1acc2
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.19.1":
-  version: 0.19.1
-  resolution: "scheduler@npm:0.19.1"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-  checksum: 804f990b9f370cca6d42b65f3cba2cc2bfed4973ee5623bed1ea36a6627842db8c891e2e5ac003f06f9ee892d1d3396921e27fa077346caf0213af05776e8dee
   languageName: node
   linkType: hard
 
