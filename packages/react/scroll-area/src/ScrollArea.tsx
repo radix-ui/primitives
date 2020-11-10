@@ -181,7 +181,7 @@ type ScrollAreaNativeProps = Omit<ScrollAreaProps, 'unstable_forceNative'> & {
 const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativeProps>(
   function ScrollAreaNative(props, forwardedRef) {
     const {
-      as: Comp,
+      as: Comp = ROOT_DEFAULT_TAG,
       overflowX,
       overflowY,
       scrollbarVisibility,
@@ -236,7 +236,7 @@ const initialState: ScrollAreaReducerState = {
 const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
   function ScrollAreaImpl(props, forwardedRef) {
     const {
-      as: Comp,
+      as: Comp = ROOT_DEFAULT_TAG,
       children,
       onScroll,
       overflowX,
