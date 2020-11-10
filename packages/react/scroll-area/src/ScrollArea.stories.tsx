@@ -2,7 +2,6 @@ import * as React from 'react';
 import { styled } from '../../../../stitches.config';
 import { ScrollArea, styles } from './ScrollArea';
 import { Popover as PopoverPrimitive, styles as popoverStyles } from '@interop-ui/react-popover';
-import './ScrollArea.stories.css';
 import { TrackClickBehavior, ScrollbarVisibility } from './types';
 
 export default { title: 'ScrollArea' };
@@ -86,7 +85,15 @@ export function Basic() {
       </div>
 
       <hr />
-      <div className="resizable">
+      <div
+        className="resizable"
+        style={{
+          padding: 10,
+          border: '1px solid gray',
+          resize: 'both',
+          overflow: 'auto',
+        }}
+      >
         <ScrollArea
           as={FixedSizeRoot}
           unstable_forceNative={usesNative}
@@ -132,6 +139,7 @@ export function Basic() {
             <LongContent />
           </ScrollArea.Viewport>
         </ScrollArea>
+        <TestButton onClick={() => alert('whoa')}>Test for pointer events</TestButton>
       </div>
     </div>
   );
@@ -181,6 +189,16 @@ export function InsidePopover() {
 /* -------------------------------------------------------------------------------------------------
  * Reset components
  * -----------------------------------------------------------------------------------------------*/
+
+const TestButton = styled('button', {
+  appearance: 'none',
+  display: 'block',
+  marginTop: '10px',
+  '&:hover': {
+    background: 'crimson',
+    color: '#fff',
+  },
+});
 
 const FixedSizeRoot = styled('div', {
   ...styles.root,

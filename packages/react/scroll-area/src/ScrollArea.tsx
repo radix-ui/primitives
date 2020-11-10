@@ -362,18 +362,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       )
     );
 
-    // Adds attribute to the body element so an app can know when a scrollarea is active, so we can
-    // disable pointer events on all other elements on the screen until scrolling stops.
-    const isScrolling = reducerState.state !== ScrollAreaState.Idle;
-    React.useEffect(() => {
-      isScrolling
-        ? document.body.setAttribute(SCROLLING_BODY_ATTR, '')
-        : document.body.removeAttribute(SCROLLING_BODY_ATTR);
-      return function () {
-        document.body.removeAttribute(SCROLLING_BODY_ATTR);
-      };
-    }, [isScrolling]);
-
     // Defined CSS custom properties to determine styles based on sizes and positioning of child
     // elements.
     //
@@ -436,7 +424,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
               <Comp
                 {...domProps}
                 ref={ref}
-                data-scrolling={isScrolling ? '' : undefined}
                 style={{
                   ...domProps.style,
                   ...style,
