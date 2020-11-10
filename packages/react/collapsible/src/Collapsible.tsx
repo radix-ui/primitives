@@ -48,6 +48,7 @@ const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButto
         ref={forwardedRef}
         aria-controls={context.contentId}
         aria-expanded={context.isOpen || false}
+        data-state={getState(context.isOpen)}
         {...buttonProps}
         onClick={composeEventHandlers(onClick, context.toggle)}
         disabled={context.isDisabled}
@@ -150,7 +151,12 @@ const Collapsible = forwardRef<
   );
 
   return (
-    <Comp {...interopDataAttrObj('root')} {...collapsibleProps} ref={forwardedRef}>
+    <Comp
+      {...interopDataAttrObj('root')}
+      {...collapsibleProps}
+      data-state={getState(context.isOpen)}
+      ref={forwardedRef}
+    >
       <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
     </Comp>
   );
@@ -185,3 +191,7 @@ const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
 
 export type { CollapsibleProps, CollapsibleButtonProps, CollapsibleContentProps };
 export { Collapsible, styles };
+
+function getState(isOpen?: boolean) {
+  return isOpen ? 'open' : 'closed';
+}
