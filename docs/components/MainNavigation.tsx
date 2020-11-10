@@ -6,26 +6,10 @@ import { PlusIcon } from '@modulz/radix-icons';
 import { Collapsible } from '@interop-ui/react-collapsible';
 import { useId } from '@interop-ui/react-utils';
 import { overviewPages, componentsPages } from '../utils/pages';
-
 import type { FlexProps } from '@modulz/radix';
 import { ScrollArea } from './ScrollArea';
 
-const NavContext = React.createContext<{
-  openPanel: string | null;
-  setOpenPanel: React.Dispatch<React.SetStateAction<string | null>>;
-}>(null as any);
-
 function MainNavigation({ sx = {} }: { sx?: BoxProps['sx'] }) {
-  const router = useRouter();
-  const defaultOpenedAccordion = getOpenedPanelFromUrl(router.pathname);
-  const [openPanel, setOpenPanel] = React.useState<string | null>(defaultOpenedAccordion);
-
-  React.useEffect(() => {
-    const handleRouteChange = (url: string) => setOpenPanel(getOpenedPanelFromUrl(url));
-    router.events.on('routeChangeComplete', handleRouteChange);
-    return () => router.events.off('routeChangeComplete', handleRouteChange);
-  }, [router]);
-
   return (
     <ScrollArea>
       <Box sx={sx}>
@@ -35,36 +19,35 @@ function MainNavigation({ sx = {} }: { sx?: BoxProps['sx'] }) {
         </Box>
 
         <Divider />
-        <NavContext.Provider value={{ openPanel, setOpenPanel }}>
-          <NavPanel id="overview" heading="Overview">
-            {overviewPages.map((page) => (
-              <PageLink key={page.id} href={`/${page.id}`}>
-                {page.label}
-              </PageLink>
-            ))}
-          </NavPanel>
 
-          <Divider />
+        <NavPanel id="overview" heading="Overview">
+          {overviewPages.map((page) => (
+            <PageLink key={page.id} href={`/${page.id}`}>
+              {page.label}
+            </PageLink>
+          ))}
+        </NavPanel>
 
-          <NavPanel id="components" heading="Components">
-            {componentsPages.map((page) => (
-              <PageLink key={page.id} href={`/${page.id}`}>
-                {page.label}
-              </PageLink>
-            ))}
-          </NavPanel>
+        <Divider />
 
-          <Divider />
+        <NavPanel id="components" heading="Components">
+          {componentsPages.map((page) => (
+            <PageLink key={page.id} href={`/${page.id}`}>
+              {page.label}
+            </PageLink>
+          ))}
+        </NavPanel>
 
-          <NavPanel id="resources" heading="Resources">
-            <ListItem as="a" href="https://www.github.com/modulz" sx={{ pl: 6 }}>
-              <Text size={2}>Github</Text>
-            </ListItem>
-            <ListItem as="a" href="https://www.twitter.com/modulz" sx={{ pl: 6 }}>
-              <Text size={2}>Twitter</Text>
-            </ListItem>
-          </NavPanel>
-        </NavContext.Provider>
+        <Divider />
+
+        <NavPanel id="resources" heading="Resources">
+          <ListItem as="a" href="https://www.github.com/modulz" sx={{ pl: 6 }}>
+            <Text size={2}>Github</Text>
+          </ListItem>
+          <ListItem as="a" href="https://www.twitter.com/modulz" sx={{ pl: 6 }}>
+            <Text size={2}>Twitter</Text>
+          </ListItem>
+        </NavPanel>
       </Box>
     </ScrollArea>
   );
@@ -126,7 +109,7 @@ function StyledCollapsibleButton(props: FlexProps) {
         pr: 2,
 
         '&:focus': {
-          boxShadow: (t) => `0 0 0 2px ${t.colors.gray300}`,
+          boxShadow: (t) => `0 0 0 3px ${t.colors.blue400}`,
         },
       }}
       {...props}
@@ -144,12 +127,16 @@ function CollapsibleButton({
       <Text as="span" size={3} weight="medium" sx={{ lineHeight: 1 }}>
         {children}
       </Text>
-      <PlusIcon
-        aria-hidden
-        style={{
-          transform: `rotate(${isOpen ? '45deg' : '0deg'})`,
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transform: `rotate(${isOpen ? 45 : 0}deg)`,
         }}
-      />
+      >
+        <PlusIcon aria-hidden />
+      </Box>
     </Collapsible.Button>
   );
 }
@@ -191,10 +178,18 @@ function NavPanel({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const defaultOpenedAccordion = getOpenedPanelFromUrl(router.pathname);
+  const defaultOpenedPanel = getOpenedPanelFromUrl(router.pathname);
+  const [isOpen, setIsOpen] = React.useState(defaultOpenedPanel === id);
+
+  React.useEffect(() => {
+    const handleRouteChange = (url: string) => setIsOpen(getOpenedPanelFromUrl(url) === id);
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => router.events.off('routeChangeComplete', handleRouteChange);
+  }, [id, router]);
+
   return (
-    <Collapsible defaultIsOpen={defaultOpenedAccordion === id}>
-      <CollapsibleButton isOpen={true}>{heading}</CollapsibleButton>
+    <Collapsible isOpen={isOpen} onToggle={(state) => setIsOpen(state!)}>
+      <CollapsibleButton isOpen={isOpen}>{heading}</CollapsibleButton>
       <Collapsible.Content>
         <List sx={{ py: 0 }} aria-label={heading}>
           {children}

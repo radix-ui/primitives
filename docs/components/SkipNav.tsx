@@ -45,7 +45,11 @@ export const SkipNavLink: React.FC<SkipNavLinkProps> = function SkipNavLink({
         },
       }}
     >
-      {children || <Text sx={{ fontWeight: 500 }}>Skip to content</Text>}
+      {children || (
+        <Text size={3} weight="medium">
+          Skip to content
+        </Text>
+      )}
     </Link>
   );
 };
