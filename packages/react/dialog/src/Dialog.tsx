@@ -14,6 +14,7 @@ import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
+import { useFocusGuards } from '@interop-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
@@ -165,11 +166,10 @@ type DialogContentOwnProps = {
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
 
   /**
-   * Event handler called when an interaction happened outside the `Dialog`.
-   * Specifically, when focus leaves the `Dialog` or a pointer event happens outside it.
+   * Event handler called when the a pointer event happens outside of the `Dialog`.
    * Can be prevented.
    */
-  onInteractOutside?: DismissableLayerProps['onInteractOutside'];
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 };
 type DialogContentProps = DialogContentDOMProps & DialogContentOwnProps;
 
@@ -187,12 +187,16 @@ const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentPr
       onOpenAutoFocus,
       onCloseAutoFocus,
       onEscapeKeyDown,
-      onInteractOutside,
+      onPointerDownOutside,
       ...contentProps
     } = props;
     const context = useDialogContext(CONTENT_NAME);
     const debugContext = useDebugContext();
     const ScrollLockWrapper = !debugContext.disableLock ? RemoveScroll : React.Fragment;
+
+    // Make sure the whole tree has focus guards as our `Dialog` will be
+    // the last element in the DOM (beacuse of the `Portal`)
+    useFocusGuards();
 
     // Hide everything from ARIA except the content
     const contentRef = React.useRef<HTMLDivElement>(null);
@@ -213,7 +217,7 @@ const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentPr
               <DismissableLayer
                 disableOutsidePointerEvents
                 onEscapeKeyDown={onEscapeKeyDown}
-                onInteractOutside={onInteractOutside}
+                onPointerDownOutside={onPointerDownOutside}
                 onDismiss={() => context.setIsOpen(false)}
               >
                 {(dismissableLayerProps) => (

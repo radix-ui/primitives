@@ -1,6 +1,6 @@
 {
   "name": "@interop-ui/react-dismissable-layer",
-  "version": "0.0.1-0",
+  "version": "0.0.1-2",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -29,6 +29,6 @@
     "react-remove-scroll": "^2.4.0"
   },
   "peerDependencies": {
-    "react": ">=16"
+    "react": "^16.8 || ^17.0"
   }
 }

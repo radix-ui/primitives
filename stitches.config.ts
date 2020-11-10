@@ -8,7 +8,7 @@ if (!(createStyled as any)._hmr) {
   });
 }
 
-export const { styled } = createStyled({
+export const { styled, css } = createStyled({
   tokens: {
     colors: {
       $white: '#fff',

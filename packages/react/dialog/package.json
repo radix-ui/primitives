@@ -1,6 +1,6 @@
 {
   "name": "@interop-ui/react-dialog",
-  "version": "0.0.1-9",
+  "version": "0.0.1-12",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -20,6 +20,7 @@
   "dependencies": {
     "@interop-ui/react-debug-context": "workspace:*",
     "@interop-ui/react-dismissable-layer": "workspace:*",
+    "@interop-ui/react-focus-guards": "workspace:*",
     "@interop-ui/react-focus-scope": "workspace:*",
     "@interop-ui/react-portal": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
@@ -31,6 +32,6 @@
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
-    "react": ">=16"
+    "react": "^16.8 || ^17.0"
   }
 }

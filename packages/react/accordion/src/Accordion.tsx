@@ -72,6 +72,7 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
     const generatedButtonId = `accordion-button-${useId()}`;
     const buttonId = props.id || generatedButtonId;
     const isOpen = (value && value === accordionContext.value) || false;
+    const disabled = accordionContext.isDisabled ?? props.disabled;
 
     const itemContext: AccordionItemContextValue = React.useMemo(() => ({ isOpen, buttonId }), [
       isOpen,
@@ -83,7 +84,9 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
         {...accordionItemProps}
         {...interopDataAttrObj('item')}
         ref={forwardedRef}
-        disabled={accordionContext.isDisabled ?? props.disabled}
+        data-state={isOpen ? 'open' : 'closed'}
+        data-disabled={disabled || undefined}
+        disabled={disabled}
         isOpen={isOpen}
         onToggle={() => accordionContext.setValue(value)}
       >
