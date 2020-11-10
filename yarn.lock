@@ -2977,14 +2977,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-focus-guards@workspace:packages/react/focus-guards":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-focus-guards@workspace:packages/react/focus-guards"
+  dependencies:
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-focus-scope@workspace:*, @interop-ui/react-focus-scope@workspace:packages/react/focus-scope":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-focus-scope@workspace:packages/react/focus-scope"
   dependencies:
     "@interop-ui/react-debug-context": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
-    tabbable: 5.0.0
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -19624,13 +19634,6 @@ fsevents@^1.2.7:
     es-abstract: ^1.17.0-next.1
     has-symbols: ^1.0.1
   checksum: 6f3edf4676c4bb0454e86bcefcddc1609b41f954e688bd92dbacd77b0564f90fec3d8876a724329fb8d9695e4d077971adde6cf17e3bc356562c056e24ee985e
-  languageName: node
-  linkType: hard
-
-"tabbable@npm:5.0.0":
-  version: 5.0.0
-  resolution: "tabbable@npm:5.0.0"
-  checksum: b9ca9e1ddb7f364bbf020e402c6b0875d613815e98b8ae8652e716e4725bd1eefb8d8bbc70f59a5e4a5697e1ceae525be3e9b9f11266f4994d17c60548b5bb25
   languageName: node
   linkType: hard
 

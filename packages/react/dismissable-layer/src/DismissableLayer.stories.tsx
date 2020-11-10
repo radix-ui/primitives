@@ -5,6 +5,7 @@ import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
 import { composeRefs } from '@interop-ui/react-utils';
+import { FocusGuards } from '@interop-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from './DismissableLayer';
 
@@ -21,7 +22,8 @@ export const Basic = () => {
   const openButtonRef = React.useRef(null);
 
   const [dismissOnEscape, setDismissOnEscape] = React.useState(false);
-  const [dismissOnOutsideInteraction, setDismissOnOutsideInteraction] = React.useState(false);
+  const [dismissOnPointerDownOutside, setDismissOnPointerDownOutside] = React.useState(false);
+  const [dismissOnFocusOutside, setDismissOnFocusOutside] = React.useState(false);
   const [disabledOutsidePointerEvents, setDisableOutsidePointerEvents] = React.useState(false);
 
   return (
@@ -41,11 +43,22 @@ export const Basic = () => {
         <label style={{ display: 'block' }}>
           <input
             type="checkbox"
-            checked={dismissOnOutsideInteraction}
-            onChange={(event) => setDismissOnOutsideInteraction(event.target.checked)}
+            checked={dismissOnPointerDownOutside}
+            onChange={(event) => setDismissOnPointerDownOutside(event.target.checked)}
           />{' '}
-          Dismiss on outside interaction?
+          Dismiss on pointer down outside?
         </label>
+
+        <label style={{ display: 'block' }}>
+          <input
+            type="checkbox"
+            checked={dismissOnFocusOutside}
+            onChange={(event) => setDismissOnFocusOutside(event.target.checked)}
+          />{' '}
+          Dismiss on focus outside?
+        </label>
+
+        <hr />
 
         <label style={{ display: 'block' }}>
           <input
@@ -70,11 +83,13 @@ export const Basic = () => {
               event.preventDefault();
             }
           }}
-          onInteractOutside={(event) => {
-            if (
-              dismissOnOutsideInteraction === false ||
-              event.detail.relatedTarget === openButtonRef.current
-            ) {
+          onPointerDownOutside={(event) => {
+            if (dismissOnPointerDownOutside === false || event.target === openButtonRef.current) {
+              event.preventDefault();
+            }
+          }}
+          onFocusOutside={(event) => {
+            if (dismissOnFocusOutside === false) {
               event.preventDefault();
             }
           }}
@@ -114,29 +129,10 @@ export const Basic = () => {
 };
 
 export const Nested = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const openButtonRef = React.useRef(null);
-
   return (
     <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
       <h1>DismissableLayer (nested)</h1>
-
-      <div>
-        <button ref={openButtonRef} type="button" onClick={() => setIsOpen((isOpen) => !isOpen)}>
-          {isOpen ? 'Close' : 'Open'} dismissable component
-        </button>
-      </div>
-
-      {isOpen ? (
-        <DismissableBox
-          onInteractOutside={(event) => {
-            if (event.detail.relatedTarget === openButtonRef.current) {
-              event.preventDefault();
-            }
-          }}
-          onDismiss={() => setIsOpen(false)}
-        />
-      ) : null}
+      <DismissableBox />
     </div>
   );
 };
@@ -156,8 +152,8 @@ export const WithFocusScope = () => {
 
       {isOpen ? (
         <DismissableLayer
-          onInteractOutside={(event) => {
-            if (event.detail.relatedTarget === openButtonRef.current) {
+          onPointerDownOutside={(event) => {
+            if (event.target === openButtonRef.current) {
               event.preventDefault();
             }
           }}
@@ -203,12 +199,12 @@ export const WithFocusScope = () => {
 
 type DismissableBoxProps = Omit<DismissableLayerProps, 'children'>;
 
-function DismissableBox({ onInteractOutside, onDismiss }: DismissableBoxProps) {
+function DismissableBox(props: DismissableBoxProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
 
   return (
-    <DismissableLayer onInteractOutside={onInteractOutside} onDismiss={onDismiss}>
+    <DismissableLayer {...props}>
       {(props) => (
         <div
           {...props}
@@ -228,17 +224,18 @@ function DismissableBox({ onInteractOutside, onDismiss }: DismissableBoxProps) {
               type="button"
               onClick={() => setIsOpen((isOpen) => !isOpen)}
             >
-              {isOpen ? 'Close' : 'Open'} dismissable component
+              {isOpen ? 'Close' : 'Open'} new layer
             </button>
           </div>
 
           {isOpen ? (
             <DismissableBox
-              onInteractOutside={(event) => {
-                if (event.detail.relatedTarget === openButtonRef.current) {
+              onPointerDownOutside={(event) => {
+                if (event.target === openButtonRef.current) {
                   event.preventDefault();
                 }
               }}
+              onFocusOutside={(event) => event.preventDefault()}
               onDismiss={() => setIsOpen(false)}
             />
           ) : null}
@@ -341,8 +338,8 @@ export const PopoverSemiModal = () => {
           color={color}
           openLabel="Open Popover"
           closeLabel="Close Popover"
-          onInteractOutside={(event) => {
-            if (event.detail.relatedTarget === changeColorButtonRef.current) {
+          onPointerDownOutside={(event) => {
+            if (event.target === changeColorButtonRef.current) {
               event.preventDefault();
             }
           }}
@@ -513,7 +510,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
         {openLabel}
       </button>
       {open ? (
-        <>
+        <FocusGuards>
           <Portal>
             <div
               style={{
@@ -568,7 +565,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
               </DismissableLayer>
             </RemoveScroll>
           </Portal>
-        </>
+        </FocusGuards>
       ) : null}
     </>
   );
@@ -592,6 +589,8 @@ function DummyPopover({
   color = '#333',
   trapped = true,
   onEscapeKeyDown,
+  onPointerDownOutside,
+  onFocusOutside,
   onInteractOutside,
   disableOutsidePointerEvents = false,
   preventScroll = false,
@@ -606,29 +605,26 @@ function DummyPopover({
         {openLabel}
       </button>
       {open ? (
-        <>
+        <FocusGuards>
           <Portal>
             <ScrollContainer>
               <DismissableLayer
+                disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onEscapeKeyDown={onEscapeKeyDown}
-                onInteractOutside={(event) => {
-                  setSkipUnmountAutoFocus(
-                    !disableOutsidePointerEvents && event.detail.originalEvent.type !== 'blur'
-                  );
-                  if (
-                    event.detail.relatedTarget === openButtonRef.current &&
-                    event.detail.originalEvent.type !== 'blur'
-                  ) {
+                onPointerDownOutside={(event) => {
+                  setSkipUnmountAutoFocus(!disableOutsidePointerEvents);
+                  if (event.target === openButtonRef.current) {
                     event.preventDefault();
-                    setSkipUnmountAutoFocus(false);
-                    return;
+                  } else {
+                    onPointerDownOutside?.(event);
                   }
-                  onInteractOutside?.(event);
+
                   if (event.defaultPrevented) {
                     setSkipUnmountAutoFocus(false);
                   }
                 }}
-                disableOutsidePointerEvents={disableOutsidePointerEvents}
+                onFocusOutside={onFocusOutside}
+                onInteractOutside={onInteractOutside}
                 onDismiss={() => setOpen(false)}
               >
                 {(dismissableLayerProps) => (
@@ -638,6 +634,7 @@ function DummyPopover({
                       if (skipUnmountAutoFocus) {
                         event.preventDefault();
                       }
+                      setSkipUnmountAutoFocus(false);
                     }}
                   >
                     {(focusScopeProps) => (
@@ -686,7 +683,7 @@ function DummyPopover({
               </DismissableLayer>
             </ScrollContainer>
           </Portal>
-        </>
+        </FocusGuards>
       ) : null}
     </>
   );

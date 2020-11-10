@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/react-focus-scope",
-  "version": "0.0.1-1",
+  "name": "@interop-ui/react-focus-guards",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -15,11 +15,6 @@
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
-  },
-  "dependencies": {
-    "@interop-ui/react-debug-context": "workspace:*",
-    "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"
