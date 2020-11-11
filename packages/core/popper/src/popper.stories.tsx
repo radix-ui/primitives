@@ -4,7 +4,7 @@ import { useSize } from '@interop-ui/react-use-size';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@interop-ui/utils';
 import { getPlacementData } from './popper';
 
-export default { title: 'Utils/popper' };
+export default { title: 'Core/popper' };
 
 export function Position() {
   return (

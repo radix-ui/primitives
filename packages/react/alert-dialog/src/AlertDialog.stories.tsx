@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AlertDialog, styles } from './AlertDialog';
 import type { AlertDialogContentProps } from './AlertDialog';
 
-export default { title: 'AlertDialog' };
+export default { title: 'Components/AlertDialog' };
 
 export const Basic = () => {
   return (

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { VisuallyHidden as VisuallyHiddenPrimitive, styles } from './VisuallyHidden';
 
-export default { title: 'VisuallyHidden' };
+export default { title: 'Components/VisuallyHidden' };
 
 export const Basic = () => (
   <button>
