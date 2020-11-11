@@ -1,11 +1,8 @@
 // This component is a progressive enhancement that will fallback to a staandard div with overflow:
 // scroll for browsers that don't support features we rely on.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 // Needs to support:
 //  - ResizeObserver
-//  - IntersectionObserver
 //  - PointerEvents
 //  - CSS scrollbar-width OR -webkit-scrollbar
 
@@ -70,8 +67,6 @@ import {
 } from './scrollAreaUtils';
 import { useHover } from './useHover';
 
-const SCROLLING_BODY_ATTR = 'data-interop-scrolling';
-
 const CSS_PROPS = {
   scrollAreaWidth: '--interop-scroll-area-width',
   scrollAreaHeight: '--interop-scroll-area-height',
@@ -104,10 +99,11 @@ const [ScrollAreaContext, useScrollAreaContext] = createContext<ScrollAreaContex
   ROOT_NAME
 );
 
-const [ScrollAreaStateContext, useScrollAreaStateContext] = createContext<ScrollAreaReducerState>(
-  'ScrollAreaStateContext',
-  ROOT_NAME
-);
+const ScrollAreaStateContext = React.createContext<ScrollAreaReducerState>({} as any);
+ScrollAreaStateContext.displayName = 'ScrollAreaStateContext';
+function useScrollAreaStateContext() {
+  return React.useContext(ScrollAreaStateContext);
+}
 
 // We render native scrollbars initially and switch to custom scrollbars after hydration if the
 // user's browser supports the necessary features. Many internal components will return `null` when
@@ -137,7 +133,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       overflowY = 'auto',
       scrollbarVisibility = 'always',
       scrollbarVisibilityRestTimeout = 600,
-      isRTL = false,
+      dir,
       scrollbarDragScrolling = false,
       trackClickBehavior = 'relative',
       unstable_forceNative: forceNative = false,
@@ -162,7 +158,7 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         overflowY={overflowY}
         scrollbarVisibility={scrollbarVisibility}
         scrollbarVisibilityRestTimeout={scrollbarVisibilityRestTimeout}
-        isRTL={isRTL}
+        dir={dir!}
         scrollbarDragScrolling={scrollbarDragScrolling}
         trackClickBehavior={trackClickBehavior}
         unstable_prefersReducedMotion={unstable_prefersReducedMotion}
@@ -187,7 +183,6 @@ const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativePro
       overflowY,
       scrollbarVisibility,
       scrollbarVisibilityRestTimeout,
-      isRTL,
       scrollbarDragScrolling,
       trackClickBehavior,
       unstable_prefersReducedMotion,
@@ -244,7 +239,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       overflowY,
       scrollbarVisibility,
       scrollbarVisibilityRestTimeout,
-      isRTL,
       scrollbarDragScrolling,
       trackClickBehavior,
       unstable_prefersReducedMotion,
@@ -254,7 +248,7 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
     // That we call `onScroll` in the viewport component is an implementation detail that the
     // consumer probably shouldn't need to think about. Passing it down from the top means that the
     // event handler would work the same way in the native fallback as well.
-    const userOnScroll = useCallbackRef(onScroll);
+    const handleScroll = useCallbackRef(onScroll);
 
     const buttonDownRef = React.useRef<HTMLDivElement>(null);
     const buttonLeftRef = React.useRef<HTMLDivElement>(null);
@@ -303,28 +297,28 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
 
     const context: ScrollAreaContextValue = React.useMemo(() => {
       return {
+        dir: props.dir || 'ltr',
         isHovered,
-        isRTL,
+        onScroll: handleScroll,
         overflowX,
         overflowY,
         prefersReducedMotion,
+        scrollbarDragScrolling,
         scrollbarVisibility,
         scrollbarVisibilityRestTimeout,
-        scrollbarDragScrolling,
         trackClickBehavior,
-        userOnScroll,
       };
     }, [
+      props.dir,
+      handleScroll,
       isHovered,
-      isRTL,
       overflowX,
       overflowY,
       prefersReducedMotion,
+      scrollbarDragScrolling,
       scrollbarVisibility,
       scrollbarVisibilityRestTimeout,
-      scrollbarDragScrolling,
       trackClickBehavior,
-      userOnScroll,
     ]);
 
     // Attach all refs to each dispatch so we can ensure fresh references in our reducer without
@@ -384,26 +378,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
         shouldOffsetX && domSizes.scrollbarX.height ? domSizes.scrollbarX.height + 'px' : 0,
       [CSS_PROPS.scrollbarYOffset]:
         shouldOffsetY && domSizes.scrollbarY.width ? domSizes.scrollbarY.width + 'px' : 0,
-      [CSS_PROPS.scrollbarXSize]: domSizes.scrollbarX.height
-        ? domSizes.scrollbarX.height + 'px'
-        : 0,
-      [CSS_PROPS.scrollbarYSize]: domSizes.scrollbarY.width ? domSizes.scrollbarY.width + 'px' : 0,
-      [CSS_PROPS.cornerHeight]: domSizes.scrollbarX.height
-        ? domSizes.scrollbarX.height + 'px'
-        : domSizes.scrollbarY.width
-        ? domSizes.scrollbarY.width + 'px'
-        : '16px',
-      [CSS_PROPS.cornerWidth]: domSizes.scrollbarY.width
-        ? domSizes.scrollbarY.width + 'px'
-        : domSizes.scrollbarX.height
-        ? domSizes.scrollbarX.height + 'px'
-        : '16px',
-      [CSS_PROPS.scrollAreaWidth]: domSizes.scrollArea.width
-        ? domSizes.scrollArea.width + 'px'
-        : 'auto',
-      [CSS_PROPS.scrollAreaHeight]: domSizes.scrollArea.height
-        ? domSizes.scrollArea.height + 'px'
-        : 'auto',
       [CSS_PROPS.positionWidth]: domSizes.position.width ? domSizes.position.width + 'px' : 'auto',
       [CSS_PROPS.positionHeight]: domSizes.position.height
         ? domSizes.position.height + 'px'
@@ -456,14 +430,10 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
       trackYRef,
       viewportRef,
     } = useScrollAreaRefs(VIEWPORT_NAME);
-    const {
-      userOnScroll,
-      overflowX,
-      overflowY,
-      scrollbarVisibility,
-      ...context
-    } = useScrollAreaContext(VIEWPORT_NAME);
-    const stateContext = useScrollAreaStateContext(VIEWPORT_NAME);
+    const { onScroll, overflowX, overflowY, scrollbarVisibility } = useScrollAreaContext(
+      VIEWPORT_NAME
+    );
+    const stateContext = useScrollAreaStateContext();
     const dispatch = useDispatchContext(VIEWPORT_NAME);
     const ref = useComposedRefs(forwardedRef, viewportRef);
 
@@ -536,7 +506,7 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
       lastScrollLeft.current = scrollLeft <= 0 ? 0 : scrollLeft;
     }
 
-    const handleScroll = composeEventHandlers(userOnScroll, function handleScroll() {
+    const handleScroll = composeEventHandlers(onScroll, function handleScroll() {
       if (!positionRef.current) return;
       updateThumbsWithScrollPosition();
       setScrollbarVisibilityOnScroll();
@@ -573,8 +543,10 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
         positionRef,
 
         // trigger update when any size changes occur
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        ...getValuesFromSizeObjects(stateContext.domSizes),
+        stateContext.domSizes.position.height,
+        stateContext.domSizes.position.width,
+        stateContext.domSizes.viewport.height,
+        stateContext.domSizes.viewport.width,
       ]
     );
 
@@ -670,7 +642,7 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
     const {
       [axis === 'x' ? 'contentIsOverflowingX' : 'contentIsOverflowingY']: contentIsOverflowing,
       [axis === 'x' ? 'scrollbarIsVisibleX' : 'scrollbarIsVisibleY']: scrollbarIsVisible,
-    } = useScrollAreaStateContext(name);
+    } = useScrollAreaStateContext();
     const refsContext = useScrollAreaRefs(name);
     const { positionRef } = refsContext;
     const scrollbarRef = getScrollbarRef(axis, refsContext);
@@ -813,6 +785,7 @@ const ScrollAreaScrollbarX = memo(
     props,
     forwardedRef
   ) {
+    const { domSizes } = useScrollAreaStateContext();
     return useNativeScrollArea() ? null : (
       <ScrollAreaScrollbarImpl
         {...interopDataAttrObj('scrollbarX')}
@@ -820,6 +793,13 @@ const ScrollAreaScrollbarX = memo(
         {...props}
         axis="x"
         name={SCROLLBAR_X_NAME}
+        style={{
+          ...props.style,
+          // @ts-ignore
+          [CSS_PROPS.scrollbarXSize]: domSizes.scrollbarX.height
+            ? domSizes.scrollbarX.height + 'px'
+            : 0,
+        }}
       />
     );
   })
@@ -830,6 +810,7 @@ const ScrollAreaScrollbarY = memo(
     props,
     forwardedRef
   ) {
+    const { domSizes } = useScrollAreaStateContext();
     return useNativeScrollArea() ? null : (
       <ScrollAreaScrollbarImpl
         {...interopDataAttrObj('scrollbarY')}
@@ -837,6 +818,13 @@ const ScrollAreaScrollbarY = memo(
         {...props}
         axis="y"
         name={SCROLLBAR_Y_NAME}
+        style={{
+          ...props.style,
+          // @ts-ignore
+          [CSS_PROPS.scrollbarYSize]: domSizes.scrollbarY.width
+            ? domSizes.scrollbarY.width + 'px'
+            : 0,
+        }}
       />
     );
   })
@@ -1093,8 +1081,7 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
     const thumbRef = getThumbRef(axis, refsContext);
     const trackRef = getTrackRef(axis, refsContext);
     const ref = useComposedRefs(thumbRef, forwardedRef);
-    const context = useScrollAreaContext(THUMB_NAME);
-    const stateContext = useScrollAreaStateContext(THUMB_NAME);
+    const stateContext = useScrollAreaStateContext();
     const onPointerDown = useCallbackRef(onPointerDownProp);
 
     const pointerInitialStartPointRef = React.useRef<number>(0);
@@ -1465,7 +1452,9 @@ const ScrollAreaCornerImpl = forwardRef<typeof CORNER_DEFAULT_TAG, ScrollAreaCor
 
     const { positionRef } = useScrollAreaRefs(CORNER_NAME);
     const dispatch = useDispatchContext(CORNER_NAME);
-    const { isRTL } = useScrollAreaContext(CORNER_NAME);
+    const { dir } = useScrollAreaContext(CORNER_NAME);
+    const { domSizes } = useScrollAreaStateContext();
+    const isRTL = dir === 'rtl';
 
     const style: any = {
       // The resize handle is placed, by default, in the bottom right corner of the scroll area. In
@@ -1473,6 +1462,17 @@ const ScrollAreaCornerImpl = forwardRef<typeof CORNER_DEFAULT_TAG, ScrollAreaCor
       // impact on handle placement.
       [CSS_PROPS.cornerLeft]: isRTL ? 0 : 'unset',
       [CSS_PROPS.cornerRight]: isRTL ? 'unset' : 0,
+
+      [CSS_PROPS.cornerHeight]: domSizes.scrollbarX.height
+        ? domSizes.scrollbarX.height + 'px'
+        : domSizes.scrollbarY.width
+        ? domSizes.scrollbarY.width + 'px'
+        : '16px',
+      [CSS_PROPS.cornerWidth]: domSizes.scrollbarY.width
+        ? domSizes.scrollbarY.width + 'px'
+        : domSizes.scrollbarX.height
+        ? domSizes.scrollbarX.height + 'px'
+        : '16px',
 
       // Cursor depends on the direction in which the user is able to resize the container. If the
       // container can be resized in either direction, the cursor will be either 'sw-resize' or
@@ -1510,7 +1510,7 @@ const ScrollAreaCornerImpl = forwardRef<typeof CORNER_DEFAULT_TAG, ScrollAreaCor
           value: computedStyles.resize as ResizeBehavior,
         });
       }
-    }, [isRTL, dispatch, positionRef]);
+    }, [dispatch, positionRef]);
 
     return (
       <Comp
@@ -1713,7 +1713,7 @@ function updateThumbPosition(args: {
   positionElement: HTMLElement;
   axis: Axis;
 }) {
-  const { thumbElement, trackElement, positionElement, axis } = args;
+  const { thumbElement, positionElement, axis } = args;
 
   const totalScrollSize = getScrollSize(positionElement, { axis });
 

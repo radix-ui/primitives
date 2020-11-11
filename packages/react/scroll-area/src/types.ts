@@ -40,7 +40,8 @@ export type ScrollAreaOwnProps = {
    */
   overflowY?: OverflowBehavior;
   /**
-   * Describes the nature of auto-hide, similar to how
+   * Describes the nature of scrollbar visibility, similar to how the scrollbar preferences in MacOS
+   * control visibility of native scrollbars.
    * - `"always"`: Scrollbars are always visible when content is overflowing
    * - `"scroll"`: Scrollbars are visible when the user is scrolling along its corresponding axis
    * - `"hover"`: Scrollbars are visible when the user is scrolling along its corresponding axis and
@@ -77,11 +78,11 @@ export type ScrollAreaOwnProps = {
    */
   unstable_forceNative?: boolean;
   unstable_prefersReducedMotion?: boolean;
-  isRTL?: boolean;
+  dir?: 'rtl' | 'ltr';
 };
 
 export type ScrollAreaContextValue = {
-  isRTL: boolean;
+  dir?: 'rtl' | 'ltr';
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
   prefersReducedMotion: boolean;
@@ -89,7 +90,7 @@ export type ScrollAreaContextValue = {
   scrollbarVisibilityRestTimeout: number;
   scrollbarDragScrolling: boolean;
   trackClickBehavior: TrackClickBehavior;
-  userOnScroll: React.ComponentProps<'div'>['onScroll'];
+  onScroll: React.ComponentProps<'div'>['onScroll'];
   isHovered: boolean;
 };
 
