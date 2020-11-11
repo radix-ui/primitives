@@ -90,6 +90,7 @@ const Item = React.forwardRef((props: any, forwardedRef) => (
       width: 30,
       height: 30,
       display: 'inline-grid',
+      padding: 0,
       placeItems: 'center',
       border: '1px solid gainsboro',
       borderRadius: 9999,

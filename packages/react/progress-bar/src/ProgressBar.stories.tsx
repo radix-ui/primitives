@@ -70,7 +70,7 @@ const WIDTH = 400;
 const BORDER = 5;
 
 const Root = styled('div', {
-  ...(styles.root as any),
+  ...styles.root,
   height: `${HEIGHT}px`,
   width: `${WIDTH}px`,
   maxWidth: '100%',
@@ -79,7 +79,7 @@ const Root = styled('div', {
 });
 
 const Indicator = styled('div', {
-  ...(styles.indicator as any),
+  ...styles.indicator,
   width: '100%',
   height: '100%',
   backgroundColor: '$red',

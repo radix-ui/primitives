@@ -8,9 +8,11 @@ import {
   createStyleObj,
   useComposedRefs,
 } from '@interop-ui/react-utils';
-import { Side, Align, cssReset } from '@interop-ui/utils';
-import { ArrowProps, Arrow } from '@interop-ui/react-arrow';
+import { Arrow, styles as arrowStyles } from '@interop-ui/react-arrow';
 import { useDebugContext } from '@interop-ui/react-debug-context';
+
+import type { Side, Align } from '@interop-ui/utils';
+import type { ArrowProps } from '@interop-ui/react-arrow';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -190,15 +192,10 @@ Popper.Arrow.displayName = ARROW_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(POPPER_NAME, {
   root: {
-    ...cssReset(POPPER_DEFAULT_TAG),
     transformOrigin: 'var(--interop-popper-transform-origin)',
   },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-  },
-  arrow: {
-    ...cssReset(ARROW_DEFAULT_TAG),
-  },
+  content: {},
+  arrow: arrowStyles.root,
 });
 
 export type { PopperProps, PopperContentProps, PopperArrowProps };

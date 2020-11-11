@@ -1,6 +1,6 @@
 import * as React from 'react';
 import omit from 'lodash.omit';
-import { cssReset, clamp, interopDataAttr } from '@interop-ui/utils';
+import { clamp, interopDataAttr } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -676,7 +676,6 @@ interface SliderStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
   root: {
-    ...cssReset(SLIDER_DEFAULT_TAG),
     position: 'relative',
     display: 'inline-flex',
     flexShrink: 0,
@@ -684,16 +683,13 @@ const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
     touchAction: 'none', // Disable browser handling of all panning and zooming gestures on touch devices
   },
   track: {
-    ...cssReset(TRACK_DEFAULT_TAG),
     position: 'relative',
     flexGrow: 1,
   },
   range: {
-    ...cssReset(RANGE_DEFAULT_TAG),
     position: 'absolute',
   },
   thumb: {
-    ...cssReset(THUMB_DEFAULT_TAG),
     display: 'block',
     outline: 'none',
 

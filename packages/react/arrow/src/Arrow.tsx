@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import { createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'Arrow';
@@ -30,7 +29,8 @@ Arrow.defaultProps = {
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
-    ...cssReset(DEFAULT_TAG),
+    display: 'block',
+    verticalAlign: 'middle',
   },
 });
 

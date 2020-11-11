@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
   createStyleObj,
@@ -149,12 +148,9 @@ interface RadioStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(RADIO_NAME, {
   root: {
-    ...cssReset(RADIO_DEFAULT_TAG),
     verticalAlign: 'middle',
   },
-  indicator: {
-    ...cssReset(INDICATOR_DEFAULT_TAG),
-  },
+  indicator: {},
 });
 
 export type { RadioProps, RadioIndicatorProps };

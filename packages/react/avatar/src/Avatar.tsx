@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
   forwardRef,
@@ -145,7 +144,6 @@ function useImageLoadingStatus(src?: string) {
 
 const [styles, interopDataAttrObj] = createStyleObj(AVATAR_NAME, {
   root: {
-    ...cssReset(AVATAR_DEFAULT_TAG),
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -154,15 +152,12 @@ const [styles, interopDataAttrObj] = createStyleObj(AVATAR_NAME, {
     userSelect: 'none',
   },
   image: {
-    ...cssReset(IMAGE_DEFAULT_TAG),
     width: '100%',
     height: '100%',
     // Make sure images are not distorted
     objectFit: 'cover',
   },
-  fallback: {
-    ...cssReset(FALLBACK_DEFAULT_TAG),
-  },
+  fallback: {},
 });
 
 export type { AvatarProps, AvatarImageProps, AvatarFallbackProps };

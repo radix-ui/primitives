@@ -18,8 +18,7 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
   },
   "devDependencies": {
     "@stitches/react": "canary",

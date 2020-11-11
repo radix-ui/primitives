@@ -1,5 +1,4 @@
 import React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -319,24 +318,11 @@ interface AccordionStaticProps {
 }
 
 const [styles, interopDataAttrObj] = createStyleObj(ACCORDION_NAME, {
-  root: {
-    ...cssReset(ACCORDION_DEFAULT_TAG),
-  },
-  item: {
-    ...cssReset(ITEM_DEFAULT_TAG),
-    ...collapsibleStyles.root,
-  },
-  header: {
-    ...cssReset(HEADER_DEFAULT_TAG),
-  },
-  button: {
-    ...cssReset(BUTTON_DEFAULT_TAG),
-    ...collapsibleStyles.button,
-  },
-  panel: {
-    ...cssReset(PANEL_DEFAULT_TAG),
-    ...collapsibleStyles.content,
-  },
+  root: {},
+  item: collapsibleStyles.root,
+  header: {},
+  button: collapsibleStyles.button,
+  panel: collapsibleStyles.content,
 });
 
 export { Accordion, styles };

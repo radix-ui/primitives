@@ -25,7 +25,6 @@
     "@interop-ui/react-popper": "workspace:*",
     "@interop-ui/react-portal": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "workspace:*",
     "aria-hidden": "^1.1.1",
     "react-remove-scroll": "^2.4.0"
   },

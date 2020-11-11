@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cssReset, interopDataAttr } from '@interop-ui/utils';
+import { interopDataAttr } from '@interop-ui/utils';
 import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -52,13 +52,11 @@ AspectRatio.displayName = ASPECT_RATIO_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(ASPECT_RATIO_NAME, {
   root: {
-    ...cssReset(ASPECT_RATIO__DEFAULT_TAG),
     paddingBottom: 'var(--interop-aspect-ratio-padding-bottom)',
     position: 'relative',
     width: '100%',
 
     [`& > [${INNER_DATA_ATTR}]`]: {
-      ...cssReset(INNER_DEFAULT_TAG),
       position: 'absolute',
       left: 0,
       top: 0,

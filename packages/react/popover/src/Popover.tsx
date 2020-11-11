@@ -9,7 +9,6 @@ import {
   useId,
   composeRefs,
 } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
@@ -401,24 +400,11 @@ Popover.Arrow.displayName = ARROW_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
   root: {},
-  trigger: {
-    ...cssReset(TRIGGER_DEFAULT_TAG),
-  },
-  popper: {
-    ...cssReset(POPPER_DEFAULT_TAG),
-    ...popperStyles.root,
-  },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-    ...popperStyles.content,
-  },
-  close: {
-    ...cssReset(CLOSE_DEFAULT_TAG),
-  },
-  arrow: {
-    ...cssReset(ARROW_DEFAULT_TAG),
-    ...popperStyles.arrow,
-  },
+  trigger: {},
+  position: popperStyles.root,
+  content: popperStyles.content,
+  close: {},
+  arrow: popperStyles.arrow,
 });
 
 export type {

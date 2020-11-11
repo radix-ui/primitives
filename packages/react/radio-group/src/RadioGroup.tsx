@@ -15,7 +15,6 @@ import { Radio, styles as radioStyles } from './Radio';
 import { useLabelContext } from '@interop-ui/react-label';
 
 import type { RadioProps } from './Radio';
-import { cssReset } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
@@ -169,7 +168,7 @@ interface RadioGroupStaticProps {
 }
 
 const [styles, interopDataAttrObj] = createStyleObj(RADIO_GROUP_NAME, {
-  root: cssReset(RADIO_GROUP_DEFAULT_TAG),
+  root: {},
   item: radioStyles.root,
   indicator: radioStyles.indicator,
 });

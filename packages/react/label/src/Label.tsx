@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import { createStyleObj, forwardRef, useId, useComposedRefs } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -112,7 +111,6 @@ Label.displayName = LABEL_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(LABEL_NAME, {
   root: {
-    ...cssReset(LABEL_DEFAULT_TAG),
     // allow vertical margins
     display: 'inline-block',
     verticalAlign: 'middle',

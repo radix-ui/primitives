@@ -22,7 +22,7 @@ import {
   useRovingTabIndex,
   ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
-import { cssReset, makeId } from '@interop-ui/utils';
+import { makeId } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -267,14 +267,14 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
 
 const [styles, interopDataAttrObj] = createStyleObj(TABS_NAME, {
   root: {},
+  tabs: {
+    display: 'flex',
+  },
   tabList: {
-    ...cssReset(TAB_LIST_DEFAULT_TAG),
     flexShrink: 0,
     display: 'flex',
   },
   tab: {
-    // reset styles
-    ...cssReset(TAB_DEFAULT_TAG),
     display: 'flex',
     flexShrink: 0,
     alignItems: 'center',
@@ -287,12 +287,7 @@ const [styles, interopDataAttrObj] = createStyleObj(TABS_NAME, {
     position: 'relative',
   },
   tabPanel: {
-    ...cssReset(TAB_PANEL_DEFAULT_TAG),
     flexGrow: 1,
-  },
-  tabs: {
-    ...cssReset(TABS_DEFAULT_TAG),
-    display: 'flex',
   },
 });
 

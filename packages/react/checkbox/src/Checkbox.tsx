@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
   createStyleObj,
@@ -158,12 +157,9 @@ interface CheckboxStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
   root: {
-    ...cssReset(CHECKBOX_DEFAULT_TAG),
     verticalAlign: 'middle',
   },
-  indicator: {
-    ...cssReset(INDICATOR_DEFAULT_TAG),
-  },
+  indicator: {},
 });
 
 export type { CheckboxProps, CheckboxIndicatorProps };

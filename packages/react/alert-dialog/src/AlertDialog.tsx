@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dialog, styles as dialogStyles } from '@interop-ui/react-dialog';
-import { cssReset, makeId, warning } from '@interop-ui/utils';
+import { makeId, warning } from '@interop-ui/utils';
 import {
   createContext,
   createStyleObj,
@@ -319,32 +319,13 @@ AlertDialog.displayName = ROOT_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
   root: dialogStyles.root,
-  overlay: {
-    ...cssReset(OVERLAY_DEFAULT_TAG),
-    ...dialogStyles.overlay,
-  },
-  trigger: {
-    ...cssReset(TRIGGER_DEFAULT_TAG),
-    ...dialogStyles.trigger,
-  },
-  cancel: {
-    ...cssReset(CANCEL_DEFAULT_TAG),
-    ...dialogStyles.close,
-  },
-  action: {
-    ...cssReset(ACTION_DEFAULT_TAG),
-    ...dialogStyles.close,
-  },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-    ...dialogStyles.content,
-  },
-  title: {
-    ...cssReset(TITLE_DEFAULT_TAG),
-  },
-  description: {
-    ...cssReset(DESCRIPTION_DEFAULT_TAG),
-  },
+  overlay: dialogStyles.overlay,
+  trigger: dialogStyles.trigger,
+  cancel: dialogStyles.close,
+  action: dialogStyles.close,
+  content: dialogStyles.content,
+  title: {},
+  description: {},
 });
 
 export { AlertDialog, styles };

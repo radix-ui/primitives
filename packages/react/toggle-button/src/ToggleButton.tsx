@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   forwardRef,
   createStyleObj,
@@ -68,7 +67,6 @@ ToggleButton.displayName = NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
-    ...cssReset(DEFAULT_TAG),
     '&[data-disabled]': {
       pointerEvents: 'none',
     },

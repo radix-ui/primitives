@@ -76,7 +76,9 @@ const Root = React.forwardRef((props: any, forwardedRef) => (
 ));
 
 const RootStyles = styled('button', {
-  ...(styles.root as any),
+  ...styles.root,
+  outline: 'none',
+  border: 'none',
   width: '50px',
   padding: '4px',
   borderRadius: '9999px',
@@ -89,7 +91,7 @@ const RootStyles = styled('button', {
 });
 
 const Thumb = styled('span', {
-  ...(styles.thumb as any),
+  ...styles.thumb,
   width: '20px',
   height: '20px',
   backgroundColor: '$white',

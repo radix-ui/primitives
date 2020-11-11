@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
   createStyleObj,
@@ -170,11 +169,8 @@ Collapsible.Button.displayName = BUTTON_NAME;
 Collapsible.Content.displayName = CONTENT_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
-  root: {
-    ...cssReset(COLLAPSIBLE_DEFAULT_TAG),
-  },
+  root: {},
   button: {
-    ...cssReset(BUTTON_DEFAULT_TAG),
     display: 'block',
     width: '100%',
     textAlign: 'inherit',
@@ -184,9 +180,7 @@ const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
       pointerEvents: 'none',
     },
   },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-  },
+  content: {},
 });
 
 export type { CollapsibleProps, CollapsibleButtonProps, CollapsibleContentProps };

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
 
 const NAME = 'Separator';
 const DEFAULT_TAG = 'hr';
@@ -55,7 +54,6 @@ Separator.displayName = NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
-    ...cssReset(DEFAULT_TAG),
     display: 'block',
   },
 });

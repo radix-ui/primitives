@@ -67,7 +67,7 @@ function VerticalSeparatorInner({ children }: any) {
 }
 
 const Root = styled('hr', {
-  ...(styles.root as any),
+  ...styles.root,
   height: '1px',
   width: '100%',
   border: 'none',

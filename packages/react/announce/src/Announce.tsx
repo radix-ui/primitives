@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { cssReset, interopDataAttr } from '@interop-ui/utils';
+import { interopDataAttr } from '@interop-ui/utils';
 import {
   forwardRef,
   createStyleObj,
@@ -190,9 +190,7 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
 Announce.displayName = NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
-  root: {
-    ...cssReset(DEFAULT_TAG),
-  },
+  root: {},
 });
 
 export { Announce, styles };

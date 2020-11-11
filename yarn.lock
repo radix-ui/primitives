@@ -2035,7 +2035,6 @@ __metadata:
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/react-visually-hidden": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2048,7 +2047,6 @@ __metadata:
   dependencies:
     "@interop-ui/react-collapsible": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2087,7 +2085,6 @@ __metadata:
   resolution: "@interop-ui/react-arrow@workspace:packages/react/arrow"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2111,8 +2108,6 @@ __metadata:
   resolution: "@interop-ui/react-avatar@workspace:packages/react/avatar"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    "@modulz/radix-icons": ^2.4.1
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2125,7 +2120,6 @@ __metadata:
   dependencies:
     "@interop-ui/react-label": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2137,7 +2131,6 @@ __metadata:
   resolution: "@interop-ui/react-collapsible@workspace:packages/react/collapsible"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2231,7 +2224,6 @@ __metadata:
   resolution: "@interop-ui/react-label@workspace:packages/react/label"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2249,7 +2241,6 @@ __metadata:
     "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     aria-hidden: ^1.1.1
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
@@ -2295,7 +2286,6 @@ __metadata:
   resolution: "@interop-ui/react-progress-bar@workspace:packages/react/progress-bar"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
@@ -2309,7 +2299,6 @@ __metadata:
   dependencies:
     "@interop-ui/react-label": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2321,7 +2310,6 @@ __metadata:
   resolution: "@interop-ui/react-separator@workspace:packages/react/separator"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
@@ -2350,7 +2338,6 @@ __metadata:
   dependencies:
     "@interop-ui/react-label": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
@@ -2375,7 +2362,6 @@ __metadata:
   resolution: "@interop-ui/react-toggle-button@workspace:packages/react/toggle-button"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2392,7 +2378,6 @@ __metadata:
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/react-visually-hidden": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0

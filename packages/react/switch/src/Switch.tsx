@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
   createStyleObj,
@@ -152,12 +151,10 @@ interface SwitchStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(SWITCH_NAME, {
   root: {
-    ...cssReset(SWITCH_DEFAULT_TAG),
     verticalAlign: 'middle',
     textAlign: 'left',
   },
   thumb: {
-    ...cssReset(THUMB_DEFAULT_TAG),
     display: 'inline-block',
     verticalAlign: 'middle',
   },

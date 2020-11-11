@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import { createContext, createStyleObj, forwardRef } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -115,11 +114,9 @@ interface ProgressBarStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(PROGRESS_NAME, {
   root: {
-    ...cssReset(PROGRESS_DEFAULT_TAG),
     position: 'relative',
   },
   indicator: {
-    ...cssReset(INDICATOR_DEFAULT_TAG),
     position: 'absolute',
     top: 0,
     bottom: 0,

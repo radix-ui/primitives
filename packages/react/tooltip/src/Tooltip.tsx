@@ -11,7 +11,6 @@ import {
   useControlledState,
   useLayoutEffect,
 } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
 import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
@@ -339,23 +338,14 @@ Tooltip.Arrow.displayName = ARROW_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   root: {},
-  trigger: {
-    ...cssReset(TRIGGER_DEFAULT_TAG),
-  },
-  popper: {
-    ...cssReset(POPPER_DEFAULT_TAG),
-    ...popperStyles.root,
-  },
+  trigger: {},
+  popper: popperStyles.root,
   content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
     ...popperStyles.content,
     userSelect: 'none',
     pointerEvents: 'none',
   },
-  arrow: {
-    ...cssReset(ARROW_DEFAULT_TAG),
-    ...popperStyles.arrow,
-  },
+  arrow: popperStyles.arrow,
 });
 
 export type {

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
-import { cssReset } from '@interop-ui/utils';
 import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'AccessibleIcon';
@@ -33,7 +32,6 @@ AccessibleIcon.displayName = NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
-    ...cssReset(DEFAULT_TAG),
     display: 'inline-flex',
     verticalAlign: 'middle',
   },
