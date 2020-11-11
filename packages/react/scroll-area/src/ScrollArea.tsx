@@ -134,7 +134,6 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
       scrollbarVisibility = 'always',
       scrollbarVisibilityRestTimeout = 600,
       dir,
-      scrollbarDragScrolling = false,
       trackClickBehavior = 'relative',
       unstable_forceNative: forceNative = false,
       unstable_prefersReducedMotion = false,
@@ -159,7 +158,6 @@ const ScrollArea = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaProps, ScrollAr
         scrollbarVisibility={scrollbarVisibility}
         scrollbarVisibilityRestTimeout={scrollbarVisibilityRestTimeout}
         dir={dir!}
-        scrollbarDragScrolling={scrollbarDragScrolling}
         trackClickBehavior={trackClickBehavior}
         unstable_prefersReducedMotion={unstable_prefersReducedMotion}
         ref={forwardedRef}
@@ -183,7 +181,6 @@ const ScrollAreaNative = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaNativePro
       overflowY,
       scrollbarVisibility,
       scrollbarVisibilityRestTimeout,
-      scrollbarDragScrolling,
       trackClickBehavior,
       unstable_prefersReducedMotion,
       ...domProps
@@ -239,7 +236,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       overflowY,
       scrollbarVisibility,
       scrollbarVisibilityRestTimeout,
-      scrollbarDragScrolling,
       trackClickBehavior,
       unstable_prefersReducedMotion,
       ...domProps
@@ -303,7 +299,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
         overflowX,
         overflowY,
         prefersReducedMotion,
-        scrollbarDragScrolling,
         scrollbarVisibility,
         scrollbarVisibilityRestTimeout,
         trackClickBehavior,
@@ -315,7 +310,6 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       overflowX,
       overflowY,
       prefersReducedMotion,
-      scrollbarDragScrolling,
       scrollbarVisibility,
       scrollbarVisibilityRestTimeout,
       trackClickBehavior,

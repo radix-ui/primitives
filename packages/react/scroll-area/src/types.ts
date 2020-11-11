@@ -59,12 +59,6 @@ export type ScrollAreaOwnProps = {
    */
   scrollbarVisibilityRestTimeout?: number;
   /**
-   * Whether or not the user can scroll by dragging.
-   *
-   * (default: `false`)
-   */
-  scrollbarDragScrolling?: boolean;
-  /**
    * Describes the action that occurs when a user clicks on the scroll track. When `"relative"`, the
    * scroll area will jump to a spot relative to where the user has clicked in relation to the
    * track. When `"page"`, the scroll area will initially jump to the next or previous page of
@@ -88,7 +82,6 @@ export type ScrollAreaContextValue = {
   prefersReducedMotion: boolean;
   scrollbarVisibility: ScrollbarVisibility;
   scrollbarVisibilityRestTimeout: number;
-  scrollbarDragScrolling: boolean;
   trackClickBehavior: TrackClickBehavior;
   onScroll: React.ComponentProps<'div'>['onScroll'];
   isHovered: boolean;
