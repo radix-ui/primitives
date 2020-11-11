@@ -3,7 +3,7 @@ import { Popper, styles } from './Popper';
 import { Portal } from '@interop-ui/react-portal';
 import { styled, css } from '../../../../stitches.config';
 
-export default { title: 'Popper' };
+export default { title: 'Components/Popper' };
 
 export const Basic = () => {
   const [isOpen, setIsOpen] = React.useState(false);

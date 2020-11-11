@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "parcel build src/index.ts --no-cache && yarn build:styles",
-    "build:styles": "node ../../../scripts/build-styles sheet",
+    "build:styles": "node ../../../scripts/build-styles slider",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"

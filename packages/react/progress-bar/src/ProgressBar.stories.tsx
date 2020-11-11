@@ -3,7 +3,7 @@ import { styled } from '../../../../stitches.config';
 import { ProgressBar, styles } from './ProgressBar';
 
 export default {
-  title: 'ProgressBar',
+  title: 'Components/ProgressBar',
 };
 
 export const Basic = () => {

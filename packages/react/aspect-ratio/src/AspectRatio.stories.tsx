@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AspectRatio as AspectRatioPrimitive, styles } from './AspectRatio';
 
-export default { title: 'AspectRatio' };
+export default { title: 'Components/AspectRatio' };
 
 export const Basic = () => (
   <AspectRatio>

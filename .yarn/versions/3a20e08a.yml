@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-slider": prerelease
+
+declined:
+  - interop-ui

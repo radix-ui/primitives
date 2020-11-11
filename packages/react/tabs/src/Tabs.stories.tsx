@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Tabs } from './Tabs';
 
-export default { title: 'Tabs' };
+export default { title: 'Components/Tabs' };
 
 export const Basic = () => (
   <Tabs defaultSelectedId="tab1">
