@@ -12,7 +12,7 @@ export const Basic = () => {
     >
       <Popover>
         <Popover.Trigger as={Button}>open</Popover.Trigger>
-        <Popover.Position style={{ ...styles.position }} sideOffset={10}>
+        <Popover.Popper style={{ ...styles.popper }} sideOffset={10}>
           <Popover.Content
             style={{
               ...styles.content,
@@ -26,7 +26,7 @@ export const Basic = () => {
             <Popover.Close as={Button}>close</Popover.Close>
           </Popover.Content>
           <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
-        </Popover.Position>
+        </Popover.Popper>
       </Popover>
     </div>
   );
@@ -40,14 +40,14 @@ export const Controlled = () => {
     >
       <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
         <Popover.Trigger as={Button}>{isOpen ? 'close' : 'open'}</Popover.Trigger>
-        <Popover.Position style={{ ...styles.position }}>
+        <Popover.Popper style={{ ...styles.popper }}>
           <Popover.Content
             style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
           >
             <Popover.Close as={Button}>close</Popover.Close>
           </Popover.Content>
           <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
-        </Popover.Position>
+        </Popover.Popper>
       </Popover>
     </div>
   );
@@ -79,7 +79,7 @@ export const Nested = () => {
           Open popover
         </Popover.Trigger>
 
-        <Popover.Position sideOffset={10} style={{ ...styles.position }}>
+        <Popover.Popper sideOffset={10} style={{ ...styles.popper }}>
           <Popover.Content
             style={{
               ...styles.content,
@@ -90,11 +90,11 @@ export const Nested = () => {
           >
             <Popover>
               <Popover.Trigger type="button">Open nested popover</Popover.Trigger>
-              <Popover.Position
+              <Popover.Popper
                 side="top"
                 align="center"
                 sideOffset={10}
-                style={{ ...styles.position }}
+                style={{ ...styles.popper }}
               >
                 <Popover.Content
                   style={{
@@ -107,7 +107,7 @@ export const Nested = () => {
                   <Popover.Close type="button">close</Popover.Close>
                 </Popover.Content>
                 <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'tomato' }} />
-              </Popover.Position>
+              </Popover.Popper>
             </Popover>
 
             <Popover.Close type="button" style={{ marginLeft: 10 }}>
@@ -115,7 +115,7 @@ export const Nested = () => {
             </Popover.Close>
           </Popover.Content>
           <Popover.Arrow offset={20} style={{ ...styles.arrow, fill: 'royalblue' }} />
-        </Popover.Position>
+        </Popover.Popper>
       </Popover>
     </div>
   );
@@ -129,7 +129,7 @@ export const FocusTest = () => {
       </button>
       <Popover>
         <Popover.Trigger as={Button}>Open Popover</Popover.Trigger>
-        <Popover.Position style={{ ...styles.position }}>
+        <Popover.Popper style={{ ...styles.popper }}>
           <Popover.Content
             style={{ ...styles.content, backgroundColor: '#eee', width: 250, height: 150 }}
           >
@@ -140,7 +140,7 @@ export const FocusTest = () => {
               Blur
             </button>
           </Popover.Content>
-        </Popover.Position>
+        </Popover.Popper>
       </Popover>
     </>
   );
@@ -165,8 +165,8 @@ export const CustomAnchor = () => {
       Item
       <Popover>
         <Popover.Trigger>open</Popover.Trigger>
-        <Popover.Position
-          style={{ ...styles.position }}
+        <Popover.Popper
+          style={{ ...styles.popper }}
           anchorRef={itemBoxRef}
           side="right"
           sideOffset={1}
@@ -183,7 +183,7 @@ export const CustomAnchor = () => {
           >
             <Popover.Close>close</Popover.Close>
           </Popover.Content>
-        </Popover.Position>
+        </Popover.Popper>
       </Popover>
     </div>
   );
@@ -194,7 +194,7 @@ export const NonModal = () => {
     <>
       <Popover>
         <Popover.Trigger as={Button}>open</Popover.Trigger>
-        <Popover.Position style={{ ...styles.position }} sideOffset={10} trapFocus={false}>
+        <Popover.Popper style={{ ...styles.popper }} sideOffset={10} trapFocus={false}>
           <Popover.Content
             style={{
               ...styles.content,
@@ -208,7 +208,7 @@ export const NonModal = () => {
             <Popover.Close as={Button}>close</Popover.Close>
           </Popover.Content>
           <Popover.Arrow width={50} height={20} style={{ ...styles.arrow }} />
-        </Popover.Position>
+        </Popover.Popper>
       </Popover>
       <input style={{ marginLeft: 10 }} />
     </>

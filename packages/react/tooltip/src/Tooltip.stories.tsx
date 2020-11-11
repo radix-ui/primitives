@@ -7,12 +7,12 @@ export default { title: 'Components/Tooltip' };
 export const Basic = () => (
   <Tooltip>
     <Tooltip.Trigger style={{ margin: 100 }}>Hover or Focus me</Tooltip.Trigger>
-    <Tooltip.Position sideOffset={5}>
+    <Tooltip.Popper sideOffset={5}>
       <Tooltip.Content as={Content} aria-label="Even better done this way!">
         Nicely done!
       </Tooltip.Content>
       <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-    </Tooltip.Position>
+    </Tooltip.Popper>
   </Tooltip>
 );
 
@@ -24,10 +24,10 @@ export const Controlled = () => {
       <Tooltip.Trigger style={{ margin: 100 }}>
         I'm controlled, look I'm {isOpen ? 'open' : 'closed'}
       </Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>Nicely done!</Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
   );
 };
@@ -36,27 +36,27 @@ export const CustomContent = () => (
   <div style={{ display: 'flex', gap: 20, padding: 100 }}>
     <Tooltip>
       <Tooltip.Trigger>Heading</Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>
           <h1>Some heading</h1>
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Trigger>Paragraph</Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>
           <p>Some paragraph</p>
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Trigger>List</Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>
           <ul>
             <li>One</li>
@@ -65,12 +65,12 @@ export const CustomContent = () => (
           </ul>
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Trigger>Article</Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>
           <article>
             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum, quae qui. Magnam
@@ -79,12 +79,12 @@ export const CustomContent = () => (
           </article>
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Trigger>Figure</Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>
           <figure style={{ margin: 0 }}>
             <img
@@ -96,33 +96,33 @@ export const CustomContent = () => (
           </figure>
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Trigger>Time</Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>
           {/* @ts-ignore */}
           <time datetime="2017-10-31T11:21:00+02:00">Tuesday, 31 October 2017</time>
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Trigger>Link</Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>
           View in <a href="https://modulz.app">Modulz</a>
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Trigger>Form</Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>
           <form>
             <label htmlFor="fname">First name:</label>
@@ -135,12 +135,12 @@ export const CustomContent = () => (
           </form>
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
 
     <Tooltip>
       <Tooltip.Trigger>Mini layout</Tooltip.Trigger>
-      <Tooltip.Position sideOffset={5}>
+      <Tooltip.Popper sideOffset={5}>
         <Tooltip.Content as={Content}>
           <p
             style={{
@@ -167,7 +167,7 @@ export const CustomContent = () => (
           </p>
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
   </div>
 );
@@ -350,10 +350,10 @@ export const Unmount = () => {
 export const Animated = () => {
   return (
     <div style={{ padding: 100 }}>
-      <SimpleTooltip as={AnimatedPosition} label="Hello world 1">
+      <SimpleTooltip as={AnimatedPopper} label="Hello world 1">
         <Tooltip.Trigger style={{ marginRight: 10 }}>Hello 1</Tooltip.Trigger>
       </SimpleTooltip>
-      <SimpleTooltip as={AnimatedPosition} label="Hello world 2" side="top">
+      <SimpleTooltip as={AnimatedPopper} label="Hello world 2" side="top">
         <Tooltip.Trigger>Hello 2</Tooltip.Trigger>
       </SimpleTooltip>
     </div>
@@ -371,12 +371,12 @@ function SimpleTooltip({
   return (
     <Tooltip isOpen={isOpen} onIsOpenChange={onOpenChange}>
       {children}
-      <Tooltip.Position sideOffset={5} {...props} style={{ ...props.style, ...styles.position }}>
+      <Tooltip.Popper sideOffset={5} {...props} style={{ ...props.style, ...styles.popper }}>
         <Tooltip.Content as={Content} aria-label={ariaLabel}>
           {label}
         </Tooltip.Content>
         <Tooltip.Arrow style={{ ...styles.arrow }} offset={10} />
-      </Tooltip.Position>
+      </Tooltip.Popper>
     </Tooltip>
   );
 }
@@ -419,7 +419,7 @@ const fadeIn = css.keyframes({
   '100%': { opacity: 1 },
 });
 
-const AnimatedPosition = styled('div', {
+const AnimatedPopper = styled('div', {
   '&[data-state="delayed-open"]': {
     animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
   },
