@@ -330,19 +330,13 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
 
     const ref = useComposedRefs(forwardedRef, scrollAreaRef);
 
-    useBorderBoxResizeObserver(
-      scrollAreaRef,
-      React.useCallback(
-        (size: ResizeObserverSize) => {
-          dispatch({
-            type: ScrollAreaEvents.HandleScrollAreaResize,
-            width: size.inlineSize,
-            height: size.blockSize,
-          });
-        },
-        [dispatch]
-      )
-    );
+    useBorderBoxResizeObserver(scrollAreaRef, (size: ResizeObserverSize) => {
+      dispatch({
+        type: ScrollAreaEvents.HandleScrollAreaResize,
+        width: size.inlineSize,
+        height: size.blockSize,
+      });
+    });
 
     // Defined CSS custom properties to determine styles based on sizes and positioning of child
     // elements.
@@ -431,19 +425,13 @@ const ScrollAreaViewportImpl = forwardRef<typeof VIEWPORT_DEFAULT_TAG, ScrollAre
     const dispatch = useDispatchContext(VIEWPORT_NAME);
     const ref = useComposedRefs(forwardedRef, viewportRef);
 
-    useBorderBoxResizeObserver(
-      viewportRef,
-      React.useCallback(
-        (size: ResizeObserverSize) => {
-          dispatch({
-            type: ScrollAreaEvents.HandleViewportResize,
-            width: size.inlineSize,
-            height: size.blockSize,
-          });
-        },
-        [dispatch]
-      )
-    );
+    useBorderBoxResizeObserver(viewportRef, (size: ResizeObserverSize) => {
+      dispatch({
+        type: ScrollAreaEvents.HandleViewportResize,
+        width: size.inlineSize,
+        height: size.blockSize,
+      });
+    });
 
     // Update the scrollbar thumb position as the user scrolls. This is simpler to execute here with
     // the scroll handler rather than in the thumb components.
@@ -647,20 +635,14 @@ const ScrollAreaScrollbarImpl = forwardRef<typeof SCROLLBAR_DEFAULT_TAG, Interna
     // able to be completed
     const scrollAnimationQueue = useConstant(() => new Queue<any>());
 
-    useBorderBoxResizeObserver(
-      scrollbarRef,
-      React.useCallback(
-        (size: ResizeObserverSize) => {
-          dispatch({
-            type: ScrollAreaEvents.HandleScrollbarResize,
-            width: size.inlineSize,
-            height: size.blockSize,
-            axis,
-          });
-        },
-        [dispatch, axis]
-      )
-    );
+    useBorderBoxResizeObserver(scrollbarRef, (size: ResizeObserverSize) => {
+      dispatch({
+        type: ScrollAreaEvents.HandleScrollbarResize,
+        width: size.inlineSize,
+        height: size.blockSize,
+        axis,
+      });
+    });
 
     const handleWheel = composeEventHandlers(onWheel, function handleWheel(event) {
       const absoluteDeltaX = Math.abs(event.deltaX);
@@ -848,20 +830,14 @@ const ScrollAreaTrack = forwardRef<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProp
 
     const onPointerDown = useCallbackRef(onPointerDownProp);
 
-    useBorderBoxResizeObserver(
-      trackRef,
-      React.useCallback(
-        (size: ResizeObserverSize) => {
-          dispatch({
-            type: ScrollAreaEvents.HandleTrackResize,
-            width: size.inlineSize,
-            height: size.blockSize,
-            axis,
-          });
-        },
-        [axis, dispatch]
-      )
-    );
+    useBorderBoxResizeObserver(trackRef, (size: ResizeObserverSize) => {
+      dispatch({
+        type: ScrollAreaEvents.HandleTrackResize,
+        width: size.inlineSize,
+        height: size.blockSize,
+        axis,
+      });
+    });
     const rafIdRef = React.useRef<number>();
 
     React.useEffect(() => {

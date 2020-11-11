@@ -1,5 +1,5 @@
 import { Axis, clamp, getResizeObserverEntryBorderBoxSize, canUseDOM } from '@interop-ui/utils';
-import { useLayoutEffect } from '@interop-ui/react-utils';
+import { useCallbackRef, useLayoutEffect } from '@interop-ui/react-utils';
 import { ScrollDirection, LogicalDirection, PointerPosition, ScrollAreaRefs } from './types';
 
 export function supportsCustomScrollbars() {
@@ -318,6 +318,7 @@ export function useBorderBoxResizeObserver(
   ref: React.RefObject<HTMLElement>,
   callback: (size: ResizeObserverSize) => void
 ) {
+  const onResize = useCallbackRef(callback);
   useLayoutEffect(() => {
     const element = ref.current;
     if (!element) {
@@ -325,15 +326,14 @@ export function useBorderBoxResizeObserver(
       throw Error('GIMME DAT REF');
     }
 
-    // TODO:
     // @ts-ignore
     const observer = new ResizeObserver(([entry]) => {
       const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
-      callback(borderBoxSize);
+      onResize(borderBoxSize);
     });
 
     const initialRect = element.getBoundingClientRect();
-    callback({
+    onResize({
       inlineSize: initialRect.width,
       blockSize: initialRect.height,
     });
@@ -342,7 +342,7 @@ export function useBorderBoxResizeObserver(
     return function () {
       observer.disconnect();
     };
-  }, [callback, ref]);
+  }, [onResize, ref]);
 }
 
 function isScrolledToTop(element: Element | null) {
