@@ -1,11 +1,4 @@
-import { Axis, Size, ResizeBehavior, ScrollAreaRefs, ScrollbarVisibility } from './types';
-import {
-  canScroll,
-  getScrollSize,
-  setScrollPosition,
-  getTrackRef,
-  getThumbRef,
-} from './scrollAreaUtils';
+import { Axis, Size, ResizeBehavior, ScrollbarVisibility } from './types';
 
 export enum ScrollAreaState {
   Idle = 'Idle',
@@ -20,7 +13,6 @@ export enum ScrollAreaEvents {
   HandleViewportResize,
   HandleScrollbarResize,
   HandleTrackResize,
-  MoveThumbWithPointer,
   SetContentOverflowing,
   SetExplicitResize,
   StartTracking,
@@ -35,11 +27,10 @@ export enum ScrollAreaEvents {
 // prettier-ignore
 export type ScrollAreaEvent =
   | { type: ScrollAreaEvents.SetExplicitResize; value: ResizeBehavior }
-  | { type: ScrollAreaEvents.HandleScrollAreaResize; width: number; height: number }
+  | { type: ScrollAreaEvents.HandleScrollAreaResize; width: number; height: number; scrollAreaComputedStyle: CSSStyleDeclaration }
   | { type: ScrollAreaEvents.HandleViewportResize; width: number; height: number }
   | { type: ScrollAreaEvents.HandleScrollbarResize; axis: Axis; width: number; height: number }
   | { type: ScrollAreaEvents.HandleTrackResize; axis: Axis; width: number; height: number }
-  | { type: ScrollAreaEvents.MoveThumbWithPointer; axis: Axis; pointerPosition: number; pointerStartPointRef: React.MutableRefObject<number>; pointerInitialStartPointRef: React.MutableRefObject<number>; thumbInitialData: React.MutableRefObject<{ size: number; positionStart: number }>; trackInitialData: React.MutableRefObject<{ size: number; positionStart: number }> }
   | { type: ScrollAreaEvents.StartTracking }
   | { type: ScrollAreaEvents.StopTracking }
   | { type: ScrollAreaEvents.StartThumbing }
@@ -71,10 +62,6 @@ export function reducer(
   context: ScrollAreaReducerState,
   event: ScrollAreaEvent
 ): ScrollAreaReducerState {
-  const refs: ScrollAreaRefs = (event as any).refs;
-  const positionElement = refs.positionRef.current!;
-  const scrollAreaElement = refs.scrollAreaRef.current!;
-
   switch (event.type) {
     case ScrollAreaEvents.SetExplicitResize: {
       return {
@@ -90,7 +77,7 @@ export function reducer(
       // very often in a real app so I don't think this will be a bottleneck for us. The
       // computations will be more critical in the composer where we need style changes to trigger
       // re-renders.
-      const computedStyle = window.getComputedStyle(scrollAreaElement);
+      const computedStyle = event.scrollAreaComputedStyle;
       const borderTopWidth = parseInt(computedStyle.borderTopWidth);
       const borderRightWidth = parseInt(computedStyle.borderRightWidth);
       const borderBottomWidth = parseInt(computedStyle.borderBottomWidth);
@@ -189,51 +176,6 @@ export function reducer(
         ...context,
         state: ScrollAreaState.Thumbing,
       };
-    }
-    case ScrollAreaEvents.MoveThumbWithPointer: {
-      const {
-        axis,
-        pointerStartPointRef,
-        pointerInitialStartPointRef,
-        thumbInitialData,
-        trackInitialData,
-        pointerPosition,
-      } = event;
-      const trackElement = getTrackRef(axis, refs).current;
-      const thumbElement = getThumbRef(axis, refs).current;
-
-      if (!trackElement || !thumbElement) {
-        return context;
-      }
-
-      const delta = pointerPosition - pointerStartPointRef.current;
-
-      if (canScroll(positionElement, { axis, delta })) {
-        // Offset by the distance between the initial pointer's distance from the initial
-        // position of the thumb
-        const { positionStart: trackPosition } = trackInitialData.current;
-        const { positionStart: thumbInitialPosition } = thumbInitialData.current;
-        const pointerOffset = pointerInitialStartPointRef.current - thumbInitialPosition;
-
-        const trackSize =
-          axis === 'x' ? context.domSizes.trackX.width : context.domSizes.trackY.height;
-        const pointerPositionRelativeToTrack = Math.round(pointerPosition - trackPosition);
-        const viewportRatioFromPointer =
-          Math.round(((pointerPositionRelativeToTrack - pointerOffset) / trackSize) * 100) / 100;
-        const scrollSize = getScrollSize(positionElement, { axis });
-        const value = viewportRatioFromPointer * scrollSize;
-        setScrollPosition(positionElement, { axis, value });
-
-        // Reset the pointer start point for the next pointer movement
-        pointerStartPointRef.current = pointerPosition;
-
-        return {
-          ...context,
-          state: ScrollAreaState.Thumbing,
-        };
-      }
-
-      return context;
     }
     case ScrollAreaEvents.StopThumbing: {
       return {

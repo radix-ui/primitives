@@ -6,7 +6,6 @@
 //  - PointerEvents
 //  - CSS scrollbar-width OR -webkit-scrollbar
 
-// TODO: Dragging functionality
 // TODO: Replace all globals with globals relative to the root node
 // TODO: RTL language testing for horizontal scrolling
 
@@ -280,7 +279,7 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
     const _prefersReducedMotion = usePrefersReducedMotion(scrollAreaRef);
     const prefersReducedMotion = unstable_prefersReducedMotion ?? _prefersReducedMotion;
 
-    const [reducerState, _dispatch] = React.useReducer(reducer, {
+    const [reducerState, dispatch] = React.useReducer(reducer, {
       ...initialState,
       scrollbarIsVisibleX: scrollbarVisibility === 'always',
       scrollbarIsVisibleY: scrollbarVisibility === 'always',
@@ -315,24 +314,12 @@ const ScrollAreaImpl = forwardRef<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
       trackClickBehavior,
     ]);
 
-    // Attach all refs to each dispatch so we can ensure fresh references in our reducer without
-    // changing stateful data.
-    const dispatch: React.Dispatch<ScrollAreaEvent> = React.useCallback(
-      function dispatch(event: ScrollAreaEvent) {
-        return _dispatch({
-          ...event,
-          // @ts-ignore
-          refs,
-        });
-      },
-      [refs]
-    );
-
     const ref = useComposedRefs(forwardedRef, scrollAreaRef);
-
-    useBorderBoxResizeObserver(scrollAreaRef, (size: ResizeObserverSize) => {
+    useBorderBoxResizeObserver(scrollAreaRef, (size, scrollAreaElement) => {
+      const scrollAreaComputedStyle = window.getComputedStyle(scrollAreaElement);
       dispatch({
         type: ScrollAreaEvents.HandleScrollAreaResize,
+        scrollAreaComputedStyle,
         width: size.inlineSize,
         height: size.blockSize,
       });
@@ -1087,10 +1074,20 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
       ...getValuesFromSizeObjects(stateContext.domSizes),
     ]);
 
+    // We need a stable reference to the track size so that changes don't detach the mousemove
+    // listener while the user is moving the thumb.
+    const trackSize =
+      axis === 'x' ? stateContext.domSizes.trackX.width : stateContext.domSizes.trackY.height;
+    const trackSizeRef = React.useRef(trackSize);
+    useLayoutEffect(() => {
+      trackSizeRef.current = trackSize;
+    });
+
     React.useEffect(() => {
       const thumbElement = thumbRef.current!;
       const trackElement = trackRef.current!;
-      if (!thumbElement || !trackElement) {
+      const positionElement = refsContext.positionRef.current!;
+      if (!thumbElement || !trackElement || !positionElement) {
         // TODO:
         throw Error('why no refs 😢');
       }
@@ -1134,16 +1131,28 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
 
       function handlePointerMove(event: PointerEvent) {
         const pointerPosition = getPointerPosition(event)[axis];
+        const delta = pointerPosition - pointerStartPointRef.current;
+        const trackSize = trackSizeRef.current;
 
-        dispatch({
-          type: ScrollAreaEvents.MoveThumbWithPointer,
-          axis,
-          pointerPosition,
-          pointerStartPointRef,
-          pointerInitialStartPointRef,
-          thumbInitialData,
-          trackInitialData,
-        });
+        if (canScroll(positionElement, { axis, delta })) {
+          // Offset by the distance between the initial pointer's distance from the initial
+          // position of the thumb
+          const { positionStart: trackPosition } = trackInitialData.current;
+          const { positionStart: thumbInitialPosition } = thumbInitialData.current;
+          const pointerOffset = pointerInitialStartPointRef.current - thumbInitialPosition;
+
+          const pointerPositionRelativeToTrack = Math.round(pointerPosition - trackPosition);
+          const viewportRatioFromPointer =
+            Math.round(((pointerPositionRelativeToTrack - pointerOffset) / trackSize) * 100) / 100;
+          const scrollSize = getScrollSize(positionElement, { axis });
+          const value = viewportRatioFromPointer * scrollSize;
+          setScrollPosition(positionElement, { axis, value });
+
+          // Reset the pointer start point for the next pointer movement
+          pointerStartPointRef.current = pointerPosition;
+
+          dispatch({ type: ScrollAreaEvents.StartThumbing });
+        }
       }
 
       function handlePointerUp(event: PointerEvent) {
@@ -1155,6 +1164,7 @@ const ScrollAreaThumb = forwardRef<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProp
       // these should be stable references
       onPointerDown,
       dispatch,
+      refsContext,
       thumbRef,
       trackRef,
     ]);

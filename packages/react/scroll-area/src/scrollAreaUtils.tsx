@@ -316,7 +316,7 @@ export function canScroll(element: Element, { axis, delta }: { axis: Axis; delta
 
 export function useBorderBoxResizeObserver(
   ref: React.RefObject<HTMLElement>,
-  callback: (size: ResizeObserverSize) => void
+  callback: (size: ResizeObserverSize, targetElement: Element) => void
 ) {
   const onResize = useCallbackRef(callback);
   useLayoutEffect(() => {
@@ -329,14 +329,17 @@ export function useBorderBoxResizeObserver(
     // @ts-ignore
     const observer = new ResizeObserver(([entry]) => {
       const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
-      onResize(borderBoxSize);
+      onResize(borderBoxSize, entry.target);
     });
 
     const initialRect = element.getBoundingClientRect();
-    onResize({
-      inlineSize: initialRect.width,
-      blockSize: initialRect.height,
-    });
+    onResize(
+      {
+        inlineSize: initialRect.width,
+        blockSize: initialRect.height,
+      },
+      element
+    );
     observer.observe(element);
 
     return function () {
