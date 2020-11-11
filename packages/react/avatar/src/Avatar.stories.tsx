@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Avatar as AvatarPrimitive, styles } from './Avatar';
 
-export default { title: 'Avatar' };
+export default { title: 'Components/Avatar' };
 
 export const WithImage = () => <Avatar src="https://picsum.photos/id/1005/400/400" />;
 export const WithoutImage = () => <Avatar />;

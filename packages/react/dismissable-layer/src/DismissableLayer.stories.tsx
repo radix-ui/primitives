@@ -12,7 +12,7 @@ import { DismissableLayer } from './DismissableLayer';
 import type { FocusScopeProps } from '@interop-ui/react-focus-scope';
 import type { DismissableLayerProps } from './DismissableLayer';
 
-export default { title: 'DismissableLayer' };
+export default { title: 'Components/DismissableLayer' };
 
 const SYSTEM_FONT =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"';

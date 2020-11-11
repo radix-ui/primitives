@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
 import { RadioGroup, styles } from './RadioGroup';
 
-export default { title: 'RadioGroup' };
+export default { title: 'Components/RadioGroup' };
 
 export const Basic = () => (
   <RadioGroup style={styles.root} defaultValue="1">

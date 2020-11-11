@@ -3,7 +3,7 @@ import { Popover, styles } from './Popover';
 
 import type { PopoverTriggerProps } from './Popover';
 
-export default { title: 'Popover' };
+export default { title: 'Components/Popover' };
 
 export const Basic = () => {
   return (

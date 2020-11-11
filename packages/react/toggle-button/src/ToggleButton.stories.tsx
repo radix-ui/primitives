@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ToggleButton, styles } from './ToggleButton';
 
-export default { title: 'ToggleButton' };
+export default { title: 'Components/ToggleButton' };
 
 export const Basic = () => {
   return <ToggleButton style={styles.root}>Toggle</ToggleButton>;

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Collapsible as CollapsiblePrimitive, styles } from './Collapsible';
 
-export default { title: 'Collapsible' };
+export default { title: 'Components/Collapsible' };
 
 export const Basic = () => (
   <Collapsible>

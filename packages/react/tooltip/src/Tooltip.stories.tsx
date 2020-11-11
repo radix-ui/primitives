@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Tooltip, styles } from './Tooltip';
 import { styled, css } from '../../../../stitches.config';
 
-export default { title: 'Tooltip' };
+export default { title: 'Components/Tooltip' };
 
 export const Basic = () => (
   <Tooltip>

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Separator, styles } from './Separator';
 import { styled } from '../../../../stitches.config';
 
-export default { title: 'Separator' };
+export default { title: 'Components/Separator' };
 
 export const Basic = () => <Separator />;
 

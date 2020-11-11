@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Portal } from './Portal';
 import { DebugContextProvider } from '@interop-ui/react-debug-context';
 
-export default { title: 'Portal' };
+export default { title: 'Components/Portal' };
 
 export const Base = () => (
   <div

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Slider, styles } from './Slider';
 
-export default { title: 'Slider' };
+export default { title: 'Components/Slider' };
 
 export const Basic = () => (
   <Slider defaultValue={10} style={styles.root}>

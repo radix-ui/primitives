@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Announce } from './Announce';
 import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
 
-export default { title: 'Announce' };
+export default { title: 'Components/Announce' };
 
 export function Basic() {
   const [count, setCount] = React.useState(1);
