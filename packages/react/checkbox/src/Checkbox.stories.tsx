@@ -118,7 +118,7 @@ const StyledRoot = styled(BasicStyledRoot, {
   '&:focus': {
     outline: 'none',
     borderColor: '$red',
-    boxShadow: '0 0 0 1px crimson',
+    boxShadow: '0 0 0 1px $red',
   },
 });
 

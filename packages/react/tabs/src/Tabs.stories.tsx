@@ -164,7 +164,7 @@ const StyledTab = styled(BasicStyledTab, {
   '&[data-state="active"]': { '--border-color': 'crimson' },
 
   '&:focus': {
-    '--border-color': 'royalblue',
+    '--border-color': '#111',
     outline: '1px solid var(--border-color)',
     '&[data-state="active"]': { '--border-color': 'crimson' },
   },
