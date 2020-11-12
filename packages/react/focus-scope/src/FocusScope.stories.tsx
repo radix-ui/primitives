@@ -1,7 +1,7 @@
 import React from 'react';
 import { FocusScope } from './FocusScope';
 
-export default { title: 'FocusScope' };
+export default { title: 'Components/FocusScope' };
 
 export const Basic = () => {
   const [trapped, setTrapped] = React.useState(false);

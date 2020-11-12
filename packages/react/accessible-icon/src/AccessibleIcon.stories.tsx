@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AccessibleIcon as AccessibleIconPrimitive, styles } from './AccessibleIcon';
 
-export default { title: 'AccessibleIcon' };
+export default { title: 'Components/AccessibleIcon' };
 
 export const Basic = () => <AccessibleIcon label="Close" />;
 export const InlineStyle = () => <AccessibleIcon label="Close" style={{ color: 'gainsboro' }} />;

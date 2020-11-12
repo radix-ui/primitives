@@ -3,7 +3,7 @@ import { Switch, styles } from './Switch';
 import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
 import { styled } from '../../../../stitches.config';
 
-export default { title: 'Switch' };
+export default { title: 'Components/Switch' };
 
 export const Basic = () => (
   <Switch style={styles.root}>

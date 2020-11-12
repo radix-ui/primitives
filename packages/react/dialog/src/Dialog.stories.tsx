@@ -3,7 +3,7 @@ import { Dialog, styles } from './Dialog';
 
 import type { DialogContentProps } from './Dialog';
 
-export default { title: 'Dialog' };
+export default { title: 'Components/Dialog' };
 
 export const Basic = () => (
   <Dialog>

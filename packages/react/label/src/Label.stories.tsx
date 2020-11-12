@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Label, styles, useLabelContext } from './Label';
 
-export default { title: 'Label' };
+export default { title: 'Components/Label' };
 
 export const Basic = () => <Label style={styles.root}>Label</Label>;
 export const InlineStyle = () => <Label as={Root}>Label</Label>;

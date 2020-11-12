@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createCollection } from './collection';
 
-export default { title: 'Collection' };
+export default { title: 'Components/Collection' };
 
 export const Basic = () => (
   <List>

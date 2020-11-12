@@ -52,7 +52,7 @@ const TOOLTIP_NAME = 'Tooltip';
 
 interface TooltipStaticProps {
   Trigger: typeof TooltipTrigger;
-  Position: typeof TooltipPosition;
+  Popper: typeof TooltipPopper;
   Content: typeof TooltipContent;
   Arrow: typeof TooltipArrow;
 }
@@ -204,42 +204,42 @@ const TooltipTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, TooltipTriggerProp
 );
 
 /* -------------------------------------------------------------------------------------------------
- * TooltipPosition
+ * TooltipPopper
  * -----------------------------------------------------------------------------------------------*/
 
-const POSITION_NAME = 'Tooltip.Position';
-const POSITION_DEFAULT_TAG = 'div';
+const POPPER_NAME = 'Tooltip.Popper';
+const POPPER_DEFAULT_TAG = 'div';
 
-type TooltipPositionDOMProps = React.ComponentPropsWithoutRef<typeof POSITION_DEFAULT_TAG>;
-type TooltipPositionOwnProps = {
+type TooltipPopperDOMProps = React.ComponentPropsWithoutRef<typeof POPPER_DEFAULT_TAG>;
+type TooltipPopperOwnProps = {
   /**
    * Whether the Tooltip should render in a Portal
    * (default: `true`)
    */
   shouldPortal?: boolean;
 };
-type TooltipPositionProps = Optional<PopperProps, 'anchorRef'> &
-  TooltipPositionDOMProps &
-  TooltipPositionOwnProps;
+type TooltipPopperProps = Optional<PopperProps, 'anchorRef'> &
+  TooltipPopperDOMProps &
+  TooltipPopperOwnProps;
 
-const TooltipPosition = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPositionProps>(
+const TooltipPopper = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperProps>(
   (props, forwardedRef) => {
-    const context = useTooltipContext(POSITION_NAME);
-    return context.isOpen ? <TooltipPositionImpl ref={forwardedRef} {...props} /> : null;
+    const context = useTooltipContext(POPPER_NAME);
+    return context.isOpen ? <TooltipPopperImpl ref={forwardedRef} {...props} /> : null;
   }
 );
 
-const TooltipPositionImpl = forwardRef<typeof POSITION_DEFAULT_TAG, TooltipPositionProps>(
+const TooltipPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperProps>(
   (props, forwardedRef) => {
     const { children, anchorRef, shouldPortal = true, ...popperProps } = props;
-    const context = useTooltipContext(POSITION_NAME);
+    const context = useTooltipContext(POPPER_NAME);
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
 
     return (
       <PortalWrapper>
         <CheckTriggerMoved />
         <Popper
-          {...interopDataAttrObj('position')}
+          {...interopDataAttrObj('popper')}
           {...popperProps}
           data-state={context.stateAttribute}
           ref={forwardedRef}
@@ -327,13 +327,13 @@ const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(fun
 /* -----------------------------------------------------------------------------------------------*/
 
 Tooltip.Trigger = TooltipTrigger;
-Tooltip.Position = TooltipPosition;
+Tooltip.Popper = TooltipPopper;
 Tooltip.Content = TooltipContent;
 Tooltip.Arrow = TooltipArrow;
 
 Tooltip.displayName = TOOLTIP_NAME;
 Tooltip.Trigger.displayName = TRIGGER_NAME;
-Tooltip.Position.displayName = POSITION_NAME;
+Tooltip.Popper.displayName = POPPER_NAME;
 Tooltip.Content.displayName = CONTENT_NAME;
 Tooltip.Arrow.displayName = ARROW_NAME;
 
@@ -342,8 +342,8 @@ const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   trigger: {
     ...cssReset(TRIGGER_DEFAULT_TAG),
   },
-  position: {
-    ...cssReset(POSITION_DEFAULT_TAG),
+  popper: {
+    ...cssReset(POPPER_DEFAULT_TAG),
     ...popperStyles.root,
   },
   content: {
@@ -361,7 +361,7 @@ const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
 export type {
   TooltipProps,
   TooltipTriggerProps,
-  TooltipPositionProps,
+  TooltipPopperProps,
   TooltipContentProps,
   TooltipArrowProps,
 };

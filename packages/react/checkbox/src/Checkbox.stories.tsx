@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
 import { Checkbox, styles } from './Checkbox';
 
-export default { title: 'Checkbox' };
+export default { title: 'Components/Checkbox' };
 
 export const Basic = () => (
   <Checkbox style={styles.root}>

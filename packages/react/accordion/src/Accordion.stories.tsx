@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Accordion as AccordionPrimitive, styles } from './Accordion';
 
-export default { title: 'Accordion' };
+export default { title: 'Components/Accordion' };
 
 export const Basic = () => (
   <Accordion>
