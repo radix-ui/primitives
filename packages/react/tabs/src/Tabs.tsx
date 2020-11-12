@@ -104,7 +104,13 @@ const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props,
 
   return (
     <TabsContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj('tabs')} ref={forwardedRef} id={tabsId} {...tabsProps}>
+      <Comp
+        {...interopDataAttrObj('tabs')}
+        ref={forwardedRef}
+        id={tabsId}
+        data-orientation={orientation}
+        {...tabsProps}
+      >
         {children}
       </Comp>
     </TabsContext.Provider>
@@ -169,7 +175,9 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
     ...tabProps
   } = props;
 
-  const { tabsId, selectedId, setSelectedId, activationMode } = useTabsContext(TAB_NAME);
+  const { tabsId, selectedId, setSelectedId, activationMode, orientation } = useTabsContext(
+    TAB_NAME
+  );
 
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabsPanelId(tabsId, id);
@@ -205,6 +213,7 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
       {...interopDataAttrObj('tab')}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
+      data-orientation={orientation}
       data-tab-id={id}
       id={tabId}
       role="tab"
@@ -240,7 +249,7 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
   forwardedRef
 ) {
   const { as: Comp = TAB_PANEL_DEFAULT_TAG, id, ...tabPanelProps } = props;
-  const { tabsId, selectedId } = useTabsContext(TAB_PANEL_NAME);
+  const { tabsId, selectedId, orientation } = useTabsContext(TAB_PANEL_NAME);
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabsPanelId(tabsId, id);
   const isSelected = id === selectedId;
@@ -249,6 +258,7 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
     <Comp
       {...interopDataAttrObj('tabPanel')}
       data-state={isSelected ? 'active' : 'inactive'}
+      data-orientation={orientation}
       id={tabPanelId}
       role="tabpanel"
       aria-labelledby={tabId}
@@ -268,23 +278,22 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
 const [styles, interopDataAttrObj] = createStyleObj(TABS_NAME, {
   root: {},
   tabs: {
+    // ensures things are layed out correctly by default
     display: 'flex',
+    '&[data-orientation="horizontal"]': {
+      flexDirection: 'column',
+    },
   },
   tabList: {
     flexShrink: 0,
+    // ensures things are layed out correctly by default
     display: 'flex',
+    '&[data-orientation="vertical"]': {
+      flexDirection: 'column',
+    },
   },
   tab: {
-    display: 'flex',
     flexShrink: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    lineHeight: '1',
-    cursor: 'default',
-    whiteSpace: 'nowrap',
-
-    // enable overlapping adjacent tabs via z-index
-    position: 'relative',
   },
   tabPanel: {
     flexGrow: 1,

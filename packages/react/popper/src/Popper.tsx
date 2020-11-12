@@ -156,7 +156,7 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
   props,
   forwardedRef
 ) {
-  const { as: Comp = Arrow, offset, ...arrowProps } = props;
+  const { as: Comp = ARROW_DEFAULT_TAG, offset, ...arrowProps } = props;
   const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
 
   // send the Arrow's offset up to Popper
@@ -175,7 +175,7 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
           pointerEvents: 'auto',
         }}
       >
-        <Comp {...interopDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
+        <Arrow as={Comp} {...interopDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
       </span>
     </span>
   );
@@ -195,7 +195,11 @@ const [styles, interopDataAttrObj] = createStyleObj(POPPER_NAME, {
     transformOrigin: 'var(--interop-popper-transform-origin)',
   },
   content: {},
-  arrow: arrowStyles.root,
+  arrow: {
+    ...arrowStyles.root,
+    // ensures the element can be measured correctly
+    display: 'block',
+  },
 });
 
 export type { PopperProps, PopperContentProps, PopperArrowProps };

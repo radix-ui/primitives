@@ -92,7 +92,7 @@ const AvatarFallback = forwardRef<typeof FALLBACK_DEFAULT_TAG, AvatarFallbackPro
   function AvatarFallback(props, forwardedRef) {
     const { as: Comp = FALLBACK_DEFAULT_TAG, ...fallbackProps } = props;
     const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
-    return imageLoadingStatus !== 'idle' && imageLoadingStatus !== 'loaded' ? (
+    return imageLoadingStatus === 'error' ? (
       <Comp {...fallbackProps} {...interopDataAttrObj('fallback')} ref={forwardedRef} />
     ) : null;
   }
@@ -144,20 +144,27 @@ function useImageLoadingStatus(src?: string) {
 
 const [styles, interopDataAttrObj] = createStyleObj(AVATAR_NAME, {
   root: {
+    // ensures image/fallback is centered
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
     verticalAlign: 'middle',
+    // ensures image doesn't bleed out
     overflow: 'hidden',
+    // ensures no selection is possible
     userSelect: 'none',
   },
   image: {
+    // ensures image is full size and not distorted
     width: '100%',
     height: '100%',
-    // Make sure images are not distorted
     objectFit: 'cover',
   },
-  fallback: {},
+  fallback: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export type { AvatarProps, AvatarImageProps, AvatarFallbackProps };

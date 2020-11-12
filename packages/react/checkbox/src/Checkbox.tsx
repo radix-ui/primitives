@@ -86,10 +86,10 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           })}
         />
         <Comp
+          type="button"
           {...checkboxProps}
           {...interopDataAttrObj('root')}
           ref={ref}
-          type={Comp === CHECKBOX_DEFAULT_TAG ? 'button' : undefined}
           role="checkbox"
           aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
           aria-labelledby={labelledBy}
@@ -157,6 +157,7 @@ interface CheckboxStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
   root: {
+    // better default alignment
     verticalAlign: 'middle',
   },
   indicator: {},

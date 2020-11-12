@@ -26,7 +26,6 @@ const AspectRatio = forwardRef<typeof ASPECT_RATIO__DEFAULT_TAG, AspectRatioProp
       ...aspectRatioProps
     } = props;
 
-    const paddingBottom = 100 / ratio;
     const innerDataAttrObj = { [INNER_DATA_ATTR]: '' };
     const Inner = INNER_DEFAULT_TAG;
 
@@ -39,7 +38,7 @@ const AspectRatio = forwardRef<typeof ASPECT_RATIO__DEFAULT_TAG, AspectRatioProp
           ...style,
           // Using `any` here recommended by the React.CSSProperties interface definition:
           // https://github.com/frenic/csstype#what-should-i-do-when-i-get-type-errors
-          ['--interop-aspect-ratio-padding-bottom' as any]: `${paddingBottom}%`,
+          ['--interop-aspect-ratio' as any]: ratio,
         }}
       >
         <Inner {...innerDataAttrObj}>{children}</Inner>
@@ -52,10 +51,13 @@ AspectRatio.displayName = ASPECT_RATIO_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(ASPECT_RATIO_NAME, {
   root: {
-    paddingBottom: 'var(--interop-aspect-ratio-padding-bottom)',
+    // ensures inner element is contained
     position: 'relative',
+    // ensures padding bottom trick maths works
     width: '100%',
+    paddingBottom: `calc(100% / var(--interop-aspect-ratio))`,
 
+    // ensures children expand in ratio
     [`& > [${INNER_DATA_ATTR}]`]: {
       position: 'absolute',
       left: 0,

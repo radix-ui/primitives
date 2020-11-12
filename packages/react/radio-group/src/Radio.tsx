@@ -79,10 +79,10 @@ const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioProps, RadioStaticProps>
         })}
       />
       <Comp
+        type="button"
         {...radioProps}
         {...interopDataAttrObj('root')}
         ref={ref}
-        type={Comp === RADIO_DEFAULT_TAG ? 'button' : undefined}
         role="radio"
         aria-checked={checked}
         aria-labelledby={labelledBy}
@@ -148,6 +148,7 @@ interface RadioStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(RADIO_NAME, {
   root: {
+    // better default alignment
     verticalAlign: 'middle',
   },
   indicator: {},

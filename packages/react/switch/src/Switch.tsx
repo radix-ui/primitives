@@ -80,10 +80,10 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
           })}
         />
         <Comp
+          type="button"
           {...switchProps}
           {...interopDataAttrObj('root')}
           ref={ref}
-          type={Comp === SWITCH_DEFAULT_TAG ? 'button' : undefined}
           role="switch"
           aria-checked={checked}
           aria-labelledby={labelledBy}
@@ -151,11 +151,15 @@ interface SwitchStaticProps {
 
 const [styles, interopDataAttrObj] = createStyleObj(SWITCH_NAME, {
   root: {
+    // better default alignment
     verticalAlign: 'middle',
+    // ensures thumb is not horizontally centered (default in `button`)
     textAlign: 'left',
   },
   thumb: {
+    // ensures thumb is sizeable/can receive vertical margins
     display: 'inline-block',
+    // ensures thumb is vertically centered
     verticalAlign: 'middle',
   },
 });

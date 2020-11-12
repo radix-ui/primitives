@@ -1,112 +1,182 @@
 import * as React from 'react';
-import { Tabs } from './Tabs';
+import { Tabs, styles } from './Tabs';
+import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Tabs' };
 
 export const Basic = () => (
-  <Tabs defaultSelectedId="tab1">
-    <Tabs.List aria-label="tabs example">
-      <Tabs.Tab id="tab1">Tab 1</Tabs.Tab>
-      <Tabs.Tab id="tab2" disabled>
-        Tab 2
-      </Tabs.Tab>
-      <Tabs.Tab id="tab3">Tab 3</Tabs.Tab>
-    </Tabs.List>
-    <Tabs.Panel id="tab1">Panel 1</Tabs.Panel>
-    <Tabs.Panel id="tab2">Panel 2</Tabs.Panel>
-    <Tabs.Panel id="tab3">Panel 3</Tabs.Panel>
-  </Tabs>
-);
-
-export const InlineStyle = () => {
-  const [selectedId, setSelectedId] = React.useState<string>('tab1');
-  const [focusedId, setFocusedId] = React.useState<string | null>(null);
-  const disabledId = 'tab2';
-
-  function getTabStyle(id: string): React.CSSProperties {
-    const selected = id === selectedId;
-    const focused = id === focusedId;
-    const disabled = id === disabledId;
-    return {
-      lineHeight: 1,
-      fontWeight: 'bold',
-      padding: '0.2em 0.6em',
-      borderTop: `4px solid transparent`,
-      borderBottom: `4px solid ${selected ? 'crimson' : focused ? 'royalblue' : 'transparent'}`,
-      outline: focused ? `2px solid ${selected ? 'crimson' : 'royalblue'}` : undefined,
-      opacity: disabled ? 0.5 : 1,
-      cursor: 'pointer',
-      userSelect: 'none',
-      boxShadow: 'none',
-    };
-  }
-
-  const tabPanelStyle = {
-    padding: '0.4em',
-    borderTop: 'none',
-    lineHeight: '1.5',
-  };
-
-  function handleTabFocus(e: React.FocusEvent) {
-    const { tabId: clickedTabId } = (e.target as HTMLElement)?.dataset || {};
-    if (clickedTabId) {
-      setFocusedId(clickedTabId);
-    }
-  }
-
-  function handleTabBlur(e: React.FocusEvent) {
-    setFocusedId(null);
-  }
-
-  return (
-    <Tabs
-      activationMode="manual"
-      style={{ fontFamily: 'sans-serif', maxWidth: '20rem' }}
-      selectedId={selectedId}
-      onSelect={setSelectedId}
-    >
-      <Tabs.List
-        aria-label="tabs example"
-        style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.05)' }}
-      >
-        <Tabs.Tab
-          onFocus={handleTabFocus}
-          onBlur={handleTabBlur}
-          style={getTabStyle('tab1')}
-          id="tab1"
-        >
+  <>
+    <h1>Horizontal (automatic activation)</h1>
+    <Tabs defaultSelectedId="tab1" as={BasicStyledTabs}>
+      <Tabs.List aria-label="tabs example" as={BasicStyledTabList}>
+        <Tabs.Tab id="tab1" as={BasicStyledTab}>
           Tab 1
         </Tabs.Tab>
-        <Tabs.Tab
-          onFocus={handleTabFocus}
-          onBlur={handleTabBlur}
-          style={getTabStyle('tab2')}
-          id="tab2"
-          disabled
-        >
+        <Tabs.Tab id="tab2" disabled as={BasicStyledTab}>
           Tab 2
         </Tabs.Tab>
-        <Tabs.Tab
-          onFocus={handleTabFocus}
-          onBlur={handleTabBlur}
-          style={getTabStyle('tab3')}
-          id="tab3"
-        >
+        <Tabs.Tab id="tab3" as={BasicStyledTab}>
           Tab 3
         </Tabs.Tab>
       </Tabs.List>
-      <Tabs.Panel style={tabPanelStyle} id="tab1">
+      <Tabs.Panel id="tab1" as={BasicStyledTabPanel}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
       </Tabs.Panel>
-      <Tabs.Panel style={tabPanelStyle} id="tab2">
+      <Tabs.Panel id="tab2" as={BasicStyledTabPanel}>
         You'll never find me!
       </Tabs.Panel>
-      <Tabs.Panel style={tabPanelStyle} id="tab3">
+      <Tabs.Panel id="tab3" as={BasicStyledTabPanel}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
       </Tabs.Panel>
     </Tabs>
-  );
-};
+
+    <h1>Vertical (manual activation)</h1>
+    <Tabs
+      defaultSelectedId="tab1"
+      as={BasicStyledTabs}
+      orientation="vertical"
+      activationMode="manual"
+    >
+      <Tabs.List aria-label="tabs example" as={BasicStyledTabList}>
+        <Tabs.Tab id="tab1" as={BasicStyledTab}>
+          Tab 1
+        </Tabs.Tab>
+        <Tabs.Tab id="tab2" disabled as={BasicStyledTab}>
+          Tab 2
+        </Tabs.Tab>
+        <Tabs.Tab id="tab3" as={BasicStyledTab}>
+          Tab 3
+        </Tabs.Tab>
+      </Tabs.List>
+      <Tabs.Panel id="tab1" as={BasicStyledTabPanel}>
+        Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
+        integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
+        pellentesque volutpat dictum ipsum.
+      </Tabs.Panel>
+      <Tabs.Panel id="tab2" as={BasicStyledTabPanel}>
+        You'll never find me!
+      </Tabs.Panel>
+      <Tabs.Panel id="tab3" as={BasicStyledTabPanel}>
+        Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
+        quam tempus pretium.
+      </Tabs.Panel>
+    </Tabs>
+  </>
+);
+
+export const Styled = () => (
+  <>
+    <h1>Horizontal (automatic activation)</h1>
+    <Tabs defaultSelectedId="tab1" as={StyledTabs}>
+      <Tabs.List aria-label="tabs example" as={StyledTabList}>
+        <Tabs.Tab id="tab1" as={StyledTab}>
+          Tab 1
+        </Tabs.Tab>
+        <Tabs.Tab id="tab2" disabled as={StyledTab}>
+          Tab 2
+        </Tabs.Tab>
+        <Tabs.Tab id="tab3" as={StyledTab}>
+          Tab 3
+        </Tabs.Tab>
+      </Tabs.List>
+      <Tabs.Panel id="tab1" as={StyledTabPanel}>
+        Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
+        integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
+        pellentesque volutpat dictum ipsum.
+      </Tabs.Panel>
+      <Tabs.Panel id="tab2" as={StyledTabPanel}>
+        You'll never find me!
+      </Tabs.Panel>
+      <Tabs.Panel id="tab3" as={StyledTabPanel}>
+        Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
+        quam tempus pretium.
+      </Tabs.Panel>
+    </Tabs>
+
+    <h1>Vertical (manual activation)</h1>
+    <Tabs defaultSelectedId="tab1" as={StyledTabs} orientation="vertical" activationMode="manual">
+      <Tabs.List aria-label="tabs example" as={StyledTabList}>
+        <Tabs.Tab id="tab1" as={StyledTab}>
+          Tab 1
+        </Tabs.Tab>
+        <Tabs.Tab id="tab2" disabled as={StyledTab}>
+          Tab 2
+        </Tabs.Tab>
+        <Tabs.Tab id="tab3" as={StyledTab}>
+          Tab 3
+        </Tabs.Tab>
+      </Tabs.List>
+      <Tabs.Panel id="tab1" as={StyledTabPanel}>
+        Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
+        integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
+        pellentesque volutpat dictum ipsum.
+      </Tabs.Panel>
+      <Tabs.Panel id="tab2" as={StyledTabPanel}>
+        You'll never find me!
+      </Tabs.Panel>
+      <Tabs.Panel id="tab3" as={StyledTabPanel}>
+        Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
+        quam tempus pretium.
+      </Tabs.Panel>
+    </Tabs>
+  </>
+);
+
+const BasicStyledTabs = styled('div', styles.tabs);
+
+const BasicStyledTabList = styled('div', styles.tabList);
+
+const BasicStyledTab = styled('div', styles.tab);
+
+const BasicStyledTabPanel = styled('div', styles.tabPanel);
+
+const StyledTabs = styled(BasicStyledTabs, {
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+  maxWidth: '20rem',
+});
+
+const StyledTabList = styled(BasicStyledTabList, {
+  backgroundColor: '#eee',
+});
+
+const StyledTab = styled(BasicStyledTab, {
+  padding: '0.4em 0.6em',
+  fontWeight: '500',
+  lineHeight: '1',
+  userSelect: 'none',
+
+  '&[data-orientation="horizontal"]': {
+    borderTop: '4px solid transparent',
+    borderBottom: '4px solid var(--border-color, transparent)',
+  },
+
+  '&[data-orientation="vertical"]': {
+    padding: '0.6em',
+    borderRight: '4px solid var(--border-color, transparent)',
+  },
+
+  '&[data-disabled]': { color: '$gray300' },
+
+  '&[data-state="active"]': { '--border-color': 'crimson' },
+
+  '&:focus': {
+    '--border-color': 'royalblue',
+    outline: '1px solid var(--border-color)',
+    '&[data-state="active"]': { '--border-color': 'crimson' },
+  },
+});
+
+const StyledTabPanel = styled(BasicStyledTabPanel, {
+  padding: '1em',
+  border: '1px solid #eee',
+  fontWeight: '300',
+  fontSize: '0.85em',
+  lineHeight: '1.65',
+
+  '&[data-orientation="horizontal"]': { borderTop: 'none' },
+  '&[data-orientation="vertical"]': { borderLeft: 'none' },
+});

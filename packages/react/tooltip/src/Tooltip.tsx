@@ -165,7 +165,7 @@ const TooltipTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, TooltipTriggerProp
       <Comp
         {...interopDataAttrObj('trigger')}
         ref={composedTriggerRef}
-        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         aria-describedby={context.isOpen ? context.id : undefined}
         onMouseEnter={composeEventHandlers(onMouseEnter, () =>
           stateMachine.transition('mouseEntered', { id: context.id })
@@ -342,6 +342,8 @@ const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   popper: popperStyles.root,
   content: {
     ...popperStyles.content,
+    // ensures content isn't selectable and cannot receive events
+    // this is just a detterent to people putting interactive content inside a `Tooltip`
     userSelect: 'none',
     pointerEvents: 'none',
   },

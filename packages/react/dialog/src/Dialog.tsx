@@ -97,7 +97,7 @@ const DialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, DialogTriggerProps>
       <Comp
         {...interopDataAttrObj('trigger')}
         ref={composedTriggerRef}
-        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         aria-haspopup="dialog"
         aria-expanded={context.isOpen}
         aria-controls={context.id}
@@ -288,7 +288,7 @@ const DialogClose = forwardRef<typeof CLOSE_DEFAULT_TAG, DialogCloseProps>(
       <Comp
         {...interopDataAttrObj('close')}
         ref={forwardedRef}
-        type={Comp === CLOSE_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         {...closeProps}
         onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
       />
@@ -313,14 +313,15 @@ const [styles, interopDataAttrObj] = createStyleObj(DIALOG_NAME, {
   root: {},
   trigger: {},
   overlay: {
+    // ensures overlay is positionned correctly
     position: 'fixed',
     top: 0,
     right: 0,
     bottom: 0,
     left: 0,
-    pointerEvents: 'none',
   },
   content: {
+    // ensures good default position for content
     position: 'fixed',
     top: 0,
     left: 0,

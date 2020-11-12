@@ -1,15 +1,14 @@
 import * as React from 'react';
-import { VisuallyHidden as VisuallyHiddenPrimitive, styles } from './VisuallyHidden';
+import { VisuallyHidden, styles } from './VisuallyHidden';
+import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/VisuallyHidden' };
 
 export const Basic = () => (
   <button>
-    <VisuallyHidden>Save the file</VisuallyHidden>
+    <VisuallyHidden as={BasicStyledRoot}>Save the file</VisuallyHidden>
     <span aria-hidden>💾</span>
   </button>
 );
 
-const VisuallyHidden = (props: React.ComponentProps<typeof VisuallyHiddenPrimitive>) => (
-  <VisuallyHiddenPrimitive {...props} style={{ ...styles.root, ...props.style }} />
-);
+const BasicStyledRoot = styled('span', styles.root);

@@ -1,24 +1,27 @@
 import * as React from 'react';
-import { AspectRatio as AspectRatioPrimitive, styles } from './AspectRatio';
+import { AspectRatio, styles } from './AspectRatio';
+import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/AspectRatio' };
 
 export const Basic = () => (
-  <AspectRatio>
-    <img src="https://picsum.photos/id/10/400/600" alt="" style={{ width: '100%' }} />
-  </AspectRatio>
+  <div style={{ width: 500 }}>
+    <AspectRatio as={BasicStyledRoot}>
+      <div style={{ backgroundColor: '#eee', height: '100%' }}>
+        A grey box inside the AspectRatio
+      </div>
+    </AspectRatio>
+  </div>
 );
 
-export const CustomRatio = () => (
-  <AspectRatio ratio={2 / 1}>
-    <img src="https://picsum.photos/id/10/400/600" alt="" style={{ width: '100%' }} />
-  </AspectRatio>
+export const Styled = () => (
+  <div style={{ width: 500 }}>
+    <AspectRatio as={StyledRoot} ratio={16 / 9} />
+  </div>
 );
 
-export const InlineStyle = () => (
-  <AspectRatio ratio={2 / 1} style={{ width: 500, backgroundColor: 'gainsboro' }} />
-);
+const BasicStyledRoot = styled('div', styles.root);
 
-const AspectRatio = (props: React.ComponentProps<typeof AspectRatioPrimitive>) => (
-  <AspectRatioPrimitive {...props} style={{ ...styles.root, ...props.style }} />
-);
+const StyledRoot = styled(BasicStyledRoot, {
+  backgroundColor: '$red',
+});

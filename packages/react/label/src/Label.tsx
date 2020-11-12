@@ -111,9 +111,11 @@ Label.displayName = LABEL_NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(LABEL_NAME, {
   root: {
-    // allow vertical margins
+    // ensures it can receive vertical margins
     display: 'inline-block',
+    // better default alignment
     verticalAlign: 'middle',
+    // mimics default `label` tag (as we render a `span`)
     cursor: 'default',
   },
 });

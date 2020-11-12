@@ -32,7 +32,9 @@ AccessibleIcon.displayName = NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
   root: {
+    // ensures child icon is contained correctly
     display: 'inline-flex',
+    // better default alignment
     verticalAlign: 'middle',
   },
 });

@@ -66,11 +66,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 ToggleButton.displayName = NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
-  root: {
-    '&[data-disabled]': {
-      pointerEvents: 'none',
-    },
-  },
+  root: {},
 });
 
 export { ToggleButton, styles };

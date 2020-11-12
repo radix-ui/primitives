@@ -113,15 +113,8 @@ interface ProgressBarStaticProps {
 }
 
 const [styles, interopDataAttrObj] = createStyleObj(PROGRESS_NAME, {
-  root: {
-    position: 'relative',
-  },
-  indicator: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-  },
+  root: {},
+  indicator: {},
 });
 
 ProgressBar.propTypes = {

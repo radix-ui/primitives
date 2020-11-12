@@ -1,16 +1,21 @@
 import * as React from 'react';
 import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
 import { Checkbox, styles } from './Checkbox';
+import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Checkbox' };
 
 export const Basic = () => (
-  <Checkbox style={styles.root}>
-    <Checkbox.Indicator style={styles.indicator} />
+  <Checkbox as={BasicStyledRoot}>
+    <Checkbox.Indicator as={BasicStyledIndicator}>
+      <span role="img" aria-label="tick">
+        ✔️
+      </span>
+    </Checkbox.Indicator>
   </Checkbox>
 );
 
-export const InlineStyle = () => (
+export const Styled = () => (
   <>
     <p>
       This checkbox is nested inside a label. The box-shadow is styled to appear when the checkbox
@@ -18,7 +23,7 @@ export const InlineStyle = () => (
     </p>
     <Label>
       Label{' '}
-      <Checkbox as={Root}>
+      <Checkbox as={StyledRoot}>
         <Checkbox.Indicator as={Indicator} />
       </Checkbox>
     </Label>
@@ -36,7 +41,7 @@ export const Controlled = () => {
       </p>
       <Label htmlFor="randBox">Label</Label>{' '}
       <Checkbox
-        as={Root}
+        as={StyledRoot}
         checked={checked}
         onCheckedChange={(event) => setChecked(event.target.checked)}
         id="randBox"
@@ -54,7 +59,7 @@ export const Indeterminate = () => {
     <>
       <p>
         <Checkbox
-          as={Root}
+          as={StyledRoot}
           checked={checked}
           onCheckedChange={(event) => setChecked(event.target.checked)}
         >
@@ -88,69 +93,38 @@ export const WithinForm = () => {
     >
       <p>checked: {String(checked)}</p>
 
-      <Checkbox as={Root}>
+      <Checkbox as={StyledRoot}>
         <Checkbox.Indicator as={Indicator} />
       </Checkbox>
     </form>
   );
 };
 
-/* -------------------------------------------------------------------------------------------------
- * Label
- * -----------------------------------------------------------------------------------------------*/
-
 const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
 
-/* -------------------------------------------------------------------------------------------------
- * Styled components
- * -----------------------------------------------------------------------------------------------*/
+const Indicator = ({ indeterminate, ...props }: any) => (
+  <StyledIndicator {...props} css={{ height: indeterminate ? 4 : undefined }} />
+);
 
-const Root = React.forwardRef((props: any, forwardedRef) => {
-  // NOTE: We can remove this when we add stitches as a dev dependency and handle focus styles there
-  //       This is just for testing quickly with inline styles.
-  const [focused, setFocused] = React.useState(false);
-  const focusStyles = {
-    boxShadow: 'none',
-    outline: focused ? '2px solid crimson' : undefined,
-  };
-  return (
-    <button
-      {...props}
-      type="button"
-      ref={forwardedRef}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
-      style={{
-        ...styles.root,
-        ...focusStyles,
-        border: '1px solid gainsboro',
-        width: 30,
-        height: 30,
-        padding: 4,
-      }}
-    />
-  );
+const BasicStyledRoot = styled('button', styles.root);
+const BasicStyledIndicator = styled('span', styles.indicator);
+
+const StyledRoot = styled(BasicStyledRoot, {
+  border: '1px solid $gray300',
+  width: 30,
+  height: 30,
+  padding: 4,
+
+  '&:focus': {
+    outline: 'none',
+    borderColor: '$red',
+    boxShadow: '0 0 0 1px crimson',
+  },
 });
 
-const Indicator = ({ indeterminate, ...props }: any) => (
-  <span
-    {...props}
-    style={{
-      ...styles.indicator,
-      width: 20,
-      height: 20,
-      backgroundColor: 'dodgerblue',
-      display: 'grid',
-      placeItems: 'center',
-      color: 'white',
-    }}
-  >
-    {indeterminate ? (
-      <b style={{ paddingBottom: '2px' }}>&mdash;</b>
-    ) : (
-      <svg viewBox="0 0 32 32" width="60%" height="60%" fill="none" stroke="currentColor">
-        <path d="M2 30 L30 2 M30 30 L2 2" />
-      </svg>
-    )}
-  </span>
-);
+const StyledIndicator = styled(BasicStyledIndicator, {
+  display: 'block',
+  width: 20,
+  height: 20,
+  backgroundColor: '$red',
+});

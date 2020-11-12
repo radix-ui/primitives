@@ -290,6 +290,7 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
           ...sliderProps.style,
           ['--thumb-transform' as any]: 'translateX(-50%)',
         }}
+        data-orientation="horizontal"
         onSlideMouseDown={(event) => {
           const value = getValueFromPointer(event.clientX);
           onSlideStart?.(value);
@@ -369,6 +370,7 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps
           ...sliderProps.style,
           ['--thumb-transform' as any]: 'translateY(50%)',
         }}
+        data-orientation="vertical"
         onSlideMouseDown={(event) => {
           const value = getValueFromPointer(event.clientY);
           onSlideStart?.(value);
@@ -533,8 +535,14 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   forwardedRef
 ) {
   const { as: Comp = TRACK_DEFAULT_TAG, children, ...trackProps } = props;
+  const context = useSliderContext(TRACK_NAME);
   return (
-    <Comp {...interopDataAttrObj('track')} {...trackProps} ref={forwardedRef}>
+    <Comp
+      {...interopDataAttrObj('track')}
+      {...trackProps}
+      ref={forwardedRef}
+      data-orientation={context.orientation}
+    >
       {children}
     </Comp>
   );
@@ -575,6 +583,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
         [orientation.startEdge]: offsetStart + '%',
         [orientation.endEdge]: offsetEnd + '%',
       }}
+      data-orientation={context.orientation}
     />
   );
 });
@@ -651,6 +660,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
           onFocus={composeEventHandlers(props.onFocus, () => {
             context.valueIndexToChangeRef.current = index;
           })}
+          data-orientation={context.orientation}
         />
       </span>
     );
@@ -677,21 +687,32 @@ interface SliderStaticProps {
 const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
   root: {
     position: 'relative',
-    display: 'inline-flex',
+    display: 'flex',
+    alignItems: 'center',
     flexShrink: 0,
+    // ensures no selection
     userSelect: 'none',
-    touchAction: 'none', // Disable browser handling of all panning and zooming gestures on touch devices
+    // disable browser handling of all panning and zooming gestures on touch devices
+    touchAction: 'none',
   },
   track: {
     position: 'relative',
+    // ensures full width in horizontal orientation, ignored in vertical orientation
     flexGrow: 1,
   },
   range: {
     position: 'absolute',
+    // good default for both orientation (match track width/height respectively)
+    '&[data-orientation="horizontal"]': {
+      height: '100%',
+    },
+    '&[data-orientation="vertical"]': {
+      width: '100%',
+    },
   },
   thumb: {
+    // ensures the thumb is sizeable
     display: 'block',
-    outline: 'none',
 
     // Add recommended target size regardless of styled size
     '&::before': {

@@ -174,11 +174,6 @@ const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
     display: 'block',
     width: '100%',
     textAlign: 'inherit',
-    userSelect: 'none',
-
-    '&:disabled': {
-      pointerEvents: 'none',
-    },
   },
   content: {},
 });

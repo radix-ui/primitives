@@ -98,7 +98,7 @@ const PopoverTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, PopoverTriggerProp
       <Comp
         {...interopDataAttrObj('trigger')}
         ref={composedTriggerRef}
-        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         aria-haspopup="dialog"
         aria-expanded={context.isOpen}
         aria-controls={context.id}
@@ -358,7 +358,7 @@ const PopoverClose = forwardRef<typeof CLOSE_DEFAULT_TAG, PopoverCloseProps>(
       <Comp
         {...interopDataAttrObj('close')}
         ref={forwardedRef}
-        type={Comp === CLOSE_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         {...closeProps}
         onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
       />
@@ -380,7 +380,10 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
   props,
   forwardedRef
 ) {
-  return <Popper.Arrow {...interopDataAttrObj('arrow')} {...props} ref={forwardedRef} />;
+  const { as: Comp = ARROW_DEFAULT_TAG, ...arrowProps } = props;
+  return (
+    <Popper.Arrow as={Comp} {...interopDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
+  );
 });
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -401,7 +404,7 @@ Popover.Arrow.displayName = ARROW_NAME;
 const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
   root: {},
   trigger: {},
-  position: popperStyles.root,
+  popper: popperStyles.root,
   content: popperStyles.content,
   close: {},
   arrow: popperStyles.arrow,

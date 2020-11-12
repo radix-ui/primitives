@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { styled } from '../../../../stitches.config';
 import { ProgressBar, styles } from './ProgressBar';
+import { styled } from '../../../../stitches.config';
 
 export default {
   title: 'Components/ProgressBar',
@@ -11,9 +11,10 @@ export const Basic = () => {
   const toggleIndeterminate = useIndeterminateToggle(value, setValue);
   return (
     <div>
-      <ProgressBar style={styles.root} value={value}>
+      <ProgressBar as={BasicStyledRoot} value={value}>
         <ProgressBar.Indicator
-          style={{ ...styles.indicator, width: percentage ?? `${percentage}%` }}
+          as={BasicStyledIndicator}
+          style={{ width: percentage ?? `${percentage}%` }}
         />
       </ProgressBar>
       <hr />
@@ -23,15 +24,15 @@ export const Basic = () => {
   );
 };
 
-export const StitchesStyle = () => {
+export const Styled = () => {
   const max = 150;
   const [value, percentage, setValue] = useProgressValueState(0, max);
   const toggleIndeterminate = useIndeterminateToggle(value, setValue);
   return (
     <div>
-      <ProgressBar as={Root} value={value} max={max}>
+      <ProgressBar as={StyledRoot} value={value} max={max}>
         <ProgressBar.Indicator
-          as={Indicator}
+          as={StyledIndicator}
           style={{ width: percentage != null ? `${percentage}%` : undefined }}
         />
       </ProgressBar>
@@ -61,16 +62,14 @@ function ProgressRange({ value, setValue, max = 100 }: any) {
   );
 }
 
-/* -------------------------------------------------------------------------------------------------
- * Reset components
- * -----------------------------------------------------------------------------------------------*/
-
 const HEIGHT = 20;
 const WIDTH = 400;
 const BORDER = 5;
 
-const Root = styled('div', {
-  ...styles.root,
+const BasicStyledRoot = styled('div', styles.root);
+const BasicStyledIndicator = styled('div', styles.indicator);
+
+const StyledRoot = styled(BasicStyledRoot, {
   height: `${HEIGHT}px`,
   width: `${WIDTH}px`,
   maxWidth: '100%',
@@ -78,8 +77,7 @@ const Root = styled('div', {
   backgroundColor: '$gray200',
 });
 
-const Indicator = styled('div', {
-  ...styles.indicator,
+const StyledIndicator = styled(BasicStyledIndicator, {
   width: '100%',
   height: '100%',
   backgroundColor: '$red',

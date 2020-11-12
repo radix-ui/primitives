@@ -53,9 +53,7 @@ const Separator = forwardRef<typeof DEFAULT_TAG, SeparatorProps>(function Separa
 Separator.displayName = NAME;
 
 const [styles, interopDataAttrObj] = createStyleObj(NAME, {
-  root: {
-    display: 'block',
-  },
+  root: {},
 });
 
 Separator.propTypes = {
