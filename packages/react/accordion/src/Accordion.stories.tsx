@@ -1,52 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
-import { Accordion, styles } from './Accordion';
+import { Accordion } from './Accordion';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Accordion' };
-
-export const Basic = () => (
-  <Accordion as={BasicStyledRoot}>
-    <Accordion.Item as={BasicStyledItem} value="one">
-      <Accordion.Header as={BasicStyledHeader}>
-        <Accordion.Button as={BasicStyledButton}>One</Accordion.Button>
-      </Accordion.Header>
-      <Accordion.Panel as={BasicStyledPanel}>
-        Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
-        integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
-        habitant sed.
-      </Accordion.Panel>
-    </Accordion.Item>
-    <Accordion.Item as={BasicStyledItem} value="two">
-      <Accordion.Header as={BasicStyledHeader}>
-        <Accordion.Button as={BasicStyledButton}>Two</Accordion.Button>
-      </Accordion.Header>
-      <Accordion.Panel as={BasicStyledPanel}>
-        Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
-        porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
-      </Accordion.Panel>
-    </Accordion.Item>
-    <Accordion.Item as={BasicStyledItem} value="three" disabled>
-      <Accordion.Header as={BasicStyledHeader}>
-        <Accordion.Button as={BasicStyledButton}>Three (disabled)</Accordion.Button>
-      </Accordion.Header>
-      <Accordion.Panel as={BasicStyledPanel}>
-        Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
-        euismod magna, nec tempor pulvinar eu etiam mattis.
-      </Accordion.Panel>
-    </Accordion.Item>
-    <Accordion.Item as={BasicStyledItem} value="four">
-      <Accordion.Header as={BasicStyledHeader}>
-        <Accordion.Button as={BasicStyledButton}>Four</Accordion.Button>
-      </Accordion.Header>
-      <Accordion.Panel as={BasicStyledPanel}>
-        Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus dignissim
-        vitae, enim vulputate nullam semper potenti etiam volutpat libero.
-        <button>Cool</button>
-      </Accordion.Panel>
-    </Accordion.Item>
-  </Accordion>
-);
 
 export const Styled = () => (
   <Accordion as={StyledRoot}>
@@ -171,26 +128,28 @@ export const OutsideViewport = () => (
   </>
 );
 
-const BasicStyledRoot = styled('div', styles.root);
-const BasicStyledItem = styled('div', styles.item);
-const BasicStyledHeader = styled('h3', styles.header);
-const BasicStyledButton = styled('button', styles.button);
-const BasicStyledPanel = styled('div', styles.panel);
-
-const StyledRoot = styled(BasicStyledRoot, {
+const StyledRoot = styled('div', {
   maxWidth: '20em',
   fontFamily: 'sans-serif',
 });
 
-const StyledItem = styled(BasicStyledItem, {
+const StyledItem = styled('div', {
   borderBottom: '1px solid white',
 });
 
-const StyledHeader = styled(BasicStyledHeader, {
+const StyledHeader = styled('h3', {
   margin: 0,
 });
 
-const StyledButton = styled(BasicStyledButton, {
+const recommendedButtonStyles: any = {
+  // because it's a button, we want to stretch it
+  width: '100%',
+  // and remove center text alignment in favour of inheriting
+  textAlign: 'inherit',
+};
+
+const StyledButton = styled('button', {
+  ...recommendedButtonStyles,
   boxSizing: 'border-box',
   appearance: 'none',
   border: 'none',
@@ -223,7 +182,7 @@ const StyledButton = styled(BasicStyledButton, {
   },
 });
 
-const StyledPanel = styled(BasicStyledPanel, {
+const StyledPanel = styled('div', {
   padding: 10,
   lineHeight: 1.5,
 });
