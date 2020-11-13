@@ -1,12 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { getPartDataAttr } from '@interop-ui/utils';
-import {
-  forwardRef,
-  createStyleObj,
-  useComposedRefs,
-  useLayoutEffect,
-} from '@interop-ui/react-utils';
+import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
+import { forwardRef, useComposedRefs, useLayoutEffect } from '@interop-ui/react-utils';
 
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';
@@ -177,7 +172,7 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
 
   return (
     <React.Fragment>
-      <Comp {...regionProps} {...getPartDataAttrObj('root')} ref={ref}>
+      <Comp {...regionProps} {...getPartDataAttrObj(NAME)} ref={ref}>
         {children}
       </Comp>
 
@@ -188,13 +183,6 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
 });
 
 Announce.displayName = NAME;
-
-const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
-  root: {},
-});
-
-export { Announce, styles };
-export type { AnnounceProps };
 
 type LiveRegionOptions = {
   type: string;
@@ -239,5 +227,8 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
 }
 
 function getLiveRegionPartDataAttr(id?: string) {
-  return getPartDataAttr('AnnounceRegion') + (id ? `-${id}` : '');
+  return getPartDataAttr(NAME + 'Region') + (id ? `-${id}` : '');
 }
+
+export { Announce };
+export type { AnnounceProps };

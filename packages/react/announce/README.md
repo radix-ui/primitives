@@ -12,7 +12,7 @@ $ npm install @interop-ui/react-announce
 
 ```js
 import * as React from 'react';
-import { Announce, styles } from '@interop-ui/react-announce';
+import { Announce } from '@interop-ui/react-announce';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 
 function StatusChange(props) {
