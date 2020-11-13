@@ -1,6 +1,6 @@
 const fs = require('fs');
 const css = require('json-to-css');
-const { interopDataAttrSelector } = require('@interop-ui/utils');
+const { getPartDataAttrSelector } = require('@interop-ui/utils');
 const { getNamespacedPart } = require('@interop-ui/react-utils');
 
 const dirPath = process.cwd() + '/dist';
@@ -14,7 +14,7 @@ function buildStyles() {
       const namespacedPart = getNamespacedPart(namespace, part);
       return {
         ...acc,
-        [interopDataAttrSelector(namespacedPart)]: styles[part],
+        [getPartDataAttrSelector(namespacedPart)]: styles[part],
       };
     }, {});
 
