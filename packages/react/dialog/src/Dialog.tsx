@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   forwardRef,
-  createStyleObj,
   createContext,
   useComposedRefs,
   composeEventHandlers,
@@ -9,7 +8,7 @@ import {
   useId,
   composeRefs,
 } from '@interop-ui/react-utils';
-import { makeId } from '@interop-ui/utils';
+import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
@@ -95,7 +94,7 @@ const DialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, DialogTriggerProps>
 
     return (
       <Comp
-        {...getPartDataAttrObj('trigger')}
+        {...getPartDataAttrObj(TRIGGER_NAME)}
         ref={composedTriggerRef}
         type="button"
         aria-haspopup="dialog"
@@ -132,7 +131,7 @@ const DialogOverlayImpl = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayPr
 
     return (
       <Portal>
-        <Comp {...getPartDataAttrObj('overlay')} ref={forwardedRef} {...overlayProps} />
+        <Comp {...getPartDataAttrObj(OVERLAY_NAME)} ref={forwardedRef} {...overlayProps} />
       </Portal>
     );
   }
@@ -222,7 +221,7 @@ const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentPr
               >
                 {(dismissableLayerProps) => (
                   <Comp
-                    {...getPartDataAttrObj('content')}
+                    {...getPartDataAttrObj(CONTENT_NAME)}
                     role="dialog"
                     aria-modal
                     {...contentProps}
@@ -286,7 +285,7 @@ const DialogClose = forwardRef<typeof CLOSE_DEFAULT_TAG, DialogCloseProps>(
 
     return (
       <Comp
-        {...getPartDataAttrObj('close')}
+        {...getPartDataAttrObj(CLOSE_NAME)}
         ref={forwardedRef}
         type="button"
         {...closeProps}
@@ -309,26 +308,7 @@ Dialog.Overlay.displayName = OVERLAY_NAME;
 Dialog.Content.displayName = CONTENT_NAME;
 Dialog.Close.displayName = CLOSE_NAME;
 
-const [styles, getPartDataAttrObj] = createStyleObj(DIALOG_NAME, {
-  root: {},
-  trigger: {},
-  overlay: {
-    // ensures overlay is positionned correctly
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-  },
-  content: {
-    // ensures good default position for content
-    position: 'fixed',
-    top: 0,
-    left: 0,
-  },
-  close: {},
-});
-
+export { Dialog };
 export type {
   DialogProps,
   DialogTriggerProps,
@@ -336,4 +316,3 @@ export type {
   DialogContentProps,
   DialogCloseProps,
 };
-export { Dialog, styles };

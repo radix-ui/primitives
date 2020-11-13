@@ -1,18 +1,8 @@
 import * as React from 'react';
-import { Dialog, styles } from './Dialog';
+import { Dialog } from './Dialog';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Dialog' };
-
-export const Basic = () => (
-  <Dialog>
-    <Dialog.Trigger as={BasicStyledTrigger}>open</Dialog.Trigger>
-    <Dialog.Overlay as={BasicStyledOverlay} />
-    <Dialog.Content as={BasicStyledContent}>
-      <Dialog.Close as={BasicStyledClose}>close</Dialog.Close>
-    </Dialog.Content>
-  </Dialog>
-);
 
 export const Styled = () => (
   <Dialog>
@@ -124,19 +114,32 @@ export const NoInteractOutsideDismiss = () => (
   </Dialog>
 );
 
-const BasicStyledTrigger = styled('button', styles.trigger);
-const BasicStyledOverlay = styled('div', styles.overlay);
-const BasicStyledContent = styled('div', styles.content);
-const BasicStyledClose = styled('button', styles.close);
+const StyledTrigger = styled('button', {});
 
-const StyledTrigger = styled(BasicStyledTrigger, {});
+const recommendedOverlayStyles: any = {
+  // ensures overlay is positionned correctly
+  position: 'fixed',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+};
 
-const StyledOverlay = styled(BasicStyledOverlay, {
+const StyledOverlay = styled('div', {
+  ...recommendedOverlayStyles,
   backgroundColor: 'black',
   opacity: 0.2,
 });
 
-const StyledContent = styled(BasicStyledContent, {
+const recommendedContentStyles: any = {
+  // ensures good default position for content
+  position: 'fixed',
+  top: 0,
+  left: 0,
+};
+
+const StyledContent = styled('div', {
+  ...recommendedContentStyles,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -149,4 +152,4 @@ const StyledContent = styled(BasicStyledContent, {
   boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
 });
 
-const StyledClose = styled(BasicStyledClose, {});
+const StyledClose = styled('button', {});
