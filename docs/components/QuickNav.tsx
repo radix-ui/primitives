@@ -43,7 +43,7 @@ function QuickNavItem({
 }: QuickNavItemProps) {
   const { setItems } = useQuickNavContext();
   const label = labelOverride ?? (typeof children === 'string' ? children : '');
-  const slug = slugOverride ?? label.toLowerCase().replace(/\s/g, '-');
+  const slug = slugOverride ?? 'section-' + label.toLowerCase().replace(/\s/g, '-');
 
   useLayoutEffect(() => {
     setItems((items) => [...items, { label, slug, level }]);
@@ -100,7 +100,7 @@ function QuickNavList({ items, sx }: { items: QuickNavItemWithChildren[]; sx?: a
 
 function getHierarchicalItems(items: QuickNavItem[]) {
   const hierarchy: QuickNavItemWithChildren[] = [];
-  let appendQueue = [hierarchy];
+  const appendQueue = [hierarchy];
 
   items.forEach((item, index) => {
     const previousItem = items[index - 1];

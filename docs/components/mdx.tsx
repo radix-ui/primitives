@@ -1,16 +1,17 @@
 import * as React from 'react';
 import {
-  Heading,
-  Title,
-  SubHeading,
-  Paragraph,
+  Caption,
   Divider,
+  Heading,
+  Paragraph,
+  SubHeading,
   Table,
-  Thead,
-  Tr,
-  Th,
-  Td,
   Tbody,
+  Td,
+  Th,
+  Thead,
+  Title,
+  Tr,
 } from './pageComponents';
 import { CodeBlock } from './CodeBlock';
 
@@ -20,13 +21,14 @@ export const MDXComponents = {
   h3: (props: any) => <SubHeading {...props} as="h3" />,
   hr: Divider,
   p: Paragraph,
-  code: (props: any) => <CodeBlock {...props} />,
-  table: (props: any) => <Table {...props} />,
-  tr: (props: any) => <Tr {...props} />,
-  th: (props: any) => <Th {...props} />,
-  td: (props: any) => <Td {...props} />,
-  tbody: (props: any) => <Tbody {...props} />,
-  thead: (props: any) => <Thead {...props} />,
+  caption: Caption,
+  code: CodeBlock,
+  table: Table,
+  tr: Tr,
+  th: Th,
+  td: Td,
+  tbody: Tbody,
+  thead: Thead,
 };
 
 export default MDXComponents;

@@ -24,7 +24,6 @@
     "react-is": "^17.0.1",
     "react-live": "^2.2.3",
     "remark-images": "^2.0.0",
-    "remark-slug": "^6.0.0",
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
