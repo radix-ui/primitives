@@ -1,25 +1,8 @@
 import * as React from 'react';
-import { AlertDialog, styles } from './AlertDialog';
+import { AlertDialog } from './AlertDialog';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/AlertDialog' };
-
-export const Basic = () => {
-  return (
-    <AlertDialog>
-      <AlertDialog.Trigger as={BasicStyledTrigger}>delete everything</AlertDialog.Trigger>
-      <AlertDialog.Overlay as={BasicStyledOverlay} />
-      <AlertDialog.Content as={BasicStyledContent}>
-        <AlertDialog.Title as={BasicStyledTitle}>Are you sure?</AlertDialog.Title>
-        <AlertDialog.Description as={BasicStyledDescription}>
-          This will do a very dangerous thing. Thar be dragons!
-        </AlertDialog.Description>
-        <AlertDialog.Action as={BasicStyledAction}>yolo, do it</AlertDialog.Action>
-        <AlertDialog.Cancel as={BasicStyledCancel}>maybe not</AlertDialog.Cancel>
-      </AlertDialog.Content>
-    </AlertDialog>
-  );
-};
 
 export const Styled = () => (
   <AlertDialog>
@@ -73,22 +56,32 @@ export const Controlled = () => {
   );
 };
 
-const BasicStyledTrigger = styled('button', styles.trigger);
-const BasicStyledOverlay = styled('div', styles.overlay);
-const BasicStyledContent = styled('div', styles.content);
-const BasicStyledAction = styled('button', styles.action);
-const BasicStyledCancel = styled('button', styles.cancel);
-const BasicStyledTitle = styled('h2', styles.cancel);
-const BasicStyledDescription = styled('p', styles.cancel);
+const StyledTrigger = styled('button', {});
 
-const StyledTrigger = styled(BasicStyledTrigger, {});
+const recommendedOverlayStyles: any = {
+  // ensures overlay is positionned correctly
+  position: 'fixed',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+};
 
-const StyledOverlay = styled(BasicStyledOverlay, {
+const StyledOverlay = styled('div', {
+  ...recommendedOverlayStyles,
   backgroundColor: 'black',
   opacity: 0.2,
 });
 
-const StyledContent = styled(BasicStyledContent, {
+const recommendedContentStyles: any = {
+  // ensures good default position for content
+  position: 'fixed',
+  top: 0,
+  left: 0,
+};
+
+const StyledContent = styled('div', {
+  ...recommendedContentStyles,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -101,14 +94,14 @@ const StyledContent = styled(BasicStyledContent, {
   boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
 });
 
-const StyledCancel = styled(BasicStyledCancel, {
+const StyledCancel = styled('button', {
   appearance: 'none',
   padding: 10,
   border: 'none',
   background: '$grey100',
 });
 
-const StyledAction = styled(BasicStyledAction, {
+const StyledAction = styled('button', {
   appearance: 'none',
   padding: 10,
   border: 'none',
@@ -116,6 +109,6 @@ const StyledAction = styled(BasicStyledAction, {
   color: '$white',
 });
 
-const StyledTitle = styled(BasicStyledTitle, {});
+const StyledTitle = styled('h2', {});
 
-const StyledDescription = styled(BasicStyledDescription, {});
+const StyledDescription = styled('p', {});
