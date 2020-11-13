@@ -1,9 +1,11 @@
 import React from 'react';
 import { AppProps } from 'next/app';
+import { MDXProvider } from '@mdx-js/react';
 import Head from 'next/head';
 import { createGlobalStyle } from 'styled-components';
 import * as Radix from '@modulz/radix';
 import { DocsPageLayout } from '../components/DocsPageLayout';
+import MDXComponents from '../components/mdx';
 
 const GlobalStyles = createGlobalStyle`
   ::selection {
@@ -43,13 +45,15 @@ function App({ Component, pageProps, router }: AppProps) {
 
       <GlobalStyles />
 
-      {isRoot ? (
-        <Component {...pageProps} />
-      ) : (
-        <DocsPageLayout>
+      <MDXProvider components={MDXComponents}>
+        {isRoot ? (
           <Component {...pageProps} />
-        </DocsPageLayout>
-      )}
+        ) : (
+          <DocsPageLayout>
+            <Component {...pageProps} />
+          </DocsPageLayout>
+        )}
+      </MDXProvider>
     </Radix.RadixProvider>
   );
 }

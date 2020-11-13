@@ -6,6 +6,7 @@ import {
   Text,
   Divider as RadixDivider,
 } from '@modulz/radix';
+import { Code, Table, Thead, Tr, Th, Td, Tbody } from '@modulz/radix';
 import { QuickNavItem } from './QuickNav';
 
 import type { HeadingProps, TextProps } from '@modulz/radix';
@@ -85,7 +86,22 @@ function Paragraph({ sx, ...props }: TextProps) {
 }
 
 function Divider() {
-  return <RadixDivider size={2} sx={{ mx: 'auto', my: 8 }} />;
+  return <RadixDivider size={2} sx={{ mx: 'auto', my: 8 }} aria-hidden />;
 }
 
-export { Hero, Title, Description, Heading, SubHeading, Paragraph, Divider };
+export {
+  Hero,
+  Title,
+  Description,
+  Heading,
+  SubHeading,
+  Paragraph,
+  Divider,
+  Code,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Td,
+  Tbody,
+};

@@ -1,3 +1,6 @@
+import { frontMatter as componentsFrontMatter } from '../pages/components/**/*.mdx';
+import * as path from 'path';
+
 export const overviewPages: Page[] = [
   { id: 'overview/introduction', label: 'Introduction' },
   { id: 'overview/installation', label: 'Installation' },
@@ -6,7 +9,16 @@ export const overviewPages: Page[] = [
   { id: 'overview/roadmap', label: 'Roadmap' },
 ];
 
-export const componentsPages: ComponentPage[] = [];
+export const componentsPages: ComponentPage[] = (componentsFrontMatter || []).map((frontMatter) => {
+  const slug = path.basename(frontMatter.__resourcePath).startsWith('index')
+    ? path.dirname(frontMatter.__resourcePath).split(path.sep).pop()
+    : path.basename(frontMatter.__resourcePath).split('.').shift();
+  return {
+    id: `components/${slug}`,
+    label: frontMatter.title,
+    description: frontMatter.description || '',
+  };
+});
 
 export const allPages = [...overviewPages, ...componentsPages];
 
