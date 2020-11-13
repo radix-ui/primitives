@@ -16,7 +16,7 @@ const ArrowImpl = forwardRef<typeof DEFAULT_TAG, ArrowProps>(function Arrow(prop
   const { as: Comp = DEFAULT_TAG, ...arrowProps } = props;
   return (
     <Comp
-      {...interopDataAttrObj('root')}
+      {...getPartDataAttrObj('root')}
       {...arrowProps}
       ref={forwardedRef}
       viewBox="0 0 30 10"
@@ -33,7 +33,7 @@ Arrow.defaultProps = {
   height: 5,
 };
 
-const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
   root: {},
 });
 

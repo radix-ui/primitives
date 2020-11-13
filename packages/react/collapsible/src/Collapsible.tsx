@@ -43,7 +43,7 @@ const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButto
 
     return (
       <Comp
-        {...interopDataAttrObj('button')}
+        {...getPartDataAttrObj('button')}
         ref={forwardedRef}
         aria-controls={context.contentId}
         aria-expanded={context.isOpen || false}
@@ -80,7 +80,7 @@ const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleCon
 
     return (
       <Comp
-        {...interopDataAttrObj('content')}
+        {...getPartDataAttrObj('content')}
         ref={forwardedRef}
         {...contentProps}
         id={id}
@@ -151,7 +151,7 @@ const Collapsible = forwardRef<
 
   return (
     <Comp
-      {...interopDataAttrObj('root')}
+      {...getPartDataAttrObj('root')}
       {...collapsibleProps}
       data-state={getState(context.isOpen)}
       ref={forwardedRef}
@@ -168,7 +168,7 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 Collapsible.Button.displayName = BUTTON_NAME;
 Collapsible.Content.displayName = CONTENT_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
   root: {},
   button: {
     display: 'block',

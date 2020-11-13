@@ -100,7 +100,7 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     return (
       <div style={popperStyles}>
         <Comp
-          {...interopDataAttrObj('root')}
+          {...getPartDataAttrObj('root')}
           {...popperProps}
           style={{
             ...popperProps.style,
@@ -136,7 +136,7 @@ const PopperContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopperContentProps>
     const { contentRef } = usePopperContext(CONTENT_NAME);
     const composedContentRef = useComposedRefs(forwardedRef, contentRef);
 
-    return <Comp {...interopDataAttrObj('content')} {...contentProps} ref={composedContentRef} />;
+    return <Comp {...getPartDataAttrObj('content')} {...contentProps} ref={composedContentRef} />;
   }
 );
 
@@ -175,7 +175,7 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
           pointerEvents: 'auto',
         }}
       >
-        <Arrow as={Comp} {...interopDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
+        <Arrow as={Comp} {...getPartDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
       </span>
     </span>
   );
@@ -190,7 +190,7 @@ Popper.displayName = POPPER_NAME;
 Popper.Content.displayName = CONTENT_NAME;
 Popper.Arrow.displayName = ARROW_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(POPPER_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(POPPER_NAME, {
   root: {
     transformOrigin: 'var(--interop-popper-transform-origin)',
   },

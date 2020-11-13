@@ -80,7 +80,7 @@ const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(pr
   }, [id, htmlFor]);
 
   return (
-    <Comp {...labelProps} {...interopDataAttrObj('root')} id={id} ref={ref} role="label">
+    <Comp {...labelProps} {...getPartDataAttrObj('root')} id={id} ref={ref} role="label">
       <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
         {children}
       </LabelContext.Provider>
@@ -109,7 +109,7 @@ function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement
 
 Label.displayName = LABEL_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(LABEL_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(LABEL_NAME, {
   root: {
     // ensures it can receive vertical margins
     display: 'inline-block',

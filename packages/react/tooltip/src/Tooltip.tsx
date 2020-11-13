@@ -163,7 +163,7 @@ const TooltipTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, TooltipTriggerProp
 
     return (
       <Comp
-        {...interopDataAttrObj('trigger')}
+        {...getPartDataAttrObj('trigger')}
         ref={composedTriggerRef}
         type="button"
         aria-describedby={context.isOpen ? context.id : undefined}
@@ -238,7 +238,7 @@ const TooltipPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperPro
       <PortalWrapper>
         <CheckTriggerMoved />
         <Popper
-          {...interopDataAttrObj('popper')}
+          {...getPartDataAttrObj('popper')}
           {...popperProps}
           data-state={context.stateAttribute}
           ref={forwardedRef}
@@ -296,7 +296,7 @@ const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProp
     const context = useTooltipContext(CONTENT_NAME);
 
     return (
-      <Popper.Content {...interopDataAttrObj('content')} {...contentProps} ref={forwardedRef}>
+      <Popper.Content {...getPartDataAttrObj('content')} {...contentProps} ref={forwardedRef}>
         {children}
         <VisuallyHidden id={context.id} role="tooltip" style={visuallyHiddenStyles.root}>
           {ariaLabel || children}
@@ -320,7 +320,7 @@ const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(fun
   props,
   forwardedRef
 ) {
-  return <Popper.Arrow {...interopDataAttrObj('arrow')} {...props} ref={forwardedRef} />;
+  return <Popper.Arrow {...getPartDataAttrObj('arrow')} {...props} ref={forwardedRef} />;
 });
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -336,7 +336,7 @@ Tooltip.Popper.displayName = POPPER_NAME;
 Tooltip.Content.displayName = CONTENT_NAME;
 Tooltip.Arrow.displayName = ARROW_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   root: {},
   trigger: {},
   popper: popperStyles.root,

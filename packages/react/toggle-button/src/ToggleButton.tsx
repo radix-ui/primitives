@@ -45,7 +45,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
   return (
     <Comp
-      {...interopDataAttrObj('root')}
+      {...getPartDataAttrObj('root')}
       type="button"
       aria-pressed={toggled}
       data-state={toggled ? 'on' : 'off'}
@@ -65,7 +65,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
 ToggleButton.displayName = NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
   root: {},
 });
 

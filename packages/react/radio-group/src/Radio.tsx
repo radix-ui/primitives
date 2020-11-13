@@ -81,7 +81,7 @@ const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioProps, RadioStaticProps>
       <Comp
         type="button"
         {...radioProps}
-        {...interopDataAttrObj('root')}
+        {...getPartDataAttrObj('root')}
         ref={ref}
         role="radio"
         aria-checked={checked}
@@ -127,7 +127,7 @@ const RadioIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, RadioIndicatorPr
 const RadioIndicatorImpl = forwardRef<typeof INDICATOR_DEFAULT_TAG, RadioIndicatorProps>(
   function RadioIndicatorImpl(props, forwardedRef) {
     const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-    return <Comp {...indicatorProps} {...interopDataAttrObj('indicator')} ref={forwardedRef} />;
+    return <Comp {...indicatorProps} {...getPartDataAttrObj('indicator')} ref={forwardedRef} />;
   }
 );
 
@@ -146,7 +146,7 @@ interface RadioStaticProps {
   Indicator: typeof RadioIndicator;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(RADIO_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(RADIO_NAME, {
   root: {
     // better default alignment
     verticalAlign: 'middle',

@@ -105,7 +105,7 @@ const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props,
   return (
     <TabsContext.Provider value={ctx}>
       <Comp
-        {...interopDataAttrObj('tabs')}
+        {...getPartDataAttrObj('tabs')}
         ref={forwardedRef}
         id={tabsId}
         data-orientation={orientation}
@@ -136,7 +136,7 @@ const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function
   return (
     <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
       <Comp
-        {...interopDataAttrObj('tabList')}
+        {...getPartDataAttrObj('tabList')}
         data-orientation={orientation}
         role="tablist"
         aria-orientation={orientation}
@@ -210,7 +210,7 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
 
   return (
     <Comp
-      {...interopDataAttrObj('tab')}
+      {...getPartDataAttrObj('tab')}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
       data-orientation={orientation}
@@ -256,7 +256,7 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj('tabPanel')}
+      {...getPartDataAttrObj('tabPanel')}
       data-state={isSelected ? 'active' : 'inactive'}
       data-orientation={orientation}
       id={tabPanelId}
@@ -275,7 +275,7 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
  * Styles
  * -----------------------------------------------------------------------------------------------*/
 
-const [styles, interopDataAttrObj] = createStyleObj(TABS_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(TABS_NAME, {
   root: {},
   tabs: {
     // ensures things are layed out correctly by default

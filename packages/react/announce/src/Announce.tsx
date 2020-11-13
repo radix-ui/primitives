@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { interopDataAttr } from '@interop-ui/utils';
+import { getPartDataAttr } from '@interop-ui/utils';
 import {
   forwardRef,
   createStyleObj,
@@ -177,7 +177,7 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
 
   return (
     <React.Fragment>
-      <Comp {...regionProps} {...interopDataAttrObj('root')} ref={ref}>
+      <Comp {...regionProps} {...getPartDataAttrObj('root')} ref={ref}>
         {children}
       </Comp>
 
@@ -189,7 +189,7 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
 
 Announce.displayName = NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
   root: {},
 });
 
@@ -239,5 +239,5 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
 }
 
 function getInteropAttr(id?: string) {
-  return interopDataAttr('AnnounceRegion' + (id ? `-${id}` : ''));
+  return getPartDataAttr('AnnounceRegion' + (id ? `-${id}` : ''));
 }

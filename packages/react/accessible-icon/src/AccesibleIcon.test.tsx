@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { interopDataAttr } from '@interop-ui/utils';
+import { getPartDataAttr } from '@interop-ui/utils';
 import { AccessibleIcon } from './AccessibleIcon';
 
 const LABEL_TEXT = 'Close';
@@ -40,7 +40,7 @@ describe('given a default AccessibleIcon', () => {
 
   it('should have an interop attribute on the container', () => {
     const container = rendered.container.firstChild;
-    const interopAttr = interopDataAttr('AccessibleIcon');
+    const interopAttr = getPartDataAttr('AccessibleIcon');
     expect(container).toHaveAttribute(interopAttr);
   });
 

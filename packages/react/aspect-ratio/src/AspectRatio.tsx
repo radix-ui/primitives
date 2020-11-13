@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { interopDataAttr } from '@interop-ui/utils';
+import { getPartDataAttr } from '@interop-ui/utils';
 import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 const ASPECT_RATIO_NAME = 'AspectRatio';
 const ASPECT_RATIO__DEFAULT_TAG = 'div';
 
-const INNER_DATA_ATTR = interopDataAttr('AspectRatio.Inner');
+const INNER_DATA_ATTR = getPartDataAttr('AspectRatioInner');
 const INNER_DEFAULT_TAG = 'div';
 
 type AspectRatioDOMProps = React.ComponentPropsWithoutRef<typeof ASPECT_RATIO__DEFAULT_TAG>;
@@ -32,7 +32,7 @@ const AspectRatio = forwardRef<typeof ASPECT_RATIO__DEFAULT_TAG, AspectRatioProp
     return (
       <Comp
         {...aspectRatioProps}
-        {...interopDataAttrObj('root')}
+        {...getPartDataAttrObj('root')}
         ref={forwardedRef}
         style={{
           ...style,
@@ -49,7 +49,7 @@ const AspectRatio = forwardRef<typeof ASPECT_RATIO__DEFAULT_TAG, AspectRatioProp
 
 AspectRatio.displayName = ASPECT_RATIO_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(ASPECT_RATIO_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(ASPECT_RATIO_NAME, {
   root: {
     // ensures inner element is contained
     position: 'relative',

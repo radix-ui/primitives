@@ -1,21 +1,25 @@
-import kebabCase from 'lodash.kebabcase';
-
-export function interopDataAttr(componentPart: string) {
-  return `data-interop-${kebabCase(componentPart)}`;
+function camelToKebab(input: string) {
+  return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
-export function interopDataAttrObj(componentPart: string) {
-  return { [interopDataAttr(componentPart)]: '' };
+function getPartDataAttr(componentPart: string) {
+  return `data-interop-${camelToKebab(componentPart)}`;
 }
 
-export function interopDataAttrSelector(componentPart: string) {
-  return `[${interopDataAttr(componentPart)}]`;
+function getPartDataAttrObj(componentPart: string) {
+  return { [getPartDataAttr(componentPart)]: '' };
 }
 
-export function canUseDOM() {
+function getPartDataAttrSelector(componentPart: string) {
+  return `[${getPartDataAttr(componentPart)}]`;
+}
+
+function canUseDOM() {
   return !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 }
 
-export function makeId(...args: (string | number | null | undefined)[]) {
+function makeId(...args: (string | number | null | undefined)[]) {
   return args.filter((val) => val != null).join('-');
 }
+
+export { getPartDataAttr, getPartDataAttrObj, getPartDataAttrSelector, canUseDOM, makeId };

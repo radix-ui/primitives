@@ -9,13 +9,13 @@ type VisuallyHiddenProps = VisuallyHiddenDOMProps;
 
 const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
   ({ as: Comp = DEFAULT_TAG, ...props }, forwardedRef) => (
-    <Comp {...props} {...interopDataAttrObj('root')} ref={forwardedRef} />
+    <Comp {...props} {...getPartDataAttrObj('root')} ref={forwardedRef} />
   )
 );
 
 VisuallyHidden.displayName = NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
   root: {
     // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
     position: 'absolute',

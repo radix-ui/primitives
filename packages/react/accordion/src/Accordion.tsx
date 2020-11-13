@@ -81,7 +81,7 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
     return (
       <Collapsible
         {...accordionItemProps}
-        {...interopDataAttrObj('item')}
+        {...getPartDataAttrObj('item')}
         ref={forwardedRef}
         data-state={isOpen ? 'open' : 'closed'}
         data-disabled={disabled || undefined}
@@ -112,7 +112,7 @@ const AccordionHeader = forwardRef<typeof HEADER_DEFAULT_TAG, AccordionHeaderPro
   function AccordionHeader(props, forwardedRef) {
     const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
 
-    return <Comp ref={forwardedRef} {...headerProps} {...interopDataAttrObj('header')} />;
+    return <Comp ref={forwardedRef} {...headerProps} {...getPartDataAttrObj('header')} />;
   }
 );
 
@@ -154,7 +154,7 @@ const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonPro
     return (
       <Collapsible.Button
         {...buttonProps}
-        {...interopDataAttrObj('button')}
+        {...getPartDataAttrObj('button')}
         ref={composedRefs}
         aria-disabled={itemContext.isOpen || undefined}
         id={itemContext.buttonId}
@@ -182,7 +182,7 @@ const AccordionPanel = forwardRef<typeof PANEL_DEFAULT_TAG, AccordionPanelProps>
     return (
       <Collapsible.Content
         {...props}
-        {...interopDataAttrObj('panel')}
+        {...getPartDataAttrObj('panel')}
         ref={forwardedRef}
         role="region"
         aria-labelledby={itemContext.buttonId}
@@ -287,7 +287,7 @@ const Accordion = forwardRef<typeof ACCORDION_DEFAULT_TAG, AccordionProps, Accor
     return (
       <Comp
         {...accordionProps}
-        {...interopDataAttrObj('root')}
+        {...getPartDataAttrObj('root')}
         ref={composedRefs}
         onKeyDown={isDisabled ? undefined : handleKeyDown}
       >
@@ -317,7 +317,7 @@ interface AccordionStaticProps {
   Panel: typeof AccordionPanel;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(ACCORDION_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(ACCORDION_NAME, {
   root: {},
   item: collapsibleStyles.root,
   header: {},

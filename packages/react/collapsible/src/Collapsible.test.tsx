@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent } from '@testing-library/react';
-import { interopDataAttr } from '@interop-ui/utils';
+import { getPartDataAttr } from '@interop-ui/utils';
 import { Collapsible } from './Collapsible';
 
 const BUTTON_TEXT = 'Button';
@@ -33,7 +33,7 @@ describe('given a default Collapsible', () => {
   });
 
   it('should have an interop attribute on the container', () => {
-    const interopAttr = interopDataAttr('Collapsible');
+    const interopAttr = getPartDataAttr('Collapsible');
     expect(collapsible).toHaveAttribute(interopAttr);
   });
 
@@ -50,7 +50,7 @@ describe('given a default Collapsible', () => {
   });
 
   it('should have an interop attribute on the button', () => {
-    const interopAttr = interopDataAttr('CollapsibleButton');
+    const interopAttr = getPartDataAttr('CollapsibleButton');
     expect(button).toHaveAttribute(interopAttr);
   });
 
@@ -71,7 +71,7 @@ describe('given a default Collapsible', () => {
     });
 
     it('should have an interop attribute on the content', () => {
-      const interopAttr = interopDataAttr('CollapsibleContent');
+      const interopAttr = getPartDataAttr('CollapsibleContent');
       expect(content).toHaveAttribute(interopAttr);
     });
 

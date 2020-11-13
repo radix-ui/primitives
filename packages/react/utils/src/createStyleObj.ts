@@ -1,4 +1,4 @@
-import { interopDataAttrObj, interopDataAttrSelector } from '@interop-ui/utils';
+import { getPartDataAttrObj, getPartDataAttrSelector } from '@interop-ui/utils';
 
 type StyleObject = {};
 type PrimitiveStyles<Part extends string> = {
@@ -8,7 +8,7 @@ type PrimitiveStyles<Part extends string> = {
 export function createStyleObj<Part extends string = string>(
   namespace: string,
   stylesInput: PrimitiveStyles<Part>
-): [PrimitiveStyles<Part>, (part: Part) => ReturnType<typeof interopDataAttrObj>] {
+): [PrimitiveStyles<Part>, (part: Part) => ReturnType<typeof getPartDataAttrObj>] {
   let stylesOutput = stylesInput;
 
   if (process.env.EXTRACT_CSS) {
@@ -16,7 +16,7 @@ export function createStyleObj<Part extends string = string>(
       const namespacedPart = getNamespacedPart(namespace, part);
       return {
         ...acc,
-        [interopDataAttrSelector(namespacedPart)]: stylesInput[part as Part],
+        [getPartDataAttrSelector(namespacedPart)]: stylesInput[part as Part],
       };
     }, {} as PrimitiveStyles<string>);
   }
@@ -25,11 +25,15 @@ export function createStyleObj<Part extends string = string>(
     stylesOutput,
     (part) => {
       const namespacedPart = getNamespacedPart(namespace, part);
-      return interopDataAttrObj(namespacedPart);
+      return getPartDataAttrObj(namespacedPart);
     },
   ];
 }
 
 export function getNamespacedPart(namespace: string, part: string) {
-  return part === 'root' ? namespace : namespace + '.' + part;
+  return part === 'root' ? namespace : namespace + capitalize(part);
+}
+
+function capitalize(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }

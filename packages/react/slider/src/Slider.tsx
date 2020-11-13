@@ -1,6 +1,6 @@
 import * as React from 'react';
 import omit from 'lodash.omit';
-import { clamp, interopDataAttr } from '@interop-ui/utils';
+import { clamp, getPartDataAttr } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -174,7 +174,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     return (
       <SliderOrientation
         {...sliderProps}
-        {...interopDataAttrObj('root')}
+        {...getPartDataAttrObj('root')}
         ref={composedRefs}
         min={min}
         max={max}
@@ -538,7 +538,7 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   const context = useSliderContext(TRACK_NAME);
   return (
     <Comp
-      {...interopDataAttrObj('track')}
+      {...getPartDataAttrObj('track')}
       {...trackProps}
       ref={forwardedRef}
       data-orientation={context.orientation}
@@ -575,7 +575,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj('range')}
+      {...getPartDataAttrObj('range')}
       {...rangeProps}
       ref={composedRefs}
       style={{
@@ -648,7 +648,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
       >
         <Comp
           {...thumbProps}
-          {...interopDataAttrObj('thumb')}
+          {...getPartDataAttrObj('thumb')}
           ref={ref}
           aria-label={props['aria-label'] || label}
           aria-valuemin={context.min}
@@ -684,7 +684,7 @@ interface SliderStaticProps {
   Thumb: typeof SliderThumb;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(SLIDER_NAME, {
   root: {
     position: 'relative',
     display: 'flex',
@@ -804,7 +804,7 @@ function toArray(value: number | number[]): number[] {
 }
 
 function isThumb(node: any): node is HTMLElement {
-  const thumbAttributeName = interopDataAttr(THUMB_NAME);
+  const thumbAttributeName = getPartDataAttr(THUMB_NAME.replace('.', ''));
   const thumbAttribute = node.getAttribute(thumbAttributeName);
   // `getAttribute` returns the attribute value and since we add the
   // attribute without a value, we must check it is an empty string

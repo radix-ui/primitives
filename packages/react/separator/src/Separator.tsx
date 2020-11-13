@@ -44,7 +44,7 @@ const Separator = forwardRef<typeof DEFAULT_TAG, SeparatorProps>(function Separa
       {...semanticProps}
       data-orientation={orientation}
       ref={forwardedRef}
-      {...interopDataAttrObj('root')}
+      {...getPartDataAttrObj('root')}
       {...domProps}
     />
   );
@@ -52,7 +52,7 @@ const Separator = forwardRef<typeof DEFAULT_TAG, SeparatorProps>(function Separa
 
 Separator.displayName = NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
   root: {},
 });
 

@@ -17,7 +17,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
   const child = React.Children.only(children);
 
   return (
-    <Comp {...interopDataAttrObj('root')} ref={forwardedRef} {...iconProps}>
+    <Comp {...getPartDataAttrObj('root')} ref={forwardedRef} {...iconProps}>
       {React.cloneElement(child as React.ReactElement, {
         // accessibility
         'aria-hidden': true,
@@ -30,7 +30,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
 
 AccessibleIcon.displayName = NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
   root: {
     // ensures child icon is contained correctly
     display: 'inline-flex',

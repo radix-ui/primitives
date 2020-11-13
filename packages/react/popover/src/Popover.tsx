@@ -96,7 +96,7 @@ const PopoverTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, PopoverTriggerProp
 
     return (
       <Comp
-        {...interopDataAttrObj('trigger')}
+        {...getPartDataAttrObj('trigger')}
         ref={composedTriggerRef}
         type="button"
         aria-haspopup="dialog"
@@ -272,7 +272,7 @@ const PopoverPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, PopoverPopperPro
               >
                 {(dismissableLayerProps) => (
                   <Popper
-                    {...interopDataAttrObj('popper')}
+                    {...getPartDataAttrObj('popper')}
                     role="dialog"
                     aria-modal
                     {...popperProps}
@@ -334,7 +334,7 @@ type PopoverContentProps = PopoverContentDOMProps & PopoverContentOwnProps;
 
 const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
   (props, forwardedRef) => {
-    return <Popper.Content {...interopDataAttrObj('content')} {...props} ref={forwardedRef} />;
+    return <Popper.Content {...getPartDataAttrObj('content')} {...props} ref={forwardedRef} />;
   }
 );
 
@@ -356,7 +356,7 @@ const PopoverClose = forwardRef<typeof CLOSE_DEFAULT_TAG, PopoverCloseProps>(
 
     return (
       <Comp
-        {...interopDataAttrObj('close')}
+        {...getPartDataAttrObj('close')}
         ref={forwardedRef}
         type="button"
         {...closeProps}
@@ -382,7 +382,7 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
 ) {
   const { as: Comp = ARROW_DEFAULT_TAG, ...arrowProps } = props;
   return (
-    <Popper.Arrow as={Comp} {...interopDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
+    <Popper.Arrow as={Comp} {...getPartDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
   );
 });
 
@@ -401,7 +401,7 @@ Popover.Content.displayName = CONTENT_NAME;
 Popover.Close.displayName = CLOSE_NAME;
 Popover.Arrow.displayName = ARROW_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(POPOVER_NAME, {
   root: {},
   trigger: {},
   popper: popperStyles.root,

@@ -95,7 +95,7 @@ const DialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, DialogTriggerProps>
 
     return (
       <Comp
-        {...interopDataAttrObj('trigger')}
+        {...getPartDataAttrObj('trigger')}
         ref={composedTriggerRef}
         type="button"
         aria-haspopup="dialog"
@@ -132,7 +132,7 @@ const DialogOverlayImpl = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayPr
 
     return (
       <Portal>
-        <Comp {...interopDataAttrObj('overlay')} ref={forwardedRef} {...overlayProps} />
+        <Comp {...getPartDataAttrObj('overlay')} ref={forwardedRef} {...overlayProps} />
       </Portal>
     );
   }
@@ -222,7 +222,7 @@ const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentPr
               >
                 {(dismissableLayerProps) => (
                   <Comp
-                    {...interopDataAttrObj('content')}
+                    {...getPartDataAttrObj('content')}
                     role="dialog"
                     aria-modal
                     {...contentProps}
@@ -286,7 +286,7 @@ const DialogClose = forwardRef<typeof CLOSE_DEFAULT_TAG, DialogCloseProps>(
 
     return (
       <Comp
-        {...interopDataAttrObj('close')}
+        {...getPartDataAttrObj('close')}
         ref={forwardedRef}
         type="button"
         {...closeProps}
@@ -309,7 +309,7 @@ Dialog.Overlay.displayName = OVERLAY_NAME;
 Dialog.Content.displayName = CONTENT_NAME;
 Dialog.Close.displayName = CLOSE_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(DIALOG_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(DIALOG_NAME, {
   root: {},
   trigger: {},
   overlay: {

@@ -82,7 +82,7 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
         <Comp
           type="button"
           {...switchProps}
-          {...interopDataAttrObj('root')}
+          {...getPartDataAttrObj('root')}
           ref={ref}
           role="switch"
           aria-checked={checked}
@@ -127,7 +127,7 @@ const SwitchThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(funct
   return (
     <Comp
       {...thumbProps}
-      {...interopDataAttrObj('thumb')}
+      {...getPartDataAttrObj('thumb')}
       data-state={getState(checked)}
       ref={forwardedRef}
     />
@@ -149,7 +149,7 @@ interface SwitchStaticProps {
   Thumb: typeof SwitchThumb;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(SWITCH_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(SWITCH_NAME, {
   root: {
     // better default alignment
     verticalAlign: 'middle',

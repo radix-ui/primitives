@@ -79,7 +79,7 @@ const RadioGroup = forwardRef<
   return (
     <Comp
       {...groupProps}
-      {...interopDataAttrObj('root')}
+      {...getPartDataAttrObj('root')}
       ref={forwardedRef}
       role="radiogroup"
       aria-labelledby={labelledBy}
@@ -138,7 +138,7 @@ const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
       <Radio
         as={as}
         {...itemProps}
-        {...interopDataAttrObj('item')}
+        {...getPartDataAttrObj('item')}
         required={required ?? context.required}
         checked={isChecked}
         ref={ref}
@@ -167,7 +167,7 @@ interface RadioGroupStaticProps {
   Indicator: typeof Radio.Indicator;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(RADIO_GROUP_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(RADIO_GROUP_NAME, {
   root: {},
   item: radioStyles.root,
   indicator: radioStyles.indicator,

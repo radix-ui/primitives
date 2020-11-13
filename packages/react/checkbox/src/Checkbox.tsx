@@ -88,7 +88,7 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
         <Comp
           type="button"
           {...checkboxProps}
-          {...interopDataAttrObj('root')}
+          {...getPartDataAttrObj('root')}
           ref={ref}
           role="checkbox"
           aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
@@ -136,7 +136,7 @@ const CheckboxIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, CheckboxIndic
 const CheckboxIndicatorImpl = forwardRef<typeof INDICATOR_DEFAULT_TAG, CheckboxIndicatorProps>(
   function CheckboxIndicatorImpl(props, forwardedRef) {
     const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-    return <Comp {...indicatorProps} {...interopDataAttrObj('indicator')} ref={forwardedRef} />;
+    return <Comp {...indicatorProps} {...getPartDataAttrObj('indicator')} ref={forwardedRef} />;
   }
 );
 
@@ -155,7 +155,7 @@ interface CheckboxStaticProps {
   Indicator: typeof CheckboxIndicator;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
   root: {
     // better default alignment
     verticalAlign: 'middle',

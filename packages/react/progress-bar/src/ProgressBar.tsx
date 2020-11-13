@@ -57,7 +57,7 @@ const ProgressBar = forwardRef<
       aria-valuetext={valueLabel}
       role="progressbar"
       {...progressProps}
-      {...interopDataAttrObj('root')}
+      {...getPartDataAttrObj('root')}
       data-state={getProgressBarState(value, max)}
       data-value={value ?? undefined}
       data-max={max}
@@ -86,7 +86,7 @@ const ProgressBarIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, ProgressBa
     return (
       <Comp
         {...indicatorProps}
-        {...interopDataAttrObj('indicator')}
+        {...getPartDataAttrObj('indicator')}
         data-state={getProgressBarState(value, max)}
         data-value={value || undefined}
         data-max={max}
@@ -112,7 +112,7 @@ interface ProgressBarStaticProps {
   Indicator: typeof ProgressBarIndicator;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(PROGRESS_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(PROGRESS_NAME, {
   root: {},
   indicator: {},
 });

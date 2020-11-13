@@ -97,7 +97,7 @@ const AlertDialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, AlertDialogTri
     const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
     return (
       <Dialog.Trigger
-        {...interopDataAttrObj('trigger')}
+        {...getPartDataAttrObj('trigger')}
         as={as}
         ref={forwardedRef}
         {...triggerProps}
@@ -124,7 +124,7 @@ const AlertDialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, AlertDialogOve
     const { as = OVERLAY_DEFAULT_TAG, ...overlayProps } = props;
     return (
       <Dialog.Overlay
-        {...interopDataAttrObj('overlay')}
+        {...getPartDataAttrObj('overlay')}
         as={as}
         ref={forwardedRef}
         {...overlayProps}
@@ -151,7 +151,7 @@ const AlertDialogCancel = forwardRef<typeof CANCEL_DEFAULT_TAG, AlertDialogCance
     const { as = CANCEL_DEFAULT_TAG, ...cancelProps } = props;
     const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
     const ref = useComposedRefs(forwardedRef, cancelRef as any);
-    return <Dialog.Close {...interopDataAttrObj('cancel')} as={as} ref={ref} {...cancelProps} />;
+    return <Dialog.Close {...getPartDataAttrObj('cancel')} as={as} ref={ref} {...cancelProps} />;
   }
 );
 
@@ -172,7 +172,7 @@ const AlertDialogAction = forwardRef<typeof ACTION_DEFAULT_TAG, AlertDialogCance
   function AlertDialogAction(props, forwardedRef) {
     const { as = ACTION_DEFAULT_TAG, ...actionProps } = props;
     return (
-      <Dialog.Close {...interopDataAttrObj('action')} as={as} ref={forwardedRef} {...actionProps} />
+      <Dialog.Close {...getPartDataAttrObj('action')} as={as} ref={forwardedRef} {...actionProps} />
     );
   }
 );
@@ -211,7 +211,7 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
 
     return (
       <Dialog.Content
-        {...interopDataAttrObj('content')}
+        {...getPartDataAttrObj('content')}
         as={as}
         ref={ref}
         role="alertdialog"
@@ -264,7 +264,7 @@ const AlertDialogTitle = forwardRef<typeof TITLE_DEFAULT_TAG, AlertDialogTitlePr
     const { as: Comp = TITLE_DEFAULT_TAG, ...titleProps } = props;
     const { titleId } = useAlertDialogContext('AlertDialogTitle');
     return (
-      <Comp {...interopDataAttrObj('title')} ref={forwardedRef} id={titleId} {...titleProps} />
+      <Comp {...getPartDataAttrObj('title')} ref={forwardedRef} id={titleId} {...titleProps} />
     );
   }
 );
@@ -290,7 +290,7 @@ const AlertDialogDescription = forwardRef<
   const { descriptionId } = useAlertDialogContext('AlertDialogDescription');
   return (
     <Comp
-      {...interopDataAttrObj('description')}
+      {...getPartDataAttrObj('description')}
       ref={forwardedRef}
       id={descriptionId}
       {...descriptionProps}
@@ -317,7 +317,7 @@ AlertDialog.Overlay.displayName = OVERLAY_NAME;
 AlertDialog.Trigger.displayName = TRIGGER_NAME;
 AlertDialog.displayName = ROOT_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
+const [styles, getPartDataAttrObj] = createStyleObj(ROOT_NAME, {
   root: dialogStyles.root,
   overlay: dialogStyles.overlay,
   trigger: dialogStyles.trigger,
