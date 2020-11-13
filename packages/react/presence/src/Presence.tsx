@@ -20,28 +20,28 @@ Presence.displayName = 'Presence';
 type PresenceEvent =
   | { type: 'MOUNT' }
   | { type: 'UNMOUNT' }
-  | { type: 'ANIMATE_OUT' }
-  | { type: 'ANIMATE_END' };
+  | { type: 'MOTION_OUT' }
+  | { type: 'MOTION_END' };
 
-type PresenceState = { value: 'in' | 'out' | 'animatingOut'; context: {} };
+type PresenceState = { value: 'mounted' | 'unmounted' | 'unmountSuspended'; context: {} };
 
 function usePresence(present: boolean) {
   const [node, setNode] = React.useState<HTMLElement>();
   const [styles, setStyles] = React.useState<CSSStyleDeclaration>();
   const prevPresentRef = React.useRef(present);
-  const prevAnimatableValuesRef = React.useRef<string[]>([]);
-  const machine = useStateMachine<{}, PresenceEvent, PresenceState>({
+  const prevMotionValuesRef = React.useRef<string[]>([]);
+  const { state, send } = useStateMachine<{}, PresenceEvent, PresenceState>({
     id: 'presence',
-    initial: present ? 'in' : 'out',
+    initial: present ? 'mounted' : 'unmounted',
     states: {
-      in: {
-        on: { UNMOUNT: 'out', ANIMATE_OUT: 'animatingOut' },
+      mounted: {
+        on: { UNMOUNT: 'unmounted', MOTION_OUT: 'unmountSuspended' },
       },
-      animatingOut: {
-        on: { ANIMATE_END: 'out' },
+      unmountSuspended: {
+        on: { MOTION_END: 'unmounted' },
       },
-      out: {
-        on: { MOUNT: 'in' },
+      unmounted: {
+        on: { MOUNT: 'mounted' },
       },
     },
   });
@@ -49,37 +49,45 @@ function usePresence(present: boolean) {
   React.useEffect(() => {
     if (node) {
       const styles = getComputedStyle(node);
-      prevAnimatableValuesRef.current = getAnimatableValues(styles);
+      prevMotionValuesRef.current = getMotionValues(styles);
       setStyles(styles);
     }
   }, [node]);
 
+  /**
+   * We check for any changes to animation/transition properties to determine
+   * whether an animation/transition has started when `present` has changed.
+   *
+   * We chose this approach (reading computed styles) over using `animationstart`
+   * or `transitionstart` events because we would need to set a timer (`setTimeout`)
+   * when `present` is `false`. These events would need to clear it to prevent unmount
+   * which is at risk of breaking if consumers used things like `animation-delay`.
+   */
   React.useEffect(() => {
-    const waitForPossibleStyleChange = waitForNextFrame(() => {
+    return waitForNextFrame(() => {
       const wasPresent = prevPresentRef.current;
-      const prevValues = prevAnimatableValuesRef.current;
-      const nextValues = getAnimatableValues(styles);
-      // If the element is hidden, it will not trigger an animation/transition
+      const prevMotionValues = prevMotionValuesRef.current;
+      const currentMotionValues = getMotionValues(styles);
       const hasHiddenStyle = styles?.display === 'none';
-      const hasAnimationChanged = String(prevValues) !== String(nextValues);
-      const isAnimating = !hasHiddenStyle && hasAnimationChanged;
-      prevAnimatableValuesRef.current = nextValues;
+      const hasMotionValuesChanged = String(prevMotionValues) !== String(currentMotionValues);
+      // If the element is hidden, it will not trigger an animation/transition
+      const isInMotion = !hasHiddenStyle && hasMotionValuesChanged;
+      prevMotionValuesRef.current = currentMotionValues;
       prevPresentRef.current = present;
 
       if (present) {
-        machine.send('MOUNT');
-      } else if (wasPresent && isAnimating) {
-        machine.send('ANIMATE_OUT');
+        send('MOUNT');
+      } else if (wasPresent && isInMotion) {
+        send('MOTION_OUT');
       } else {
-        machine.send('UNMOUNT');
+        send('UNMOUNT');
       }
     });
-    return () => waitForPossibleStyleChange.cancel();
-  }, [present, styles, machine]);
+  }, [present, styles, send]);
 
   React.useEffect(() => {
     if (node) {
-      const handleEnd = () => machine.send('ANIMATE_END');
+      const handleEnd = () => send('MOTION_END');
       node.addEventListener('animationcancel', handleEnd);
       node.addEventListener('transitioncancel', handleEnd);
       node.addEventListener('animationend', handleEnd);
@@ -92,19 +100,19 @@ function usePresence(present: boolean) {
         node.removeEventListener('transitionend', handleEnd);
       };
     }
-  }, [node, present, machine]);
+  }, [node, present, send]);
 
   return {
-    ref: setNode,
-    isPresent: ['in', 'animatingOut'].includes(machine.state),
+    ref: (node: HTMLElement) => setNode(node),
+    isPresent: ['mounted', 'unmountSuspended'].includes(state),
   };
 }
 
-function getAnimatableValues(styles?: CSSStyleDeclaration) {
-  const animationValue = styles?.animationName || 'none';
+function getMotionValues(styles?: CSSStyleDeclaration) {
+  const animationName = styles?.animationName || 'none';
   const transitionProperties = styles?.transitionProperty.split(/,\s?/) || [];
   const transitionValues = transitionProperties.map((prop) => styles?.[prop as any]);
-  return [...transitionValues, animationValue].filter(Boolean) as string[];
+  return [animationName, ...transitionValues].filter(Boolean) as string[];
 }
 
 function waitForNextFrame(cb = () => {}) {
@@ -118,11 +126,9 @@ function waitForNextFrame(cb = () => {}) {
     innerRaf = requestAnimationFrame(cb);
   });
 
-  return {
-    cancel: () => {
-      cancelAnimationFrame(outerRaf);
-      cancelAnimationFrame(innerRaf);
-    },
+  return () => {
+    cancelAnimationFrame(outerRaf);
+    cancelAnimationFrame(innerRaf);
   };
 }
 

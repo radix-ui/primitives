@@ -23,11 +23,5 @@ export function useStateMachine<
     };
   }, [machine]);
 
-  const result = React.useMemo(() => ({ state, context, send: machine.send }), [
-    state,
-    context,
-    machine,
-  ]);
-
-  return result;
+  return React.useMemo(() => ({ state, context, send: machine.send }), [state, context, machine]);
 }
