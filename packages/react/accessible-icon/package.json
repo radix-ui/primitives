@@ -11,15 +11,15 @@
     "README.md"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache && yarn build:styles",
-    "build:styles": "node ../../../scripts/build-styles accessible-icon",
+    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
     "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/react-visually-hidden": "workspace:*"
+    "@interop-ui/react-visually-hidden": "workspace:*",
+    "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"

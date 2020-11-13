@@ -2035,6 +2035,7 @@ __metadata:
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/react-visually-hidden": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0

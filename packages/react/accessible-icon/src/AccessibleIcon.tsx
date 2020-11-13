@@ -1,6 +1,7 @@
 import * as React from 'react';
+import { getPartDataAttrObj } from '@interop-ui/utils';
+import { forwardRef } from '@interop-ui/react-utils';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
-import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'AccessibleIcon';
 const DEFAULT_TAG = 'span';
@@ -17,7 +18,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
   const child = React.Children.only(children);
 
   return (
-    <Comp {...getPartDataAttrObj('root')} ref={forwardedRef} {...iconProps}>
+    <Comp {...getPartDataAttrObj(NAME)} ref={forwardedRef} {...iconProps}>
       {React.cloneElement(child as React.ReactElement, {
         // accessibility
         'aria-hidden': true,
@@ -30,14 +31,5 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
 
 AccessibleIcon.displayName = NAME;
 
-const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
-  root: {
-    // ensures child icon is contained correctly
-    display: 'inline-flex',
-    // better default alignment
-    verticalAlign: 'middle',
-  },
-});
-
-export { styles, AccessibleIcon };
+export { AccessibleIcon };
 export type { AccessibleIconProps };

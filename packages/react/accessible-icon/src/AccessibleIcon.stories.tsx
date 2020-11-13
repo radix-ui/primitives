@@ -1,14 +1,8 @@
 import * as React from 'react';
-import { AccessibleIcon, styles } from './AccessibleIcon';
+import { AccessibleIcon } from './AccessibleIcon';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/AccessibleIcon' };
-
-export const Basic = () => (
-  <AccessibleIcon label="Close" as={BasicStyledRoot}>
-    <CrossIcon />
-  </AccessibleIcon>
-);
 
 export const Styled = () => (
   <AccessibleIcon label="Close" as={StyledRoot}>
@@ -22,8 +16,15 @@ const CrossIcon = () => (
   </svg>
 );
 
-const BasicStyledRoot = styled('span', styles.root);
+const recommendedStyles = {
+  // ensures child icon is contained correctly, `inline-block` would also work for that
+  // but it would create the usual nasty few extra pixels underneath, so `inline-flex` is a better default.
+  display: 'inline-flex',
+  // better default alignment
+  verticalAlign: 'middle',
+};
 
-const StyledRoot = styled(BasicStyledRoot, {
+const StyledRoot = styled('span', {
+  ...recommendedStyles,
   color: '$red',
 });
