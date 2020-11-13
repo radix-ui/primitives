@@ -33,8 +33,8 @@ describe('given a default Collapsible', () => {
   });
 
   it('should have an interop attribute on the container', () => {
-    const interopAttr = getPartDataAttr('Collapsible');
-    expect(collapsible).toHaveAttribute(interopAttr);
+    const partDataAttr = getPartDataAttr('Collapsible');
+    expect(collapsible).toHaveAttribute(partDataAttr);
   });
 
   it('should have a data-state attribute on the container set to `closed`', () => {
@@ -50,8 +50,8 @@ describe('given a default Collapsible', () => {
   });
 
   it('should have an interop attribute on the button', () => {
-    const interopAttr = getPartDataAttr('CollapsibleButton');
-    expect(button).toHaveAttribute(interopAttr);
+    const partDataAttr = getPartDataAttr('CollapsibleButton');
+    expect(button).toHaveAttribute(partDataAttr);
   });
 
   it('should not render content', () => {
@@ -71,8 +71,8 @@ describe('given a default Collapsible', () => {
     });
 
     it('should have an interop attribute on the content', () => {
-      const interopAttr = getPartDataAttr('CollapsibleContent');
-      expect(content).toHaveAttribute(interopAttr);
+      const partDataAttr = getPartDataAttr('CollapsibleContent');
+      expect(content).toHaveAttribute(partDataAttr);
     });
 
     it('should have a data-state attribute on the container set to `open`', () => {

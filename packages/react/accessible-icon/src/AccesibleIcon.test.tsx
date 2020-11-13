@@ -40,8 +40,8 @@ describe('given a default AccessibleIcon', () => {
 
   it('should have an interop attribute on the container', () => {
     const container = rendered.container.firstChild;
-    const interopAttr = getPartDataAttr('AccessibleIcon');
-    expect(container).toHaveAttribute(interopAttr);
+    const partDataAttr = getPartDataAttr('AccessibleIcon');
+    expect(container).toHaveAttribute(partDataAttr);
   });
 
   it('should have a label', () => {
