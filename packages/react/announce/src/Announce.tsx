@@ -209,7 +209,7 @@ function buildLiveRegionElement(
   { type, relevant, role, atomic, id }: LiveRegionOptions
 ) {
   const element = ownerDocument.createElement('div');
-  element.setAttribute(getInteropAttr(id), '');
+  element.setAttribute(getLiveRegionPartDataAttr(id), '');
   element.setAttribute(
     'style',
     'position: absolute; top: -1px; width: 1px; height: 1px; overflow: hidden;'
@@ -227,7 +227,7 @@ function buildLiveRegionElement(
 }
 
 function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) {
-  return `[${getInteropAttr(id)}]${[
+  return `[${getLiveRegionPartDataAttr(id)}]${[
     ['aria-live', type],
     ['aria-atomic', atomic],
     ['aria-relevant', relevant],
@@ -238,6 +238,6 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
     .join('')}`;
 }
 
-function getInteropAttr(id?: string) {
-  return getPartDataAttr('AnnounceRegion' + (id ? `-${id}` : ''));
+function getLiveRegionPartDataAttr(id?: string) {
+  return getPartDataAttr('AnnounceRegion') + (id ? `-${id}` : '');
 }
