@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
+import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
 
 const NAME = 'AccessibleIcon';
@@ -23,7 +23,7 @@ const AccessibleIcon = forwardRef<typeof DEFAULT_TAG, AccessibleIconProps>(funct
         'aria-hidden': true,
         focusable: 'false', // See: https://allyjs.io/tutorials/focusing-in-svg.html#making-svg-elements-focusable
       })}
-      <VisuallyHidden style={visuallyHiddenStyles.root}>{label}</VisuallyHidden>
+      <VisuallyHidden>{label}</VisuallyHidden>
     </Comp>
   );
 });

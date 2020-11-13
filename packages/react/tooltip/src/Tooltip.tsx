@@ -13,7 +13,7 @@ import {
 } from '@interop-ui/react-utils';
 import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
-import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
+import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
 
 import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
@@ -298,7 +298,7 @@ const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProp
     return (
       <Popper.Content {...getPartDataAttrObj('content')} {...contentProps} ref={forwardedRef}>
         {children}
-        <VisuallyHidden id={context.id} role="tooltip" style={visuallyHiddenStyles.root}>
+        <VisuallyHidden id={context.id} role="tooltip">
           {ariaLabel || children}
         </VisuallyHidden>
       </Popper.Content>
