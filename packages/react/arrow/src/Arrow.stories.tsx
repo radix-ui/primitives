@@ -1,10 +1,21 @@
 import * as React from 'react';
-import { Arrow, styles } from './Arrow';
+import { Arrow } from './Arrow';
 
 export default { title: 'Components/Arrow' };
 
-export const Basic = () => <Arrow style={styles.root} />;
+const recommendedStyles = {
+  // better default alignment
+  verticalAlign: 'middle',
+};
 
 export const Styled = () => (
-  <Arrow style={{ ...styles.root, fill: 'crimson' }} width={20} height={10} />
+  <Arrow style={{ ...recommendedStyles, fill: 'crimson' }} width={20} height={10} />
+);
+
+export const CustomSizes = () => (
+  <>
+    <Arrow style={{ ...recommendedStyles }} width={40} height={10} />
+    <Arrow style={{ ...recommendedStyles }} width={50} height={30} />
+    <Arrow style={{ ...recommendedStyles }} width={20} height={100} />
+  </>
 );

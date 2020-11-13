@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
+import { forwardRef } from '@interop-ui/react-utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 const NAME = 'Arrow';
 const DEFAULT_TAG = 'svg';
@@ -16,7 +17,7 @@ const ArrowImpl = forwardRef<typeof DEFAULT_TAG, ArrowProps>(function Arrow(prop
   const { as: Comp = DEFAULT_TAG, ...arrowProps } = props;
   return (
     <Comp
-      {...getPartDataAttrObj('root')}
+      {...getPartDataAttrObj(NAME)}
       {...arrowProps}
       ref={forwardedRef}
       viewBox="0 0 30 10"
@@ -33,9 +34,5 @@ Arrow.defaultProps = {
   height: 5,
 };
 
-const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
-  root: {},
-});
-
-export { Arrow, styles };
+export { Arrow };
 export type { ArrowProps };

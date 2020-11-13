@@ -2086,6 +2086,7 @@ __metadata:
   resolution: "@interop-ui/react-arrow@workspace:packages/react/arrow"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0

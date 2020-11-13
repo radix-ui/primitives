@@ -8,7 +8,7 @@ import {
   createStyleObj,
   useComposedRefs,
 } from '@interop-ui/react-utils';
-import { Arrow, styles as arrowStyles } from '@interop-ui/react-arrow';
+import { Arrow } from '@interop-ui/react-arrow';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 
 import type { Side, Align } from '@interop-ui/utils';
@@ -196,7 +196,6 @@ const [styles, getPartDataAttrObj] = createStyleObj(POPPER_NAME, {
   },
   content: {},
   arrow: {
-    ...arrowStyles.root,
     // ensures the element can be measured correctly
     display: 'block',
   },
