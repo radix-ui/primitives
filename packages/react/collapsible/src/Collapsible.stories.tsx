@@ -1,15 +1,8 @@
 import * as React from 'react';
-import { Collapsible, styles } from './Collapsible';
+import { Collapsible } from './Collapsible';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Collapsible' };
-
-export const Basic = () => (
-  <Collapsible as={BasicStyledRoot}>
-    <Collapsible.Button as={BasicStyledButton}>Button</Collapsible.Button>
-    <Collapsible.Content as={BasicStyledContent}>Content 1</Collapsible.Content>
-  </Collapsible>
-);
 
 export const Styled = () => (
   <Collapsible as={StyledRoot}>
@@ -18,16 +11,20 @@ export const Styled = () => (
   </Collapsible>
 );
 
-const BasicStyledRoot = styled('div', styles.root);
-const BasicStyledButton = styled('button', styles.button);
-const BasicStyledContent = styled('div', styles.content);
-
-const StyledRoot = styled(BasicStyledRoot, {
+const StyledRoot = styled('div', {
   maxWidth: '20em',
   fontFamily: 'sans-serif',
 });
 
-const StyledButton = styled(BasicStyledButton, {
+const recommendedButtonStyles: any = {
+  // because it's a button, we want to stretch it
+  width: '100%',
+  // and remove center text alignment in favour of inheriting
+  textAlign: 'inherit',
+};
+
+const StyledButton = styled('button', {
+  ...recommendedButtonStyles,
   boxSizing: 'border-box',
   appearance: 'none',
   border: 'none',
@@ -60,7 +57,7 @@ const StyledButton = styled(BasicStyledButton, {
   },
 });
 
-const StyledContent = styled(BasicStyledContent, {
+const StyledContent = styled('div', {
   padding: 10,
   lineHeight: 1.5,
 });

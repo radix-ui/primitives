@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {
   createContext,
-  createStyleObj,
   forwardRef,
   useId,
   composeEventHandlers,
   useControlledState,
 } from '@interop-ui/react-utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -43,7 +43,7 @@ const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButto
 
     return (
       <Comp
-        {...getPartDataAttrObj('button')}
+        {...getPartDataAttrObj(BUTTON_NAME)}
         ref={forwardedRef}
         aria-controls={context.contentId}
         aria-expanded={context.isOpen || false}
@@ -80,7 +80,7 @@ const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleCon
 
     return (
       <Comp
-        {...getPartDataAttrObj('content')}
+        {...getPartDataAttrObj(CONTENT_NAME)}
         ref={forwardedRef}
         {...contentProps}
         id={id}
@@ -151,7 +151,7 @@ const Collapsible = forwardRef<
 
   return (
     <Comp
-      {...getPartDataAttrObj('root')}
+      {...getPartDataAttrObj(COLLAPSIBLE_NAME)}
       {...collapsibleProps}
       data-state={getState(context.isOpen)}
       ref={forwardedRef}
@@ -161,6 +161,10 @@ const Collapsible = forwardRef<
   );
 });
 
+function getState(isOpen?: boolean) {
+  return isOpen ? 'open' : 'closed';
+}
+
 Collapsible.Button = CollapsibleButton;
 Collapsible.Content = CollapsibleContent;
 
@@ -168,19 +172,5 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 Collapsible.Button.displayName = BUTTON_NAME;
 Collapsible.Content.displayName = CONTENT_NAME;
 
-const [styles, getPartDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
-  root: {},
-  button: {
-    display: 'block',
-    width: '100%',
-    textAlign: 'inherit',
-  },
-  content: {},
-});
-
+export { Collapsible };
 export type { CollapsibleProps, CollapsibleButtonProps, CollapsibleContentProps };
-export { Collapsible, styles };
-
-function getState(isOpen?: boolean) {
-  return isOpen ? 'open' : 'closed';
-}

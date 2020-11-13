@@ -804,7 +804,7 @@ function toArray(value: number | number[]): number[] {
 }
 
 function isThumb(node: any): node is HTMLElement {
-  const thumbAttributeName = getPartDataAttr(THUMB_NAME.replace('.', ''));
+  const thumbAttributeName = getPartDataAttr(THUMB_NAME);
   const thumbAttribute = node.getAttribute(thumbAttributeName);
   // `getAttribute` returns the attribute value and since we add the
   // attribute without a value, we must check it is an empty string

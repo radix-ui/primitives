@@ -3,7 +3,7 @@ function camelToKebab(input: string) {
 }
 
 function getPartDataAttr(componentPart: string) {
-  return `data-interop-${camelToKebab(componentPart)}`;
+  return `data-interop-${camelToKebab(componentPart.replace('.', ''))}`;
 }
 
 function getPartDataAttrObj(componentPart: string) {

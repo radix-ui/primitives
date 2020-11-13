@@ -8,7 +8,7 @@ import {
   useControlledState,
   useId,
 } from '@interop-ui/react-utils';
-import { Collapsible, styles as collapsibleStyles } from '@interop-ui/react-collapsible';
+import { Collapsible } from '@interop-ui/react-collapsible';
 
 import type {
   CollapsibleProps,
@@ -319,10 +319,10 @@ interface AccordionStaticProps {
 
 const [styles, getPartDataAttrObj] = createStyleObj(ACCORDION_NAME, {
   root: {},
-  item: collapsibleStyles.root,
+  item: {},
   header: {},
-  button: collapsibleStyles.button,
-  panel: collapsibleStyles.content,
+  button: {},
+  panel: {},
 });
 
 export { Accordion, styles };
