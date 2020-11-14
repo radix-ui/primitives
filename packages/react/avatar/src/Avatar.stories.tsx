@@ -1,34 +1,11 @@
 import * as React from 'react';
-import { Avatar, styles } from './Avatar';
+import { Avatar } from './Avatar';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Avatar' };
 
 const src = 'https://picsum.photos/id/1005/400/400';
 const srcBroken = 'https://broken.link.com/broken-pic.jpg';
-
-export const Basic = () => (
-  <>
-    <h1>With image & fallback</h1>
-    <Avatar as={BasicStyledRoot}>
-      <Avatar.Image as={BasicStyledImage} alt="John Smith" src={src} />
-      <Avatar.Fallback as={BasicStyledFallback}>JS</Avatar.Fallback>
-    </Avatar>
-
-    <h1>With image & fallback (but broken src, shows once loading failed)</h1>
-    <Avatar as={BasicStyledRoot}>
-      <Avatar.Image
-        as={BasicStyledImage}
-        alt="John Smith"
-        src={srcBroken}
-        onLoadingStatusChange={console.log}
-      />
-      <Avatar.Fallback as={BasicStyledFallback}>
-        <AvatarIcon />
-      </Avatar.Fallback>
-    </Avatar>
-  </>
-);
 
 export const Styled = () => (
   <>
@@ -58,21 +35,45 @@ export const Styled = () => (
   </>
 );
 
-const BasicStyledRoot = styled('span', styles.root);
-const BasicStyledImage = styled('img', styles.image);
-const BasicStyledFallback = styled('span', styles.fallback);
+const recommendedRootStyles: any = {
+  // ensures image/fallback is centered
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  verticalAlign: 'middle',
+  // ensures image doesn't bleed out
+  overflow: 'hidden',
+  // ensures no selection is possible
+  userSelect: 'none',
+};
 
-const StyledRoot = styled(BasicStyledRoot, {
+const StyledRoot = styled('span', {
+  ...recommendedRootStyles,
   borderRadius: 9999,
   width: 48,
   height: 48,
 });
 
-const StyledImage = styled(BasicStyledImage, {});
-
-const StyledFallback = styled(BasicStyledFallback, {
+const recommendedImageStyles: any = {
+  // ensures image is full size and not distorted
   width: '100%',
   height: '100%',
+  objectFit: 'cover',
+};
+
+const StyledImage = styled('img', recommendedImageStyles);
+
+const recommendedFallbackStyles: any = {
+  // ensures content inside the fallback is centered
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const StyledFallback = styled('span', {
+  ...recommendedFallbackStyles,
   backgroundColor: '$black',
   color: '$white',
 });

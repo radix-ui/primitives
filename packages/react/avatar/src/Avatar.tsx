@@ -1,8 +1,8 @@
 import * as React from 'react';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 import {
   createContext,
   forwardRef,
-  createStyleObj,
   useCallbackRef,
   useLayoutEffect,
 } from '@interop-ui/react-utils';
@@ -33,7 +33,7 @@ const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticPr
     const context = React.useState<ImageLoadingStatus>('idle');
 
     return (
-      <Comp {...getPartDataAttrObj('root')} {...avatarProps} ref={forwardedRef}>
+      <Comp {...getPartDataAttrObj(AVATAR_NAME)} {...avatarProps} ref={forwardedRef}>
         <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
       </Comp>
     );
@@ -73,7 +73,7 @@ const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(funct
   }, [imageLoadingStatus, setImageLoadingStatus, onLoadingStatusChange]);
 
   return imageLoadingStatus === 'loaded' ? (
-    <Comp {...imageProps} {...getPartDataAttrObj('image')} src={src} ref={forwardedRef} />
+    <Comp {...imageProps} {...getPartDataAttrObj(IMAGE_NAME)} src={src} ref={forwardedRef} />
   ) : null;
 });
 
@@ -93,7 +93,7 @@ const AvatarFallback = forwardRef<typeof FALLBACK_DEFAULT_TAG, AvatarFallbackPro
     const { as: Comp = FALLBACK_DEFAULT_TAG, ...fallbackProps } = props;
     const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
     return imageLoadingStatus === 'error' ? (
-      <Comp {...fallbackProps} {...getPartDataAttrObj('fallback')} ref={forwardedRef} />
+      <Comp {...fallbackProps} {...getPartDataAttrObj(FALLBACK_NAME)} ref={forwardedRef} />
     ) : null;
   }
 );
@@ -142,30 +142,5 @@ function useImageLoadingStatus(src?: string) {
   return loadingStatus;
 }
 
-const [styles, getPartDataAttrObj] = createStyleObj(AVATAR_NAME, {
-  root: {
-    // ensures image/fallback is centered
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    verticalAlign: 'middle',
-    // ensures image doesn't bleed out
-    overflow: 'hidden',
-    // ensures no selection is possible
-    userSelect: 'none',
-  },
-  image: {
-    // ensures image is full size and not distorted
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  fallback: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
+export { Avatar };
 export type { AvatarProps, AvatarImageProps, AvatarFallbackProps };
-export { Avatar, styles };
