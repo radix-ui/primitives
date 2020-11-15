@@ -2315,6 +2315,7 @@ __metadata:
   resolution: "@interop-ui/react-separator@workspace:packages/react/separator"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:
