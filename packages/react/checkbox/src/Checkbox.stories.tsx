@@ -1,19 +1,9 @@
 import * as React from 'react';
 import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
-import { Checkbox, styles } from './Checkbox';
+import { Checkbox } from './Checkbox';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Checkbox' };
-
-export const Basic = () => (
-  <Checkbox as={BasicStyledRoot}>
-    <Checkbox.Indicator as={BasicStyledIndicator}>
-      <span role="img" aria-label="tick">
-        ✔️
-      </span>
-    </Checkbox.Indicator>
-  </Checkbox>
-);
 
 export const Styled = () => (
   <>
@@ -102,14 +92,13 @@ export const WithinForm = () => {
 
 const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
 
-const Indicator = ({ indeterminate, ...props }: any) => (
-  <StyledIndicator {...props} css={{ height: indeterminate ? 4 : undefined }} />
-);
+const recommendedRootStyles = {
+  // better default alignment
+  verticalAlign: 'middle',
+};
 
-const BasicStyledRoot = styled('button', styles.root);
-const BasicStyledIndicator = styled('span', styles.indicator);
-
-const StyledRoot = styled(BasicStyledRoot, {
+const StyledRoot = styled('button', {
+  ...recommendedRootStyles,
   border: '1px solid $gray300',
   width: 30,
   height: 30,
@@ -122,9 +111,13 @@ const StyledRoot = styled(BasicStyledRoot, {
   },
 });
 
-const StyledIndicator = styled(BasicStyledIndicator, {
+const StyledIndicator = styled('span', {
   display: 'block',
   width: 20,
   height: 20,
   backgroundColor: '$red',
 });
+
+const Indicator = ({ indeterminate, ...props }: any) => (
+  <StyledIndicator {...props} css={{ height: indeterminate ? 4 : undefined }} />
+);
