@@ -1,36 +1,10 @@
 import * as React from 'react';
 import { Label as LabelPrimitive } from '@interop-ui/react-label';
-import { RadioGroup, styles } from './RadioGroup';
+import { RadioGroup } from './RadioGroup';
 import { styled } from '../../../../stitches.config';
 import { recommendedStyles as recommendedLabelStyles } from '../../label/src/Label.stories';
 
 export default { title: 'Components/RadioGroup' };
-
-export const Basic = () => (
-  <RadioGroup as={BasicStyledRoot} defaultValue="1">
-    <RadioGroup.Item as={BasicStyledItem} value="1">
-      <RadioGroup.Indicator as={BasicStyledIndicator}>
-        <span role="img" aria-label="tick">
-          ●
-        </span>
-      </RadioGroup.Indicator>
-    </RadioGroup.Item>
-    <RadioGroup.Item as={BasicStyledItem} value="2">
-      <RadioGroup.Indicator as={BasicStyledIndicator}>
-        <span role="img" aria-label="tick">
-          ●
-        </span>
-      </RadioGroup.Indicator>
-    </RadioGroup.Item>
-    <RadioGroup.Item as={BasicStyledItem} value="3">
-      <RadioGroup.Indicator as={BasicStyledIndicator}>
-        <span role="img" aria-label="tick">
-          ●
-        </span>
-      </RadioGroup.Indicator>
-    </RadioGroup.Item>
-  </RadioGroup>
-);
 
 export const Styled = () => (
   <Label>
@@ -82,13 +56,15 @@ export const Controlled = () => {
 
 const Label = (props: any) => <LabelPrimitive {...props} style={recommendedLabelStyles} />;
 
-const BasicStyledRoot = styled('div', styles.root);
-const BasicStyledItem = styled('button', styles.item);
-const BasicStyledIndicator = styled('span', styles.indicator);
+const StyledRoot = styled('div', {});
 
-const StyledRoot = styled(BasicStyledRoot, {});
+const recommendedItemStyles = {
+  // better default alignment
+  verticalAlign: 'middle',
+};
 
-const StyledItem = styled(BasicStyledItem, {
+const StyledItem = styled('button', {
+  ...recommendedItemStyles,
   width: 30,
   height: 30,
   display: 'inline-grid',
@@ -104,7 +80,7 @@ const StyledItem = styled(BasicStyledItem, {
   },
 });
 
-const StyledIndicator = styled(BasicStyledIndicator, {
+const StyledIndicator = styled('span', {
   width: 18,
   height: 18,
   backgroundColor: '$red',
