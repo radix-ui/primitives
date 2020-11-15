@@ -1,10 +1,8 @@
 import * as React from 'react';
-import omit from 'lodash.omit';
-import { clamp, getPartDataAttr } from '@interop-ui/utils';
+import { clamp, getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
-  createStyleObj,
   forwardRef,
   useComposedRefs,
   useControlledState,
@@ -97,11 +95,13 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       | SliderRangeControlledProps
       | SliderRangeUncontrolledProps;
 
-    const sliderProps = omit(restProps, [
-      'defaultValue',
-      'value',
-      'minStepsBetweenThumbs',
-    ]) as SliderDOMProps;
+    const sliderProps = { ...restProps } as SliderDOMProps;
+    // @ts-ignore
+    delete sliderProps.defaultValue;
+    // @ts-ignore
+    delete sliderProps.value;
+    // @ts-ignore
+    delete sliderProps.minStepsBetweenThumbs;
 
     const step = Math.max(stepProp, 1);
     const sliderRef = React.useRef<HTMLSpanElement>(null);
@@ -174,7 +174,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     return (
       <SliderOrientation
         {...sliderProps}
-        {...getPartDataAttrObj('root')}
+        {...getPartDataAttrObj(SLIDER_NAME)}
         ref={composedRefs}
         min={min}
         max={max}
@@ -288,7 +288,7 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
         ref={ref}
         style={{
           ...sliderProps.style,
-          ['--thumb-transform' as any]: 'translateX(-50%)',
+          ['--interop-slider-thumb-transform' as any]: 'translateX(-50%)',
         }}
         data-orientation="horizontal"
         onSlideMouseDown={(event) => {
@@ -368,7 +368,7 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps
         ref={ref}
         style={{
           ...sliderProps.style,
-          ['--thumb-transform' as any]: 'translateY(50%)',
+          ['--interop-slider-thumb-transform' as any]: 'translateY(50%)',
         }}
         data-orientation="vertical"
         onSlideMouseDown={(event) => {
@@ -538,7 +538,7 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   const context = useSliderContext(TRACK_NAME);
   return (
     <Comp
-      {...getPartDataAttrObj('track')}
+      {...getPartDataAttrObj(TRACK_NAME)}
       {...trackProps}
       ref={forwardedRef}
       data-orientation={context.orientation}
@@ -575,7 +575,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
 
   return (
     <Comp
-      {...getPartDataAttrObj('range')}
+      {...getPartDataAttrObj(RANGE_NAME)}
       {...rangeProps}
       ref={composedRefs}
       style={{
@@ -641,14 +641,14 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     return (
       <span
         style={{
-          transform: 'var(--thumb-transform)',
+          transform: 'var(--interop-slider-thumb-transform)',
           position: 'absolute',
           [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
         }}
       >
         <Comp
           {...thumbProps}
-          {...getPartDataAttrObj('thumb')}
+          {...getPartDataAttrObj(THUMB_NAME)}
           ref={ref}
           aria-label={props['aria-label'] || label}
           aria-valuemin={context.min}
@@ -683,50 +683,6 @@ interface SliderStaticProps {
   Range: typeof SliderRange;
   Thumb: typeof SliderThumb;
 }
-
-const [styles, getPartDataAttrObj] = createStyleObj(SLIDER_NAME, {
-  root: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    flexShrink: 0,
-    // ensures no selection
-    userSelect: 'none',
-    // disable browser handling of all panning and zooming gestures on touch devices
-    touchAction: 'none',
-  },
-  track: {
-    position: 'relative',
-    // ensures full width in horizontal orientation, ignored in vertical orientation
-    flexGrow: 1,
-  },
-  range: {
-    position: 'absolute',
-    // good default for both orientation (match track width/height respectively)
-    '&[data-orientation="horizontal"]': {
-      height: '100%',
-    },
-    '&[data-orientation="vertical"]': {
-      width: '100%',
-    },
-  },
-  thumb: {
-    // ensures the thumb is sizeable
-    display: 'block',
-
-    // Add recommended target size regardless of styled size
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      zIndex: -1,
-      width: 44,
-      height: 44,
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-    },
-  },
-});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -898,5 +854,5 @@ function linearScale(domain: [number, number], range: [number, number]) {
   };
 }
 
+export { Slider };
 export type { SliderProps, SliderRangeProps, SliderTrackProps, SliderThumbProps };
-export { Slider, styles };

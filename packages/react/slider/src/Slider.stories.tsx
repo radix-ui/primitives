@@ -1,17 +1,8 @@
 import * as React from 'react';
-import { Slider, styles } from './Slider';
+import { Slider } from './Slider';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Slider' };
-
-export const Basic = () => (
-  <Slider defaultValue={10} as={BasicStyledRoot}>
-    <Slider.Track as={BasicStyledTrack}>
-      <Slider.Range as={BasicStyledRange} />
-    </Slider.Track>
-    <Slider.Thumb as={BasicStyledThumb} />
-  </Slider>
-);
 
 export const Styled = () => (
   <Slider defaultValue={10} as={StyledRoot}>
@@ -113,12 +104,19 @@ export const WithMultipleRanges = () => {
   );
 };
 
-const BasicStyledRoot = styled('span', styles.root);
-const BasicStyledTrack = styled('span', styles.track);
-const BasicStyledRange = styled('span', styles.range);
-const BasicStyledThumb = styled('span', styles.thumb);
+const recommendedRootStyles: any = {
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  flexShrink: 0,
+  // ensures no selection
+  userSelect: 'none',
+  // disable browser handling of all panning and zooming gestures on touch devices
+  touchAction: 'none',
+};
 
-const StyledRoot = styled(BasicStyledRoot, {
+const StyledRoot = styled('span', {
+  ...recommendedRootStyles,
   '&[data-orientation="horizontal"]': {
     height: 15,
   },
@@ -128,7 +126,14 @@ const StyledRoot = styled(BasicStyledRoot, {
   },
 });
 
-const StyledTrack = styled(BasicStyledTrack, {
+const recommendedTrackStyles: any = {
+  position: 'relative',
+  // ensures full width in horizontal orientation, ignored in vertical orientation
+  flexGrow: 1,
+};
+
+const StyledTrack = styled('span', {
+  ...recommendedTrackStyles,
   background: 'gainsboro',
   borderRadius: 4,
   '&[data-orientation="horizontal"]': {
@@ -140,12 +145,42 @@ const StyledTrack = styled(BasicStyledTrack, {
   },
 });
 
-const StyledRange = styled(BasicStyledRange, {
+const recommendedRangeStyles: any = {
+  position: 'absolute',
+  // good default for both orientation (match track width/height respectively)
+  '&[data-orientation="horizontal"]': {
+    height: '100%',
+  },
+  '&[data-orientation="vertical"]': {
+    width: '100%',
+  },
+};
+
+const StyledRange = styled('span', {
+  ...recommendedRangeStyles,
   background: '$black',
   borderRadius: 'inherit',
 });
 
-const StyledThumb = styled(BasicStyledThumb, {
+const recommendedThumbStyles = {
+  // ensures the thumb is sizeable
+  display: 'block',
+
+  // Add recommended target size regardless of styled size
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    zIndex: -1,
+    width: 44,
+    height: 44,
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+
+const StyledThumb = styled('span', {
+  ...recommendedThumbStyles,
   borderRadius: 15,
   width: 15,
   height: 15,
