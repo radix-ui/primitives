@@ -1,13 +1,13 @@
 import * as React from 'react';
 import {
   createContext,
-  createStyleObj,
   composeEventHandlers,
   forwardRef,
   useControlledState,
   useComposedRefs,
 } from '@interop-ui/react-utils';
 import { useLabelContext } from '@interop-ui/react-label';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
@@ -82,7 +82,7 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
         <Comp
           type="button"
           {...switchProps}
-          {...getPartDataAttrObj('root')}
+          {...getPartDataAttrObj(SWITCH_NAME)}
           ref={ref}
           role="switch"
           aria-checked={checked}
@@ -127,7 +127,7 @@ const SwitchThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(funct
   return (
     <Comp
       {...thumbProps}
-      {...getPartDataAttrObj('thumb')}
+      {...getPartDataAttrObj(THUMB_NAME)}
       data-state={getState(checked)}
       ref={forwardedRef}
     />
@@ -149,20 +149,5 @@ interface SwitchStaticProps {
   Thumb: typeof SwitchThumb;
 }
 
-const [styles, getPartDataAttrObj] = createStyleObj(SWITCH_NAME, {
-  root: {
-    // better default alignment
-    verticalAlign: 'middle',
-    // ensures thumb is not horizontally centered (default in `button`)
-    textAlign: 'left',
-  },
-  thumb: {
-    // ensures thumb is sizeable/can receive vertical margins
-    display: 'inline-block',
-    // ensures thumb is vertically centered
-    verticalAlign: 'middle',
-  },
-});
-
+export { Switch };
 export type { SwitchProps, SwitchThumbProps };
-export { Switch, styles };

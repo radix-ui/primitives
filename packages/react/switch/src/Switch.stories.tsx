@@ -1,16 +1,10 @@
 import * as React from 'react';
-import { Switch, styles } from './Switch';
+import { Switch } from './Switch';
 import { Label as LabelPrimitive } from '@interop-ui/react-label';
 import { styled } from '../../../../stitches.config';
 import { recommendedStyles as recommendedLabelStyles } from '../../label/src/Label.stories';
 
 export default { title: 'Components/Switch' };
-
-export const Basic = () => (
-  <Switch as={BasicStyledRoot}>
-    <Switch.Thumb as={BasicStyledThumb} />
-  </Switch>
-);
 
 export const Styled = () => (
   <>
@@ -64,14 +58,19 @@ export const WithinForm = () => {
 
 const Label = (props: any) => <LabelPrimitive {...props} style={recommendedLabelStyles} />;
 
-const BasicStyledRoot = styled('button', styles.root);
-const BasicStyledThumb = styled('span', styles.thumb);
-
-const WIDTH = 60;
+const WIDTH = 50;
 const THUMB_WIDTH = 20;
 const GAP = 4;
 
-const StyledRoot = styled(BasicStyledRoot, {
+const recommendedRootStyles: any = {
+  // better default alignment
+  verticalAlign: 'middle',
+  // ensures thumb is not horizontally centered (default in `button`)
+  textAlign: 'left',
+};
+
+const StyledRoot = styled('button', {
+  ...recommendedRootStyles,
   outline: 'none',
   border: 'none',
   width: WIDTH,
@@ -91,7 +90,15 @@ const StyledRoot = styled(BasicStyledRoot, {
   },
 });
 
-const StyledThumb = styled(BasicStyledThumb, {
+const recommendedThumbStyles = {
+  // ensures thumb is sizeable/can receive vertical margins
+  display: 'inline-block',
+  // ensures thumb is vertically centered
+  verticalAlign: 'middle',
+};
+
+const StyledThumb = styled('span', {
+  ...recommendedThumbStyles,
   width: THUMB_WIDTH,
   height: THUMB_WIDTH,
   backgroundColor: '$white',
