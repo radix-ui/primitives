@@ -1,27 +1,9 @@
 import * as React from 'react';
-import { ProgressBar, styles } from './ProgressBar';
+import { ProgressBar } from './ProgressBar';
 import { styled } from '../../../../stitches.config';
 
 export default {
   title: 'Components/ProgressBar',
-};
-
-export const Basic = () => {
-  const [value, percentage, setValue] = useProgressValueState(0);
-  const toggleIndeterminate = useIndeterminateToggle(value, setValue);
-  return (
-    <div>
-      <ProgressBar as={BasicStyledRoot} value={value}>
-        <ProgressBar.Indicator
-          as={BasicStyledIndicator}
-          style={{ width: percentage ?? `${percentage}%` }}
-        />
-      </ProgressBar>
-      <hr />
-      <button onClick={toggleIndeterminate}>Toggle Indeterminate</button>
-      <ProgressRange value={value} setValue={setValue} />
-    </div>
-  );
 };
 
 export const Styled = () => {
@@ -62,22 +44,15 @@ function ProgressRange({ value, setValue, max = 100 }: any) {
   );
 }
 
-const HEIGHT = 20;
-const WIDTH = 400;
-const BORDER = 5;
-
-const BasicStyledRoot = styled('div', styles.root);
-const BasicStyledIndicator = styled('div', styles.indicator);
-
-const StyledRoot = styled(BasicStyledRoot, {
-  height: `${HEIGHT}px`,
-  width: `${WIDTH}px`,
+const StyledRoot = styled('div', {
+  width: 400,
+  height: 20,
   maxWidth: '100%',
-  border: `${BORDER}px solid $black`,
+  border: '5px solid $black',
   backgroundColor: '$gray200',
 });
 
-const StyledIndicator = styled(BasicStyledIndicator, {
+const StyledIndicator = styled('div', {
   width: '100%',
   height: '100%',
   backgroundColor: '$red',

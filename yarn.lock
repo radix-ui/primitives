@@ -2289,6 +2289,7 @@ __metadata:
   resolution: "@interop-ui/react-progress-bar@workspace:packages/react/progress-bar"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
     "@stitches/react": canary
     parcel: ^2.0.0-beta.1
   peerDependencies:

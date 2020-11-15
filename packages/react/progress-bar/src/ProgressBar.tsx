@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { createContext, createStyleObj, forwardRef } from '@interop-ui/react-utils';
+import { createContext, forwardRef } from '@interop-ui/react-utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * ProgressBar
@@ -57,7 +58,7 @@ const ProgressBar = forwardRef<
       aria-valuetext={valueLabel}
       role="progressbar"
       {...progressProps}
-      {...getPartDataAttrObj('root')}
+      {...getPartDataAttrObj(PROGRESS_NAME)}
       data-state={getProgressBarState(value, max)}
       data-value={value ?? undefined}
       data-max={max}
@@ -86,7 +87,7 @@ const ProgressBarIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, ProgressBa
     return (
       <Comp
         {...indicatorProps}
-        {...getPartDataAttrObj('indicator')}
+        {...getPartDataAttrObj(INDICATOR_NAME)}
         data-state={getProgressBarState(value, max)}
         data-value={value || undefined}
         data-max={max}
@@ -112,11 +113,6 @@ interface ProgressBarStaticProps {
   Indicator: typeof ProgressBarIndicator;
 }
 
-const [styles, getPartDataAttrObj] = createStyleObj(PROGRESS_NAME, {
-  root: {},
-  indicator: {},
-});
-
 ProgressBar.propTypes = {
   max(props, propName, componentName, location, propFullName) {
     const propValue = props[propName];
@@ -136,9 +132,6 @@ ProgressBar.propTypes = {
     return null;
   },
 };
-
-export type { ProgressBarProps, ProgressBarIndicatorProps, ProgressBarState };
-export { ProgressBar, styles, useProgressBarState };
 
 function defaultGetValueLabel(value: number, max: number) {
   return `${Math.round((value / max) * 100)}%`;
@@ -184,3 +177,6 @@ function getInvalidValueError(propValue: string, componentName: string) {
 
 Defaulting to \`null\`.`;
 }
+
+export { ProgressBar, useProgressBarState };
+export type { ProgressBarProps, ProgressBarIndicatorProps, ProgressBarState };
