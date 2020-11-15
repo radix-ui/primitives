@@ -1,10 +1,6 @@
 import * as React from 'react';
-import {
-  forwardRef,
-  createStyleObj,
-  useControlledState,
-  composeEventHandlers,
-} from '@interop-ui/react-utils';
+import { forwardRef, useControlledState, composeEventHandlers } from '@interop-ui/react-utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 const NAME = 'ToggleButton';
 const DEFAULT_TAG = 'button';
@@ -45,7 +41,7 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
   return (
     <Comp
-      {...getPartDataAttrObj('root')}
+      {...getPartDataAttrObj(NAME)}
       type="button"
       aria-pressed={toggled}
       data-state={toggled ? 'on' : 'off'}
@@ -65,9 +61,5 @@ const ToggleButton = forwardRef<typeof DEFAULT_TAG, ToggleButtonProps>(function 
 
 ToggleButton.displayName = NAME;
 
-const [styles, getPartDataAttrObj] = createStyleObj(NAME, {
-  root: {},
-});
-
-export { ToggleButton, styles };
+export { ToggleButton };
 export type { ToggleButtonProps };

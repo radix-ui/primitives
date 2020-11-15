@@ -1,12 +1,8 @@
 import * as React from 'react';
-import { ToggleButton, styles } from './ToggleButton';
+import { ToggleButton } from './ToggleButton';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/ToggleButton' };
-
-export const Basic = () => {
-  return <ToggleButton as={BasicStyledRoot}>Toggle</ToggleButton>;
-};
 
 export const Styled = () => <ToggleButton as={StyledRoot}>Toggle</ToggleButton>;
 
@@ -20,9 +16,7 @@ export const Controlled = () => {
   );
 };
 
-const BasicStyledRoot = styled('button', styles.root);
-
-const StyledRoot = styled(BasicStyledRoot, {
+const StyledRoot = styled('button', {
   padding: 6,
   lineHeight: 1,
   border: 'none',
