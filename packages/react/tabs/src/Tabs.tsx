@@ -12,7 +12,6 @@ import * as React from 'react';
 import {
   composeEventHandlers,
   createContext,
-  createStyleObj,
   forwardRef,
   RovingTabIndexProvider,
   useAccessibleMouseDown,
@@ -22,7 +21,7 @@ import {
   useRovingTabIndex,
   ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
-import { makeId } from '@interop-ui/utils';
+import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -105,7 +104,7 @@ const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props,
   return (
     <TabsContext.Provider value={ctx}>
       <Comp
-        {...getPartDataAttrObj('tabs')}
+        {...getPartDataAttrObj(TABS_NAME)}
         ref={forwardedRef}
         id={tabsId}
         data-orientation={orientation}
@@ -136,7 +135,7 @@ const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function
   return (
     <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
       <Comp
-        {...getPartDataAttrObj('tabList')}
+        {...getPartDataAttrObj(TAB_LIST_NAME)}
         data-orientation={orientation}
         role="tablist"
         aria-orientation={orientation}
@@ -210,7 +209,7 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
 
   return (
     <Comp
-      {...getPartDataAttrObj('tab')}
+      {...getPartDataAttrObj(TAB_NAME)}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
       data-orientation={orientation}
@@ -256,7 +255,7 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
 
   return (
     <Comp
-      {...getPartDataAttrObj('tabPanel')}
+      {...getPartDataAttrObj(TAB_PANEL_NAME)}
       data-state={isSelected ? 'active' : 'inactive'}
       data-orientation={orientation}
       id={tabPanelId}
@@ -270,47 +269,6 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
     />
   );
 });
-
-/* -------------------------------------------------------------------------------------------------
- * Styles
- * -----------------------------------------------------------------------------------------------*/
-
-const [styles, getPartDataAttrObj] = createStyleObj(TABS_NAME, {
-  root: {},
-  tabs: {
-    // ensures things are layed out correctly by default
-    display: 'flex',
-    '&[data-orientation="horizontal"]': {
-      flexDirection: 'column',
-    },
-  },
-  tabList: {
-    flexShrink: 0,
-    // ensures things are layed out correctly by default
-    display: 'flex',
-    '&[data-orientation="vertical"]': {
-      flexDirection: 'column',
-    },
-  },
-  tab: {
-    flexShrink: 0,
-  },
-  tabPanel: {
-    flexGrow: 1,
-  },
-});
-
-Tabs.Panel = TabsPanel;
-Tabs.Tab = TabsTab;
-Tabs.List = TabsList;
-
-Tabs.displayName = TABS_NAME;
-Tabs.List.displayName = TAB_LIST_NAME;
-Tabs.Tab.displayName = TAB_NAME;
-Tabs.Panel.displayName = TAB_PANEL_NAME;
-
-export { Tabs, styles };
-export type { TabsProps, TabsListProps, TabsTabProps, TabsPanelProps, ITabs };
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -327,3 +285,15 @@ interface ITabs extends ForwardRefExoticComponentWithAs<typeof TABS_DEFAULT_TAG,
   Tab: typeof TabsTab;
   Panel: typeof TabsPanel;
 }
+
+Tabs.Panel = TabsPanel;
+Tabs.Tab = TabsTab;
+Tabs.List = TabsList;
+
+Tabs.displayName = TABS_NAME;
+Tabs.List.displayName = TAB_LIST_NAME;
+Tabs.Tab.displayName = TAB_NAME;
+Tabs.Panel.displayName = TAB_PANEL_NAME;
+
+export { Tabs };
+export type { TabsProps, TabsListProps, TabsTabProps, TabsPanelProps, ITabs };

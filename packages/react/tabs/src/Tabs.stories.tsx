@@ -1,76 +1,13 @@
 import * as React from 'react';
-import { Tabs, styles } from './Tabs';
+import { Tabs } from './Tabs';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Tabs' };
 
-export const Basic = () => (
-  <>
-    <h1>Horizontal (automatic activation)</h1>
-    <Tabs defaultSelectedId="tab1" as={BasicStyledTabs}>
-      <Tabs.List aria-label="tabs example" as={BasicStyledTabList}>
-        <Tabs.Tab id="tab1" as={BasicStyledTab}>
-          Tab 1
-        </Tabs.Tab>
-        <Tabs.Tab id="tab2" disabled as={BasicStyledTab}>
-          Tab 2
-        </Tabs.Tab>
-        <Tabs.Tab id="tab3" as={BasicStyledTab}>
-          Tab 3
-        </Tabs.Tab>
-      </Tabs.List>
-      <Tabs.Panel id="tab1" as={BasicStyledTabPanel}>
-        Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
-        integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
-        pellentesque volutpat dictum ipsum.
-      </Tabs.Panel>
-      <Tabs.Panel id="tab2" as={BasicStyledTabPanel}>
-        You'll never find me!
-      </Tabs.Panel>
-      <Tabs.Panel id="tab3" as={BasicStyledTabPanel}>
-        Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
-        quam tempus pretium.
-      </Tabs.Panel>
-    </Tabs>
-
-    <h1>Vertical (manual activation)</h1>
-    <Tabs
-      defaultSelectedId="tab1"
-      as={BasicStyledTabs}
-      orientation="vertical"
-      activationMode="manual"
-    >
-      <Tabs.List aria-label="tabs example" as={BasicStyledTabList}>
-        <Tabs.Tab id="tab1" as={BasicStyledTab}>
-          Tab 1
-        </Tabs.Tab>
-        <Tabs.Tab id="tab2" disabled as={BasicStyledTab}>
-          Tab 2
-        </Tabs.Tab>
-        <Tabs.Tab id="tab3" as={BasicStyledTab}>
-          Tab 3
-        </Tabs.Tab>
-      </Tabs.List>
-      <Tabs.Panel id="tab1" as={BasicStyledTabPanel}>
-        Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
-        integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
-        pellentesque volutpat dictum ipsum.
-      </Tabs.Panel>
-      <Tabs.Panel id="tab2" as={BasicStyledTabPanel}>
-        You'll never find me!
-      </Tabs.Panel>
-      <Tabs.Panel id="tab3" as={BasicStyledTabPanel}>
-        Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
-        quam tempus pretium.
-      </Tabs.Panel>
-    </Tabs>
-  </>
-);
-
 export const Styled = () => (
   <>
     <h1>Horizontal (automatic activation)</h1>
-    <Tabs defaultSelectedId="tab1" as={StyledTabs}>
+    <Tabs defaultSelectedId="tab1" as={StyledRoot}>
       <Tabs.List aria-label="tabs example" as={StyledTabList}>
         <Tabs.Tab id="tab1" as={StyledTab}>
           Tab 1
@@ -97,7 +34,7 @@ export const Styled = () => (
     </Tabs>
 
     <h1>Vertical (manual activation)</h1>
-    <Tabs defaultSelectedId="tab1" as={StyledTabs} orientation="vertical" activationMode="manual">
+    <Tabs defaultSelectedId="tab1" as={StyledRoot} orientation="vertical" activationMode="manual">
       <Tabs.List aria-label="tabs example" as={StyledTabList}>
         <Tabs.Tab id="tab1" as={StyledTab}>
           Tab 1
@@ -125,25 +62,42 @@ export const Styled = () => (
   </>
 );
 
-const BasicStyledTabs = styled('div', styles.tabs);
+const recommendedRootStyles = {
+  // ensures things are layed out correctly by default
+  display: 'flex',
+  '&[data-orientation="horizontal"]': {
+    flexDirection: 'column',
+  },
+};
 
-const BasicStyledTabList = styled('div', styles.tabList);
-
-const BasicStyledTab = styled('div', styles.tab);
-
-const BasicStyledTabPanel = styled('div', styles.tabPanel);
-
-const StyledTabs = styled(BasicStyledTabs, {
+const StyledRoot = styled('div', {
+  ...recommendedRootStyles,
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
   maxWidth: '20rem',
 });
 
-const StyledTabList = styled(BasicStyledTabList, {
+const recommendedTabListStyles = {
+  flexShrink: 0,
+  // ensures things are layed out correctly by default
+  display: 'flex',
+  '&[data-orientation="vertical"]': {
+    flexDirection: 'column',
+  },
+};
+
+const StyledTabList = styled('div', {
+  ...recommendedTabListStyles,
   backgroundColor: '#eee',
 });
 
-const StyledTab = styled(BasicStyledTab, {
+const recommendedTabStyles = {
+  flexShrink: 0,
+};
+
+const StyledTab = styled('div', {
+  ...recommendedTabStyles,
+
   padding: '0.4em 0.6em',
   fontWeight: '500',
   lineHeight: '1',
@@ -170,7 +124,13 @@ const StyledTab = styled(BasicStyledTab, {
   },
 });
 
-const StyledTabPanel = styled(BasicStyledTabPanel, {
+const recommendedTabPanelStyles = {
+  flexGrow: 1,
+};
+
+const StyledTabPanel = styled('div', {
+  ...recommendedTabPanelStyles,
+
   padding: '1em',
   border: '1px solid #eee',
   fontWeight: '300',
