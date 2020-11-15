@@ -1,23 +1,9 @@
 import * as React from 'react';
-import { Tooltip, styles } from './Tooltip';
+import { Tooltip } from './Tooltip';
 import { Arrow } from '@interop-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
 
 export default { title: 'Components/Tooltip' };
-
-export const Basic = () => (
-  <Tooltip>
-    <Tooltip.Trigger as={BasicStyledTrigger} style={{ margin: 100 }}>
-      Hover or Focus me
-    </Tooltip.Trigger>
-    <Tooltip.Popper as={BasicStyledPopper} sideOffset={5}>
-      <Tooltip.Content as={BasicStyledContent} aria-label="Even better done this way!">
-        Nicely done!
-      </Tooltip.Content>
-      <Tooltip.Arrow as={BasicStyledArrow} offset={10} />
-    </Tooltip.Popper>
-  </Tooltip>
-);
 
 export const Styled = () => (
   <Tooltip>
@@ -408,16 +394,23 @@ const PositionButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsW
   )
 );
 
-const BasicStyledTrigger = styled('button', styles.trigger);
-const BasicStyledPopper = styled('div', styles.popper);
-const BasicStyledContent = styled('div', styles.content);
-const BasicStyledArrow = styled(Arrow, styles.arrow);
+const StyledTrigger = styled('button', {});
 
-const StyledTrigger = styled(BasicStyledTrigger, {});
+const recommendedPopperStyles = {
+  transformOrigin: 'var(--interop-tooltip-popper-transform-origin)',
+};
 
-const StyledPopper = styled(BasicStyledPopper, {});
+const StyledPopper = styled('div', recommendedPopperStyles);
 
-const StyledContent = styled(BasicStyledContent, {
+const recommendedContentStyles: any = {
+  // ensures content isn't selectable and cannot receive events
+  // this is just a detterent to people putting interactive content inside a `Tooltip`
+  userSelect: 'none',
+  pointerEvents: 'none',
+};
+
+const StyledContent = styled('div', {
+  ...recommendedContentStyles,
   backgroundColor: '$black',
   color: '$white',
   borderRadius: 5,
@@ -425,7 +418,7 @@ const StyledContent = styled(BasicStyledContent, {
   maxWidth: 300,
 });
 
-const StyledArrow = styled(BasicStyledArrow, {
+const StyledArrow = styled(Arrow, {
   fill: '$black',
 });
 
