@@ -11,7 +11,7 @@ import {
   useControlledState,
   useLayoutEffect,
 } from '@interop-ui/react-utils';
-import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
+import { Popper } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
@@ -339,15 +339,14 @@ Tooltip.Arrow.displayName = ARROW_NAME;
 const [styles, getPartDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
   root: {},
   trigger: {},
-  popper: popperStyles.root,
+  popper: {},
   content: {
-    ...popperStyles.content,
     // ensures content isn't selectable and cannot receive events
     // this is just a detterent to people putting interactive content inside a `Tooltip`
     userSelect: 'none',
     pointerEvents: 'none',
   },
-  arrow: popperStyles.arrow,
+  arrow: {},
 });
 
 export type {

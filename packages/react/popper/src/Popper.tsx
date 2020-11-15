@@ -1,15 +1,10 @@
 import * as React from 'react';
 import { getPlacementData } from '@interop-ui/popper';
 import { useSize } from '@interop-ui/react-use-size';
-import {
-  createContext,
-  forwardRef,
-  useRect,
-  createStyleObj,
-  useComposedRefs,
-} from '@interop-ui/react-utils';
+import { createContext, forwardRef, useRect, useComposedRefs } from '@interop-ui/react-utils';
 import { Arrow } from '@interop-ui/react-arrow';
 import { useDebugContext } from '@interop-ui/react-debug-context';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 import type { Side, Align } from '@interop-ui/utils';
 import type { ArrowProps } from '@interop-ui/react-arrow';
@@ -100,7 +95,7 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     return (
       <div style={popperStyles}>
         <Comp
-          {...getPartDataAttrObj('root')}
+          {...getPartDataAttrObj(POPPER_NAME)}
           {...popperProps}
           style={{
             ...popperProps.style,
@@ -136,7 +131,9 @@ const PopperContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopperContentProps>
     const { contentRef } = usePopperContext(CONTENT_NAME);
     const composedContentRef = useComposedRefs(forwardedRef, contentRef);
 
-    return <Comp {...getPartDataAttrObj('content')} {...contentProps} ref={composedContentRef} />;
+    return (
+      <Comp {...getPartDataAttrObj(CONTENT_NAME)} {...contentProps} ref={composedContentRef} />
+    );
   }
 );
 
@@ -156,7 +153,7 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
   props,
   forwardedRef
 ) {
-  const { as: Comp = ARROW_DEFAULT_TAG, offset, ...arrowProps } = props;
+  const { as: Comp, offset, ...arrowProps } = props;
   const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
 
   // send the Arrow's offset up to Popper
@@ -175,7 +172,17 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
           pointerEvents: 'auto',
         }}
       >
-        <Arrow as={Comp} {...getPartDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
+        <Arrow
+          as={Comp}
+          {...getPartDataAttrObj(ARROW_NAME)}
+          {...arrowProps}
+          ref={forwardedRef}
+          style={{
+            ...arrowProps.style,
+            // ensures the element can be measured correctly (mostly for if SVG)
+            display: 'block',
+          }}
+        />
       </span>
     </span>
   );
@@ -190,16 +197,5 @@ Popper.displayName = POPPER_NAME;
 Popper.Content.displayName = CONTENT_NAME;
 Popper.Arrow.displayName = ARROW_NAME;
 
-const [styles, getPartDataAttrObj] = createStyleObj(POPPER_NAME, {
-  root: {
-    transformOrigin: 'var(--interop-popper-transform-origin)',
-  },
-  content: {},
-  arrow: {
-    // ensures the element can be measured correctly
-    display: 'block',
-  },
-});
-
+export { Popper };
 export type { PopperProps, PopperContentProps, PopperArrowProps };
-export { Popper, styles };

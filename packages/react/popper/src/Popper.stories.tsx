@@ -1,29 +1,10 @@
 import * as React from 'react';
-import { Popper, styles } from './Popper';
+import { Popper } from './Popper';
 import { Portal } from '@interop-ui/react-portal';
 import { Arrow } from '@interop-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
 
 export default { title: 'Components/Popper' };
-
-export const Basic = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLDivElement>(null);
-  return (
-    <Scrollable>
-      <Anchor ref={anchorRef} onClick={() => setIsOpen(true)} />
-
-      {isOpen && (
-        <Popper as={BasicStyledRoot} anchorRef={anchorRef}>
-          <Popper.Content as={BasicStyledContent}>
-            <button onClick={() => setIsOpen(false)}>close</button>
-          </Popper.Content>
-          <Popper.Arrow as={BasicStyledArrow} />
-        </Popper>
-      )}
-    </Scrollable>
-  );
-};
 
 export const Styled = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -56,7 +37,7 @@ export const WithCustomArrow = () => {
           <Popper.Content as={StyledContent}>
             <button onClick={() => setIsOpen(false)}>close</button>
           </Popper.Content>
-          <Popper.Arrow as={CustomArrow} width={20} height={10} />
+          <Popper.Arrow as={CustomArrow} width={20} height={10} offset={20} />
         </Popper>
       )}
     </Scrollable>
@@ -124,7 +105,6 @@ function CustomArrow(props: any) {
     <div
       {...props}
       style={{
-        ...styles.arrow,
         ...props.style,
         width: 20,
         height: 10,
@@ -136,20 +116,21 @@ function CustomArrow(props: any) {
   );
 }
 
-const BasicStyledRoot = styled('div', styles.root);
-const BasicStyledContent = styled('div', styles.content);
-const BasicStyledArrow = styled(Arrow, styles.arrow);
+const recommendedRootStyles = {
+  transformOrigin: 'var(--interop-popper-transform-origin)',
+};
 
-const StyledRoot = styled(BasicStyledRoot, {});
+const StyledRoot = styled('div', recommendedRootStyles);
 
-const StyledContent = styled(BasicStyledContent, {
+const StyledContent = styled('div', {
   backgroundColor: '$gray100',
-  width: 200,
-  height: 100,
+  width: 300,
+  height: 150,
+  padding: 10,
   borderRadius: 10,
 });
 
-const StyledArrow = styled(BasicStyledArrow, {
+const StyledArrow = styled(Arrow, {
   fill: '$gray100',
 });
 

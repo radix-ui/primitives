@@ -9,7 +9,7 @@ import {
   useId,
   composeRefs,
 } from '@interop-ui/react-utils';
-import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
+import { Popper } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
@@ -404,10 +404,10 @@ Popover.Arrow.displayName = ARROW_NAME;
 const [styles, getPartDataAttrObj] = createStyleObj(POPOVER_NAME, {
   root: {},
   trigger: {},
-  popper: popperStyles.root,
-  content: popperStyles.content,
+  popper: {},
+  content: {},
   close: {},
-  arrow: popperStyles.arrow,
+  arrow: {},
 });
 
 export type {

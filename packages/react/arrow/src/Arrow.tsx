@@ -10,10 +10,13 @@ type ArrowProps = ArrowDOMProps;
 
 const Arrow = forwardRef<typeof DEFAULT_TAG, ArrowProps>(function Arrow(props, forwardedRef) {
   const { as: Comp = ArrowImpl, ...arrowProps } = props;
-  return <Comp {...arrowProps} />;
+  return <Comp {...arrowProps} ref={forwardedRef} />;
 });
 
-const ArrowImpl = forwardRef<typeof DEFAULT_TAG, ArrowProps>(function Arrow(props, forwardedRef) {
+const ArrowImpl = forwardRef<typeof DEFAULT_TAG, ArrowProps>(function ArrowImpl(
+  props,
+  forwardedRef
+) {
   const { as: Comp = DEFAULT_TAG, ...arrowProps } = props;
   return (
     <Comp
