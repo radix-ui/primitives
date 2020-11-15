@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
+import { Label as LabelPrimitive } from '@interop-ui/react-label';
 import { RadioGroup, styles } from './RadioGroup';
 import { styled } from '../../../../stitches.config';
+import { recommendedStyles as recommendedLabelStyles } from '../../label/src/Label.stories';
 
 export default { title: 'Components/RadioGroup' };
 
@@ -79,7 +80,7 @@ export const Controlled = () => {
   );
 };
 
-const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
+const Label = (props: any) => <LabelPrimitive {...props} style={recommendedLabelStyles} />;
 
 const BasicStyledRoot = styled('div', styles.root);
 const BasicStyledItem = styled('button', styles.item);

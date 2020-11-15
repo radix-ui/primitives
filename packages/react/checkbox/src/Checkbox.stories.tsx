@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
+import { Label as LabelPrimitive } from '@interop-ui/react-label';
 import { Checkbox } from './Checkbox';
 import { styled } from '../../../../stitches.config';
+import { recommendedStyles as recommendedLabelStyles } from '../../label/src/Label.stories';
 
 export default { title: 'Components/Checkbox' };
 
@@ -90,7 +91,7 @@ export const WithinForm = () => {
   );
 };
 
-const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
+const Label = (props: any) => <LabelPrimitive {...props} style={recommendedLabelStyles} />;
 
 const recommendedRootStyles = {
   // better default alignment

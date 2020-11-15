@@ -1,14 +1,15 @@
 import * as React from 'react';
-import { createStyleObj, forwardRef, useId, useComposedRefs } from '@interop-ui/react-utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
+import { forwardRef, useId, useComposedRefs } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
  * -----------------------------------------------------------------------------------------------*/
 
-const LABEL_NAME = 'Label';
-const LABEL_DEFAULT_TAG = 'span';
+const NAME = 'Label';
+const DEFAULT_TAG = 'span';
 
-type LabelDOMProps = React.ComponentPropsWithoutRef<typeof LABEL_DEFAULT_TAG>;
+type LabelDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type LabelOwnProps = { htmlFor?: string };
 type LabelProps = LabelOwnProps & LabelDOMProps;
 
@@ -30,8 +31,8 @@ const useLabelContext = <E extends HTMLElement>(ref?: React.RefObject<E>) => {
   return context?.id;
 };
 
-const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(props, forwardedRef) {
-  const { htmlFor, as: Comp = LABEL_DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
+const Label = forwardRef<typeof DEFAULT_TAG, LabelProps>(function Label(props, forwardedRef) {
+  const { htmlFor, as: Comp = DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
   const generatedId = `label-${useId()}`;
@@ -80,7 +81,7 @@ const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(pr
   }, [id, htmlFor]);
 
   return (
-    <Comp {...labelProps} {...getPartDataAttrObj('root')} id={id} ref={ref} role="label">
+    <Comp {...labelProps} {...getPartDataAttrObj(NAME)} id={id} ref={ref} role="label">
       <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
         {children}
       </LabelContext.Provider>
@@ -107,18 +108,5 @@ function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement
 
 /* ---------------------------------------------------------------------------------------------- */
 
-Label.displayName = LABEL_NAME;
-
-const [styles, getPartDataAttrObj] = createStyleObj(LABEL_NAME, {
-  root: {
-    // ensures it can receive vertical margins
-    display: 'inline-block',
-    // better default alignment
-    verticalAlign: 'middle',
-    // mimics default `label` tag (as we render a `span`)
-    cursor: 'default',
-  },
-});
-
+export { Label, useLabelContext };
 export type { LabelProps };
-export { Label, styles, useLabelContext };

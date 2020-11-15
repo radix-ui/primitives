@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Switch, styles } from './Switch';
-import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
+import { Label as LabelPrimitive } from '@interop-ui/react-label';
 import { styled } from '../../../../stitches.config';
+import { recommendedStyles as recommendedLabelStyles } from '../../label/src/Label.stories';
 
 export default { title: 'Components/Switch' };
 
@@ -61,7 +62,7 @@ export const WithinForm = () => {
   );
 };
 
-const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
+const Label = (props: any) => <LabelPrimitive {...props} style={recommendedLabelStyles} />;
 
 const BasicStyledRoot = styled('button', styles.root);
 const BasicStyledThumb = styled('span', styles.thumb);

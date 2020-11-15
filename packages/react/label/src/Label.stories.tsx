@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { Label, styles, useLabelContext } from './Label';
+import { Label, useLabelContext } from './Label';
 import { styled } from '../../../../stitches.config';
 
-export default { title: 'Components/Label' };
-
-export const Basic = () => <Label as={BasicStyledRoot}>Label</Label>;
+export default { title: 'Components/Label', excludeStories: ['recommendedStyles'] };
 
 export const Styled = () => <Label as={StyledRoot}>Label</Label>;
 
@@ -34,9 +32,17 @@ const Control = (props: any) => {
   return <span {...props}>{id}</span>;
 };
 
-const BasicStyledRoot = styled('span', styles.root);
+export const recommendedStyles = {
+  // ensures it can receive vertical margins
+  display: 'inline-block',
+  // better default alignment
+  verticalAlign: 'middle',
+  // mimics default `label` tag (as we render a `span`)
+  cursor: 'default',
+};
 
-const StyledRoot = styled(BasicStyledRoot, {
+const StyledRoot = styled('span', {
+  ...recommendedStyles,
   border: '1px solid gainsboro',
   margin: 10,
   padding: 10,
