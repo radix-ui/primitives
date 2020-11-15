@@ -1,7 +1,7 @@
 import * as React from 'react';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 import {
   forwardRef,
-  createStyleObj,
   createContext,
   useComposedRefs,
   composeEventHandlers,
@@ -96,7 +96,7 @@ const PopoverTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, PopoverTriggerProp
 
     return (
       <Comp
-        {...getPartDataAttrObj('trigger')}
+        {...getPartDataAttrObj(TRIGGER_NAME)}
         ref={composedTriggerRef}
         type="button"
         aria-haspopup="dialog"
@@ -272,7 +272,7 @@ const PopoverPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, PopoverPopperPro
               >
                 {(dismissableLayerProps) => (
                   <Popper
-                    {...getPartDataAttrObj('popper')}
+                    {...getPartDataAttrObj(POPPER_NAME)}
                     role="dialog"
                     aria-modal
                     {...popperProps}
@@ -287,6 +287,8 @@ const PopoverPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, PopoverPopperPro
                     style={{
                       ...dismissableLayerProps.style,
                       ...popperProps.style,
+                      // re-namespace exposed popper custom property
+                      ['--interop-popover-popper-transform-origin' as any]: 'var(--interop-popper-transform-origin)',
                     }}
                     onBlurCapture={composeEventHandlers(
                       popperProps.onBlurCapture,
@@ -334,7 +336,7 @@ type PopoverContentProps = PopoverContentDOMProps & PopoverContentOwnProps;
 
 const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
   (props, forwardedRef) => {
-    return <Popper.Content {...getPartDataAttrObj('content')} {...props} ref={forwardedRef} />;
+    return <Popper.Content {...getPartDataAttrObj(CONTENT_NAME)} {...props} ref={forwardedRef} />;
   }
 );
 
@@ -356,7 +358,7 @@ const PopoverClose = forwardRef<typeof CLOSE_DEFAULT_TAG, PopoverCloseProps>(
 
     return (
       <Comp
-        {...getPartDataAttrObj('close')}
+        {...getPartDataAttrObj(CLOSE_NAME)}
         ref={forwardedRef}
         type="button"
         {...closeProps}
@@ -380,9 +382,14 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
   props,
   forwardedRef
 ) {
-  const { as: Comp = ARROW_DEFAULT_TAG, ...arrowProps } = props;
+  const { as: Comp, ...arrowProps } = props;
   return (
-    <Popper.Arrow as={Comp} {...getPartDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
+    <Popper.Arrow
+      as={Comp}
+      {...getPartDataAttrObj(ARROW_NAME)}
+      {...arrowProps}
+      ref={forwardedRef}
+    />
   );
 });
 
@@ -401,15 +408,7 @@ Popover.Content.displayName = CONTENT_NAME;
 Popover.Close.displayName = CLOSE_NAME;
 Popover.Arrow.displayName = ARROW_NAME;
 
-const [styles, getPartDataAttrObj] = createStyleObj(POPOVER_NAME, {
-  root: {},
-  trigger: {},
-  popper: {},
-  content: {},
-  close: {},
-  arrow: {},
-});
-
+export { Popover };
 export type {
   PopoverProps,
   PopoverTriggerProps,
@@ -418,4 +417,3 @@ export type {
   PopoverCloseProps,
   PopoverArrowProps,
 };
-export { Popover, styles };

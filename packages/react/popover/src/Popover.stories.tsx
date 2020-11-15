@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Popover, styles } from './Popover';
+import { Popover } from './Popover';
 import { Arrow } from '@interop-ui/react-arrow';
 import { styled } from '../../../../stitches.config';
 
@@ -11,12 +11,12 @@ export const Basic = () => {
       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
     >
       <Popover>
-        <Popover.Trigger as={BasicStyledTrigger}>open</Popover.Trigger>
-        <Popover.Popper as={BasicStyledPopper} sideOffset={5}>
-          <Popover.Content as={BasicStyledContent}>
-            <Popover.Close as={BasicStyledClose}>close</Popover.Close>
+        <Popover.Trigger>open</Popover.Trigger>
+        <Popover.Popper sideOffset={5}>
+          <Popover.Content>
+            <Popover.Close>close</Popover.Close>
           </Popover.Content>
-          <Popover.Arrow as={BasicStyledArrow} />
+          <Popover.Arrow />
         </Popover.Popper>
       </Popover>
     </div>
@@ -173,24 +173,22 @@ export const NonModal = () => {
   );
 };
 
-const BasicStyledTrigger = styled('button', styles.trigger);
-const BasicStyledPopper = styled('div', styles.popper);
-const BasicStyledContent = styled('div', styles.content);
-const BasicStyledClose = styled('button', styles.close);
-const BasicStyledArrow = styled(Arrow, styles.arrow);
+const StyledTrigger = styled('button', {});
 
-const StyledTrigger = styled(BasicStyledTrigger, {});
+const recommendedPopperStyles = {
+  transformOrigin: 'var(--interop-popover-popper-transform-origin)',
+};
 
-const StyledPopper = styled(BasicStyledPopper, {});
+const StyledPopper = styled('div', recommendedPopperStyles);
 
-const StyledContent = styled(BasicStyledContent, {
+const StyledContent = styled('div', {
   backgroundColor: '$gray300',
   padding: 20,
   borderRadius: 5,
 });
 
-const StyledClose = styled(BasicStyledClose, {});
+const StyledClose = styled('button', {});
 
-const StyledArrow = styled(BasicStyledArrow, {
+const StyledArrow = styled(Arrow, {
   fill: '$gray300',
 });
