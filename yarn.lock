@@ -2147,7 +2147,6 @@ __metadata:
   resolution: "@interop-ui/react-collection@workspace:packages/react/collection"
   dependencies:
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2158,8 +2157,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-debug-context@workspace:packages/react/debug-context"
   dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
