@@ -99,6 +99,12 @@ function Divider() {
   return <RadixDivider size={2} sx={{ mx: 'auto', my: 8 }} aria-hidden />;
 }
 
+const SAFARI_FIX_TH_STYLES = {
+  // Safari aligns th to the center when set to `unset`, other browsers align to the left. should be
+  // fixed in Radix
+  textAlign: 'left',
+} as const;
+
 const TableContext = React.createContext<TableContext>({
   tableId: '',
   captionId: undefined,
@@ -136,7 +142,7 @@ function Table({ sx, ...props }: TableProps) {
           overflow: 'auto',
           '&:focus': {
             outline: 0,
-            boxShadow: (t) => `0 0 0 3px ${radixTheme.colors.blue400}`,
+            boxShadow: `0 0 0 3px ${radixTheme.colors.blue400}`,
           },
         }}
       >
@@ -157,8 +163,12 @@ function KeyboardInteractionTable({
       <Table>
         <Thead>
           <Tr>
-            <Th scope="col">Key</Th>
-            <Th scope="col">Function</Th>
+            <Th scope="col" sx={SAFARI_FIX_TH_STYLES}>
+              Key
+            </Th>
+            <Th scope="col" sx={SAFARI_FIX_TH_STYLES}>
+              Function
+            </Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -174,6 +184,7 @@ function KeyboardInteractionTable({
                 as="th"
                 scope="row"
                 sx={{
+                  ...SAFARI_FIX_TH_STYLES,
                   pr: 2,
                   whiteSpace: 'nowrap',
                   '* + *': {

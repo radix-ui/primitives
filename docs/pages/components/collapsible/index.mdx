@@ -7,6 +7,8 @@ date: '2020-11-08'
 
 import { KeyboardInteractions } from './collapsible-components';
 
+## Installation
+
 Install the component from your command line:
 
 ```bash
@@ -19,11 +21,37 @@ Then import the component in your project:
 import { Collapsible } from '@interop-ui/react-collapsible';
 ```
 
-<hr />
+## Basic Usage
 
-A pulvinar et viverra donec vivamus dictumst tortor massa nisl montes hendrerit himenaeos, vehicula lobortis interdum potenti blandit convallis.
+The most basic composition of a `Collapsible` component is as follows:
 
-## Installation
+```jsx
+// live
+<Collapsible>
+  <Collapsible.Button>Greeting</Collapsible.Button>
+  <Collapsible.Content>Hello there!</Collapsible.Content>
+</Collapsible>
+```
+
+The component will work as expected without any additional props or configuration, but if you need access to its state you can control it with the `isOpen` and `onToggle` props.
+
+```jsx
+// live
+function ControlledCollapsible() {
+  const [isOpen, setIsOpen] = React.useState(false);
+  return (
+    <Collapsible isOpen={isOpen} onToggle={setIsOpen}>
+      <Collapsible.Button>Greeting</Collapsible.Button>
+      <Collapsible.Content>Hello there!</Collapsible.Content>
+    </Collapsible>
+  );
+}
+
+// render
+<>
+  <ControlledCollapsible />
+</>;
+```
 
 ## Accessibility
 
