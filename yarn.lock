@@ -2139,7 +2139,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-collection@workspace:packages/react/collection":
+"@interop-ui/react-collection@workspace:*, @interop-ui/react-collection@workspace:packages/react/collection":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-collection@workspace:packages/react/collection"
   dependencies:
@@ -2317,6 +2317,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-slider@workspace:packages/react/slider"
   dependencies:
+    "@interop-ui/react-collection": "workspace:*"
     "@interop-ui/react-use-size": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
