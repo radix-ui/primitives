@@ -21,7 +21,6 @@
     "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
-    "@interop-ui/react-visually-hidden": "workspace:*",
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {

@@ -22,7 +22,6 @@
     "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
-    "@stitches/react": "canary",
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
