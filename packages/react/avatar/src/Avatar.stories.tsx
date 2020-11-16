@@ -9,13 +9,20 @@ const srcBroken = 'https://broken.link.com/broken-pic.jpg';
 
 export const Styled = () => (
   <>
-    <h1>With image & fallback</h1>
+    <h1>Without image & with fallback</h1>
     <Avatar as={StyledRoot}>
-      <Avatar.Image as={StyledImage} alt="John Smith" src={src} />
       <Avatar.Fallback as={StyledFallback}>JS</Avatar.Fallback>
     </Avatar>
 
-    <h1>With image & fallback (but broken src, shows once loading failed)</h1>
+    <h1>With image & with fallback</h1>
+    <Avatar as={StyledRoot}>
+      <Avatar.Image as={StyledImage} alt="John Smith" src={src} />
+      <Avatar.Fallback delayMs={300} as={StyledFallback}>
+        JS
+      </Avatar.Fallback>
+    </Avatar>
+
+    <h1>With image & with fallback (but broken src)</h1>
     <Avatar as={StyledRoot}>
       <Avatar.Image
         as={StyledImage}
@@ -26,11 +33,6 @@ export const Styled = () => (
       <Avatar.Fallback as={StyledFallback}>
         <AvatarIcon />
       </Avatar.Fallback>
-    </Avatar>
-
-    <h1>With own content (no image, no fallback, shows instantly)</h1>
-    <Avatar as={StyledRoot}>
-      <LetterAvatar>JS</LetterAvatar>
     </Avatar>
   </>
 );
@@ -75,18 +77,6 @@ const RECOMMENDED_CSS__AVATAR__FALLBACK: any = {
 const StyledFallback = styled('span', {
   ...RECOMMENDED_CSS__AVATAR__FALLBACK,
   backgroundColor: '$black',
-  color: '$white',
-});
-
-const LetterAvatar = styled('span', {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%',
-  height: '100%',
-  backgroundColor: '$red',
-  fontFamily: 'sans-serif',
-  fontWeight: 'bold',
   color: '$white',
 });
 

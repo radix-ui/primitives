@@ -85,14 +85,23 @@ const FALLBACK_NAME = 'Avatar.Fallback';
 const FALLBACK_DEFAULT_TAG = 'span';
 
 type AvatarFallbackDOMProps = React.ComponentPropsWithoutRef<typeof FALLBACK_DEFAULT_TAG>;
-type AvatarFallbackOwnProps = {};
+type AvatarFallbackOwnProps = { delayMs?: number };
 type AvatarFallbackProps = AvatarFallbackDOMProps & AvatarFallbackOwnProps;
 
 const AvatarFallback = forwardRef<typeof FALLBACK_DEFAULT_TAG, AvatarFallbackProps>(
   function AvatarFallback(props, forwardedRef) {
-    const { as: Comp = FALLBACK_DEFAULT_TAG, ...fallbackProps } = props;
+    const { as: Comp = FALLBACK_DEFAULT_TAG, delayMs, ...fallbackProps } = props;
     const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
-    return imageLoadingStatus === 'error' ? (
+    const [canRender, setCanRender] = React.useState(delayMs === undefined);
+
+    React.useEffect(() => {
+      if (delayMs !== undefined) {
+        const timerId = window.setTimeout(() => setCanRender(true), delayMs);
+        return () => window.clearTimeout(timerId);
+      }
+    }, [delayMs]);
+
+    return canRender && imageLoadingStatus !== 'loaded' ? (
       <Comp {...fallbackProps} {...getPartDataAttrObj(FALLBACK_NAME)} ref={forwardedRef} />
     ) : null;
   }
