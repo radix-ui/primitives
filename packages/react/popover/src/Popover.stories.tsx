@@ -5,24 +5,6 @@ import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Popover' };
 
-export const Basic = () => {
-  return (
-    <div
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
-    >
-      <Popover>
-        <Popover.Trigger>open</Popover.Trigger>
-        <Popover.Popper sideOffset={5}>
-          <Popover.Content>
-            <Popover.Close>close</Popover.Close>
-          </Popover.Content>
-          <Popover.Arrow />
-        </Popover.Popper>
-      </Popover>
-    </div>
-  );
-};
-
 export const Styled = () => {
   return (
     <div
