@@ -23,7 +23,7 @@ function MyComponent(props) {
           <p>Some really cool popover content!</p>
           <Popover.Close>Close popover</Popover.Close>
         </Popover.Content>
-        <Popover.Arrow width={50} height={20} style={styles.arrow} />
+        <Popover.Arrow width={50} height={20} />
       </Popover.Popper>
     </Popover>
   );
