@@ -12128,7 +12128,6 @@ fsevents@^1.2.7:
     jest: ^26.4.0
     jest-axe: ^3.5.0
     jest-watch-typeahead: ^0.6.0
-    json-to-css: ^0.1.0
     prettier: ^2.0.5
     pretty-quick: ^2.0.1
     react: ^17.0.1
@@ -13538,13 +13537,6 @@ fsevents@^1.2.7:
   version: 5.0.1
   resolution: "json-stringify-safe@npm:5.0.1"
   checksum: 261dfb8eb3e72c8b0dda11fd7c20c151ffc1d1b03e529245d51708c8dd8d8c6a225880464adf41a570dff6e5c805fd9d1f47fed948cfb526e4fbe5a67ce4e5f4
-  languageName: node
-  linkType: hard
-
-"json-to-css@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "json-to-css@npm:0.1.0"
-  checksum: 157a1ac238d6a883adc28d2f6868dbeb61cc7825855992d35163b91533eb9974d6a96f77ce3fd1e9ddd0e0e43da962ec3ed6eefd102b9268e3f8240aa918caed
   languageName: node
   linkType: hard
 

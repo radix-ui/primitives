@@ -58,7 +58,6 @@
     "jest": "^26.4.0",
     "jest-axe": "^3.5.0",
     "jest-watch-typeahead": "^0.6.0",
-    "json-to-css": "^0.1.0",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "react-test-renderer": "^17.0.1",
