@@ -382,15 +382,7 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
   props,
   forwardedRef
 ) {
-  const { as: Comp, ...arrowProps } = props;
-  return (
-    <Popper.Arrow
-      as={Comp}
-      {...getPartDataAttrObj(ARROW_NAME)}
-      {...arrowProps}
-      ref={forwardedRef}
-    />
-  );
+  return <Popper.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
 });
 
 /* -----------------------------------------------------------------------------------------------*/

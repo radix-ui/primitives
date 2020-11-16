@@ -153,7 +153,7 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
   props,
   forwardedRef
 ) {
-  const { as: Comp, offset, ...arrowProps } = props;
+  const { offset, ...arrowProps } = props;
   const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
 
   // send the Arrow's offset up to Popper
@@ -173,7 +173,6 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
         }}
       >
         <Arrow
-          as={Comp}
           {...getPartDataAttrObj(ARROW_NAME)}
           {...arrowProps}
           ref={forwardedRef}
