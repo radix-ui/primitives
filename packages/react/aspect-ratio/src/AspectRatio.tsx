@@ -26,7 +26,7 @@ const AspectRatio = forwardRef<typeof DEFAULT_TAG, AspectRatioProps>(function As
         position: 'relative',
         // ensures padding bottom trick maths works
         width: '100%',
-        paddingBottom: `calc(100% / ${ratio})`,
+        paddingBottom: `${100 / ratio}%`,
       }}
     >
       <Comp
