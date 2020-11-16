@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "@interop-ui/react-collapsible": "workspace:*",
-    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*",
+    "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"
