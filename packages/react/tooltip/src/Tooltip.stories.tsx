@@ -397,7 +397,7 @@ const PositionButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsW
 const StyledTrigger = styled('button', {});
 
 const RECOMMENDED_CSS__TOOLTIP__POPPER = {
-  transformOrigin: 'var(--interop-tooltip-popper-transform-origin)',
+  transformOrigin: 'var(--interop-ui-tooltip-popper-transform-origin)',
 };
 
 const StyledPopper = styled('div', RECOMMENDED_CSS__TOOLTIP__POPPER);

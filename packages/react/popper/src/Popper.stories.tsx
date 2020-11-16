@@ -117,7 +117,7 @@ function CustomArrow(props: any) {
 }
 
 const RECOMMENDED_CSS__POPPER__ROOT = {
-  transformOrigin: 'var(--interop-popper-transform-origin)',
+  transformOrigin: 'var(--interop-ui-popper-transform-origin)',
 };
 
 const StyledRoot = styled('div', RECOMMENDED_CSS__POPPER__ROOT);

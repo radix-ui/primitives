@@ -1,13 +1,17 @@
-/** Possible inputs: "Component", "SomeComponent", "Component.Part", "SomeComponent.Part", "SomeComponent.SomePart" */
-function getPartDataAttr(componentPart: string) {
+const NAMESPACE = 'interop-ui';
+
+function namespaced(componentPart: string) {
   const part = componentPart
     .replace('.', '')
     .replace(/([a-z])([A-Z])/g, '$1-$2')
     .toLowerCase();
-  return `data-interop-${part}`;
+  return `${NAMESPACE}-${part}`;
 }
 
-/** Possible inputs: "Component", "SomeComponent", "Component.Part", "SomeComponent.Part", "SomeComponent.SomePart" */
+function getPartDataAttr(componentPart: string) {
+  return `data-${namespaced(componentPart)}`;
+}
+
 function getPartDataAttrObj(componentPart: string) {
   return { [getPartDataAttr(componentPart)]: '' };
 }

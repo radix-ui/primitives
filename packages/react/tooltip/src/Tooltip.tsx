@@ -246,7 +246,7 @@ const TooltipPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperPro
           style={{
             ...popperProps.style,
             // re-namespace exposed popper custom property
-            ['--interop-tooltip-popper-transform-origin' as any]: 'var(--interop-popper-transform-origin)',
+            ['--interop-ui-tooltip-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
           }}
         >
           {children}
