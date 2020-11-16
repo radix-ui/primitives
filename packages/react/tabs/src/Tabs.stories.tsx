@@ -62,7 +62,7 @@ export const Styled = () => (
   </>
 );
 
-const recommendedRootStyles = {
+const RECOMMENDED_CSS__ROOT = {
   // ensures things are layed out correctly by default
   display: 'flex',
   '&[data-orientation="horizontal"]': {
@@ -71,13 +71,13 @@ const recommendedRootStyles = {
 };
 
 const StyledRoot = styled('div', {
-  ...recommendedRootStyles,
+  ...RECOMMENDED_CSS__ROOT,
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
   maxWidth: '20rem',
 });
 
-const recommendedTabListStyles = {
+const RECOMMENDED_CSS__TAB_LIST = {
   flexShrink: 0,
   // ensures things are layed out correctly by default
   display: 'flex',
@@ -87,16 +87,16 @@ const recommendedTabListStyles = {
 };
 
 const StyledTabList = styled('div', {
-  ...recommendedTabListStyles,
+  ...RECOMMENDED_CSS__TAB_LIST,
   backgroundColor: '#eee',
 });
 
-const recommendedTabStyles = {
+const RECOMMENDED_CSS__TAB = {
   flexShrink: 0,
 };
 
 const StyledTab = styled('div', {
-  ...recommendedTabStyles,
+  ...RECOMMENDED_CSS__TAB,
 
   padding: '0.4em 0.6em',
   fontWeight: '500',
@@ -124,12 +124,12 @@ const StyledTab = styled('div', {
   },
 });
 
-const recommendedTabPanelStyles = {
+const RECOMMENDED_CSS__TAB_PANEL = {
   flexGrow: 1,
 };
 
 const StyledTabPanel = styled('div', {
-  ...recommendedTabPanelStyles,
+  ...RECOMMENDED_CSS__TAB_PANEL,
 
   padding: '1em',
   border: '1px solid #eee',

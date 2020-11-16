@@ -116,11 +116,11 @@ function CustomArrow(props: any) {
   );
 }
 
-const recommendedRootStyles = {
+const RECOMMENDED_CSS__ROOT = {
   transformOrigin: 'var(--interop-popper-transform-origin)',
 };
 
-const StyledRoot = styled('div', recommendedRootStyles);
+const StyledRoot = styled('div', RECOMMENDED_CSS__ROOT);
 
 const StyledContent = styled('div', {
   backgroundColor: '$gray100',

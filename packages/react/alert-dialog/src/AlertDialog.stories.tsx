@@ -58,7 +58,7 @@ export const Controlled = () => {
 
 const StyledTrigger = styled('button', {});
 
-const recommendedOverlayStyles: any = {
+const RECOMMENDED_CSS__OVERLAY: any = {
   // ensures overlay is positionned correctly
   position: 'fixed',
   top: 0,
@@ -68,12 +68,12 @@ const recommendedOverlayStyles: any = {
 };
 
 const StyledOverlay = styled('div', {
-  ...recommendedOverlayStyles,
+  ...RECOMMENDED_CSS__OVERLAY,
   backgroundColor: 'black',
   opacity: 0.2,
 });
 
-const recommendedContentStyles: any = {
+const RECOMMENDED_CSS__CONTENT: any = {
   // ensures good default position for content
   position: 'fixed',
   top: 0,
@@ -81,7 +81,7 @@ const recommendedContentStyles: any = {
 };
 
 const StyledContent = styled('div', {
-  ...recommendedContentStyles,
+  ...RECOMMENDED_CSS__CONTENT,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',

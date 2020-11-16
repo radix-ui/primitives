@@ -3,19 +3,19 @@ import { Arrow } from './Arrow';
 
 export default { title: 'Components/Arrow' };
 
-const recommendedStyles = {
+const RECOMMENDED_CSS__ROOT = {
   // better default alignment
   verticalAlign: 'middle',
 };
 
 export const Styled = () => (
-  <Arrow style={{ ...recommendedStyles, fill: 'crimson' }} width={20} height={10} />
+  <Arrow style={{ ...RECOMMENDED_CSS__ROOT, fill: 'crimson' }} width={20} height={10} />
 );
 
 export const CustomSizes = () => (
   <>
-    <Arrow style={{ ...recommendedStyles }} width={40} height={10} />
-    <Arrow style={{ ...recommendedStyles }} width={50} height={30} />
-    <Arrow style={{ ...recommendedStyles }} width={20} height={100} />
+    <Arrow style={{ ...RECOMMENDED_CSS__ROOT }} width={40} height={10} />
+    <Arrow style={{ ...RECOMMENDED_CSS__ROOT }} width={50} height={30} />
+    <Arrow style={{ ...RECOMMENDED_CSS__ROOT }} width={20} height={100} />
   </>
 );

@@ -35,7 +35,7 @@ export const Styled = () => (
   </>
 );
 
-const recommendedRootStyles: any = {
+const RECOMMENDED_CSS__ROOT: any = {
   // ensures image/fallback is centered
   display: 'inline-flex',
   alignItems: 'center',
@@ -48,22 +48,22 @@ const recommendedRootStyles: any = {
 };
 
 const StyledRoot = styled('span', {
-  ...recommendedRootStyles,
+  ...RECOMMENDED_CSS__ROOT,
   borderRadius: 9999,
   width: 48,
   height: 48,
 });
 
-const recommendedImageStyles: any = {
+const RECOMMENDED_CSS__IMAGE: any = {
   // ensures image is full size and not distorted
   width: '100%',
   height: '100%',
   objectFit: 'cover',
 };
 
-const StyledImage = styled('img', recommendedImageStyles);
+const StyledImage = styled('img', RECOMMENDED_CSS__IMAGE);
 
-const recommendedFallbackStyles: any = {
+const RECOMMENDED_CSS__FALLBACK: any = {
   // ensures content inside the fallback is centered
   width: '100%',
   height: '100%',
@@ -73,7 +73,7 @@ const recommendedFallbackStyles: any = {
 };
 
 const StyledFallback = styled('span', {
-  ...recommendedFallbackStyles,
+  ...RECOMMENDED_CSS__FALLBACK,
   backgroundColor: '$black',
   color: '$white',
 });

@@ -141,7 +141,7 @@ const StyledHeader = styled('h3', {
   margin: 0,
 });
 
-const recommendedButtonStyles: any = {
+const RECOMMENDED_CSS__BUTTON: any = {
   // because it's a button, we want to stretch it
   width: '100%',
   // and remove center text alignment in favour of inheriting
@@ -149,7 +149,7 @@ const recommendedButtonStyles: any = {
 };
 
 const StyledButton = styled('button', {
-  ...recommendedButtonStyles,
+  ...RECOMMENDED_CSS__BUTTON,
   boxSizing: 'border-box',
   appearance: 'none',
   border: 'none',

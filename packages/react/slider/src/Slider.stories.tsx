@@ -104,7 +104,7 @@ export const WithMultipleRanges = () => {
   );
 };
 
-const recommendedRootStyles: any = {
+const RECOMMENDED_CSS__ROOT: any = {
   position: 'relative',
   display: 'flex',
   alignItems: 'center',
@@ -116,7 +116,7 @@ const recommendedRootStyles: any = {
 };
 
 const StyledRoot = styled('span', {
-  ...recommendedRootStyles,
+  ...RECOMMENDED_CSS__ROOT,
   '&[data-orientation="horizontal"]': {
     height: 15,
   },
@@ -126,14 +126,14 @@ const StyledRoot = styled('span', {
   },
 });
 
-const recommendedTrackStyles: any = {
+const RECOMMENDED_CSS__TRACK: any = {
   position: 'relative',
   // ensures full width in horizontal orientation, ignored in vertical orientation
   flexGrow: 1,
 };
 
 const StyledTrack = styled('span', {
-  ...recommendedTrackStyles,
+  ...RECOMMENDED_CSS__TRACK,
   background: 'gainsboro',
   borderRadius: 4,
   '&[data-orientation="horizontal"]': {
@@ -145,7 +145,7 @@ const StyledTrack = styled('span', {
   },
 });
 
-const recommendedRangeStyles: any = {
+const RECOMMENDED_CSS__RANGE: any = {
   position: 'absolute',
   // good default for both orientation (match track width/height respectively)
   '&[data-orientation="horizontal"]': {
@@ -157,12 +157,12 @@ const recommendedRangeStyles: any = {
 };
 
 const StyledRange = styled('span', {
-  ...recommendedRangeStyles,
+  ...RECOMMENDED_CSS__RANGE,
   background: '$black',
   borderRadius: 'inherit',
 });
 
-const recommendedThumbStyles = {
+const RECOMMENDED_CSS__THUMB = {
   // ensures the thumb is sizeable
   display: 'block',
 
@@ -180,7 +180,7 @@ const recommendedThumbStyles = {
 };
 
 const StyledThumb = styled('span', {
-  ...recommendedThumbStyles,
+  ...RECOMMENDED_CSS__THUMB,
   borderRadius: 15,
   width: 15,
   height: 15,

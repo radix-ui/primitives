@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Switch } from './Switch';
 import { Label as LabelPrimitive } from '@interop-ui/react-label';
 import { styled } from '../../../../stitches.config';
-import { recommendedStyles as recommendedLabelStyles } from '../../label/src/Label.stories';
+import { RECOMMENDED_CSS__ROOT as RECOMMENDED_CSS__LABEL } from '../../label/src/Label.stories';
 
 export default { title: 'Components/Switch' };
 
@@ -56,13 +56,13 @@ export const WithinForm = () => {
   );
 };
 
-const Label = (props: any) => <LabelPrimitive {...props} style={recommendedLabelStyles} />;
+const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL} />;
 
 const WIDTH = 50;
 const THUMB_WIDTH = 20;
 const GAP = 4;
 
-const recommendedRootStyles: any = {
+const RECOMMENDED_CSS__ROOT: any = {
   // better default alignment
   verticalAlign: 'middle',
   // ensures thumb is not horizontally centered (default in `button`)
@@ -70,7 +70,7 @@ const recommendedRootStyles: any = {
 };
 
 const StyledRoot = styled('button', {
-  ...recommendedRootStyles,
+  ...RECOMMENDED_CSS__ROOT,
   outline: 'none',
   border: 'none',
   width: WIDTH,
@@ -90,7 +90,7 @@ const StyledRoot = styled('button', {
   },
 });
 
-const recommendedThumbStyles = {
+const RECOMMENDED_CSS__THUMB = {
   // ensures thumb is sizeable/can receive vertical margins
   display: 'inline-block',
   // ensures thumb is vertically centered
@@ -98,7 +98,7 @@ const recommendedThumbStyles = {
 };
 
 const StyledThumb = styled('span', {
-  ...recommendedThumbStyles,
+  ...RECOMMENDED_CSS__THUMB,
   width: THUMB_WIDTH,
   height: THUMB_WIDTH,
   backgroundColor: '$white',

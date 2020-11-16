@@ -175,11 +175,11 @@ export const NonModal = () => {
 
 const StyledTrigger = styled('button', {});
 
-const recommendedPopperStyles = {
+const RECOMMENDED_CSS__POPPER = {
   transformOrigin: 'var(--interop-popover-popper-transform-origin)',
 };
 
-const StyledPopper = styled('div', recommendedPopperStyles);
+const StyledPopper = styled('div', RECOMMENDED_CSS__POPPER);
 
 const StyledContent = styled('div', {
   backgroundColor: '$gray300',
