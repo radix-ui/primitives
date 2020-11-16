@@ -104,7 +104,7 @@ export const WithMultipleRanges = () => {
   );
 };
 
-const RECOMMENDED_CSS__ROOT: any = {
+const RECOMMENDED_CSS__SLIDER__ROOT: any = {
   position: 'relative',
   display: 'flex',
   alignItems: 'center',
@@ -116,7 +116,7 @@ const RECOMMENDED_CSS__ROOT: any = {
 };
 
 const StyledRoot = styled('span', {
-  ...RECOMMENDED_CSS__ROOT,
+  ...RECOMMENDED_CSS__SLIDER__ROOT,
   '&[data-orientation="horizontal"]': {
     height: 15,
   },
@@ -126,14 +126,14 @@ const StyledRoot = styled('span', {
   },
 });
 
-const RECOMMENDED_CSS__TRACK: any = {
+const RECOMMENDED_CSS__SLIDER__TRACK: any = {
   position: 'relative',
   // ensures full width in horizontal orientation, ignored in vertical orientation
   flexGrow: 1,
 };
 
 const StyledTrack = styled('span', {
-  ...RECOMMENDED_CSS__TRACK,
+  ...RECOMMENDED_CSS__SLIDER__TRACK,
   background: 'gainsboro',
   borderRadius: 4,
   '&[data-orientation="horizontal"]': {
@@ -145,7 +145,7 @@ const StyledTrack = styled('span', {
   },
 });
 
-const RECOMMENDED_CSS__RANGE: any = {
+const RECOMMENDED_CSS__SLIDER__RANGE: any = {
   position: 'absolute',
   // good default for both orientation (match track width/height respectively)
   '&[data-orientation="horizontal"]': {
@@ -157,12 +157,12 @@ const RECOMMENDED_CSS__RANGE: any = {
 };
 
 const StyledRange = styled('span', {
-  ...RECOMMENDED_CSS__RANGE,
+  ...RECOMMENDED_CSS__SLIDER__RANGE,
   background: '$black',
   borderRadius: 'inherit',
 });
 
-const RECOMMENDED_CSS__THUMB = {
+const RECOMMENDED_CSS__SLIDER__THUMB = {
   // ensures the thumb is sizeable
   display: 'block',
 
@@ -180,7 +180,7 @@ const RECOMMENDED_CSS__THUMB = {
 };
 
 const StyledThumb = styled('span', {
-  ...RECOMMENDED_CSS__THUMB,
+  ...RECOMMENDED_CSS__SLIDER__THUMB,
   borderRadius: 15,
   width: 15,
   height: 15,

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Label, useLabelContext } from './Label';
 import { styled } from '../../../../stitches.config';
 
-export default { title: 'Components/Label', excludeStories: ['RECOMMENDED_CSS__ROOT'] };
+export default { title: 'Components/Label', excludeStories: ['RECOMMENDED_CSS__LABEL__ROOT'] };
 
 export const Styled = () => <Label as={StyledRoot}>Label</Label>;
 
@@ -32,7 +32,7 @@ const Control = (props: any) => {
   return <span {...props}>{id}</span>;
 };
 
-export const RECOMMENDED_CSS__ROOT = {
+export const RECOMMENDED_CSS__LABEL__ROOT = {
   // ensures it can receive vertical margins
   display: 'inline-block',
   // better default alignment
@@ -42,7 +42,7 @@ export const RECOMMENDED_CSS__ROOT = {
 };
 
 const StyledRoot = styled('span', {
-  ...RECOMMENDED_CSS__ROOT,
+  ...RECOMMENDED_CSS__LABEL__ROOT,
   border: '1px solid gainsboro',
   margin: 10,
   padding: 10,

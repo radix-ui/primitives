@@ -116,7 +116,7 @@ export const NoInteractOutsideDismiss = () => (
 
 const StyledTrigger = styled('button', {});
 
-const RECOMMENDED_CSS__OVERLAY: any = {
+const RECOMMENDED_CSS__DIALOG__OVERLAY: any = {
   // ensures overlay is positionned correctly
   position: 'fixed',
   top: 0,
@@ -126,12 +126,12 @@ const RECOMMENDED_CSS__OVERLAY: any = {
 };
 
 const StyledOverlay = styled('div', {
-  ...RECOMMENDED_CSS__OVERLAY,
+  ...RECOMMENDED_CSS__DIALOG__OVERLAY,
   backgroundColor: 'black',
   opacity: 0.2,
 });
 
-const RECOMMENDED_CSS__CONTENT: any = {
+const RECOMMENDED_CSS__DIALOG__CONTENT: any = {
   // ensures good default position for content
   position: 'fixed',
   top: 0,
@@ -139,7 +139,7 @@ const RECOMMENDED_CSS__CONTENT: any = {
 };
 
 const StyledContent = styled('div', {
-  ...RECOMMENDED_CSS__CONTENT,
+  ...RECOMMENDED_CSS__DIALOG__CONTENT,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',

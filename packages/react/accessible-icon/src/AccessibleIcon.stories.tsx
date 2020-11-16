@@ -16,7 +16,7 @@ const CrossIcon = () => (
   </svg>
 );
 
-const RECOMMENDED_CSS__ROOT = {
+const RECOMMENDED_CSS__ACCESSIBLE_ICON__ROOT = {
   // ensures child icon is contained correctly, `inline-block` would also work for that
   // but it would create the usual nasty few extra pixels underneath, so `inline-flex` is a better default.
   display: 'inline-flex',
@@ -25,6 +25,6 @@ const RECOMMENDED_CSS__ROOT = {
 };
 
 const StyledRoot = styled('span', {
-  ...RECOMMENDED_CSS__ROOT,
+  ...RECOMMENDED_CSS__ACCESSIBLE_ICON__ROOT,
   color: '$red',
 });

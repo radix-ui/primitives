@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Label as LabelPrimitive } from '@interop-ui/react-label';
 import { RadioGroup } from './RadioGroup';
 import { styled } from '../../../../stitches.config';
-import { RECOMMENDED_CSS__ROOT as RECOMMENDED_CSS__LABEL } from '../../label/src/Label.stories';
+import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 
 export default { title: 'Components/RadioGroup' };
 
@@ -54,17 +54,17 @@ export const Controlled = () => {
   );
 };
 
-const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL} />;
+const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL__ROOT} />;
 
 const StyledRoot = styled('div', {});
 
-const RECOMMENDED_CSS__ITEM = {
+const RECOMMENDED_CSS__RADIO_GROUP__ITEM = {
   // better default alignment
   verticalAlign: 'middle',
 };
 
 const StyledItem = styled('button', {
-  ...RECOMMENDED_CSS__ITEM,
+  ...RECOMMENDED_CSS__RADIO_GROUP__ITEM,
   width: 30,
   height: 30,
   display: 'inline-grid',
