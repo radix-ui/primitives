@@ -1,115 +1,72 @@
 import React from 'react';
 import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { Text, Flex, List, Box, ListItem, Divider } from '@modulz/radix';
+import { Text, Flex, List, Box, ListItem, Divider, BoxProps } from '@modulz/radix';
 import { PlusIcon } from '@modulz/radix-icons';
-import { Accordion } from '@interop-ui/react-accordion';
-import { ScrollArea } from './ScrollArea';
+import { Collapsible } from '@interop-ui/react-collapsible';
+import { useId } from '@interop-ui/react-utils';
 import { overviewPages, componentsPages } from '../utils/pages';
-
 import type { FlexProps } from '@modulz/radix';
+import { ScrollArea } from './ScrollArea';
 
-function MainNavigation() {
-  const router = useRouter();
-  const defaultOpenedAccordion = getOpenedAccordionFromUrl(router.pathname);
-  const [openedAccordion, setOpenedAccordion] = React.useState(defaultOpenedAccordion);
-
-  React.useEffect(() => {
-    const handleRouteChange = (url: string) => setOpenedAccordion(getOpenedAccordionFromUrl(url));
-    router.events.on('routeChangeComplete', handleRouteChange);
-    return () => router.events.off('routeChangeComplete', handleRouteChange);
-  }, []);
-
+function MainNavigation({ sx = {} }: { sx?: BoxProps['sx'] }) {
   return (
     <ScrollArea>
-      <Box sx={{ pb: 7 }}>
+      <Box sx={sx}>
         {/* @ts-ignore */}
         <Box as="a" href="/" sx={{ display: 'inline-flex', m: 3 }}>
           <Logo />
         </Box>
 
-        <Divider sx={{ mt: 2 }} />
+        <Divider />
 
-        <Accordion value={openedAccordion} onChange={setOpenedAccordion}>
-          <Accordion.Item value="overview">
-            <Accordion.Button as={AccordionButton}>
-              <Text as="h3" size={3} weight="medium" sx={{ lineHeight: 1 }}>
-                Overview
-              </Text>
-              <PlusIcon
-                style={{
-                  transform: `rotate(${openedAccordion === 'overview' ? '45deg' : '0deg'})`,
-                }}
-              />
-            </Accordion.Button>
-            <Accordion.Panel>
-              <List>
-                {overviewPages.map((page) => (
-                  <PageLink key={page.id} href={`/${page.id}`}>
-                    {page.label}
-                  </PageLink>
-                ))}
-              </List>
-            </Accordion.Panel>
-          </Accordion.Item>
+        <NavPanel id="overview" heading="Overview">
+          {overviewPages.map((page) => (
+            <PageLink key={page.id} href={`/${page.id}`}>
+              {page.label}
+            </PageLink>
+          ))}
+        </NavPanel>
 
-          <Divider sx={{ mt: 2 }} />
+        <Divider />
 
-          <Accordion.Item value="components">
-            <Accordion.Button as={AccordionButton}>
-              <Text as="h3" size={3} weight="medium" sx={{ lineHeight: 1 }}>
-                Components
-              </Text>
-              <PlusIcon
-                style={{
-                  transform: `rotate(${openedAccordion === 'components' ? '45deg' : '0deg'})`,
-                }}
-              />
-            </Accordion.Button>
-            <Accordion.Panel>
-              <List>
-                {componentsPages.map((page) => (
-                  <PageLink key={page.id} href={`/${page.id}`}>
-                    {page.label}
-                  </PageLink>
-                ))}
-              </List>
-            </Accordion.Panel>
-          </Accordion.Item>
+        <NavPanel id="components" heading="Components">
+          {componentsPages.map((page) => (
+            <PageLink key={page.id} href={`/${page.id}`}>
+              {page.label}
+            </PageLink>
+          ))}
+        </NavPanel>
 
-          <Divider sx={{ mt: 2 }} />
+        <Divider />
 
-          <Accordion.Item value="resources">
-            <Accordion.Button as={AccordionButton}>
-              <Text as="h3" size={3} weight="medium" sx={{ lineHeight: 1 }}>
-                Resources
-              </Text>
-              <PlusIcon
-                style={{
-                  transform: `rotate(${openedAccordion === 'resources' ? '45deg' : '0deg'})`,
-                }}
-              />
-            </Accordion.Button>
-            <Accordion.Panel>
-              <List>
-                <ListItem as="a" href="https://www.github.com/modulz" sx={{ pl: 6 }}>
-                  <Text size={2}>Github</Text>
-                </ListItem>
-                <ListItem as="a" href="https://www.twitter.com/modulz" sx={{ pl: 6 }}>
-                  <Text size={2}>Twitter</Text>
-                </ListItem>
-              </List>
-            </Accordion.Panel>
-          </Accordion.Item>
-        </Accordion>
+        <NavPanel id="resources" heading="Resources">
+          <ListItem as="a" href="https://www.github.com/modulz" sx={{ pl: 6 }}>
+            <Text size={2}>Github</Text>
+          </ListItem>
+          <ListItem as="a" href="https://www.twitter.com/modulz" sx={{ pl: 6 }}>
+            <Text size={2}>Twitter</Text>
+          </ListItem>
+        </NavPanel>
       </Box>
     </ScrollArea>
   );
 }
 
-function Logo() {
+function Logo({ id }: { id?: string }) {
+  const _id = String(useId());
+  const titleId = `radix-logo-title-${id || _id}`;
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="61" height="18" viewBox="0 0 61 18" fill="none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="61"
+      height="18"
+      viewBox="0 0 61 18"
+      fill="none"
+      role="img"
+      aria-labelledby={titleId}
+    >
+      <title id={titleId}>Radix</title>
       <path
         d="M0.264648 17H10.4996V14.654H6.17565V10.629C6.17565 8.58196 8.10765 7.38596 9.97065 7.38596C10.9366 7.38596 11.5116 7.52396 12.1326 7.73096V5.01696C11.6956 4.83296 11.0976 4.69496 10.2466 4.69496C8.56765 4.69496 6.93465 5.49996 6.17565 6.87996V4.92496H0.264648V7.27096H3.46165V14.654H0.264648V17Z"
         fill="#1F0D53"
@@ -134,11 +91,11 @@ function Logo() {
   );
 }
 
-function getOpenedAccordionFromUrl(pathname: string) {
+function getOpenedPanelFromUrl(pathname: string) {
   return pathname.split('/')[1] ?? 'overview';
 }
 
-function AccordionButton(props: FlexProps) {
+function StyledCollapsibleButton(props: FlexProps) {
   return (
     <Flex
       as="button"
@@ -147,13 +104,40 @@ function AccordionButton(props: FlexProps) {
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
-        pt: 3,
-        pb: 1,
+        py: 3,
         pl: 4,
         pr: 2,
+
+        '&:focus': {
+          boxShadow: (t) => `0 0 0 3px ${t.colors.blue400}`,
+        },
       }}
       {...props}
     />
+  );
+}
+
+function CollapsibleButton({
+  children,
+  isOpen,
+  ...props
+}: React.ComponentProps<typeof Collapsible.Button> & { isOpen: boolean }) {
+  return (
+    <Collapsible.Button as={StyledCollapsibleButton} {...props}>
+      <Text as="span" size={3} weight="medium" sx={{ lineHeight: 1 }}>
+        {children}
+      </Text>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transform: `rotate(${isOpen ? 45 : 0}deg)`,
+        }}
+      >
+        <PlusIcon aria-hidden />
+      </Box>
+    </Collapsible.Button>
   );
 }
 
@@ -168,7 +152,12 @@ function PageLink({ children, isNested = false, ...props }: PageLinkProps) {
 
   return (
     <Link {...props} passHref>
-      <ListItem as="a" sx={{ pl: isNested ? 8 : 6 }} variant={isActive ? 'active' : undefined}>
+      <ListItem
+        as="a"
+        sx={{ pl: isNested ? 8 : 6 }}
+        variant={isActive ? 'active' : undefined}
+        aria-current={isActive || undefined}
+      >
         <Text size={2} sx={{ color: isActive ? 'white' : undefined }}>
           {children}
         </Text>
@@ -178,3 +167,34 @@ function PageLink({ children, isNested = false, ...props }: PageLinkProps) {
 }
 
 export { MainNavigation };
+
+function NavPanel({
+  id,
+  heading,
+  children,
+}: {
+  id: string;
+  heading: string;
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const defaultOpenedPanel = getOpenedPanelFromUrl(router.pathname);
+  const [isOpen, setIsOpen] = React.useState(defaultOpenedPanel === id);
+
+  React.useEffect(() => {
+    const handleRouteChange = (url: string) => setIsOpen(getOpenedPanelFromUrl(url) === id);
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => router.events.off('routeChangeComplete', handleRouteChange);
+  }, [id, router]);
+
+  return (
+    <Collapsible isOpen={isOpen} onToggle={(state) => setIsOpen(state!)}>
+      <CollapsibleButton isOpen={isOpen}>{heading}</CollapsibleButton>
+      <Collapsible.Content>
+        <List sx={{ py: 0 }} aria-label={heading}>
+          {children}
+        </List>
+      </Collapsible.Content>
+    </Collapsible>
+  );
+}

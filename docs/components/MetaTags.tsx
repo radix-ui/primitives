@@ -15,7 +15,6 @@ export function MetaTags({ title, description }: MetaTagsProps) {
     <Head>
       <title>Radix — {title}</title>
       <meta name="description" content={description} />
-
       <meta property="og:url" content={`${baseUrl}${router.pathname}`} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
