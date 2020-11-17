@@ -1,6 +1,0 @@
-releases:
-  "@interop-ui/react-popover": prerelease
-  "@interop-ui/react-tooltip": prerelease
-
-declined:
-  - interop-ui
