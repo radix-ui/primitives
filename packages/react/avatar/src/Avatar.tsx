@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 import {
   createContext,
   forwardRef,
-  createStyleObj,
   useCallbackRef,
   useLayoutEffect,
 } from '@interop-ui/react-utils';
@@ -34,7 +33,7 @@ const Avatar = forwardRef<typeof AVATAR_DEFAULT_TAG, AvatarProps, AvatarStaticPr
     const context = React.useState<ImageLoadingStatus>('idle');
 
     return (
-      <Comp {...interopDataAttrObj('root')} {...avatarProps} ref={forwardedRef}>
+      <Comp {...getPartDataAttrObj(AVATAR_NAME)} {...avatarProps} ref={forwardedRef}>
         <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
       </Comp>
     );
@@ -74,7 +73,7 @@ const AvatarImage = forwardRef<typeof IMAGE_DEFAULT_TAG, AvatarImageProps>(funct
   }, [imageLoadingStatus, setImageLoadingStatus, onLoadingStatusChange]);
 
   return imageLoadingStatus === 'loaded' ? (
-    <Comp {...imageProps} {...interopDataAttrObj('image')} src={src} ref={forwardedRef} />
+    <Comp {...imageProps} {...getPartDataAttrObj(IMAGE_NAME)} src={src} ref={forwardedRef} />
   ) : null;
 });
 
@@ -86,15 +85,24 @@ const FALLBACK_NAME = 'Avatar.Fallback';
 const FALLBACK_DEFAULT_TAG = 'span';
 
 type AvatarFallbackDOMProps = React.ComponentPropsWithoutRef<typeof FALLBACK_DEFAULT_TAG>;
-type AvatarFallbackOwnProps = {};
+type AvatarFallbackOwnProps = { delayMs?: number };
 type AvatarFallbackProps = AvatarFallbackDOMProps & AvatarFallbackOwnProps;
 
 const AvatarFallback = forwardRef<typeof FALLBACK_DEFAULT_TAG, AvatarFallbackProps>(
   function AvatarFallback(props, forwardedRef) {
-    const { as: Comp = FALLBACK_DEFAULT_TAG, ...fallbackProps } = props;
+    const { as: Comp = FALLBACK_DEFAULT_TAG, delayMs, ...fallbackProps } = props;
     const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
-    return imageLoadingStatus !== 'idle' && imageLoadingStatus !== 'loaded' ? (
-      <Comp {...fallbackProps} {...interopDataAttrObj('fallback')} ref={forwardedRef} />
+    const [canRender, setCanRender] = React.useState(delayMs === undefined);
+
+    React.useEffect(() => {
+      if (delayMs !== undefined) {
+        const timerId = window.setTimeout(() => setCanRender(true), delayMs);
+        return () => window.clearTimeout(timerId);
+      }
+    }, [delayMs]);
+
+    return canRender && imageLoadingStatus !== 'loaded' ? (
+      <Comp {...fallbackProps} {...getPartDataAttrObj(FALLBACK_NAME)} ref={forwardedRef} />
     ) : null;
   }
 );
@@ -143,27 +151,5 @@ function useImageLoadingStatus(src?: string) {
   return loadingStatus;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(AVATAR_NAME, {
-  root: {
-    ...cssReset(AVATAR_DEFAULT_TAG),
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    verticalAlign: 'middle',
-    overflow: 'hidden',
-    userSelect: 'none',
-  },
-  image: {
-    ...cssReset(IMAGE_DEFAULT_TAG),
-    width: '100%',
-    height: '100%',
-    // Make sure images are not distorted
-    objectFit: 'cover',
-  },
-  fallback: {
-    ...cssReset(FALLBACK_DEFAULT_TAG),
-  },
-});
-
+export { Avatar };
 export type { AvatarProps, AvatarImageProps, AvatarFallbackProps };
-export { Avatar, styles };

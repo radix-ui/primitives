@@ -12,13 +12,13 @@ $ npm install @interop-ui/react-announce
 
 ```js
 import * as React from 'react';
-import { Announce, styles } from '@interop-ui/react-announce';
-import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
+import { Announce } from '@interop-ui/react-announce';
+import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 
 function StatusChange(props) {
   return (
     <div>
-      <VisuallyHidden style={visuallyHiddenStyles.root}>
+      <VisuallyHidden>
         {/* Content inside Announce will inform screen reader users of a status change */}
         <Announce aria-relevant="all">Your friend is {props.status}</Announce>
       </VisuallyHidden>

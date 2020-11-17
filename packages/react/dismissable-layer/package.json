@@ -21,10 +21,6 @@
     "@interop-ui/react-utils": "workspace:*"
   },
   "devDependencies": {
-    "@interop-ui/react-focus-scope": "workspace:*",
-    "@interop-ui/react-popper": "workspace:*",
-    "@interop-ui/react-portal": "workspace:*",
-    "@interop-ui/react-utils": "workspace:*",
     "parcel": "^2.0.0-beta.1",
     "react-remove-scroll": "^2.4.0"
   },

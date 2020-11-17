@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { Dialog, styles as dialogStyles } from '@interop-ui/react-dialog';
-import { cssReset, makeId, warning } from '@interop-ui/utils';
+import { Dialog } from '@interop-ui/react-dialog';
+import { getPartDataAttrObj, makeId, warning } from '@interop-ui/utils';
 import {
   createContext,
-  createStyleObj,
   forwardRef,
   useComposedRefs,
   useId,
@@ -97,7 +96,7 @@ const AlertDialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, AlertDialogTri
     const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
     return (
       <Dialog.Trigger
-        {...interopDataAttrObj('trigger')}
+        {...getPartDataAttrObj(TRIGGER_NAME)}
         as={as}
         ref={forwardedRef}
         {...triggerProps}
@@ -124,7 +123,7 @@ const AlertDialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, AlertDialogOve
     const { as = OVERLAY_DEFAULT_TAG, ...overlayProps } = props;
     return (
       <Dialog.Overlay
-        {...interopDataAttrObj('overlay')}
+        {...getPartDataAttrObj(OVERLAY_NAME)}
         as={as}
         ref={forwardedRef}
         {...overlayProps}
@@ -151,7 +150,7 @@ const AlertDialogCancel = forwardRef<typeof CANCEL_DEFAULT_TAG, AlertDialogCance
     const { as = CANCEL_DEFAULT_TAG, ...cancelProps } = props;
     const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
     const ref = useComposedRefs(forwardedRef, cancelRef as any);
-    return <Dialog.Close {...interopDataAttrObj('cancel')} as={as} ref={ref} {...cancelProps} />;
+    return <Dialog.Close {...getPartDataAttrObj(CANCEL_NAME)} as={as} ref={ref} {...cancelProps} />;
   }
 );
 
@@ -172,7 +171,12 @@ const AlertDialogAction = forwardRef<typeof ACTION_DEFAULT_TAG, AlertDialogCance
   function AlertDialogAction(props, forwardedRef) {
     const { as = ACTION_DEFAULT_TAG, ...actionProps } = props;
     return (
-      <Dialog.Close {...interopDataAttrObj('action')} as={as} ref={forwardedRef} {...actionProps} />
+      <Dialog.Close
+        {...getPartDataAttrObj(ACTION_NAME)}
+        as={as}
+        ref={forwardedRef}
+        {...actionProps}
+      />
     );
   }
 );
@@ -211,7 +215,7 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
 
     return (
       <Dialog.Content
-        {...interopDataAttrObj('content')}
+        {...getPartDataAttrObj(CONTENT_NAME)}
         as={as}
         ref={ref}
         role="alertdialog"
@@ -264,7 +268,7 @@ const AlertDialogTitle = forwardRef<typeof TITLE_DEFAULT_TAG, AlertDialogTitlePr
     const { as: Comp = TITLE_DEFAULT_TAG, ...titleProps } = props;
     const { titleId } = useAlertDialogContext('AlertDialogTitle');
     return (
-      <Comp {...interopDataAttrObj('title')} ref={forwardedRef} id={titleId} {...titleProps} />
+      <Comp {...getPartDataAttrObj(TITLE_NAME)} ref={forwardedRef} id={titleId} {...titleProps} />
     );
   }
 );
@@ -290,7 +294,7 @@ const AlertDialogDescription = forwardRef<
   const { descriptionId } = useAlertDialogContext('AlertDialogDescription');
   return (
     <Comp
-      {...interopDataAttrObj('description')}
+      {...getPartDataAttrObj(DESCRIPTION_NAME)}
       ref={forwardedRef}
       id={descriptionId}
       {...descriptionProps}
@@ -317,37 +321,7 @@ AlertDialog.Overlay.displayName = OVERLAY_NAME;
 AlertDialog.Trigger.displayName = TRIGGER_NAME;
 AlertDialog.displayName = ROOT_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(ROOT_NAME, {
-  root: dialogStyles.root,
-  overlay: {
-    ...cssReset(OVERLAY_DEFAULT_TAG),
-    ...dialogStyles.overlay,
-  },
-  trigger: {
-    ...cssReset(TRIGGER_DEFAULT_TAG),
-    ...dialogStyles.trigger,
-  },
-  cancel: {
-    ...cssReset(CANCEL_DEFAULT_TAG),
-    ...dialogStyles.close,
-  },
-  action: {
-    ...cssReset(ACTION_DEFAULT_TAG),
-    ...dialogStyles.close,
-  },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-    ...dialogStyles.content,
-  },
-  title: {
-    ...cssReset(TITLE_DEFAULT_TAG),
-  },
-  description: {
-    ...cssReset(DESCRIPTION_DEFAULT_TAG),
-  },
-});
-
-export { AlertDialog, styles };
+export { AlertDialog };
 export type {
   AlertDialogProps,
   AlertDialogOverlayProps,

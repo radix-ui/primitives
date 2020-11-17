@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
-import { Size } from '@interop-ui/utils';
+
+import type { Size } from '@interop-ui/utils';
 
 export function useSize(
   /** A reference to the element whose size to observe */

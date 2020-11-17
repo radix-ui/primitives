@@ -12,13 +12,13 @@ $ npm install @interop-ui/react-collapsible
 
 ```js
 import * as React from 'react';
-import { Collapsible, styles } from '@interop-ui/react-collapsible';
+import { Collapsible } from '@interop-ui/react-collapsible';
 
-function MyComponent(props) {
+function MyComponent() {
   return (
-    <Collapsible style={{ ...styles.root, ...props.style }}>
-      <Collapsible.Button style={styles.button}>Button</Collapsible.Button>
-      <Collapsible.Content style={styles.content}>Content 1</Collapsible.Content>
+    <Collapsible>
+      <Collapsible.Button>Button</Collapsible.Button>
+      <Collapsible.Content>Content 1</Collapsible.Content>
     </Collapsible>
   );
 }

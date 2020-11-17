@@ -11,20 +11,18 @@
     "README.md"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache && yarn build:styles",
-    "build:styles": "node ../../../scripts/build-styles slider",
+    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
+    "@interop-ui/react-collection": "workspace:*",
     "@interop-ui/react-use-size": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "workspace:*",
-    "lodash.omit": "^4.5.0"
+    "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
-    "@types/lodash.omit": "^4.5.6",
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {

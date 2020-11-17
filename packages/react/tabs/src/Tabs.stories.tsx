@@ -1,112 +1,142 @@
 import * as React from 'react';
 import { Tabs } from './Tabs';
+import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Tabs' };
 
-export const Basic = () => (
-  <Tabs defaultSelectedId="tab1">
-    <Tabs.List aria-label="tabs example">
-      <Tabs.Tab id="tab1">Tab 1</Tabs.Tab>
-      <Tabs.Tab id="tab2" disabled>
-        Tab 2
-      </Tabs.Tab>
-      <Tabs.Tab id="tab3">Tab 3</Tabs.Tab>
-    </Tabs.List>
-    <Tabs.Panel id="tab1">Panel 1</Tabs.Panel>
-    <Tabs.Panel id="tab2">Panel 2</Tabs.Panel>
-    <Tabs.Panel id="tab3">Panel 3</Tabs.Panel>
-  </Tabs>
-);
-
-export const InlineStyle = () => {
-  const [selectedId, setSelectedId] = React.useState<string>('tab1');
-  const [focusedId, setFocusedId] = React.useState<string | null>(null);
-  const disabledId = 'tab2';
-
-  function getTabStyle(id: string): React.CSSProperties {
-    const selected = id === selectedId;
-    const focused = id === focusedId;
-    const disabled = id === disabledId;
-    return {
-      lineHeight: 1,
-      fontWeight: 'bold',
-      padding: '0.2em 0.6em',
-      borderTop: `4px solid transparent`,
-      borderBottom: `4px solid ${selected ? 'crimson' : focused ? 'royalblue' : 'transparent'}`,
-      outline: focused ? `2px solid ${selected ? 'crimson' : 'royalblue'}` : undefined,
-      opacity: disabled ? 0.5 : 1,
-      cursor: 'pointer',
-      userSelect: 'none',
-      boxShadow: 'none',
-    };
-  }
-
-  const tabPanelStyle = {
-    padding: '0.4em',
-    borderTop: 'none',
-    lineHeight: '1.5',
-  };
-
-  function handleTabFocus(e: React.FocusEvent) {
-    const { tabId: clickedTabId } = (e.target as HTMLElement)?.dataset || {};
-    if (clickedTabId) {
-      setFocusedId(clickedTabId);
-    }
-  }
-
-  function handleTabBlur(e: React.FocusEvent) {
-    setFocusedId(null);
-  }
-
-  return (
-    <Tabs
-      activationMode="manual"
-      style={{ fontFamily: 'sans-serif', maxWidth: '20rem' }}
-      selectedId={selectedId}
-      onSelect={setSelectedId}
-    >
-      <Tabs.List
-        aria-label="tabs example"
-        style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.05)' }}
-      >
-        <Tabs.Tab
-          onFocus={handleTabFocus}
-          onBlur={handleTabBlur}
-          style={getTabStyle('tab1')}
-          id="tab1"
-        >
+export const Styled = () => (
+  <>
+    <h1>Horizontal (automatic activation)</h1>
+    <Tabs defaultSelectedId="tab1" as={StyledRoot}>
+      <Tabs.List aria-label="tabs example" as={StyledTabList}>
+        <Tabs.Tab id="tab1" as={StyledTab}>
           Tab 1
         </Tabs.Tab>
-        <Tabs.Tab
-          onFocus={handleTabFocus}
-          onBlur={handleTabBlur}
-          style={getTabStyle('tab2')}
-          id="tab2"
-          disabled
-        >
+        <Tabs.Tab id="tab2" disabled as={StyledTab}>
           Tab 2
         </Tabs.Tab>
-        <Tabs.Tab
-          onFocus={handleTabFocus}
-          onBlur={handleTabBlur}
-          style={getTabStyle('tab3')}
-          id="tab3"
-        >
+        <Tabs.Tab id="tab3" as={StyledTab}>
           Tab 3
         </Tabs.Tab>
       </Tabs.List>
-      <Tabs.Panel style={tabPanelStyle} id="tab1">
+      <Tabs.Panel id="tab1" as={StyledTabPanel}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
       </Tabs.Panel>
-      <Tabs.Panel style={tabPanelStyle} id="tab2">
+      <Tabs.Panel id="tab2" as={StyledTabPanel}>
         You'll never find me!
       </Tabs.Panel>
-      <Tabs.Panel style={tabPanelStyle} id="tab3">
+      <Tabs.Panel id="tab3" as={StyledTabPanel}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
       </Tabs.Panel>
     </Tabs>
-  );
+
+    <h1>Vertical (manual activation)</h1>
+    <Tabs defaultSelectedId="tab1" as={StyledRoot} orientation="vertical" activationMode="manual">
+      <Tabs.List aria-label="tabs example" as={StyledTabList}>
+        <Tabs.Tab id="tab1" as={StyledTab}>
+          Tab 1
+        </Tabs.Tab>
+        <Tabs.Tab id="tab2" disabled as={StyledTab}>
+          Tab 2
+        </Tabs.Tab>
+        <Tabs.Tab id="tab3" as={StyledTab}>
+          Tab 3
+        </Tabs.Tab>
+      </Tabs.List>
+      <Tabs.Panel id="tab1" as={StyledTabPanel}>
+        Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
+        integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
+        pellentesque volutpat dictum ipsum.
+      </Tabs.Panel>
+      <Tabs.Panel id="tab2" as={StyledTabPanel}>
+        You'll never find me!
+      </Tabs.Panel>
+      <Tabs.Panel id="tab3" as={StyledTabPanel}>
+        Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
+        quam tempus pretium.
+      </Tabs.Panel>
+    </Tabs>
+  </>
+);
+
+const RECOMMENDED_CSS__TABS__ROOT = {
+  // ensures things are layed out correctly by default
+  display: 'flex',
+  '&[data-orientation="horizontal"]': {
+    flexDirection: 'column',
+  },
 };
+
+const StyledRoot = styled('div', {
+  ...RECOMMENDED_CSS__TABS__ROOT,
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+  maxWidth: '20rem',
+});
+
+const RECOMMENDED_CSS__TABS__TAB_LIST = {
+  flexShrink: 0,
+  // ensures things are layed out correctly by default
+  display: 'flex',
+  '&[data-orientation="vertical"]': {
+    flexDirection: 'column',
+  },
+};
+
+const StyledTabList = styled('div', {
+  ...RECOMMENDED_CSS__TABS__TAB_LIST,
+  backgroundColor: '#eee',
+});
+
+const RECOMMENDED_CSS__TABS__TAB = {
+  flexShrink: 0,
+};
+
+const StyledTab = styled('div', {
+  ...RECOMMENDED_CSS__TABS__TAB,
+
+  padding: '0.4em 0.6em',
+  fontWeight: '500',
+  lineHeight: '1',
+  userSelect: 'none',
+
+  '&[data-orientation="horizontal"]': {
+    borderTop: '4px solid transparent',
+    borderBottom: '4px solid var(--border-color, transparent)',
+  },
+
+  '&[data-orientation="vertical"]': {
+    padding: '0.6em',
+    borderRight: '4px solid var(--border-color, transparent)',
+  },
+
+  '&[data-disabled]': { color: '$gray300' },
+
+  '&[data-state="active"]': { '--border-color': 'crimson' },
+
+  '&:focus': {
+    '--border-color': '#111',
+    outline: '1px solid var(--border-color)',
+    '&[data-state="active"]': { '--border-color': 'crimson' },
+  },
+});
+
+const RECOMMENDED_CSS__TABS__TAB_PANEL = {
+  flexGrow: 1,
+};
+
+const StyledTabPanel = styled('div', {
+  ...RECOMMENDED_CSS__TABS__TAB_PANEL,
+
+  padding: '1em',
+  border: '1px solid #eee',
+  fontWeight: '300',
+  fontSize: '0.85em',
+  lineHeight: '1.65',
+
+  '&[data-orientation="horizontal"]': { borderTop: 'none' },
+  '&[data-orientation="vertical"]': { borderLeft: 'none' },
+});

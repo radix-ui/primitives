@@ -12,7 +12,6 @@ import * as React from 'react';
 import {
   composeEventHandlers,
   createContext,
-  createStyleObj,
   forwardRef,
   RovingTabIndexProvider,
   useAccessibleMouseDown,
@@ -22,7 +21,7 @@ import {
   useRovingTabIndex,
   ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
-import { cssReset, makeId } from '@interop-ui/utils';
+import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -104,7 +103,13 @@ const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props,
 
   return (
     <TabsContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj('tabs')} ref={forwardedRef} id={tabsId} {...tabsProps}>
+      <Comp
+        {...getPartDataAttrObj(TABS_NAME)}
+        ref={forwardedRef}
+        id={tabsId}
+        data-orientation={orientation}
+        {...tabsProps}
+      >
         {children}
       </Comp>
     </TabsContext.Provider>
@@ -130,7 +135,7 @@ const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function
   return (
     <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
       <Comp
-        {...interopDataAttrObj('tabList')}
+        {...getPartDataAttrObj(TAB_LIST_NAME)}
         data-orientation={orientation}
         role="tablist"
         aria-orientation={orientation}
@@ -169,7 +174,9 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
     ...tabProps
   } = props;
 
-  const { tabsId, selectedId, setSelectedId, activationMode } = useTabsContext(TAB_NAME);
+  const { tabsId, selectedId, setSelectedId, activationMode, orientation } = useTabsContext(
+    TAB_NAME
+  );
 
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabsPanelId(tabsId, id);
@@ -202,9 +209,10 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
 
   return (
     <Comp
-      {...interopDataAttrObj('tab')}
+      {...getPartDataAttrObj(TAB_NAME)}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
+      data-orientation={orientation}
       data-tab-id={id}
       id={tabId}
       role="tab"
@@ -240,15 +248,16 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
   forwardedRef
 ) {
   const { as: Comp = TAB_PANEL_DEFAULT_TAG, id, ...tabPanelProps } = props;
-  const { tabsId, selectedId } = useTabsContext(TAB_PANEL_NAME);
+  const { tabsId, selectedId, orientation } = useTabsContext(TAB_PANEL_NAME);
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabsPanelId(tabsId, id);
   const isSelected = id === selectedId;
 
   return (
     <Comp
-      {...interopDataAttrObj('tabPanel')}
+      {...getPartDataAttrObj(TAB_PANEL_NAME)}
       data-state={isSelected ? 'active' : 'inactive'}
+      data-orientation={orientation}
       id={tabPanelId}
       role="tabpanel"
       aria-labelledby={tabId}
@@ -260,53 +269,6 @@ const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(funct
     />
   );
 });
-
-/* -------------------------------------------------------------------------------------------------
- * Styles
- * -----------------------------------------------------------------------------------------------*/
-
-const [styles, interopDataAttrObj] = createStyleObj(TABS_NAME, {
-  root: {},
-  tabList: {
-    ...cssReset(TAB_LIST_DEFAULT_TAG),
-    flexShrink: 0,
-    display: 'flex',
-  },
-  tab: {
-    // reset styles
-    ...cssReset(TAB_DEFAULT_TAG),
-    display: 'flex',
-    flexShrink: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    lineHeight: '1',
-    cursor: 'default',
-    whiteSpace: 'nowrap',
-
-    // enable overlapping adjacent tabs via z-index
-    position: 'relative',
-  },
-  tabPanel: {
-    ...cssReset(TAB_PANEL_DEFAULT_TAG),
-    flexGrow: 1,
-  },
-  tabs: {
-    ...cssReset(TABS_DEFAULT_TAG),
-    display: 'flex',
-  },
-});
-
-Tabs.Panel = TabsPanel;
-Tabs.Tab = TabsTab;
-Tabs.List = TabsList;
-
-Tabs.displayName = TABS_NAME;
-Tabs.List.displayName = TAB_LIST_NAME;
-Tabs.Tab.displayName = TAB_NAME;
-Tabs.Panel.displayName = TAB_PANEL_NAME;
-
-export { Tabs, styles };
-export type { TabsProps, TabsListProps, TabsTabProps, TabsPanelProps, ITabs };
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -323,3 +285,15 @@ interface ITabs extends ForwardRefExoticComponentWithAs<typeof TABS_DEFAULT_TAG,
   Tab: typeof TabsTab;
   Panel: typeof TabsPanel;
 }
+
+Tabs.Panel = TabsPanel;
+Tabs.Tab = TabsTab;
+Tabs.List = TabsList;
+
+Tabs.displayName = TABS_NAME;
+Tabs.List.displayName = TAB_LIST_NAME;
+Tabs.Tab.displayName = TAB_NAME;
+Tabs.Panel.displayName = TAB_PANEL_NAME;
+
+export { Tabs };
+export type { TabsProps, TabsListProps, TabsTabProps, TabsPanelProps, ITabs };

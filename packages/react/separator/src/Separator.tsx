@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { forwardRef, createStyleObj } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
+import { forwardRef } from '@interop-ui/react-utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 const NAME = 'Separator';
-const DEFAULT_TAG = 'hr';
+const DEFAULT_TAG = 'div';
 const DEFAULT_ORIENTATION = 'horizontal';
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
@@ -45,20 +45,13 @@ const Separator = forwardRef<typeof DEFAULT_TAG, SeparatorProps>(function Separa
       {...semanticProps}
       data-orientation={orientation}
       ref={forwardedRef}
-      {...interopDataAttrObj('root')}
+      {...getPartDataAttrObj(NAME)}
       {...domProps}
     />
   );
 });
 
 Separator.displayName = NAME;
-
-const [styles, interopDataAttrObj] = createStyleObj(NAME, {
-  root: {
-    ...cssReset(DEFAULT_TAG),
-    display: 'block',
-  },
-});
 
 Separator.propTypes = {
   orientation(props, propName, componentName) {
@@ -80,9 +73,9 @@ function getInvalidOrientationError(value: string, componentName: string) {
 Defaulting to \`${DEFAULT_ORIENTATION}\`.`;
 }
 
-export { Separator, styles };
-export type { SeparatorProps };
-
 function isValidOrientation(orientation: any): orientation is Orientation {
   return ORIENTATIONS.includes(orientation);
 }
+
+export { Separator };
+export type { SeparatorProps };

@@ -1,14 +1,13 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
-  createStyleObj,
   composeEventHandlers,
   forwardRef,
   useControlledState,
   useComposedRefs,
 } from '@interop-ui/react-utils';
 import { useLabelContext } from '@interop-ui/react-label';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Radio
@@ -80,10 +79,10 @@ const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioProps, RadioStaticProps>
         })}
       />
       <Comp
+        type="button"
         {...radioProps}
-        {...interopDataAttrObj('root')}
+        {...getPartDataAttrObj(RADIO_NAME)}
         ref={ref}
-        type={Comp === RADIO_DEFAULT_TAG ? 'button' : undefined}
         role="radio"
         aria-checked={checked}
         aria-labelledby={labelledBy}
@@ -128,7 +127,7 @@ const RadioIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, RadioIndicatorPr
 const RadioIndicatorImpl = forwardRef<typeof INDICATOR_DEFAULT_TAG, RadioIndicatorProps>(
   function RadioIndicatorImpl(props, forwardedRef) {
     const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-    return <Comp {...indicatorProps} {...interopDataAttrObj('indicator')} ref={forwardedRef} />;
+    return <Comp {...indicatorProps} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
   }
 );
 
@@ -147,15 +146,5 @@ interface RadioStaticProps {
   Indicator: typeof RadioIndicator;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(RADIO_NAME, {
-  root: {
-    ...cssReset(RADIO_DEFAULT_TAG),
-    verticalAlign: 'middle',
-  },
-  indicator: {
-    ...cssReset(INDICATOR_DEFAULT_TAG),
-  },
-});
-
+export { Radio };
 export type { RadioProps, RadioIndicatorProps };
-export { Radio, styles };

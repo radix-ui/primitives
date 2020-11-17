@@ -1,15 +1,14 @@
 import React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
-  createStyleObj,
   forwardRef,
   useComposedRefs,
   useControlledState,
   useId,
 } from '@interop-ui/react-utils';
-import { Collapsible, styles as collapsibleStyles } from '@interop-ui/react-collapsible';
+import { Collapsible } from '@interop-ui/react-collapsible';
 
 import type {
   CollapsibleProps,
@@ -82,7 +81,7 @@ const AccordionItem = forwardRef<typeof ITEM_DEFAULT_TAG, AccordionItemProps>(
     return (
       <Collapsible
         {...accordionItemProps}
-        {...interopDataAttrObj('item')}
+        {...getPartDataAttrObj(ITEM_NAME)}
         ref={forwardedRef}
         data-state={isOpen ? 'open' : 'closed'}
         data-disabled={disabled || undefined}
@@ -113,7 +112,7 @@ const AccordionHeader = forwardRef<typeof HEADER_DEFAULT_TAG, AccordionHeaderPro
   function AccordionHeader(props, forwardedRef) {
     const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
 
-    return <Comp ref={forwardedRef} {...headerProps} {...interopDataAttrObj('header')} />;
+    return <Comp ref={forwardedRef} {...headerProps} {...getPartDataAttrObj(HEADER_NAME)} />;
   }
 );
 
@@ -155,7 +154,7 @@ const AccordionButton = forwardRef<typeof BUTTON_DEFAULT_TAG, AccordionButtonPro
     return (
       <Collapsible.Button
         {...buttonProps}
-        {...interopDataAttrObj('button')}
+        {...getPartDataAttrObj(BUTTON_NAME)}
         ref={composedRefs}
         aria-disabled={itemContext.isOpen || undefined}
         id={itemContext.buttonId}
@@ -183,7 +182,7 @@ const AccordionPanel = forwardRef<typeof PANEL_DEFAULT_TAG, AccordionPanelProps>
     return (
       <Collapsible.Content
         {...props}
-        {...interopDataAttrObj('panel')}
+        {...getPartDataAttrObj(PANEL_NAME)}
         ref={forwardedRef}
         role="region"
         aria-labelledby={itemContext.buttonId}
@@ -288,7 +287,7 @@ const Accordion = forwardRef<typeof ACCORDION_DEFAULT_TAG, AccordionProps, Accor
     return (
       <Comp
         {...accordionProps}
-        {...interopDataAttrObj('root')}
+        {...getPartDataAttrObj(ACCORDION_NAME)}
         ref={composedRefs}
         onKeyDown={isDisabled ? undefined : handleKeyDown}
       >
@@ -299,6 +298,10 @@ const Accordion = forwardRef<typeof ACCORDION_DEFAULT_TAG, AccordionProps, Accor
 );
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function isButton(element: HTMLElement): element is HTMLButtonElement {
+  return element instanceof HTMLButtonElement;
+}
 
 Accordion.Item = AccordionItem;
 Accordion.Header = AccordionHeader;
@@ -318,28 +321,7 @@ interface AccordionStaticProps {
   Panel: typeof AccordionPanel;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(ACCORDION_NAME, {
-  root: {
-    ...cssReset(ACCORDION_DEFAULT_TAG),
-  },
-  item: {
-    ...cssReset(ITEM_DEFAULT_TAG),
-    ...collapsibleStyles.root,
-  },
-  header: {
-    ...cssReset(HEADER_DEFAULT_TAG),
-  },
-  button: {
-    ...cssReset(BUTTON_DEFAULT_TAG),
-    ...collapsibleStyles.button,
-  },
-  panel: {
-    ...cssReset(PANEL_DEFAULT_TAG),
-    ...collapsibleStyles.content,
-  },
-});
-
-export { Accordion, styles };
+export { Accordion };
 export type {
   AccordionProps,
   AccordionButtonProps,
@@ -347,7 +329,3 @@ export type {
   AccordionItemProps,
   AccordionPanelProps,
 };
-
-function isButton(element: HTMLElement): element is HTMLButtonElement {
-  return element instanceof HTMLButtonElement;
-}

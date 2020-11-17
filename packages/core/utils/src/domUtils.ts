@@ -1,21 +1,27 @@
-import kebabCase from 'lodash.kebabcase';
+const NAMESPACE = 'interop-ui';
 
-export function interopDataAttr(componentPart: string) {
-  return `data-interop-${kebabCase(componentPart)}`;
+function namespaced(componentPart: string) {
+  const part = componentPart
+    .replace('.', '')
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .toLowerCase();
+  return `${NAMESPACE}-${part}`;
 }
 
-export function interopDataAttrObj(componentPart: string) {
-  return { [interopDataAttr(componentPart)]: '' };
+function getPartDataAttr(componentPart: string) {
+  return `data-${namespaced(componentPart)}`;
 }
 
-export function interopDataAttrSelector(componentPart: string) {
-  return `[${interopDataAttr(componentPart)}]`;
+function getPartDataAttrObj(componentPart: string) {
+  return { [getPartDataAttr(componentPart)]: '' };
 }
 
-export function canUseDOM() {
+function canUseDOM() {
   return !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 }
 
-export function makeId(...args: (string | number | null | undefined)[]) {
+function makeId(...args: (string | number | null | undefined)[]) {
   return args.filter((val) => val != null).join('-');
 }
+
+export { getPartDataAttr, getPartDataAttrObj, canUseDOM, makeId };

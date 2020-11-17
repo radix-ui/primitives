@@ -16,10 +16,6 @@
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
   },
-  "dependencies": {
-    "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "workspace:*"
-  },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"
   },

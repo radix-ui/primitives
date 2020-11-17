@@ -1,11 +1,21 @@
 import * as React from 'react';
-import { Arrow as ArrowPrimitive, styles } from './Arrow';
+import { Arrow } from './Arrow';
 
 export default { title: 'Components/Arrow' };
 
-export const Basic = () => <Arrow />;
-export const InlineStyle = () => <Arrow width={20} height={10} style={{ fill: 'gainsboro' }} />;
+const RECOMMENDED_CSS__ARROW__ROOT = {
+  // better default alignment
+  verticalAlign: 'middle',
+};
 
-const Arrow = ({ children, ...props }: React.ComponentProps<typeof ArrowPrimitive>) => (
-  <ArrowPrimitive {...props} style={{ ...styles.root, ...props.style }} />
+export const Styled = () => (
+  <Arrow style={{ ...RECOMMENDED_CSS__ARROW__ROOT, fill: 'crimson' }} width={20} height={10} />
+);
+
+export const CustomSizes = () => (
+  <>
+    <Arrow style={{ ...RECOMMENDED_CSS__ARROW__ROOT }} width={40} height={10} />
+    <Arrow style={{ ...RECOMMENDED_CSS__ARROW__ROOT }} width={50} height={30} />
+    <Arrow style={{ ...RECOMMENDED_CSS__ARROW__ROOT }} width={20} height={100} />
+  </>
 );

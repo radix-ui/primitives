@@ -11,8 +11,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache && yarn build:styles",
-    "build:styles": "node ../../../scripts/build-styles announce",
+    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
@@ -22,7 +21,6 @@
     "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
-    "@interop-ui/react-visually-hidden": "workspace:*",
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {

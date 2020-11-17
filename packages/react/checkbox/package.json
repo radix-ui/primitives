@@ -11,8 +11,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache && yarn build:styles",
-    "build:styles": "node ../../../scripts/build-styles checkbox",
+    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"

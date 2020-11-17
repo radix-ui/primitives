@@ -12,18 +12,18 @@ $ npm install @interop-ui/react-popover
 
 ```js
 import * as React from 'react';
-import { Popover, styles } from '@interop-ui/react-popover';
+import { Popover } from '@interop-ui/react-popover';
 
 function MyComponent(props) {
   return (
     <Popover>
-      <Popover.Trigger style={styles.trigger}>Open popover</Popover.Trigger>
-      <Popover.Popper style={{ ...styles.popper, ...props.style }} sideOffset={10}>
-        <Popover.Content style={styles.content}>
+      <Popover.Trigger>Open popover</Popover.Trigger>
+      <Popover.Popper sideOffset={10}>
+        <Popover.Content>
           <p>Some really cool popover content!</p>
-          <Popover.Close style={styles.close}>Close popover</Popover.Close>
+          <Popover.Close>Close popover</Popover.Close>
         </Popover.Content>
-        <Popover.Arrow width={50} height={20} style={styles.arrow} />
+        <Popover.Arrow width={50} height={20} />
       </Popover.Popper>
     </Popover>
   );
