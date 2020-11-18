@@ -57,9 +57,10 @@ function getFocusIntent(
 
 function getNextItem(focusIntent: FocusIntent, items: HTMLElement[], loop?: boolean) {
   const currentIndex = items.findIndex((item) => item.tabIndex === 0);
-  const map = { first: 0, last: items.length - 1, prev: currentIndex - 1, next: currentIndex + 1 };
-  const limit = loop ? wrap : clamp;
-  const nextIndex = limit(map[focusIntent], [0, items.length - 1]);
+  const maxIndex = items.length;
+  const map = { first: 0, last: maxIndex, prev: currentIndex - 1, next: currentIndex + 1 };
+  let nextIndex = map[focusIntent];
+  nextIndex = loop ? wrap(nextIndex, maxIndex) : clamp(nextIndex, [0, maxIndex]);
   return items[nextIndex] as HTMLElement | undefined;
 }
 
@@ -74,7 +75,7 @@ type UseRovingFocusItemOptions = {
 function useRovingFocusItem({ disabled, initiallyTabbable }: UseRovingFocusItemOptions) {
   return {
     ...(disabled ? {} : getPartDataAttrObj(ITEM_NAME)),
-    tabIndex: initiallyTabbable ? 0 : -1,
+    tabIndex: !disabled && initiallyTabbable ? 0 : -1,
   };
 }
 

@@ -103,7 +103,7 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
   const { as: Comp = ITEM_DEFAULT_TAG, disabled, tabIndex, ...itemProps } = props;
 
   const rovingFocusItemProps = useRovingFocusItem({ disabled, initiallyTabbable: tabIndex === 0 });
-  const onSelect = () => !disabled && itemProps.onSelect?.();
+  const handleSelect = () => !disabled && itemProps.onSelect?.();
 
   return (
     <Comp
@@ -119,10 +119,10 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
         // prevent focusing disabled items when clicking
         (event) => disabled && event.preventDefault()
       )}
-      onMouseUp={composeEventHandlers(itemProps.onMouseUp, onSelect)}
+      onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
       onKeyDown={composeEventHandlers(itemProps.onKeyDown, (event) => {
         if (event.key === 'Enter' || event.key === ' ') {
-          onSelect?.();
+          handleSelect();
         }
       })}
     />
