@@ -20,6 +20,7 @@
       "@interop-ui/react-focus-guards": ["packages/react/focus-guards/src"],
       "@interop-ui/react-focus-scope": ["./packages/react/focus-scope/src"],
       "@interop-ui/react-label": ["./packages/react/label/src"],
+      "@interop-ui/react-polymorphic": ["./packages/react/polymorphic/src"],
       "@interop-ui/react-popover": ["./packages/react/popover/src"],
       "@interop-ui/react-popper": ["./packages/react/popper/src"],
       "@interop-ui/react-portal": ["./packages/react/portal/src"],

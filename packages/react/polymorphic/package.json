@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/react-collapsible",
-  "version": "0.0.1-12",
+  "name": "@interop-ui/react-polymorphic",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -15,11 +15,6 @@
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
-  },
-  "dependencies": {
-    "@interop-ui/react-polymorphic": "workspace:*",
-    "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"
