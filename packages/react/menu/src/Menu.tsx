@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers, forwardRef } from '@interop-ui/react-utils';
+import { composeEventHandlers, forwardRef, useComposedRefs } from '@interop-ui/react-utils';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import { useRovingFocus, useRovingFocusItem } from './useRovingFocus';
 
@@ -28,19 +28,25 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
     ...menuProps
   } = props;
 
-  const rovingFocusProps = useRovingFocus({ orientation, loop });
+  const rovingFocusProps = useRovingFocus({ orientation, loop, makeFirstItemTabbable: false });
+  const ref = useComposedRefs(
+    forwardedRef,
+    rovingFocusProps.ref as React.RefCallback<HTMLDivElement>
+  );
 
   return (
     <Comp
       role="menu"
       {...menuProps}
       {...getPartDataAttrObj(MENU_NAME)}
-      ref={forwardedRef}
       {...rovingFocusProps}
-      style={{ ...menuProps.style, ...rovingFocusProps.style }}
+      ref={ref}
+      tabIndex={0}
+      style={{ ...menuProps.style, outline: 'none' }}
       onKeyDown={composeEventHandlers(menuProps.onKeyDown, rovingFocusProps.onKeyDown, {
         checkForDefaultPrevented: false,
       })}
+      // We highlight items on `mouseMove` rather than `mouseOver` to match native menus implementation
       onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
         const menu = event.currentTarget;
         const target = event.target as HTMLElement;
@@ -48,7 +54,7 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
         const item = target.closest(ENABLED_ITEM_SELECTOR) as HTMLElement | null;
 
         if (item) {
-          // if the item is already focused, we don't need to do anything (as we're in onMouseMove)
+          // if the item is already focused, we don't want to do extra work (as this is `onMouseMove`)
           if (document.activeElement !== item) {
             setItemsTabIndex(menu, -1);
             menu.tabIndex = -1;
@@ -56,12 +62,17 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
             item.focus();
           }
         } else {
-          // if the menu is already focused, we don't need to do anything (as we're in onMouseMove)
+          // if the menu is already focused, we don't want to do extra work (as this is `onMouseMove`)
           if (document.activeElement !== menu) {
-            revertFocusToMenu(menu);
+            // we also ignore the menu here to match native menus implementation
+            if (target !== menu) {
+              revertFocusToMenu(menu);
+            }
           }
         }
       })}
+      // We unhighlight item when leaving on menu `mouseLeave` rather than `mouseOut`
+      // to match native menus implementation
       onMouseLeave={composeEventHandlers(menuProps.onMouseLeave, (event) => {
         const menu = event.currentTarget;
         revertFocusToMenu(menu);
@@ -116,9 +127,12 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
       data-disabled={disabled ? '' : undefined}
       onMouseDown={composeEventHandlers(
         itemProps.onMouseDown,
-        // prevent focusing disabled items when clicking
+        // we prevent focusing disabled items when clicking because even though the item
+        // has tabIndex={-1}, it only means take it out of the tabbable order, but clicking would
+        // still actually focus it otherwise
         (event) => disabled && event.preventDefault()
       )}
+      // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
       onKeyDown={composeEventHandlers(itemProps.onKeyDown, (event) => {
         if (event.key === 'Enter' || event.key === ' ') {

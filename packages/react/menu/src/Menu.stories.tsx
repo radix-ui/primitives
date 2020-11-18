@@ -6,7 +6,7 @@ export default { title: 'Components/Menu' };
 
 export const Styled = () => (
   <Menu as={StyledRoot}>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('undo')} tabIndex={0}>
+    <Menu.Item as={StyledItem} onSelect={() => window.alert('undo')}>
       Undo
     </Menu.Item>
     <Menu.Item as={StyledItem} onSelect={() => window.alert('redo')}>
