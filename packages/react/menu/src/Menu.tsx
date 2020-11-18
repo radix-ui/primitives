@@ -28,7 +28,7 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
     ...menuProps
   } = props;
 
-  const rovingFocusProps = useRovingFocus({ orientation, loop, makeFirstItemTabbable: false });
+  const rovingFocusProps = useRovingFocus({ orientation, loop });
   const ref = useComposedRefs(
     forwardedRef,
     rovingFocusProps.ref as React.RefCallback<HTMLDivElement>

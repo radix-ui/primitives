@@ -7,9 +7,7 @@ export const Basic = () => (
   <>
     <h1>no orientation (both) + no looping</h1>
     <ButtonGroup defaultValue="two">
-      <Button tabIndex={0} value="one">
-        One
-      </Button>
+      <Button value="one">One</Button>
       <Button value="two">Two</Button>
       <Button disabled value="three">
         Three
@@ -19,9 +17,7 @@ export const Basic = () => (
 
     <h1>no orientation (both) + looping</h1>
     <ButtonGroup loop>
-      <Button tabIndex={0} value="one">
-        One
-      </Button>
+      <Button value="one">One</Button>
       <Button value="two">Two</Button>
       <Button disabled value="three">
         Three
@@ -31,9 +27,7 @@ export const Basic = () => (
 
     <h1>horizontal orientation + no looping</h1>
     <ButtonGroup orientation="horizontal">
-      <Button tabIndex={0} value="one">
-        One
-      </Button>
+      <Button value="one">One</Button>
       <Button value="two">Two</Button>
       <Button disabled value="three">
         Three
@@ -43,9 +37,7 @@ export const Basic = () => (
 
     <h1>horizontal orientation + looping</h1>
     <ButtonGroup orientation="horizontal" loop>
-      <Button tabIndex={0} value="one">
-        One
-      </Button>
+      <Button value="one">One</Button>
       <Button value="two">Two</Button>
       <Button disabled value="three">
         Three
@@ -55,9 +47,7 @@ export const Basic = () => (
 
     <h1>vertical orientation + no looping</h1>
     <ButtonGroup orientation="vertical">
-      <Button tabIndex={0} value="one">
-        One
-      </Button>
+      <Button value="one">One</Button>
       <Button value="two">Two</Button>
       <Button disabled value="three">
         Three
@@ -67,9 +57,7 @@ export const Basic = () => (
 
     <h1>vertical orientation + looping</h1>
     <ButtonGroup orientation="vertical" loop>
-      <Button tabIndex={0} value="one">
-        One
-      </Button>
+      <Button value="one">One</Button>
       <Button value="two">Two</Button>
       <Button disabled value="three">
         Three
@@ -89,11 +77,7 @@ type ButtonGroupProps = Omit<React.ComponentPropsWithRef<'div'>, 'defaultValue'>
 
 const ButtonGroup = ({ orientation, loop, defaultValue, ...props }: ButtonGroupProps) => {
   const [value, setValue] = React.useState(defaultValue);
-  const rovingFocusProps = useRovingFocus({
-    orientation,
-    loop,
-    makeFirstItemTabbable: value === undefined,
-  });
+  const rovingFocusProps = useRovingFocus({ orientation, loop });
 
   return (
     <ButtonGroupContext.Provider value={{ value, setValue }}>
@@ -122,6 +106,7 @@ const Button = ({ disabled, tabIndex, value, ...props }: ButtonProps) => {
   const { value: contextValue, setValue } = React.useContext(ButtonGroupContext);
   const isSelected = contextValue !== undefined && value !== undefined && contextValue === value;
   const rovingFocusItemProps = useRovingFocusItem({ disabled, initiallyTabbable: isSelected });
+
   return (
     <button
       disabled={disabled}

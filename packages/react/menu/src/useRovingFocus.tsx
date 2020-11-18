@@ -4,20 +4,19 @@ import { getPartDataAttr, getPartDataAttrObj, wrap, clamp } from '@interop-ui/ut
 type UseRovingFocusOptions = {
   orientation?: React.AriaAttributes['aria-orientation'];
   loop?: boolean;
-  makeFirstItemTabbable?: boolean;
 };
 
-function useRovingFocus({
-  orientation,
-  loop = false,
-  makeFirstItemTabbable = true,
-}: UseRovingFocusOptions) {
+function useRovingFocus({ orientation, loop = false }: UseRovingFocusOptions) {
   return {
     ref: (container: HTMLElement | null) => {
-      if (makeFirstItemTabbable && container) {
-        const items = getRovingFocusItems(container);
-        const firstItem = items[0];
-        if (firstItem) firstItem.tabIndex = 0;
+      if (container) {
+        const alreadyIsTabbable =
+          container.querySelector('[tabIndex="0"]') !== null || container.tabIndex === 0;
+        if (!alreadyIsTabbable) {
+          const items = getRovingFocusItems(container);
+          const firstItem = items[0];
+          if (firstItem) firstItem.tabIndex = 0;
+        }
       }
     },
     onKeyDown: (event: React.KeyboardEvent) => {
