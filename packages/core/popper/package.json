@@ -1,6 +1,6 @@
 {
   "name": "@interop-ui/popper",
-  "version": "0.0.1-11",
+  "version": "0.0.1-12",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -21,8 +21,6 @@
     "csstype": "^3.0.4"
   },
   "devDependencies": {
-    "@interop-ui/react-use-size": "workspace:*",
-    "@interop-ui/react-utils": "workspace:*",
     "parcel": "^2.0.0-beta.1"
   }
 }

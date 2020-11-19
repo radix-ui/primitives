@@ -1,37 +1,20 @@
 import * as React from 'react';
+import { ProgressBar } from './ProgressBar';
 import { styled } from '../../../../stitches.config';
-import { ProgressBar, styles } from './ProgressBar';
 
 export default {
   title: 'Components/ProgressBar',
 };
 
-export const Basic = () => {
-  const [value, percentage, setValue] = useProgressValueState(0);
-  const toggleIndeterminate = useIndeterminateToggle(value, setValue);
-  return (
-    <div>
-      <ProgressBar style={styles.root} value={value}>
-        <ProgressBar.Indicator
-          style={{ ...styles.indicator, width: percentage ?? `${percentage}%` }}
-        />
-      </ProgressBar>
-      <hr />
-      <button onClick={toggleIndeterminate}>Toggle Indeterminate</button>
-      <ProgressRange value={value} setValue={setValue} />
-    </div>
-  );
-};
-
-export const StitchesStyle = () => {
+export const Styled = () => {
   const max = 150;
   const [value, percentage, setValue] = useProgressValueState(0, max);
   const toggleIndeterminate = useIndeterminateToggle(value, setValue);
   return (
     <div>
-      <ProgressBar as={Root} value={value} max={max}>
+      <ProgressBar as={StyledRoot} value={value} max={max}>
         <ProgressBar.Indicator
-          as={Indicator}
+          as={StyledIndicator}
           style={{ width: percentage != null ? `${percentage}%` : undefined }}
         />
       </ProgressBar>
@@ -61,25 +44,15 @@ function ProgressRange({ value, setValue, max = 100 }: any) {
   );
 }
 
-/* -------------------------------------------------------------------------------------------------
- * Reset components
- * -----------------------------------------------------------------------------------------------*/
-
-const HEIGHT = 20;
-const WIDTH = 400;
-const BORDER = 5;
-
-const Root = styled('div', {
-  ...(styles.root as any),
-  height: `${HEIGHT}px`,
-  width: `${WIDTH}px`,
+const StyledRoot = styled('div', {
+  width: 400,
+  height: 20,
   maxWidth: '100%',
-  border: `${BORDER}px solid $black`,
+  border: '5px solid $black',
   backgroundColor: '$gray200',
 });
 
-const Indicator = styled('div', {
-  ...(styles.indicator as any),
+const StyledIndicator = styled('div', {
   width: '100%',
   height: '100%',
   backgroundColor: '$red',

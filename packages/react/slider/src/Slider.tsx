@@ -1,10 +1,8 @@
 import * as React from 'react';
-import omit from 'lodash.omit';
-import { cssReset, clamp, interopDataAttr } from '@interop-ui/utils';
+import { clamp, getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
-  createStyleObj,
   forwardRef,
   useComposedRefs,
   useControlledState,
@@ -97,11 +95,13 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       | SliderRangeControlledProps
       | SliderRangeUncontrolledProps;
 
-    const sliderProps = omit(restProps, [
-      'defaultValue',
-      'value',
-      'minStepsBetweenThumbs',
-    ]) as SliderDOMProps;
+    const sliderProps = { ...restProps } as SliderDOMProps;
+    // @ts-ignore
+    delete sliderProps.defaultValue;
+    // @ts-ignore
+    delete sliderProps.value;
+    // @ts-ignore
+    delete sliderProps.minStepsBetweenThumbs;
 
     const step = Math.max(stepProp, 1);
     const sliderRef = React.useRef<HTMLSpanElement>(null);
@@ -174,7 +174,7 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     return (
       <SliderOrientation
         {...sliderProps}
-        {...interopDataAttrObj('root')}
+        {...getPartDataAttrObj(SLIDER_NAME)}
         ref={composedRefs}
         min={min}
         max={max}
@@ -288,8 +288,9 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
         ref={ref}
         style={{
           ...sliderProps.style,
-          ['--thumb-transform' as any]: 'translateX(-50%)',
+          ['--interop-ui-slider-thumb-transform' as any]: 'translateX(-50%)',
         }}
+        data-orientation="horizontal"
         onSlideMouseDown={(event) => {
           const value = getValueFromPointer(event.clientX);
           onSlideStart?.(value);
@@ -367,8 +368,9 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps
         ref={ref}
         style={{
           ...sliderProps.style,
-          ['--thumb-transform' as any]: 'translateY(50%)',
+          ['--interop-ui-slider-thumb-transform' as any]: 'translateY(50%)',
         }}
+        data-orientation="vertical"
         onSlideMouseDown={(event) => {
           const value = getValueFromPointer(event.clientY);
           onSlideStart?.(value);
@@ -533,8 +535,14 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   forwardedRef
 ) {
   const { as: Comp = TRACK_DEFAULT_TAG, children, ...trackProps } = props;
+  const context = useSliderContext(TRACK_NAME);
   return (
-    <Comp {...interopDataAttrObj('track')} {...trackProps} ref={forwardedRef}>
+    <Comp
+      {...getPartDataAttrObj(TRACK_NAME)}
+      {...trackProps}
+      ref={forwardedRef}
+      data-orientation={context.orientation}
+    >
       {children}
     </Comp>
   );
@@ -567,7 +575,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
 
   return (
     <Comp
-      {...interopDataAttrObj('range')}
+      {...getPartDataAttrObj(RANGE_NAME)}
       {...rangeProps}
       ref={composedRefs}
       style={{
@@ -575,6 +583,7 @@ const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(funct
         [orientation.startEdge]: offsetStart + '%',
         [orientation.endEdge]: offsetEnd + '%',
       }}
+      data-orientation={context.orientation}
     />
   );
 });
@@ -632,14 +641,14 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
     return (
       <span
         style={{
-          transform: 'var(--thumb-transform)',
+          transform: 'var(--interop-ui-slider-thumb-transform)',
           position: 'absolute',
           [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
         }}
       >
         <Comp
           {...thumbProps}
-          {...interopDataAttrObj('thumb')}
+          {...getPartDataAttrObj(THUMB_NAME)}
           ref={ref}
           aria-label={props['aria-label'] || label}
           aria-valuemin={context.min}
@@ -651,6 +660,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
           onFocus={composeEventHandlers(props.onFocus, () => {
             context.valueIndexToChangeRef.current = index;
           })}
+          data-orientation={context.orientation}
         />
       </span>
     );
@@ -673,43 +683,6 @@ interface SliderStaticProps {
   Range: typeof SliderRange;
   Thumb: typeof SliderThumb;
 }
-
-const [styles, interopDataAttrObj] = createStyleObj(SLIDER_NAME, {
-  root: {
-    ...cssReset(SLIDER_DEFAULT_TAG),
-    position: 'relative',
-    display: 'inline-flex',
-    flexShrink: 0,
-    userSelect: 'none',
-    touchAction: 'none', // Disable browser handling of all panning and zooming gestures on touch devices
-  },
-  track: {
-    ...cssReset(TRACK_DEFAULT_TAG),
-    position: 'relative',
-    flexGrow: 1,
-  },
-  range: {
-    ...cssReset(RANGE_DEFAULT_TAG),
-    position: 'absolute',
-  },
-  thumb: {
-    ...cssReset(THUMB_DEFAULT_TAG),
-    display: 'block',
-    outline: 'none',
-
-    // Add recommended target size regardless of styled size
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      zIndex: -1,
-      width: 44,
-      height: 44,
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-    },
-  },
-});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -787,7 +760,7 @@ function toArray(value: number | number[]): number[] {
 }
 
 function isThumb(node: any): node is HTMLElement {
-  const thumbAttributeName = interopDataAttr(THUMB_NAME);
+  const thumbAttributeName = getPartDataAttr(THUMB_NAME);
   const thumbAttribute = node.getAttribute(thumbAttributeName);
   // `getAttribute` returns the attribute value and since we add the
   // attribute without a value, we must check it is an empty string
@@ -881,5 +854,5 @@ function linearScale(domain: [number, number], range: [number, number]) {
   };
 }
 
+export { Slider };
 export type { SliderProps, SliderRangeProps, SliderTrackProps, SliderThumbProps };
-export { Slider, styles };

@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@stitches/react": "canary",
     "@storybook/addon-storysource": "6.1.0-beta.4",
     "@storybook/react": "6.1.0-beta.4",
     "@testing-library/jest-dom": "^5.11.3",
@@ -58,7 +59,6 @@
     "jest": "^26.4.0",
     "jest-axe": "^3.5.0",
     "jest-watch-typeahead": "^0.6.0",
-    "json-to-css": "^0.1.0",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "react-test-renderer": "^17.0.1",

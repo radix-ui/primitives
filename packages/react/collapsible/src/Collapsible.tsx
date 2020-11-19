@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
-  createStyleObj,
   forwardRef,
   useId,
   composeEventHandlers,
   useControlledState,
 } from '@interop-ui/react-utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -44,7 +43,7 @@ const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButto
 
     return (
       <Comp
-        {...interopDataAttrObj('button')}
+        {...getPartDataAttrObj(BUTTON_NAME)}
         ref={forwardedRef}
         aria-controls={context.contentId}
         aria-expanded={context.isOpen || false}
@@ -81,7 +80,7 @@ const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleCon
 
     return (
       <Comp
-        {...interopDataAttrObj('content')}
+        {...getPartDataAttrObj(CONTENT_NAME)}
         ref={forwardedRef}
         {...contentProps}
         id={id}
@@ -152,7 +151,7 @@ const Collapsible = forwardRef<
 
   return (
     <Comp
-      {...interopDataAttrObj('root')}
+      {...getPartDataAttrObj(COLLAPSIBLE_NAME)}
       {...collapsibleProps}
       data-state={getState(context.isOpen)}
       ref={forwardedRef}
@@ -162,6 +161,10 @@ const Collapsible = forwardRef<
   );
 });
 
+function getState(isOpen?: boolean) {
+  return isOpen ? 'open' : 'closed';
+}
+
 Collapsible.Button = CollapsibleButton;
 Collapsible.Content = CollapsibleContent;
 
@@ -169,29 +172,5 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 Collapsible.Button.displayName = BUTTON_NAME;
 Collapsible.Content.displayName = CONTENT_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
-  root: {
-    ...cssReset(COLLAPSIBLE_DEFAULT_TAG),
-  },
-  button: {
-    ...cssReset(BUTTON_DEFAULT_TAG),
-    display: 'block',
-    width: '100%',
-    textAlign: 'inherit',
-    userSelect: 'none',
-
-    '&:disabled': {
-      pointerEvents: 'none',
-    },
-  },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-  },
-});
-
+export { Collapsible };
 export type { CollapsibleProps, CollapsibleButtonProps, CollapsibleContentProps };
-export { Collapsible, styles };
-
-function getState(isOpen?: boolean) {
-  return isOpen ? 'open' : 'closed';
-}

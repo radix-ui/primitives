@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   composeEventHandlers,
   createContext,
-  createStyleObj,
   forwardRef,
   useCallbackRef,
   useControlledState,
@@ -11,11 +10,11 @@ import {
   useComposedRefs,
   useId,
 } from '@interop-ui/react-utils';
-import { Radio, styles as radioStyles } from './Radio';
+import { Radio } from './Radio';
 import { useLabelContext } from '@interop-ui/react-label';
 
 import type { RadioProps } from './Radio';
-import { cssReset } from '@interop-ui/utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
@@ -80,7 +79,7 @@ const RadioGroup = forwardRef<
   return (
     <Comp
       {...groupProps}
-      {...interopDataAttrObj('root')}
+      {...getPartDataAttrObj(RADIO_GROUP_NAME)}
       ref={forwardedRef}
       role="radiogroup"
       aria-labelledby={labelledBy}
@@ -139,7 +138,7 @@ const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
       <Radio
         as={as}
         {...itemProps}
-        {...interopDataAttrObj('item')}
+        {...getPartDataAttrObj(ITEM_NAME)}
         required={required ?? context.required}
         checked={isChecked}
         ref={ref}
@@ -168,11 +167,5 @@ interface RadioGroupStaticProps {
   Indicator: typeof Radio.Indicator;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(RADIO_GROUP_NAME, {
-  root: cssReset(RADIO_GROUP_DEFAULT_TAG),
-  item: radioStyles.root,
-  indicator: radioStyles.indicator,
-});
-
-export { RadioGroup, styles };
+export { RadioGroup };
 export type { RadioGroupProps, RadioGroupItemProps };

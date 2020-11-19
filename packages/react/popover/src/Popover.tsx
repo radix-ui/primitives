@@ -1,7 +1,7 @@
 import * as React from 'react';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 import {
   forwardRef,
-  createStyleObj,
   createContext,
   useComposedRefs,
   composeEventHandlers,
@@ -9,8 +9,7 @@ import {
   useId,
   composeRefs,
 } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
-import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
+import { Popper } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
@@ -97,9 +96,9 @@ const PopoverTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, PopoverTriggerProp
 
     return (
       <Comp
-        {...interopDataAttrObj('trigger')}
+        {...getPartDataAttrObj(TRIGGER_NAME)}
         ref={composedTriggerRef}
-        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         aria-haspopup="dialog"
         aria-expanded={context.isOpen}
         aria-controls={context.id}
@@ -273,7 +272,7 @@ const PopoverPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, PopoverPopperPro
               >
                 {(dismissableLayerProps) => (
                   <Popper
-                    {...interopDataAttrObj('popper')}
+                    {...getPartDataAttrObj(POPPER_NAME)}
                     role="dialog"
                     aria-modal
                     {...popperProps}
@@ -288,6 +287,8 @@ const PopoverPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, PopoverPopperPro
                     style={{
                       ...dismissableLayerProps.style,
                       ...popperProps.style,
+                      // re-namespace exposed popper custom property
+                      ['--interop-ui-popover-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
                     }}
                     onBlurCapture={composeEventHandlers(
                       popperProps.onBlurCapture,
@@ -335,7 +336,7 @@ type PopoverContentProps = PopoverContentDOMProps & PopoverContentOwnProps;
 
 const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
   (props, forwardedRef) => {
-    return <Popper.Content {...interopDataAttrObj('content')} {...props} ref={forwardedRef} />;
+    return <Popper.Content {...getPartDataAttrObj(CONTENT_NAME)} {...props} ref={forwardedRef} />;
   }
 );
 
@@ -357,9 +358,9 @@ const PopoverClose = forwardRef<typeof CLOSE_DEFAULT_TAG, PopoverCloseProps>(
 
     return (
       <Comp
-        {...interopDataAttrObj('close')}
+        {...getPartDataAttrObj(CLOSE_NAME)}
         ref={forwardedRef}
-        type={Comp === CLOSE_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         {...closeProps}
         onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
       />
@@ -381,7 +382,7 @@ const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(fun
   props,
   forwardedRef
 ) {
-  return <Popper.Arrow {...interopDataAttrObj('arrow')} {...props} ref={forwardedRef} />;
+  return <Popper.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
 });
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -399,28 +400,7 @@ Popover.Content.displayName = CONTENT_NAME;
 Popover.Close.displayName = CLOSE_NAME;
 Popover.Arrow.displayName = ARROW_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(POPOVER_NAME, {
-  root: {},
-  trigger: {
-    ...cssReset(TRIGGER_DEFAULT_TAG),
-  },
-  popper: {
-    ...cssReset(POPPER_DEFAULT_TAG),
-    ...popperStyles.root,
-  },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-    ...popperStyles.content,
-  },
-  close: {
-    ...cssReset(CLOSE_DEFAULT_TAG),
-  },
-  arrow: {
-    ...cssReset(ARROW_DEFAULT_TAG),
-    ...popperStyles.arrow,
-  },
-});
-
+export { Popover };
 export type {
   PopoverProps,
   PopoverTriggerProps,
@@ -429,4 +409,3 @@ export type {
   PopoverCloseProps,
   PopoverArrowProps,
 };
-export { Popover, styles };

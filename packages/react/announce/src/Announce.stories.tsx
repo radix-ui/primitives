@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Announce } from './Announce';
-import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
+import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 
 export default { title: 'Components/Announce' };
 
@@ -34,7 +34,7 @@ export function StatusChange() {
 
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, lineHeight: 1 }}>
-      <VisuallyHidden style={visuallyHiddenStyles.root}>
+      <VisuallyHidden>
         <Announce aria-relevant="all">
           Your friend is {friendIsOnline ? 'online' : 'offline'}
         </Announce>

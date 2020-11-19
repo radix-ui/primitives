@@ -1,7 +1,7 @@
 import * as React from 'react';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 import {
   forwardRef,
-  createStyleObj,
   createContext,
   useComposedRefs,
   useId,
@@ -11,10 +11,9 @@ import {
   useControlledState,
   useLayoutEffect,
 } from '@interop-ui/react-utils';
-import { cssReset } from '@interop-ui/utils';
-import { Popper, styles as popperStyles } from '@interop-ui/react-popper';
+import { Popper } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
-import { VisuallyHidden, styles as visuallyHiddenStyles } from '@interop-ui/react-visually-hidden';
+import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
 
 import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
@@ -164,9 +163,9 @@ const TooltipTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, TooltipTriggerProp
 
     return (
       <Comp
-        {...interopDataAttrObj('trigger')}
+        {...getPartDataAttrObj(TRIGGER_NAME)}
         ref={composedTriggerRef}
-        type={Comp === TRIGGER_DEFAULT_TAG ? 'button' : undefined}
+        type="button"
         aria-describedby={context.isOpen ? context.id : undefined}
         onMouseEnter={composeEventHandlers(onMouseEnter, () =>
           stateMachine.transition('mouseEntered', { id: context.id })
@@ -239,11 +238,16 @@ const TooltipPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperPro
       <PortalWrapper>
         <CheckTriggerMoved />
         <Popper
-          {...interopDataAttrObj('popper')}
+          {...getPartDataAttrObj(POPPER_NAME)}
           {...popperProps}
           data-state={context.stateAttribute}
           ref={forwardedRef}
           anchorRef={anchorRef || context.triggerRef}
+          style={{
+            ...popperProps.style,
+            // re-namespace exposed popper custom property
+            ['--interop-ui-tooltip-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
+          }}
         >
           {children}
         </Popper>
@@ -297,9 +301,9 @@ const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProp
     const context = useTooltipContext(CONTENT_NAME);
 
     return (
-      <Popper.Content {...interopDataAttrObj('content')} {...contentProps} ref={forwardedRef}>
+      <Popper.Content {...getPartDataAttrObj(CONTENT_NAME)} {...contentProps} ref={forwardedRef}>
         {children}
-        <VisuallyHidden id={context.id} role="tooltip" style={visuallyHiddenStyles.root}>
+        <VisuallyHidden id={context.id} role="tooltip">
           {ariaLabel || children}
         </VisuallyHidden>
       </Popper.Content>
@@ -321,7 +325,7 @@ const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(fun
   props,
   forwardedRef
 ) {
-  return <Popper.Arrow {...interopDataAttrObj('arrow')} {...props} ref={forwardedRef} />;
+  return <Popper.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
 });
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -337,27 +341,7 @@ Tooltip.Popper.displayName = POPPER_NAME;
 Tooltip.Content.displayName = CONTENT_NAME;
 Tooltip.Arrow.displayName = ARROW_NAME;
 
-const [styles, interopDataAttrObj] = createStyleObj(TOOLTIP_NAME, {
-  root: {},
-  trigger: {
-    ...cssReset(TRIGGER_DEFAULT_TAG),
-  },
-  popper: {
-    ...cssReset(POPPER_DEFAULT_TAG),
-    ...popperStyles.root,
-  },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-    ...popperStyles.content,
-    userSelect: 'none',
-    pointerEvents: 'none',
-  },
-  arrow: {
-    ...cssReset(ARROW_DEFAULT_TAG),
-    ...popperStyles.arrow,
-  },
-});
-
+export { Tooltip };
 export type {
   TooltipProps,
   TooltipTriggerProps,
@@ -365,4 +349,3 @@ export type {
   TooltipContentProps,
   TooltipArrowProps,
 };
-export { Tooltip, styles };

@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 import {
   createContext,
-  createStyleObj,
   composeEventHandlers,
   forwardRef,
   useControlledState,
@@ -87,10 +86,10 @@ const Checkbox = forwardRef<typeof CHECKBOX_DEFAULT_TAG, CheckboxProps, Checkbox
           })}
         />
         <Comp
+          type="button"
           {...checkboxProps}
-          {...interopDataAttrObj('root')}
+          {...getPartDataAttrObj(CHECKBOX_NAME)}
           ref={ref}
-          type={Comp === CHECKBOX_DEFAULT_TAG ? 'button' : undefined}
           role="checkbox"
           aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
           aria-labelledby={labelledBy}
@@ -137,7 +136,7 @@ const CheckboxIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, CheckboxIndic
 const CheckboxIndicatorImpl = forwardRef<typeof INDICATOR_DEFAULT_TAG, CheckboxIndicatorProps>(
   function CheckboxIndicatorImpl(props, forwardedRef) {
     const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-    return <Comp {...indicatorProps} {...interopDataAttrObj('indicator')} ref={forwardedRef} />;
+    return <Comp {...indicatorProps} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
   }
 );
 
@@ -156,15 +155,5 @@ interface CheckboxStaticProps {
   Indicator: typeof CheckboxIndicator;
 }
 
-const [styles, interopDataAttrObj] = createStyleObj(CHECKBOX_NAME, {
-  root: {
-    ...cssReset(CHECKBOX_DEFAULT_TAG),
-    verticalAlign: 'middle',
-  },
-  indicator: {
-    ...cssReset(INDICATOR_DEFAULT_TAG),
-  },
-});
-
 export type { CheckboxProps, CheckboxIndicatorProps };
-export { Checkbox, styles };
+export { Checkbox };

@@ -99,7 +99,7 @@ export function getPlacementData({
     return {
       popperStyles: {
         ...popperStyles,
-        ['--interop-popper-transform-origin' as any]: transformOrigin,
+        ['--interop-ui-popper-transform-origin' as any]: transformOrigin,
       },
       arrowStyles,
       placedSide: side,
@@ -166,7 +166,7 @@ export function getPlacementData({
   return {
     popperStyles: {
       ...popperStyles,
-      ['--interop-popper-transform-origin' as any]: transformOrigin,
+      ['--interop-ui-popper-transform-origin' as any]: transformOrigin,
     },
     arrowStyles,
     placedSide,

@@ -12,15 +12,15 @@ $ npm install @interop-ui/react-checkbox
 
 ```js
 import * as React from 'react';
-import { Checkbox, styles } from '@interop-ui/react-checkbox';
-import { Label, styles as labelStyles } from '@interop-ui/react-label';
+import { Checkbox } from '@interop-ui/react-checkbox';
+import { Label } from '@interop-ui/react-label';
 
 function MyComponent(props) {
   return (
-    <Label style={labelStyles.root}>
+    <Label>
       <span>{props.label}</span>
-      <Checkbox onCheckedChange={() => props.onCheckedChange()} style={styles.root}>
-        <Checkbox.Indicator style={styles.indicator} />
+      <Checkbox onCheckedChange={() => props.onCheckedChange()}>
+        <Checkbox.Indicator />
       </Checkbox>
     </Label>
   );
