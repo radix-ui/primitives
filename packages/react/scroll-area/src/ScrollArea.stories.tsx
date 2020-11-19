@@ -157,7 +157,7 @@ export function InsidePopover() {
           <PopoverPrimitive.Trigger as="button">
             {isOpen ? 'close' : 'open'}
           </PopoverPrimitive.Trigger>
-          <PopoverPrimitive.Position style={{ ...popoverStyles.position }}>
+          <PopoverPrimitive.Popper style={{ ...popoverStyles.popper }}>
             <PopoverPrimitive.Content
               style={{ ...popoverStyles.content, backgroundColor: '#eee', width: 250, height: 150 }}
             >
@@ -179,7 +179,7 @@ export function InsidePopover() {
               </ScrollArea>
             </PopoverPrimitive.Content>
             <PopoverPrimitive.Arrow width={50} height={20} style={{ ...popoverStyles.arrow }} />
-          </PopoverPrimitive.Position>
+          </PopoverPrimitive.Popper>
         </PopoverPrimitive>
       </div>
     </div>
