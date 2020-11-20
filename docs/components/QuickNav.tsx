@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Box, Heading, Link, Text, BoxProps } from '@modulz/radix';
 import { useLayoutEffect } from '@interop-ui/react-utils';
+import uniqBy from 'lodash/uniqBy';
 
 type QuickNavItem = {
   label: string;
@@ -42,16 +43,28 @@ function QuickNavItem({
   level = 0,
 }: QuickNavItemProps) {
   const { setItems } = useQuickNavContext();
-  const label = labelOverride ?? (typeof children === 'string' ? children : '');
-  const slug = slugOverride ?? 'section-' + label.toLowerCase().replace(/\s/g, '-');
+  const [label, setLabel] = React.useState(() => (typeof children === 'string' ? children : ''));
+  const slug = slugOverride ?? `section-${level}-` + label.toLowerCase().replace(/\s/g, '-');
 
   useLayoutEffect(() => {
-    setItems((items) => [...items, { label, slug, level }]);
+    setItems((items) => uniqBy([...items, { label, slug, level }], (item) => item.slug));
     return () => setItems((items) => items.filter((item) => item.slug !== slug));
   }, [slug, label, level, setItems]);
 
+  // If children isn't a string (which can be the case if headings have additional inside elements)
+  // we need to get the inner text from the DOM node.
+  const setLabelFromInnerText = React.useCallback((node: HTMLSpanElement | null) => {
+    const innerText = node?.innerText || '';
+    setLabel((label) => {
+      if (!label) {
+        return innerText;
+      }
+      return label;
+    });
+  }, []);
+
   return (
-    <Box as="span" id={slug} sx={{ scrollMargin: 15 }}>
+    <Box as="span" id={slug} ref={setLabelFromInnerText} sx={{ scrollMargin: 15 }}>
       {children}
     </Box>
   );

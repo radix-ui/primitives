@@ -1,0 +1,17 @@
+---
+title: ''
+---
+
+export default ({ frontMatter, ...props }) => <React.Fragment {...props} />;
+
+Whether or not the `CollapsibleContent` is visible by default when `Collapsible` is rendered. If omitted, `CollapsibleContent` will be hidden until the user clicks `CollapsibleButton`.
+
+```jsx
+// live
+<Collapsible defaultIsOpen>
+  <Collapsible.Button>Greeting</Collapsible.Button>
+  <Collapsible.Content>Hello there!</Collapsible.Content>
+</Collapsible>
+```
+
+`defaultIsOpen` should be used if you do not need to control the state of `Collapsible`, as its value will not change the state of `Collapsible` after the first render. If you need to control its state, use the `isOpen` prop instead.
