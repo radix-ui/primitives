@@ -32,7 +32,7 @@ export interface ForwardRefExoticComponentWithAs<T, P = {}> extends React.Forwar
 }
 
 export function forwardRefWithAs<T extends Element, P = {}>(
-  component: React.ForwardRefRenderFunction<T, P & { as?: React.ComponentType<P> }>
+  component: React.ForwardRefRenderFunction<T, P & { as?: React.ComponentType<Partial<P>> }>
 ) {
   return React.forwardRef(component) as ForwardRefExoticComponentWithAs<
     T,
