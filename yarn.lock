@@ -1994,8 +1994,9 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@mdx-js/react": ^1.6.21
     "@modulz/radix": 0.0.1-beta.44
-    "@modulz/radix-icons": ^2.4.1
+    "@modulz/radix-icons": ^3.3.0
     "@ngsctt/remark-smartypants": ^0.2.0
+    "@types/lodash": ^4.14.165
     "@types/mdx-js__react": ^1.5.3
     "@types/react": ^16.9.56
     "@types/react-dom": ^16.9.9
@@ -2003,6 +2004,7 @@ __metadata:
     "@types/styled-components": ^5.1.4
     babel-plugin-import-glob-array: ^0.2.0
     babel-plugin-styled-components: ^1.11.1
+    lodash: ^4.17.20
     next: ^10.0.1
     next-mdx-enhanced: 5.0.0
     next-transpile-modules: ^4.1.0
@@ -2011,7 +2013,6 @@ __metadata:
     react-is: ^17.0.1
     react-live: ^2.2.3
     remark-images: ^2.0.0
-    remark-slug: ^6.0.0
     styled-components: ^5.2.1
     typescript: ^4.0.5
   languageName: unknown
@@ -2729,12 +2730,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modulz/radix-icons@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "@modulz/radix-icons@npm:2.4.1"
+"@modulz/radix-icons@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@modulz/radix-icons@npm:3.3.0"
   peerDependencies:
     react: ^16.x
-  checksum: 7d0d148316b45a85f8107b20a65fe3a105338a73cb5033b6e469b28e9d9f02ed20c42828411b6f511c31e491e83c71fe0271ee2f63a776be9258cd630eb13c84
+  checksum: 510a796bca746c4cb317b5b6ba1a6b2d16667cc35ef2c113a8ce44783fdd74280299e401c8851a7fd6efbf8918b24ca15fbc49f5d979e352412e20ae2d10186b
   languageName: node
   linkType: hard
 
@@ -4874,6 +4875,13 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 66e9ac0143ec521522c7bb670301e9836ee886207eeed1aab6d4854a1b19b404ab3a54cd8d449f9b1f13acc357f540be96f8ac2d1e86e301eab52ae0f9a4066f
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.14.165":
+  version: 4.14.165
+  resolution: "@types/lodash@npm:4.14.165"
+  checksum: 525bfc34b0b591cc957125a961c70e63e5ad8b23cbd89b7594a5ea74823285b6d96993a7eec506e26b379ee52dc9dcd3a894ff210be4c97bccb536e62361dbc8
   languageName: node
   linkType: hard
 
@@ -9446,13 +9454,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"emoji-regex@npm:>=6.0.0 <=6.1.1":
-  version: 6.1.1
-  resolution: "emoji-regex@npm:6.1.1"
-  checksum: 1d35436f24d1a00d53451573271ee1ea01e8b978bcc105ac7677633c35c665a796c317086d39b19eda6261d1861415185e98e28d39d2437cd2a9fd3dfcc0f54a
-  languageName: node
-  linkType: hard
-
 "emoji-regex@npm:^7.0.1":
   version: 7.0.3
   resolution: "emoji-regex@npm:7.0.3"
@@ -11018,15 +11019,6 @@ fsevents@^1.2.7:
   version: 0.0.0
   resolution: "github-from-package@npm:0.0.0"
   checksum: 9c3bae601535f7de7e2f54cc58dcd2ae62aa7afd262e9edea9021a264e633859ad0aef6ec23328e26607e4259f1efb97ce9b5b01e3f80d7d258085a628c9b710
-  languageName: node
-  linkType: hard
-
-"github-slugger@npm:^1.0.0":
-  version: 1.3.0
-  resolution: "github-slugger@npm:1.3.0"
-  dependencies:
-    emoji-regex: ">=6.0.0 <=6.1.1"
-  checksum: 1f5961777b75d2ce2df5ae8d16a1eba49145a9896c5808341ca4100894631a4182ab010dea260a8a22855ea89d383f61412507dd34977a67b3a641168af19e10
   languageName: node
   linkType: hard
 
@@ -14169,13 +14161,6 @@ fsevents@^1.2.7:
     unist-util-position: ^3.0.0
     unist-util-visit: ^2.0.0
   checksum: 5c79c78fe3b084f35c3fd6f8a83f1a2b175a4ef8d17fa4e5a0fb92544fa9758af34678717196345ae31e73af769873f6fc1b160a5ee82c5ec224530e5068a8df
-  languageName: node
-  linkType: hard
-
-"mdast-util-to-string@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "mdast-util-to-string@npm:1.1.0"
-  checksum: 0d5ebe2cb573ac817436a0cb0310f7a46c69a742de2de728451fd6293e4825a7894c2112b2651c4c6dcaccb6f545eade1ea58c0e08dcf4a1ddadb636f2fcd52c
   languageName: node
   linkType: hard
 
@@ -17747,17 +17732,6 @@ fsevents@^1.2.7:
     vfile-location: ^3.0.0
     xtend: ^4.0.1
   checksum: c1c1bde733599bc689a0e4b3cb7b720c09e6b0713ef19986a9e7525406887429bdf535a112e5939eb5133456fb81ee7a29f08f63c9702d0bb5c3592120670285
-  languageName: node
-  linkType: hard
-
-"remark-slug@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "remark-slug@npm:6.0.0"
-  dependencies:
-    github-slugger: ^1.0.0
-    mdast-util-to-string: ^1.0.0
-    unist-util-visit: ^2.0.0
-  checksum: 90471e3768faa6b6cfc6300aa5e5c34205b4f889f305c185a0e7aa7249410102d928e8617bcf493e29695a0fe9a29689af9520868a0428ac75642599f6217aba
   languageName: node
   linkType: hard
 

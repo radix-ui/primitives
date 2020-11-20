@@ -1,9 +1,18 @@
 ---
 title: Collapsible
-description: Fames blandit velit tristique sociis quam vitae, nec ullamcorper.
+description: A component comprised of a button that controls visibility of an adjacent section of content.
 layout: 'DocsLayout'
 date: '2020-11-08'
 ---
+
+import { PackageMeta } from '../../../components/PackageMeta';
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from '../../../components/Tabs';
+import { KeyboardInteractions } from './collapsible-components';
+import StylingCSS from './_styling-css.mdx';
+
+<PackageMeta packageName="react-collapsible" />
+
+## Installation
 
 Install the component from your command line:
 
@@ -17,12 +26,130 @@ Then import the component in your project:
 import { Collapsible } from '@interop-ui/react-collapsible';
 ```
 
-<hr />
+## Basic Usage
 
-A pulvinar et viverra donec vivamus dictumst tortor massa nisl montes hendrerit himenaeos, vehicula lobortis interdum potenti blandit convallis.
+The most basic composition of a `Collapsible` component is as follows:
 
-## Installation
+```jsx
+// live
+<Collapsible>
+  <Collapsible.Button>Greeting</Collapsible.Button>
+  <Collapsible.Content>Hello there!</Collapsible.Content>
+</Collapsible>
+```
 
-## Keyboard interaction
+### Controlled state
+
+The component will work as expected without any additional props or configuration, but if you need access to its state you can control it with the `isOpen` and `onToggle` props.
+
+```jsx
+// live
+function ControlledCollapsible() {
+  const [isOpen, setIsOpen] = React.useState(false);
+  return (
+    <div>
+      <Collapsible isOpen={isOpen} onToggle={setIsOpen}>
+        <Collapsible.Button>Greeting</Collapsible.Button>
+        <Collapsible.Content id="greeting">Hello there!</Collapsible.Content>
+      </Collapsible>
+      <button aria-controls="greeting" aria-expanded={isOpen} onClick={() => setIsOpen(!isOpen)}>
+        I can also toggle the greeting!
+      </button>
+    </div>
+  );
+}
+
+// render
+<ControlledCollapsible />;
+```
+
+### Styling
+
+All `Collapsible` components are unstyled by default. Each component renders a single DOM node which can be styled however you'd style a JSX component.
+
+<Tabs defaultSelectedId="styling-tabs-css">
+  <TabList aria-label="Styling examples">
+    <Tab id="styling-tabs-css">CSS</Tab>
+    <Tab id="styling-tabs-stitches">Stitches</Tab>
+    <Tab id="styling-tabs-styled">Styled Components</Tab>
+  </TabList>
+  <TabPanels>
+    <TabPanel id="styling-tabs-css">
+      <StylingCSS />
+    </TabPanel>
+    <TabPanel id="styling-tabs-stitches">
+      <p>TODO</p>
+    </TabPanel>
+    <TabPanel id="styling-tabs-styled">
+      <p>TODO</p>
+    </TabPanel>
+  </TabPanels>
+</Tabs>
+
+### Animating
+
+You can animate the visibility of the `CollapsibleContent` component pretty much the same way you would animate any other React component—using CSS transitions or animations, or a JavaScript animation library.
+
+If you are animating visibility using JavaScript, we recommend controlling the visibility state in your implementation so that you can pass use the visibility state directly.
+
+<Tabs defaultSelectedId="animating-tabs-css">
+  <TabList aria-label="Styling examples">
+    <Tab id="animating-tabs-css">CSS</Tab>
+    <Tab id="animating-tabs-framer">Framer Motion</Tab>
+    <Tab id="animating-tabs-spring">React Spring</Tab>
+  </TabList>
+  <TabPanels>
+    <TabPanel id="animating-tabs-css">
+      <p>TODO</p>
+    </TabPanel>
+    <TabPanel id="animating-tabs-framer">
+      <p>TODO</p>
+    </TabPanel>
+    <TabPanel id="animating-tabs-spring">
+      <p>TODO</p>
+    </TabPanel>
+  </TabPanels>
+</Tabs>
+
+## Accessibility
+
+- `CollapsibleButton` should always render a `button` DOM element. As such, nested content should follow the HTML rules for nested content in buttons. For more information, see the [HTML button documentation on MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button).
+- While we generally advise against rendering anything other than a `button` element for `CollapsibleButton`, if you absolutely must, you should shim the missing behavior and attributes that make buttons accessible. See the [WAI-ARIA button pattern](https://www.w3.org/TR/wai-aria-practices-1.2/#button) for guidance.
+- The element rendered by `CollapsibleButton` has a value specified for `aria-controls` that refers to the element rendered by `CollapsibleContent`.
+- The element rendered by `CollapsibleButton` has an `aria-expanded` attribute set to `true` when `CollapsibleContent` is visible, and `false` when `CollapsibleContent` is hidden.
+
+### WAI-ARIA Guidance
+
+`Collapsible` implements the [WAI-ARIA disclosure pattern](https://www.w3.org/TR/wai-aria-practices-1.2/#disclosure).
+
+### Accessibility FAQs
+
+<details>
+  <summary>What if I need to nest interactive content in the button area?</summary>
+  <p>
+    You can solve this with composition, as `Collapsible` will render any arbitrary children it
+    receives—not just `CollapsibleButton` and `CollapsibleContent`.</p>
+
+
+```js
+export const MyComponent = () => (
+  <Collapsible>
+    <div>
+      <Collapsible.Button>Collapsible button</Collapsible.Button>
+      <button>Some other button</button>
+    </div>
+    <Collapsible.Content>Collapsible content</Collapsible.Content>
+  </Collapsible>
+);
+```
+
+</details>
+
+
+### Keyboard Interactions
+
+<KeyboardInteractions />
 
 ## Examples
+
+TODO
