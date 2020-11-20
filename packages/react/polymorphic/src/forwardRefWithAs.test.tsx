@@ -1,13 +1,16 @@
 import * as React from 'react';
+import { render } from '@testing-library/react';
 import { forwardRefWithAs } from './forwardRefWithAs';
+
+import type { RenderResult } from '@testing-library/react';
 
 type ButtonProps = React.ComponentProps<'button'> & {
   isDisabled?: boolean;
 };
 
 const Button = forwardRefWithAs<HTMLButtonElement, ButtonProps>((props, forwardedRef) => {
-  const { as: Comp = 'button' } = props;
-  return <Comp {...props} ref={forwardedRef} />;
+  const { as: Comp = 'button', isDisabled, ...buttonProps } = props;
+  return <Comp {...buttonProps} ref={forwardedRef} />;
 });
 
 type LinkProps = React.ComponentProps<'a'> & {
@@ -16,9 +19,9 @@ type LinkProps = React.ComponentProps<'a'> & {
 };
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const { children, isPrimary, ...rest } = props;
+  const { children, isPrimary, ...linkProps } = props;
   return (
-    <a className={isPrimary ? 'primary' : undefined} ref={ref} {...rest}>
+    <a className={isPrimary ? 'primary' : undefined} ref={ref} {...linkProps}>
       {children}
     </a>
   );
@@ -28,7 +31,8 @@ const ExtendedButton = forwardRefWithAs<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button> & { isExtended: boolean }
 >((props, forwardedRef) => {
-  return <Button {...props} ref={forwardedRef} />;
+  const { isExtended, ...extendedButtonProps } = props;
+  return <Button {...extendedButtonProps} ref={forwardedRef} />;
 });
 
 export function Test() {
@@ -75,3 +79,15 @@ export function Test() {
     </>
   );
 }
+
+describe('Given forwardRefWithAs components', () => {
+  let rendered: RenderResult;
+
+  beforeEach(() => {
+    rendered = render(<Test />);
+  });
+
+  it('should render', async () => {
+    expect(rendered.container.firstChild).toBeInTheDocument();
+  });
+});
