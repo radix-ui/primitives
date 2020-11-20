@@ -1996,6 +1996,7 @@ __metadata:
     "@modulz/radix": 0.0.1-beta.44
     "@modulz/radix-icons": ^2.4.1
     "@ngsctt/remark-smartypants": ^0.2.0
+    "@types/lodash": ^4.14.165
     "@types/mdx-js__react": ^1.5.3
     "@types/react": ^16.9.56
     "@types/react-dom": ^16.9.9
@@ -2003,6 +2004,7 @@ __metadata:
     "@types/styled-components": ^5.1.4
     babel-plugin-import-glob-array: ^0.2.0
     babel-plugin-styled-components: ^1.11.1
+    lodash: ^4.17.20
     next: ^10.0.1
     next-mdx-enhanced: 5.0.0
     next-transpile-modules: ^4.1.0
@@ -4873,6 +4875,13 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 66e9ac0143ec521522c7bb670301e9836ee886207eeed1aab6d4854a1b19b404ab3a54cd8d449f9b1f13acc357f540be96f8ac2d1e86e301eab52ae0f9a4066f
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.14.165":
+  version: 4.14.165
+  resolution: "@types/lodash@npm:4.14.165"
+  checksum: 525bfc34b0b591cc957125a961c70e63e5ad8b23cbd89b7594a5ea74823285b6d96993a7eec506e26b379ee52dc9dcd3a894ff210be4c97bccb536e62361dbc8
   languageName: node
   linkType: hard
 

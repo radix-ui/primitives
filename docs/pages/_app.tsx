@@ -24,6 +24,11 @@ const GlobalStyles = createGlobalStyle`
 	}
 
   svg { vertical-align: middle }
+
+  summary {
+    cursor: pointer;
+    user-select: none;
+  }
 `;
 
 function App({ Component, pageProps, router }: AppProps) {

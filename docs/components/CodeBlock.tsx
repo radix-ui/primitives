@@ -80,15 +80,43 @@ const theme: PrismTheme = {
 };
 
 type CodeBlockProps = {
-  children: string;
+  children: string | React.ReactElement<any>;
   live?: boolean;
   className?: string;
   noInline?: boolean;
   isMdx?: boolean;
 };
 
+function childIsElementgWithCode(
+  children: CodeBlockProps['children']
+): children is React.ReactElement<{ children: string }> {
+  return React.isValidElement(children) && typeof children.props.children === 'string';
+}
+
+function isString(value: any): value is string {
+  return typeof value === 'string';
+}
+
 export function CodeBlock({ children, className, isMdx, noInline, ...props }: CodeBlockProps) {
-  let code = children.trim();
+  // To determing the language and code string, we need to analyze children and do some similar
+  // comparisons, but we really only need to do that if either the children or classname props
+  // change.
+  let { code, language } = React.useMemo(() => {
+    let code: string;
+    let classNameForLanguage: string = '';
+    if (React.isValidElement(children)) {
+      const childClassName = children.props.className;
+      code = isString(children.props.children) ? children.props.children.trim() : '';
+      classNameForLanguage = isString(childClassName) ? childClassName : '';
+    } else {
+      code = isString(children) ? children.trim() : '';
+      classNameForLanguage = isString(className) ? className : '';
+    }
+    return {
+      code,
+      language: classNameForLanguage?.replace('language-', ''),
+    };
+  }, [children, className]);
 
   // The following is a little weird to read, but the goal here is to use comments in mdx code
   // blocks as indicators for how the code block should be rendered. An mdx code block could be live
@@ -110,7 +138,6 @@ export function CodeBlock({ children, className, isMdx, noInline, ...props }: Co
   let live = props.live;
   if (isMdx) {
     const liveKey = '// live';
-    const language = className?.replace('language-', '') || '';
 
     // Only JS is live-renderable. We may want to expand this to support TypeScript, but React Live
     // would need to be forked so we could override its transpilation functionality.
@@ -291,7 +318,7 @@ function LiveCodeBlock({
             }}
           />
         </Box>
-        <LiveError />
+        {process.env.NODE_ENV === 'development' ? <LiveError /> : null}
       </LiveProvider>
     </Box>
   );

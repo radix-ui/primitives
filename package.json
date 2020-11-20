@@ -110,7 +110,12 @@
       }
     },
     "rules": {
-      "prefer-const": 1,
+      "prefer-const": [
+        1,
+        {
+          "destructuring": "all"
+        }
+      ],
       "jsx-a11y/label-has-associated-control": [
         2,
         {

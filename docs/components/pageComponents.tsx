@@ -159,8 +159,7 @@ function KeyboardInteractionTable({
 }) {
   return (
     <React.Fragment>
-      <SubHeading>Keyboard Interactions</SubHeading>
-      <Table>
+      <Table aria-label="Keyboard interactions">
         <Thead>
           <Tr>
             <Th scope="col" sx={SAFARI_FIX_TH_STYLES}>
