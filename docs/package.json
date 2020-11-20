@@ -12,7 +12,7 @@
     "@interop-ui/react-utils": "workspace:*",
     "@mdx-js/react": "^1.6.21",
     "@modulz/radix": "0.0.1-beta.44",
-    "@modulz/radix-icons": "^2.4.1",
+    "@modulz/radix-icons": "^3.3.0",
     "@ngsctt/remark-smartypants": "^0.2.0",
     "babel-plugin-import-glob-array": "^0.2.0",
     "babel-plugin-styled-components": "^1.11.1",

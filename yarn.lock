@@ -1994,7 +1994,7 @@ __metadata:
     "@interop-ui/react-utils": "workspace:*"
     "@mdx-js/react": ^1.6.21
     "@modulz/radix": 0.0.1-beta.44
-    "@modulz/radix-icons": ^2.4.1
+    "@modulz/radix-icons": ^3.3.0
     "@ngsctt/remark-smartypants": ^0.2.0
     "@types/lodash": ^4.14.165
     "@types/mdx-js__react": ^1.5.3
@@ -2730,12 +2730,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modulz/radix-icons@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "@modulz/radix-icons@npm:2.4.1"
+"@modulz/radix-icons@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@modulz/radix-icons@npm:3.3.0"
   peerDependencies:
     react: ^16.x
-  checksum: 7d0d148316b45a85f8107b20a65fe3a105338a73cb5033b6e469b28e9d9f02ed20c42828411b6f511c31e491e83c71fe0271ee2f63a776be9258cd630eb13c84
+  checksum: 510a796bca746c4cb317b5b6ba1a6b2d16667cc35ef2c113a8ce44783fdd74280299e401c8851a7fd6efbf8918b24ca15fbc49f5d979e352412e20ae2d10186b
   languageName: node
   linkType: hard
 

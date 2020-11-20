@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Box, Flex } from '@modulz/radix';
-import { GitHubIcon } from './icons';
+import { GitHubLogoIcon } from '@modulz/radix-icons';
 
 const PackageMeta: React.FC<PackageMetaProps> = function PackageMeta({
   packageName,
@@ -21,7 +21,7 @@ const PackageMeta: React.FC<PackageMetaProps> = function PackageMeta({
           rel="noopener noreferrer"
         >
           <Box as="span" sx={{ display: 'inline-flex', alignItems: 'center', mr: 1 }}>
-            <GitHubIcon aria-hidden height="1em" width="1em" />
+            <GitHubLogoIcon aria-hidden height="1em" width="1em" />
           </Box>
           View Source
         </Button>
