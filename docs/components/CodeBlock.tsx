@@ -87,12 +87,6 @@ type CodeBlockProps = {
   isMdx?: boolean;
 };
 
-function childIsElementgWithCode(
-  children: CodeBlockProps['children']
-): children is React.ReactElement<{ children: string }> {
-  return React.isValidElement(children) && typeof children.props.children === 'string';
-}
-
 function isString(value: any): value is string {
   return typeof value === 'string';
 }

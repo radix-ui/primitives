@@ -7,27 +7,11 @@ import omit from 'lodash/omit';
 const nextPropNames = ['href', 'replace', 'scroll', 'shallow', 'prefetch'] as const;
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
-  { as: Comp = RadixLink, passHref = true, ...props },
+  { as: Comp = RadixLink, ...props },
   ref
 ) {
-  const [isExternal, setIsExternal] = React.useState(false);
-  React.useEffect(() => {
-    if (props.href !== window.location.host) {
-      setIsExternal(true);
-    }
-  }, [props.href]);
-  const rel = props.rel || isExternal ? 'nofollow noreferrer' : undefined;
-  const target = props.target || isExternal ? '_blank' : undefined;
-  return isExternal ? (
-    <Comp
-      {...omit(props, nextPropNames)}
-      ref={ref}
-      href={props.href as string}
-      rel={rel}
-      target={target}
-    />
-  ) : (
-    <NextLink {...pick(props, nextPropNames)} passHref={passHref}>
+  return (
+    <NextLink {...pick(props, nextPropNames)} passHref>
       <Comp {...omit(props, nextPropNames)} ref={ref} />
     </NextLink>
   );
@@ -36,9 +20,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
 Link.displayName = 'Link';
 
 type LinkProps = Omit<RadixLinkProps, typeof nextPropNames[number]> &
-  Pick<NextLinkProps, typeof nextPropNames[number]> & {
-    passHref?: NextLinkProps['passHref'];
-  };
+  Pick<NextLinkProps, typeof nextPropNames[number]>;
 
 export type { LinkProps };
 export { Link };
