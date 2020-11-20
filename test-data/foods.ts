@@ -26,6 +26,7 @@ export const foodGroups: Array<{
     label: 'Meat',
     foods: [
       { value: 'beef', label: 'Beef' },
+      { value: 'beef-with-sauce', label: 'Beef with sauce' },
       { value: 'chicken', label: 'Chicken' },
       { value: 'lamb', label: 'Lamb' },
       { value: 'pork', label: 'Pork' },

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { composeEventHandlers, forwardRef, useComposedRefs } from '@interop-ui/react-utils';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from './useRovingFocus';
+import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
 
 /* -------------------------------------------------------------------------------------------------
  * Menu
@@ -26,6 +27,7 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
   const composedRef = useComposedRefs(forwardedRef, menuRef);
   const [menuTabIndex, setMenuTabIndex] = React.useState(0);
   const [itemsReachable, setItemsReachable] = React.useState(false);
+  const menuTypeaheadProps = useMenuTypeahead();
 
   React.useEffect(() => {
     setMenuTabIndex(itemsReachable ? -1 : 0);
@@ -39,6 +41,10 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
       ref={composedRef}
       tabIndex={menuTabIndex}
       style={{ ...menuProps.style, outline: 'none' }}
+      onKeyDownCapture={composeEventHandlers(
+        menuProps.onKeyDownCapture,
+        menuTypeaheadProps.onKeyDownCapture
+      )}
       // focus first/last item based on key pressed
       onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
         if (event.target === menuRef.current) {
@@ -86,8 +92,12 @@ const ITEM_NAME = 'Menu.Item';
 const ITEM_DEFAULT_TAG = 'div';
 const ENABLED_ITEM_SELECTOR = `[${getPartDataAttr(ITEM_NAME)}]:not([data-disabled])`;
 
-type MenuItemDOMProps = React.ComponentPropsWithoutRef<typeof ITEM_DEFAULT_TAG>;
-type MenuItemOwnProps = { disabled?: boolean; onSelect?: () => void };
+type MenuItemDOMProps = Omit<React.ComponentPropsWithoutRef<typeof ITEM_DEFAULT_TAG>, 'children'>;
+type MenuItemOwnProps = {
+  children: string;
+  disabled?: boolean;
+  onSelect?: () => void;
+};
 type MenuItemProps = MenuItemDOMProps & MenuItemOwnProps;
 
 const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function MenuItem(
@@ -95,10 +105,9 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
   forwardedRef
 ) {
   const { as: Comp = ITEM_DEFAULT_TAG, disabled, tabIndex, ...itemProps } = props;
-  const itemRef = React.useRef<HTMLDivElement>(null);
-  const composedRef = useComposedRefs(forwardedRef, itemRef);
 
   const rovingFocusProps = useRovingFocus({ disabled });
+  const menuTypeaheadItemProps = useMenuTypeaheadItem({ textValue: itemProps.children, disabled });
   const handleSelect = () => !disabled && itemProps.onSelect?.();
   const handleKeyDown = composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
     if (!disabled) {
@@ -115,7 +124,8 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
       {...itemProps}
       {...getPartDataAttrObj(ITEM_NAME)}
       {...rovingFocusProps}
-      ref={composedRef}
+      {...menuTypeaheadItemProps}
+      ref={forwardedRef}
       data-disabled={disabled ? '' : undefined}
       onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
       onKeyDown={composeEventHandlers(itemProps.onKeyDown, handleKeyDown)}

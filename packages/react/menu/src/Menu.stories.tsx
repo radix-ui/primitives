@@ -36,7 +36,12 @@ export const WithLabels = () => (
           </Menu.Label>
         )}
         {foodGroup.foods.map((food) => (
-          <Menu.Item as={StyledItem} key={food.value}>
+          <Menu.Item
+            as={StyledItem}
+            key={food.value}
+            disabled={food.disabled}
+            onSelect={() => window.alert(food.label)}
+          >
             {food.label}
           </Menu.Item>
         ))}
@@ -44,6 +49,32 @@ export const WithLabels = () => (
       </Menu.Group>
     ))}
   </Menu>
+);
+
+export const Typeahead = () => (
+  <>
+    <h1>Testing ground for typeahead behaviour</h1>
+    <p style={{ maxWidth: 400, marginBottom: 30 }}>
+      I recommend opening this story frame in it's own window (outside of the storybook frame)
+      because Storybook has a bunch of shortcuts on certain keys (A, D, F, S, T) which get triggered
+      all the time whilst testing the typeahead.
+    </p>
+    <WithLabels />
+    <div style={{ marginTop: 20 }}>
+      <p>For comparison, try the closed select below</p>
+      <select>
+        {foodGroups.map((foodGroup, index) => (
+          <React.Fragment key={index}>
+            {foodGroup.foods.map((food) => (
+              <option key={food.value} value={food.value} disabled={food.disabled}>
+                {food.label}
+              </option>
+            ))}
+          </React.Fragment>
+        ))}
+      </select>
+    </div>
+  </>
 );
 
 const StyledRoot = styled('div', {
