@@ -48,7 +48,9 @@ const Bold = forwardRefWithAs<HTMLElement, BoldProps>((props, forwardedRef) => {
 export function Test() {
   return (
     <>
-      <Bold requiredProp />
+      {/* 🔴 Bold should have requiredProp prop */}
+      {/* @ts-expect-error */}
+      <Bold />
       {/* 🟢 Link has onToggle prop */}
       <Link onToggle={(isOpen) => console.log(isOpen)} />
       {/* 🟢 Link has isPrimary prop */}
