@@ -43,7 +43,8 @@ function QuickNavItem({
   level = 0,
 }: QuickNavItemProps) {
   const { setItems } = useQuickNavContext();
-  const [label, setLabel] = React.useState(() => (typeof children === 'string' ? children : ''));
+  const [_label, setLabel] = React.useState(() => (typeof children === 'string' ? children : ''));
+  const label = labelOverride ?? _label;
   const slug = slugOverride ?? `section-${level}-` + label.toLowerCase().replace(/\s/g, '-');
 
   useLayoutEffect(() => {
@@ -53,15 +54,22 @@ function QuickNavItem({
 
   // If children isn't a string (which can be the case if headings have additional inside elements)
   // we need to get the inner text from the DOM node.
-  const setLabelFromInnerText = React.useCallback((node: HTMLSpanElement | null) => {
-    const innerText = node?.innerText || '';
-    setLabel((label) => {
-      if (!label) {
-        return innerText;
+  const setLabelFromInnerText = React.useCallback(
+    (node: HTMLSpanElement | null) => {
+      if (labelOverride != null) {
+        return;
       }
-      return label;
-    });
-  }, []);
+
+      const innerText = node?.innerText || '';
+      setLabel((label) => {
+        if (!label) {
+          return innerText;
+        }
+        return label;
+      });
+    },
+    [labelOverride]
+  );
 
   return (
     <Box as="span" id={slug} ref={setLabelFromInnerText} sx={{ scrollMargin: 15 }}>
