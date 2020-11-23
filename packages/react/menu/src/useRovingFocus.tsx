@@ -1,93 +1,123 @@
 import * as React from 'react';
-import { getPartDataAttr, getPartDataAttrObj, wrap, clamp } from '@interop-ui/utils';
+import { getPartDataAttr, wrap, clamp } from '@interop-ui/utils';
+import { createContext, useId } from '@interop-ui/react-utils';
 
-type UseRovingFocusOptions = {
-  orientation?: React.AriaAttributes['aria-orientation'];
-  loop?: boolean;
+type Orientation = React.AriaAttributes['aria-orientation'];
+type RovingFocusContextValue = { id: string; orientation?: Orientation; loop?: boolean };
+
+const [RovingFocusContext, useRovingFocusContext] = createContext<RovingFocusContextValue>(
+  'RovingFocusContext',
+  'RovingFocusGroup'
+);
+
+type RovingFocusGroupProps = Omit<RovingFocusContextValue, 'id'> & { children: React.ReactNode };
+type RovingFocusGroupAPI = {
+  focus: (item?: HTMLElement) => void;
+  focusFirst: () => void;
+  focusLast: () => void;
 };
 
-function useRovingFocus({ orientation, loop = false }: UseRovingFocusOptions) {
-  return {
-    ref: (container: HTMLElement | null) => {
-      if (container) {
-        const alreadyIsTabbable =
-          container.querySelector('[tabIndex="0"]') !== null || container.tabIndex === 0;
-        if (!alreadyIsTabbable) {
-          const items = getRovingFocusItems(container);
-          const firstItem = items[0];
-          if (firstItem) firstItem.tabIndex = 0;
-        }
+const RovingFocusGroup = React.forwardRef<RovingFocusGroupAPI, RovingFocusGroupProps>(
+  (props, forwardedRef) => {
+    const { children, orientation, loop } = props;
+    const id = String(useId());
+    const context = React.useMemo(() => ({ id, orientation, loop }), [id, orientation, loop]);
+
+    // expose public API on ref
+    React.useImperativeHandle(
+      forwardedRef,
+      () => ({
+        focus: (node?: HTMLElement) => focusItem(id, node),
+        focusFirst: () => {
+          const [firstItem] = getRovingFocusItems(id);
+          focusItem(id, firstItem);
+        },
+        focusLast: () => {
+          const [lastItem] = getRovingFocusItems(id).reverse();
+          focusItem(id, lastItem);
+        },
+      }),
+      [id]
+    );
+
+    // make sure we have a tab stop when the component first renders
+    React.useEffect(() => {
+      if (getTabStop(id) === null) {
+        const [firstItem] = getRovingFocusItems(id);
+        if (firstItem) firstItem.tabIndex = 0;
       }
-    },
+    }, [id]);
+
+    return <RovingFocusContext.Provider value={context}>{children}</RovingFocusContext.Provider>;
+  }
+);
+
+const ITEM_NAME = 'RovingFocusItem';
+
+type UseRovingFocusItemOptions = { disabled?: boolean; isDefaultTabStop?: boolean };
+
+function useRovingFocus({ disabled, isDefaultTabStop }: UseRovingFocusItemOptions) {
+  const { id, orientation, loop } = useRovingFocusContext(ITEM_NAME);
+  return {
+    [getPartDataAttr(ITEM_NAME)]: disabled ? undefined : id,
+    tabIndex: !disabled && isDefaultTabStop ? 0 : -1,
     onKeyDown: (event: React.KeyboardEvent) => {
       const focusIntent = getFocusIntent(event, orientation);
+
+      // stop key events from propagating to parent in case we're in a nested roving focus group
+      if (KEYS.includes(event.key)) event.stopPropagation();
 
       if (focusIntent !== undefined) {
         event.preventDefault();
 
-        const container = event.currentTarget as HTMLElement;
-        const items = getRovingFocusItems(container);
-        const nextItem = getNextItem(focusIntent, items, loop);
-
-        if (nextItem) {
-          items.forEach((item) => (item.tabIndex = -1));
-          nextItem.tabIndex = 0;
-          nextItem.focus();
-        }
+        const items = getRovingFocusItems(id);
+        const count = items.length;
+        const currentTabStop = getTabStop(id);
+        const currentIndex = currentTabStop ? items.indexOf(currentTabStop) : -1;
+        const map = { first: 0, last: count - 1, prev: currentIndex - 1, next: currentIndex + 1 };
+        let nextIndex = map[focusIntent];
+        nextIndex = loop ? wrap(nextIndex, count) : clamp(nextIndex, [0, count - 1]);
+        focusItem(id, items[nextIndex]);
       }
     },
   };
 }
 
-function getRovingFocusItems(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.querySelectorAll(ITEM_SELECTOR));
-}
+// prettier-ignore
+const MAP_KEY_TO_FOCUS_INTENT: Record<string, FocusIntent> = {
+  ArrowLeft: 'prev', ArrowUp: 'prev',
+  ArrowRight: 'next', ArrowDown: 'next',
+  PageUp: 'first', Home: 'first',
+  PageDown: 'last', End: 'last',
+};
+const KEYS = Object.keys(MAP_KEY_TO_FOCUS_INTENT);
 
 type FocusIntent = 'first' | 'last' | 'prev' | 'next';
 
-function getFocusIntent(
-  event: React.KeyboardEvent,
-  orientation?: UseRovingFocusOptions['orientation']
-): FocusIntent | undefined {
-  const { key, currentTarget: container } = event;
-  const orientationToKeys = {
-    none: { next: ['ArrowRight', 'ArrowDown'], prev: ['ArrowLeft', 'ArrowUp'] },
-    horizontal: { next: ['ArrowRight'], prev: ['ArrowLeft'] },
-    vertical: { next: ['ArrowDown'], prev: ['ArrowUp'] },
-  };
-  const keys = orientationToKeys[orientation || 'none'];
+function getFocusIntent({ key }: React.KeyboardEvent, orientation?: Orientation) {
+  if (orientation === 'horizontal' && ['ArrowUp', 'ArrowDown'].includes(key)) return undefined;
+  if (orientation === 'vertical' && ['ArrowLeft', 'ArrowRight'].includes(key)) return undefined;
+  return MAP_KEY_TO_FOCUS_INTENT[key];
+}
 
-  if (keys.prev.includes(key)) {
-    const isContainerFocused = document.activeElement === container;
-    // if the container is focused and the prev key is pressed, we need to start at the end
-    return isContainerFocused ? 'last' : 'prev';
+const makeItemSelector = (id: string) => `[${getPartDataAttr(ITEM_NAME)}="${id}"]`;
+
+function getRovingFocusItems(id: string): HTMLElement[] {
+  return Array.from(document.querySelectorAll(makeItemSelector(id)));
+}
+
+function getTabStop(id: string): HTMLElement | null {
+  return document.querySelector(`${makeItemSelector(id)}[tabIndex="0"]`);
+}
+
+function focusItem(id: string, item?: HTMLElement) {
+  if (item) {
+    const tabStop = getTabStop(id);
+    if (tabStop) tabStop.tabIndex = -1;
+    item.tabIndex = 0;
+    item.focus();
   }
-  if (keys.next.includes(key)) return 'next';
-  if (key === 'PageUp' || key === 'Home') return 'first';
-  if (key === 'PageDown' || key === 'End') return 'last';
 }
 
-function getNextItem(focusIntent: FocusIntent, items: HTMLElement[], loop?: boolean) {
-  const currentIndex = items.findIndex((item) => item.tabIndex === 0);
-  const map = { first: 0, last: items.length - 1, prev: currentIndex - 1, next: currentIndex + 1 };
-  let nextIndex = map[focusIntent];
-  nextIndex = loop ? wrap(nextIndex, items.length) : clamp(nextIndex, [0, items.length - 1]);
-  return items[nextIndex] as HTMLElement | undefined;
-}
-
-const ITEM_NAME = 'RovingFocusItem';
-const ITEM_SELECTOR = `[${getPartDataAttr(ITEM_NAME)}]`;
-
-type UseRovingFocusItemOptions = {
-  disabled?: boolean;
-  initiallyTabbable?: boolean;
-};
-
-function useRovingFocusItem({ disabled, initiallyTabbable }: UseRovingFocusItemOptions) {
-  return {
-    ...(disabled ? {} : getPartDataAttrObj(ITEM_NAME)),
-    tabIndex: !disabled && initiallyTabbable ? 0 : -1,
-  };
-}
-
-export { useRovingFocus, useRovingFocusItem };
+export { RovingFocusGroup, useRovingFocus };
+export type { RovingFocusGroupProps, RovingFocusGroupAPI };

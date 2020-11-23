@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { composeEventHandlers, forwardRef, useComposedRefs } from '@interop-ui/react-utils';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
-import { useRovingFocus, useRovingFocusItem } from './useRovingFocus';
+import { RovingFocusGroup, useRovingFocus } from './useRovingFocus';
+
+import type { RovingFocusGroupAPI } from './useRovingFocus';
 
 /* -------------------------------------------------------------------------------------------------
  * Menu
  * -----------------------------------------------------------------------------------------------*/
-
 const MENU_NAME = 'Menu';
 const MENU_DEFAULT_TAG = 'div';
 
@@ -22,29 +23,41 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
   forwardedRef
 ) {
   const {
+    children,
     as: Comp = MENU_DEFAULT_TAG,
     orientation = 'vertical',
     loop = false,
     ...menuProps
   } = props;
+  const menuRef = React.useRef<HTMLDivElement>(null);
+  const composedRef = useComposedRefs(forwardedRef, menuRef);
+  const rovingFocusGroupRef = React.useRef<RovingFocusGroupAPI>(null);
 
-  const rovingFocusProps = useRovingFocus({ orientation, loop });
-  const ref = useComposedRefs(
-    forwardedRef,
-    rovingFocusProps.ref as React.RefCallback<HTMLDivElement>
-  );
+  // override initial tab index strategy from `RovingFocusGroup`
+  React.useEffect(() => {
+    const menu = menuRef.current;
+    if (menu) removeCurrentTabStop(menu);
+  }, []);
 
   return (
     <Comp
       role="menu"
       {...menuProps}
       {...getPartDataAttrObj(MENU_NAME)}
-      {...rovingFocusProps}
-      ref={ref}
+      ref={composedRef}
       tabIndex={0}
       style={{ ...menuProps.style, outline: 'none' }}
-      onKeyDown={composeEventHandlers(menuProps.onKeyDown, rovingFocusProps.onKeyDown, {
-        checkForDefaultPrevented: false,
+      onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
+        if (event.target === event.currentTarget) {
+          if (['ArrowDown', 'PageUp', 'Home'].includes(event.key)) {
+            event.preventDefault();
+            rovingFocusGroupRef.current?.focusFirst();
+          }
+          if (['ArrowUp', 'PageDown', 'End'].includes(event.key)) {
+            event.preventDefault();
+            rovingFocusGroupRef.current?.focusLast();
+          }
+        }
       })}
       // We highlight items on `mouseMove` rather than `mouseOver` to match native menus implementation
       onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
@@ -56,10 +69,8 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
         if (item) {
           // if the item is already focused, we don't want to do extra work (as this is `onMouseMove`)
           if (document.activeElement !== item) {
-            setItemsTabIndex(menu, -1);
             menu.tabIndex = -1;
-            item.tabIndex = 0;
-            item.focus();
+            rovingFocusGroupRef.current?.focus(item);
           }
         } else {
           // if the menu is already focused, we don't want to do extra work (as this is `onMouseMove`)
@@ -77,17 +88,21 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
         const menu = event.currentTarget;
         revertFocusToMenu(menu);
       })}
-    />
+    >
+      <RovingFocusGroup ref={rovingFocusGroupRef} orientation={orientation} loop={loop}>
+        {children}
+      </RovingFocusGroup>
+    </Comp>
   );
 });
 
-function setItemsTabIndex(menu: HTMLElement, tabIndex: number) {
-  const items: HTMLElement[] = Array.from(menu.querySelectorAll(ENABLED_ITEM_SELECTOR));
-  items.forEach((item) => (item.tabIndex = tabIndex));
+function removeCurrentTabStop(menu: HTMLElement) {
+  const tabStop: HTMLElement | null = menu.querySelector('[tabIndex="0"]');
+  if (tabStop) tabStop.tabIndex = -1;
 }
 
 function revertFocusToMenu(menu: HTMLElement) {
-  setItemsTabIndex(menu, -1);
+  removeCurrentTabStop(menu);
   menu.tabIndex = 0;
   menu.focus();
 }
@@ -95,7 +110,6 @@ function revertFocusToMenu(menu: HTMLElement) {
 /* -------------------------------------------------------------------------------------------------
  * MenuItem
  * -----------------------------------------------------------------------------------------------*/
-
 const ITEM_NAME = 'Menu.Item';
 const ITEM_DEFAULT_TAG = 'div';
 const ENABLED_ITEM_SELECTOR = `[${getPartDataAttr(ITEM_NAME)}]:not([data-disabled])`;
@@ -113,8 +127,13 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
 ) {
   const { as: Comp = ITEM_DEFAULT_TAG, disabled, tabIndex, ...itemProps } = props;
 
-  const rovingFocusItemProps = useRovingFocusItem({ disabled, initiallyTabbable: tabIndex === 0 });
+  const rovingFocusProps = useRovingFocus({ disabled });
   const handleSelect = () => !disabled && itemProps.onSelect?.();
+  const handleKeyDown = composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      handleSelect();
+    }
+  });
 
   return (
     <Comp
@@ -122,7 +141,7 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
       aria-disabled={disabled || undefined}
       {...itemProps}
       {...getPartDataAttrObj(ITEM_NAME)}
-      {...rovingFocusItemProps}
+      {...rovingFocusProps}
       ref={forwardedRef}
       data-disabled={disabled ? '' : undefined}
       onMouseDown={composeEventHandlers(
@@ -134,11 +153,7 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
       )}
       // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
-      onKeyDown={composeEventHandlers(itemProps.onKeyDown, (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          handleSelect();
-        }
-      })}
+      onKeyDown={composeEventHandlers(itemProps.onKeyDown, handleKeyDown)}
     />
   );
 });
@@ -146,7 +161,6 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
 /* -------------------------------------------------------------------------------------------------
  * MenuSeparator
  * -----------------------------------------------------------------------------------------------*/
-
 const SEPARATOR_NAME = 'Menu.Separator';
 const SEPARATOR_DEFAULT_TAG = 'div';
 
