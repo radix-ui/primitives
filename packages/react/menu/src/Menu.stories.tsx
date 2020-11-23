@@ -29,7 +29,7 @@ export const Styled = () => (
 export const WithLabels = () => (
   <Menu as={StyledRoot}>
     {foodGroups.map((foodGroup, index) => (
-      <>
+      <React.Fragment key={index}>
         {foodGroup.label && (
           <Menu.Label as={StyledLabel} key={foodGroup.label}>
             {foodGroup.label}
@@ -41,7 +41,7 @@ export const WithLabels = () => (
           </Menu.Item>
         ))}
         {index < foodGroups.length - 1 && <Menu.Separator as={StyledSeparator} />}
-      </>
+      </React.Fragment>
     ))}
   </Menu>
 );

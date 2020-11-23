@@ -146,7 +146,6 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
 /* -------------------------------------------------------------------------------------------------
  * MenuLabel
  * -----------------------------------------------------------------------------------------------*/
-
 const LABEL_NAME = 'Menu.Label';
 const LABEL_DEFAULT_TAG = 'div';
 
@@ -207,3 +206,4 @@ Menu.Label.displayName = LABEL_NAME;
 Menu.Separator.displayName = SEPARATOR_NAME;
 
 export { Menu };
+export type { MenuProps, MenuItemProps, MenuLabelProps, MenuSeparatorProps };
