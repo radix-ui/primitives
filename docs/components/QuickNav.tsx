@@ -49,7 +49,6 @@ function QuickNavItem({
   const slug = slugOverride ?? `section-${level}-` + kebabCase(label);
 
   useLayoutEffect(() => {
-    // setItems((items) => [...items, { label, slug, level }]);
     setItems((items) => uniqBy([...items, { label, slug, level }], (item) => item.slug));
     return () => setItems((items) => items.filter((item) => item.slug !== slug));
   }, [slug, label, level, setItems]);
