@@ -49,6 +49,11 @@ function QuickNavItem({
   const slug = slugOverride ?? `section-${level}-` + kebabCase(label);
 
   useLayoutEffect(() => {
+    // I use `uniqBy` to make sure we aren't adding duplicate references to the items list every
+    // time the effect runs. We will run this effect multiple times throughout the life of a
+    // component if its dependency references change. Benoit has a suggestion to improve the
+    // implementation but I'm not exactly sure at the moment what that looks like.
+    // https://github.com/modulz/interop-ui/pull/249#discussion_r528978859
     setItems((items) => uniqBy([...items, { label, slug, level }], (item) => item.slug));
     return () => setItems((items) => items.filter((item) => item.slug !== slug));
   }, [slug, label, level, setItems]);
