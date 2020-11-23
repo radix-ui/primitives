@@ -144,6 +144,27 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
 });
 
 /* -------------------------------------------------------------------------------------------------
+ * MenuGroup
+ * -----------------------------------------------------------------------------------------------*/
+const GROUP_NAME = 'Menu.Group';
+const GROUP_DEFAULT_TAG = 'div';
+
+type MenuGroupDOMProps = React.ComponentPropsWithoutRef<typeof GROUP_DEFAULT_TAG>;
+type MenuGroupOwnProps = {};
+type MenuGroupProps = MenuGroupDOMProps & MenuGroupOwnProps;
+
+const MenuGroup = forwardRef<typeof GROUP_DEFAULT_TAG, MenuGroupProps>(function MenuGroup(
+  props,
+  forwardedRef
+) {
+  const { as: Comp = GROUP_DEFAULT_TAG, ...groupProps } = props;
+
+  return (
+    <Comp role="group" {...groupProps} {...getPartDataAttrObj(GROUP_NAME)} ref={forwardedRef} />
+  );
+});
+
+/* -------------------------------------------------------------------------------------------------
  * MenuLabel
  * -----------------------------------------------------------------------------------------------*/
 const LABEL_NAME = 'Menu.Label';
@@ -192,18 +213,21 @@ const MenuSeparator = forwardRef<typeof SEPARATOR_DEFAULT_TAG, MenuSeparatorProp
 
 interface MenuStaticProps {
   Item: typeof MenuItem;
+  Group: typeof MenuGroup;
   Label: typeof MenuLabel;
   Separator: typeof MenuSeparator;
 }
 
 Menu.Item = MenuItem;
+Menu.Group = MenuGroup;
 Menu.Label = MenuLabel;
 Menu.Separator = MenuSeparator;
 
 Menu.displayName = MENU_NAME;
 Menu.Item.displayName = ITEM_NAME;
+Menu.Group.displayName = GROUP_NAME;
 Menu.Label.displayName = LABEL_NAME;
 Menu.Separator.displayName = SEPARATOR_NAME;
 
 export { Menu };
-export type { MenuProps, MenuItemProps, MenuLabelProps, MenuSeparatorProps };
+export type { MenuProps, MenuItemProps, MenuGroupProps, MenuLabelProps, MenuSeparatorProps };
