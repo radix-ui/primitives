@@ -79,9 +79,5 @@ export function CollapsiblePropsSections() {
 }
 
 export function CollapsibleProps() {
-  // defaultIsOpen?: boolean;
-  // isOpen?: boolean;
-  // disabled?: boolean;
-  // onToggle?(isOpen?: boolean): void;
   return <PropsTable componentName="Collapsible" propDefs={collapsibleProps} />;
 }
