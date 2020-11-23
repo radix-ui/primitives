@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Box, Heading, Link, Text, BoxProps } from '@modulz/radix';
 import { useLayoutEffect } from '@interop-ui/react-utils';
 import uniqBy from 'lodash/uniqBy';
+import kebabCase from 'lodash/kebabCase';
 
 type QuickNavItem = {
   label: string;
@@ -45,7 +46,7 @@ function QuickNavItem({
   const { setItems } = useQuickNavContext();
   const [_label, setLabel] = React.useState(() => (typeof children === 'string' ? children : ''));
   const label = labelOverride ?? _label;
-  const slug = slugOverride ?? `section-${level}-` + label.toLowerCase().replace(/\s/g, '-');
+  const slug = slugOverride ?? `section-${level}-` + kebabCase(label);
 
   useLayoutEffect(() => {
     // setItems((items) => [...items, { label, slug, level }]);
