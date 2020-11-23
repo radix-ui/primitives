@@ -6,7 +6,6 @@ import { PlusIcon } from '@modulz/radix-icons';
 import { Collapsible } from '@interop-ui/react-collapsible';
 import { useId } from '@interop-ui/react-utils';
 import { overviewPages, componentsPages } from '../utils/pages';
-import type { FlexProps } from '@modulz/radix';
 import { ScrollArea } from './ScrollArea';
 
 function MainNavigation({ sx = {} }: { sx?: BoxProps['sx'] }) {
@@ -95,8 +94,11 @@ function getOpenedPanelFromUrl(pathname: string) {
   return pathname.split('/')[1] ?? 'overview';
 }
 
-function StyledCollapsibleButton(props: FlexProps) {
+// Manually typing props as `button` because the `as` prop from Radix isn't
+// converting Flex to `HTMLButtonElement` type
+function StyledCollapsibleButton(props: React.ComponentProps<'button'>) {
   return (
+    // @ts-ignore complains that HTMLButtonElement props don't match HTMLDivElement
     <Flex
       as="button"
       sx={{
