@@ -144,13 +144,7 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
       {...rovingFocusProps}
       ref={forwardedRef}
       data-disabled={disabled ? '' : undefined}
-      onMouseDown={composeEventHandlers(
-        itemProps.onMouseDown,
-        // we prevent focusing disabled items when clicking because even though the item
-        // has tabIndex={-1}, it only means take it out of the tabbable order, but clicking would
-        // still actually focus it otherwise
-        (event) => disabled && event.preventDefault()
-      )}
+      onMouseDown={composeEventHandlers(itemProps.onMouseDown, rovingFocusProps.onMouseDown)}
       // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
       onKeyDown={composeEventHandlers(itemProps.onKeyDown, handleKeyDown)}

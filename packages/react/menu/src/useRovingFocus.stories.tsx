@@ -5,69 +5,80 @@ import type { RovingFocusGroupProps } from './useRovingFocus';
 
 export default { title: 'Hooks/useRovingFocus' };
 
-export const Basic = () => (
-  <>
-    <h1>no orientation (both) + no looping</h1>
-    <ButtonGroup defaultValue="two">
-      <Button value="one">One</Button>
-      <Button value="two">Two</Button>
-      <Button disabled value="three">
-        Three
-      </Button>
-      <Button value="four">Four</Button>
-    </ButtonGroup>
+export const Basic = () => {
+  const [dir, setDir] = React.useState<RovingFocusGroupProps['dir']>('ltr');
 
-    <h1>no orientation (both) + looping</h1>
-    <ButtonGroup loop>
-      <Button value="one">One</Button>
-      <Button value="two">Two</Button>
-      <Button disabled value="three">
-        Three
-      </Button>
-      <Button value="four">Four</Button>
-    </ButtonGroup>
+  return (
+    <div dir={dir}>
+      <h1>
+        Direction: {dir}{' '}
+        <button type="button" onClick={() => setDir((prev) => (prev === 'ltr' ? 'rtl' : 'ltr'))}>
+          Toggle to {dir === 'ltr' ? 'rtl' : 'ltr'}
+        </button>
+      </h1>
 
-    <h1>horizontal orientation + no looping</h1>
-    <ButtonGroup orientation="horizontal">
-      <Button value="one">One</Button>
-      <Button value="two">Two</Button>
-      <Button disabled value="three">
-        Three
-      </Button>
-      <Button value="four">Four</Button>
-    </ButtonGroup>
+      <h2>no orientation (both) + no looping</h2>
+      <ButtonGroup dir={dir} defaultValue="two">
+        <Button value="one">One</Button>
+        <Button value="two">Two</Button>
+        <Button disabled value="three">
+          Three
+        </Button>
+        <Button value="four">Four</Button>
+      </ButtonGroup>
 
-    <h1>horizontal orientation + looping</h1>
-    <ButtonGroup orientation="horizontal" loop>
-      <Button value="one">One</Button>
-      <Button value="two">Two</Button>
-      <Button disabled value="three">
-        Three
-      </Button>
-      <Button value="four">Four</Button>
-    </ButtonGroup>
+      <h2>no orientation (both) + looping</h2>
+      <ButtonGroup dir={dir} loop>
+        <Button value="one">One</Button>
+        <Button value="two">Two</Button>
+        <Button disabled value="three">
+          Three
+        </Button>
+        <Button value="four">Four</Button>
+      </ButtonGroup>
 
-    <h1>vertical orientation + no looping</h1>
-    <ButtonGroup orientation="vertical">
-      <Button value="one">One</Button>
-      <Button value="two">Two</Button>
-      <Button disabled value="three">
-        Three
-      </Button>
-      <Button value="four">Four</Button>
-    </ButtonGroup>
+      <h2>horizontal orientation + no looping</h2>
+      <ButtonGroup orientation="horizontal" dir={dir}>
+        <Button value="one">One</Button>
+        <Button value="two">Two</Button>
+        <Button disabled value="three">
+          Three
+        </Button>
+        <Button value="four">Four</Button>
+      </ButtonGroup>
 
-    <h1>vertical orientation + looping</h1>
-    <ButtonGroup orientation="vertical" loop>
-      <Button value="one">One</Button>
-      <Button value="two">Two</Button>
-      <Button disabled value="three">
-        Three
-      </Button>
-      <Button value="four">Four</Button>
-    </ButtonGroup>
-  </>
-);
+      <h2>horizontal orientation + looping</h2>
+      <ButtonGroup orientation="horizontal" dir={dir} loop>
+        <Button value="one">One</Button>
+        <Button value="two">Two</Button>
+        <Button disabled value="three">
+          Three
+        </Button>
+        <Button value="four">Four</Button>
+      </ButtonGroup>
+
+      <h2>vertical orientation + no looping</h2>
+      <ButtonGroup orientation="vertical" dir={dir}>
+        <Button value="one">One</Button>
+        <Button value="two">Two</Button>
+        <Button disabled value="three">
+          Three
+        </Button>
+        <Button value="four">Four</Button>
+      </ButtonGroup>
+
+      <h2>vertical orientation + looping</h2>
+      <ButtonGroup orientation="vertical" dir={dir} loop>
+        <Button value="one">One</Button>
+        <Button value="two">Two</Button>
+        <Button disabled value="three">
+          Three
+        </Button>
+        <Button value="four">Four</Button>
+      </ButtonGroup>
+    </div>
+  );
+};
 
 export const Nested = () => (
   <ButtonGroup orientation="vertical" loop>
@@ -103,11 +114,11 @@ const ButtonGroupContext = React.createContext<{
 type ButtonGroupProps = Omit<React.ComponentPropsWithRef<'div'>, 'defaultValue'> &
   RovingFocusGroupProps & { defaultValue?: string };
 
-const ButtonGroup = ({ orientation, loop, defaultValue, ...props }: ButtonGroupProps) => {
+const ButtonGroup = ({ orientation, dir, loop, defaultValue, ...props }: ButtonGroupProps) => {
   const [value, setValue] = React.useState(defaultValue);
   return (
     <ButtonGroupContext.Provider value={{ value, setValue }}>
-      <RovingFocusGroup orientation={orientation} loop={loop}>
+      <RovingFocusGroup orientation={orientation} dir={dir} loop={loop}>
         <div
           {...props}
           style={{
@@ -133,7 +144,8 @@ const Button = ({ disabled, tabIndex, value, ...props }: ButtonProps) => {
     <button
       disabled={disabled}
       style={{
-        border: '1px solid #ccc',
+        border: '1px solid',
+        borderColor: '#ccc',
         padding: '5px 10px',
         borderRadius: 5,
         ...(isSelected
@@ -144,12 +156,13 @@ const Button = ({ disabled, tabIndex, value, ...props }: ButtonProps) => {
             }
           : {}),
       }}
-      onClick={() => setValue(value)}
+      onClick={disabled ? undefined : () => setValue(value)}
       onFocus={(event) => {
         if (contextValue !== undefined) {
           event.target.click();
         }
       }}
+      {...props}
       {...rovingFocusProps}
     />
   );

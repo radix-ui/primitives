@@ -2,15 +2,26 @@ import * as React from 'react';
 import { getPartDataAttr, wrap, clamp } from '@interop-ui/utils';
 import { createContext, useId } from '@interop-ui/react-utils';
 
+/* -------------------------------------------------------------------------------------------------
+ * RovingFocusGroup
+ * -----------------------------------------------------------------------------------------------*/
 type Orientation = React.AriaAttributes['aria-orientation'];
-type RovingFocusContextValue = { id: string; orientation?: Orientation; loop?: boolean };
+type Direction = 'ltr' | 'rtl';
+type RovingContextValue = {
+  id: string;
+  orientation?: Orientation;
+  dir?: Direction;
+  loop?: boolean;
+};
 
-const [RovingFocusContext, useRovingFocusContext] = createContext<RovingFocusContextValue>(
-  'RovingFocusContext',
-  'RovingFocusGroup'
+const GROUP_NAME = 'RovingFocusGroup';
+
+const [RovingFocusContext, useRovingFocusContext] = createContext<RovingContextValue>(
+  GROUP_NAME + 'Context',
+  GROUP_NAME
 );
 
-type RovingFocusGroupProps = Omit<RovingFocusContextValue, 'id'> & { children: React.ReactNode };
+type RovingFocusGroupProps = Omit<RovingContextValue, 'id'> & { children: React.ReactNode };
 type RovingFocusGroupAPI = {
   focus: (item?: HTMLElement) => void;
   focusFirst: () => void;
@@ -19,9 +30,10 @@ type RovingFocusGroupAPI = {
 
 const RovingFocusGroup = React.forwardRef<RovingFocusGroupAPI, RovingFocusGroupProps>(
   (props, forwardedRef) => {
-    const { children, orientation, loop } = props;
+    const { children, orientation, loop, dir } = props;
     const id = String(useId());
-    const context = React.useMemo(() => ({ id, orientation, loop }), [id, orientation, loop]);
+    // prettier-ignore
+    const context = React.useMemo(() => ({ id, orientation, dir, loop }), [id, orientation, dir, loop]);
 
     // expose public API on ref
     React.useImperativeHandle(
@@ -52,17 +64,32 @@ const RovingFocusGroup = React.forwardRef<RovingFocusGroupAPI, RovingFocusGroupP
   }
 );
 
+RovingFocusGroup.displayName = GROUP_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * useRovingFocus
+ * -----------------------------------------------------------------------------------------------*/
 const ITEM_NAME = 'RovingFocusItem';
 
 type UseRovingFocusItemOptions = { disabled?: boolean; isDefaultTabStop?: boolean };
 
 function useRovingFocus({ disabled, isDefaultTabStop }: UseRovingFocusItemOptions) {
-  const { id, orientation, loop } = useRovingFocusContext(ITEM_NAME);
+  const { id, orientation, dir, loop } = useRovingFocusContext(ITEM_NAME);
+
+  if (disabled) {
+    return {
+      tabIndex: -1,
+      // we prevent focusing disabled items on `mousedown`. Even though the item has tabIndex={-1},
+      // that only means take it out of the tabbable order
+      onMouseDown: (event: React.MouseEvent) => event.preventDefault(),
+    };
+  }
+
   return {
-    [getPartDataAttr(ITEM_NAME)]: disabled ? undefined : id,
-    tabIndex: !disabled && isDefaultTabStop ? 0 : -1,
+    [getPartDataAttr(ITEM_NAME)]: id,
+    tabIndex: isDefaultTabStop ? 0 : -1,
     onKeyDown: (event: React.KeyboardEvent) => {
-      const focusIntent = getFocusIntent(event, orientation);
+      const focusIntent = getFocusIntent(event, orientation, dir);
 
       // stop key events from propagating to parent in case we're in a nested roving focus group
       if (KEYS.includes(event.key)) event.stopPropagation();
@@ -83,6 +110,8 @@ function useRovingFocus({ disabled, isDefaultTabStop }: UseRovingFocusItemOption
   };
 }
 
+/* -----------------------------------------------------------------------------------------------*/
+
 // prettier-ignore
 const MAP_KEY_TO_FOCUS_INTENT: Record<string, FocusIntent> = {
   ArrowLeft: 'prev', ArrowUp: 'prev',
@@ -92,11 +121,17 @@ const MAP_KEY_TO_FOCUS_INTENT: Record<string, FocusIntent> = {
 };
 const KEYS = Object.keys(MAP_KEY_TO_FOCUS_INTENT);
 
+function getDirectionAwareKey(key: string, dir?: Direction) {
+  if (dir !== 'rtl') return key;
+  return key === 'ArrowLeft' ? 'ArrowRight' : key === 'ArrowRight' ? 'ArrowLeft' : key;
+}
+
 type FocusIntent = 'first' | 'last' | 'prev' | 'next';
 
-function getFocusIntent({ key }: React.KeyboardEvent, orientation?: Orientation) {
-  if (orientation === 'horizontal' && ['ArrowUp', 'ArrowDown'].includes(key)) return undefined;
+function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, dir?: Direction) {
+  const key = getDirectionAwareKey(event.key, dir);
   if (orientation === 'vertical' && ['ArrowLeft', 'ArrowRight'].includes(key)) return undefined;
+  if (orientation === 'horizontal' && ['ArrowUp', 'ArrowDown'].includes(key)) return undefined;
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 
