@@ -59,17 +59,17 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
           }
         }
       })}
-	/** 
-	 * We highlight items on `mouseMove` to achieve the following:
-	 *
-	 * - Mouse over an item (it highlights)
-	 * - Leave mouse where it is and use keyboard to highlight a different item
-	 * - Wiggle mouse without it leaving previously highlighted item
-	 * - Previously highlighted item should re-highlight
-	 *
-	 * If we used `mouseOver`/`mouseEnter` it would not re-highlight when the mouse
-	 * wiggles. This is to match native menu implementation.
-	 */
+      /**
+       * We highlight items on `mouseMove` to achieve the following:
+       *
+       * - Mouse over an item (it highlights)
+       * - Leave mouse where it is and use keyboard to highlight a different item
+       * - Wiggle mouse without it leaving previously highlighted item
+       * - Previously highlighted item should re-highlight
+       *
+       * If we used `mouseOver`/`mouseEnter` it would not re-highlight when the mouse
+       * wiggles. This is to match native menu implementation.
+       */
       onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
         const menu = event.currentTarget;
         const target = event.target as HTMLElement;
