@@ -51,6 +51,13 @@ export const WithLabels = () => (
   </Menu>
 );
 
+const suits = [
+  { emoji: '♥️', label: 'Hearts' },
+  { emoji: '♠️', label: 'Spades' },
+  { emoji: '♦️', label: 'Diamonds' },
+  { emoji: '♣️', label: 'Clubs' },
+];
+
 export const Typeahead = () => (
   <>
     <h1>Testing ground for typeahead behaviour</h1>
@@ -59,20 +66,60 @@ export const Typeahead = () => (
       because Storybook has a bunch of shortcuts on certain keys (A, D, F, S, T) which get triggered
       all the time whilst testing the typeahead.
     </p>
-    <WithLabels />
-    <div style={{ marginTop: 20 }}>
-      <p>For comparison, try the closed select below</p>
-      <select>
-        {foodGroups.map((foodGroup, index) => (
-          <React.Fragment key={index}>
-            {foodGroup.foods.map((food) => (
-              <option key={food.value} value={food.value} disabled={food.disabled}>
-                {food.label}
-              </option>
+
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 100 }}>
+      <div>
+        <h2>Text labels</h2>
+        <WithLabels />
+        <div style={{ marginTop: 20 }}>
+          <p>
+            For comparison
+            <br />
+            try the closed select below
+          </p>
+          <select>
+            {foodGroups.map((foodGroup, index) => (
+              <React.Fragment key={index}>
+                {foodGroup.foods.map((food) => (
+                  <option key={food.value} value={food.value} disabled={food.disabled}>
+                    {food.label}
+                  </option>
+                ))}
+              </React.Fragment>
             ))}
-          </React.Fragment>
-        ))}
-      </select>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <h2>Complex children</h2>
+        <p>(relying on `.textContent` — default)</p>
+        <Menu as={StyledRoot}>
+          {suits.map((suit) => (
+            <Menu.Item as={StyledItem}>
+              {suit.label}
+              <span role="img" aria-label={suit.label}>
+                {suit.emoji}
+              </span>
+            </Menu.Item>
+          ))}
+        </Menu>
+      </div>
+
+      <div>
+        <h2>Complex children</h2>
+        <p>(with explicit `textValue` prop)</p>
+        <Menu as={StyledRoot}>
+          {suits.map((suit) => (
+            <Menu.Item as={StyledItem} textValue={suit.label}>
+              <span role="img" aria-label={suit.label}>
+                {suit.emoji}
+              </span>
+              {suit.label}
+            </Menu.Item>
+          ))}
+        </Menu>
+      </div>
     </div>
   </>
 );
@@ -88,11 +135,15 @@ const StyledRoot = styled('div', {
   boxShadow: '0 5px 10px 0 rgba(0, 0, 0, 0.1)',
   fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
   fontSize: 13,
+  '&:focus-within': {
+    borderColor: 'black',
+  },
 });
 
 const itemCss: any = {
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'space-between',
   lineHeight: '1',
   cursor: 'default',
   userSelect: 'none',

@@ -92,10 +92,10 @@ const ITEM_NAME = 'Menu.Item';
 const ITEM_DEFAULT_TAG = 'div';
 const ENABLED_ITEM_SELECTOR = `[${getPartDataAttr(ITEM_NAME)}]:not([data-disabled])`;
 
-type MenuItemDOMProps = Omit<React.ComponentPropsWithoutRef<typeof ITEM_DEFAULT_TAG>, 'children'>;
+type MenuItemDOMProps = React.ComponentPropsWithoutRef<typeof ITEM_DEFAULT_TAG>;
 type MenuItemOwnProps = {
-  children: string;
   disabled?: boolean;
+  textValue?: string;
   onSelect?: () => void;
 };
 type MenuItemProps = MenuItemDOMProps & MenuItemOwnProps;
@@ -104,11 +104,26 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
   props,
   forwardedRef
 ) {
-  const { as: Comp = ITEM_DEFAULT_TAG, disabled, tabIndex, ...itemProps } = props;
+  const { as: Comp = ITEM_DEFAULT_TAG, disabled, textValue, onSelect, ...itemProps } = props;
+  const menuItemRef = React.useRef<HTMLDivElement>(null);
+  const composedRef = useComposedRefs(forwardedRef, menuItemRef);
+
+  // get the item's `.textContent` as default strategy for typeahead `textValue`
+  const [textContent, setTextContent] = React.useState('');
+  React.useEffect(() => {
+    const menuItem = menuItemRef.current;
+    if (menuItem) {
+      setTextContent((menuItem.textContent ?? '').trim());
+    }
+  }, [itemProps.children]);
 
   const rovingFocusProps = useRovingFocus({ disabled });
-  const menuTypeaheadItemProps = useMenuTypeaheadItem({ textValue: itemProps.children, disabled });
-  const handleSelect = () => !disabled && itemProps.onSelect?.();
+  const menuTypeaheadItemProps = useMenuTypeaheadItem({
+    textValue: textValue ?? textContent,
+    disabled,
+  });
+
+  const handleSelect = () => !disabled && onSelect?.();
   const handleKeyDown = composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
     if (!disabled) {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -125,7 +140,7 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
       {...getPartDataAttrObj(ITEM_NAME)}
       {...rovingFocusProps}
       {...menuTypeaheadItemProps}
-      ref={forwardedRef}
+      ref={composedRef}
       data-disabled={disabled ? '' : undefined}
       onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
       onKeyDown={composeEventHandlers(itemProps.onKeyDown, handleKeyDown)}
