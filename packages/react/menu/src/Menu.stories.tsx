@@ -65,7 +65,6 @@ const StyledRoot = styled('div', {
   },
 
   '&[data-orientation="horizontal"][data-direction="rtl"]': {
-    display: 'flex',
     flexDirection: 'row-reverse',
   },
 });
