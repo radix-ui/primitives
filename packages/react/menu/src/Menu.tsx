@@ -15,6 +15,7 @@ type MenuDOMProps = React.ComponentPropsWithoutRef<typeof MENU_DEFAULT_TAG>;
 type MenuOwnProps = {
   orientation?: React.AriaAttributes['aria-orientation'];
   loop?: boolean;
+  dir?: 'rtl' | 'ltr';
 };
 type MenuProps = MenuDOMProps & MenuOwnProps;
 
@@ -26,6 +27,7 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
     children,
     as: Comp = MENU_DEFAULT_TAG,
     orientation = 'vertical',
+    dir = 'ltr',
     loop = false,
     ...menuProps
   } = props;
@@ -47,6 +49,8 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
       ref={composedRef}
       tabIndex={0}
       style={{ ...menuProps.style, outline: 'none' }}
+      data-orientation={orientation}
+      data-direction={dir}
       onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
         if (event.target === event.currentTarget) {
           if (['ArrowDown', 'PageUp', 'Home'].includes(event.key)) {
@@ -89,7 +93,7 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
         revertFocusToMenu(menu);
       })}
     >
-      <RovingFocusGroup ref={rovingFocusGroupRef} orientation={orientation} loop={loop}>
+      <RovingFocusGroup ref={rovingFocusGroupRef} orientation={orientation} loop={loop} dir={dir}>
         {children}
       </RovingFocusGroup>
     </Comp>
@@ -192,4 +196,5 @@ interface MenuStaticProps {
   Separator: typeof MenuSeparator;
 }
 
+export type { MenuProps, MenuItemProps };
 export { Menu };
