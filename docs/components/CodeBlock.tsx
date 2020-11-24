@@ -5,6 +5,7 @@ import { PrismTheme } from 'prism-react-renderer';
 import { Box, theme as radixTheme, Badge } from '@modulz/radix';
 import * as RI from '@modulz/radix-icons';
 import * as Collapsible from '@interop-ui/react-collapsible';
+import { Slider } from './baseStyledPrimitives';
 
 const EDITOR_CLASSNAME = 'react-live-code-block';
 const EDITOR_STYLES: CSS.Properties = {
@@ -20,6 +21,7 @@ const componentsExposedToCodeBlock = {
   // Add components in scope for the code block editor here
   React,
   ...Collapsible,
+  Slider,
   ...RI,
 };
 

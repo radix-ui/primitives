@@ -41,6 +41,24 @@ type SliderRangeControlledProps = {
   onChange?(value: number[]): void;
 };
 type SliderRangeUncontrolledProps = {
+  /**
+   * The default value for an uncontrolled `Slider` when it is rendered. If `defaultValue` and
+   * `value` are both omitted, `Slider` will initialize with a single default value of `0`.
+   *
+   * ```jsx
+   * // live
+   * <Slider defaultValue={10}>
+   *   <Slider.Track>
+   *     <Slider.Range />
+   *   </Slider.Track>
+   *   <Slider.Thumb />
+   * </Slider>
+   * ```
+   *
+   * `defaultValue` should be used if you do not need to control the state of `Slider`, as its value
+   * will not change the state of `Slider` after the first render. If you need to control its state,
+   * use the `value` prop instead.
+   */
   defaultValue: number[];
   minStepsBetweenThumbs?: number;
   onChange?: (value: number[]) => void;
@@ -178,8 +196,8 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
         ref={composedRefs}
         min={min}
         max={max}
-        aria-disabled={disabled}
-        data-disabled={disabled}
+        aria-disabled={disabled || undefined}
+        data-disabled={disabled ? '' : undefined}
         onSlideStart={disabled ? undefined : handleSlideStart}
         onSlideMove={disabled ? undefined : handleSlideMove}
         onHomeKeyDown={() => !disabled && updateValues(min, 0)}
@@ -855,4 +873,12 @@ function linearScale(domain: [number, number], range: [number, number]) {
 }
 
 export { Slider };
-export type { SliderProps, SliderRangeProps, SliderTrackProps, SliderThumbProps };
+export type {
+  SliderProps,
+  SliderRangeProps,
+  SliderTrackProps,
+  SliderThumbProps,
+  // Need to expose this to fix a TS error, but this should probably go away with the new
+  // polymorphic version
+  SliderStaticProps,
+};

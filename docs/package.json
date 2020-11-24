@@ -16,6 +16,7 @@
     "@ngsctt/remark-smartypants": "^0.2.0",
     "babel-plugin-import-glob-array": "^0.2.0",
     "babel-plugin-styled-components": "^1.11.1",
+    "clsx": "^1.1.1",
     "lodash": "^4.17.20",
     "next": "^10.0.1",
     "next-mdx-enhanced": "5.0.0",

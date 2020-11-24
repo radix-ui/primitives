@@ -2004,6 +2004,7 @@ __metadata:
     "@types/styled-components": ^5.1.4
     babel-plugin-import-glob-array: ^0.2.0
     babel-plugin-styled-components: ^1.11.1
+    clsx: ^1.1.1
     lodash: ^4.17.20
     next: ^10.0.1
     next-mdx-enhanced: 5.0.0
@@ -7737,6 +7738,13 @@ __metadata:
   version: 2.1.2
   resolution: "clone@npm:2.1.2"
   checksum: 85232d66015d2d703dc59812e30049931d97c7815bf70569ae4fb7a66be257f46fcf47040e4e7050966ca195a9e615d59d73ba9e39fc37eedba1a76865f27ab1
+  languageName: node
+  linkType: hard
+
+"clsx@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "clsx@npm:1.1.1"
+  checksum: d8ae10ac0546da19fe8c9516886f6582a64a382cf4d09ea7d36d5287cafbdab1192ab249adc2cdf0310e0b0aeac4f4142cf7c738c98d9cb68c19ba24b6f673d5
   languageName: node
   linkType: hard
 

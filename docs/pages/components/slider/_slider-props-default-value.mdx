@@ -1,0 +1,15 @@
+export default ({ frontMatter, ...props }) => <React.Fragment {...props} />;
+
+The default value for an uncontrolled `Slider` when it is rendered. If `defaultValue` and `value` are both omitted, `Slider` will initialize with a single default value of `0`.
+
+```jsx
+// live
+<Slider defaultValue={10}>
+  <Slider.Track>
+    <Slider.Range />
+  </Slider.Track>
+  <Slider.Thumb />
+</Slider>
+```
+
+`defaultValue` should be used if you do not need to control the state of `Slider`, as its value will not change the state of `Slider` after the first render. If you need to control its state, use the `value` prop instead.
