@@ -12,23 +12,14 @@ const MENU_NAME = 'Menu';
 const MENU_DEFAULT_TAG = 'div';
 
 type MenuDOMProps = React.ComponentPropsWithoutRef<typeof MENU_DEFAULT_TAG>;
-type MenuOwnProps = {
-  orientation?: React.AriaAttributes['aria-orientation'];
-  loop?: boolean;
-};
+type MenuOwnProps = { loop?: boolean };
 type MenuProps = MenuDOMProps & MenuOwnProps;
 
 const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(function Menu(
   props,
   forwardedRef
 ) {
-  const {
-    children,
-    as: Comp = MENU_DEFAULT_TAG,
-    orientation = 'vertical',
-    loop = false,
-    ...menuProps
-  } = props;
+  const { children, as: Comp = MENU_DEFAULT_TAG, loop = false, ...menuProps } = props;
   const menuRef = React.useRef<HTMLDivElement>(null);
   const composedRef = useComposedRefs(forwardedRef, menuRef);
   const rovingFocusGroupRef = React.useRef<RovingFocusGroupAPI>(null);
@@ -102,7 +93,7 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
         }
       })}
     >
-      <RovingFocusGroup ref={rovingFocusGroupRef} orientation={orientation} loop={loop}>
+      <RovingFocusGroup ref={rovingFocusGroupRef} orientation="vertical" loop={loop}>
         {children}
       </RovingFocusGroup>
     </Comp>
