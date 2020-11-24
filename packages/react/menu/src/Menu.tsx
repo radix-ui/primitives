@@ -82,11 +82,14 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
           }
         }
       })}
-      // We unhighlight item when leaving on menu `mouseLeave` rather than `mouseOut`
-      // to match native menus implementation
-      onMouseLeave={composeEventHandlers(menuProps.onMouseLeave, (event) => {
+      onMouseOut={composeEventHandlers(menuProps.onMouseOut, (event) => {
         const menu = event.currentTarget;
-        revertFocusToMenu(menu);
+        const target = event.target as HTMLElement;
+        // we use `.closest` as the target could be an element inside the item which is out of its bounds
+        const item = target.closest(ENABLED_ITEM_SELECTOR) as HTMLElement | null;
+        if (item) {
+          revertFocusToMenu(menu);
+        }
       })}
     >
       <RovingFocusGroup ref={rovingFocusGroupRef} orientation={orientation} loop={loop}>
