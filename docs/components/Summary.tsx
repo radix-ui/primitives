@@ -7,6 +7,7 @@ export function Summary({ sx, ...props }: ButtonProps) {
       as="summary"
       sx={{
         cursor: 'pointer',
+        my: 2,
         ...sx,
       }}
       {...props}

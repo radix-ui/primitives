@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Box, Heading, Link, Text, BoxProps } from '@modulz/radix';
 import { useLayoutEffect } from '@interop-ui/react-utils';
+import uniqBy from 'lodash/uniqBy';
+import kebabCase from 'lodash/kebabCase';
 
 type QuickNavItem = {
   label: string;
@@ -42,16 +44,41 @@ function QuickNavItem({
   level = 0,
 }: QuickNavItemProps) {
   const { setItems } = useQuickNavContext();
-  const label = labelOverride ?? (typeof children === 'string' ? children : '');
-  const slug = slugOverride ?? 'section-' + label.toLowerCase().replace(/\s/g, '-');
+  const [_label, setLabel] = React.useState(() => (typeof children === 'string' ? children : ''));
+  const label = labelOverride ?? _label;
+  const slug = slugOverride ?? `section-${level}-` + kebabCase(label);
 
   useLayoutEffect(() => {
-    setItems((items) => [...items, { label, slug, level }]);
+    // I use `uniqBy` to make sure we aren't adding duplicate references to the items list every
+    // time the effect runs. We will run this effect multiple times throughout the life of a
+    // component if its dependency references change. Benoit has a suggestion to improve the
+    // implementation but I'm not exactly sure at the moment what that looks like.
+    // https://github.com/modulz/interop-ui/pull/249#discussion_r528978859
+    setItems((items) => uniqBy([...items, { label, slug, level }], (item) => item.slug));
     return () => setItems((items) => items.filter((item) => item.slug !== slug));
   }, [slug, label, level, setItems]);
 
+  // If children isn't a string (which can be the case if headings have additional inside elements)
+  // we need to get the inner text from the DOM node.
+  const setLabelFromInnerText = React.useCallback(
+    (node: HTMLSpanElement | null) => {
+      if (labelOverride != null) {
+        return;
+      }
+
+      const innerText = node?.innerText || '';
+      setLabel((label) => {
+        if (!label) {
+          return innerText;
+        }
+        return label;
+      });
+    },
+    [labelOverride]
+  );
+
   return (
-    <Box as="span" id={slug} sx={{ scrollMargin: 15 }}>
+    <Box as="span" id={slug} ref={setLabelFromInnerText} sx={{ scrollMargin: 15 }}>
       {children}
     </Box>
   );

@@ -7,7 +7,12 @@ date: '2020-11-08'
 
 import { PackageMeta } from '../../../components/PackageMeta';
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from '../../../components/Tabs';
-import { KeyboardInteractions } from './collapsible-components';
+import {
+  KeyboardInteractions,
+  CollapsibleProps,
+  collapsibleProps,
+  CollapsiblePropsSections,
+} from './collapsible-components';
 import StylingCSS from './_styling-css.mdx';
 
 <PackageMeta packageName="react-collapsible" />
@@ -63,7 +68,7 @@ function ControlledCollapsible() {
 <ControlledCollapsible />;
 ```
 
-### Styling
+## Styling
 
 All `Collapsible` components are unstyled by default. Each component renders a single DOM node which can be styled however you'd style a JSX component.
 
@@ -86,7 +91,25 @@ All `Collapsible` components are unstyled by default. Each component renders a s
   </TabPanels>
 </Tabs>
 
-### Animating
+### Basic style recommendations
+
+`Collapsible` should work fairly well out-of-the-box without any styles at all. Make sure that your global stylesheet respects setting `display: none` on all elements with the `hidden` attribute in order to properly hiden `CollapsibleContent`. If it does not, you can add it explicitly and have a functional `Collapsible` component.
+
+```css
+[data-interop-ui-collapsible-content][hidden] {
+  display: none;
+}
+```
+
+It is also important to include focus rings on interactive elements. By default, `CollapsibleButton` will render a button element. If you are overriding global focus styles and indpendently adding them to you component, be sure to include a focus ring to aide users who navigate without a mouse.
+
+```css
+[data-interop-ui-collapsible-button]:focus {
+  outline: 2px solid var(--color-focus-ring);
+}
+```
+
+## Animating
 
 You can animate the visibility of the `CollapsibleContent` component pretty much the same way you would animate any other React component—using CSS transitions or animations, or a JavaScript animation library.
 
@@ -151,5 +174,20 @@ export const MyComponent = () => (
 <KeyboardInteractions />
 
 ## Examples
+
+TODO
+
+## API Reference
+
+### `Collapsible`
+
+<CollapsibleProps />
+<CollapsiblePropsSections />
+
+### `Collapsible.Button`
+
+TODO
+
+### `Collapsible.Content`
 
 TODO

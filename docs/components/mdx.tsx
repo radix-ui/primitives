@@ -16,7 +16,7 @@ import {
   Tr,
 } from './pageComponents';
 import { CodeBlock } from './CodeBlock';
-import { Summary } from './Summary';
+import { Details, Summary } from './Details';
 import { MDXProviderComponentsProp } from '@mdx-js/react';
 
 export const MDXComponents: MDXProviderComponentsProp = {
@@ -24,6 +24,7 @@ export const MDXComponents: MDXProviderComponentsProp = {
   h2: (props: any) => <Heading {...props} as="h2" />,
   h3: (props: any) => <SubHeading {...props} as="h3" />,
   a: Link,
+  details: Details,
   hr: Divider,
   p: Paragraph,
   caption: Caption,
