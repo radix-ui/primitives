@@ -46,17 +46,12 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
             event.preventDefault();
             const items = Array.from(document.querySelectorAll(ENABLED_ITEM_SELECTOR));
             const item = FIRST_KEYS.includes(event.key) ? items[0] : items.reverse()[0];
-            setItemsReachable(true);
             (item as HTMLElement | undefined)?.focus();
           }
         }
       })}
-      // make items reachable "just before" an item is focused (capture)
-      onFocusCapture={composeEventHandlers(menuProps.onFocusCapture, (event) => {
-        if (isItem(event.target)) setItemsReachable(true);
-      })}
-      // make items unreachable "just before" an item is blurred (capture)
-      onBlurCapture={composeEventHandlers(menuProps.onBlurCapture, (event) => {
+      // make items unreachable when an item is blurred
+      onBlur={composeEventHandlers(menuProps.onBlur, (event) => {
         if (isItem(event.target)) setItemsReachable(false);
       })}
       // focus the menu if the mouse is moved over anything else than an item
@@ -68,7 +63,12 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
         if (isItem(event.target)) menuRef.current?.focus();
       })}
     >
-      <RovingFocusGroup reachable={itemsReachable} orientation="vertical" loop={loop}>
+      <RovingFocusGroup
+        reachable={itemsReachable}
+        onReachableChange={setItemsReachable}
+        orientation="vertical"
+        loop={loop}
+      >
         {children}
       </RovingFocusGroup>
     </Comp>
