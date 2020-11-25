@@ -102,13 +102,9 @@ export function KeyboardInteractions() {
             description: 'Sets the value to its maximum',
           },
           {
-            keys: ['Space', 'Enter'],
-            description: (
-              <>
-                Activates the disclosure button, which toggles the visibility of{' '}
-                <Code>CollapsibleContent</Code>.
-              </>
-            ),
+            keys: ['Enter'],
+            description:
+              'If the Slider is in a form context, simulates a click on the associated form submit button',
           },
         ]}
       />
