@@ -11,6 +11,10 @@ import type { RovingFocusGroupAPI } from './useRovingFocus';
 const MENU_NAME = 'Menu';
 const MENU_DEFAULT_TAG = 'div';
 
+const FIRST_KEYS = ['ArrowDown', 'PageUp', 'Home'];
+const LAST_KEYS = ['ArrowUp', 'PageDown', 'End'];
+const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
+
 type MenuDOMProps = React.ComponentPropsWithoutRef<typeof MENU_DEFAULT_TAG>;
 type MenuOwnProps = { loop?: boolean };
 type MenuProps = MenuDOMProps & MenuOwnProps;
@@ -23,12 +27,13 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
   const menuRef = React.useRef<HTMLDivElement>(null);
   const composedRef = useComposedRefs(forwardedRef, menuRef);
   const rovingFocusGroupRef = React.useRef<RovingFocusGroupAPI>(null);
+  const [menuTabIndex, setMenuTabIndex] = React.useState(0);
+  const [itemsReachable, setItemsReachable] = React.useState(false);
 
-  // override initial tab index strategy from `RovingFocusGroup`
-  React.useEffect(() => {
-    const menu = menuRef.current;
-    if (menu) removeCurrentTabStop(menu);
-  }, []);
+  function setMenuReachability(reachable: boolean) {
+    setItemsReachable(!reachable);
+    setMenuTabIndex(reachable ? 0 : -1);
+  }
 
   return (
     <Comp
@@ -36,20 +41,99 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
       {...menuProps}
       {...getPartDataAttrObj(MENU_NAME)}
       ref={composedRef}
-      tabIndex={0}
+      tabIndex={menuTabIndex}
       style={{ ...menuProps.style, outline: 'none' }}
+      // focus first/last item based on key pressed
       onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
-        if (event.target === event.currentTarget) {
-          if (['ArrowDown', 'PageUp', 'Home'].includes(event.key)) {
+        if (event.target === menuRef.current) {
+          if (ALL_KEYS.includes(event.key)) {
             event.preventDefault();
-            rovingFocusGroupRef.current?.focusFirst();
-          }
-          if (['ArrowUp', 'PageDown', 'End'].includes(event.key)) {
-            event.preventDefault();
-            rovingFocusGroupRef.current?.focusLast();
+            const items = Array.from(document.querySelectorAll(ENABLED_ITEM_SELECTOR));
+            const item = FIRST_KEYS.includes(event.key) ? items[0] : items.reverse()[0];
+            setItemsReachable(true);
+            (item as HTMLElement | undefined)?.focus();
           }
         }
       })}
+      // make menu unreachable "just before" an item is focused (capture)
+      onFocusCapture={composeEventHandlers(menuProps.onFocusCapture, (event) => {
+        if (isItem(event.target)) setMenuReachability(false);
+      })}
+      // make menu reachable "just before" an item is blurred (capture)
+      onBlurCapture={composeEventHandlers(menuProps.onBlurCapture, (event) => {
+        if (isItem(event.target)) setMenuReachability(true);
+      })}
+      // focus the menu if the mouse is moved over anything else than an item
+      onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
+        // if the menu is already focused, we don't want to do extra work (as this is `onMouseMove`)
+        if (document.activeElement !== menuRef.current) {
+          if (!isItem(event.target)) menuRef.current?.focus();
+        }
+      })}
+      // focus the menu if the mouse is moved outside an item
+      onMouseOut={composeEventHandlers(menuProps.onMouseOut, (event) => {
+        if (isItem(event.target)) menuRef.current?.focus();
+      })}
+    >
+      <RovingFocusGroup
+        ref={rovingFocusGroupRef}
+        reachable={itemsReachable}
+        orientation="vertical"
+        loop={loop}
+      >
+        {children}
+      </RovingFocusGroup>
+    </Comp>
+  );
+});
+
+function isItem(target: EventTarget) {
+  return (target as HTMLElement).matches(ENABLED_ITEM_SELECTOR);
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuItem
+ * -----------------------------------------------------------------------------------------------*/
+const ITEM_NAME = 'Menu.Item';
+const ITEM_DEFAULT_TAG = 'div';
+const ENABLED_ITEM_SELECTOR = `[${getPartDataAttr(ITEM_NAME)}]:not([data-disabled])`;
+
+type MenuItemDOMProps = React.ComponentPropsWithoutRef<typeof ITEM_DEFAULT_TAG>;
+type MenuItemOwnProps = { disabled?: boolean; onSelect?: () => void };
+type MenuItemProps = MenuItemDOMProps & MenuItemOwnProps;
+
+const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function MenuItem(
+  props,
+  forwardedRef
+) {
+  const { as: Comp = ITEM_DEFAULT_TAG, disabled, tabIndex, ...itemProps } = props;
+  const itemRef = React.useRef<HTMLDivElement>(null);
+  const composedRef = useComposedRefs(forwardedRef, itemRef);
+
+  const rovingFocusProps = useRovingFocus({ disabled });
+  const handleSelect = () => !disabled && itemProps.onSelect?.();
+  const handleKeyDown = composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
+    if (!disabled) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        handleSelect();
+      }
+    }
+  });
+
+  return (
+    <Comp
+      role="menuitem"
+      aria-disabled={disabled || undefined}
+      {...itemProps}
+      {...getPartDataAttrObj(ITEM_NAME)}
+      {...rovingFocusProps}
+      ref={composedRef}
+      data-disabled={disabled ? '' : undefined}
+      onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
+      onKeyDown={composeEventHandlers(itemProps.onKeyDown, handleKeyDown)}
+      onMouseDown={composeEventHandlers(itemProps.onMouseDown, rovingFocusProps.onMouseDown)}
+      // we handle selection on `mouseUp` rather than `click` to match native menus implementation
+      onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
       /**
        * We highlight items on `mouseMove` to achieve the following:
        *
@@ -61,97 +145,13 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
        * If we used `mouseOver`/`mouseEnter` it would not re-highlight when the mouse
        * wiggles. This is to match native menu implementation.
        */
-      onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
-        const menu = event.currentTarget;
-        const target = event.target as HTMLElement;
-        // we use `.closest` as the target could be an element inside the item which is out of its bounds
-        const item = target.closest(ENABLED_ITEM_SELECTOR) as HTMLElement | null;
-
-        if (item) {
+      onMouseMove={composeEventHandlers(itemProps.onMouseMove, (event) => {
+        if (!disabled) {
+          const item = event.currentTarget;
           // if the item is already focused, we don't want to do extra work (as this is `onMouseMove`)
-          if (document.activeElement !== item) {
-            menu.tabIndex = -1;
-            rovingFocusGroupRef.current?.focus(item);
-          }
-        } else {
-          // if the menu is already focused, we don't want to do extra work (as this is `onMouseMove`)
-          if (document.activeElement !== menu) {
-            // we also ignore the menu here to match native menus implementation
-            if (target !== menu) {
-              revertFocusToMenu(menu);
-            }
-          }
+          if (document.activeElement !== item) item.focus();
         }
       })}
-      onMouseOut={composeEventHandlers(menuProps.onMouseOut, (event) => {
-        const menu = event.currentTarget;
-        const target = event.target as HTMLElement;
-        // we use `.closest` as the target could be an element inside the item which is out of its bounds
-        const item = target.closest(ENABLED_ITEM_SELECTOR) as HTMLElement | null;
-        if (item) {
-          revertFocusToMenu(menu);
-        }
-      })}
-    >
-      <RovingFocusGroup ref={rovingFocusGroupRef} orientation="vertical" loop={loop}>
-        {children}
-      </RovingFocusGroup>
-    </Comp>
-  );
-});
-
-function removeCurrentTabStop(menu: HTMLElement) {
-  const tabStop: HTMLElement | null = menu.querySelector('[tabIndex="0"]');
-  if (tabStop) tabStop.tabIndex = -1;
-}
-
-function revertFocusToMenu(menu: HTMLElement) {
-  removeCurrentTabStop(menu);
-  menu.tabIndex = 0;
-  menu.focus();
-}
-
-/* -------------------------------------------------------------------------------------------------
- * MenuItem
- * -----------------------------------------------------------------------------------------------*/
-const ITEM_NAME = 'Menu.Item';
-const ITEM_DEFAULT_TAG = 'div';
-const ENABLED_ITEM_SELECTOR = `[${getPartDataAttr(ITEM_NAME)}]:not([data-disabled])`;
-
-type MenuItemDOMProps = React.ComponentPropsWithoutRef<typeof ITEM_DEFAULT_TAG>;
-type MenuItemOwnProps = {
-  disabled?: boolean;
-  onSelect?: () => void;
-};
-type MenuItemProps = MenuItemDOMProps & MenuItemOwnProps;
-
-const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function MenuItem(
-  props,
-  forwardedRef
-) {
-  const { as: Comp = ITEM_DEFAULT_TAG, disabled, tabIndex, ...itemProps } = props;
-
-  const rovingFocusProps = useRovingFocus({ disabled });
-  const handleSelect = () => !disabled && itemProps.onSelect?.();
-  const handleKeyDown = composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      handleSelect();
-    }
-  });
-
-  return (
-    <Comp
-      role="menuitem"
-      aria-disabled={disabled || undefined}
-      {...itemProps}
-      {...getPartDataAttrObj(ITEM_NAME)}
-      {...rovingFocusProps}
-      ref={forwardedRef}
-      data-disabled={disabled ? '' : undefined}
-      onMouseDown={composeEventHandlers(itemProps.onMouseDown, rovingFocusProps.onMouseDown)}
-      // we handle selection on `mouseUp` rather than `click` to match native menus implementation
-      onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
-      onKeyDown={composeEventHandlers(itemProps.onKeyDown, handleKeyDown)}
     />
   );
 });

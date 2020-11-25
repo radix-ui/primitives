@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { RovingFocusGroup, useRovingFocus } from './useRovingFocus';
+import { composeEventHandlers } from '@interop-ui/react-utils';
 
-import type { RovingFocusGroupProps } from './useRovingFocus';
+import type { RovingFocusGroupProps, RovingFocusGroupAPI } from './useRovingFocus';
 
 export default { title: 'Hooks/useRovingFocus' };
 
@@ -106,6 +107,67 @@ export const Nested = () => (
   </ButtonGroup>
 );
 
+export const Reachable = () => {
+  const [reachable, setReachable] = React.useState(true);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 20 }}>
+      <label>
+        <input
+          type="checkbox"
+          checked={reachable}
+          onChange={(event) => setReachable(event.target.checked)}
+        />{' '}
+        Reachable?
+      </label>
+
+      <div>
+        <ButtonGroup reachable={reachable}>
+          <Button value="one">One</Button>
+          <Button value="two">Two</Button>
+          <Button disabled value="three">
+            Three
+          </Button>
+          <Button value="four">Four</Button>
+        </ButtonGroup>
+      </div>
+
+      <input />
+    </div>
+  );
+};
+
+export const ImperativeAPI = () => {
+  const rovingFocusGroupRef = React.useRef<RovingFocusGroupAPI>(null);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 20 }}>
+      <h1>Imperative API</h1>
+      <div style={{ display: 'flex', gap: 10 }}>
+        <button type="button" onClick={() => rovingFocusGroupRef.current?.focus()}>
+          Focus button group
+        </button>
+        <button type="button" onClick={() => rovingFocusGroupRef.current?.blur()}>
+          Blur button group
+        </button>
+      </div>
+
+      <div>
+        <ButtonGroup ref={rovingFocusGroupRef} defaultValue="two">
+          <Button value="one">One</Button>
+          <Button value="two">Two</Button>
+          <Button disabled value="three">
+            Three
+          </Button>
+          <Button value="four">Four</Button>
+        </ButtonGroup>
+      </div>
+
+      <input />
+    </div>
+  );
+};
+
 const ButtonGroupContext = React.createContext<{
   value?: string;
   setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -114,36 +176,47 @@ const ButtonGroupContext = React.createContext<{
 type ButtonGroupProps = Omit<React.ComponentPropsWithRef<'div'>, 'defaultValue'> &
   RovingFocusGroupProps & { defaultValue?: string };
 
-const ButtonGroup = ({ orientation, dir, loop, defaultValue, ...props }: ButtonGroupProps) => {
-  const [value, setValue] = React.useState(defaultValue);
-  return (
-    <ButtonGroupContext.Provider value={{ value, setValue }}>
-      <RovingFocusGroup orientation={orientation} dir={dir} loop={loop}>
-        <div
-          {...props}
-          style={{
-            ...props.style,
-            display: 'inline-flex',
-            flexDirection: orientation === 'vertical' ? 'column' : 'row',
-            gap: 10,
-          }}
-        />
-      </RovingFocusGroup>
-    </ButtonGroupContext.Provider>
-  );
-};
+const ButtonGroup = React.forwardRef<RovingFocusGroupAPI, ButtonGroupProps>(
+  ({ reachable, orientation, dir, loop, defaultValue, ...props }, forwardedRef) => {
+    const [value, setValue] = React.useState(defaultValue);
+    return (
+      <ButtonGroupContext.Provider value={{ value, setValue }}>
+        <RovingFocusGroup
+          ref={forwardedRef}
+          reachable={reachable}
+          orientation={orientation}
+          dir={dir}
+          loop={loop}
+        >
+          <div
+            {...props}
+            style={{
+              ...props.style,
+              display: 'inline-flex',
+              flexDirection: orientation === 'vertical' ? 'column' : 'row',
+              gap: 10,
+            }}
+          />
+        </RovingFocusGroup>
+      </ButtonGroupContext.Provider>
+    );
+  }
+);
 
 type ButtonProps = Omit<React.ComponentPropsWithRef<'button'>, 'value'> & { value?: string };
 
 const Button = ({ disabled, tabIndex, value, ...props }: ButtonProps) => {
   const { value: contextValue, setValue } = React.useContext(ButtonGroupContext);
   const isSelected = contextValue !== undefined && value !== undefined && contextValue === value;
-  const rovingFocusProps = useRovingFocus({ disabled, isDefaultTabStop: isSelected });
+  const rovingFocusProps = useRovingFocus({ disabled, active: isSelected });
 
   return (
     <button
       disabled={disabled}
+      {...props}
+      {...rovingFocusProps}
       style={{
+        ...props.style,
         border: '1px solid',
         borderColor: '#ccc',
         padding: '5px 10px',
@@ -157,13 +230,11 @@ const Button = ({ disabled, tabIndex, value, ...props }: ButtonProps) => {
           : {}),
       }}
       onClick={disabled ? undefined : () => setValue(value)}
-      onFocus={(event) => {
+      onFocus={composeEventHandlers(rovingFocusProps.onFocus, (event) => {
         if (contextValue !== undefined) {
           event.target.click();
         }
-      }}
-      {...props}
-      {...rovingFocusProps}
+      })}
     />
   );
 };
