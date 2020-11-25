@@ -30,34 +30,21 @@ const [RovingFocusContext, useRovingFocusContext] = createContext<RovingContextV
 );
 
 type RovingFocusGroupProps = RovingFocusGroupOptions & { children?: React.ReactNode };
-type RovingFocusGroupAPI = { focus: () => void; blur: () => void };
 
-const RovingFocusGroup = React.forwardRef<RovingFocusGroupAPI, RovingFocusGroupProps>(
-  (props, forwardedRef) => {
-    const { children, reachable = true, orientation, loop, dir } = props;
-    const defaultTabStopSetRef = React.useRef(false);
-    const [tabStopId, setTabStopId] = React.useState<string | null>(null);
-    const groupId = String(useId());
+function RovingFocusGroup(props: RovingFocusGroupProps) {
+  const { children, reachable = true, orientation, loop, dir } = props;
+  const defaultTabStopSetRef = React.useRef(false);
+  const [tabStopId, setTabStopId] = React.useState<string | null>(null);
+  const groupId = String(useId());
 
-    // prettier-ignore
-    const context = React.useMemo(() => ({
+  // prettier-ignore
+  const context = React.useMemo(() => ({
       groupId, defaultTabStopSetRef, tabStopId, setTabStopId, reachable, orientation, dir, loop, }),
       [ groupId, defaultTabStopSetRef, tabStopId, setTabStopId, reachable, orientation, dir, loop, ]
     );
 
-    // expose public API on ref
-    React.useImperativeHandle(
-      forwardedRef,
-      () => ({
-        focus: () => getTabStop(groupId)?.focus(),
-        blur: () => getTabStop(groupId)?.blur(),
-      }),
-      [groupId]
-    );
-
-    return <RovingFocusContext.Provider value={context}>{children}</RovingFocusContext.Provider>;
-  }
-);
+  return <RovingFocusContext.Provider value={context}>{children}</RovingFocusContext.Provider>;
+}
 
 RovingFocusGroup.displayName = GROUP_NAME;
 
@@ -153,9 +140,5 @@ function getRovingFocusItems(groupId: string): HTMLElement[] {
   return Array.from(document.querySelectorAll(`[${getItemDataAttr(groupId)}]`));
 }
 
-function getTabStop(groupId: string): HTMLElement | null {
-  return document.querySelector(`[${getItemDataAttr(groupId)}][tabIndex="0"]`);
-}
-
 export { RovingFocusGroup, useRovingFocus };
-export type { RovingFocusGroupProps, RovingFocusGroupAPI };
+export type { RovingFocusGroupProps };

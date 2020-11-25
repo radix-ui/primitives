@@ -3,8 +3,6 @@ import { composeEventHandlers, forwardRef, useComposedRefs } from '@interop-ui/r
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from './useRovingFocus';
 
-import type { RovingFocusGroupAPI } from './useRovingFocus';
-
 /* -------------------------------------------------------------------------------------------------
  * Menu
  * -----------------------------------------------------------------------------------------------*/
@@ -26,14 +24,12 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
   const { children, as: Comp = MENU_DEFAULT_TAG, loop = false, ...menuProps } = props;
   const menuRef = React.useRef<HTMLDivElement>(null);
   const composedRef = useComposedRefs(forwardedRef, menuRef);
-  const rovingFocusGroupRef = React.useRef<RovingFocusGroupAPI>(null);
   const [menuTabIndex, setMenuTabIndex] = React.useState(0);
   const [itemsReachable, setItemsReachable] = React.useState(false);
 
-  function setMenuReachability(reachable: boolean) {
-    setItemsReachable(!reachable);
-    setMenuTabIndex(reachable ? 0 : -1);
-  }
+  React.useEffect(() => {
+    setMenuTabIndex(itemsReachable ? -1 : 0);
+  }, [itemsReachable]);
 
   return (
     <Comp
@@ -55,32 +51,24 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
           }
         }
       })}
-      // make menu unreachable "just before" an item is focused (capture)
+      // make items reachable "just before" an item is focused (capture)
       onFocusCapture={composeEventHandlers(menuProps.onFocusCapture, (event) => {
-        if (isItem(event.target)) setMenuReachability(false);
+        if (isItem(event.target)) setItemsReachable(true);
       })}
-      // make menu reachable "just before" an item is blurred (capture)
+      // make items unreachable "just before" an item is blurred (capture)
       onBlurCapture={composeEventHandlers(menuProps.onBlurCapture, (event) => {
-        if (isItem(event.target)) setMenuReachability(true);
+        if (isItem(event.target)) setItemsReachable(false);
       })}
       // focus the menu if the mouse is moved over anything else than an item
       onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
-        // if the menu is already focused, we don't want to do extra work (as this is `onMouseMove`)
-        if (document.activeElement !== menuRef.current) {
-          if (!isItem(event.target)) menuRef.current?.focus();
-        }
+        if (!isItem(event.target)) menuRef.current?.focus();
       })}
       // focus the menu if the mouse is moved outside an item
       onMouseOut={composeEventHandlers(menuProps.onMouseOut, (event) => {
         if (isItem(event.target)) menuRef.current?.focus();
       })}
     >
-      <RovingFocusGroup
-        ref={rovingFocusGroupRef}
-        reachable={itemsReachable}
-        orientation="vertical"
-        loop={loop}
-      >
+      <RovingFocusGroup reachable={itemsReachable} orientation="vertical" loop={loop}>
         {children}
       </RovingFocusGroup>
     </Comp>
@@ -135,21 +123,20 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
       // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
       /**
-       * We highlight items on `mouseMove` to achieve the following:
+       * We focus items on `mouseMove` to achieve the following:
        *
-       * - Mouse over an item (it highlights)
-       * - Leave mouse where it is and use keyboard to highlight a different item
-       * - Wiggle mouse without it leaving previously highlighted item
-       * - Previously highlighted item should re-highlight
+       * - Mouse over an item (it focuses)
+       * - Leave mouse where it is and use keyboard to focus a different item
+       * - Wiggle mouse without it leaving previously focused item
+       * - Previously focused item should re-focus
        *
-       * If we used `mouseOver`/`mouseEnter` it would not re-highlight when the mouse
+       * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
        * wiggles. This is to match native menu implementation.
        */
       onMouseMove={composeEventHandlers(itemProps.onMouseMove, (event) => {
         if (!disabled) {
           const item = event.currentTarget;
-          // if the item is already focused, we don't want to do extra work (as this is `onMouseMove`)
-          if (document.activeElement !== item) item.focus();
+          item.focus();
         }
       })}
     />
