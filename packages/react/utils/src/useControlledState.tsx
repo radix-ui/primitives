@@ -1,55 +1,54 @@
 import * as React from 'react';
 import { useCallbackRef } from './useCallbackRef';
 
-type UseControlledStateParams<T> = {
+type UseControlledStateOptions<T> = {
   prop?: T | undefined;
   defaultProp?: T | undefined;
   onChange?: (state: T) => void;
 };
 
-type SetStateFn<T> = (prevState?: T) => T;
-
-export function useControlledState<T>({
-  prop,
-  defaultProp,
-  onChange = () => {},
-}: UseControlledStateParams<T>) {
-  const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({ defaultProp, onChange });
+function useControlledState<T>(options: UseControlledStateOptions<T>) {
+  const { prop, defaultProp, onChange } = options;
+  const [internalState, setInternalState] = React.useState(defaultProp);
   const isControlled = prop !== undefined;
-  const value = isControlled ? prop : uncontrolledProp;
   const handleChange = useCallbackRef(onChange);
 
-  const setValue: React.Dispatch<React.SetStateAction<T | undefined>> = React.useCallback(
-    (nextValue) => {
-      if (isControlled) {
-        const setter = nextValue as SetStateFn<T>;
-        const value = typeof nextValue === 'function' ? setter(prop) : nextValue;
-        if (value !== prop) handleChange(value as T);
-      } else {
-        setUncontrolledProp(nextValue);
-      }
+  type SetState = React.Dispatch<React.SetStateAction<T | undefined>>;
+
+  const stateWhenControlled = prop;
+  const setStateWhenControlled: SetState = React.useCallback(
+    (setStateAction) => {
+      const prevState = stateWhenControlled;
+      const nextState = resolveSetStateAction(setStateAction, prevState);
+      if (nextState !== prevState) handleChange?.(nextState as T);
     },
-    [isControlled, prop, setUncontrolledProp, handleChange]
+    [handleChange, stateWhenControlled]
   );
 
-  return [value, setValue] as const;
+  const stateWhenUncontrolled = internalState;
+  const setStateWhenUncontrolled: SetState = React.useCallback(
+    (setStateAction) => {
+      setInternalState((prevState) => {
+        const nextState = resolveSetStateAction(setStateAction, prevState);
+        if (nextState !== prevState) handleChange?.(nextState as T);
+        return nextState;
+      });
+    },
+    [handleChange]
+  );
+
+  if (isControlled) {
+    return [stateWhenControlled, setStateWhenControlled] as const;
+  } else {
+    return [stateWhenUncontrolled, setStateWhenUncontrolled] as const;
+  }
 }
 
-function useUncontrolledState<T>({
-  defaultProp,
-  onChange,
-}: Omit<UseControlledStateParams<T>, 'prop'>) {
-  const uncontrolledState = React.useState<T | undefined>(defaultProp);
-  const [value] = uncontrolledState;
-  const prevValueRef = React.useRef(value);
-  const handleChange = useCallbackRef(onChange);
+type SetStateFn<T> = (prevState?: T) => T;
 
-  React.useEffect(() => {
-    if (prevValueRef.current !== value) {
-      handleChange(value as T);
-      prevValueRef.current = value;
-    }
-  }, [value, prevValueRef, handleChange]);
-
-  return uncontrolledState;
+function resolveSetStateAction<S>(action: React.SetStateAction<S>, prevState: S) {
+  const setter = action as SetStateFn<S>;
+  return typeof action === 'function' ? setter(prevState) : action;
 }
+
+export { useControlledState };
