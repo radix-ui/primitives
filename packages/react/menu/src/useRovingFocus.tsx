@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { getPartDataAttr, wrap, clamp } from '@interop-ui/utils';
-import { createContext, useControlledState, useId } from '@interop-ui/react-utils';
+import { createContext, useCallbackRef, useControlledState, useId } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * RovingFocusGroup
@@ -15,11 +15,12 @@ type RovingFocusGroupOptions = {
 };
 
 type RovingContextValue = {
+  focusImpl: (element: HTMLElement) => void;
   groupId: string;
-  reachable: boolean;
-  setReachable: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   tabStopId: string | null;
   setTabStopId: React.Dispatch<React.SetStateAction<string | null>>;
+  reachable: boolean;
+  setReachable: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 } & RovingFocusGroupOptions;
 
 const GROUP_NAME = 'RovingFocusGroup';
@@ -31,26 +32,27 @@ const [RovingFocusContext, useRovingFocusContext] = createContext<RovingContextV
 
 type RovingFocusGroupProps = RovingFocusGroupOptions & {
   children?: React.ReactNode;
+  focusImpl?: (element: HTMLElement) => void;
   reachable?: boolean;
   defaultReachable?: boolean;
   onReachableChange?: (reachable: boolean) => void;
 };
 
 function RovingFocusGroup(props: RovingFocusGroupProps) {
-  const { children, orientation, loop, dir } = props;
-  const { reachable: reachableProp, defaultReachable, onReachableChange } = props;
+  const { children, orientation, loop, dir, focusImpl: focusImplProp = (el) => el.focus() } = props;
+  const focusImpl = useCallbackRef(focusImplProp);
   const [reachable = true, setReachable] = useControlledState({
-    prop: reachableProp,
-    defaultProp: defaultReachable,
-    onChange: onReachableChange,
+    prop: props.reachable,
+    defaultProp: props.defaultReachable,
+    onChange: props.onReachableChange,
   });
   const [tabStopId, setTabStopId] = React.useState<string | null>(null);
   const groupId = String(useId());
 
   // prettier-ignore
   const context = React.useMemo(() => ({
-    groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop, }),
-    [ groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop, ]
+    focusImpl, groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop }),
+    [ focusImpl, groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop ]
   );
 
   return <RovingFocusContext.Provider value={context}>{children}</RovingFocusContext.Provider>;
@@ -114,8 +116,8 @@ function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
         const map = { first: 0, last: count - 1, prev: currentIndex - 1, next: currentIndex + 1 };
         let nextIndex = map[focusIntent];
         nextIndex = context.loop ? wrap(nextIndex, count) : clamp(nextIndex, [0, count - 1]);
-        // See: https://github.com/facebook/react/issues/20332
-        setTimeout(() => items[nextIndex]?.focus());
+        const nextItem = items[nextIndex];
+        if (nextItem) context.focusImpl(nextItem);
       }
     },
   };

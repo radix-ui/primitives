@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { getPartDataAttr, wrapArray } from '@interop-ui/utils';
 
-type UseMenuTypeaheadOptions = { focus?: (element: HTMLElement) => void };
+type UseMenuTypeaheadOptions = { focusImpl?: (element: HTMLElement) => void };
 
-function useMenuTypeahead({ focus = (el) => el.focus() }: UseMenuTypeaheadOptions = {}) {
+function useMenuTypeahead({ focusImpl = (el) => el.focus() }: UseMenuTypeaheadOptions = {}) {
   const timerRef = React.useRef(0);
   const searchRef = React.useRef('');
 
@@ -33,8 +33,7 @@ function useMenuTypeahead({ focus = (el) => el.focus() }: UseMenuTypeaheadOption
         const newItem = container.querySelector(`[${ITEM_ATTR}="${nextMatch}"]`);
 
         if (newItem) {
-          // See: https://github.com/facebook/react/issues/20332
-          setTimeout(() => focus(newItem as HTMLElement));
+          focusImpl(newItem as HTMLElement);
         }
       }
     },
