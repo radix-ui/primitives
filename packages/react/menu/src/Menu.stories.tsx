@@ -37,8 +37,8 @@ export const WithLabels = () => (
         )}
         {foodGroup.foods.map((food) => (
           <Menu.Item
-            as={StyledItem}
             key={food.value}
+            as={StyledItem}
             disabled={food.disabled}
             onSelect={() => window.alert(food.label)}
           >
@@ -96,7 +96,7 @@ export const Typeahead = () => (
         <p>(relying on `.textContent` — default)</p>
         <Menu as={StyledRoot}>
           {suits.map((suit) => (
-            <Menu.Item as={StyledItem}>
+            <Menu.Item key={suit.emoji} as={StyledItem}>
               {suit.label}
               <span role="img" aria-label={suit.label}>
                 {suit.emoji}
@@ -111,7 +111,7 @@ export const Typeahead = () => (
         <p>(with explicit `textValue` prop)</p>
         <Menu as={StyledRoot}>
           {suits.map((suit) => (
-            <Menu.Item as={StyledItem} textValue={suit.label}>
+            <Menu.Item key={suit.emoji} as={StyledItem} textValue={suit.label}>
               <span role="img" aria-label={suit.label}>
                 {suit.emoji}
               </span>
