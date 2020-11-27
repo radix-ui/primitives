@@ -2230,6 +2230,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-menu@workspace:packages/react/menu":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-menu@workspace:packages/react/menu"
+  dependencies:
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-polymorphic@workspace:*, @interop-ui/react-polymorphic@workspace:packages/react/polymorphic":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-polymorphic@workspace:packages/react/polymorphic"
