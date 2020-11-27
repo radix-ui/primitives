@@ -114,7 +114,8 @@ function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
         const map = { first: 0, last: count - 1, prev: currentIndex - 1, next: currentIndex + 1 };
         let nextIndex = map[focusIntent];
         nextIndex = context.loop ? wrap(nextIndex, count) : clamp(nextIndex, [0, count - 1]);
-        items[nextIndex]?.focus();
+        // See: https://github.com/facebook/react/issues/20332
+        setTimeout(() => items[nextIndex]?.focus());
       }
     },
   };
