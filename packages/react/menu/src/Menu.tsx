@@ -144,6 +144,46 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
 });
 
 /* -------------------------------------------------------------------------------------------------
+ * MenuGroup
+ * -----------------------------------------------------------------------------------------------*/
+const GROUP_NAME = 'Menu.Group';
+const GROUP_DEFAULT_TAG = 'div';
+
+type MenuGroupDOMProps = React.ComponentPropsWithoutRef<typeof GROUP_DEFAULT_TAG>;
+type MenuGroupOwnProps = {};
+type MenuGroupProps = MenuGroupDOMProps & MenuGroupOwnProps;
+
+const MenuGroup = forwardRef<typeof GROUP_DEFAULT_TAG, MenuGroupProps>(function MenuGroup(
+  props,
+  forwardedRef
+) {
+  const { as: Comp = GROUP_DEFAULT_TAG, ...groupProps } = props;
+
+  return (
+    <Comp role="group" {...groupProps} {...getPartDataAttrObj(GROUP_NAME)} ref={forwardedRef} />
+  );
+});
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuLabel
+ * -----------------------------------------------------------------------------------------------*/
+const LABEL_NAME = 'Menu.Label';
+const LABEL_DEFAULT_TAG = 'div';
+
+type MenuLabelDOMProps = React.ComponentPropsWithoutRef<typeof LABEL_DEFAULT_TAG>;
+type MenuLabelOwnProps = {};
+type MenuLabelProps = MenuLabelDOMProps & MenuLabelOwnProps;
+
+const MenuLabel = forwardRef<typeof LABEL_DEFAULT_TAG, MenuLabelProps>(function MenuLabel(
+  props,
+  forwardedRef
+) {
+  const { as: Comp = LABEL_DEFAULT_TAG, ...labelProps } = props;
+
+  return <Comp {...labelProps} {...getPartDataAttrObj(LABEL_NAME)} ref={forwardedRef} />;
+});
+
+/* -------------------------------------------------------------------------------------------------
  * MenuSeparator
  * -----------------------------------------------------------------------------------------------*/
 const SEPARATOR_NAME = 'Menu.Separator';
@@ -171,16 +211,23 @@ const MenuSeparator = forwardRef<typeof SEPARATOR_DEFAULT_TAG, MenuSeparatorProp
 
 /* -----------------------------------------------------------------------------------------------*/
 
+interface MenuStaticProps {
+  Item: typeof MenuItem;
+  Group: typeof MenuGroup;
+  Label: typeof MenuLabel;
+  Separator: typeof MenuSeparator;
+}
+
 Menu.Item = MenuItem;
+Menu.Group = MenuGroup;
+Menu.Label = MenuLabel;
 Menu.Separator = MenuSeparator;
 
 Menu.displayName = MENU_NAME;
 Menu.Item.displayName = ITEM_NAME;
+Menu.Group.displayName = GROUP_NAME;
+Menu.Label.displayName = LABEL_NAME;
 Menu.Separator.displayName = SEPARATOR_NAME;
 
-interface MenuStaticProps {
-  Item: typeof MenuItem;
-  Separator: typeof MenuSeparator;
-}
-
 export { Menu };
+export type { MenuProps, MenuItemProps, MenuGroupProps, MenuLabelProps, MenuSeparatorProps };

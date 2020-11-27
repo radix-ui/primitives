@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Menu } from './Menu';
 import { styled } from '../../../../stitches.config';
+import { foodGroups } from '../../../../test-data/foods';
 
 export default { title: 'Components/Menu' };
 
@@ -25,6 +26,26 @@ export const Styled = () => (
   </Menu>
 );
 
+export const WithLabels = () => (
+  <Menu as={StyledRoot}>
+    {foodGroups.map((foodGroup, index) => (
+      <Menu.Group key={index}>
+        {foodGroup.label && (
+          <Menu.Label as={StyledLabel} key={foodGroup.label}>
+            {foodGroup.label}
+          </Menu.Label>
+        )}
+        {foodGroup.foods.map((food) => (
+          <Menu.Item as={StyledItem} key={food.value}>
+            {food.label}
+          </Menu.Item>
+        ))}
+        {index < foodGroups.length - 1 && <Menu.Separator as={StyledSeparator} />}
+      </Menu.Group>
+    ))}
+  </Menu>
+);
+
 const StyledRoot = styled('div', {
   display: 'inline-block',
   boxSizing: 'border-box',
@@ -38,7 +59,7 @@ const StyledRoot = styled('div', {
   fontSize: 13,
 });
 
-const StyledItem = styled('div', {
+const itemCss: any = {
   display: 'flex',
   alignItems: 'center',
   lineHeight: '1',
@@ -46,9 +67,13 @@ const StyledItem = styled('div', {
   userSelect: 'none',
   whiteSpace: 'nowrap',
   height: 25,
-  padding: '0 25px',
+  padding: '0 10px',
   color: 'black',
   borderRadius: 3,
+};
+
+const StyledItem = styled('div', {
+  ...itemCss,
 
   '&:focus': {
     outline: 'none',
@@ -61,8 +86,13 @@ const StyledItem = styled('div', {
   },
 });
 
+const StyledLabel = styled('div', {
+  ...itemCss,
+  color: '$gray100',
+});
+
 const StyledSeparator = styled('div', {
   height: 1,
-  margin: 5,
+  margin: '5px 10px',
   backgroundColor: '$gray100',
 });
