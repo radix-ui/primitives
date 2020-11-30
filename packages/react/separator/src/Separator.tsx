@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
 const NAME = 'Separator';
@@ -8,7 +8,6 @@ const DEFAULT_ORIENTATION = 'horizontal';
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 type Orientation = typeof ORIENTATIONS[number];
-type SeparatorDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type SeparatorOwnProps = {
   /**
    * Either `vertical` or `horizontal`. Defaults to `horizontal`.
@@ -20,12 +19,8 @@ type SeparatorOwnProps = {
    */
   decorative?: boolean;
 };
-type SeparatorProps = Omit<SeparatorDOMProps & SeparatorOwnProps, 'aria-orientation'>;
 
-const Separator = forwardRef<typeof DEFAULT_TAG, SeparatorProps>(function Separator(
-  props,
-  forwardedRef
-) {
+const Separator = forwardRefWithAs<typeof DEFAULT_TAG, SeparatorOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = DEFAULT_TAG,
     decorative,
@@ -51,8 +46,6 @@ const Separator = forwardRef<typeof DEFAULT_TAG, SeparatorProps>(function Separa
   );
 });
 
-Separator.displayName = NAME;
-
 Separator.propTypes = {
   orientation(props, propName, componentName) {
     const propValue = props[propName];
@@ -63,6 +56,8 @@ Separator.propTypes = {
     return null;
   },
 };
+
+/* -----------------------------------------------------------------------------------------------*/
 
 // Split this out for clearer readability of the error message.
 function getInvalidOrientationError(value: string, componentName: string) {
@@ -77,5 +72,6 @@ function isValidOrientation(orientation: any): orientation is Orientation {
   return ORIENTATIONS.includes(orientation);
 }
 
+Separator.displayName = NAME;
+
 export { Separator };
-export type { SeparatorProps };
