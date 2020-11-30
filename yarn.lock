@@ -2372,6 +2372,7 @@ __metadata:
   resolution: "@interop-ui/react-switch@workspace:packages/react/switch"
   dependencies:
     "@interop-ui/react-label": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1

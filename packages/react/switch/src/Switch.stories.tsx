@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Switch } from './Switch';
+import { Switch, SwitchThumb } from './Switch';
 import { Label as LabelPrimitive } from '@interop-ui/react-label';
 import { styled } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
@@ -12,7 +12,7 @@ export const Styled = () => (
     <Label>
       This is the label{' '}
       <Switch as={StyledRoot}>
-        <Switch.Thumb as={StyledThumb} />
+        <SwitchThumb as={StyledThumb} />
       </Switch>
     </Label>
   </>
@@ -31,7 +31,7 @@ export const Controlled = () => {
         onCheckedChange={(event: any) => setChecked(event.target.checked)}
         id="randBox"
       >
-        <Switch.Thumb as={StyledThumb} />
+        <SwitchThumb as={StyledThumb} />
       </Switch>
     </>
   );
@@ -50,7 +50,7 @@ export const WithinForm = () => {
       <p>checked: {String(checked)}</p>
 
       <Switch as={StyledRoot}>
-        <Switch.Thumb as={StyledThumb} />
+        <SwitchThumb as={StyledThumb} />
       </Switch>
     </form>
   );
