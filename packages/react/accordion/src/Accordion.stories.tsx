@@ -1,50 +1,56 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
-import { Accordion } from './Accordion';
 import { styled } from '../../../../stitches.config';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionHeader,
+  AccordionButton,
+  AccordionPanel,
+} from './Accordion';
 
 export default { title: 'Components/Accordion' };
 
 export const Styled = () => (
   <Accordion as={StyledRoot}>
-    <Accordion.Item as={StyledItem} value="one">
-      <Accordion.Header as={StyledHeader}>
-        <Accordion.Button as={StyledButton}>One</Accordion.Button>
-      </Accordion.Header>
-      <Accordion.Panel as={StyledPanel}>
+    <AccordionItem as={StyledItem} value="one">
+      <AccordionHeader as={StyledHeader}>
+        <AccordionButton as={StyledButton}>One</AccordionButton>
+      </AccordionHeader>
+      <AccordionPanel as={StyledPanel}>
         Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
         integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
         habitant sed.
-      </Accordion.Panel>
-    </Accordion.Item>
-    <Accordion.Item as={StyledItem} value="two">
-      <Accordion.Header as={StyledHeader}>
-        <Accordion.Button as={StyledButton}>Two</Accordion.Button>
-      </Accordion.Header>
-      <Accordion.Panel as={StyledPanel}>
+      </AccordionPanel>
+    </AccordionItem>
+    <AccordionItem as={StyledItem} value="two">
+      <AccordionHeader as={StyledHeader}>
+        <AccordionButton as={StyledButton}>Two</AccordionButton>
+      </AccordionHeader>
+      <AccordionPanel as={StyledPanel}>
         Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
         porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
-      </Accordion.Panel>
-    </Accordion.Item>
-    <Accordion.Item as={StyledItem} value="three" disabled>
-      <Accordion.Header as={StyledHeader}>
-        <Accordion.Button as={StyledButton}>Three (disabled)</Accordion.Button>
-      </Accordion.Header>
-      <Accordion.Panel as={StyledPanel}>
+      </AccordionPanel>
+    </AccordionItem>
+    <AccordionItem as={StyledItem} value="three" disabled>
+      <AccordionHeader as={StyledHeader}>
+        <AccordionButton as={StyledButton}>Three (disabled)</AccordionButton>
+      </AccordionHeader>
+      <AccordionPanel as={StyledPanel}>
         Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
         euismod magna, nec tempor pulvinar eu etiam mattis.
-      </Accordion.Panel>
-    </Accordion.Item>
-    <Accordion.Item as={StyledItem} value="four">
-      <Accordion.Header as={StyledHeader}>
-        <Accordion.Button as={StyledButton}>Four</Accordion.Button>
-      </Accordion.Header>
-      <Accordion.Panel as={StyledPanel}>
+      </AccordionPanel>
+    </AccordionItem>
+    <AccordionItem as={StyledItem} value="four">
+      <AccordionHeader as={StyledHeader}>
+        <AccordionButton as={StyledButton}>Four</AccordionButton>
+      </AccordionHeader>
+      <AccordionPanel as={StyledPanel}>
         Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus dignissim
         vitae, enim vulputate nullam semper potenti etiam volutpat libero.
         <button>Cool</button>
-      </Accordion.Panel>
-    </Accordion.Item>
+      </AccordionPanel>
+    </AccordionItem>
   </Accordion>
 );
 
@@ -52,26 +58,26 @@ export const Controlled = () => {
   const [value, setValue] = React.useState('one');
 
   return (
-    <Accordion as={StyledRoot} value={value} onChange={setValue}>
-      <Accordion.Item as={StyledItem} value="one">
-        <Accordion.Header as={StyledHeader}>
-          <Accordion.Button as={StyledButton}>One</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel as={StyledPanel}>
+    <Accordion as={StyledRoot} value={value} onChange={(value) => setValue(value)}>
+      <AccordionItem as={StyledItem} value="one">
+        <AccordionHeader as={StyledHeader}>
+          <AccordionButton as={StyledButton}>One</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel as={StyledPanel}>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
           integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
           habitant sed.
-        </Accordion.Panel>
-      </Accordion.Item>
-      <Accordion.Item as={StyledItem} value="two">
-        <Accordion.Header as={StyledHeader}>
-          <Accordion.Button as={StyledButton}>Two</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel as={StyledPanel}>
+        </AccordionPanel>
+      </AccordionItem>
+      <AccordionItem as={StyledItem} value="two">
+        <AccordionHeader as={StyledHeader}>
+          <AccordionButton as={StyledButton}>Two</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel as={StyledPanel}>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
           porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
-        </Accordion.Panel>
-      </Accordion.Item>
+        </AccordionPanel>
+      </AccordionItem>
     </Accordion>
   );
 };
@@ -85,44 +91,44 @@ export const OutsideViewport = () => (
       not scroll unless the next tab is entering the viewport.
     </p>
     <Accordion as={StyledRoot}>
-      <Accordion.Item as={StyledItem} value="one">
-        <Accordion.Header as={StyledHeader}>
-          <Accordion.Button as={StyledButton}>One</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel as={StyledPanel}>
+      <AccordionItem as={StyledItem} value="one">
+        <AccordionHeader as={StyledHeader}>
+          <AccordionButton as={StyledButton}>One</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel as={StyledPanel}>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
           integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
           habitant sed.
-        </Accordion.Panel>
-      </Accordion.Item>
-      <Accordion.Item as={StyledItem} value="two">
-        <Accordion.Header as={StyledHeader}>
-          <Accordion.Button as={StyledButton}>Two</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel as={StyledPanel}>
+        </AccordionPanel>
+      </AccordionItem>
+      <AccordionItem as={StyledItem} value="two">
+        <AccordionHeader as={StyledHeader}>
+          <AccordionButton as={StyledButton}>Two</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel as={StyledPanel}>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
           porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
-        </Accordion.Panel>
-      </Accordion.Item>
-      <Accordion.Item as={StyledItem} value="three" disabled>
-        <Accordion.Header as={StyledHeader}>
-          <Accordion.Button as={StyledButton}>Three (disabled)</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel as={StyledPanel}>
+        </AccordionPanel>
+      </AccordionItem>
+      <AccordionItem as={StyledItem} value="three" disabled>
+        <AccordionHeader as={StyledHeader}>
+          <AccordionButton as={StyledButton}>Three (disabled)</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel as={StyledPanel}>
           Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
           euismod magna, nec tempor pulvinar eu etiam mattis.
-        </Accordion.Panel>
-      </Accordion.Item>
-      <Accordion.Item as={StyledItem} value="four">
-        <Accordion.Header as={StyledHeader}>
-          <Accordion.Button as={StyledButton}>Four</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel as={StyledPanel}>
+        </AccordionPanel>
+      </AccordionItem>
+      <AccordionItem as={StyledItem} value="four">
+        <AccordionHeader as={StyledHeader}>
+          <AccordionButton as={StyledButton}>Four</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel as={StyledPanel}>
           Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
           dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
           <button>Cool</button>
-        </Accordion.Panel>
-      </Accordion.Item>
+        </AccordionPanel>
+      </AccordionItem>
     </Accordion>
     <div style={{ height: '150vh' }} />
   </>

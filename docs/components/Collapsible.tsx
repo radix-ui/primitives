@@ -1,37 +1,27 @@
 import * as React from 'react';
 import {
   Collapsible as CollapsiblePrimitive,
-  CollapsibleButtonProps,
-  CollapsibleProps,
-  CollapsibleContentProps,
+  CollapsibleButton as CollapsiblePrimitiveButton,
+  CollapsibleContent as CollapsiblePrimitiveContent,
 } from '@interop-ui/react-collapsible';
 import { Arrow as ArrowPrimitive } from '@interop-ui/react-arrow';
-import { Button, Box, BoxProps, Text, theme as radixTheme } from '@modulz/radix';
+import { Button, Box, BoxProps, Text } from '@modulz/radix';
 
-export function Collapsible({ sx, ...props }: CollapsibleProps & { sx?: BoxProps['sx'] }) {
-  return (
-    <CollapsiblePrimitive
-      as={(props) => <Box {...props} sx={{ my: 4, ...sx }} as="div" />}
-      {...props}
-    />
-  );
+export function Collapsible({
+  sx,
+  ...props
+}: React.ComponentProps<typeof CollapsiblePrimitive> & { sx?: BoxProps['sx'] }) {
+  return <CollapsiblePrimitive as={(props) => <Box {...props} />} {...props} />;
 }
 
 export function CollapsibleButton({
   sx,
   ...props
-}: CollapsibleButtonProps & { sx?: BoxProps['sx'] }) {
+}: React.ComponentProps<typeof CollapsiblePrimitiveButton> & { sx?: BoxProps['sx'] }) {
   return (
-    <CollapsiblePrimitive.Button
+    <CollapsiblePrimitiveButton
       as={({ children, ...props }) => (
-        <Button
-          {...props}
-          sx={{
-            // background: radixTheme.colors.gray200,
-            ...sx,
-          }}
-          as="button"
-        >
+        <Button {...props} sx={sx}>
           <Box
             as="span"
             aria-hidden
@@ -58,10 +48,10 @@ export function CollapsibleButton({
 export function CollapsibleContent({
   sx,
   ...props
-}: CollapsibleContentProps & { sx?: BoxProps['sx'] }) {
+}: React.ComponentProps<typeof CollapsiblePrimitiveContent> & { sx?: BoxProps['sx'] }) {
   return (
-    <CollapsiblePrimitive.Content
-      as={(props) => <Box {...props} sx={{ pt: 2, ...sx }} as="div" />}
+    <CollapsiblePrimitiveContent
+      as={(props) => <Box {...props} sx={{ pt: 2, ...sx }} />}
       {...props}
     />
   );

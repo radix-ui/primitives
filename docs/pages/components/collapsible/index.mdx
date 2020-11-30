@@ -38,8 +38,8 @@ The most basic composition of a `Collapsible` component is as follows:
 ```jsx
 // live
 <Collapsible>
-  <Collapsible.Button>Greeting</Collapsible.Button>
-  <Collapsible.Content>Hello there!</Collapsible.Content>
+  <CollapsibleButton>Greeting</CollapsibleButton>
+  <CollapsibleContent>Hello there!</CollapsibleContent>
 </Collapsible>
 ```
 
@@ -54,8 +54,8 @@ function ControlledCollapsible() {
   return (
     <div>
       <Collapsible isOpen={isOpen} onToggle={setIsOpen}>
-        <Collapsible.Button>Greeting</Collapsible.Button>
-        <Collapsible.Content id="greeting">Hello there!</Collapsible.Content>
+        <CollapsibleButton>Greeting</CollapsibleButton>
+        <CollapsibleContent id="greeting">Hello there!</CollapsibleContent>
       </Collapsible>
       <button aria-controls="greeting" aria-expanded={isOpen} onClick={() => setIsOpen(!isOpen)}>
         I can also toggle the greeting!
@@ -158,10 +158,10 @@ If you are animating visibility using JavaScript, we recommend controlling the v
 export const MyComponent = () => (
   <Collapsible>
     <div>
-      <Collapsible.Button>Collapsible button</Collapsible.Button>
+      <CollapsibleButton>Collapsible button</CollapsibleButton>
       <button>Some other button</button>
     </div>
-    <Collapsible.Content>Collapsible content</Collapsible.Content>
+    <CollapsibleContent>Collapsible content</CollapsibleContent>
   </Collapsible>
 );
 ```
