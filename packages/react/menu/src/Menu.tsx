@@ -2,6 +2,7 @@ import * as React from 'react';
 import { composeEventHandlers, forwardRef, useComposedRefs } from '@interop-ui/react-utils';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from './useRovingFocus';
+import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
 
 /* -------------------------------------------------------------------------------------------------
  * Menu
@@ -26,6 +27,7 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
   const composedRef = useComposedRefs(forwardedRef, menuRef);
   const [menuTabIndex, setMenuTabIndex] = React.useState(0);
   const [itemsReachable, setItemsReachable] = React.useState(false);
+  const menuTypeaheadProps = useMenuTypeahead();
 
   React.useEffect(() => {
     setMenuTabIndex(itemsReachable ? -1 : 0);
@@ -39,12 +41,17 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
       ref={composedRef}
       tabIndex={menuTabIndex}
       style={{ ...menuProps.style, outline: 'none' }}
+      onKeyDownCapture={composeEventHandlers(
+        menuProps.onKeyDownCapture,
+        menuTypeaheadProps.onKeyDownCapture
+      )}
       // focus first/last item based on key pressed
       onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
-        if (event.target === menuRef.current) {
+        const menu = menuRef.current;
+        if (event.target === menu) {
           if (ALL_KEYS.includes(event.key)) {
             event.preventDefault();
-            const items = Array.from(document.querySelectorAll(ENABLED_ITEM_SELECTOR));
+            const items = Array.from(menu.querySelectorAll(ENABLED_ITEM_SELECTOR));
             const item = FIRST_KEYS.includes(event.key) ? items[0] : items.reverse()[0];
             (item as HTMLElement | undefined)?.focus();
           }
@@ -87,19 +94,37 @@ const ITEM_DEFAULT_TAG = 'div';
 const ENABLED_ITEM_SELECTOR = `[${getPartDataAttr(ITEM_NAME)}]:not([data-disabled])`;
 
 type MenuItemDOMProps = React.ComponentPropsWithoutRef<typeof ITEM_DEFAULT_TAG>;
-type MenuItemOwnProps = { disabled?: boolean; onSelect?: () => void };
+type MenuItemOwnProps = {
+  disabled?: boolean;
+  textValue?: string;
+  onSelect?: () => void;
+};
 type MenuItemProps = MenuItemDOMProps & MenuItemOwnProps;
 
 const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function MenuItem(
   props,
   forwardedRef
 ) {
-  const { as: Comp = ITEM_DEFAULT_TAG, disabled, tabIndex, ...itemProps } = props;
-  const itemRef = React.useRef<HTMLDivElement>(null);
-  const composedRef = useComposedRefs(forwardedRef, itemRef);
+  const { as: Comp = ITEM_DEFAULT_TAG, disabled, textValue, onSelect, ...itemProps } = props;
+  const menuItemRef = React.useRef<HTMLDivElement>(null);
+  const composedRef = useComposedRefs(forwardedRef, menuItemRef);
+
+  // get the item's `.textContent` as default strategy for typeahead `textValue`
+  const [textContent, setTextContent] = React.useState('');
+  React.useEffect(() => {
+    const menuItem = menuItemRef.current;
+    if (menuItem) {
+      setTextContent((menuItem.textContent ?? '').trim());
+    }
+  }, [itemProps.children]);
 
   const rovingFocusProps = useRovingFocus({ disabled });
-  const handleSelect = () => !disabled && itemProps.onSelect?.();
+  const menuTypeaheadItemProps = useMenuTypeaheadItem({
+    textValue: textValue ?? textContent,
+    disabled,
+  });
+
+  const handleSelect = () => !disabled && onSelect?.();
   const handleKeyDown = composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
     if (!disabled) {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -115,6 +140,7 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
       {...itemProps}
       {...getPartDataAttrObj(ITEM_NAME)}
       {...rovingFocusProps}
+      {...menuTypeaheadItemProps}
       ref={composedRef}
       data-disabled={disabled ? '' : undefined}
       onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}

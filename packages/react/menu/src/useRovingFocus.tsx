@@ -16,10 +16,10 @@ type RovingFocusGroupOptions = {
 
 type RovingContextValue = {
   groupId: string;
-  reachable: boolean;
-  setReachable: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   tabStopId: string | null;
   setTabStopId: React.Dispatch<React.SetStateAction<string | null>>;
+  reachable: boolean;
+  setReachable: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 } & RovingFocusGroupOptions;
 
 const GROUP_NAME = 'RovingFocusGroup';
@@ -38,19 +38,18 @@ type RovingFocusGroupProps = RovingFocusGroupOptions & {
 
 function RovingFocusGroup(props: RovingFocusGroupProps) {
   const { children, orientation, loop, dir } = props;
-  const { reachable: reachableProp, defaultReachable, onReachableChange } = props;
   const [reachable = true, setReachable] = useControlledState({
-    prop: reachableProp,
-    defaultProp: defaultReachable,
-    onChange: onReachableChange,
+    prop: props.reachable,
+    defaultProp: props.defaultReachable,
+    onChange: props.onReachableChange,
   });
   const [tabStopId, setTabStopId] = React.useState<string | null>(null);
   const groupId = String(useId());
 
   // prettier-ignore
   const context = React.useMemo(() => ({
-    groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop, }),
-    [ groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop, ]
+    groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop }),
+    [groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop ]
   );
 
   return <RovingFocusContext.Provider value={context}>{children}</RovingFocusContext.Provider>;
@@ -114,8 +113,14 @@ function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
         const map = { first: 0, last: count - 1, prev: currentIndex - 1, next: currentIndex + 1 };
         let nextIndex = map[focusIntent];
         nextIndex = context.loop ? wrap(nextIndex, count) : clamp(nextIndex, [0, count - 1]);
-        // See: https://github.com/facebook/react/issues/20332
-        setTimeout(() => items[nextIndex]?.focus());
+        const nextItem = items[nextIndex];
+        if (nextItem) {
+          /**
+           * Imperative focus during keydown is risky so we prevent React's batching updates
+           * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+           */
+          setTimeout(() => nextItem.focus());
+        }
       }
     },
   };
