@@ -1991,6 +1991,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/docs@workspace:docs"
   dependencies:
+    "@interop-ui/react-collapsible": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@mdx-js/react": ^1.6.21
     "@modulz/radix": 0.0.1-beta.44
