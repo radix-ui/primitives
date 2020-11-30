@@ -1,0 +1,29 @@
+{
+  "name": "@interop-ui/react-roving-focus",
+  "version": "0.0.0",
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.module.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "parcel build src/index.ts --no-cache",
+    "clean": "rm -rf dist",
+    "version": "yarn version",
+    "prepublish": "yarn clean && yarn build"
+  },
+  "dependencies": {
+    "@interop-ui/react-utils": "workspace:*",
+    "@interop-ui/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "parcel": "^2.0.0-beta.1"
+  },
+  "peerDependencies": {
+    "react": "^16.8 || ^17.0"
+  }
+}

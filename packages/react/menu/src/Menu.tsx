@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers, forwardRef, useComposedRefs } from '@interop-ui/react-utils';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
-import { RovingFocusGroup, useRovingFocus } from './useRovingFocus';
+import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
 import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
 
 /* -------------------------------------------------------------------------------------------------

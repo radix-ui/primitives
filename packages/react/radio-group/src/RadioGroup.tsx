@@ -5,16 +5,14 @@ import {
   forwardRef,
   useCallbackRef,
   useControlledState,
-  RovingTabIndexProvider,
-  useRovingTabIndex,
   useComposedRefs,
-  useId,
 } from '@interop-ui/react-utils';
 import { Radio } from './Radio';
 import { useLabelContext } from '@interop-ui/react-label';
 
 import type { RadioProps } from './Radio';
 import { getPartDataAttrObj } from '@interop-ui/utils';
+import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
@@ -85,7 +83,7 @@ const RadioGroup = forwardRef<
       aria-labelledby={labelledBy}
     >
       <RadioGroupContext.Provider value={context}>
-        <RovingTabIndexProvider>{children}</RovingTabIndexProvider>
+        <RovingFocusGroup loop>{children}</RovingFocusGroup>
       </RadioGroupContext.Provider>
     </Comp>
   );
@@ -102,52 +100,48 @@ type RadioGroupItemProps = Omit<RadioProps, 'value' | 'as'> & { value: string };
 
 const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
   function RadioGroupItem(props, forwardedRef) {
-    const { as, required, ...itemProps } = props;
-    const id = `radio-group-item-${useId()}`;
+    const { as, disabled, required, ...itemProps } = props;
     const context = useRadioGroupContext(ITEM_NAME);
     const radioRef = React.useRef<React.ElementRef<typeof Radio>>(null);
     const ref = useComposedRefs(forwardedRef, radioRef);
     const isChecked = context.value === props.value;
-    const handleChange = composeEventHandlers(props.onCheckedChange, context.onValueChange);
-    const { onFocus, onKeyDown, tabIndex } = useRovingTabIndex({
-      id,
-      /**
-       * Roving index will set all items to `tabIndex={-1}` unless one is selected. Radio groups
-       * can have no items selected by default, which would mean none are focusable. We need
-       * one/them to be focusable on page load to pass the space bar critieria here:
-       * https://w3c.github.io/aria-practices/examples/radio/radio-activedescendant.html#key-space
-       */
-      isSelected: !context.value || isChecked,
-      elementRef: radioRef,
-    });
+    const rovingFocusProps = useRovingFocus({ disabled, active: isChecked });
 
-    function handleFocus(event: React.FocusEvent<React.ElementRef<typeof Radio>>) {
-      onFocus(event);
-
-      /**
-       * Roving index will focus the radio and we need to check it when this happens.
-       * We do this imperatively instead of updating `context.value` because changing via
-       * state would not trigger change events (e.g. when in a form).
-       */
-      if (context.value !== undefined) {
-        radioRef.current?.click();
-      }
-    }
+    const handleChange = composeEventHandlers(itemProps.onCheckedChange, context.onValueChange);
+    const handleKeyDown = composeEventHandlers(itemProps.onKeyDown, rovingFocusProps.onKeyDown);
+    const handleMouseDown = composeEventHandlers(
+      itemProps.onMouseDown,
+      rovingFocusProps.onMouseDown
+    );
+    const handleFocus = composeEventHandlers(
+      itemProps.onFocus,
+      composeEventHandlers(rovingFocusProps.onFocus, () => {
+        /**
+         * Roving index will focus the radio and we need to check it when this happens.
+         * We do this imperatively instead of updating `context.value` because changing via
+         * state would not trigger change events (e.g. when in a form).
+         */
+        if (context.value !== undefined) {
+          radioRef.current?.click();
+        }
+      })
+    );
 
     return (
       <Radio
         as={as}
-        {...itemProps}
         {...getPartDataAttrObj(ITEM_NAME)}
+        {...itemProps}
+        {...rovingFocusProps}
+        disabled={disabled}
+        data-disabled={disabled ? '' : undefined}
         required={required ?? context.required}
         checked={isChecked}
         ref={ref}
-        tabIndex={tabIndex}
         onCheckedChange={handleChange}
-        onKeyDown={composeEventHandlers(itemProps.onKeyDown, onKeyDown)}
-        onFocus={composeEventHandlers(itemProps.onFocus, handleFocus, {
-          checkForDefaultPrevented: false,
-        })}
+        onKeyDown={handleKeyDown}
+        onMouseDown={handleMouseDown}
+        onFocus={handleFocus}
       />
     );
   }
