@@ -12,16 +12,22 @@ $ npm install @interop-ui/react-tooltip
 
 ```js
 import * as React from 'react';
-import { Tooltip } from '@interop-ui/react-tooltip';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipPopper,
+  TooltipContent,
+  TooltipArrow,
+} from '@interop-ui/react-tooltip';
 
 function MyComponent() {
   return (
     <Tooltip>
-      <Tooltip.Trigger>Hover or Focus me</Tooltip.Trigger>
-      <Tooltip.Popper sideOffset={5}>
-        <Tooltip.Content aria-label="Very useful label">Nicely done!</Tooltip.Content>
-        <Tooltip.Arrow offset={10} />
-      </Tooltip.Popper>
+      <TooltipTrigger>Hover or Focus me</TooltipTrigger>
+      <TooltipPopper sideOffset={5}>
+        <TooltipContent aria-label="Very useful label">Nicely done!</TooltipContent>
+        <TooltipArrow offset={10} />
+      </TooltipPopper>
     </Tooltip>
   );
 }

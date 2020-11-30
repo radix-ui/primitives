@@ -19,6 +19,7 @@
   "dependencies": {
     "@interop-ui/popper": "workspace:*",
     "@interop-ui/react-arrow": "workspace:*",
+    "@interop-ui/react-polymorphic": "workspace:*",
     "@interop-ui/react-popper": "workspace:*",
     "@interop-ui/react-portal": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",

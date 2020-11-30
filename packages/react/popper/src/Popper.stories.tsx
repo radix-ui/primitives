@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Popper } from './Popper';
+import { Popper, PopperContent, PopperArrow } from './Popper';
 import { Portal } from '@interop-ui/react-portal';
 import { Arrow } from '@interop-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
@@ -15,10 +15,10 @@ export const Styled = () => {
 
       {isOpen && (
         <Popper as={StyledRoot} anchorRef={anchorRef} sideOffset={5}>
-          <Popper.Content as={StyledContent}>
+          <PopperContent as={StyledContent}>
             <button onClick={() => setIsOpen(false)}>close</button>
-          </Popper.Content>
-          <Popper.Arrow as={StyledArrow} width={20} height={10} />
+          </PopperContent>
+          <PopperArrow as={StyledArrow} width={20} height={10} />
         </Popper>
       )}
     </Scrollable>
@@ -34,10 +34,10 @@ export const WithCustomArrow = () => {
 
       {isOpen && (
         <Popper as={StyledRoot} anchorRef={anchorRef} side="right" sideOffset={5}>
-          <Popper.Content as={StyledContent}>
+          <PopperContent as={StyledContent}>
             <button onClick={() => setIsOpen(false)}>close</button>
-          </Popper.Content>
-          <Popper.Arrow as={CustomArrow} width={20} height={10} offset={20} />
+          </PopperContent>
+          <PopperArrow as={CustomArrow} width={20} height={10} offset={20} />
         </Popper>
       )}
     </Scrollable>
@@ -55,10 +55,10 @@ export const Animated = () => {
       {isOpen && (
         <Portal>
           <Popper as={AnimatedPopper} anchorRef={anchorRef} sideOffset={5}>
-            <Popper.Content as={StyledContent}>
+            <PopperContent as={StyledContent}>
               <button onClick={() => setIsOpen(false)}>close</button>
-            </Popper.Content>
-            <Popper.Arrow as={StyledArrow} width={20} height={10} offset={25} />
+            </PopperContent>
+            <PopperArrow as={StyledArrow} width={20} height={10} offset={25} />
           </Popper>
         </Portal>
       )}
@@ -76,10 +76,10 @@ export const WithPortal = () => {
       {isOpen && (
         <Portal>
           <Popper as={StyledRoot} anchorRef={anchorRef} sideOffset={5}>
-            <Popper.Content as={StyledContent}>
+            <PopperContent as={StyledContent}>
               <button onClick={() => setIsOpen(false)}>close</button>
-            </Popper.Content>
-            <Popper.Arrow as={StyledArrow} width={20} height={10} />
+            </PopperContent>
+            <PopperArrow as={StyledArrow} width={20} height={10} />
           </Popper>
         </Portal>
       )}

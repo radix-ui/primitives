@@ -21,6 +21,7 @@
     "@interop-ui/react-dismissable-layer": "workspace:*",
     "@interop-ui/react-focus-guards": "workspace:*",
     "@interop-ui/react-focus-scope": "workspace:*",
+    "@interop-ui/react-polymorphic": "workspace:*",
     "@interop-ui/react-popper": "workspace:*",
     "@interop-ui/react-portal": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",

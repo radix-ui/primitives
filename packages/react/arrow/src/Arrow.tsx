@@ -1,29 +1,25 @@
 import * as React from 'react';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
 const NAME = 'Arrow';
 const DEFAULT_TAG = 'svg';
 
-type ArrowDOMProps = React.ComponentPropsWithRef<typeof DEFAULT_TAG>;
-type ArrowProps = ArrowDOMProps;
-
-const Arrow = forwardRef<typeof DEFAULT_TAG, ArrowProps>(function Arrow(props, forwardedRef) {
+const Arrow = forwardRefWithAs<typeof ArrowImpl>((props, forwardedRef) => {
   const { as: Comp = ArrowImpl, ...arrowProps } = props;
   return <Comp {...arrowProps} ref={forwardedRef} />;
 });
 
-const ArrowImpl = forwardRef<typeof DEFAULT_TAG, ArrowProps>(function ArrowImpl(
-  props,
-  forwardedRef
-) {
-  const { as: Comp = DEFAULT_TAG, ...arrowProps } = props;
+const ArrowImpl = forwardRefWithAs<typeof DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = DEFAULT_TAG, width = 10, height = 5, ...arrowProps } = props;
   return (
     <Comp
       {...getPartDataAttrObj(NAME)}
       {...arrowProps}
       ref={forwardedRef}
       viewBox="0 0 30 10"
+      width={width}
+      height={height}
       preserveAspectRatio="none"
     >
       <polygon points="0,0 30,0 15,10" />
@@ -32,10 +28,5 @@ const ArrowImpl = forwardRef<typeof DEFAULT_TAG, ArrowProps>(function ArrowImpl(
 });
 
 Arrow.displayName = NAME;
-Arrow.defaultProps = {
-  width: 10,
-  height: 5,
-};
 
 export { Arrow };
-export type { ArrowProps };
