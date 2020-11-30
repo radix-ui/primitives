@@ -1,21 +1,30 @@
 import * as React from 'react';
-import { AlertDialog } from './AlertDialog';
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from './AlertDialog';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/AlertDialog' };
 
 export const Styled = () => (
   <AlertDialog>
-    <AlertDialog.Trigger as={StyledTrigger}>delete everything</AlertDialog.Trigger>
-    <AlertDialog.Overlay as={StyledOverlay} />
-    <AlertDialog.Content as={StyledContent}>
-      <AlertDialog.Title as={StyledTitle}>Are you sure?</AlertDialog.Title>
-      <AlertDialog.Description as={StyledDescription}>
+    <AlertDialogTrigger as={StyledTrigger}>delete everything</AlertDialogTrigger>
+    <AlertDialogOverlay as={StyledOverlay} />
+    <AlertDialogContent as={StyledContent}>
+      <AlertDialogTitle as={StyledTitle}>Are you sure?</AlertDialogTitle>
+      <AlertDialogDescription as={StyledDescription}>
         This will do a very dangerous thing. Thar be dragons!
-      </AlertDialog.Description>
-      <AlertDialog.Action as={StyledAction}>yolo, do it</AlertDialog.Action>
-      <AlertDialog.Cancel as={StyledCancel}>maybe not</AlertDialog.Cancel>
-    </AlertDialog.Content>
+      </AlertDialogDescription>
+      <AlertDialogAction as={StyledAction}>yolo, do it</AlertDialogAction>
+      <AlertDialogCancel as={StyledCancel}>maybe not</AlertDialogCancel>
+    </AlertDialogContent>
   </AlertDialog>
 );
 
@@ -29,7 +38,7 @@ export const Controlled = () => {
         <img src="https://i.ibb.co/K54hsKt/house.jpg" alt="a large white house with a red roof" />
       </div>
       <AlertDialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
-        <AlertDialog.Trigger
+        <AlertDialogTrigger
           onClick={(e) => {
             if (housePurchased) {
               e.preventDefault();
@@ -38,19 +47,19 @@ export const Controlled = () => {
           }}
         >
           {housePurchased ? 'You bought the house! Sell it!' : 'Buy this house'}
-        </AlertDialog.Trigger>
-        <AlertDialog.Overlay as={StyledOverlay} />
-        <AlertDialog.Content as={StyledContent}>
-          <AlertDialog.Title>Are you sure?</AlertDialog.Title>
-          <AlertDialog.Description>
+        </AlertDialogTrigger>
+        <AlertDialogOverlay as={StyledOverlay} />
+        <AlertDialogContent as={StyledContent}>
+          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          <AlertDialogDescription>
             Houses are very expensive and it looks like you only have €20 in the bank. Maybe consult
             with a financial advisor?
-          </AlertDialog.Description>
-          <AlertDialog.Action as={StyledAction} onClick={() => setHousePurchased(true)}>
+          </AlertDialogDescription>
+          <AlertDialogAction as={StyledAction} onClick={() => setHousePurchased(true)}>
             buy it anyway
-          </AlertDialog.Action>
-          <AlertDialog.Cancel as={StyledCancel}>good point, I'll reconsider</AlertDialog.Cancel>
-        </AlertDialog.Content>
+          </AlertDialogAction>
+          <AlertDialogCancel as={StyledCancel}>good point, I'll reconsider</AlertDialogCancel>
+        </AlertDialogContent>
       </AlertDialog>
     </div>
   );

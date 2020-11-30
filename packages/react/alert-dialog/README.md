@@ -12,21 +12,30 @@ $ npm install @interop-ui/react-alert-dialog
 
 ```js
 import * as React from 'react';
-import { AlertDialog } from '@interop-ui/react-alert-dialog';
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from '@interop-ui/react-alert-dialog';
 
 function MyComponent() {
   return (
     <AlertDialog>
-      <AlertDialog.Trigger>Delete everything</AlertDialog.Trigger>
-      <AlertDialog.Overlay />
-      <AlertDialog.Content>
-        <AlertDialog.Title>Are you sure?</AlertDialog.Title>
-        <AlertDialog.Description>
+      <AlertDialogTrigger>Delete everything</AlertDialogTrigger>
+      <AlertDialogOverlay />
+      <AlertDialogContent>
+        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+        <AlertDialogDescription>
           This will do a very dangerous thing. Thar be dragons!
-        </AlertDialog.Description>
-        <AlertDialog.Action onClick={deleteFiles}>Delete them</AlertDialog.Action>
-        <AlertDialog.Cancel>Never mind</AlertDialog.Cancel>
-      </AlertDialog.Content>
+        </AlertDialogDescription>
+        <AlertDialogAction onClick={deleteFiles}>Delete them</AlertDialogAction>
+        <AlertDialogCancel>Never mind</AlertDialogCancel>
+      </AlertDialogContent>
     </AlertDialog>
   );
 }

@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { Dialog } from './Dialog';
+import { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogClose } from './Dialog';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Dialog' };
 
 export const Styled = () => (
   <Dialog>
-    <Dialog.Trigger as={StyledTrigger}>open</Dialog.Trigger>
-    <Dialog.Overlay as={StyledOverlay} />
-    <Dialog.Content as={StyledContent}>
-      <Dialog.Close as={StyledClose}>close</Dialog.Close>
-    </Dialog.Content>
+    <DialogTrigger as={StyledTrigger}>open</DialogTrigger>
+    <DialogOverlay as={StyledOverlay} />
+    <DialogContent as={StyledContent}>
+      <DialogClose as={StyledClose}>close</DialogClose>
+    </DialogContent>
   </Dialog>
 );
 
@@ -18,11 +18,11 @@ export const Controlled = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   return (
     <Dialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
-      <Dialog.Trigger>{isOpen ? 'close' : 'open'}</Dialog.Trigger>
-      <Dialog.Overlay as={StyledOverlay} />
-      <Dialog.Content as={StyledContent}>
-        <Dialog.Close>close</Dialog.Close>
-      </Dialog.Content>
+      <DialogTrigger>{isOpen ? 'close' : 'open'}</DialogTrigger>
+      <DialogOverlay as={StyledOverlay} />
+      <DialogContent as={StyledContent}>
+        <DialogClose>close</DialogClose>
+      </DialogContent>
     </Dialog>
   );
 };
@@ -30,10 +30,10 @@ export const Controlled = () => {
 export const FocusTrap = () => (
   <>
     <Dialog>
-      <Dialog.Trigger>open</Dialog.Trigger>
-      <Dialog.Overlay as={StyledOverlay} />
-      <Dialog.Content as={StyledContent}>
-        <Dialog.Close>close</Dialog.Close>
+      <DialogTrigger>open</DialogTrigger>
+      <DialogOverlay as={StyledOverlay} />
+      <DialogContent as={StyledContent}>
+        <DialogClose>close</DialogClose>
         <div>
           <label htmlFor="firstName">First Name</label>
           <input type="text" id="firstName" placeholder="John" />
@@ -43,7 +43,7 @@ export const FocusTrap = () => (
 
           <button type="submit">Send</button>
         </div>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
 
     <p>These elements can't be focused when the dialog is opened.</p>
@@ -58,9 +58,9 @@ export const CustomFocus = () => {
   return (
     <>
       <Dialog>
-        <Dialog.Trigger>open</Dialog.Trigger>
-        <Dialog.Overlay as={StyledOverlay} />
-        <Dialog.Content
+        <DialogTrigger>open</DialogTrigger>
+        <DialogOverlay as={StyledOverlay} />
+        <DialogContent
           as={StyledContent}
           onOpenAutoFocus={(event) => {
             event.preventDefault();
@@ -71,7 +71,7 @@ export const CustomFocus = () => {
             searchFieldRef.current?.focus();
           }}
         >
-          <Dialog.Close>close</Dialog.Close>
+          <DialogClose>close</DialogClose>
 
           <div>
             <p>The first name input will receive the focus after opening the dialog.</p>
@@ -83,7 +83,7 @@ export const CustomFocus = () => {
 
             <button type="submit">Send</button>
           </div>
-        </Dialog.Content>
+        </DialogContent>
       </Dialog>
 
       <div>
@@ -96,21 +96,21 @@ export const CustomFocus = () => {
 
 export const NoEscapeDismiss = () => (
   <Dialog>
-    <Dialog.Trigger>open</Dialog.Trigger>
-    <Dialog.Overlay as={StyledOverlay} />
-    <Dialog.Content as={StyledContent} onEscapeKeyDown={(event) => event.preventDefault()}>
-      <Dialog.Close>close</Dialog.Close>
-    </Dialog.Content>
+    <DialogTrigger>open</DialogTrigger>
+    <DialogOverlay as={StyledOverlay} />
+    <DialogContent as={StyledContent} onEscapeKeyDown={(event) => event.preventDefault()}>
+      <DialogClose>close</DialogClose>
+    </DialogContent>
   </Dialog>
 );
 
 export const NoInteractOutsideDismiss = () => (
   <Dialog>
-    <Dialog.Trigger>open</Dialog.Trigger>
-    <Dialog.Overlay as={StyledOverlay} />
-    <Dialog.Content as={StyledContent} onPointerDownOutside={(event) => event.preventDefault()}>
-      <Dialog.Close>close</Dialog.Close>
-    </Dialog.Content>
+    <DialogTrigger>open</DialogTrigger>
+    <DialogOverlay as={StyledOverlay} />
+    <DialogContent as={StyledContent} onPointerDownOutside={(event) => event.preventDefault()}>
+      <DialogClose>close</DialogClose>
+    </DialogContent>
   </Dialog>
 );
 
