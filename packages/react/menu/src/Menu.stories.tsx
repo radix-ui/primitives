@@ -124,6 +124,80 @@ export const Typeahead = () => (
   </>
 );
 
+export const CheckboxItem = () => (
+  <Menu as={StyledRoot}>
+    <Menu.Item as={StyledItem} onSelect={() => window.alert('show')}>
+      Show fonts
+    </Menu.Item>
+    <Menu.Item as={StyledItem} onSelect={() => window.alert('bigger')}>
+      Bigger
+    </Menu.Item>
+    <Menu.Item as={StyledItem} onSelect={() => window.alert('smaller')}>
+      Smaller
+    </Menu.Item>
+    <Menu.Separator as={StyledSeparator} />
+    <Menu.CheckboxItem as={StyledItem} value="bold" onCheckedChange={console.log}>
+      Bold
+      <Menu.ItemIndicator>
+        <TickIcon />
+      </Menu.ItemIndicator>
+    </Menu.CheckboxItem>
+    <Menu.CheckboxItem as={StyledItem} value="italic" defaultChecked>
+      Italic
+      <Menu.ItemIndicator>
+        <TickIcon />
+      </Menu.ItemIndicator>
+    </Menu.CheckboxItem>
+    <Menu.CheckboxItem as={StyledItem} value="underline">
+      Underline
+      <Menu.ItemIndicator>
+        <TickIcon />
+      </Menu.ItemIndicator>
+    </Menu.CheckboxItem>
+    <Menu.CheckboxItem as={StyledItem} value="strikethrough" disabled>
+      Strikethrough
+      <Menu.ItemIndicator>
+        <TickIcon />
+      </Menu.ItemIndicator>
+    </Menu.CheckboxItem>
+  </Menu>
+);
+
+export const RadioItems = () => (
+  <Menu as={StyledRoot}>
+    <Menu.Item as={StyledItem} onSelect={() => window.alert('minimize')}>
+      Minimize window
+    </Menu.Item>
+    <Menu.Item as={StyledItem} onSelect={() => window.alert('zoom')}>
+      Zoom
+    </Menu.Item>
+    <Menu.Item as={StyledItem} onSelect={() => window.alert('smaller')}>
+      Smaller
+    </Menu.Item>
+    <Menu.Separator as={StyledSeparator} />
+    <Menu.RadioGroup defaultValue="index.js">
+      <Menu.RadioItem as={StyledItem} value="readme.md">
+        README.md
+        <Menu.ItemIndicator>
+          <TickIcon />
+        </Menu.ItemIndicator>
+      </Menu.RadioItem>
+      <Menu.RadioItem as={StyledItem} value="index.js">
+        index.js
+        <Menu.ItemIndicator>
+          <TickIcon />
+        </Menu.ItemIndicator>
+      </Menu.RadioItem>
+      <Menu.RadioItem as={StyledItem} value="page.css">
+        page.css
+        <Menu.ItemIndicator>
+          <TickIcon />
+        </Menu.ItemIndicator>
+      </Menu.RadioItem>
+    </Menu.RadioGroup>
+  </Menu>
+);
+
 const StyledRoot = styled('div', {
   display: 'inline-block',
   boxSizing: 'border-box',
@@ -154,6 +228,11 @@ const itemCss: any = {
   borderRadius: 3,
 };
 
+const StyledLabel = styled('div', {
+  ...itemCss,
+  color: '$gray100',
+});
+
 const StyledItem = styled('div', {
   ...itemCss,
 
@@ -168,13 +247,24 @@ const StyledItem = styled('div', {
   },
 });
 
-const StyledLabel = styled('div', {
-  ...itemCss,
-  color: '$gray100',
-});
-
 const StyledSeparator = styled('div', {
   height: 1,
   margin: '5px 10px',
   backgroundColor: '$gray100',
 });
+
+const TickIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 32 32"
+    width="12"
+    height="12"
+    fill="none"
+    stroke="currentcolor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="3"
+  >
+    <path d="M2 20 L12 28 30 4" />
+  </svg>
+);
