@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Menu } from './Menu';
+import { Menu, MenuItem, MenuGroup, MenuLabel, MenuSeparator } from './Menu';
 import { styled } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 
@@ -7,46 +7,46 @@ export default { title: 'Components/Menu' };
 
 export const Styled = () => (
   <Menu as={StyledRoot}>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('undo')}>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('undo')}>
       Undo
-    </Menu.Item>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('redo')}>
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('redo')}>
       Redo
-    </Menu.Item>
-    <Menu.Separator as={StyledSeparator} />
-    <Menu.Item as={StyledItem} disabled onSelect={() => window.alert('cut')}>
+    </MenuItem>
+    <MenuSeparator as={StyledSeparator} />
+    <MenuItem as={StyledItem} disabled onSelect={() => window.alert('cut')}>
       Cut
-    </Menu.Item>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('copy')}>
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('copy')}>
       Copy
-    </Menu.Item>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('paste')}>
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('paste')}>
       Paste
-    </Menu.Item>
+    </MenuItem>
   </Menu>
 );
 
 export const WithLabels = () => (
   <Menu as={StyledRoot}>
     {foodGroups.map((foodGroup, index) => (
-      <Menu.Group key={index}>
+      <MenuGroup key={index}>
         {foodGroup.label && (
-          <Menu.Label as={StyledLabel} key={foodGroup.label}>
+          <MenuLabel as={StyledLabel} key={foodGroup.label}>
             {foodGroup.label}
-          </Menu.Label>
+          </MenuLabel>
         )}
         {foodGroup.foods.map((food) => (
-          <Menu.Item
+          <MenuItem
             key={food.value}
             as={StyledItem}
             disabled={food.disabled}
             onSelect={() => window.alert(food.label)}
           >
             {food.label}
-          </Menu.Item>
+          </MenuItem>
         ))}
-        {index < foodGroups.length - 1 && <Menu.Separator as={StyledSeparator} />}
-      </Menu.Group>
+        {index < foodGroups.length - 1 && <MenuSeparator as={StyledSeparator} />}
+      </MenuGroup>
     ))}
   </Menu>
 );
@@ -96,12 +96,12 @@ export const Typeahead = () => (
         <p>(relying on `.textContent` — default)</p>
         <Menu as={StyledRoot}>
           {suits.map((suit) => (
-            <Menu.Item key={suit.emoji} as={StyledItem}>
+            <MenuItem key={suit.emoji} as={StyledItem}>
               {suit.label}
               <span role="img" aria-label={suit.label}>
                 {suit.emoji}
               </span>
-            </Menu.Item>
+            </MenuItem>
           ))}
         </Menu>
       </div>
@@ -111,12 +111,12 @@ export const Typeahead = () => (
         <p>(with explicit `textValue` prop)</p>
         <Menu as={StyledRoot}>
           {suits.map((suit) => (
-            <Menu.Item key={suit.emoji} as={StyledItem} textValue={suit.label}>
+            <MenuItem key={suit.emoji} as={StyledItem} textValue={suit.label}>
               <span role="img" aria-label={suit.label}>
                 {suit.emoji}
               </span>
               {suit.label}
-            </Menu.Item>
+            </MenuItem>
           ))}
         </Menu>
       </div>
