@@ -13,15 +13,12 @@ import {
   composeEventHandlers,
   createContext,
   forwardRef,
-  RovingTabIndexProvider,
-  useAccessibleMouseDown,
-  useComposedRefs,
   useControlledState,
   useId,
-  useRovingTabIndex,
   ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
 import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
+import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -130,19 +127,21 @@ const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function
   forwardedRef
 ) {
   const { orientation, shouldLoop } = useTabsContext(TAB_LIST_NAME);
-  const { as: Comp = TAB_LIST_DEFAULT_TAG, ...otherProps } = props;
+  const { as: Comp = TAB_LIST_DEFAULT_TAG, children, ...otherProps } = props;
 
   return (
-    <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
-      <Comp
-        {...getPartDataAttrObj(TAB_LIST_NAME)}
-        data-orientation={orientation}
-        role="tablist"
-        aria-orientation={orientation}
-        ref={forwardedRef}
-        {...otherProps}
-      />
-    </RovingTabIndexProvider>
+    <Comp
+      {...getPartDataAttrObj(TAB_LIST_NAME)}
+      data-orientation={orientation}
+      role="tablist"
+      aria-orientation={orientation}
+      ref={forwardedRef}
+      {...otherProps}
+    >
+      <RovingFocusGroup orientation={orientation} loop={shouldLoop}>
+        {children}
+      </RovingFocusGroup>
+    </Comp>
   );
 });
 
@@ -164,72 +163,66 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
   props,
   forwardedRef
 ) {
-  const {
-    as: Comp = TAB_DEFAULT_TAG,
-    id,
-    disabled,
-    onMouseDown: originalOnMouseDown,
-    onKeyDown: originalOnKeyDown,
-    onFocus: originalOnFocus,
-    ...tabProps
-  } = props;
-
+  const { as: Comp = TAB_DEFAULT_TAG, id, disabled, ...tabProps } = props;
   const { tabsId, selectedId, setSelectedId, activationMode, orientation } = useTabsContext(
     TAB_NAME
   );
-
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabsPanelId(tabsId, id);
   const isSelected = id === selectedId;
-  const ref = React.useRef<HTMLDivElement>(null);
-  const composedRef = useComposedRefs(forwardedRef, ref);
-
+  const rovingFocusProps = useRovingFocus({ disabled });
   const selectTab = React.useCallback(() => setSelectedId?.(id), [id, setSelectedId]);
 
-  const {
-    onFocus: rovingTabIndexFocusHandler,
-    onKeyDown: rovingTabIndexKeyDownHandler,
-    tabIndex,
-  } = useRovingTabIndex({
-    id: tabId,
-    isSelected: Boolean(isSelected),
-    elementRef: ref,
-    onFocus: originalOnFocus,
-    onKeyDown: originalOnKeyDown,
-  });
+  const handleKeyDown = composeEventHandlers(
+    tabProps.onKeyDown,
+    composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
+      if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
+        selectTab();
+      }
+    })
+  );
 
-  // handle "automatic" activation if necessary
-  // ie. activate tab following focus
-  function handleFocus() {
-    const isAutomaticActivation = activationMode !== 'manual';
-    if (!isSelected && !disabled && isAutomaticActivation) {
-      selectTab();
-    }
-  }
+  const handleMouseDown = composeEventHandlers(
+    tabProps.onMouseDown,
+    composeEventHandlers(rovingFocusProps.onMouseDown, (event) => {
+      // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
+      // but not when the control key is pressed (avoiding MacOS right click)
+      if (!disabled && event.button === 0 && event.ctrlKey === false) {
+        selectTab();
+      }
+    })
+  );
+
+  const handleFocus = composeEventHandlers(
+    tabProps.onFocus,
+    composeEventHandlers(rovingFocusProps.onFocus, () => {
+      // handle "automatic" activation if necessary
+      // ie. activate tab following focus
+      const isAutomaticActivation = activationMode !== 'manual';
+      if (!isSelected && !disabled && isAutomaticActivation) {
+        selectTab();
+      }
+    })
+  );
 
   return (
     <Comp
       {...getPartDataAttrObj(TAB_NAME)}
+      role="tab"
+      aria-selected={isSelected}
+      aria-controls={tabPanelId}
+      aria-disabled={disabled || undefined}
+      {...tabProps}
+      {...rovingFocusProps}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
       data-orientation={orientation}
       data-tab-id={id}
       id={tabId}
-      role="tab"
-      aria-selected={isSelected}
-      aria-controls={tabPanelId}
-      aria-disabled={disabled || undefined}
-      tabIndex={tabIndex}
-      onFocus={composeEventHandlers(rovingTabIndexFocusHandler, handleFocus, {
-        checkForDefaultPrevented: false,
-      })}
-      {...useAccessibleMouseDown(selectTab, {
-        isDisabled: disabled,
-        onMouseDown: originalOnMouseDown,
-        onKeyDown: rovingTabIndexKeyDownHandler,
-      })}
-      ref={composedRef}
-      {...tabProps}
+      ref={forwardedRef}
+      onKeyDown={handleKeyDown}
+      onMouseDown={handleMouseDown}
+      onFocus={handleFocus}
     />
   );
 });

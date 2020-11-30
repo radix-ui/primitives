@@ -1,6 +1,7 @@
 {
-  "name": "@interop-ui/react-accessible-icon",
-  "version": "0.0.1-12",
+  "private": true,
+  "name": "@interop-ui/react-menu",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -17,8 +18,7 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-polymorphic": "workspace:*",
-    "@interop-ui/react-visually-hidden": "workspace:*",
+    "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {

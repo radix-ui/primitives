@@ -54,6 +54,32 @@ export const Controlled = () => {
   );
 };
 
+export const Unset = () => (
+  <Label>
+    Favourite pet
+    <RadioGroup as={StyledRoot}>
+      <Label>
+        <RadioGroup.Item as={StyledItem} value="1">
+          <RadioGroup.Indicator as={StyledIndicator} />
+        </RadioGroup.Item>
+        Cat
+      </Label>{' '}
+      <Label>
+        <RadioGroup.Item as={StyledItem} value="2" disabled>
+          <RadioGroup.Indicator as={StyledIndicator} />
+        </RadioGroup.Item>
+        Dog
+      </Label>{' '}
+      <Label>
+        <RadioGroup.Item as={StyledItem} value="3">
+          <RadioGroup.Indicator as={StyledIndicator} />
+        </RadioGroup.Item>
+        Rabbit
+      </Label>
+    </RadioGroup>
+  </Label>
+);
+
 const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL__ROOT} />;
 
 const StyledRoot = styled('div', {});
@@ -77,6 +103,10 @@ const StyledItem = styled('button', {
     outline: 'none',
     borderColor: '$red',
     boxShadow: '0 0 0 1px $red',
+  },
+
+  '&[data-disabled]': {
+    opacity: 0.5,
   },
 });
 

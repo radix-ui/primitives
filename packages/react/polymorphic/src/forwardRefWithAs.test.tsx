@@ -35,9 +35,22 @@ const ExtendedButton = forwardRefWithAs<
   return <Button {...extendedButtonProps} ref={forwardedRef} />;
 });
 
+type BoldProps = React.ComponentProps<'b'> & {
+  requiredProp: boolean;
+};
+
+const Bold = forwardRefWithAs<HTMLElement, BoldProps>((props, forwardedRef) => {
+  const { as: Comp = 'b', requiredProp, ...boldProps } = props;
+  /* 🟢 Should not expect requiredProp */
+  return <Comp {...boldProps} ref={forwardedRef} />;
+});
+
 export function Test() {
   return (
     <>
+      {/* 🔴 Bold should have requiredProp prop */}
+      {/* @ts-expect-error */}
+      <Bold />
       {/* 🟢 Link has onToggle prop */}
       <Link onToggle={(isOpen) => console.log(isOpen)} />
       {/* 🟢 Link has isPrimary prop */}

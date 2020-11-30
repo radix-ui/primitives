@@ -2033,7 +2033,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-accessible-icon@workspace:packages/react/accessible-icon"
   dependencies:
-    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-visually-hidden": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2231,6 +2231,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-menu@workspace:packages/react/menu":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-menu@workspace:packages/react/menu"
+  dependencies:
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-polymorphic@workspace:*, @interop-ui/react-polymorphic@workspace:packages/react/polymorphic":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-polymorphic@workspace:packages/react/polymorphic"
@@ -2307,6 +2319,18 @@ __metadata:
   resolution: "@interop-ui/react-radio-group@workspace:packages/react/radio-group"
   dependencies:
     "@interop-ui/react-label": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@interop-ui/react-roving-focus@workspace:packages/react/roving-focus":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-roving-focus@workspace:packages/react/roving-focus"
+  dependencies:
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
