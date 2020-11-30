@@ -1,2 +1,5 @@
 releases:
   "@interop-ui/react-menu": prerelease
+
+declined:
+  - interop-ui
