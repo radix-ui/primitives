@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { getPartDataAttr, wrapArray } from '@interop-ui/utils';
 
-type UseMenuTypeaheadOptions = { focusImpl?: (element: HTMLElement) => void };
-
-function useMenuTypeahead({ focusImpl = (el) => el.focus() }: UseMenuTypeaheadOptions = {}) {
+function useMenuTypeahead() {
   const timerRef = React.useRef(0);
   const searchRef = React.useRef('');
 
@@ -33,7 +31,11 @@ function useMenuTypeahead({ focusImpl = (el) => el.focus() }: UseMenuTypeaheadOp
         const newItem = container.querySelector(`[${ITEM_ATTR}="${nextMatch}"]`);
 
         if (newItem) {
-          focusImpl(newItem as HTMLElement);
+          /**
+           * Imperative focus during keydown is risky so we prevent React's batching updates
+           * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+           */
+          setTimeout(() => (newItem as HTMLElement).focus());
         }
       }
     },

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { getPartDataAttr, wrap, clamp } from '@interop-ui/utils';
-import { createContext, useCallbackRef, useControlledState, useId } from '@interop-ui/react-utils';
+import { createContext, useControlledState, useId } from '@interop-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * RovingFocusGroup
@@ -15,7 +15,6 @@ type RovingFocusGroupOptions = {
 };
 
 type RovingContextValue = {
-  focusImpl: (element: HTMLElement) => void;
   groupId: string;
   tabStopId: string | null;
   setTabStopId: React.Dispatch<React.SetStateAction<string | null>>;
@@ -32,15 +31,13 @@ const [RovingFocusContext, useRovingFocusContext] = createContext<RovingContextV
 
 type RovingFocusGroupProps = RovingFocusGroupOptions & {
   children?: React.ReactNode;
-  focusImpl?: (element: HTMLElement) => void;
   reachable?: boolean;
   defaultReachable?: boolean;
   onReachableChange?: (reachable: boolean) => void;
 };
 
 function RovingFocusGroup(props: RovingFocusGroupProps) {
-  const { children, orientation, loop, dir, focusImpl: focusImplProp = (el) => el.focus() } = props;
-  const focusImpl = useCallbackRef(focusImplProp);
+  const { children, orientation, loop, dir } = props;
   const [reachable = true, setReachable] = useControlledState({
     prop: props.reachable,
     defaultProp: props.defaultReachable,
@@ -51,8 +48,8 @@ function RovingFocusGroup(props: RovingFocusGroupProps) {
 
   // prettier-ignore
   const context = React.useMemo(() => ({
-    focusImpl, groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop }),
-    [ focusImpl, groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop ]
+    groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop }),
+    [groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop ]
   );
 
   return <RovingFocusContext.Provider value={context}>{children}</RovingFocusContext.Provider>;
@@ -117,7 +114,13 @@ function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
         let nextIndex = map[focusIntent];
         nextIndex = context.loop ? wrap(nextIndex, count) : clamp(nextIndex, [0, count - 1]);
         const nextItem = items[nextIndex];
-        if (nextItem) context.focusImpl(nextItem);
+        if (nextItem) {
+          /**
+           * Imperative focus during keydown is risky so we prevent React's batching updates
+           * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+           */
+          setTimeout(() => nextItem.focus());
+        }
       }
     },
   };

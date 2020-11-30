@@ -4,15 +4,6 @@ import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from './useRovingFocus';
 import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
 
-/**
- * In some cases, when focus is happening programmatically we need to delay it
- * to prevent React from batching updates (between Menu's `onBlur` and Item's `onFocus`)
- * See: https://github.com/facebook/react/issues/20332
- */
-function delayedFocus(element: HTMLElement) {
-  setTimeout(() => element.focus());
-}
-
 /* -------------------------------------------------------------------------------------------------
  * Menu
  * -----------------------------------------------------------------------------------------------*/
@@ -36,7 +27,7 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
   const composedRef = useComposedRefs(forwardedRef, menuRef);
   const [menuTabIndex, setMenuTabIndex] = React.useState(0);
   const [itemsReachable, setItemsReachable] = React.useState(false);
-  const menuTypeaheadProps = useMenuTypeahead({ focusImpl: delayedFocus });
+  const menuTypeaheadProps = useMenuTypeahead();
 
   React.useEffect(() => {
     setMenuTabIndex(itemsReachable ? -1 : 0);
@@ -80,7 +71,6 @@ const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(fun
       })}
     >
       <RovingFocusGroup
-        focusImpl={delayedFocus}
         reachable={itemsReachable}
         onReachableChange={setItemsReachable}
         orientation="vertical"
