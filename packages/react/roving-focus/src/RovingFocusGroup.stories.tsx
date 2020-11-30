@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { RovingFocusGroup, useRovingFocus } from './useRovingFocus';
+import { RovingFocusGroup, useRovingFocus } from './RovingFocusGroup';
 import { composeEventHandlers } from '@interop-ui/react-utils';
 
-import type { RovingFocusGroupProps } from './useRovingFocus';
+import type { RovingFocusGroupProps } from './RovingFocusGroup';
 
-export default { title: 'Hooks/useRovingFocus' };
+export default { title: 'Components/RovingFocusGroup' };
 
 export const Basic = () => {
   const [dir, setDir] = React.useState<RovingFocusGroupProps['dir']>('ltr');
