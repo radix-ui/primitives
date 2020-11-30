@@ -18,7 +18,8 @@ function useMenuTypeahead() {
         const container = event.currentTarget as HTMLElement;
         setSearch(searchRef.current + event.key);
 
-        // Stop activating the item if we're still "searching"
+        // Stop activating the item if we're still "searching", essentially preventing
+        // the spacebar from selecting the item currently focused.
         // This is also why we use `onKeyDownCapture` rather than `onKeyDown`
         if (event.key === ' ' && !searchRef.current.startsWith(' ')) {
           event.stopPropagation();

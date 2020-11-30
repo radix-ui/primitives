@@ -18,69 +18,68 @@ type MenuDOMProps = React.ComponentPropsWithoutRef<typeof MENU_DEFAULT_TAG>;
 type MenuOwnProps = { loop?: boolean };
 type MenuProps = MenuDOMProps & MenuOwnProps;
 
-const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(function Menu(
-  props,
-  forwardedRef
-) {
-  const { children, as: Comp = MENU_DEFAULT_TAG, loop = false, ...menuProps } = props;
-  const menuRef = React.useRef<HTMLDivElement>(null);
-  const composedRef = useComposedRefs(forwardedRef, menuRef);
-  const [menuTabIndex, setMenuTabIndex] = React.useState(0);
-  const [itemsReachable, setItemsReachable] = React.useState(false);
-  const menuTypeaheadProps = useMenuTypeahead();
+const Menu = forwardRef<typeof MENU_DEFAULT_TAG, MenuProps, MenuStaticProps>(
+  (props, forwardedRef) => {
+    const { children, as: Comp = MENU_DEFAULT_TAG, loop = false, ...menuProps } = props;
+    const menuRef = React.useRef<HTMLDivElement>(null);
+    const composedRef = useComposedRefs(forwardedRef, menuRef);
+    const [menuTabIndex, setMenuTabIndex] = React.useState(0);
+    const [itemsReachable, setItemsReachable] = React.useState(false);
+    const menuTypeaheadProps = useMenuTypeahead();
 
-  React.useEffect(() => {
-    setMenuTabIndex(itemsReachable ? -1 : 0);
-  }, [itemsReachable]);
+    React.useEffect(() => {
+      setMenuTabIndex(itemsReachable ? -1 : 0);
+    }, [itemsReachable]);
 
-  return (
-    <Comp
-      role="menu"
-      {...menuProps}
-      {...getPartDataAttrObj(MENU_NAME)}
-      ref={composedRef}
-      tabIndex={menuTabIndex}
-      style={{ ...menuProps.style, outline: 'none' }}
-      onKeyDownCapture={composeEventHandlers(
-        menuProps.onKeyDownCapture,
-        menuTypeaheadProps.onKeyDownCapture
-      )}
-      // focus first/last item based on key pressed
-      onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
-        const menu = menuRef.current;
-        if (event.target === menu) {
-          if (ALL_KEYS.includes(event.key)) {
-            event.preventDefault();
-            const items = Array.from(menu.querySelectorAll(ENABLED_ITEM_SELECTOR));
-            const item = FIRST_KEYS.includes(event.key) ? items[0] : items.reverse()[0];
-            (item as HTMLElement | undefined)?.focus();
+    return (
+      <Comp
+        role="menu"
+        {...menuProps}
+        {...getPartDataAttrObj(MENU_NAME)}
+        ref={composedRef}
+        tabIndex={menuTabIndex}
+        style={{ ...menuProps.style, outline: 'none' }}
+        onKeyDownCapture={composeEventHandlers(
+          menuProps.onKeyDownCapture,
+          menuTypeaheadProps.onKeyDownCapture
+        )}
+        // focus first/last item based on key pressed
+        onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
+          const menu = menuRef.current;
+          if (event.target === menu) {
+            if (ALL_KEYS.includes(event.key)) {
+              event.preventDefault();
+              const items = Array.from(menu.querySelectorAll(ENABLED_ITEM_SELECTOR));
+              const item = FIRST_KEYS.includes(event.key) ? items[0] : items.reverse()[0];
+              (item as HTMLElement | undefined)?.focus();
+            }
           }
-        }
-      })}
-      // make items unreachable when an item is blurred
-      onBlur={composeEventHandlers(menuProps.onBlur, (event) => {
-        if (isItem(event.target)) setItemsReachable(false);
-      })}
-      // focus the menu if the mouse is moved over anything else than an item
-      onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
-        if (!isItem(event.target)) menuRef.current?.focus();
-      })}
-      // focus the menu if the mouse is moved outside an item
-      onMouseOut={composeEventHandlers(menuProps.onMouseOut, (event) => {
-        if (isItem(event.target)) menuRef.current?.focus();
-      })}
-    >
-      <RovingFocusGroup
-        reachable={itemsReachable}
-        onReachableChange={setItemsReachable}
-        orientation="vertical"
-        loop={loop}
+        })}
+        // make items unreachable when an item is blurred
+        onBlur={composeEventHandlers(menuProps.onBlur, (event) => {
+          if (isItem(event.target)) setItemsReachable(false);
+        })}
+        // focus the menu if the mouse is moved over anything else than an item
+        onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
+          if (!isItem(event.target)) menuRef.current?.focus();
+        })}
+        // focus the menu if the mouse is moved outside an item
+        onMouseOut={composeEventHandlers(menuProps.onMouseOut, (event) => {
+          if (isItem(event.target)) menuRef.current?.focus();
+        })}
       >
-        {children}
-      </RovingFocusGroup>
-    </Comp>
-  );
-});
+        <RovingFocusGroup
+          reachable={itemsReachable}
+          onReachableChange={setItemsReachable}
+          orientation="vertical"
+          loop={loop}
+        >
+          {children}
+        </RovingFocusGroup>
+      </Comp>
+    );
+  }
+);
 
 function isItem(target: EventTarget) {
   return (target as HTMLElement).matches(ENABLED_ITEM_SELECTOR);
@@ -101,10 +100,7 @@ type MenuItemOwnProps = {
 };
 type MenuItemProps = MenuItemDOMProps & MenuItemOwnProps;
 
-const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function MenuItem(
-  props,
-  forwardedRef
-) {
+const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>((props, forwardedRef) => {
   const { as: Comp = ITEM_DEFAULT_TAG, disabled, textValue, onSelect, ...itemProps } = props;
   const menuItemRef = React.useRef<HTMLDivElement>(null);
   const composedRef = useComposedRefs(forwardedRef, menuItemRef);
@@ -125,13 +121,6 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
   });
 
   const handleSelect = () => !disabled && onSelect?.();
-  const handleKeyDown = composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
-    if (!disabled) {
-      if (event.key === 'Enter' || event.key === ' ') {
-        handleSelect();
-      }
-    }
-  });
 
   return (
     <Comp
@@ -144,7 +133,16 @@ const MenuItem = forwardRef<typeof ITEM_DEFAULT_TAG, MenuItemProps>(function Men
       ref={composedRef}
       data-disabled={disabled ? '' : undefined}
       onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
-      onKeyDown={composeEventHandlers(itemProps.onKeyDown, handleKeyDown)}
+      onKeyDown={composeEventHandlers(
+        itemProps.onKeyDown,
+        composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
+          if (!disabled) {
+            if (event.key === 'Enter' || event.key === ' ') {
+              handleSelect();
+            }
+          }
+        })
+      )}
       onMouseDown={composeEventHandlers(itemProps.onMouseDown, rovingFocusProps.onMouseDown)}
       // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
@@ -179,12 +177,8 @@ type MenuGroupDOMProps = React.ComponentPropsWithoutRef<typeof GROUP_DEFAULT_TAG
 type MenuGroupOwnProps = {};
 type MenuGroupProps = MenuGroupDOMProps & MenuGroupOwnProps;
 
-const MenuGroup = forwardRef<typeof GROUP_DEFAULT_TAG, MenuGroupProps>(function MenuGroup(
-  props,
-  forwardedRef
-) {
+const MenuGroup = forwardRef<typeof GROUP_DEFAULT_TAG, MenuGroupProps>((props, forwardedRef) => {
   const { as: Comp = GROUP_DEFAULT_TAG, ...groupProps } = props;
-
   return (
     <Comp role="group" {...groupProps} {...getPartDataAttrObj(GROUP_NAME)} ref={forwardedRef} />
   );
@@ -200,12 +194,8 @@ type MenuLabelDOMProps = React.ComponentPropsWithoutRef<typeof LABEL_DEFAULT_TAG
 type MenuLabelOwnProps = {};
 type MenuLabelProps = MenuLabelDOMProps & MenuLabelOwnProps;
 
-const MenuLabel = forwardRef<typeof LABEL_DEFAULT_TAG, MenuLabelProps>(function MenuLabel(
-  props,
-  forwardedRef
-) {
+const MenuLabel = forwardRef<typeof LABEL_DEFAULT_TAG, MenuLabelProps>((props, forwardedRef) => {
   const { as: Comp = LABEL_DEFAULT_TAG, ...labelProps } = props;
-
   return <Comp {...labelProps} {...getPartDataAttrObj(LABEL_NAME)} ref={forwardedRef} />;
 });
 
@@ -220,9 +210,8 @@ type MenuSeparatorOwnProps = {};
 type MenuSeparatorProps = MenuSeparatorDOMProps & MenuSeparatorOwnProps;
 
 const MenuSeparator = forwardRef<typeof SEPARATOR_DEFAULT_TAG, MenuSeparatorProps>(
-  function MenuSeparator(props, forwardedRef) {
+  (props, forwardedRef) => {
     const { as: Comp = SEPARATOR_DEFAULT_TAG, ...separatorProps } = props;
-
     return (
       <Comp
         role="separator"
