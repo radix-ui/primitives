@@ -177,8 +177,6 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
     tabProps.onKeyDown,
     composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
       if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
-        // prevent active state to be stuck in case focus moves somewhere else before mouseUp
-        // event.preventDefault();
         selectTab();
       }
     })
