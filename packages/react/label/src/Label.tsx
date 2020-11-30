@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { getPartDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, useId, useComposedRefs } from '@interop-ui/react-utils';
+import { useId, useComposedRefs } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
@@ -9,9 +10,7 @@ import { forwardRef, useId, useComposedRefs } from '@interop-ui/react-utils';
 const NAME = 'Label';
 const DEFAULT_TAG = 'span';
 
-type LabelDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type LabelOwnProps = { htmlFor?: string };
-type LabelProps = LabelOwnProps & LabelDOMProps;
 
 type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
@@ -31,7 +30,7 @@ const useLabelContext = <E extends HTMLElement>(ref?: React.RefObject<E>) => {
   return context?.id;
 };
 
-const Label = forwardRef<typeof DEFAULT_TAG, LabelProps>(function Label(props, forwardedRef) {
+const Label = forwardRefWithAs<typeof DEFAULT_TAG, LabelOwnProps>((props, forwardedRef) => {
   const { htmlFor, as: Comp = DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
@@ -109,4 +108,3 @@ function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement
 /* ---------------------------------------------------------------------------------------------- */
 
 export { Label, useLabelContext };
-export type { LabelProps };
