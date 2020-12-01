@@ -1,14 +1,11 @@
 import * as React from 'react';
 import { getPartDataAttrObj } from '@interop-ui/utils';
-import { forwardRef } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 
 const NAME = 'VisuallyHidden';
 const DEFAULT_TAG = 'span';
 
-type VisuallyHiddenDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
-type VisuallyHiddenProps = VisuallyHiddenDOMProps;
-
-const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
+const VisuallyHidden = forwardRefWithAs<typeof DEFAULT_TAG>(
   ({ as: Comp = DEFAULT_TAG, style, ...visuallyHiddenProps }, forwardedRef) => (
     <Comp
       {...visuallyHiddenProps}
@@ -35,4 +32,3 @@ const VisuallyHidden = forwardRef<typeof DEFAULT_TAG, VisuallyHiddenProps>(
 VisuallyHidden.displayName = NAME;
 
 export { VisuallyHidden };
-export type { VisuallyHiddenProps };
