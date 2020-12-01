@@ -24,6 +24,7 @@ type CheckboxOwnProps = {
   required?: InputDOMProps['required'];
   readOnly?: InputDOMProps['readOnly'];
   onCheckedChange?: InputDOMProps['onChange'];
+  onChange?: never;
 };
 
 const [CheckboxContext, useCheckboxContext] = createContext<CheckedState>(
