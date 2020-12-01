@@ -124,6 +124,8 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
   return <TooltipContext.Provider value={context}>{children}</TooltipContext.Provider>;
 };
 
+Tooltip.displayName = TOOLTIP_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * TooltipTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -186,6 +188,8 @@ const TooltipTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forw
   );
 });
 
+TooltipTrigger.displayName = TRIGGER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * TooltipPopper
  * -----------------------------------------------------------------------------------------------*/
@@ -235,28 +239,7 @@ const TooltipPopperImpl = forwardRefWithAs<typeof Popper, TooltipPopperOwnProps>
   }
 );
 
-function CheckTriggerMoved() {
-  const { triggerRef, id } = useTooltipContext('CheckTriggerMoved');
-
-  const triggerRect = useRect(triggerRef);
-  const triggerLeft = triggerRect?.left;
-  const previousTriggerLeft = usePrevious(triggerLeft);
-  const triggerTop = triggerRect?.top;
-  const previousTriggerTop = usePrevious(triggerTop);
-
-  React.useEffect(() => {
-    // checking if the user has scrolled…
-    const hasTriggerMoved =
-      (previousTriggerLeft !== undefined && previousTriggerLeft !== triggerLeft) ||
-      (previousTriggerTop !== undefined && previousTriggerTop !== triggerTop);
-
-    if (hasTriggerMoved) {
-      stateMachine.transition('triggerMoved', { id });
-    }
-  }, [id, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
-
-  return null;
-}
+TooltipPopper.displayName = POPPER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipContent
@@ -287,6 +270,8 @@ const TooltipContent = forwardRefWithAs<typeof PopperContent, TooltipContentOwnP
   }
 );
 
+TooltipContent.displayName = CONTENT_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * TooltipArrow
  * -----------------------------------------------------------------------------------------------*/
@@ -297,12 +282,31 @@ const TooltipArrow = forwardRefWithAs<typeof PopperArrow>((props, forwardedRef) 
   return <PopperArrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
 });
 
+TooltipArrow.displayName = ARROW_NAME;
+
 /* -----------------------------------------------------------------------------------------------*/
 
-Tooltip.displayName = TOOLTIP_NAME;
-TooltipTrigger.displayName = TRIGGER_NAME;
-TooltipPopper.displayName = POPPER_NAME;
-TooltipContent.displayName = CONTENT_NAME;
-TooltipArrow.displayName = ARROW_NAME;
+function CheckTriggerMoved() {
+  const { triggerRef, id } = useTooltipContext('CheckTriggerMoved');
+
+  const triggerRect = useRect(triggerRef);
+  const triggerLeft = triggerRect?.left;
+  const previousTriggerLeft = usePrevious(triggerLeft);
+  const triggerTop = triggerRect?.top;
+  const previousTriggerTop = usePrevious(triggerTop);
+
+  React.useEffect(() => {
+    // checking if the user has scrolled…
+    const hasTriggerMoved =
+      (previousTriggerLeft !== undefined && previousTriggerLeft !== triggerLeft) ||
+      (previousTriggerTop !== undefined && previousTriggerTop !== triggerTop);
+
+    if (hasTriggerMoved) {
+      stateMachine.transition('triggerMoved', { id });
+    }
+  }, [id, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
+
+  return null;
+}
 
 export { Tooltip, TooltipTrigger, TooltipPopper, TooltipContent, TooltipArrow };

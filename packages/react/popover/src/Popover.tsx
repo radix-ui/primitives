@@ -67,6 +67,8 @@ const Popover: React.FC<PopoverProps> = (props) => {
   return <PopoverContext.Provider value={context}>{children}</PopoverContext.Provider>;
 };
 
+Popover.displayName = POPOVER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * PopoverTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -92,6 +94,8 @@ const PopoverTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forw
     />
   );
 });
+
+PopoverTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverPopper
@@ -300,6 +304,8 @@ const PopoverPopperImpl = forwardRefWithAs<typeof Popper, PopoverPopperOwnProps>
   }
 );
 
+PopoverPopper.displayName = POPPER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * PopoverContent
  * -----------------------------------------------------------------------------------------------*/
@@ -309,6 +315,8 @@ const CONTENT_NAME = 'PopoverContent';
 const PopoverContent = forwardRefWithAs<typeof PopperContent>((props, forwardedRef) => {
   return <PopperContent {...getPartDataAttrObj(CONTENT_NAME)} {...props} ref={forwardedRef} />;
 });
+
+PopoverContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverClose
@@ -332,6 +340,8 @@ const PopoverClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwarde
   );
 });
 
+PopoverClose.displayName = CLOSE_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * PopoverArrow
  * -----------------------------------------------------------------------------------------------*/
@@ -342,13 +352,8 @@ const PopoverArrow = forwardRefWithAs<typeof PopperArrow>((props, forwardedRef) 
   return <PopperArrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
 });
 
-/* -----------------------------------------------------------------------------------------------*/
-
-Popover.displayName = POPOVER_NAME;
-PopoverTrigger.displayName = TRIGGER_NAME;
-PopoverPopper.displayName = POPPER_NAME;
-PopoverContent.displayName = CONTENT_NAME;
-PopoverClose.displayName = CLOSE_NAME;
 PopoverArrow.displayName = ARROW_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
 
 export { Popover, PopoverTrigger, PopoverPopper, PopoverContent, PopoverClose, PopoverArrow };

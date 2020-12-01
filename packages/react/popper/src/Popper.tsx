@@ -107,6 +107,8 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
   }
 );
 
+Popper.displayName = POPPER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * PopperContent
  * -----------------------------------------------------------------------------------------------*/
@@ -120,6 +122,8 @@ const PopperContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, forwa
   const composedContentRef = useComposedRefs(forwardedRef, contentRef);
   return <Comp {...getPartDataAttrObj(CONTENT_NAME)} {...contentProps} ref={composedContentRef} />;
 });
+
+PopperContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopperArrow
@@ -169,10 +173,8 @@ const PopperArrow = forwardRefWithAs<typeof Arrow, PopperArrowOwnProps>(function
   );
 });
 
-/* -----------------------------------------------------------------------------------------------*/
-
-Popper.displayName = POPPER_NAME;
-PopperContent.displayName = CONTENT_NAME;
 PopperArrow.displayName = ARROW_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
 
 export { Popper, PopperContent, PopperArrow };
