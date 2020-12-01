@@ -2099,6 +2099,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio"
   dependencies:
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1

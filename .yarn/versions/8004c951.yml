@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-aspect-ratio": prerelease
+
+declined:
+  - interop-ui
