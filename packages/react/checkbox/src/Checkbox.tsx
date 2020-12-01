@@ -112,6 +112,8 @@ const Checkbox = forwardRefWithAs<typeof CHECKBOX_DEFAULT_TAG, CheckboxOwnProps>
   }
 );
 
+Checkbox.displayName = CHECKBOX_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * CheckboxIndicator
  * -----------------------------------------------------------------------------------------------*/
@@ -133,13 +135,12 @@ const CheckboxIndicatorImpl = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
   }
 );
 
+CheckboxIndicator.displayName = INDICATOR_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 function getState(checked: CheckedState) {
   return checked === 'indeterminate' ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
-
-Checkbox.displayName = CHECKBOX_NAME;
-CheckboxIndicator.displayName = INDICATOR_NAME;
 
 export { Checkbox, CheckboxIndicator };
