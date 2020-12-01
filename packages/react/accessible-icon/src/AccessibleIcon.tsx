@@ -6,11 +6,9 @@ import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 const NAME = 'AccessibleIcon';
 const DEFAULT_TAG = 'span';
 
-type AccessibleIconDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type AccessibleIconOwnProps = { label: string };
-type AccessibleIconProps = AccessibleIconDOMProps & AccessibleIconOwnProps;
 
-const AccessibleIcon = forwardRefWithAs<HTMLSpanElement, AccessibleIconProps>(
+const AccessibleIcon = forwardRefWithAs<typeof DEFAULT_TAG, AccessibleIconOwnProps>(
   (props, forwardedRef) => {
     const { as: Comp = DEFAULT_TAG, children, label, ...iconProps } = props;
     const child = React.Children.only(children);
@@ -31,4 +29,3 @@ const AccessibleIcon = forwardRefWithAs<HTMLSpanElement, AccessibleIconProps>(
 AccessibleIcon.displayName = NAME;
 
 export { AccessibleIcon };
-export type { AccessibleIconProps };

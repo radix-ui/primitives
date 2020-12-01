@@ -12,26 +12,32 @@ $ npm install @interop-ui/react-accordion
 
 ```js
 import * as React from 'react';
-import { Accordion } from '@interop-ui/react-accordion';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionHeader,
+  AccordionButton,
+  AccordionPanel,
+} from '@interop-ui/react-accordion';
 
 function MyComponent() {
   return (
     <Accordion>
       {/* start items */}
 
-      <Accordion.Item value="one">
-        <Accordion.Header>
-          <Accordion.Button>One</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel>Content for item 1</Accordion.Panel>
-      </Accordion.Item>
+      <AccordionItem value="one">
+        <AccordionHeader>
+          <AccordionButton>One</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel>Content for item 1</AccordionPanel>
+      </AccordionItem>
 
-      <Accordion.Item value="two">
-        <Accordion.Header>
-          <Accordion.Button>Two</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel>Content for item 2</Accordion.Panel>
-      </Accordion.Item>
+      <AccordionItem value="two">
+        <AccordionHeader>
+          <AccordionButton>Two</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel>Content for item 2</AccordionPanel>
+      </AccordionItem>
 
       {/* end items */}
     </Accordion>

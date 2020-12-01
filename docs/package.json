@@ -9,6 +9,7 @@
     "bump": "yarn version --deferred"
   },
   "dependencies": {
+    "@interop-ui/react-collapsible": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@mdx-js/react": "^1.6.21",
     "@modulz/radix": "0.0.1-beta.44",

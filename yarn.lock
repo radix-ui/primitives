@@ -1991,6 +1991,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/docs@workspace:docs"
   dependencies:
+    "@interop-ui/react-collapsible": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@mdx-js/react": ^1.6.21
     "@modulz/radix": 0.0.1-beta.44
@@ -2046,6 +2047,7 @@ __metadata:
   resolution: "@interop-ui/react-accordion@workspace:packages/react/accordion"
   dependencies:
     "@interop-ui/react-collapsible": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2246,6 +2248,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-polymorphic@workspace:packages/react/polymorphic"
   dependencies:
+    "@testing-library/react": ^10.4.8
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0

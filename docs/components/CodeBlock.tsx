@@ -125,8 +125,8 @@ export function CodeBlock({ children, className, isMdx, noInline, ...props }: Co
   //    ```js
   //    // live
   //    <Collapsible>
-  //      <Collapsible.Button>Button</Collapsible.Button>
-  //      <Collapsible.Content>Content 1</Collapsible.Content>
+  //      <CollapsibleButton>Button</CollapsibleButton>
+  //      <CollapsibleContent>Content 1</CollapsibleContent>
   //    </Collapsible>
   //    ```
   let live = props.live;

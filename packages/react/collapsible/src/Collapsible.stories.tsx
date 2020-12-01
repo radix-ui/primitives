@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Collapsible } from './Collapsible';
 import { styled } from '../../../../stitches.config';
+import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
 
 export default { title: 'Components/Collapsible' };
 
 export const Styled = () => (
   <Collapsible as={StyledRoot}>
-    <Collapsible.Button as={StyledButton}>Button</Collapsible.Button>
-    <Collapsible.Content as={StyledContent}>Content 1</Collapsible.Content>
+    <CollapsibleButton as={StyledButton}>Button</CollapsibleButton>
+    <CollapsibleContent as={StyledContent}>Content 1</CollapsibleContent>
   </Collapsible>
 );
 

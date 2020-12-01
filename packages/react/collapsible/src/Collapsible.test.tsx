@@ -3,15 +3,15 @@ import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent } from '@testing-library/react';
 import { getPartDataAttr } from '@interop-ui/utils';
-import { Collapsible } from './Collapsible';
+import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
 
 const BUTTON_TEXT = 'Button';
 const CONTENT_TEXT = 'Content';
 
 const CollapsibleTest = (props: React.ComponentProps<typeof Collapsible>) => (
   <Collapsible {...props}>
-    <Collapsible.Button>{BUTTON_TEXT}</Collapsible.Button>
-    <Collapsible.Content>{CONTENT_TEXT}</Collapsible.Content>
+    <CollapsibleButton>{BUTTON_TEXT}</CollapsibleButton>
+    <CollapsibleContent>{CONTENT_TEXT}</CollapsibleContent>
   </Collapsible>
 );
 
@@ -182,8 +182,8 @@ describe('given styled parts', () => {
   beforeEach(() => {
     rendered = render(
       <Collapsible className="container-class" isOpen={true}>
-        <Collapsible.Button className="button-class">{BUTTON_TEXT}</Collapsible.Button>
-        <Collapsible.Content className="content-class">{CONTENT_TEXT}</Collapsible.Content>
+        <CollapsibleButton className="button-class">{BUTTON_TEXT}</CollapsibleButton>
+        <CollapsibleContent className="content-class">{CONTENT_TEXT}</CollapsibleContent>
       </Collapsible>
     );
   });

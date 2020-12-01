@@ -3,7 +3,11 @@ import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import { Text, Flex, List, Box, ListItem, Divider, BoxProps } from '@modulz/radix';
 import { PlusIcon } from '@modulz/radix-icons';
-import { Collapsible } from '@interop-ui/react-collapsible';
+import {
+  Collapsible as CollapsiblePrimitive,
+  CollapsibleButton as CollapsiblePrimitiveButton,
+  CollapsibleContent as CollapsiblePrimitiveContent,
+} from '@interop-ui/react-collapsible';
 import { useId } from '@interop-ui/react-utils';
 import { overviewPages, componentsPages } from '../utils/pages';
 import { ScrollArea } from './ScrollArea';
@@ -123,9 +127,9 @@ function CollapsibleButton({
   children,
   isOpen,
   ...props
-}: React.ComponentProps<typeof Collapsible.Button> & { isOpen: boolean }) {
+}: React.ComponentProps<typeof CollapsiblePrimitiveButton> & { isOpen: boolean }) {
   return (
-    <Collapsible.Button as={StyledCollapsibleButton} {...props}>
+    <CollapsiblePrimitive as={StyledCollapsibleButton} {...props}>
       <Text as="span" size={3} weight="medium" sx={{ lineHeight: 1 }}>
         {children}
       </Text>
@@ -139,7 +143,7 @@ function CollapsibleButton({
       >
         <PlusIcon aria-hidden />
       </Box>
-    </Collapsible.Button>
+    </CollapsiblePrimitive>
   );
 }
 
@@ -190,13 +194,13 @@ function NavPanel({
   }, [id, router]);
 
   return (
-    <Collapsible isOpen={isOpen} onToggle={(state) => setIsOpen(state!)}>
+    <CollapsiblePrimitive isOpen={isOpen} onToggle={(state) => setIsOpen(state!)}>
       <CollapsibleButton isOpen={isOpen}>{heading}</CollapsibleButton>
-      <Collapsible.Content>
+      <CollapsiblePrimitiveContent>
         <List sx={{ py: 0 }} aria-label={heading}>
           {children}
         </List>
-      </Collapsible.Content>
-    </Collapsible>
+      </CollapsiblePrimitiveContent>
+    </CollapsiblePrimitive>
   );
 }
