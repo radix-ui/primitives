@@ -62,6 +62,26 @@ const ProgressBar = forwardRefWithAs<typeof PROGRESS_DEFAULT_TAG, ProgressBarOwn
 
 ProgressBar.displayName = PROGRESS_NAME;
 
+ProgressBar.propTypes = {
+  max(props, propName, componentName) {
+    const propValue = props[propName];
+    const strVal = String(propValue);
+    if (propValue && !isValidMaxNumber(propValue)) {
+      return new Error(getInvalidMaxError(strVal, componentName));
+    }
+    return null;
+  },
+  value(props, propName, componentName) {
+    const valueProp = props[propName];
+    const strVal = String(valueProp);
+    const max = isValidMaxNumber(props.max) ? props.max : DEFAULT_MAX;
+    if (valueProp != null && !isValidValueNumber(valueProp, max)) {
+      return new Error(getInvalidValueError(strVal, componentName));
+    }
+    return null;
+  },
+};
+
 /* -------------------------------------------------------------------------------------------------
  * ProgressBarIndicator
  * -----------------------------------------------------------------------------------------------*/
@@ -94,26 +114,6 @@ function useProgressBarState() {
   const { value, max } = React.useContext(ProgressBarContext);
   return getProgressBarState(value, max);
 }
-
-ProgressBar.propTypes = {
-  max(props, propName, componentName, location, propFullName) {
-    const propValue = props[propName];
-    const strVal = String(propValue);
-    if (propValue && !isValidMaxNumber(propValue)) {
-      return new Error(getInvalidMaxError(strVal, componentName));
-    }
-    return null;
-  },
-  value(props, propName, componentName) {
-    const valueProp = props[propName];
-    const strVal = String(valueProp);
-    const max = isValidMaxNumber(props.max) ? props.max : DEFAULT_MAX;
-    if (valueProp != null && !isValidValueNumber(valueProp, max)) {
-      return new Error(getInvalidValueError(strVal, componentName));
-    }
-    return null;
-  },
-};
 
 function defaultGetValueLabel(value: number, max: number) {
   return `${Math.round((value / max) * 100)}%`;
