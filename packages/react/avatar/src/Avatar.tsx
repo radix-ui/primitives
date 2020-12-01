@@ -10,6 +10,7 @@ import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 const AVATAR_NAME = 'Avatar';
 const AVATAR_DEFAULT_TAG = 'span';
 
+type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
 type AvatarOwnProps = { onLoadingStatusChange?: (status: ImageLoadingStatus) => void };
 type AvatarContextValue = [
   ImageLoadingStatus,
@@ -32,6 +33,8 @@ const Avatar = forwardRefWithAs<typeof AVATAR_DEFAULT_TAG, AvatarOwnProps>(
     );
   }
 );
+
+Avatar.displayName = AVATAR_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AvatarImage
@@ -67,6 +70,8 @@ const AvatarImage = forwardRefWithAs<typeof IMAGE_DEFAULT_TAG, AvatarImageOwnPro
   }
 );
 
+AvatarImage.displayName = IMAGE_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * AvatarFallback
  * -----------------------------------------------------------------------------------------------*/
@@ -95,7 +100,9 @@ const AvatarFallback = forwardRefWithAs<typeof FALLBACK_DEFAULT_TAG, AvatarFallb
   }
 );
 
-type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
+AvatarFallback.displayName = FALLBACK_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
 
 function useImageLoadingStatus(src?: string) {
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
@@ -126,9 +133,5 @@ function useImageLoadingStatus(src?: string) {
 
   return loadingStatus;
 }
-
-Avatar.displayName = AVATAR_NAME;
-AvatarImage.displayName = IMAGE_NAME;
-AvatarFallback.displayName = FALLBACK_NAME;
 
 export { Avatar, AvatarImage, AvatarFallback };
