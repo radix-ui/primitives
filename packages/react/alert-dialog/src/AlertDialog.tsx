@@ -1,20 +1,19 @@
 import * as React from 'react';
-import { Dialog } from '@interop-ui/react-dialog';
 import { getPartDataAttrObj, makeId, warning } from '@interop-ui/utils';
 import {
   createContext,
-  forwardRef,
   useComposedRefs,
   useId,
   useDocumentRef,
   composeEventHandlers,
 } from '@interop-ui/react-utils';
-import type {
-  DialogCloseProps,
-  DialogContentProps,
-  DialogOverlayProps,
-  DialogProps,
-  DialogTriggerProps,
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import {
+  Dialog,
+  DialogOverlay,
+  DialogContent,
+  DialogTrigger,
+  DialogClose,
 } from '@interop-ui/react-dialog';
 
 /* -------------------------------------------------------------------------------------------------
@@ -29,7 +28,7 @@ type AlertDialogContextValue = {
 };
 
 type AlertDialogContentContextValue = {
-  cancelRef: React.MutableRefObject<HTMLElement | null>;
+  cancelRef: React.MutableRefObject<React.ElementRef<typeof AlertDialogCancel> | null>;
   ownerDocumentRef: React.MutableRefObject<Document>;
 };
 
@@ -46,21 +45,7 @@ const [AlertDialogContentContext, useAlertDialogContentContext] = createContext<
  * AlertDialog
  * -----------------------------------------------------------------------------------------------*/
 
-interface AlertDialogStaticProps {
-  Trigger: typeof AlertDialogTrigger;
-  Overlay: typeof AlertDialogOverlay;
-  Content: typeof AlertDialogContent;
-  Cancel: typeof AlertDialogCancel;
-  Action: typeof AlertDialogAction;
-  Title: typeof AlertDialogTitle;
-  Description: typeof AlertDialogDescription;
-}
-
-type AlertDialogProps = DialogProps;
-
-const AlertDialog: React.FC<AlertDialogProps> & AlertDialogStaticProps = function AlertDialog(
-  props
-) {
+const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => {
   const { children, id: idProp, ...dialogProps } = props;
   const generatedId = makeId('alert-dialog', useId());
   const alertDialogId = idProp || generatedId;
@@ -78,145 +63,87 @@ const AlertDialog: React.FC<AlertDialogProps> & AlertDialogStaticProps = functio
   );
 };
 
+AlertDialog.displayName = ROOT_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const TRIGGER_NAME = 'AlertDialog.Trigger';
-const TRIGGER_DEFAULT_TAG = 'button';
+const TRIGGER_NAME = 'AlertDialogTrigger';
 
-type AlertDialogTriggerDOMProps = React.ComponentPropsWithoutRef<typeof TRIGGER_DEFAULT_TAG>;
-type AlertDialogTriggerOwnProps = {};
-type AlertDialogTriggerProps = DialogTriggerProps &
-  AlertDialogTriggerDOMProps &
-  AlertDialogTriggerOwnProps;
+const AlertDialogTrigger = forwardRefWithAs<typeof DialogTrigger>((props, forwardedRef) => {
+  return <DialogTrigger {...getPartDataAttrObj(TRIGGER_NAME)} ref={forwardedRef} {...props} />;
+});
 
-const AlertDialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, AlertDialogTriggerProps>(
-  function AlertDialogTrigger(props, forwardedRef) {
-    const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
-    return (
-      <Dialog.Trigger
-        {...getPartDataAttrObj(TRIGGER_NAME)}
-        as={as}
-        ref={forwardedRef}
-        {...triggerProps}
-      />
-    );
-  }
-);
+AlertDialogTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogOverlay
  * -----------------------------------------------------------------------------------------------*/
 
-const OVERLAY_NAME = 'AlertDialog.Overlay';
-const OVERLAY_DEFAULT_TAG = 'div';
+const OVERLAY_NAME = 'AlertDialogOverlay';
 
-type AlertDialogOverlayDOMProps = React.ComponentPropsWithoutRef<typeof OVERLAY_DEFAULT_TAG>;
-type AlertDialogOverlayOwnProps = {};
-type AlertDialogOverlayProps = DialogOverlayProps &
-  AlertDialogOverlayDOMProps &
-  AlertDialogOverlayOwnProps;
+const AlertDialogOverlay = forwardRefWithAs<typeof DialogOverlay>((props, forwardedRef) => {
+  return <DialogOverlay {...getPartDataAttrObj(OVERLAY_NAME)} ref={forwardedRef} {...props} />;
+});
 
-const AlertDialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, AlertDialogOverlayProps>(
-  function AlertDialogOverlay(props, forwardedRef) {
-    const { as = OVERLAY_DEFAULT_TAG, ...overlayProps } = props;
-    return (
-      <Dialog.Overlay
-        {...getPartDataAttrObj(OVERLAY_NAME)}
-        as={as}
-        ref={forwardedRef}
-        {...overlayProps}
-      />
-    );
-  }
-);
+AlertDialogOverlay.displayName = OVERLAY_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogCancel
  * -----------------------------------------------------------------------------------------------*/
 
-const CANCEL_NAME = 'AlertDialog.Cancel';
-const CANCEL_DEFAULT_TAG = 'button';
+const CANCEL_NAME = 'AlertDialogCancel';
 
-type AlertDialogCancelDOMProps = React.ComponentPropsWithoutRef<typeof CANCEL_DEFAULT_TAG>;
-type AlertDialogCancelOwnProps = {};
-type AlertDialogCancelProps = DialogCloseProps &
-  AlertDialogCancelOwnProps &
-  AlertDialogCancelDOMProps;
+const AlertDialogCancel = forwardRefWithAs<typeof DialogClose>((props, forwardedRef) => {
+  const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
+  const ref = useComposedRefs(forwardedRef, cancelRef);
+  return <DialogClose {...getPartDataAttrObj(CANCEL_NAME)} ref={ref} {...props} />;
+});
 
-const AlertDialogCancel = forwardRef<typeof CANCEL_DEFAULT_TAG, AlertDialogCancelProps>(
-  function AlertDialogCancel(props, forwardedRef) {
-    const { as = CANCEL_DEFAULT_TAG, ...cancelProps } = props;
-    const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
-    const ref = useComposedRefs(forwardedRef, cancelRef as any);
-    return <Dialog.Close {...getPartDataAttrObj(CANCEL_NAME)} as={as} ref={ref} {...cancelProps} />;
-  }
-);
+AlertDialogCancel.displayName = CANCEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogAction
  * -----------------------------------------------------------------------------------------------*/
 
-const ACTION_NAME = 'AlertDialog.Action';
-const ACTION_DEFAULT_TAG = 'button';
+const ACTION_NAME = 'AlertDialogAction';
 
-type AlertDialogActionDOMProps = React.ComponentPropsWithoutRef<typeof ACTION_DEFAULT_TAG>;
-type AlertDialogActionOwnProps = {};
-type AlertDialogActionProps = DialogCloseProps &
-  AlertDialogActionOwnProps &
-  AlertDialogActionDOMProps;
+const AlertDialogAction = forwardRefWithAs<typeof DialogClose>((props, forwardedRef) => {
+  return <DialogClose {...getPartDataAttrObj(ACTION_NAME)} ref={forwardedRef} {...props} />;
+});
 
-const AlertDialogAction = forwardRef<typeof ACTION_DEFAULT_TAG, AlertDialogCancelProps>(
-  function AlertDialogAction(props, forwardedRef) {
-    const { as = ACTION_DEFAULT_TAG, ...actionProps } = props;
-    return (
-      <Dialog.Close
-        {...getPartDataAttrObj(ACTION_NAME)}
-        as={as}
-        ref={forwardedRef}
-        {...actionProps}
-      />
-    );
-  }
-);
+AlertDialogAction.displayName = ACTION_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogContent
  * -----------------------------------------------------------------------------------------------*/
 
-const CONTENT_NAME = 'AlertDialog.Content';
-const CONTENT_DEFAULT_TAG = 'div';
+const CONTENT_NAME = 'AlertDialogContent';
 
-type AlertDialogContentDOMProps = Omit<
-  React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>,
-  'id'
->;
-type AlertDialogContentOwnProps = {};
-type AlertDialogContentProps = Omit<DialogContentProps, 'refToFocusOnOpen'> &
-  AlertDialogContentDOMProps &
-  AlertDialogContentOwnProps;
+type AlertDialogContentOwnProps = {
+  refToFocusOnOpen?: never;
+  id?: never;
+};
 
-const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogContentProps>(
-  function AlertDialogContent(props, forwardedRef) {
+const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogContentOwnProps>(
+  (props, forwardedRef) => {
     const {
-      as = CONTENT_DEFAULT_TAG,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       'aria-describedby': ariaDescribedBy,
       children,
       ...dialogContentProps
     } = props;
-    const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
-    const cancelRef = React.useRef<HTMLElementTagNameMap[typeof CANCEL_DEFAULT_TAG] | null>(null);
-    const ownRef = React.useRef<HTMLElementTagNameMap[typeof CONTENT_DEFAULT_TAG] | null>(null);
+    const { descriptionId, titleId } = useAlertDialogContext(CONTENT_NAME);
+    const cancelRef = React.useRef<React.ElementRef<typeof AlertDialogCancel> | null>(null);
+    const ownRef = React.useRef<React.ElementRef<typeof DialogContent> | null>(null);
     const ownerDocumentRef = useDocumentRef(ownRef);
     const ref = useComposedRefs(forwardedRef, ownRef);
 
     return (
-      <Dialog.Content
+      <DialogContent
         {...getPartDataAttrObj(CONTENT_NAME)}
-        as={as}
         ref={ref}
         role="alertdialog"
         aria-describedby={ariaDescribedBy || descriptionId}
@@ -242,10 +169,12 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
           {process.env.NODE_ENV === 'development' && <AccessibilityDevWarnings {...props} />}
           {children}
         </AlertDialogContentContext.Provider>
-      </Dialog.Content>
+      </DialogContent>
     );
   }
 );
+
+AlertDialogContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogTitle
@@ -256,81 +185,54 @@ const AlertDialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, AlertDialogCon
 // simpler to get these right. These are optional if the consumer prefers to pass appropriate aria
 // labelling props directly.
 
-const TITLE_NAME = 'AlertDialog.Title';
+const TITLE_NAME = 'AlertDialogTitle';
 const TITLE_DEFAULT_TAG = 'h2';
 
-type AlertDialogTitleDOMProps = React.ComponentPropsWithoutRef<typeof TITLE_DEFAULT_TAG>;
-type AlertDialogTitleOwnProps = {};
-type AlertDialogTitleProps = AlertDialogTitleDOMProps & AlertDialogTitleOwnProps;
+const AlertDialogTitle = forwardRefWithAs<typeof TITLE_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = TITLE_DEFAULT_TAG, ...titleProps } = props;
+  const { titleId } = useAlertDialogContext(TITLE_NAME);
+  return (
+    <Comp {...getPartDataAttrObj(TITLE_NAME)} ref={forwardedRef} id={titleId} {...titleProps} />
+  );
+});
 
-const AlertDialogTitle = forwardRef<typeof TITLE_DEFAULT_TAG, AlertDialogTitleProps>(
-  function AlertDialogTitle(props, forwardedRef) {
-    const { as: Comp = TITLE_DEFAULT_TAG, ...titleProps } = props;
-    const { titleId } = useAlertDialogContext('AlertDialogTitle');
-    return (
-      <Comp {...getPartDataAttrObj(TITLE_NAME)} ref={forwardedRef} id={titleId} {...titleProps} />
-    );
-  }
-);
+AlertDialogTitle.displayName = TITLE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogDescription
  * -----------------------------------------------------------------------------------------------*/
 
-const DESCRIPTION_NAME = 'AlertDialog.Description';
+const DESCRIPTION_NAME = 'AlertDialogDescription';
 const DESCRIPTION_DEFAULT_TAG = 'p';
 
-type AlertDialogDescriptionDOMProps = React.ComponentPropsWithoutRef<
-  typeof DESCRIPTION_DEFAULT_TAG
->;
-type AlertDialogDescriptionOwnProps = {};
-type AlertDialogDescriptionProps = AlertDialogDescriptionDOMProps & AlertDialogDescriptionOwnProps;
+const AlertDialogDescription = forwardRefWithAs<typeof DESCRIPTION_DEFAULT_TAG>(
+  (props, forwardedRef) => {
+    const { as: Comp = DESCRIPTION_DEFAULT_TAG, ...descriptionProps } = props;
+    const { descriptionId } = useAlertDialogContext(DESCRIPTION_NAME);
+    return (
+      <Comp
+        {...getPartDataAttrObj(DESCRIPTION_NAME)}
+        ref={forwardedRef}
+        id={descriptionId}
+        {...descriptionProps}
+      />
+    );
+  }
+);
 
-const AlertDialogDescription = forwardRef<
-  typeof DESCRIPTION_DEFAULT_TAG,
-  AlertDialogDescriptionProps
->(function AlertDialogDescription(props, forwardedRef) {
-  const { as: Comp = DESCRIPTION_DEFAULT_TAG, ...descriptionProps } = props;
-  const { descriptionId } = useAlertDialogContext('AlertDialogDescription');
-  return (
-    <Comp
-      {...getPartDataAttrObj(DESCRIPTION_NAME)}
-      ref={forwardedRef}
-      id={descriptionId}
-      {...descriptionProps}
-    />
-  );
-});
+AlertDialogDescription.displayName = DESCRIPTION_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-AlertDialog.Cancel = AlertDialogCancel;
-AlertDialog.Action = AlertDialogAction;
-AlertDialog.Content = AlertDialogContent;
-AlertDialog.Description = AlertDialogDescription;
-AlertDialog.Overlay = AlertDialogOverlay;
-AlertDialog.Title = AlertDialogTitle;
-AlertDialog.Trigger = AlertDialogTrigger;
-
-AlertDialog.Title.displayName = TITLE_NAME;
-AlertDialog.Cancel.displayName = CANCEL_NAME;
-AlertDialog.Action.displayName = ACTION_NAME;
-AlertDialog.Content.displayName = CONTENT_NAME;
-AlertDialog.Description.displayName = DESCRIPTION_NAME;
-AlertDialog.Overlay.displayName = OVERLAY_NAME;
-AlertDialog.Trigger.displayName = TRIGGER_NAME;
-AlertDialog.displayName = ROOT_NAME;
-
-export { AlertDialog };
-export type {
-  AlertDialogProps,
-  AlertDialogOverlayProps,
-  AlertDialogContentProps,
-  AlertDialogCancelProps,
-  AlertDialogActionProps,
-  AlertDialogTriggerProps,
-  AlertDialogTitleProps,
-  AlertDialogDescriptionProps,
+export {
+  AlertDialog,
+  AlertDialogTitle,
+  AlertDialogCancel,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
 };
 
 // TODO: Add link to docs when available
@@ -350,15 +252,15 @@ Alternatively, you can use your own component as a description by assigning it a
 
 For more information, see https://LINK-TO-DOCS.com`;
 
-// We need some effects to fire when Dialog.Content is mounted that will give us some useful dev
-// warnings. Dialog.Content returns `null` when the Dialog is closed, meaning that if we put these
+// We need some effects to fire when DialogContent is mounted that will give us some useful dev
+// warnings. DialogContent returns `null` when the Dialog is closed, meaning that if we put these
 // effects up in AlertDialog.Content these effects only fire on its initial mount, NOT when the
-// underlying Dialog.Content mounts. We stick this inner component inside Dialog.Content to make
+// underlying DialogContent mounts. We stick this inner component inside DialogContent to make
 // sure the effects fire as expected. This component is only useful in a dev environment, so we
 // won't bother rendering it in production.
-const AccessibilityDevWarnings: React.FC<AlertDialogContentProps> = function AccessibilityDevWarnings(
+const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialogContent>> = (
   props
-) {
+) => {
   const {
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,

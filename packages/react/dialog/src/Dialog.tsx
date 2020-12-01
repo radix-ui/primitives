@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  forwardRef,
   createContext,
   useComposedRefs,
   composeEventHandlers,
@@ -8,6 +7,7 @@ import {
   useId,
   composeRefs,
 } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
@@ -42,21 +42,14 @@ const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
 
 const DIALOG_NAME = 'Dialog';
 
-interface DialogStaticProps {
-  Trigger: typeof DialogTrigger;
-  Overlay: typeof DialogOverlay;
-  Content: typeof DialogContent;
-  Close: typeof DialogClose;
-}
-
-type DialogProps = {
+type DialogOwnProps = {
   id?: string;
   isOpen?: boolean;
   defaultIsOpen?: boolean;
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
-const Dialog: React.FC<DialogProps> & DialogStaticProps = function Dialog(props) {
+const Dialog: React.FC<DialogOwnProps> = (props) => {
   const { children, id: idProp, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const generatedId = makeId('dialog', useId());
@@ -75,76 +68,67 @@ const Dialog: React.FC<DialogProps> & DialogStaticProps = function Dialog(props)
   return <DialogContext.Provider value={context}>{children}</DialogContext.Provider>;
 };
 
+Dialog.displayName = DIALOG_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * DialogTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const TRIGGER_NAME = 'Dialog.Trigger';
+const TRIGGER_NAME = 'DialogTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type DialogTriggerDOMProps = React.ComponentPropsWithoutRef<typeof TRIGGER_DEFAULT_TAG>;
-type DialogTriggerOwnProps = {};
-type DialogTriggerProps = DialogTriggerOwnProps & DialogTriggerDOMProps;
+const DialogTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
+  const context = useDialogContext(TRIGGER_NAME);
+  const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
-const DialogTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, DialogTriggerProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
-    const context = useDialogContext(TRIGGER_NAME);
-    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
+  return (
+    <Comp
+      {...getPartDataAttrObj(TRIGGER_NAME)}
+      ref={composedTriggerRef}
+      type="button"
+      aria-haspopup="dialog"
+      aria-expanded={context.isOpen}
+      aria-controls={context.id}
+      onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
+      {...triggerProps}
+    />
+  );
+});
 
-    return (
-      <Comp
-        {...getPartDataAttrObj(TRIGGER_NAME)}
-        ref={composedTriggerRef}
-        type="button"
-        aria-haspopup="dialog"
-        aria-expanded={context.isOpen}
-        aria-controls={context.id}
-        onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
-        {...triggerProps}
-      />
-    );
-  }
-);
+DialogTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogOverlay
  * -----------------------------------------------------------------------------------------------*/
 
-const OVERLAY_NAME = 'Dialog.Overlay';
+const OVERLAY_NAME = 'DialogOverlay';
 const OVERLAY_DEFAULT_TAG = 'div';
 
-type DialogOverlayDOMProps = React.ComponentPropsWithoutRef<typeof OVERLAY_DEFAULT_TAG>;
-type DialogOverlayOwnProps = {};
-type DialogOverlayProps = DialogOverlayDOMProps & DialogOverlayOwnProps;
+const DialogOverlay = forwardRefWithAs<typeof DialogOverlayImpl>((props, forwardedRef) => {
+  const context = useDialogContext(OVERLAY_NAME);
+  return context.isOpen ? <DialogOverlayImpl ref={forwardedRef} {...props} /> : null;
+});
 
-const DialogOverlay = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayProps>(
-  function DialogOverlay(props, forwardedRef) {
-    const context = useDialogContext(OVERLAY_NAME);
-    return context.isOpen ? <DialogOverlayImpl ref={forwardedRef} {...props} /> : null;
-  }
-);
+const DialogOverlayImpl = forwardRefWithAs<typeof OVERLAY_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = OVERLAY_DEFAULT_TAG, ...overlayProps } = props;
 
-const DialogOverlayImpl = forwardRef<typeof OVERLAY_DEFAULT_TAG, DialogOverlayProps>(
-  function DialogOverlayImpl(props, forwardedRef) {
-    const { as: Comp = OVERLAY_DEFAULT_TAG, ...overlayProps } = props;
+  return (
+    <Portal>
+      <Comp {...getPartDataAttrObj(OVERLAY_NAME)} ref={forwardedRef} {...overlayProps} />
+    </Portal>
+  );
+});
 
-    return (
-      <Portal>
-        <Comp {...getPartDataAttrObj(OVERLAY_NAME)} ref={forwardedRef} {...overlayProps} />
-      </Portal>
-    );
-  }
-);
+DialogOverlay.displayName = OVERLAY_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogContent
  * -----------------------------------------------------------------------------------------------*/
 
-const CONTENT_NAME = 'Dialog.Content';
+const CONTENT_NAME = 'DialogContent';
 const CONTENT_DEFAULT_TAG = 'div';
 
-type DialogContentDOMProps = Omit<React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>, 'id'>;
 type DialogContentOwnProps = {
   /**
    * Event handler called when auto-focusing on open.
@@ -170,17 +154,14 @@ type DialogContentOwnProps = {
    */
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 };
-type DialogContentProps = DialogContentDOMProps & DialogContentOwnProps;
 
-const DialogContent = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentProps>(
-  function DialogContent(props, forwardedRef) {
-    const context = useDialogContext(CONTENT_NAME);
-    return context.isOpen ? <DialogContentImpl ref={forwardedRef} {...props} /> : null;
-  }
-);
+const DialogContent = forwardRefWithAs<typeof DialogContentImpl>((props, forwardedRef) => {
+  const context = useDialogContext(CONTENT_NAME);
+  return context.isOpen ? <DialogContentImpl ref={forwardedRef} {...props} /> : null;
+});
 
-const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentProps>(
-  function DialogContentImpl(props, forwardedRef) {
+const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogContentOwnProps>(
+  (props, forwardedRef) => {
     const {
       as: Comp = CONTENT_DEFAULT_TAG,
       onOpenAutoFocus,
@@ -267,52 +248,32 @@ const DialogContentImpl = forwardRef<typeof CONTENT_DEFAULT_TAG, DialogContentPr
   }
 );
 
+DialogContent.displayName = CONTENT_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * DialogClose
  * -----------------------------------------------------------------------------------------------*/
 
-const CLOSE_NAME = 'Dialog.Close';
+const CLOSE_NAME = 'DialogClose';
 const CLOSE_DEFAULT_TAG = 'button';
 
-type DialogCloseDOMProps = React.ComponentPropsWithoutRef<typeof CLOSE_DEFAULT_TAG>;
-type DialogCloseOwnProps = {};
-type DialogCloseProps = DialogCloseOwnProps & DialogCloseDOMProps;
+const DialogClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = CLOSE_DEFAULT_TAG, onClick, ...closeProps } = props;
+  const context = useDialogContext(CLOSE_NAME);
 
-const DialogClose = forwardRef<typeof CLOSE_DEFAULT_TAG, DialogCloseProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = CLOSE_DEFAULT_TAG, onClick, ...closeProps } = props;
-    const context = useDialogContext(CLOSE_NAME);
+  return (
+    <Comp
+      {...getPartDataAttrObj(CLOSE_NAME)}
+      ref={forwardedRef}
+      type="button"
+      {...closeProps}
+      onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
+    />
+  );
+});
 
-    return (
-      <Comp
-        {...getPartDataAttrObj(CLOSE_NAME)}
-        ref={forwardedRef}
-        type="button"
-        {...closeProps}
-        onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
-      />
-    );
-  }
-);
+DialogClose.displayName = CLOSE_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-Dialog.Trigger = DialogTrigger;
-Dialog.Overlay = DialogOverlay;
-Dialog.Content = DialogContent;
-Dialog.Close = DialogClose;
-
-Dialog.displayName = DIALOG_NAME;
-Dialog.Trigger.displayName = TRIGGER_NAME;
-Dialog.Overlay.displayName = OVERLAY_NAME;
-Dialog.Content.displayName = CONTENT_NAME;
-Dialog.Close.displayName = CLOSE_NAME;
-
-export { Dialog };
-export type {
-  DialogProps,
-  DialogTriggerProps,
-  DialogOverlayProps,
-  DialogContentProps,
-  DialogCloseProps,
-};
+export { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogClose };

@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@interop-ui/react-dialog": "workspace:*",
+    "@interop-ui/react-polymorphic": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },

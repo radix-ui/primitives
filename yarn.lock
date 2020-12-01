@@ -2061,6 +2061,7 @@ __metadata:
   resolution: "@interop-ui/react-alert-dialog@workspace:packages/react/alert-dialog"
   dependencies:
     "@interop-ui/react-dialog": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2178,6 +2179,7 @@ __metadata:
     "@interop-ui/react-dismissable-layer": "workspace:*"
     "@interop-ui/react-focus-guards": "workspace:*"
     "@interop-ui/react-focus-scope": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
