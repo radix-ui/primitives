@@ -66,6 +66,8 @@ const ProgressBar = forwardRefWithAs<typeof PROGRESS_DEFAULT_TAG, ProgressBarOwn
   }
 );
 
+ProgressBar.displayName = PROGRESS_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * ProgressBarIndicator
  * -----------------------------------------------------------------------------------------------*/
@@ -90,15 +92,14 @@ const ProgressBarIndicator = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
   }
 );
 
+ProgressBarIndicator.displayName = INDICATOR_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 function useProgressBarState() {
   const { value, max } = React.useContext(ProgressBarContext);
   return getProgressBarState(value, max);
 }
-
-ProgressBar.displayName = PROGRESS_NAME;
-ProgressBarIndicator.displayName = INDICATOR_NAME;
 
 ProgressBar.propTypes = {
   max(props, propName, componentName, location, propFullName) {
