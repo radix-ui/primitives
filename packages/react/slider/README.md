@@ -12,15 +12,15 @@ $ npm install @interop-ui/react-slider
 
 ```js
 import * as React from 'react';
-import { Slider } from '@interop-ui/react-slider';
+import { Slider, SliderTrack, SliderRange, SliderThumb } from '@interop-ui/react-slider';
 
 function SingleThumbSlider() {
   return (
     <Slider defaultValue={10} step={1} min={1} max={10}>
-      <Slider.Track>
-        <Slider.Range />
-      </Slider.Track>
-      <Slider.Thumb />
+      <SliderTrack>
+        <SliderRange />
+      </SliderTrack>
+      <SliderThumb />
     </Slider>
   );
 }
@@ -28,11 +28,11 @@ function SingleThumbSlider() {
 function MultipleThumbSlider() {
   return (
     <Slider defaultValue={[10, 20]} step={1} min={1} max={10} minStepsBetweenThumbs={1}>
-      <Slider.Track>
-        <Slider.Range />
-      </Slider.Track>
-      <Slider.Thumb />
-      <Slider.Thumb />
+      <SliderTrack>
+        <SliderRange />
+      </SliderTrack>
+      <SliderThumb />
+      <SliderThumb />
     </Slider>
   );
 }
