@@ -19,7 +19,7 @@ function MyComponent(props) {
   return (
     <Label>
       <span>{props.label}</span>
-      <Switch onCheckedChange={() => props.onCheckedChange()}>
+      <Switch onCheckedChange={console.log}>
         <SwitchThumb />
       </Switch>
     </Label>
