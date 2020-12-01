@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ProgressBar } from './ProgressBar';
+import { ProgressBar, ProgressBarIndicator } from './ProgressBar';
 import { styled } from '../../../../stitches.config';
 
 export default {
@@ -13,7 +13,7 @@ export const Styled = () => {
   return (
     <div>
       <ProgressBar as={StyledRoot} value={value} max={max}>
-        <ProgressBar.Indicator
+        <ProgressBarIndicator
           as={StyledIndicator}
           style={{ width: percentage != null ? `${percentage}%` : undefined }}
         />

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { createContext, forwardRef } from '@interop-ui/react-utils';
+import { createContext } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -11,110 +12,58 @@ const PROGRESS_DEFAULT_TAG = 'div';
 const DEFAULT_MAX = 100;
 
 type ProgressBarState = 'indeterminate' | 'complete' | 'loading';
-type ProgressBarDOMProps = React.ComponentPropsWithoutRef<typeof PROGRESS_DEFAULT_TAG>;
-type ProgressBarOwnProps = {
-  value?: number | null | undefined;
-  max?: number;
-  getValueLabel?(value: number, max: number): string;
-};
-type ProgressBarProps = ProgressBarOwnProps & ProgressBarDOMProps;
-
-type ProgressBarContextValue = {
-  value: number | null;
-  max: number;
-};
-
+type ProgressBarContextValue = { value: number | null; max: number };
 const [ProgressBarContext, useProgressBarContext] = createContext<ProgressBarContextValue>(
   PROGRESS_NAME + 'Context',
   PROGRESS_NAME
 );
 
-const ProgressBar = forwardRef<
-  typeof PROGRESS_DEFAULT_TAG,
-  ProgressBarProps,
-  ProgressBarStaticProps
->(function ProgressBar(props, forwardedRef) {
-  const {
-    as: Comp = PROGRESS_DEFAULT_TAG,
-    children,
-    value: valueProp,
-    max: maxProp,
-    getValueLabel = defaultGetValueLabel,
-    ...progressProps
-  } = props;
+type ProgressBarOwnProps = {
+  value?: number | null | undefined;
+  max?: number;
+  getValueLabel?(value: number, max: number): string;
+};
 
-  const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
-  const value = isValidValueNumber(valueProp, max) ? valueProp : null;
+const ProgressBar = forwardRefWithAs<typeof PROGRESS_DEFAULT_TAG, ProgressBarOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = PROGRESS_DEFAULT_TAG,
+      children,
+      value: valueProp,
+      max: maxProp,
+      getValueLabel = defaultGetValueLabel,
+      ...progressProps
+    } = props;
 
-  const ctx: ProgressBarContextValue = React.useMemo(() => ({ value, max }), [value, max]);
+    const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+    const value = isValidValueNumber(valueProp, max) ? valueProp : null;
+    const ctx: ProgressBarContextValue = React.useMemo(() => ({ value, max }), [value, max]);
+    const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
 
-  const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
-
-  return (
-    <Comp
-      aria-valuemax={max}
-      aria-valuemin={0}
-      aria-valuenow={isNumber(value) ? value : undefined}
-      aria-valuetext={valueLabel}
-      role="progressbar"
-      {...progressProps}
-      {...getPartDataAttrObj(PROGRESS_NAME)}
-      data-state={getProgressBarState(value, max)}
-      data-value={value ?? undefined}
-      data-max={max}
-      ref={forwardedRef}
-    >
-      <ProgressBarContext.Provider value={ctx}>{children}</ProgressBarContext.Provider>
-    </Comp>
-  );
-});
-
-/* -------------------------------------------------------------------------------------------------
- * ProgressBarIndicator
- * -----------------------------------------------------------------------------------------------*/
-
-const INDICATOR_NAME = 'ProgressBar.Indicator';
-const INDICATOR_DEFAULT_TAG = 'div';
-
-type ProgressBarIndicatorDOMProps = React.ComponentPropsWithoutRef<typeof INDICATOR_DEFAULT_TAG>;
-type ProgressBarIndicatorOwnProps = {};
-type ProgressBarIndicatorProps = ProgressBarIndicatorDOMProps & ProgressBarIndicatorOwnProps;
-
-const ProgressBarIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, ProgressBarIndicatorProps>(
-  function ProgressBarIndicator(props, forwardedRef) {
-    const { value, max } = useProgressBarContext(INDICATOR_NAME);
-    const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
     return (
       <Comp
-        {...indicatorProps}
-        {...getPartDataAttrObj(INDICATOR_NAME)}
+        aria-valuemax={max}
+        aria-valuemin={0}
+        aria-valuenow={isNumber(value) ? value : undefined}
+        aria-valuetext={valueLabel}
+        role="progressbar"
+        {...progressProps}
+        {...getPartDataAttrObj(PROGRESS_NAME)}
         data-state={getProgressBarState(value, max)}
-        data-value={value || undefined}
+        data-value={value ?? undefined}
         data-max={max}
         ref={forwardedRef}
-      />
+      >
+        <ProgressBarContext.Provider value={ctx}>{children}</ProgressBarContext.Provider>
+      </Comp>
     );
   }
 );
 
-/* ---------------------------------------------------------------------------------------------- */
-
-function useProgressBarState() {
-  const { value, max } = React.useContext(ProgressBarContext);
-  return getProgressBarState(value, max);
-}
-
 ProgressBar.displayName = PROGRESS_NAME;
-ProgressBarIndicator.displayName = INDICATOR_NAME;
-
-ProgressBar.Indicator = ProgressBarIndicator;
-
-interface ProgressBarStaticProps {
-  Indicator: typeof ProgressBarIndicator;
-}
 
 ProgressBar.propTypes = {
-  max(props, propName, componentName, location, propFullName) {
+  max(props, propName, componentName) {
     const propValue = props[propName];
     const strVal = String(propValue);
     if (propValue && !isValidMaxNumber(propValue)) {
@@ -132,6 +81,39 @@ ProgressBar.propTypes = {
     return null;
   },
 };
+
+/* -------------------------------------------------------------------------------------------------
+ * ProgressBarIndicator
+ * -----------------------------------------------------------------------------------------------*/
+
+const INDICATOR_NAME = 'ProgressBarIndicator';
+const INDICATOR_DEFAULT_TAG = 'div';
+
+const ProgressBarIndicator = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
+  (props, forwardedRef) => {
+    const { value, max } = useProgressBarContext(INDICATOR_NAME);
+    const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
+    return (
+      <Comp
+        {...indicatorProps}
+        {...getPartDataAttrObj(INDICATOR_NAME)}
+        data-state={getProgressBarState(value, max)}
+        data-value={value || undefined}
+        data-max={max}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
+
+ProgressBarIndicator.displayName = INDICATOR_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
+
+function useProgressBarState() {
+  const { value, max } = React.useContext(ProgressBarContext);
+  return getProgressBarState(value, max);
+}
 
 function defaultGetValueLabel(value: number, max: number) {
   return `${Math.round((value / max) * 100)}%`;
@@ -178,5 +160,5 @@ function getInvalidValueError(propValue: string, componentName: string) {
 Defaulting to \`null\`.`;
 }
 
-export { ProgressBar, useProgressBarState };
-export type { ProgressBarProps, ProgressBarIndicatorProps, ProgressBarState };
+export { ProgressBar, ProgressBarIndicator, useProgressBarState };
+export type { ProgressBarState };
