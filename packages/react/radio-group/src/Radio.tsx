@@ -99,6 +99,8 @@ const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, 
   );
 });
 
+Radio.displayName = RADIO_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * RadioIndicator
  * -----------------------------------------------------------------------------------------------*/
@@ -120,13 +122,12 @@ const RadioIndicatorImpl = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
   }
 );
 
+RadioIndicator.displayName = INDICATOR_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
-
-Radio.displayName = RADIO_NAME;
-RadioIndicator.displayName = INDICATOR_NAME;
 
 export { Radio, RadioIndicator };

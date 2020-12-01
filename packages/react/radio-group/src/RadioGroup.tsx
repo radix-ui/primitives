@@ -84,6 +84,8 @@ const RadioGroup = forwardRefWithAs<typeof RADIO_GROUP_DEFAULT_TAG, RadioGroupOw
   }
 );
 
+RadioGroup.displayName = RADIO_GROUP_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * RadioGroupItem
  * -----------------------------------------------------------------------------------------------*/
@@ -141,6 +143,8 @@ const RadioGroupItem = forwardRefWithAs<typeof Radio, RadioGroupItemOwnProps>(
   }
 );
 
+RadioGroupItem.displayName = ITEM_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * RadioGroupIndicator
  * -----------------------------------------------------------------------------------------------*/
@@ -151,10 +155,8 @@ const RadioGroupIndicator = forwardRefWithAs<typeof RadioIndicator>((props, forw
   return <RadioIndicator {...props} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
 });
 
-/* ---------------------------------------------------------------------------------------------- */
-
-RadioGroup.displayName = RADIO_GROUP_NAME;
-RadioGroupItem.displayName = ITEM_NAME;
 RadioGroupIndicator.displayName = INDICATOR_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
 
 export { RadioGroup, RadioGroupItem, RadioGroupIndicator };
