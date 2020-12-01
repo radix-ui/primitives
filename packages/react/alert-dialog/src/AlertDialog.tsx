@@ -63,6 +63,8 @@ const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => {
   );
 };
 
+AlertDialog.displayName = ROOT_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -73,6 +75,8 @@ const AlertDialogTrigger = forwardRefWithAs<typeof DialogTrigger>((props, forwar
   return <DialogTrigger {...getPartDataAttrObj(TRIGGER_NAME)} ref={forwardedRef} {...props} />;
 });
 
+AlertDialogTrigger.displayName = TRIGGER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogOverlay
  * -----------------------------------------------------------------------------------------------*/
@@ -82,6 +86,8 @@ const OVERLAY_NAME = 'AlertDialogOverlay';
 const AlertDialogOverlay = forwardRefWithAs<typeof DialogOverlay>((props, forwardedRef) => {
   return <DialogOverlay {...getPartDataAttrObj(OVERLAY_NAME)} ref={forwardedRef} {...props} />;
 });
+
+AlertDialogOverlay.displayName = OVERLAY_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogCancel
@@ -95,6 +101,8 @@ const AlertDialogCancel = forwardRefWithAs<typeof DialogClose>((props, forwarded
   return <DialogClose {...getPartDataAttrObj(CANCEL_NAME)} ref={ref} {...props} />;
 });
 
+AlertDialogCancel.displayName = CANCEL_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogAction
  * -----------------------------------------------------------------------------------------------*/
@@ -104,6 +112,8 @@ const ACTION_NAME = 'AlertDialogAction';
 const AlertDialogAction = forwardRefWithAs<typeof DialogClose>((props, forwardedRef) => {
   return <DialogClose {...getPartDataAttrObj(ACTION_NAME)} ref={forwardedRef} {...props} />;
 });
+
+AlertDialogAction.displayName = ACTION_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogContent
@@ -164,6 +174,8 @@ const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogCon
   }
 );
 
+AlertDialogContent.displayName = CONTENT_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogTitle
  * -----------------------------------------------------------------------------------------------*/
@@ -183,6 +195,8 @@ const AlertDialogTitle = forwardRefWithAs<typeof TITLE_DEFAULT_TAG>((props, forw
     <Comp {...getPartDataAttrObj(TITLE_NAME)} ref={forwardedRef} id={titleId} {...titleProps} />
   );
 });
+
+AlertDialogTitle.displayName = TITLE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogDescription
@@ -206,16 +220,9 @@ const AlertDialogDescription = forwardRefWithAs<typeof DESCRIPTION_DEFAULT_TAG>(
   }
 );
 
-/* ---------------------------------------------------------------------------------------------- */
-
-AlertDialog.displayName = ROOT_NAME;
-AlertDialogTitle.displayName = TITLE_NAME;
-AlertDialogCancel.displayName = CANCEL_NAME;
-AlertDialogAction.displayName = ACTION_NAME;
-AlertDialogContent.displayName = CONTENT_NAME;
 AlertDialogDescription.displayName = DESCRIPTION_NAME;
-AlertDialogOverlay.displayName = OVERLAY_NAME;
-AlertDialogTrigger.displayName = TRIGGER_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
 
 export {
   AlertDialog,

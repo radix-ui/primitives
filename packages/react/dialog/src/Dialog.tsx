@@ -68,6 +68,8 @@ const Dialog: React.FC<DialogProps> = (props) => {
   return <DialogContext.Provider value={context}>{children}</DialogContext.Provider>;
 };
 
+Dialog.displayName = DIALOG_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * DialogTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -94,6 +96,8 @@ const DialogTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwa
   );
 });
 
+DialogTrigger.displayName = TRIGGER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * DialogOverlay
  * -----------------------------------------------------------------------------------------------*/
@@ -115,6 +119,8 @@ const DialogOverlayImpl = forwardRefWithAs<typeof OVERLAY_DEFAULT_TAG>((props, f
     </Portal>
   );
 });
+
+DialogOverlay.displayName = OVERLAY_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogContent
@@ -242,6 +248,8 @@ const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogCon
   }
 );
 
+DialogContent.displayName = CONTENT_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * DialogClose
  * -----------------------------------------------------------------------------------------------*/
@@ -264,12 +272,8 @@ const DialogClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwarded
   );
 });
 
-/* -----------------------------------------------------------------------------------------------*/
-
-Dialog.displayName = DIALOG_NAME;
-DialogTrigger.displayName = TRIGGER_NAME;
-DialogOverlay.displayName = OVERLAY_NAME;
-DialogContent.displayName = CONTENT_NAME;
 DialogClose.displayName = CLOSE_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
 
 export { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogClose };
