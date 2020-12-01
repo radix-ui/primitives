@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Avatar } from './Avatar';
+import { Avatar, AvatarImage, AvatarFallback } from './Avatar';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Avatar' };
@@ -11,28 +11,28 @@ export const Styled = () => (
   <>
     <h1>Without image & with fallback</h1>
     <Avatar as={StyledRoot}>
-      <Avatar.Fallback as={StyledFallback}>JS</Avatar.Fallback>
+      <AvatarFallback as={StyledFallback}>JS</AvatarFallback>
     </Avatar>
 
     <h1>With image & with fallback</h1>
     <Avatar as={StyledRoot}>
-      <Avatar.Image as={StyledImage} alt="John Smith" src={src} />
-      <Avatar.Fallback delayMs={300} as={StyledFallback}>
+      <AvatarImage as={StyledImage} alt="John Smith" src={src} />
+      <AvatarFallback delayMs={300} as={StyledFallback}>
         JS
-      </Avatar.Fallback>
+      </AvatarFallback>
     </Avatar>
 
     <h1>With image & with fallback (but broken src)</h1>
     <Avatar as={StyledRoot}>
-      <Avatar.Image
+      <AvatarImage
         as={StyledImage}
         alt="John Smith"
         src={srcBroken}
         onLoadingStatusChange={console.log}
       />
-      <Avatar.Fallback as={StyledFallback}>
+      <AvatarFallback as={StyledFallback}>
         <AvatarIcon />
-      </Avatar.Fallback>
+      </AvatarFallback>
     </Avatar>
   </>
 );
