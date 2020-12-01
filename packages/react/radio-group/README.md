@@ -21,20 +21,20 @@ function MyComponent(props) {
       <span>{props.label}</span>
       <RadioGroup defaultValue="1">
         <Label>
-          <RadioGroupItem as={StyledItem} value="1">
-            <RadioGroupIndicator as={StyledIndicator} />
+          <RadioGroupItem value="1">
+            <RadioGroupIndicator />
           </RadioGroupItem>
           Cat
         </Label>{' '}
         <Label>
-          <RadioGroupItem as={StyledItem} value="2">
-            <RadioGroupIndicator as={StyledIndicator} />
+          <RadioGroupItem value="2">
+            <RadioGroupIndicator />
           </RadioGroupItem>
           Dog
         </Label>{' '}
         <Label>
-          <RadioGroupItem as={StyledItem} value="3">
-            <RadioGroupIndicator as={StyledIndicator} />
+          <RadioGroupItem value="3">
+            <RadioGroupIndicator />
           </RadioGroupItem>
           Rabbit
         </Label>
