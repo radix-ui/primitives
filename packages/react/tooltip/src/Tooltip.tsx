@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 import {
-  forwardRef,
   createContext,
   useComposedRefs,
   useId,
@@ -11,13 +10,11 @@ import {
   useControlledState,
   useLayoutEffect,
 } from '@interop-ui/react-utils';
-import { Popper } from '@interop-ui/react-popper';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { Popper, PopperContent, PopperArrow } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
-
-import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
-import type { Optional } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -49,20 +46,13 @@ const stateMachine = createStateMachine(stateChart);
 
 const TOOLTIP_NAME = 'Tooltip';
 
-interface TooltipStaticProps {
-  Trigger: typeof TooltipTrigger;
-  Popper: typeof TooltipPopper;
-  Content: typeof TooltipContent;
-  Arrow: typeof TooltipArrow;
-}
-
-type TooltipProps = {
+type TooltipOwnProps = {
   isOpen?: boolean;
   defaultIsOpen?: boolean;
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
-const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(props) {
+const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `tooltip-${useId()}`;
@@ -134,101 +124,94 @@ const Tooltip: React.FC<TooltipProps> & TooltipStaticProps = function Tooltip(pr
   return <TooltipContext.Provider value={context}>{children}</TooltipContext.Provider>;
 };
 
+Tooltip.displayName = TOOLTIP_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * TooltipTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const TRIGGER_NAME = 'Tooltip.Trigger';
+const TRIGGER_NAME = 'TooltipTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type TooltipTriggerDOMProps = React.ComponentPropsWithoutRef<typeof TRIGGER_DEFAULT_TAG>;
-type TooltipTriggerOwnProps = {};
-type TooltipTriggerProps = TooltipTriggerOwnProps & TooltipTriggerDOMProps;
+const TooltipTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwardedRef) => {
+  const {
+    as: Comp = TRIGGER_DEFAULT_TAG,
+    onMouseEnter,
+    onMouseMove,
+    onMouseLeave,
+    onFocus,
+    onBlur,
+    onMouseDown,
+    onKeyDown,
+    ...triggerProps
+  } = props;
+  const context = useTooltipContext(TRIGGER_NAME);
+  const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
-const TooltipTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, TooltipTriggerProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = TRIGGER_DEFAULT_TAG,
-      onMouseEnter,
-      onMouseMove,
-      onMouseLeave,
-      onFocus,
-      onBlur,
-      onMouseDown,
-      onKeyDown,
-      ...triggerProps
-    } = props;
-    const context = useTooltipContext(TRIGGER_NAME);
-    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
+  return (
+    <Comp
+      {...getPartDataAttrObj(TRIGGER_NAME)}
+      ref={composedTriggerRef}
+      type="button"
+      aria-describedby={context.isOpen ? context.id : undefined}
+      onMouseEnter={composeEventHandlers(onMouseEnter, () =>
+        stateMachine.transition('mouseEntered', { id: context.id })
+      )}
+      onMouseMove={composeEventHandlers(onMouseMove, () =>
+        stateMachine.transition('mouseMoved', { id: context.id })
+      )}
+      onMouseLeave={composeEventHandlers(onMouseLeave, () => {
+        const stateMachineContext = stateMachine.getContext();
+        if (stateMachineContext.id === context.id) {
+          stateMachine.transition('mouseLeft', { id: context.id });
+        }
+      })}
+      onFocus={composeEventHandlers(onFocus, () =>
+        stateMachine.transition('focused', { id: context.id })
+      )}
+      onBlur={composeEventHandlers(onBlur, () => {
+        const stateMachineContext = stateMachine.getContext();
+        if (stateMachineContext.id === context.id) {
+          stateMachine.transition('blurred', { id: context.id });
+        }
+      })}
+      onMouseDown={composeEventHandlers(onMouseDown, () =>
+        stateMachine.transition('activated', { id: context.id })
+      )}
+      onKeyDown={composeEventHandlers(onKeyDown, (event) => {
+        if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+          stateMachine.transition('activated', { id: context.id });
+        }
+      })}
+      {...triggerProps}
+    />
+  );
+});
 
-    return (
-      <Comp
-        {...getPartDataAttrObj(TRIGGER_NAME)}
-        ref={composedTriggerRef}
-        type="button"
-        aria-describedby={context.isOpen ? context.id : undefined}
-        onMouseEnter={composeEventHandlers(onMouseEnter, () =>
-          stateMachine.transition('mouseEntered', { id: context.id })
-        )}
-        onMouseMove={composeEventHandlers(onMouseMove, () =>
-          stateMachine.transition('mouseMoved', { id: context.id })
-        )}
-        onMouseLeave={composeEventHandlers(onMouseLeave, () => {
-          const stateMachineContext = stateMachine.getContext();
-          if (stateMachineContext.id === context.id) {
-            stateMachine.transition('mouseLeft', { id: context.id });
-          }
-        })}
-        onFocus={composeEventHandlers(onFocus, () =>
-          stateMachine.transition('focused', { id: context.id })
-        )}
-        onBlur={composeEventHandlers(onBlur, () => {
-          const stateMachineContext = stateMachine.getContext();
-          if (stateMachineContext.id === context.id) {
-            stateMachine.transition('blurred', { id: context.id });
-          }
-        })}
-        onMouseDown={composeEventHandlers(onMouseDown, () =>
-          stateMachine.transition('activated', { id: context.id })
-        )}
-        onKeyDown={composeEventHandlers(onKeyDown, (event) => {
-          if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-            stateMachine.transition('activated', { id: context.id });
-          }
-        })}
-        {...triggerProps}
-      />
-    );
-  }
-);
+TooltipTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipPopper
  * -----------------------------------------------------------------------------------------------*/
 
-const POPPER_NAME = 'Tooltip.Popper';
-const POPPER_DEFAULT_TAG = 'div';
+const POPPER_NAME = 'TooltipPopper';
 
-type TooltipPopperDOMProps = React.ComponentPropsWithoutRef<typeof POPPER_DEFAULT_TAG>;
 type TooltipPopperOwnProps = {
   /**
    * Whether the Tooltip should render in a Portal
    * (default: `true`)
    */
   shouldPortal?: boolean;
+
+  anchorRef?: React.ComponentProps<typeof Popper>['anchorRef'];
 };
-type TooltipPopperProps = Optional<PopperProps, 'anchorRef'> &
-  TooltipPopperDOMProps &
-  TooltipPopperOwnProps;
 
-const TooltipPopper = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperProps>(
-  (props, forwardedRef) => {
-    const context = useTooltipContext(POPPER_NAME);
-    return context.isOpen ? <TooltipPopperImpl ref={forwardedRef} {...props} /> : null;
-  }
-);
+const TooltipPopper = forwardRefWithAs<typeof TooltipPopperImpl>((props, forwardedRef) => {
+  const context = useTooltipContext(POPPER_NAME);
+  return context.isOpen ? <TooltipPopperImpl ref={forwardedRef} {...props} /> : null;
+});
 
-const TooltipPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperProps>(
+const TooltipPopperImpl = forwardRefWithAs<typeof Popper, TooltipPopperOwnProps>(
   (props, forwardedRef) => {
     const { children, anchorRef, shouldPortal = true, ...popperProps } = props;
     const context = useTooltipContext(POPPER_NAME);
@@ -256,6 +239,53 @@ const TooltipPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, TooltipPopperPro
   }
 );
 
+TooltipPopper.displayName = POPPER_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * TooltipContent
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONTENT_NAME = 'TooltipContent';
+
+type TooltipContentOwnProps = {
+  /**
+   * A more descriptive label for accessibility purpose
+   */
+  'aria-label'?: string;
+};
+
+const TooltipContent = forwardRefWithAs<typeof PopperContent, TooltipContentOwnProps>(
+  (props, forwardedRef) => {
+    const { children, 'aria-label': ariaLabel, ...contentProps } = props;
+    const context = useTooltipContext(CONTENT_NAME);
+
+    return (
+      <PopperContent {...getPartDataAttrObj(CONTENT_NAME)} {...contentProps} ref={forwardedRef}>
+        {children}
+        <VisuallyHidden id={context.id} role="tooltip">
+          {ariaLabel || children}
+        </VisuallyHidden>
+      </PopperContent>
+    );
+  }
+);
+
+TooltipContent.displayName = CONTENT_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * TooltipArrow
+ * -----------------------------------------------------------------------------------------------*/
+
+const ARROW_NAME = 'TooltipArrow';
+
+const TooltipArrow = forwardRefWithAs<typeof PopperArrow>((props, forwardedRef) => {
+  return <PopperArrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
+});
+
+TooltipArrow.displayName = ARROW_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
+
 function CheckTriggerMoved() {
   const { triggerRef, id } = useTooltipContext('CheckTriggerMoved');
 
@@ -279,73 +309,4 @@ function CheckTriggerMoved() {
   return null;
 }
 
-/* -------------------------------------------------------------------------------------------------
- * TooltipContent
- * -----------------------------------------------------------------------------------------------*/
-
-const CONTENT_NAME = 'Tooltip.Content';
-const CONTENT_DEFAULT_TAG = 'div';
-
-type TooltipContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type TooltipContentOwnProps = {
-  /**
-   * A more descriptive label for accessibility purpose
-   */
-  'aria-label'?: string;
-};
-type TooltipContentProps = TooltipContentDOMProps & TooltipContentOwnProps;
-
-const TooltipContent = forwardRef<typeof CONTENT_DEFAULT_TAG, TooltipContentProps>(
-  (props, forwardedRef) => {
-    const { children, 'aria-label': ariaLabel, ...contentProps } = props;
-    const context = useTooltipContext(CONTENT_NAME);
-
-    return (
-      <Popper.Content {...getPartDataAttrObj(CONTENT_NAME)} {...contentProps} ref={forwardedRef}>
-        {children}
-        <VisuallyHidden id={context.id} role="tooltip">
-          {ariaLabel || children}
-        </VisuallyHidden>
-      </Popper.Content>
-    );
-  }
-);
-
-/* -------------------------------------------------------------------------------------------------
- * TooltipArrow
- * -----------------------------------------------------------------------------------------------*/
-
-const ARROW_NAME = 'Tooltip.Arrow';
-const ARROW_DEFAULT_TAG = 'svg';
-
-type TooltipArrowOwnProps = {};
-type TooltipArrowProps = PopperArrowProps & TooltipArrowOwnProps;
-
-const TooltipArrow = forwardRef<typeof ARROW_DEFAULT_TAG, TooltipArrowProps>(function TooltipArrow(
-  props,
-  forwardedRef
-) {
-  return <Popper.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
-});
-
-/* -----------------------------------------------------------------------------------------------*/
-
-Tooltip.Trigger = TooltipTrigger;
-Tooltip.Popper = TooltipPopper;
-Tooltip.Content = TooltipContent;
-Tooltip.Arrow = TooltipArrow;
-
-Tooltip.displayName = TOOLTIP_NAME;
-Tooltip.Trigger.displayName = TRIGGER_NAME;
-Tooltip.Popper.displayName = POPPER_NAME;
-Tooltip.Content.displayName = CONTENT_NAME;
-Tooltip.Arrow.displayName = ARROW_NAME;
-
-export { Tooltip };
-export type {
-  TooltipProps,
-  TooltipTriggerProps,
-  TooltipPopperProps,
-  TooltipContentProps,
-  TooltipArrowProps,
-};
+export { Tooltip, TooltipTrigger, TooltipPopper, TooltipContent, TooltipArrow };

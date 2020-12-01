@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 import {
-  forwardRef,
   createContext,
   useComposedRefs,
   composeEventHandlers,
@@ -9,7 +8,8 @@ import {
   useId,
   composeRefs,
 } from '@interop-ui/react-utils';
-import { Popper } from '@interop-ui/react-popper';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { Popper, PopperContent, PopperArrow } from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
@@ -20,8 +20,6 @@ import { hideOthers } from 'aria-hidden';
 
 import type { DismissableLayerProps } from '@interop-ui/react-dismissable-layer';
 import type { FocusScopeProps } from '@interop-ui/react-focus-scope';
-import type { PopperProps, PopperArrowProps } from '@interop-ui/react-popper';
-import type { Optional } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -45,21 +43,13 @@ const [PopoverContext, usePopoverContext] = createContext<PopoverContextValue>(
 
 const POPOVER_NAME = 'Popover';
 
-interface PopoverStaticProps {
-  Trigger: typeof PopoverTrigger;
-  Popper: typeof PopoverPopper;
-  Content: typeof PopoverContent;
-  Close: typeof PopoverClose;
-  Arrow: typeof PopoverArrow;
-}
-
-type PopoverProps = {
+type PopoverOwnProps = {
   isOpen?: boolean;
   defaultIsOpen?: boolean;
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
-const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(props) {
+const Popover: React.FC<PopoverOwnProps> = (props) => {
   const { children, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `popover-${useId()}`;
@@ -77,48 +67,42 @@ const Popover: React.FC<PopoverProps> & PopoverStaticProps = function Popover(pr
   return <PopoverContext.Provider value={context}>{children}</PopoverContext.Provider>;
 };
 
+Popover.displayName = POPOVER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * PopoverTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const TRIGGER_NAME = 'Popover.Trigger';
+const TRIGGER_NAME = 'PopoverTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type PopoverTriggerDOMProps = React.ComponentPropsWithoutRef<typeof TRIGGER_DEFAULT_TAG>;
-type PopoverTriggerOwnProps = {};
-type PopoverTriggerProps = PopoverTriggerOwnProps & PopoverTriggerDOMProps;
+const PopoverTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
+  const context = usePopoverContext(TRIGGER_NAME);
+  const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
-const PopoverTrigger = forwardRef<typeof TRIGGER_DEFAULT_TAG, PopoverTriggerProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
-    const context = usePopoverContext(TRIGGER_NAME);
-    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
+  return (
+    <Comp
+      {...getPartDataAttrObj(TRIGGER_NAME)}
+      ref={composedTriggerRef}
+      type="button"
+      aria-haspopup="dialog"
+      aria-expanded={context.isOpen}
+      aria-controls={context.id}
+      onClick={composeEventHandlers(onClick, () => context.setIsOpen((prevIsOpen) => !prevIsOpen))}
+      {...triggerProps}
+    />
+  );
+});
 
-    return (
-      <Comp
-        {...getPartDataAttrObj(TRIGGER_NAME)}
-        ref={composedTriggerRef}
-        type="button"
-        aria-haspopup="dialog"
-        aria-expanded={context.isOpen}
-        aria-controls={context.id}
-        onClick={composeEventHandlers(onClick, () =>
-          context.setIsOpen((prevIsOpen) => !prevIsOpen)
-        )}
-        {...triggerProps}
-      />
-    );
-  }
-);
+PopoverTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverPopper
  * -----------------------------------------------------------------------------------------------*/
 
-const POPPER_NAME = 'Popover.Popper';
-const POPPER_DEFAULT_TAG = 'div';
+const POPPER_NAME = 'PopoverPopper';
 
-type PopoverPopperDOMProps = React.ComponentPropsWithoutRef<typeof POPPER_DEFAULT_TAG>;
 type PopoverPopperOwnProps = {
   /**
    * Whether focus should be trapped within the `Popover`
@@ -181,20 +165,17 @@ type PopoverPopperOwnProps = {
    * (default: `true`)
    */
   shouldPortal?: boolean;
+
+  anchorRef?: React.ComponentProps<typeof Popper>['anchorRef'];
 };
-type PopoverPopperProps = Optional<PopperProps, 'anchorRef'> &
-  PopoverPopperDOMProps &
-  PopoverPopperOwnProps;
 
-const PopoverPopper = forwardRef<typeof POPPER_DEFAULT_TAG, PopoverPopperProps>(
-  function PopoverPopper(props, forwardedRef) {
-    const context = usePopoverContext(POPPER_NAME);
-    return context.isOpen ? <PopoverPopperImpl ref={forwardedRef} {...props} /> : null;
-  }
-);
+const PopoverPopper = forwardRefWithAs<typeof PopoverPopperImpl>((props, forwardedRef) => {
+  const context = usePopoverContext(POPPER_NAME);
+  return context.isOpen ? <PopoverPopperImpl ref={forwardedRef} {...props} /> : null;
+});
 
-const PopoverPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, PopoverPopperProps>(
-  function PopoverPopperImpl(props, forwardedRef) {
+const PopoverPopperImpl = forwardRefWithAs<typeof Popper, PopoverPopperOwnProps>(
+  (props, forwardedRef) => {
     const {
       children,
       anchorRef,
@@ -323,89 +304,56 @@ const PopoverPopperImpl = forwardRef<typeof POPPER_DEFAULT_TAG, PopoverPopperPro
   }
 );
 
+PopoverPopper.displayName = POPPER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * PopoverContent
  * -----------------------------------------------------------------------------------------------*/
 
-const CONTENT_NAME = 'Popover.Content';
-const CONTENT_DEFAULT_TAG = 'div';
+const CONTENT_NAME = 'PopoverContent';
 
-type PopoverContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type PopoverContentOwnProps = {};
-type PopoverContentProps = PopoverContentDOMProps & PopoverContentOwnProps;
+const PopoverContent = forwardRefWithAs<typeof PopperContent>((props, forwardedRef) => {
+  return <PopperContent {...getPartDataAttrObj(CONTENT_NAME)} {...props} ref={forwardedRef} />;
+});
 
-const PopoverContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopoverContentProps>(
-  (props, forwardedRef) => {
-    return <Popper.Content {...getPartDataAttrObj(CONTENT_NAME)} {...props} ref={forwardedRef} />;
-  }
-);
+PopoverContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverClose
  * -----------------------------------------------------------------------------------------------*/
 
-const CLOSE_NAME = 'Popover.Close';
+const CLOSE_NAME = 'PopoverClose';
 const CLOSE_DEFAULT_TAG = 'button';
 
-type PopoverCloseDOMProps = React.ComponentPropsWithoutRef<typeof CLOSE_DEFAULT_TAG>;
-type PopoverCloseOwnProps = {};
-type PopoverCloseProps = PopoverCloseOwnProps & PopoverCloseDOMProps;
+const PopoverClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = CLOSE_DEFAULT_TAG, onClick, ...closeProps } = props;
+  const context = usePopoverContext(CLOSE_NAME);
 
-const PopoverClose = forwardRef<typeof CLOSE_DEFAULT_TAG, PopoverCloseProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = CLOSE_DEFAULT_TAG, onClick, ...closeProps } = props;
-    const context = usePopoverContext(CLOSE_NAME);
+  return (
+    <Comp
+      {...getPartDataAttrObj(CLOSE_NAME)}
+      ref={forwardedRef}
+      type="button"
+      {...closeProps}
+      onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
+    />
+  );
+});
 
-    return (
-      <Comp
-        {...getPartDataAttrObj(CLOSE_NAME)}
-        ref={forwardedRef}
-        type="button"
-        {...closeProps}
-        onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
-      />
-    );
-  }
-);
+PopoverClose.displayName = CLOSE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverArrow
  * -----------------------------------------------------------------------------------------------*/
 
-const ARROW_NAME = 'Popover.Arrow';
-const ARROW_DEFAULT_TAG = 'svg';
+const ARROW_NAME = 'PopoverArrow';
 
-type PopoverArrowOwnProps = {};
-type PopoverArrowProps = PopperArrowProps & PopoverArrowOwnProps;
-
-const PopoverArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopoverArrowProps>(function PopoverArrow(
-  props,
-  forwardedRef
-) {
-  return <Popper.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
+const PopoverArrow = forwardRefWithAs<typeof PopperArrow>((props, forwardedRef) => {
+  return <PopperArrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
 });
+
+PopoverArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-Popover.Trigger = PopoverTrigger;
-Popover.Popper = PopoverPopper;
-Popover.Content = PopoverContent;
-Popover.Close = PopoverClose;
-Popover.Arrow = PopoverArrow;
-
-Popover.displayName = POPOVER_NAME;
-Popover.Trigger.displayName = TRIGGER_NAME;
-Popover.Popper.displayName = POPPER_NAME;
-Popover.Content.displayName = CONTENT_NAME;
-Popover.Close.displayName = CLOSE_NAME;
-Popover.Arrow.displayName = ARROW_NAME;
-
-export { Popover };
-export type {
-  PopoverProps,
-  PopoverTriggerProps,
-  PopoverPopperProps,
-  PopoverContentProps,
-  PopoverCloseProps,
-  PopoverArrowProps,
-};
+export { Popover, PopoverTrigger, PopoverPopper, PopoverContent, PopoverClose, PopoverArrow };

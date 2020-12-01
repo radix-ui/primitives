@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { FocusScope } from '@interop-ui/react-focus-scope';
-import { Popper } from '@interop-ui/react-popper';
+import { Popper, PopperContent, PopperArrow } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
 import { composeRefs } from '@interop-ui/react-utils';
 import { FocusGuards } from '@interop-ui/react-focus-guards';
@@ -649,7 +649,7 @@ function DummyPopover({
                         side="bottom"
                         sideOffset={10}
                       >
-                        <Popper.Content
+                        <PopperContent
                           style={{
                             display: 'flex',
                             alignItems: 'flex-start',
@@ -667,8 +667,8 @@ function DummyPopover({
                             {closeLabel}
                           </button>
                           <input type="text" defaultValue="hello world" />
-                        </Popper.Content>
-                        <Popper.Arrow width={10} height={4} style={{ fill: color }} offset={20} />
+                        </PopperContent>
+                        <PopperArrow width={10} height={4} style={{ fill: color }} offset={20} />
                       </Popper>
                     )}
                   </FocusScope>

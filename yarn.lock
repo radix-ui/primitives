@@ -2087,6 +2087,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-arrow@workspace:packages/react/arrow"
   dependencies:
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2193,6 +2194,10 @@ __metadata:
   resolution: "@interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
   dependencies:
     "@interop-ui/react-debug-context": "workspace:*"
+    "@interop-ui/react-focus-guards": "workspace:*"
+    "@interop-ui/react-focus-scope": "workspace:*"
+    "@interop-ui/react-popper": "workspace:*"
+    "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
@@ -2268,6 +2273,7 @@ __metadata:
     "@interop-ui/react-dismissable-layer": "workspace:*"
     "@interop-ui/react-focus-guards": "workspace:*"
     "@interop-ui/react-focus-scope": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
@@ -2287,6 +2293,7 @@ __metadata:
     "@interop-ui/popper": "workspace:*"
     "@interop-ui/react-arrow": "workspace:*"
     "@interop-ui/react-debug-context": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-use-size": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
@@ -2420,6 +2427,7 @@ __metadata:
   dependencies:
     "@interop-ui/popper": "workspace:*"
     "@interop-ui/react-arrow": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"

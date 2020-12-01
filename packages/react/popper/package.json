@@ -20,6 +20,7 @@
     "@interop-ui/popper": "workspace:*",
     "@interop-ui/react-arrow": "workspace:*",
     "@interop-ui/react-debug-context": "workspace:*",
+    "@interop-ui/react-polymorphic": "workspace:*",
     "@interop-ui/react-use-size": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
