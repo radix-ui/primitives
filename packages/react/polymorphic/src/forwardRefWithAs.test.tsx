@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import { useComposedRefs } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from './forwardRefWithAs';
 
 import type { RenderResult } from '@testing-library/react';
@@ -46,9 +45,7 @@ export function ExtendedButtonUsingReactUtilsWithInternalInlineAs(
 const ExtendedButton = forwardRefWithAs<typeof Button, { isExtended?: boolean }>(
   (props, forwardedRef) => {
     const { isExtended, ...extendedButtonProps } = props;
-    const buttonRef = React.useRef<React.ElementRef<typeof Button>>(null);
-    const ref = useComposedRefs(forwardedRef, buttonRef);
-    return <Button {...extendedButtonProps} ref={ref} />;
+    return <Button {...extendedButtonProps} ref={forwardedRef} />;
   }
 );
 

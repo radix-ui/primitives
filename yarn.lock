@@ -2248,6 +2248,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-polymorphic@workspace:packages/react/polymorphic"
   dependencies:
+    "@testing-library/react": ^10.4.8
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
