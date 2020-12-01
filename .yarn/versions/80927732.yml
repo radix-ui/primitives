@@ -1,0 +1,19 @@
+releases:
+  "@interop-ui/react-polymorphic": prerelease
+  "@interop-ui/react-slider": prerelease
+
+declined:
+  - "@interop-ui/react-accessible-icon"
+  - "@interop-ui/react-accordion"
+  - "@interop-ui/react-announce"
+  - "@interop-ui/react-aspect-ratio"
+  - "@interop-ui/react-avatar"
+  - "@interop-ui/react-checkbox"
+  - "@interop-ui/react-collapsible"
+  - "@interop-ui/react-label"
+  - "@interop-ui/react-progress-bar"
+  - "@interop-ui/react-radio-group"
+  - "@interop-ui/react-separator"
+  - "@interop-ui/react-switch"
+  - "@interop-ui/react-toggle-button"
+  - "@interop-ui/react-visually-hidden"
