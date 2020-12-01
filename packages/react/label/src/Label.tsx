@@ -15,21 +15,6 @@ type LabelOwnProps = { htmlFor?: string };
 type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
-const useLabelContext = <E extends HTMLElement>(ref?: React.RefObject<E>) => {
-  const context = React.useContext(LabelContext);
-
-  React.useEffect(() => {
-    const label = context?.ref.current;
-    const element = ref?.current;
-
-    if (label && element) {
-      return addLabelClickEventListener(label, element);
-    }
-  }, [context, ref]);
-
-  return context?.id;
-};
-
 const Label = forwardRefWithAs<typeof DEFAULT_TAG, LabelOwnProps>((props, forwardedRef) => {
   const { htmlFor, as: Comp = DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
@@ -88,6 +73,25 @@ const Label = forwardRefWithAs<typeof DEFAULT_TAG, LabelOwnProps>((props, forwar
   );
 });
 
+Label.displayName = 'Label';
+
+/* -----------------------------------------------------------------------------------------------*/
+
+const useLabelContext = <E extends HTMLElement>(ref?: React.RefObject<E>) => {
+  const context = React.useContext(LabelContext);
+
+  React.useEffect(() => {
+    const label = context?.ref.current;
+    const element = ref?.current;
+
+    if (label && element) {
+      return addLabelClickEventListener(label, element);
+    }
+  }, [context, ref]);
+
+  return context?.id;
+};
+
 function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement) {
   const handleClick = (event: MouseEvent) => {
     /**
@@ -104,7 +108,5 @@ function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement
   label.addEventListener('click', handleClick);
   return () => label.removeEventListener('click', handleClick);
 }
-
-/* ---------------------------------------------------------------------------------------------- */
 
 export { Label, useLabelContext };
