@@ -2,10 +2,10 @@ import * as React from 'react';
 import {
   createContext,
   composeEventHandlers,
-  forwardRef,
   useControlledState,
   useComposedRefs,
 } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { useLabelContext } from '@interop-ui/react-label';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
@@ -17,23 +17,22 @@ const SWITCH_NAME = 'Switch';
 const SWITCH_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
-type SwitchDOMProps = React.ComponentPropsWithoutRef<typeof SWITCH_DEFAULT_TAG>;
 type SwitchOwnProps = {
   checked?: boolean;
   defaultChecked?: boolean;
   required?: InputDOMProps['required'];
   readOnly?: InputDOMProps['readOnly'];
   onCheckedChange?: InputDOMProps['onChange'];
+  onChange?: never;
 };
-type SwitchProps = SwitchOwnProps & Omit<SwitchDOMProps, keyof SwitchOwnProps | 'onChange'>;
 
 const [SwitchContext, useSwitchContext] = createContext<boolean>(
   SWITCH_NAME + 'Context',
   SWITCH_NAME
 );
 
-const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticProps>(
-  function Switch(props, forwardedRef) {
+const Switch = forwardRefWithAs<typeof SWITCH_DEFAULT_TAG, SwitchOwnProps>(
+  (props, forwardedRef) => {
     const {
       as: Comp = SWITCH_DEFAULT_TAG,
       'aria-labelledby': ariaLabelledby,
@@ -107,21 +106,16 @@ const Switch = forwardRef<typeof SWITCH_DEFAULT_TAG, SwitchProps, SwitchStaticPr
   }
 );
 
+Switch.displayName = SWITCH_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * SwitchThumb
  * -----------------------------------------------------------------------------------------------*/
 
-const THUMB_NAME = 'Switch.Thumb';
+const THUMB_NAME = 'SwitchThumb';
 const THUMB_DEFAULT_TAG = 'span';
 
-type SwitchThumbDOMProps = React.ComponentPropsWithoutRef<typeof THUMB_DEFAULT_TAG>;
-type SwitchThumbOwnProps = {};
-type SwitchThumbProps = SwitchThumbDOMProps & SwitchThumbOwnProps;
-
-const SwitchThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(function SwitchThumb(
-  props,
-  forwardedRef
-) {
+const SwitchThumb = forwardRefWithAs<typeof THUMB_DEFAULT_TAG>((props, forwardedRef) => {
   const checked = useSwitchContext(THUMB_NAME);
   const { as: Comp = THUMB_DEFAULT_TAG, ...thumbProps } = props;
   return (
@@ -134,20 +128,12 @@ const SwitchThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SwitchThumbProps>(funct
   );
 });
 
+SwitchThumb.displayName = THUMB_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
 
-Switch.Thumb = SwitchThumb;
-
-Switch.displayName = SWITCH_NAME;
-Switch.Thumb.displayName = THUMB_NAME;
-
-interface SwitchStaticProps {
-  Thumb: typeof SwitchThumb;
-}
-
-export { Switch };
-export type { SwitchProps, SwitchThumbProps };
+export { Switch, SwitchThumb };

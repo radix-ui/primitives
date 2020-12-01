@@ -10,4 +10,19 @@ $ npm install @interop-ui/react-switch
 
 ## Usage
 
-This package is currently in early development and not quite ready for usage.
+```js
+import * as React from 'react';
+import { Switch, SwitchThumb } from '@interop-ui/react-switch';
+import { Label } from '@interop-ui/react-label';
+
+function MyComponent(props) {
+  return (
+    <Label>
+      <span>{props.label}</span>
+      <Switch onCheckedChange={console.log}>
+        <SwitchThumb />
+      </Switch>
+    </Label>
+  );
+}
+```
