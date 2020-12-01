@@ -9,16 +9,25 @@ export const overviewPages: Page[] = [
   { id: 'overview/roadmap', label: 'Roadmap' },
 ];
 
-export const componentsPages: ComponentPage[] = (componentsFrontMatter || []).map((frontMatter) => {
+export const componentsPages: ComponentPage[] = (componentsFrontMatter || []).reduce<
+  ComponentPage[]
+>((allPages, frontMatter) => {
   const slug = path.basename(frontMatter.__resourcePath).startsWith('index')
     ? path.dirname(frontMatter.__resourcePath).split(path.sep).pop()
     : path.basename(frontMatter.__resourcePath).split('.').shift();
-  return {
-    id: `components/${slug}`,
-    label: frontMatter.title,
-    description: frontMatter.description || '',
-  };
-});
+
+  // Ignore invalid slugs or private pages whose filenames start with `_`
+  return !slug || slug.startsWith('_')
+    ? allPages
+    : [
+        ...allPages,
+        {
+          id: `components/${slug}`,
+          label: frontMatter.title,
+          description: frontMatter.description || '',
+        },
+      ];
+}, []);
 
 export const allPages = [...overviewPages, ...componentsPages];
 

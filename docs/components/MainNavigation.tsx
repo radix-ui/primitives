@@ -30,11 +30,13 @@ function MainNavigation({ sx = {} }: { sx?: BoxProps['sx'] }) {
         <Divider />
 
         <NavPanel id="components" heading="Components">
-          {componentsPages.map((page) => (
-            <PageLink key={page.id} href={`/${page.id}`}>
-              {page.label}
-            </PageLink>
-          ))}
+          {componentsPages.map((page) => {
+            return (
+              <PageLink key={page.id} href={`/${page.id}`}>
+                {page.label}
+              </PageLink>
+            );
+          })}
         </NavPanel>
 
         <Divider />
