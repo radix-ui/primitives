@@ -78,9 +78,7 @@ const Menu = forwardRefWithAs<typeof MENU_DEFAULT_TAG, MenuOwnProps>((props, for
   );
 });
 
-function isItem(target: EventTarget) {
-  return (target as HTMLElement).matches(ENABLED_ITEM_SELECTOR);
-}
+Menu.displayName = MENU_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuItem
@@ -164,6 +162,8 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
   }
 );
 
+MenuItem.displayName = ITEM_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * MenuGroup
  * -----------------------------------------------------------------------------------------------*/
@@ -177,6 +177,8 @@ const MenuGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG>((props, forwardedRe
   );
 });
 
+MenuGroup.displayName = GROUP_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * MenuLabel
  * -----------------------------------------------------------------------------------------------*/
@@ -187,6 +189,8 @@ const MenuLabel = forwardRefWithAs<typeof LABEL_DEFAULT_TAG>((props, forwardedRe
   const { as: Comp = LABEL_DEFAULT_TAG, ...labelProps } = props;
   return <Comp {...labelProps} {...getPartDataAttrObj(LABEL_NAME)} ref={forwardedRef} />;
 });
+
+MenuLabel.displayName = LABEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuSeparator
@@ -207,12 +211,12 @@ const MenuSeparator = forwardRefWithAs<typeof SEPARATOR_DEFAULT_TAG>((props, for
   );
 });
 
+MenuSeparator.displayName = SEPARATOR_NAME;
+
 /* -----------------------------------------------------------------------------------------------*/
 
-Menu.displayName = MENU_NAME;
-MenuItem.displayName = ITEM_NAME;
-MenuGroup.displayName = GROUP_NAME;
-MenuLabel.displayName = LABEL_NAME;
-MenuSeparator.displayName = SEPARATOR_NAME;
+function isItem(target: EventTarget) {
+  return (target as HTMLElement).matches(ENABLED_ITEM_SELECTOR);
+}
 
 export { Menu, MenuItem, MenuGroup, MenuLabel, MenuSeparator };
