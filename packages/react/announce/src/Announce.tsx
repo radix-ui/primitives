@@ -1,7 +1,8 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
-import { forwardRef, useComposedRefs, useLayoutEffect } from '@interop-ui/react-utils';
+import { useComposedRefs, useLayoutEffect } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';
@@ -22,7 +23,6 @@ const listenerMap = new Map<Element, number>();
 const NAME = 'Announce';
 const DEFAULT_TAG = 'div';
 
-type AnnounceDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type AnnounceOwnProps = {
   /**
    * Mirrors the `aria-atomic` DOM attribute for live regions. It is an optional attribute that
@@ -81,13 +81,10 @@ type AnnounceOwnProps = {
    */
   type?: RegionType;
 };
-type AnnounceProps = AnnounceDOMProps & AnnounceOwnProps;
+
 type AnnounceDOMElement = HTMLElementTagNameMap[typeof DEFAULT_TAG];
 
-const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce(
-  props,
-  forwardedRef
-) {
+const Announce = forwardRefWithAs<typeof DEFAULT_TAG, AnnounceOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = DEFAULT_TAG,
     'aria-relevant': ariaRelevant,
@@ -231,4 +228,3 @@ function getLiveRegionPartDataAttr(id?: string) {
 }
 
 export { Announce };
-export type { AnnounceProps };
