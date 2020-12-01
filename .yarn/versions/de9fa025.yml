@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-toggle-button": prerelease
+
+declined:
+  - interop-ui
