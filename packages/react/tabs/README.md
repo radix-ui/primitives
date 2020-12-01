@@ -12,21 +12,21 @@ $ npm install @interop-ui/react-tabs
 
 ```js
 import * as React from 'react';
-import { Tabs } from '@interop-ui/react-tabs';
+import { Tabs, TabsList, TabsTab, TabsPanel } from '@interop-ui/react-tabs';
 
 function MyComponent(props) {
   return (
     <Tabs defaultSelectedId="tab1">
-      <Tabs.List aria-label="tabs example">
-        <Tabs.Tab id="tab1">Tab 1</Tabs.Tab>
-        <Tabs.Tab id="tab2" disabled>
+      <TabsList aria-label="tabs example">
+        <TabsTab id="tab1">Tab 1</TabsTab>
+        <TabsTab id="tab2" disabled>
           Tab 2
-        </Tabs.Tab>
-        <Tabs.Tab id="tab3">Tab 3</Tabs.Tab>
-      </Tabs.List>
-      <Tabs.Panel id="tab1">Panel 1</Tabs.Panel>
-      <Tabs.Panel id="tab2">Panel 2</Tabs.Panel>
-      <Tabs.Panel id="tab3">Panel 3</Tabs.Panel>
+        </TabsTab>
+        <TabsTab id="tab3">Tab 3</TabsTab>
+      </TabsList>
+      <TabsPanel id="tab1">Panel 1</TabsPanel>
+      <TabsPanel id="tab2">Panel 2</TabsPanel>
+      <TabsPanel id="tab3">Panel 3</TabsPanel>
     </Tabs>
   );
 }

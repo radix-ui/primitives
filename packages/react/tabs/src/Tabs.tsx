@@ -12,11 +12,10 @@ import * as React from 'react';
 import {
   composeEventHandlers,
   createContext,
-  forwardRef,
   useControlledState,
   useId,
-  ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
 
@@ -28,8 +27,8 @@ type TabsContextValue = {
   tabsId: string;
   selectedId?: string;
   setSelectedId?: (id: string) => void;
-  orientation?: TabsProps['orientation'];
-  activationMode?: TabsProps['activationMode'];
+  orientation?: TabsOwnProps['orientation'];
+  activationMode?: TabsOwnProps['activationMode'];
   shouldLoop?: boolean;
 };
 
@@ -42,7 +41,6 @@ const [TabsContext, useTabsContext] = createContext<TabsContextValue>('TabsConte
 const TABS_NAME = 'Tabs';
 const TABS_DEFAULT_TAG = 'div';
 
-type TabsDOMProps = Omit<React.ComponentProps<typeof TABS_DEFAULT_TAG>, 'onSelect'>;
 type TabsOwnProps = {
   /** The id of the selected tab, if controlled */
   selectedId?: string;
@@ -61,9 +59,8 @@ type TabsOwnProps = {
   /** Whether tab navigation loops around or not (default: true) */
   shouldLoop?: boolean;
 };
-type TabsProps = TabsDOMProps & TabsOwnProps;
 
-const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props, forwardedRef) {
+const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = TABS_DEFAULT_TAG,
     children,
@@ -111,21 +108,18 @@ const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props,
       </Comp>
     </TabsContext.Provider>
   );
-}) as ITabs;
+});
+
+Tabs.displayName = TABS_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TabsList
  * -----------------------------------------------------------------------------------------------*/
 
-const TAB_LIST_NAME = 'Tabs.List';
+const TAB_LIST_NAME = 'TabsList';
 const TAB_LIST_DEFAULT_TAG = 'div';
 
-type TabsListProps = React.ComponentProps<typeof TAB_LIST_DEFAULT_TAG>;
-
-const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function TabsList(
-  props,
-  forwardedRef
-) {
+const TabsList = forwardRefWithAs<typeof TAB_LIST_DEFAULT_TAG>((props, forwardedRef) => {
   const { orientation, shouldLoop } = useTabsContext(TAB_LIST_NAME);
   const { as: Comp = TAB_LIST_DEFAULT_TAG, children, ...otherProps } = props;
 
@@ -145,24 +139,21 @@ const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function
   );
 });
 
+TabsList.displayName = TAB_LIST_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * TabsTab
  * -----------------------------------------------------------------------------------------------*/
 
-const TAB_NAME = 'Tabs.Tab';
+const TAB_NAME = 'TabsTab';
 const TAB_DEFAULT_TAG = 'div';
 
-type TabsTabDOMProps = React.ComponentProps<typeof TAB_DEFAULT_TAG>;
 type TabsTabOwnProps = {
   id: string;
   disabled?: boolean;
 };
-type TabsTabProps = TabsTabDOMProps & TabsTabOwnProps;
 
-const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTab(
-  props,
-  forwardedRef
-) {
+const TabsTab = forwardRefWithAs<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>((props, forwardedRef) => {
   const { as: Comp = TAB_DEFAULT_TAG, id, disabled, ...tabProps } = props;
   const { tabsId, selectedId, setSelectedId, activationMode, orientation } = useTabsContext(
     TAB_NAME
@@ -227,41 +218,44 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
   );
 });
 
+TabsTab.displayName = TAB_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * TabsPanel
  * -----------------------------------------------------------------------------------------------*/
 
-const TAB_PANEL_NAME = 'Tabs.Panel';
+const TAB_PANEL_NAME = 'TabsPanel';
 const TAB_PANEL_DEFAULT_TAG = 'div';
 
-type TabsPanelProps = React.ComponentProps<typeof TAB_PANEL_DEFAULT_TAG> & { id: string };
+type TabsPanelPropsOwnProps = { id: string };
 
-const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(function TabsPanel(
-  props,
-  forwardedRef
-) {
-  const { as: Comp = TAB_PANEL_DEFAULT_TAG, id, ...tabPanelProps } = props;
-  const { tabsId, selectedId, orientation } = useTabsContext(TAB_PANEL_NAME);
-  const tabId = makeTabId(tabsId, id);
-  const tabPanelId = makeTabsPanelId(tabsId, id);
-  const isSelected = id === selectedId;
+const TabsPanel = forwardRefWithAs<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelPropsOwnProps>(
+  (props, forwardedRef) => {
+    const { as: Comp = TAB_PANEL_DEFAULT_TAG, id, ...tabPanelProps } = props;
+    const { tabsId, selectedId, orientation } = useTabsContext(TAB_PANEL_NAME);
+    const tabId = makeTabId(tabsId, id);
+    const tabPanelId = makeTabsPanelId(tabsId, id);
+    const isSelected = id === selectedId;
 
-  return (
-    <Comp
-      {...getPartDataAttrObj(TAB_PANEL_NAME)}
-      data-state={isSelected ? 'active' : 'inactive'}
-      data-orientation={orientation}
-      id={tabPanelId}
-      role="tabpanel"
-      aria-labelledby={tabId}
-      tabIndex={0}
-      hidden={!isSelected}
-      // other props
-      ref={forwardedRef}
-      {...tabPanelProps}
-    />
-  );
-});
+    return (
+      <Comp
+        {...getPartDataAttrObj(TAB_PANEL_NAME)}
+        data-state={isSelected ? 'active' : 'inactive'}
+        data-orientation={orientation}
+        id={tabPanelId}
+        role="tabpanel"
+        aria-labelledby={tabId}
+        tabIndex={0}
+        hidden={!isSelected}
+        // other props
+        ref={forwardedRef}
+        {...tabPanelProps}
+      />
+    );
+  }
+);
+
+TabsPanel.displayName = TAB_PANEL_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -273,20 +267,4 @@ function makeTabsPanelId(tabsId: string, tabId: string) {
   return `${tabsId}-tabPanel-${tabId}`;
 }
 
-interface ITabs extends ForwardRefExoticComponentWithAs<typeof TABS_DEFAULT_TAG, TabsProps> {
-  List: typeof TabsList;
-  Tab: typeof TabsTab;
-  Panel: typeof TabsPanel;
-}
-
-Tabs.Panel = TabsPanel;
-Tabs.Tab = TabsTab;
-Tabs.List = TabsList;
-
-Tabs.displayName = TABS_NAME;
-Tabs.List.displayName = TAB_LIST_NAME;
-Tabs.Tab.displayName = TAB_NAME;
-Tabs.Panel.displayName = TAB_PANEL_NAME;
-
-export { Tabs };
-export type { TabsProps, TabsListProps, TabsTabProps, TabsPanelProps, ITabs };
+export { Tabs, TabsList, TabsTab, TabsPanel };
