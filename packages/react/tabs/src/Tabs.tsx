@@ -110,6 +110,8 @@ const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, for
   );
 });
 
+Tabs.displayName = TABS_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * TabsList
  * -----------------------------------------------------------------------------------------------*/
@@ -136,6 +138,8 @@ const TabsList = forwardRefWithAs<typeof TAB_LIST_DEFAULT_TAG>((props, forwarded
     </Comp>
   );
 });
+
+TabsList.displayName = TAB_LIST_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TabsTab
@@ -214,6 +218,8 @@ const TabsTab = forwardRefWithAs<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>((props
   );
 });
 
+TabsTab.displayName = TAB_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * TabsPanel
  * -----------------------------------------------------------------------------------------------*/
@@ -249,6 +255,8 @@ const TabsPanel = forwardRefWithAs<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelPropsO
   }
 );
 
+TabsPanel.displayName = TAB_PANEL_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 function makeTabId(tabsId: string, tabId: string) {
@@ -258,10 +266,5 @@ function makeTabId(tabsId: string, tabId: string) {
 function makeTabsPanelId(tabsId: string, tabId: string) {
   return `${tabsId}-tabPanel-${tabId}`;
 }
-
-Tabs.displayName = TABS_NAME;
-TabsList.displayName = TAB_LIST_NAME;
-TabsTab.displayName = TAB_NAME;
-TabsPanel.displayName = TAB_PANEL_NAME;
 
 export { Tabs, TabsList, TabsTab, TabsPanel };
