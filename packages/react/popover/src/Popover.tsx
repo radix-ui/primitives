@@ -43,13 +43,13 @@ const [PopoverContext, usePopoverContext] = createContext<PopoverContextValue>(
 
 const POPOVER_NAME = 'Popover';
 
-type PopoverProps = {
+type PopoverOwnProps = {
   isOpen?: boolean;
   defaultIsOpen?: boolean;
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
-const Popover: React.FC<PopoverProps> = (props) => {
+const Popover: React.FC<PopoverOwnProps> = (props) => {
   const { children, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `popover-${useId()}`;

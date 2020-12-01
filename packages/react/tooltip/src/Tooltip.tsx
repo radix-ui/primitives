@@ -46,13 +46,13 @@ const stateMachine = createStateMachine(stateChart);
 
 const TOOLTIP_NAME = 'Tooltip';
 
-type TooltipProps = {
+type TooltipOwnProps = {
   isOpen?: boolean;
   defaultIsOpen?: boolean;
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
-const Tooltip: React.FC<TooltipProps> = (props) => {
+const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `tooltip-${useId()}`;
