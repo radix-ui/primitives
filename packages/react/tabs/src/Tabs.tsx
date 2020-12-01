@@ -170,7 +170,7 @@ const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTa
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabsPanelId(tabsId, id);
   const isSelected = id === selectedId;
-  const rovingFocusProps = useRovingFocus({ disabled });
+  const rovingFocusProps = useRovingFocus({ disabled, active: isSelected });
   const selectTab = React.useCallback(() => setSelectedId?.(id), [id, setSelectedId]);
 
   const handleKeyDown = composeEventHandlers(
