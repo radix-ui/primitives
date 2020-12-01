@@ -46,6 +46,8 @@ const Separator = forwardRefWithAs<typeof DEFAULT_TAG, SeparatorOwnProps>((props
   );
 });
 
+Separator.displayName = NAME;
+
 Separator.propTypes = {
   orientation(props, propName, componentName) {
     const propValue = props[propName];
@@ -71,7 +73,5 @@ Defaulting to \`${DEFAULT_ORIENTATION}\`.`;
 function isValidOrientation(orientation: any): orientation is Orientation {
   return ORIENTATIONS.includes(orientation);
 }
-
-Separator.displayName = NAME;
 
 export { Separator };
