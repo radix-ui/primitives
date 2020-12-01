@@ -12,7 +12,7 @@ $ npm install @interop-ui/react-checkbox
 
 ```js
 import * as React from 'react';
-import { Checkbox } from '@interop-ui/react-checkbox';
+import { Checkbox, CheckboxIndicator } from '@interop-ui/react-checkbox';
 import { Label } from '@interop-ui/react-label';
 
 function MyComponent(props) {
@@ -20,7 +20,7 @@ function MyComponent(props) {
     <Label>
       <span>{props.label}</span>
       <Checkbox onCheckedChange={() => props.onCheckedChange()}>
-        <Checkbox.Indicator />
+        <CheckboxIndicator />
       </Checkbox>
     </Label>
   );

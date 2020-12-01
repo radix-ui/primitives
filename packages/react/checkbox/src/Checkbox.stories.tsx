@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Label as LabelPrimitive } from '@interop-ui/react-label';
-import { Checkbox } from './Checkbox';
+import { Checkbox, CheckboxIndicator } from './Checkbox';
 import { styled } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 
@@ -15,7 +15,7 @@ export const Styled = () => (
     <Label>
       Label{' '}
       <Checkbox as={StyledRoot}>
-        <Checkbox.Indicator as={Indicator} />
+        <CheckboxIndicator as={Indicator} />
       </Checkbox>
     </Label>
   </>
@@ -37,7 +37,7 @@ export const Controlled = () => {
         onCheckedChange={(event) => setChecked(event.target.checked)}
         id="randBox"
       >
-        <Checkbox.Indicator as={Indicator} />
+        <CheckboxIndicator as={Indicator} />
       </Checkbox>
     </>
   );
@@ -54,7 +54,7 @@ export const Indeterminate = () => {
           checked={checked}
           onCheckedChange={(event) => setChecked(event.target.checked)}
         >
-          <Checkbox.Indicator as={Indicator} indeterminate={checked === 'indeterminate'} />
+          <CheckboxIndicator as={Indicator} indeterminate={checked === 'indeterminate'} />
         </Checkbox>
       </p>
 
@@ -85,7 +85,7 @@ export const WithinForm = () => {
       <p>checked: {String(checked)}</p>
 
       <Checkbox as={StyledRoot}>
-        <Checkbox.Indicator as={Indicator} />
+        <CheckboxIndicator as={Indicator} />
       </Checkbox>
     </form>
   );
