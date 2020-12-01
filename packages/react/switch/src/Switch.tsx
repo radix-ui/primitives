@@ -106,6 +106,8 @@ const Switch = forwardRefWithAs<typeof SWITCH_DEFAULT_TAG, SwitchOwnProps>(
   }
 );
 
+Switch.displayName = SWITCH_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * SwitchThumb
  * -----------------------------------------------------------------------------------------------*/
@@ -126,13 +128,12 @@ const SwitchThumb = forwardRefWithAs<typeof THUMB_DEFAULT_TAG>((props, forwarded
   );
 });
 
+SwitchThumb.displayName = THUMB_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
-
-Switch.displayName = SWITCH_NAME;
-SwitchThumb.displayName = THUMB_NAME;
 
 export { Switch, SwitchThumb };
