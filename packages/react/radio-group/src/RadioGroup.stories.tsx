@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Label as LabelPrimitive } from '@interop-ui/react-label';
-import { RadioGroup } from './RadioGroup';
+import { RadioGroup, RadioGroupItem, RadioGroupIndicator } from './RadioGroup';
 import { styled } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 
@@ -11,21 +11,21 @@ export const Styled = () => (
     Favourite pet
     <RadioGroup as={StyledRoot} defaultValue="1">
       <Label>
-        <RadioGroup.Item as={StyledItem} value="1">
-          <RadioGroup.Indicator as={StyledIndicator} />
-        </RadioGroup.Item>
+        <RadioGroupItem as={StyledItem} value="1">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
         Cat
       </Label>{' '}
       <Label>
-        <RadioGroup.Item as={StyledItem} value="2">
-          <RadioGroup.Indicator as={StyledIndicator} />
-        </RadioGroup.Item>
+        <RadioGroupItem as={StyledItem} value="2">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
         Dog
       </Label>{' '}
       <Label>
-        <RadioGroup.Item as={StyledItem} value="3">
-          <RadioGroup.Indicator as={StyledIndicator} />
-        </RadioGroup.Item>
+        <RadioGroupItem as={StyledItem} value="3">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
         Rabbit
       </Label>
     </RadioGroup>
@@ -41,15 +41,15 @@ export const Controlled = () => {
       value={value}
       onValueChange={(event: React.ChangeEvent<HTMLInputElement>) => setValue(event.target.value)}
     >
-      <RadioGroup.Item as={StyledItem} value="1">
-        <RadioGroup.Indicator as={StyledIndicator} />
-      </RadioGroup.Item>
-      <RadioGroup.Item as={StyledItem} value="2">
-        <RadioGroup.Indicator as={StyledIndicator} />
-      </RadioGroup.Item>
-      <RadioGroup.Item as={StyledItem} value="3">
-        <RadioGroup.Indicator as={StyledIndicator} />
-      </RadioGroup.Item>
+      <RadioGroupItem as={StyledItem} value="1">
+        <RadioGroupIndicator as={StyledIndicator} />
+      </RadioGroupItem>
+      <RadioGroupItem as={StyledItem} value="2">
+        <RadioGroupIndicator as={StyledIndicator} />
+      </RadioGroupItem>
+      <RadioGroupItem as={StyledItem} value="3">
+        <RadioGroupIndicator as={StyledIndicator} />
+      </RadioGroupItem>
     </RadioGroup>
   );
 };
@@ -59,21 +59,21 @@ export const Unset = () => (
     Favourite pet
     <RadioGroup as={StyledRoot}>
       <Label>
-        <RadioGroup.Item as={StyledItem} value="1">
-          <RadioGroup.Indicator as={StyledIndicator} />
-        </RadioGroup.Item>
+        <RadioGroupItem as={StyledItem} value="1">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
         Cat
       </Label>{' '}
       <Label>
-        <RadioGroup.Item as={StyledItem} value="2" disabled>
-          <RadioGroup.Indicator as={StyledIndicator} />
-        </RadioGroup.Item>
+        <RadioGroupItem as={StyledItem} value="2" disabled>
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
         Dog
       </Label>{' '}
       <Label>
-        <RadioGroup.Item as={StyledItem} value="3">
-          <RadioGroup.Indicator as={StyledIndicator} />
-        </RadioGroup.Item>
+        <RadioGroupItem as={StyledItem} value="3">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
         Rabbit
       </Label>
     </RadioGroup>

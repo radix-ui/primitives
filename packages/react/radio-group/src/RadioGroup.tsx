@@ -2,15 +2,14 @@ import * as React from 'react';
 import {
   composeEventHandlers,
   createContext,
-  forwardRef,
   useCallbackRef,
   useControlledState,
   useComposedRefs,
 } from '@interop-ui/react-utils';
-import { Radio } from './Radio';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { Radio, RadioIndicator } from './Radio';
 import { useLabelContext } from '@interop-ui/react-label';
 
-import type { RadioProps } from './Radio';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
 
@@ -20,14 +19,12 @@ import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus
 const RADIO_GROUP_NAME = 'RadioGroup';
 const RADIO_GROUP_DEFAULT_TAG = 'div';
 
-type RadioGroupDOMProps = React.ComponentPropsWithoutRef<typeof RADIO_GROUP_DEFAULT_TAG>;
 type RadioGroupOwnProps = {
   value?: string;
   defaultValue?: string;
-  required?: RadioProps['required'];
+  required?: React.ComponentProps<typeof Radio>['required'];
   onValueChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
-type RadioGroupProps = Omit<RadioGroupDOMProps, 'onChange'> & RadioGroupOwnProps;
 
 type RadioGroupContextValue = {
   value: RadioGroupOwnProps['value'];
@@ -40,66 +37,65 @@ const [RadioGroupContext, useRadioGroupContext] = createContext<RadioGroupContex
   RADIO_GROUP_NAME
 );
 
-const RadioGroup = forwardRef<
-  typeof RADIO_GROUP_DEFAULT_TAG,
-  RadioGroupProps,
-  RadioGroupStaticProps
->(function RagioGroup(props, forwardedRef) {
-  const {
-    as: Comp = RADIO_GROUP_DEFAULT_TAG,
-    'aria-labelledby': ariaLabelledby,
-    defaultValue,
-    children,
-    value: valueProp,
-    required,
-    onValueChange,
-    ...groupProps
-  } = props;
-  const labelId = useLabelContext();
-  const labelledBy = ariaLabelledby || labelId;
-  const handleValueChange = useCallbackRef(onValueChange);
-  const [value, setValue] = useControlledState({
-    prop: valueProp,
-    defaultProp: defaultValue,
-  });
-
-  const context = React.useMemo(
-    () => ({
-      value,
+const RadioGroup = forwardRefWithAs<typeof RADIO_GROUP_DEFAULT_TAG, RadioGroupOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = RADIO_GROUP_DEFAULT_TAG,
+      'aria-labelledby': ariaLabelledby,
+      defaultValue,
+      children,
+      value: valueProp,
       required,
-      onValueChange: composeEventHandlers(handleValueChange, (event) => {
-        setValue(event.target.value);
-      }),
-    }),
-    [value, required, handleValueChange, setValue]
-  );
+      onValueChange,
+      ...groupProps
+    } = props;
+    const labelId = useLabelContext();
+    const labelledBy = ariaLabelledby || labelId;
+    const handleValueChange = useCallbackRef(onValueChange);
+    const [value, setValue] = useControlledState({
+      prop: valueProp,
+      defaultProp: defaultValue,
+    });
 
-  return (
-    <Comp
-      {...groupProps}
-      {...getPartDataAttrObj(RADIO_GROUP_NAME)}
-      ref={forwardedRef}
-      role="radiogroup"
-      aria-labelledby={labelledBy}
-    >
-      <RadioGroupContext.Provider value={context}>
-        <RovingFocusGroup loop>{children}</RovingFocusGroup>
-      </RadioGroupContext.Provider>
-    </Comp>
-  );
-});
+    const context = React.useMemo(
+      () => ({
+        value,
+        required,
+        onValueChange: composeEventHandlers(handleValueChange, (event) => {
+          setValue(event.target.value);
+        }),
+      }),
+      [value, required, handleValueChange, setValue]
+    );
+
+    return (
+      <Comp
+        {...groupProps}
+        {...getPartDataAttrObj(RADIO_GROUP_NAME)}
+        ref={forwardedRef}
+        role="radiogroup"
+        aria-labelledby={labelledBy}
+      >
+        <RadioGroupContext.Provider value={context}>
+          <RovingFocusGroup loop>{children}</RovingFocusGroup>
+        </RadioGroupContext.Provider>
+      </Comp>
+    );
+  }
+);
+
+RadioGroup.displayName = RADIO_GROUP_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroupItem
  * -----------------------------------------------------------------------------------------------*/
 
-const ITEM_NAME = 'RadioGroup.Item';
-const ITEM_DEFAULT_TAG = 'button';
+const ITEM_NAME = 'RadioGroupItem';
 
-type RadioGroupItemProps = Omit<RadioProps, 'value' | 'as'> & { value: string };
+type RadioGroupItemOwnProps = { value: string };
 
-const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
-  function RadioGroupItem(props, forwardedRef) {
+const RadioGroupItem = forwardRefWithAs<typeof Radio, RadioGroupItemOwnProps>(
+  (props, forwardedRef) => {
     const { as, disabled, required, ...itemProps } = props;
     const context = useRadioGroupContext(ITEM_NAME);
     const radioRef = React.useRef<React.ElementRef<typeof Radio>>(null);
@@ -147,19 +143,20 @@ const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
   }
 );
 
+RadioGroupItem.displayName = ITEM_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * RadioGroupIndicator
+ * -----------------------------------------------------------------------------------------------*/
+
+const INDICATOR_NAME = 'RadioGroupIndicator';
+
+const RadioGroupIndicator = forwardRefWithAs<typeof RadioIndicator>((props, forwardedRef) => {
+  return <RadioIndicator {...props} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
+});
+
+RadioGroupIndicator.displayName = INDICATOR_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
-RadioGroup.Item = RadioGroupItem;
-RadioGroup.Indicator = Radio.Indicator;
-
-RadioGroup.displayName = RADIO_GROUP_NAME;
-RadioGroup.Item.displayName = ITEM_NAME;
-RadioGroup.Indicator.displayName = 'RadioGroup.Indicator';
-
-interface RadioGroupStaticProps {
-  Item: typeof RadioGroupItem;
-  Indicator: typeof Radio.Indicator;
-}
-
-export { RadioGroup };
-export type { RadioGroupProps, RadioGroupItemProps };
+export { RadioGroup, RadioGroupItem, RadioGroupIndicator };

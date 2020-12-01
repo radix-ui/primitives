@@ -2,10 +2,10 @@ import * as React from 'react';
 import {
   createContext,
   composeEventHandlers,
-  forwardRef,
   useControlledState,
   useComposedRefs,
 } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { useLabelContext } from '@interop-ui/react-label';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
@@ -17,22 +17,18 @@ const RADIO_NAME = 'Radio';
 const RADIO_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
-type RadioDOMProps = React.ComponentPropsWithoutRef<typeof RADIO_DEFAULT_TAG>;
 type RadioOwnProps = {
   checked?: boolean;
   defaultChecked?: boolean;
   required?: InputDOMProps['required'];
   readOnly?: InputDOMProps['readOnly'];
   onCheckedChange?: InputDOMProps['onChange'];
+  onChange?: never;
 };
-type RadioProps = RadioOwnProps & Omit<RadioDOMProps, keyof RadioOwnProps | 'onChange'>;
 
 const [RadioContext, useRadioContext] = createContext<boolean>(RADIO_NAME + 'Context', RADIO_NAME);
 
-const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioProps, RadioStaticProps>(function Radio(
-  props,
-  forwardedRef
-) {
+const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = RADIO_DEFAULT_TAG,
     'aria-labelledby': ariaLabelledby,
@@ -104,32 +100,30 @@ const Radio = forwardRef<typeof RADIO_DEFAULT_TAG, RadioProps, RadioStaticProps>
   );
 });
 
+Radio.displayName = RADIO_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * RadioIndicator
  * -----------------------------------------------------------------------------------------------*/
 
-const INDICATOR_NAME = 'Radio.Indicator';
+const INDICATOR_NAME = 'RadioIndicator';
 const INDICATOR_DEFAULT_TAG = 'span';
 
-type RadioIndicatorDOMProps = React.ComponentPropsWithoutRef<typeof INDICATOR_DEFAULT_TAG>;
-type RadioIndicatorOwnProps = {};
-type RadioIndicatorProps = RadioIndicatorDOMProps & RadioIndicatorOwnProps;
+const RadioIndicator = forwardRefWithAs<typeof RadioIndicatorImpl>((props, forwardedRef) => {
+  const checked = useRadioContext(INDICATOR_NAME);
+  return checked ? (
+    <RadioIndicatorImpl {...props} data-state={getState(checked)} ref={forwardedRef} />
+  ) : null;
+});
 
-const RadioIndicator = forwardRef<typeof INDICATOR_DEFAULT_TAG, RadioIndicatorProps>(
-  function RadioIndicator(props, forwardedRef) {
-    const checked = useRadioContext(INDICATOR_NAME);
-    return checked ? (
-      <RadioIndicatorImpl {...props} data-state={getState(checked)} ref={forwardedRef} />
-    ) : null;
-  }
-);
-
-const RadioIndicatorImpl = forwardRef<typeof INDICATOR_DEFAULT_TAG, RadioIndicatorProps>(
+const RadioIndicatorImpl = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
   function RadioIndicatorImpl(props, forwardedRef) {
     const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
     return <Comp {...indicatorProps} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
   }
 );
+
+RadioIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -137,14 +131,4 @@ function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
 
-Radio.Indicator = RadioIndicator;
-
-Radio.displayName = RADIO_NAME;
-Radio.Indicator.displayName = INDICATOR_NAME;
-
-interface RadioStaticProps {
-  Indicator: typeof RadioIndicator;
-}
-
-export { Radio };
-export type { RadioProps, RadioIndicatorProps };
+export { Radio, RadioIndicator };
