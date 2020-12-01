@@ -42,14 +42,14 @@ const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
 
 const DIALOG_NAME = 'Dialog';
 
-type DialogProps = {
+type DialogOwnProps = {
   id?: string;
   isOpen?: boolean;
   defaultIsOpen?: boolean;
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
-const Dialog: React.FC<DialogProps> = (props) => {
+const Dialog: React.FC<DialogOwnProps> = (props) => {
   const { children, id: idProp, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const generatedId = makeId('dialog', useId());
