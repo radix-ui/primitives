@@ -12,21 +12,17 @@ const PROGRESS_DEFAULT_TAG = 'div';
 const DEFAULT_MAX = 100;
 
 type ProgressBarState = 'indeterminate' | 'complete' | 'loading';
+type ProgressBarContextValue = { value: number | null; max: number };
+const [ProgressBarContext, useProgressBarContext] = createContext<ProgressBarContextValue>(
+  PROGRESS_NAME + 'Context',
+  PROGRESS_NAME
+);
+
 type ProgressBarOwnProps = {
   value?: number | null | undefined;
   max?: number;
   getValueLabel?(value: number, max: number): string;
 };
-
-type ProgressBarContextValue = {
-  value: number | null;
-  max: number;
-};
-
-const [ProgressBarContext, useProgressBarContext] = createContext<ProgressBarContextValue>(
-  PROGRESS_NAME + 'Context',
-  PROGRESS_NAME
-);
 
 const ProgressBar = forwardRefWithAs<typeof PROGRESS_DEFAULT_TAG, ProgressBarOwnProps>(
   (props, forwardedRef) => {
@@ -41,9 +37,7 @@ const ProgressBar = forwardRefWithAs<typeof PROGRESS_DEFAULT_TAG, ProgressBarOwn
 
     const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
     const value = isValidValueNumber(valueProp, max) ? valueProp : null;
-
     const ctx: ProgressBarContextValue = React.useMemo(() => ({ value, max }), [value, max]);
-
     const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
 
     return (
