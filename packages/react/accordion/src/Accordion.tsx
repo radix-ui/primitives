@@ -80,6 +80,8 @@ const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps
   }
 );
 
+AccordionItem.displayName = ITEM_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * AccordionHeader
  * -----------------------------------------------------------------------------------------------*/
@@ -95,6 +97,8 @@ const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG, AccordionHea
     return <Comp ref={forwardedRef} {...headerProps} {...getPartDataAttrObj(HEADER_NAME)} />;
   }
 );
+
+AccordionHeader.displayName = HEADER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AccordionButton
@@ -138,6 +142,8 @@ const AccordionButton = forwardRefWithAs<typeof CollapsibleButton, AccordionButt
   }
 );
 
+AccordionButton.displayName = BUTTON_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * AccordionPanel
  * -----------------------------------------------------------------------------------------------*/
@@ -160,6 +166,8 @@ const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent, AccordionPane
     );
   }
 );
+
+AccordionPanel.displayName = PANEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * Accordion
@@ -261,16 +269,12 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
   }
 );
 
+Accordion.displayName = ACCORDION_NAME;
+
 /* -----------------------------------------------------------------------------------------------*/
 
 function isButton(element: HTMLElement): element is HTMLButtonElement {
   return element instanceof HTMLButtonElement;
 }
-
-Accordion.displayName = ACCORDION_NAME;
-AccordionItem.displayName = ITEM_NAME;
-AccordionHeader.displayName = HEADER_NAME;
-AccordionButton.displayName = BUTTON_NAME;
-AccordionPanel.displayName = PANEL_NAME;
 
 export { Accordion, AccordionItem, AccordionHeader, AccordionButton, AccordionPanel };

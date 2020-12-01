@@ -78,6 +78,8 @@ const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, Collapsible
   }
 );
 
+Collapsible.displayName = COLLAPSIBLE_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * CollapsibleButton
  * -----------------------------------------------------------------------------------------------*/
@@ -102,6 +104,8 @@ const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG>((props, fo
     />
   );
 });
+
+CollapsibleButton.displayName = BUTTON_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * CollapsibleContent
@@ -133,14 +137,12 @@ const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, 
   );
 });
 
+CollapsibleContent.displayName = CONTENT_NAME;
+
 /* -----------------------------------------------------------------------------------------------*/
 
 function getState(isOpen?: boolean) {
   return isOpen ? 'open' : 'closed';
 }
-
-Collapsible.displayName = COLLAPSIBLE_NAME;
-CollapsibleButton.displayName = BUTTON_NAME;
-CollapsibleContent.displayName = CONTENT_NAME;
 
 export { Collapsible, CollapsibleButton, CollapsibleContent };
