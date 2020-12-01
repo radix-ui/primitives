@@ -1,5 +1,15 @@
 import * as React from 'react';
-import { Menu, MenuItem, MenuGroup, MenuLabel, MenuSeparator } from './Menu';
+import {
+  Menu,
+  MenuGroup,
+  MenuLabel,
+  MenuItem,
+  MenuCheckboxItem,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuItemIndicator,
+  MenuSeparator,
+} from './Menu';
 import { styled } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 
@@ -126,75 +136,75 @@ export const Typeahead = () => (
 
 export const CheckboxItem = () => (
   <Menu as={StyledRoot}>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('show')}>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
       Show fonts
-    </Menu.Item>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('bigger')}>
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('bigger')}>
       Bigger
-    </Menu.Item>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('smaller')}>
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
       Smaller
-    </Menu.Item>
-    <Menu.Separator as={StyledSeparator} />
-    <Menu.CheckboxItem as={StyledItem} value="bold" onCheckedChange={console.log}>
+    </MenuItem>
+    <MenuSeparator as={StyledSeparator} />
+    <MenuCheckboxItem as={StyledItem} value="bold" onCheckedChange={console.log}>
       Bold
-      <Menu.ItemIndicator>
+      <MenuItemIndicator>
         <TickIcon />
-      </Menu.ItemIndicator>
-    </Menu.CheckboxItem>
-    <Menu.CheckboxItem as={StyledItem} value="italic" defaultChecked>
+      </MenuItemIndicator>
+    </MenuCheckboxItem>
+    <MenuCheckboxItem as={StyledItem} value="italic" defaultChecked>
       Italic
-      <Menu.ItemIndicator>
+      <MenuItemIndicator>
         <TickIcon />
-      </Menu.ItemIndicator>
-    </Menu.CheckboxItem>
-    <Menu.CheckboxItem as={StyledItem} value="underline">
+      </MenuItemIndicator>
+    </MenuCheckboxItem>
+    <MenuCheckboxItem as={StyledItem} value="underline">
       Underline
-      <Menu.ItemIndicator>
+      <MenuItemIndicator>
         <TickIcon />
-      </Menu.ItemIndicator>
-    </Menu.CheckboxItem>
-    <Menu.CheckboxItem as={StyledItem} value="strikethrough" disabled>
+      </MenuItemIndicator>
+    </MenuCheckboxItem>
+    <MenuCheckboxItem as={StyledItem} value="strikethrough" disabled>
       Strikethrough
-      <Menu.ItemIndicator>
+      <MenuItemIndicator>
         <TickIcon />
-      </Menu.ItemIndicator>
-    </Menu.CheckboxItem>
+      </MenuItemIndicator>
+    </MenuCheckboxItem>
   </Menu>
 );
 
 export const RadioItems = () => (
   <Menu as={StyledRoot}>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('minimize')}>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
       Minimize window
-    </Menu.Item>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('zoom')}>
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('zoom')}>
       Zoom
-    </Menu.Item>
-    <Menu.Item as={StyledItem} onSelect={() => window.alert('smaller')}>
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
       Smaller
-    </Menu.Item>
-    <Menu.Separator as={StyledSeparator} />
-    <Menu.RadioGroup defaultValue="index.js">
-      <Menu.RadioItem as={StyledItem} value="readme.md">
+    </MenuItem>
+    <MenuSeparator as={StyledSeparator} />
+    <MenuRadioGroup defaultValue="index.js">
+      <MenuRadioItem as={StyledItem} value="readme.md">
         README.md
-        <Menu.ItemIndicator>
+        <MenuItemIndicator>
           <TickIcon />
-        </Menu.ItemIndicator>
-      </Menu.RadioItem>
-      <Menu.RadioItem as={StyledItem} value="index.js">
+        </MenuItemIndicator>
+      </MenuRadioItem>
+      <MenuRadioItem as={StyledItem} value="index.js">
         index.js
-        <Menu.ItemIndicator>
+        <MenuItemIndicator>
           <TickIcon />
-        </Menu.ItemIndicator>
-      </Menu.RadioItem>
-      <Menu.RadioItem as={StyledItem} value="page.css">
+        </MenuItemIndicator>
+      </MenuRadioItem>
+      <MenuRadioItem as={StyledItem} value="page.css">
         page.css
-        <Menu.ItemIndicator>
+        <MenuItemIndicator>
           <TickIcon />
-        </Menu.ItemIndicator>
-      </Menu.RadioItem>
-    </Menu.RadioGroup>
+        </MenuItemIndicator>
+      </MenuRadioItem>
+    </MenuRadioGroup>
   </Menu>
 );
 
