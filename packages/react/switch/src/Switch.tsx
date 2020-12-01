@@ -23,6 +23,7 @@ type SwitchOwnProps = {
   required?: InputDOMProps['required'];
   readOnly?: InputDOMProps['readOnly'];
   onCheckedChange?: InputDOMProps['onChange'];
+  onChange?: never;
 };
 
 const [SwitchContext, useSwitchContext] = createContext<boolean>(
