@@ -1,0 +1,52 @@
+export default ({ frontMatter, ...props }) => <div {...props} />;
+
+For full documentation and guides to styling with Styled Components, visit the [Styled Components documentation](https://styled-components.com/).
+
+Install `styled-components` in your project:
+
+```bash
+npm i styled-components
+# or
+yarn add styled-components
+```
+
+Then import `styled` from `styled-components`:
+
+```js
+import { styled } from 'styled-components';
+```
+
+Create your styled slider components:
+
+```js
+// outer container styles
+const StyledSlider = styled.div`
+  /* */
+`;
+
+// track styles
+const StyledSliderTrack = styled.div`
+  /* */
+`;
+
+// range styles
+const StyledSliderRange = styled.div`
+  /* */
+`;
+
+// thumb styles
+const StyledSliderThumb = styled.div`
+  /* */
+`;
+```
+
+Pass the styled components into the relevant primitive via the `as` prop:
+
+```js
+<Slider defaultValue={10} as={StyledSlider}>
+  <Slider.Track as={StyledSliderTrack}>
+    <Slider.Range as={StyledSliderRange} />
+  </Slider.Track>
+  <Slider.Thumb as={StyledSliderThumb} />
+</Slider>
+```

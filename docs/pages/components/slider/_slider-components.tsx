@@ -4,6 +4,12 @@ import { Code, KeyboardInteractionTable } from '../../../components/pageComponen
 import { PropsTable, PropDef } from '../../../components/PropsTable';
 import { Details, Summary } from '../../../components/Details';
 import SliderPropsDefaultValue from './_slider-props-default-value.mdx';
+import SliderPropsDir from './_slider-props-dir.mdx';
+import SliderPropsDisabled from './_slider-props-disabled.mdx';
+import SliderPropsMax from './_slider-props-max.mdx';
+import SliderPropsMin from './_slider-props-min.mdx';
+import SliderPropsName from './_slider-props-name.mdx';
+import SliderPropsOrientation from './_slider-props-orientation.mdx';
 import {
   RadioGroup,
   RadioGroupLabel,
@@ -119,15 +125,88 @@ export const sliderProps: PropDef[] = [
     type: 'number',
     sectionContent: <SliderPropsDefaultValue />,
   },
+  {
+    name: 'name',
+    isRequired: false,
+    type: 'string',
+    sectionContent: <SliderPropsName />,
+  },
+  {
+    name: 'disabled',
+    isRequired: false,
+    type: 'boolean',
+    defaultValue: 'false',
+    sectionContent: <SliderPropsDisabled />,
+  },
+  {
+    name: 'orientation',
+    isRequired: false,
+    type: '"horizontal" | "vertical"',
+    typeSimple: 'enum',
+    defaultValue: '"horizontal"',
+    sectionContent: <SliderPropsOrientation />,
+  },
+  {
+    name: 'dir',
+    isRequired: false,
+    type: '"ltr" | "rtl"',
+    typeSimple: 'enum',
+    defaultValue: '"ltr"',
+    sectionContent: <SliderPropsDir />,
+  },
+  {
+    name: 'min',
+    isRequired: false,
+    type: 'number',
+    defaultValue: '0',
+    sectionContent: <SliderPropsMin />,
+  },
+  {
+    name: 'max',
+    isRequired: false,
+    type: 'number',
+    defaultValue: '100',
+    sectionContent: <SliderPropsMax />,
+  },
 ];
 
-export function SliderPropsSections() {
+export const sliderTrackProps: PropDef[] = [
+  // {
+  //   name: 'defaultValue',
+  //   isRequired: false,
+  //   type: 'number',
+  //   sectionContent: <SliderPropsDefaultValue />,
+  // },
+];
+
+export const sliderRangeProps: PropDef[] = [
+  // {
+  //   name: 'defaultValue',
+  //   isRequired: false,
+  //   type: 'number',
+  //   sectionContent: <SliderPropsDefaultValue />,
+  // },
+];
+
+export const sliderThumbProps: PropDef[] = [
+  // {
+  //   name: 'defaultValue',
+  //   isRequired: false,
+  //   type: 'number',
+  //   sectionContent: <SliderPropsDefaultValue />,
+  // },
+];
+
+export function PropDefSections(props: { propDefs: PropDef[]; componentName: string }) {
+  const { propDefs, componentName } = props;
   return (
     <React.Fragment>
-      {sliderProps.map((propDef) => (
+      {propDefs.map((propDef) => (
         <Details key={propDef.name}>
           <Summary>
-            <Code>Slider {propDef.name}</Code>
+            <Code>
+              {componentName} {propDef.name}
+            </Code>
           </Summary>
           <p>
             <Text size={3} weight="medium" as="span">
@@ -145,4 +224,16 @@ export function SliderPropsSections() {
 
 export function SliderProps() {
   return <PropsTable componentName="Slider" propDefs={sliderProps} />;
+}
+
+export function SliderTrackProps() {
+  return <PropsTable componentName="SliderTrack" propDefs={sliderTrackProps} />;
+}
+
+export function SliderRangeProps() {
+  return <PropsTable componentName="SliderRange" propDefs={sliderRangeProps} />;
+}
+
+export function SliderThumbProps() {
+  return <PropsTable componentName="SliderThumb" propDefs={sliderThumbProps} />;
 }

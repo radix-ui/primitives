@@ -1,0 +1,25 @@
+export default ({ frontMatter, ...props }) => <React.Fragment {...props} />;
+
+If `Slider` is used to hold a value within a form, the `name` prop should be used to identify its value in form submissions.
+
+```jsx
+// live
+function MyForm() {
+  function handleSubmit(event) {
+    event.preventDefault();
+    window.alert(`The value is ${event.target.elements[0].value}`);
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Slider name="cool-slider" defaultValue={10}>
+        <Slider.Track>
+          <Slider.Range />
+        </Slider.Track>
+        <Slider.Thumb />
+      </Slider>
+      <button>Submit</button>
+    </form>
+  );
+}
+```

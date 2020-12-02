@@ -6,6 +6,7 @@ import { Box, theme as radixTheme, Badge } from '@modulz/radix';
 import * as RI from '@modulz/radix-icons';
 import * as Collapsible from '@interop-ui/react-collapsible';
 import { Slider } from './baseStyledPrimitives';
+import { ErrorBoundary } from './ErrorBoundary';
 
 const EDITOR_CLASSNAME = 'react-live-code-block';
 const EDITOR_STYLES: CSS.Properties = {
@@ -273,50 +274,52 @@ function LiveCodeBlock({
   }, []);
 
   return (
-    <Box ref={boxRef}>
-      <LiveProvider
-        scope={componentsExposedToCodeBlock}
-        noInline={noInline}
-        theme={theme}
-        code={code}
-        transformCode={renderArg ? (c) => `${c}\nrender(${renderArg})` : undefined}
-      >
-        <LivePreview
-          style={{
-            padding: radixTheme.space[3],
-            border: `1px solid ${radixTheme.colors.gray300}`,
-            borderTopLeftRadius: radixTheme.radii[2],
-            borderTopRightRadius: radixTheme.radii[2],
-          }}
-        />
-
-        <Box
-          sx={{
-            position: 'relative',
-            '&:focus,&:focus-within': {
-              outline: 0,
-              boxShadow: `0 0 0 3px ${radixTheme.colors.blue400}`,
-            },
-          }}
+    <ErrorBoundary>
+      <Box ref={boxRef}>
+        <LiveProvider
+          scope={componentsExposedToCodeBlock}
+          noInline={noInline}
+          theme={theme}
+          code={code}
+          transformCode={renderArg ? (c) => `${c}\nrender(${renderArg})` : undefined}
         >
-          <LiveEditorKeyboardInstructionBadge state={liveEditorState} />
-          <LiveEditor
-            data-live-code-block=""
-            tabIndex={0}
-            className={EDITOR_CLASSNAME}
-            role="region"
-            aria-label="Live code area. Press Enter or Space to edit the code. When editing, press Escape to return to the page context."
+          <LivePreview
             style={{
-              ...EDITOR_STYLES,
-              borderTop: 'none',
-              borderTopLeftRadius: 0,
-              borderTopRightRadius: 0,
+              padding: radixTheme.space[3],
+              border: `1px solid ${radixTheme.colors.gray300}`,
+              borderTopLeftRadius: radixTheme.radii[2],
+              borderTopRightRadius: radixTheme.radii[2],
             }}
           />
-        </Box>
-        {process.env.NODE_ENV === 'development' ? <LiveError /> : null}
-      </LiveProvider>
-    </Box>
+
+          <Box
+            sx={{
+              position: 'relative',
+              '&:focus,&:focus-within': {
+                outline: 0,
+                boxShadow: `0 0 0 3px ${radixTheme.colors.blue400}`,
+              },
+            }}
+          >
+            <LiveEditorKeyboardInstructionBadge state={liveEditorState} />
+            <LiveEditor
+              data-live-code-block=""
+              tabIndex={0}
+              className={EDITOR_CLASSNAME}
+              role="region"
+              aria-label="Live code area. Press Enter or Space to edit the code. When editing, press Escape to return to the page context."
+              style={{
+                ...EDITOR_STYLES,
+                borderTop: 'none',
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0,
+              }}
+            />
+          </Box>
+          {process.env.NODE_ENV === 'development' ? <LiveError /> : null}
+        </LiveProvider>
+      </Box>
+    </ErrorBoundary>
   );
 }
 

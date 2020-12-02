@@ -10,10 +10,18 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel } from '../../../components/Tab
 import {
   KeyboardInteractions,
   SliderProps,
+  SliderTrackProps,
+  SliderRangeProps,
+  SliderThumbProps,
+  PropDefSections,
   sliderProps,
-  SliderPropsSections,
+  sliderTrackProps,
+  sliderRangeProps,
+  sliderThumbProps,
 } from './_slider-components';
 import StylingCSS from './_slider-styling-css.mdx';
+import StylingStyled from './_slider-styling-styled.mdx';
+import StylingStitches from './_slider-styling-stitches.mdx';
 
 <PackageMeta packageName="react-slider" />
 
@@ -49,14 +57,12 @@ The most basic composition of a `Slider` component is as follows:
 
 The component will work as expected without any additional props or configuration, but if you need access to its state you can control it with the `value` and `onChange` props.
 
-TODO: This isn't currently working. Need to double check controlled API to see what I'm doing wrong.
-
 ```jsx
 // live
 function ControlledSlider() {
   const [value, setValue] = React.useState(10);
   return (
-    <Slider value={10} onChange={(newValue) => setValue(newValue)}>
+    <Slider value={value} onChange={(newValue) => setValue(newValue)}>
       <Slider.Track>
         <Slider.Range />
       </Slider.Track>
@@ -84,20 +90,75 @@ All `Slider` components are unstyled by default. In most cases, each component r
       <StylingCSS />
     </TabPanel>
     <TabPanel id="styling-tabs-stitches">
-      <p>TODO</p>
+      <StylingStitches />
     </TabPanel>
     <TabPanel id="styling-tabs-styled">
-      <p>TODO</p>
+      <StylingStyled />
     </TabPanel>
   </TabPanels>
 </Tabs>
 
 ### Basic style recommendations
 
-TODO
+`Slider` will require some styling to achieve basic functionality. The following recommendations serve as a good base to build on for your component.
 
 ```css
-/* TODO */
+/* outer container styles */
+[data-interop-ui-slider] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+  touch-action: none;
+}
+
+/* styles for horizontal sliders */
+[data-interop-ui-slider][data-orientation='horizontal'] {
+}
+
+/* styles for vertical sliders */
+[data-interop-ui-slider][data-orientation='vertical'] {
+  flex-direction: column;
+}
+
+/* track styles */
+[data-interop-ui-slider-track] {
+  position: relative;
+  flex-grow: 1;
+}
+
+/* range styles */
+[data-interop-ui-slider-range] {
+  position: absolute;
+}
+
+/* styles for horizontal slider range */
+[data-interop-ui-slider-range][data-orientation='horizontal'] {
+  height: 100%;
+}
+
+/* styles for vertical slider range */
+[data-interop-ui-slider-range][data-orientation='vertical'] {
+  width: 100%;
+}
+
+/* thumb styles */
+[data-interop-ui-slider-thumb] {
+  display: block;
+}
+
+/* Add recommended touch target size regardless of styled size */
+[data-interop-ui-slider-thumb]::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: 44px;
+  height: 44px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 ```
 
 ## Animating
@@ -125,7 +186,14 @@ TODO
 
 ## Accessibility
 
-TODO
+- The user can touch or click anywhere on the `Slider` track to activate the thumb and update the value. Regardless of the visible size of the track or thumb, a sufficiently large touch target should exist to help users regardless of input modality. The touch target can be increased by adding invisible pseudo elements to the thumb and/or track to expand the boundaries of the `Slider`'s internal event handlers.
+- The element with the accessible role of `"slider"` is actually the `SliderThumb`, not the `Slider` itself. This is because a `Slider` can have multiple thumbs that actually represent two independent values.
+- The element rendered by `SliderThumb` sets a value for `aria-label` by default that represents the slider's range in a human readable format. This can be overridden by passing `aria-label` directly to `SliderThumb`.
+- The element rendered by `SliderThumb` sets a value for `aria-valuemin` equal to the `min` prop passed to `Slider`.
+- The element rendered by `SliderThumb` sets a value for `aria-valuemax` equal to the `max` prop passed to `Slider`.
+- The element rendered by `SliderThumb` sets a value for `aria-valuenow` equal to the component's current value.
+- The element rendered by `SliderThumb` sets a value for `aria-orientation` equal to the `orientation` prop passed to `Slider`.
+- The `SliderThumb` must be in the document's tab sequence and has a `tabIndex` of `0` by default
 
 ### WAI-ARIA Guidance
 
@@ -151,16 +219,19 @@ TODO
 ### `Slider`
 
 <SliderProps />
-<SliderPropsSections />
+<PropDefSections componentName="Slider" propDefs={sliderProps} />
 
 ### `Slider.Track`
 
-TODO
+<SliderTrackProps />
+<PropDefSections componentName="SliderTrack" propDefs={sliderTrackProps} />
 
 ### `Slider.Range`
 
-TODO
+<SliderRangeProps />
+<PropDefSections componentName="SliderRange" propDefs={sliderRangeProps} />
 
 ### `Slider.Thumb`
 
-TODO
+<SliderThumbProps />
+<PropDefSections componentName="SliderThumb" propDefs={sliderThumbProps} />

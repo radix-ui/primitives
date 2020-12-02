@@ -1,0 +1,69 @@
+export default ({ frontMatter, ...props }) => <div {...props} />;
+
+For full documentation and guides to styling components with Stitches, visit the [Stitches documentation](https://stitches.dev/).
+
+Install `@stitches/react` in your project:
+
+```bash
+npm i @stitches/react
+# or
+yarn add @stitches/react
+```
+
+Then import `createStyled` from `@stitches/react`:
+
+```js
+import { createStyled } from '@stitches/react';
+```
+
+Create your configuration to generate the `styled` and `css` functions:
+
+```js
+export const { styled, css } = createStyled({
+  tokens: {
+    colors: {
+      $white: '#fff',
+      $gray100: '#ccc',
+      $gray300: '#aaa',
+      $black: '#111',
+      $red: 'crimson',
+      $green: 'green',
+    },
+  },
+});
+```
+
+Create your styled slider components:
+
+```js
+// outer container styles
+const StyledSlider = styled('div', {
+  /* */
+});
+
+// track styles
+const StyledSliderTrack = styled('div', {
+  /* */
+});
+
+// range styles
+const StyledSliderRange = styled('div', {
+  /* */
+});
+
+// thumb styles
+const StyledSliderThumb = styled('div', {
+  /* */
+});
+```
+
+Pass the styled components into the relevant primitive via the `as` prop:
+
+```js
+<Slider defaultValue={10} as={StyledSlider}>
+  <Slider.Track as={StyledSliderTrack}>
+    <Slider.Range as={StyledSliderRange} />
+  </Slider.Track>
+  <Slider.Thumb as={StyledSliderThumb} />
+</Slider>
+```

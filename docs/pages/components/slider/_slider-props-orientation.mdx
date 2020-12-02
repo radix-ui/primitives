@@ -1,0 +1,13 @@
+export default ({ frontMatter, ...props }) => <React.Fragment {...props} />;
+
+The `orientation` prop represents the visual orientation of the slider. It also provides assistive technology with the context needed for users to control the slider according to its orientation. If omitted, the slider will be in the horizontal orientation by default.
+
+```jsx
+// live
+<Slider defaultValue={20} orientation="vertical">
+  <Slider.Track>
+    <Slider.Range />
+  </Slider.Track>
+  <Slider.Thumb />
+</Slider>
+```
