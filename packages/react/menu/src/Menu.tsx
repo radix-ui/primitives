@@ -12,6 +12,7 @@ const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 /* -------------------------------------------------------------------------------------------------
  * Menu
  * -----------------------------------------------------------------------------------------------*/
+
 const MENU_NAME = 'Menu';
 const MENU_DEFAULT_TAG = 'div';
 
@@ -83,6 +84,7 @@ Menu.displayName = MENU_NAME;
 /* -------------------------------------------------------------------------------------------------
  * MenuGroup
  * -----------------------------------------------------------------------------------------------*/
+
 const GROUP_NAME = 'MenuGroup';
 const GROUP_DEFAULT_TAG = 'div';
 
@@ -98,6 +100,7 @@ MenuGroup.displayName = GROUP_NAME;
 /* -------------------------------------------------------------------------------------------------
  * MenuLabel
  * -----------------------------------------------------------------------------------------------*/
+
 const LABEL_NAME = 'MenuLabel';
 const LABEL_DEFAULT_TAG = 'div';
 
@@ -111,6 +114,7 @@ MenuLabel.displayName = LABEL_NAME;
 /* -------------------------------------------------------------------------------------------------
  * MenuItem
  * -----------------------------------------------------------------------------------------------*/
+
 const ITEM_NAME = 'MenuItem';
 const ITEM_DEFAULT_TAG = 'div';
 const ENABLED_ITEM_SELECTOR = `[${getPartDataAttr(ITEM_NAME)}]:not([data-disabled])`;
@@ -195,6 +199,7 @@ MenuItem.displayName = ITEM_NAME;
 /* -------------------------------------------------------------------------------------------------
  * MenuCheckboxItem
  * -----------------------------------------------------------------------------------------------*/
+
 const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
 type MenuCheckboxItemOwnProps = {
@@ -240,6 +245,7 @@ MenuCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
 /* -------------------------------------------------------------------------------------------------
  * MenuRadioGroup
  * -----------------------------------------------------------------------------------------------*/
+
 const RADIO_GROUP_NAME = 'MenuRadioGroup';
 
 type ReactStateTuple<T> = readonly [T, React.Dispatch<React.SetStateAction<T>>];
@@ -263,6 +269,7 @@ MenuRadioGroup.displayName = RADIO_GROUP_NAME;
 /* -------------------------------------------------------------------------------------------------
  * MenuRadioItem
  * -----------------------------------------------------------------------------------------------*/
+
 const RADIO_ITEM_NAME = 'MenuRadioItem';
 
 type MenuRadioItemOwnProps = { value: string };
@@ -319,6 +326,7 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 /* -------------------------------------------------------------------------------------------------
  * MenuSeparator
  * -----------------------------------------------------------------------------------------------*/
+
 const SEPARATOR_NAME = 'MenuSeparator';
 const SEPARATOR_DEFAULT_TAG = 'div';
 
