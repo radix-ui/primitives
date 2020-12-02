@@ -1,7 +1,5 @@
 export * from './composeEventHandlers';
 export * from './createContext';
-export * from './forwardRef';
-export * from './memo';
 export * from './useCallbackRef';
 export * from './useComposedRefs';
 export * from './useConstant';
@@ -12,5 +10,3 @@ export * from './useId';
 export * from './useLayoutEffect';
 export * from './usePrevious';
 export * from './useRect';
-
-export * from './types';
