@@ -1,70 +1,72 @@
 import * as React from 'react';
-import { Slider } from './Slider';
+import { Slider, SliderTrack, SliderRange, SliderThumb } from './Slider';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Slider' };
 
 export const Styled = () => (
   <Slider defaultValue={10} as={StyledRoot}>
-    <Slider.Track as={StyledTrack}>
-      <Slider.Range as={StyledRange} />
-    </Slider.Track>
-    <Slider.Thumb as={StyledThumb} />
+    <SliderTrack as={StyledTrack}>
+      <SliderRange as={StyledRange} />
+    </SliderTrack>
+    <SliderThumb as={StyledThumb} />
   </Slider>
 );
 
 export const Horizontal = () => (
   <>
-    {/* @ts-ignore */}
-    <Slider as={StyledRoot} defaultValue={[10, 30]}>
-      <Slider.Track as={StyledTrack}>
-        <Slider.Range as={StyledRange} />
-      </Slider.Track>
-      <Slider.Thumb as={StyledThumb} />
-      <Slider.Thumb as={StyledThumb} />
+    <Slider
+      as={StyledRoot}
+      defaultValue={[10, 30]}
+      minStepsBetweenThumbs={1}
+      onChange={(value) => console.log(value)}
+    >
+      <SliderTrack as={StyledTrack}>
+        <SliderRange as={StyledRange} />
+      </SliderTrack>
+      <SliderThumb as={StyledThumb} />
+      <SliderThumb as={StyledThumb} />
     </Slider>
 
     <br />
 
     <Slider as={StyledRoot} defaultValue={10}>
-      <Slider.Track as={StyledTrack}>
-        <Slider.Range as={StyledRange} />
-      </Slider.Track>
-      <Slider.Thumb as={StyledThumb} />
+      <SliderTrack as={StyledTrack}>
+        <SliderRange as={StyledRange} />
+      </SliderTrack>
+      <SliderThumb as={StyledThumb} />
     </Slider>
   </>
 );
 
 export const Vertical = () => (
   <>
-    {/* @ts-ignore */}
     <Slider as={StyledRoot} defaultValue={[10, 30]} orientation="vertical">
-      <Slider.Track as={StyledTrack}>
-        <Slider.Range as={StyledRange} />
-      </Slider.Track>
-      <Slider.Thumb as={StyledThumb} />
-      <Slider.Thumb as={StyledThumb} />
+      <SliderTrack as={StyledTrack}>
+        <SliderRange as={StyledRange} />
+      </SliderTrack>
+      <SliderThumb as={StyledThumb} />
+      <SliderThumb as={StyledThumb} />
     </Slider>
 
     <br />
 
     <Slider as={StyledRoot} defaultValue={10} orientation="vertical">
-      <Slider.Track as={StyledTrack}>
-        <Slider.Range as={StyledRange} />
-      </Slider.Track>
-      <Slider.Thumb as={StyledThumb} />
+      <SliderTrack as={StyledTrack}>
+        <SliderRange as={StyledRange} />
+      </SliderTrack>
+      <SliderThumb as={StyledThumb} />
     </Slider>
   </>
 );
 
 export const WithMinimumStepsBetweenThumbs = () => (
-  // @ts-ignore
   <Slider as={StyledRoot} defaultValue={[10, 30]} minStepsBetweenThumbs={3}>
-    <Slider.Track as={StyledTrack}>
-      <Slider.Range as={StyledRange} />
-    </Slider.Track>
-    <Slider.Thumb as={StyledThumb} />
-    <Slider.Thumb as={StyledThumb} />
+    <SliderTrack as={StyledTrack}>
+      <SliderRange as={StyledRange} />
+    </SliderTrack>
+    <SliderThumb as={StyledThumb} />
+    <SliderThumb as={StyledThumb} />
   </Slider>
 );
 
@@ -86,19 +88,18 @@ export const WithMultipleRanges = () => {
       <br />
       <br />
 
-      {/* @ts-ignore */}
       <Slider
         as={StyledRoot}
         defaultValue={[10, 15, 20, 80]}
         minStepsBetweenThumbs={minStepsBetweenThumbs}
       >
-        <Slider.Track as={StyledTrack}>
-          <Slider.Range as={StyledRange} />
-        </Slider.Track>
-        <Slider.Thumb as={StyledThumb} />
-        <Slider.Thumb as={StyledThumb} />
-        <Slider.Thumb as={StyledThumb} />
-        <Slider.Thumb as={StyledThumb} />
+        <SliderTrack as={StyledTrack}>
+          <SliderRange as={StyledRange} />
+        </SliderTrack>
+        <SliderThumb as={StyledThumb} />
+        <SliderThumb as={StyledThumb} />
+        <SliderThumb as={StyledThumb} />
+        <SliderThumb as={StyledThumb} />
       </Slider>
     </>
   );

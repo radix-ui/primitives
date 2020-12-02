@@ -14,7 +14,7 @@ type MergeWithDOMProps<E extends React.ElementType, P = {}> = MergeProps<
  * ForwardRefExoticComponentWithAs
  * -----------------------------------------------------------------------------------------------*/
 
-export interface ForwardRefExoticComponentWithAs<
+interface ForwardRefExoticComponentWithAs<
   DefaultElement extends keyof JSX.IntrinsicElements,
   OwnProps
   /**
@@ -56,7 +56,7 @@ export interface ForwardRefExoticComponentWithAs<
 /**
  * Infers the JSX.IntrinsicElement if E is a ForwardRefExoticComponentWithAs
  */
-type Intrinsic<E> = E extends ForwardRefExoticComponentWithAs<infer T, any> ? T : E;
+type IntrinsicElement<E> = E extends ForwardRefExoticComponentWithAs<infer T, any> ? T : E;
 
 /**
  * If E is a ForwardRefExoticComponentWithAs then we know we are trying to forward to
@@ -74,20 +74,23 @@ type ExtendedProps<E, OwnProps> = E extends ForwardRefExoticComponentWithAs<any,
  * @example when extending an existing polymorphic component
  * const Flex = forwardRefWithAs<typeof Box, { direction?: FlexDirection }>()
  */
-export function forwardRefWithAs<
+function forwardRefWithAs<
   E extends keyof JSX.IntrinsicElements | ForwardRefExoticComponentWithAs<any, any>,
   OwnProps = {}
 >(
   component: React.ForwardRefRenderFunction<
-    React.ElementRef<Intrinsic<E>>,
+    React.ElementRef<IntrinsicElement<E>>,
     MergeProps<
-      React.ComponentPropsWithoutRef<Intrinsic<E>>,
-      ExtendedProps<E, OwnProps> & { as?: Intrinsic<E> }
+      React.ComponentPropsWithoutRef<IntrinsicElement<E>>,
+      ExtendedProps<E, OwnProps> & { as?: IntrinsicElement<E> }
     >
   >
 ) {
   return React.forwardRef(component) as ForwardRefExoticComponentWithAs<
-    Intrinsic<E>,
+    IntrinsicElement<E>,
     ExtendedProps<E, OwnProps>
   >;
 }
+
+export { forwardRefWithAs };
+export type { ForwardRefExoticComponentWithAs };

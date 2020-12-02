@@ -3,15 +3,16 @@ import { clamp, getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import {
   composeEventHandlers,
   createContext,
-  forwardRef,
   useComposedRefs,
   useControlledState,
   useCallbackRef,
 } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { createCollection } from '@interop-ui/react-collection';
 import { useSize } from '@interop-ui/react-use-size';
 
 type Direction = 'ltr' | 'rtl';
+
 const PAGE_KEYS = ['PageUp', 'PageDown'];
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
@@ -32,35 +33,6 @@ const SliderCollectionProvider = createSliderCollection((props: { children: Reac
 const SLIDER_NAME = 'Slider';
 const SLIDER_DEFAULT_TAG = 'span';
 
-type SliderDOMProps = Omit<SliderPartDOMProps, 'defaultValue' | 'onChange' | 'dir'>;
-type SliderControlledProps = { value: number; onChange?(value: number): void };
-type SliderUncontrolledProps = { defaultValue: number; onChange?(value: number): void };
-type SliderRangeControlledProps = {
-  value: number[];
-  minStepsBetweenThumbs?: number;
-  onChange?(value: number[]): void;
-};
-type SliderRangeUncontrolledProps = {
-  defaultValue: number[];
-  minStepsBetweenThumbs?: number;
-  onChange?: (value: number[]) => void;
-};
-type SliderOwnProps = {
-  name?: string;
-  disabled?: boolean;
-  orientation?: SliderDOMProps['aria-orientation'];
-  dir?: Direction;
-  min?: number;
-  max?: number;
-  step?: number;
-} & (
-  | SliderControlledProps
-  | SliderUncontrolledProps
-  | SliderRangeControlledProps
-  | SliderRangeUncontrolledProps
-);
-type SliderProps = SliderDOMProps & SliderOwnProps;
-
 type SliderContextValue = {
   min: number;
   max: number;
@@ -75,8 +47,30 @@ const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
   SLIDER_NAME
 );
 
-const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticProps>(
-  function Slider(props, forwardedRef) {
+type SliderSingleThumbProps = {
+  value?: number;
+  defaultValue?: number;
+};
+
+type SliderMultiThumbProps = {
+  minStepsBetweenThumbs?: number;
+  value?: number[];
+  defaultValue?: number[];
+};
+
+type SliderOwnProps = {
+  name?: string;
+  disabled?: boolean;
+  orientation?: React.AriaAttributes['aria-orientation'];
+  dir?: Direction;
+  min?: number;
+  max?: number;
+  step?: number;
+  onChange?(value: number | number[]): void;
+} & (SliderSingleThumbProps | SliderMultiThumbProps);
+
+const Slider = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>(
+  (props, forwardedRef) => {
     const {
       children,
       name,
@@ -85,23 +79,11 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
       step: stepProp = 1,
       orientation = 'horizontal',
       disabled = false,
+      defaultValue,
+      value,
       onChange = () => {},
       ...restProps
     } = props;
-
-    const { defaultValue } = props as SliderUncontrolledProps | SliderRangeUncontrolledProps;
-    const { value } = props as SliderControlledProps | SliderRangeControlledProps;
-    const { minStepsBetweenThumbs = 0 } = props as
-      | SliderRangeControlledProps
-      | SliderRangeUncontrolledProps;
-
-    const sliderProps = { ...restProps } as SliderDOMProps;
-    // @ts-ignore
-    delete sliderProps.defaultValue;
-    // @ts-ignore
-    delete sliderProps.value;
-    // @ts-ignore
-    delete sliderProps.minStepsBetweenThumbs;
 
     const step = Math.max(stepProp, 1);
     const sliderRef = React.useRef<HTMLSpanElement>(null);
@@ -111,16 +93,19 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
+    const { minStepsBetweenThumbs = 0 } = restProps as SliderMultiThumbProps;
+    const sliderProps = restProps as SliderSingleThumbProps;
+    // @ts-ignore
+    delete sliderProps.minStepsBetweenThumbs;
+
     const [values = [], setValues] = useControlledState({
       prop: value === undefined ? undefined : toArray(value),
       defaultProp: defaultValue === undefined ? undefined : toArray(defaultValue),
       onChange: (values) => {
         if (Array.isArray(value || defaultValue)) {
-          const onRangeChange = onChange as SliderRangeControlledProps['onChange'];
-          onRangeChange?.(values);
+          onChange(values);
         } else {
-          const onValueChange = onChange as SliderControlledProps['onChange'];
-          onValueChange?.(values[0]);
+          onChange(values[0]);
         }
       },
     });
@@ -230,6 +215,8 @@ const Slider = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderProps, SliderStaticPr
   }
 );
 
+Slider.displayName = SLIDER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * SliderHorizontal
  * -----------------------------------------------------------------------------------------------*/
@@ -240,7 +227,7 @@ const SliderOrientationContext = React.createContext<{
   size: keyof NonNullable<ReturnType<typeof useSize>>;
 }>({} as any);
 
-type SliderOrientationProps = SliderPartDOMProps & {
+type SliderOrientationOwnProps = {
   min: number;
   max: number;
   onSlideStart?(value: number): void;
@@ -248,14 +235,20 @@ type SliderOrientationProps = SliderPartDOMProps & {
   onHomeKeyDown(event: React.KeyboardEvent): void;
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
+  onSlideMouseDown?: never;
+  onSlideMouseMove?: never;
+  onSlideMouseUp?: never;
+  onSlideTouchStart?: never;
+  onSlideTouchMove?: never;
+  onSlideTouchEnd?: never;
 };
 
-type SliderHorizontalProps = SliderOrientationProps & {
+type SliderHorizontalOwnProps = SliderOrientationOwnProps & {
   dir?: Direction;
 };
 
-const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalProps>(
-  function SliderHorizontal(props, forwardedRef) {
+const SliderHorizontal = forwardRefWithAs<typeof SliderPart, SliderHorizontalOwnProps>(
+  (props, forwardedRef) => {
     const {
       min,
       max,
@@ -343,10 +336,8 @@ const SliderHorizontal = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderHorizontalP
  * SliderVertical
  * -----------------------------------------------------------------------------------------------*/
 
-type SliderVerticalProps = SliderOrientationProps;
-
-const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps>(
-  function SliderVertical(props, forwardedRef) {
+const SliderVertical = forwardRefWithAs<typeof SliderPart, SliderOrientationOwnProps>(
+  (props, forwardedRef) => {
     const { min, max, children, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
     const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
@@ -409,8 +400,6 @@ const SliderVertical = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderVerticalProps
 /* -------------------------------------------------------------------------------------------------
  * SliderPart
  * -----------------------------------------------------------------------------------------------*/
-
-type SliderPartDOMProps = React.ComponentPropsWithoutRef<typeof SLIDER_DEFAULT_TAG>;
 type SliderPartOwnProps = {
   onSlideMouseDown(event: React.MouseEvent): void;
   onSlideMouseMove(event: MouseEvent): void;
@@ -422,118 +411,109 @@ type SliderPartOwnProps = {
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(event: React.KeyboardEvent): void;
 };
-type SliderPartProps = SliderPartDOMProps & SliderPartOwnProps;
 
-const SliderPart = forwardRef<typeof SLIDER_DEFAULT_TAG, SliderPartProps>(function SliderPart(
-  props,
-  forwardedRef
-) {
-  const {
-    as: Comp = SLIDER_DEFAULT_TAG,
-    onSlideMouseDown,
-    onSlideMouseMove,
-    onSlideMouseUp,
-    onSlideTouchStart,
-    onSlideTouchMove,
-    onSlideTouchEnd,
-    onHomeKeyDown,
-    onEndKeyDown,
-    onStepKeyDown,
-    ...sliderProps
-  } = props;
+const SliderPart = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderPartOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = SLIDER_DEFAULT_TAG,
+      onSlideMouseDown,
+      onSlideMouseMove,
+      onSlideMouseUp,
+      onSlideTouchStart,
+      onSlideTouchMove,
+      onSlideTouchEnd,
+      onHomeKeyDown,
+      onEndKeyDown,
+      onStepKeyDown,
+      ...sliderProps
+    } = props;
 
-  const handleSlideMouseMove = useCallbackRef(onSlideMouseMove);
-  const handleSlideTouchMove = useCallbackRef(onSlideTouchMove);
-  const removeMouseEventListeners = useCallbackRef(() => {
-    document.removeEventListener('mousemove', handleSlideMouseMove);
-    document.removeEventListener('mouseup', removeMouseEventListeners);
-    onSlideMouseUp();
-  });
-  const removeTouchEventListeners = useCallbackRef(() => {
-    document.removeEventListener('touchmove', handleSlideTouchMove);
-    document.removeEventListener('touchend', removeTouchEventListeners);
-    onSlideTouchEnd();
-  });
+    const handleSlideMouseMove = useCallbackRef(onSlideMouseMove);
+    const handleSlideTouchMove = useCallbackRef(onSlideTouchMove);
+    const removeMouseEventListeners = useCallbackRef(() => {
+      document.removeEventListener('mousemove', handleSlideMouseMove);
+      document.removeEventListener('mouseup', removeMouseEventListeners);
+      onSlideMouseUp();
+    });
+    const removeTouchEventListeners = useCallbackRef(() => {
+      document.removeEventListener('touchmove', handleSlideTouchMove);
+      document.removeEventListener('touchend', removeTouchEventListeners);
+      onSlideTouchEnd();
+    });
 
-  React.useEffect(() => {
-    return () => {
-      removeMouseEventListeners();
-      removeTouchEventListeners();
-    };
-  }, [removeMouseEventListeners, removeTouchEventListeners]);
+    React.useEffect(() => {
+      return () => {
+        removeMouseEventListeners();
+        removeTouchEventListeners();
+      };
+    }, [removeMouseEventListeners, removeTouchEventListeners]);
 
-  return (
-    <Comp
-      {...sliderProps}
-      ref={forwardedRef}
-      onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
-        // Slide only if main mouse button was clicked
-        if (event.button === 0) {
-          if (!isThumb(event.target)) onSlideMouseDown(event);
-          document.addEventListener('mousemove', handleSlideMouseMove);
-          document.addEventListener('mouseup', removeMouseEventListeners);
-        }
-        // We purpoesfully avoid calling `event.preventDefault` here as it will
-        // also prevent PointerEvents which we need.
-      })}
-      onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
-        if (isThumb(event.target)) {
-          // Touch devices have a delay before focusing and won't focus if touch
-          // immediatedly moves away from target. We want thumb to focus regardless.
-          event.target.focus();
-        } else {
-          onSlideTouchStart(event);
-        }
+    return (
+      <Comp
+        {...sliderProps}
+        ref={forwardedRef}
+        onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
+          // Slide only if main mouse button was clicked
+          if (event.button === 0) {
+            if (!isThumb(event.target)) onSlideMouseDown(event);
+            document.addEventListener('mousemove', handleSlideMouseMove);
+            document.addEventListener('mouseup', removeMouseEventListeners);
+          }
+          // We purpoesfully avoid calling `event.preventDefault` here as it will
+          // also prevent PointerEvents which we need.
+        })}
+        onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
+          if (isThumb(event.target)) {
+            // Touch devices have a delay before focusing and won't focus if touch
+            // immediatedly moves away from target. We want thumb to focus regardless.
+            event.target.focus();
+          } else {
+            onSlideTouchStart(event);
+          }
 
-        document.addEventListener('touchmove', handleSlideTouchMove);
-        document.addEventListener('touchend', removeTouchEventListeners);
-        // Prevent scrolling for touch events
-        event.preventDefault();
-      })}
-      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        if (event.key === 'Home') {
-          onHomeKeyDown(event);
-        } else if (event.key === 'End') {
-          onEndKeyDown(event);
-        } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(event.key)) {
-          onStepKeyDown(event);
-          // Prevent scrolling for directional key presses
+          document.addEventListener('touchmove', handleSlideTouchMove);
+          document.addEventListener('touchend', removeTouchEventListeners);
+          // Prevent scrolling for touch events
           event.preventDefault();
-        }
-      })}
-      /**
-       * Prevent pointer events on other elements on the page while sliding.
-       * For example, stops hover states from triggering on buttons if
-       * mouse moves over a button during slide.
-       *
-       * Also ensures that slider receives all pointer events after mouse down
-       * even when mouse moves outside the document.
-       */
-      onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-        event.currentTarget.setPointerCapture(event.pointerId);
-      })}
-      onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
-        event.currentTarget.releasePointerCapture(event.pointerId);
-      })}
-    />
-  );
-});
+        })}
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          if (event.key === 'Home') {
+            onHomeKeyDown(event);
+          } else if (event.key === 'End') {
+            onEndKeyDown(event);
+          } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(event.key)) {
+            onStepKeyDown(event);
+            // Prevent scrolling for directional key presses
+            event.preventDefault();
+          }
+        })}
+        /**
+         * Prevent pointer events on other elements on the page while sliding.
+         * For example, stops hover states from triggering on buttons if
+         * mouse moves over a button during slide.
+         *
+         * Also ensures that slider receives all pointer events after mouse down
+         * even when mouse moves outside the document.
+         */
+        onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        })}
+        onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        })}
+      />
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SliderTrack
  * -----------------------------------------------------------------------------------------------*/
 
-const TRACK_NAME = 'Slider.Track';
+const TRACK_NAME = 'SliderTrack';
 const TRACK_DEFAULT_TAG = 'span';
 
-type SliderTrackDOMProps = React.ComponentPropsWithoutRef<typeof TRACK_DEFAULT_TAG>;
-type SliderTrackOwnProps = {};
-type SliderTrackProps = SliderTrackDOMProps & SliderTrackOwnProps;
-
-const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(function SliderTrack(
-  props,
-  forwardedRef
-) {
+const SliderTrack = forwardRefWithAs<typeof TRACK_DEFAULT_TAG>((props, forwardedRef) => {
   const { as: Comp = TRACK_DEFAULT_TAG, children, ...trackProps } = props;
   const context = useSliderContext(TRACK_NAME);
   return (
@@ -548,73 +528,76 @@ const SliderTrack = forwardRef<typeof TRACK_DEFAULT_TAG, SliderTrackProps>(funct
   );
 });
 
+SliderTrack.displayName = TRACK_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * SliderRange
  * -----------------------------------------------------------------------------------------------*/
 
-const RANGE_NAME = 'Slider.Range';
+const RANGE_NAME = 'SliderRange';
 const RANGE_DEFAULT_TAG = 'span';
 
-type SliderRangeProps = Omit<React.ComponentPropsWithoutRef<typeof RANGE_DEFAULT_TAG>, 'children'>;
+type SliderRangeOwnProps = {
+  children?: never;
+};
 
-const SliderRange = forwardRef<typeof RANGE_DEFAULT_TAG, SliderRangeProps>(function SliderRange(
-  props,
-  forwardedRef
-) {
-  const { as: Comp = RANGE_DEFAULT_TAG, style, ...rangeProps } = props;
-  const context = useSliderContext(RANGE_NAME);
-  const orientation = React.useContext(SliderOrientationContext);
-  const ref = React.useRef<HTMLSpanElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
-  const valuesCount = context.values.length;
-  const percentages = context.values.map((value) =>
-    convertValueToPercentage(value, context.min, context.max)
-  );
-  const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
-  const offsetEnd = 100 - Math.max(...percentages);
+const SliderRange = forwardRefWithAs<typeof RANGE_DEFAULT_TAG, SliderRangeOwnProps>(
+  (props, forwardedRef) => {
+    const { as: Comp = RANGE_DEFAULT_TAG, style, ...rangeProps } = props;
+    const context = useSliderContext(RANGE_NAME);
+    const orientation = React.useContext(SliderOrientationContext);
+    const ref = React.useRef<HTMLSpanElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref);
+    const valuesCount = context.values.length;
+    const percentages = context.values.map((value) =>
+      convertValueToPercentage(value, context.min, context.max)
+    );
+    const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
+    const offsetEnd = 100 - Math.max(...percentages);
 
-  return (
-    <Comp
-      {...getPartDataAttrObj(RANGE_NAME)}
-      {...rangeProps}
-      ref={composedRefs}
-      style={{
-        ...style,
-        [orientation.startEdge]: offsetStart + '%',
-        [orientation.endEdge]: offsetEnd + '%',
-      }}
-      data-orientation={context.orientation}
-    />
-  );
-});
+    return (
+      <Comp
+        {...getPartDataAttrObj(RANGE_NAME)}
+        {...rangeProps}
+        ref={composedRefs}
+        style={{
+          ...style,
+          [orientation.startEdge]: offsetStart + '%',
+          [orientation.endEdge]: offsetEnd + '%',
+        }}
+        data-orientation={context.orientation}
+      />
+    );
+  }
+);
+
+SliderRange.displayName = RANGE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SliderThumb
  * -----------------------------------------------------------------------------------------------*/
 
-const THUMB_NAME = 'Slider.Thumb';
+const THUMB_NAME = 'SliderThumb';
 const THUMB_DEFAULT_TAG = 'span';
 
-type SliderThumbDOMProps = React.ComponentPropsWithoutRef<typeof THUMB_DEFAULT_TAG>;
-type SliderThumbOwnProps = {};
-type SliderThumbProps = SliderThumbDOMProps & SliderThumbOwnProps;
-type SliderThumbImplProps = SliderThumbProps & { value: number; index: number };
+type SliderThumbOwnProps = { value?: never; index?: never };
 
-const SliderThumb = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbProps>(function SliderThumb(
-  props,
-  forwardedRef
-) {
-  const { ref: collectionRef, index } = useSliderCollectionItem();
-  const ref = useComposedRefs(forwardedRef, collectionRef);
-  const context = useSliderContext(THUMB_NAME);
-  const value = context.values[index];
-  return value !== undefined ? (
-    <SliderThumbImpl {...props} ref={ref} index={index} value={value} />
-  ) : null;
-});
+const SliderThumb = forwardRefWithAs<typeof SliderThumbImpl, SliderThumbOwnProps>(
+  (props, forwardedRef) => {
+    const { ref: collectionRef, index } = useSliderCollectionItem();
+    const ref = useComposedRefs(forwardedRef, collectionRef);
+    const context = useSliderContext(THUMB_NAME);
+    const value = context.values[index];
+    return value !== undefined ? (
+      <SliderThumbImpl {...props} ref={ref} index={index} value={value} />
+    ) : null;
+  }
+);
 
-const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProps>(
-  function SliderThumbImpl(props, forwardedRef) {
+type SliderThumbImplOwnProps = { value: number; index: number };
+
+const SliderThumbImpl = forwardRefWithAs<typeof THUMB_DEFAULT_TAG, SliderThumbImplOwnProps>(
+  (props, forwardedRef) => {
     const { as: Comp = THUMB_DEFAULT_TAG, index, value, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME);
     const orientation = React.useContext(SliderOrientationContext);
@@ -667,22 +650,7 @@ const SliderThumbImpl = forwardRef<typeof THUMB_DEFAULT_TAG, SliderThumbImplProp
   }
 );
 
-/* -----------------------------------------------------------------------------------------------*/
-
-Slider.Track = SliderTrack;
-Slider.Range = SliderRange;
-Slider.Thumb = SliderThumb;
-
-Slider.displayName = SLIDER_NAME;
-Slider.Track.displayName = TRACK_NAME;
-Slider.Range.displayName = RANGE_NAME;
-Slider.Thumb.displayName = THUMB_NAME;
-
-interface SliderStaticProps {
-  Track: typeof SliderTrack;
-  Range: typeof SliderRange;
-  Thumb: typeof SliderThumb;
-}
+SliderThumb.displayName = THUMB_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -854,5 +822,4 @@ function linearScale(domain: [number, number], range: [number, number]) {
   };
 }
 
-export { Slider };
-export type { SliderProps, SliderRangeProps, SliderTrackProps, SliderThumbProps };
+export { Slider, SliderTrack, SliderRange, SliderThumb };
