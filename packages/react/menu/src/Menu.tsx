@@ -65,10 +65,6 @@ const Menu = forwardRefWithAs<typeof MENU_DEFAULT_TAG, MenuOwnProps>((props, for
       onMouseOut={composeEventHandlers(menuProps.onMouseOut, (event) => {
         if (isItem(event.target)) menuRef.current?.focus();
       })}
-      // prevent any native menu from showing on top of one of our menus
-      onContextMenu={composeEventHandlers(menuProps.onContextMenu, (event) =>
-        event.preventDefault()
-      )}
     >
       <RovingFocusGroup
         reachable={itemsReachable}
