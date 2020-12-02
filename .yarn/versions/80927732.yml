@@ -22,5 +22,7 @@ declined:
   - "@interop-ui/react-radio-group"
   - "@interop-ui/react-separator"
   - "@interop-ui/react-switch"
+  - "@interop-ui/react-tabs"
   - "@interop-ui/react-toggle-button"
+  - "@interop-ui/react-tooltip"
   - "@interop-ui/react-visually-hidden"
