@@ -1,5 +1,15 @@
 import * as React from 'react';
-import { Menu, MenuItem, MenuGroup, MenuLabel, MenuSeparator } from './Menu';
+import {
+  Menu,
+  MenuGroup,
+  MenuLabel,
+  MenuItem,
+  MenuCheckboxItem,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuItemIndicator,
+  MenuSeparator,
+} from './Menu';
 import { styled } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 
@@ -124,6 +134,80 @@ export const Typeahead = () => (
   </>
 );
 
+export const CheckboxItem = () => (
+  <Menu as={StyledRoot}>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
+      Show fonts
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('bigger')}>
+      Bigger
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+      Smaller
+    </MenuItem>
+    <MenuSeparator as={StyledSeparator} />
+    <MenuCheckboxItem as={StyledItem} value="bold" onCheckedChange={console.log}>
+      Bold
+      <MenuItemIndicator>
+        <TickIcon />
+      </MenuItemIndicator>
+    </MenuCheckboxItem>
+    <MenuCheckboxItem as={StyledItem} value="italic" defaultChecked>
+      Italic
+      <MenuItemIndicator>
+        <TickIcon />
+      </MenuItemIndicator>
+    </MenuCheckboxItem>
+    <MenuCheckboxItem as={StyledItem} value="underline">
+      Underline
+      <MenuItemIndicator>
+        <TickIcon />
+      </MenuItemIndicator>
+    </MenuCheckboxItem>
+    <MenuCheckboxItem as={StyledItem} value="strikethrough" disabled>
+      Strikethrough
+      <MenuItemIndicator>
+        <TickIcon />
+      </MenuItemIndicator>
+    </MenuCheckboxItem>
+  </Menu>
+);
+
+export const RadioItems = () => (
+  <Menu as={StyledRoot}>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
+      Minimize window
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('zoom')}>
+      Zoom
+    </MenuItem>
+    <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+      Smaller
+    </MenuItem>
+    <MenuSeparator as={StyledSeparator} />
+    <MenuRadioGroup defaultValue="index.js">
+      <MenuRadioItem as={StyledItem} value="readme.md">
+        README.md
+        <MenuItemIndicator>
+          <TickIcon />
+        </MenuItemIndicator>
+      </MenuRadioItem>
+      <MenuRadioItem as={StyledItem} value="index.js">
+        index.js
+        <MenuItemIndicator>
+          <TickIcon />
+        </MenuItemIndicator>
+      </MenuRadioItem>
+      <MenuRadioItem as={StyledItem} value="page.css">
+        page.css
+        <MenuItemIndicator>
+          <TickIcon />
+        </MenuItemIndicator>
+      </MenuRadioItem>
+    </MenuRadioGroup>
+  </Menu>
+);
+
 const StyledRoot = styled('div', {
   display: 'inline-block',
   boxSizing: 'border-box',
@@ -154,6 +238,11 @@ const itemCss: any = {
   borderRadius: 3,
 };
 
+const StyledLabel = styled('div', {
+  ...itemCss,
+  color: '$gray100',
+});
+
 const StyledItem = styled('div', {
   ...itemCss,
 
@@ -168,13 +257,24 @@ const StyledItem = styled('div', {
   },
 });
 
-const StyledLabel = styled('div', {
-  ...itemCss,
-  color: '$gray100',
-});
-
 const StyledSeparator = styled('div', {
   height: 1,
   margin: '5px 10px',
   backgroundColor: '$gray100',
 });
+
+const TickIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 32 32"
+    width="12"
+    height="12"
+    fill="none"
+    stroke="currentcolor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="3"
+  >
+    <path d="M2 20 L12 28 30 4" />
+  </svg>
+);

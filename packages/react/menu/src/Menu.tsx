@@ -1,19 +1,19 @@
 import * as React from 'react';
-import { composeEventHandlers, useComposedRefs } from '@interop-ui/react-utils';
+import { composeEventHandlers, useComposedRefs, useControlledState } from '@interop-ui/react-utils';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
 import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
+
+const FIRST_KEYS = ['ArrowDown', 'PageUp', 'Home'];
+const LAST_KEYS = ['ArrowUp', 'PageDown', 'End'];
+const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 /* -------------------------------------------------------------------------------------------------
  * Menu
  * -----------------------------------------------------------------------------------------------*/
 const MENU_NAME = 'Menu';
 const MENU_DEFAULT_TAG = 'div';
-
-const FIRST_KEYS = ['ArrowDown', 'PageUp', 'Home'];
-const LAST_KEYS = ['ArrowUp', 'PageDown', 'End'];
-const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 type MenuOwnProps = { loop?: boolean };
 
@@ -79,6 +79,34 @@ const Menu = forwardRefWithAs<typeof MENU_DEFAULT_TAG, MenuOwnProps>((props, for
 });
 
 Menu.displayName = MENU_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuGroup
+ * -----------------------------------------------------------------------------------------------*/
+const GROUP_NAME = 'MenuGroup';
+const GROUP_DEFAULT_TAG = 'div';
+
+const MenuGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = GROUP_DEFAULT_TAG, ...groupProps } = props;
+  return (
+    <Comp role="group" {...groupProps} {...getPartDataAttrObj(GROUP_NAME)} ref={forwardedRef} />
+  );
+});
+
+MenuGroup.displayName = GROUP_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuLabel
+ * -----------------------------------------------------------------------------------------------*/
+const LABEL_NAME = 'MenuLabel';
+const LABEL_DEFAULT_TAG = 'div';
+
+const MenuLabel = forwardRefWithAs<typeof LABEL_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = LABEL_DEFAULT_TAG, ...labelProps } = props;
+  return <Comp {...labelProps} {...getPartDataAttrObj(LABEL_NAME)} ref={forwardedRef} />;
+});
+
+MenuLabel.displayName = LABEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuItem
@@ -165,32 +193,128 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
 MenuItem.displayName = ITEM_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * MenuGroup
+ * MenuCheckboxItem
  * -----------------------------------------------------------------------------------------------*/
-const GROUP_NAME = 'MenuGroup';
-const GROUP_DEFAULT_TAG = 'div';
+const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
-const MenuGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = GROUP_DEFAULT_TAG, ...groupProps } = props;
-  return (
-    <Comp role="group" {...groupProps} {...getPartDataAttrObj(GROUP_NAME)} ref={forwardedRef} />
-  );
-});
+type MenuCheckboxItemOwnProps = {
+  value: string;
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onCheckedChange?: (checked?: boolean) => void;
+};
 
-MenuGroup.displayName = GROUP_NAME;
+const MenuCheckboxItem = forwardRefWithAs<typeof MenuItem, MenuCheckboxItemOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      value,
+      checked: checkedProp,
+      defaultChecked,
+      onCheckedChange,
+      children,
+      ...checkboxItemProps
+    } = props;
+    const [checked = false, setChecked] = useControlledState({
+      prop: checkedProp,
+      defaultProp: defaultChecked,
+      onChange: onCheckedChange,
+    });
+    return (
+      <MenuItem
+        role="menuitemcheckbox"
+        aria-checked={checked}
+        {...checkboxItemProps}
+        {...getPartDataAttrObj(CHECKBOX_ITEM_NAME)}
+        data-state={getState(checked)}
+        ref={forwardedRef}
+        onSelect={() => setChecked((prevChecked) => !prevChecked)}
+      >
+        <ItemIndicatorContext.Provider value={checked}>{children}</ItemIndicatorContext.Provider>
+      </MenuItem>
+    );
+  }
+);
+
+MenuCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * MenuLabel
+ * MenuRadioGroup
  * -----------------------------------------------------------------------------------------------*/
-const LABEL_NAME = 'MenuLabel';
-const LABEL_DEFAULT_TAG = 'div';
+const RADIO_GROUP_NAME = 'MenuRadioGroup';
 
-const MenuLabel = forwardRefWithAs<typeof LABEL_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = LABEL_DEFAULT_TAG, ...labelProps } = props;
-  return <Comp {...labelProps} {...getPartDataAttrObj(LABEL_NAME)} ref={forwardedRef} />;
-});
+type ReactStateTuple<T> = readonly [T, React.Dispatch<React.SetStateAction<T>>];
+type RadioGroupContextType = ReactStateTuple<string | undefined>;
+const RadioGroupContext = React.createContext<RadioGroupContextType>({} as any);
 
-MenuLabel.displayName = LABEL_NAME;
+type MenuRadioGroupOwnProps = {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value?: string) => void;
+};
+
+const MenuRadioGroup: React.FC<MenuRadioGroupOwnProps> = (props) => {
+  const { children, value, defaultValue, onValueChange: onChange } = props;
+  const state = useControlledState({ prop: value, defaultProp: defaultValue, onChange });
+  return <RadioGroupContext.Provider value={state}>{children}</RadioGroupContext.Provider>;
+};
+
+MenuRadioGroup.displayName = RADIO_GROUP_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuRadioItem
+ * -----------------------------------------------------------------------------------------------*/
+const RADIO_ITEM_NAME = 'MenuRadioItem';
+
+type MenuRadioItemOwnProps = { value: string };
+
+const MenuRadioItem = forwardRefWithAs<typeof MenuItem, MenuRadioItemOwnProps>(
+  (props, forwardedRef) => {
+    const { value, children, ...radioItemProps } = props;
+    const [valueFromContext, setValue] = React.useContext(RadioGroupContext);
+    const checked = value === valueFromContext;
+    return (
+      <MenuItem
+        role="menuitemradio"
+        aria-checked={checked}
+        {...radioItemProps}
+        {...getPartDataAttrObj(RADIO_ITEM_NAME)}
+        data-state={getState(checked)}
+        ref={forwardedRef}
+        onSelect={() => setValue(value)}
+      >
+        <ItemIndicatorContext.Provider value={checked}>{children}</ItemIndicatorContext.Provider>
+      </MenuItem>
+    );
+  }
+);
+
+MenuRadioItem.displayName = RADIO_ITEM_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuItemIndicator
+ * -----------------------------------------------------------------------------------------------*/
+
+const ITEM_INDICATOR_NAME = 'MenuItemIndicator';
+const ITEM_INDICATOR_DEFAULT_TAG = 'span';
+
+const ItemIndicatorContext = React.createContext(false);
+
+const MenuItemIndicator = forwardRefWithAs<typeof ITEM_INDICATOR_DEFAULT_TAG>(
+  (props, forwardedRef) => {
+    const { as: Comp = ITEM_INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
+    const checked = React.useContext(ItemIndicatorContext);
+    return checked ? (
+      <Comp
+        {...indicatorProps}
+        {...getPartDataAttrObj(ITEM_INDICATOR_NAME)}
+        data-state={getState(checked)}
+        ref={forwardedRef}
+      />
+    ) : null;
+  }
+);
+
+MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuSeparator
@@ -219,4 +343,18 @@ function isItem(target: EventTarget) {
   return (target as HTMLElement).matches(ENABLED_ITEM_SELECTOR);
 }
 
-export { Menu, MenuItem, MenuGroup, MenuLabel, MenuSeparator };
+function getState(checked: boolean) {
+  return checked ? 'checked' : 'unchecked';
+}
+
+export {
+  Menu,
+  MenuGroup,
+  MenuLabel,
+  MenuItem,
+  MenuCheckboxItem,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuItemIndicator,
+  MenuSeparator,
+};
