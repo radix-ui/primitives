@@ -2141,6 +2141,7 @@ __metadata:
   resolution: "@interop-ui/react-collapsible@workspace:packages/react/collapsible"
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-presence": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
