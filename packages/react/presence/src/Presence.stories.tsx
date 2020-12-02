@@ -20,7 +20,7 @@ export const Basic = () => {
 
 export const WithSuspendedUnmountAnimation = () => {
   const ref = React.useRef<React.ElementRef<typeof Animated>>(null);
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <>
@@ -36,7 +36,7 @@ export const WithSuspendedUnmountAnimation = () => {
 
 export const WithSuspendedUnmountTransition = () => {
   const ref = React.useRef<React.ElementRef<typeof Transitioned>>(null);
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(false);
   return (
     <>
       <Toggles nodeRef={ref} open={isOpen} onOpenChange={setIsOpen} />
@@ -101,7 +101,6 @@ const Animated = styled('div', {
 const Transitioned = styled('div', {
   opacity: 1,
   transition: 'opacity 3s ease-out',
-
   '&[data-state="closed"]': {
     opacity: 0,
   },

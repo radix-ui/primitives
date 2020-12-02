@@ -20,8 +20,10 @@ Presence.displayName = 'Presence';
 type PresenceEvent =
   | { type: 'MOUNT' }
   | { type: 'UNMOUNT' }
-  | { type: 'MOTION_OUT' }
-  | { type: 'MOTION_END' };
+  | { type: 'ANIMATION_RUN' }
+  | { type: 'TRANSITION_RUN' }
+  | { type: 'ANIMATION_END' }
+  | { type: 'TRANSITION_END' };
 
 type PresenceState = { value: 'mounted' | 'unmounted' | 'unmountSuspended'; context: {} };
 
@@ -29,16 +31,20 @@ function usePresence(present: boolean) {
   const [node, setNode] = React.useState<HTMLElement>();
   const [styles, setStyles] = React.useState<CSSStyleDeclaration>();
   const prevPresentRef = React.useRef(present);
-  const prevMotionValuesRef = React.useRef<string[]>([]);
+  const prevAnimationNameRef = React.useRef<string>();
   const { state, send } = useStateMachine<{}, PresenceEvent, PresenceState>({
     id: 'presence',
     initial: present ? 'mounted' : 'unmounted',
     states: {
       mounted: {
-        on: { UNMOUNT: 'unmounted', MOTION_OUT: 'unmountSuspended' },
+        on: {
+          UNMOUNT: 'unmounted',
+          ANIMATION_RUN: 'unmountSuspended',
+          TRANSITION_RUN: 'unmountSuspended',
+        },
       },
       unmountSuspended: {
-        on: { MOTION_END: 'unmounted' },
+        on: { ANIMATION_END: 'unmounted', TRANSITION_END: 'unmounted' },
       },
       unmounted: {
         on: { MOUNT: 'mounted' },
@@ -49,36 +55,32 @@ function usePresence(present: boolean) {
   React.useEffect(() => {
     if (node) {
       const styles = getComputedStyle(node);
-      prevMotionValuesRef.current = getMotionValues(styles);
+      prevAnimationNameRef.current = getAnimationName(styles);
       setStyles(styles);
     }
   }, [node]);
 
-  /**
-   * We check for any changes to animation/transition properties to determine
-   * whether an animation/transition has started when `present` has changed.
-   *
-   * We chose this approach (reading computed styles) over using `animationstart`
-   * or `transitionstart` events because we would need to set a timer (`setTimeout`)
-   * when `present` is `false`. These events would need to clear it to prevent unmount
-   * which is at risk of breaking if consumers used things like `animation-delay`.
-   */
   React.useEffect(() => {
-    return waitForNextFrame(() => {
+    return waitForAfterNextFrame(() => {
+      /**
+       * When `present` changes, we check changes to animation-name to determine
+       * whether an animation has started. We chose this approach (reading computed
+       * styles) over using `animationstart` event because we would need to delay
+       * unmount with a `setTimeout` that `animationstart` would clear. That approach
+       * becomes problematic if consumers use `animation-delay`.
+       */
       const wasPresent = prevPresentRef.current;
-      const prevMotionValues = prevMotionValuesRef.current;
-      const currentMotionValues = getMotionValues(styles);
-      const hasHiddenStyle = styles?.display === 'none';
-      const hasMotionValuesChanged = String(prevMotionValues) !== String(currentMotionValues);
-      // If the element is hidden, it will not trigger an animation/transition
-      const isInMotion = !hasHiddenStyle && hasMotionValuesChanged;
-      prevMotionValuesRef.current = currentMotionValues;
+      const prevAnimationName = prevAnimationNameRef.current;
+      const currentAnimationName = getAnimationName(styles);
+      const isAnimating = String(prevAnimationName) !== String(currentAnimationName);
+      prevAnimationNameRef.current = currentAnimationName;
       prevPresentRef.current = present;
 
       if (present) {
         send('MOUNT');
-      } else if (wasPresent && isInMotion) {
-        send('MOTION_OUT');
+      } else if (wasPresent && isAnimating) {
+        // If the element is hidden, it will not run the animation
+        send(styles?.display === 'none' ? 'UNMOUNT' : 'ANIMATION_RUN');
       } else {
         send('UNMOUNT');
       }
@@ -87,17 +89,22 @@ function usePresence(present: boolean) {
 
   React.useEffect(() => {
     if (node) {
-      const handleEnd = () => send('MOTION_END');
-      node.addEventListener('animationcancel', handleEnd);
-      node.addEventListener('transitioncancel', handleEnd);
-      node.addEventListener('animationend', handleEnd);
-      node.addEventListener('transitionend', handleEnd);
+      const handleAnimationEnd = () => send('ANIMATION_END');
+      const handleTransitionRun = () => send('TRANSITION_RUN');
+      const handleTransitionEnd = () => send('TRANSITION_END');
+
+      node.addEventListener('animationcancel', handleAnimationEnd);
+      node.addEventListener('animationend', handleAnimationEnd);
+      node.addEventListener('transitionrun', handleTransitionRun);
+      node.addEventListener('transitioncancel', handleTransitionEnd);
+      node.addEventListener('transitionend', handleTransitionEnd);
 
       return () => {
-        node.removeEventListener('animationcancel', handleEnd);
-        node.removeEventListener('transitioncancel', handleEnd);
-        node.removeEventListener('animationend', handleEnd);
-        node.removeEventListener('transitionend', handleEnd);
+        node.removeEventListener('animationcancel', handleAnimationEnd);
+        node.removeEventListener('animationend', handleAnimationEnd);
+        node.removeEventListener('transitionrun', handleTransitionRun);
+        node.removeEventListener('transitioncancel', handleTransitionEnd);
+        node.removeEventListener('transitionend', handleTransitionEnd);
       };
     }
   }, [node, present, send]);
@@ -108,27 +115,29 @@ function usePresence(present: boolean) {
   };
 }
 
-function getMotionValues(styles?: CSSStyleDeclaration) {
-  const animationName = styles?.animationName || 'none';
-  const transitionProperties = styles?.transitionProperty.split(/,\s?/) || [];
-  const transitionValues = transitionProperties.map((prop) => styles?.[prop as any]);
-  return [animationName, ...transitionValues].filter(Boolean) as string[];
+function getAnimationName(styles?: CSSStyleDeclaration) {
+  return styles?.animationName || 'none';
 }
 
-function waitForNextFrame(cb = () => {}) {
-  let innerRaf: number;
+function waitForAfterNextFrame(cb = () => {}) {
+  let nextFrameRaf: number;
+  let afterNextFrameRaf: number;
   /**
    * We call `requestAnimationFrame` twice because `requestAnimationFrame` fires *before* the
    * next frame and we need *next* frame. This is to ensure our live CSSStyleDeclaration
-   * has updated before we compare values.
+   * has updated before we compare values for animation. The third `requestAnimationFrame`
+   * is to ensure the callback fires after the transition run event.
    */
-  const outerRaf = requestAnimationFrame(() => {
-    innerRaf = requestAnimationFrame(cb);
+  const beforeNextFrameRaf = requestAnimationFrame(() => {
+    nextFrameRaf = requestAnimationFrame(() => {
+      afterNextFrameRaf = requestAnimationFrame(cb);
+    });
   });
 
   return () => {
-    cancelAnimationFrame(outerRaf);
-    cancelAnimationFrame(innerRaf);
+    cancelAnimationFrame(beforeNextFrameRaf);
+    cancelAnimationFrame(nextFrameRaf);
+    cancelAnimationFrame(afterNextFrameRaf);
   };
 }
 
