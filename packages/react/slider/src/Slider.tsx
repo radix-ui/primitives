@@ -81,10 +81,9 @@ const Slider = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>(
       disabled = false,
       defaultValue,
       value,
-      minStepsBetweenThumbs,
       onChange = () => {},
-      ...sliderProps
-    } = { minStepsBetweenThumbs: 0, ...props };
+      ...restProps
+    } = props;
 
     const step = Math.max(stepProp, 1);
     const sliderRef = React.useRef<HTMLSpanElement>(null);
@@ -93,6 +92,11 @@ const Slider = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>(
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
+
+    const { minStepsBetweenThumbs = 0 } = restProps as SliderMultiThumbProps;
+    const sliderProps = restProps as SliderSingleThumbProps;
+    // @ts-ignore
+    delete sliderProps.minStepsBetweenThumbs;
 
     const [values = [], setValues] = useControlledState({
       prop: value === undefined ? undefined : toArray(value),
