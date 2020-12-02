@@ -93,4 +93,4 @@ function forwardRefWithAs<
 }
 
 export { forwardRefWithAs };
-export type { IntrinsicElement, ForwardRefExoticComponentWithAs };
+export type { ForwardRefExoticComponentWithAs };

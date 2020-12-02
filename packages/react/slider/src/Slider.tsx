@@ -11,8 +11,6 @@ import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { createCollection } from '@interop-ui/react-collection';
 import { useSize } from '@interop-ui/react-use-size';
 
-import type { IntrinsicElement } from '@interop-ui/react-polymorphic';
-
 type Direction = 'ltr' | 'rtl';
 
 const PAGE_KEYS = ['PageUp', 'PageDown'];
@@ -233,163 +231,167 @@ type SliderOrientationOwnProps = {
   onHomeKeyDown(event: React.KeyboardEvent): void;
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
+  onSlideMouseDown?: never;
+  onSlideMouseMove?: never;
+  onSlideMouseUp?: never;
+  onSlideTouchStart?: never;
+  onSlideTouchMove?: never;
+  onSlideTouchEnd?: never;
 };
 
 type SliderHorizontalOwnProps = SliderOrientationOwnProps & {
   dir?: Direction;
 };
 
-const SliderHorizontal = forwardRefWithAs<
-  IntrinsicElement<typeof SliderPart>,
-  SliderHorizontalOwnProps
->((props, forwardedRef) => {
-  const {
-    min,
-    max,
-    dir,
-    children,
-    onSlideStart,
-    onSlideMove,
-    onStepKeyDown,
-    ...sliderProps
-  } = props;
-  const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
-  const ref = useComposedRefs(forwardedRef, sliderRef);
-  const rectRef = React.useRef<ClientRect>();
-  const direction = useDirection({ ref: sliderRef, directionProp: dir });
-  const isDirectionLTR = direction === 'ltr';
+const SliderHorizontal = forwardRefWithAs<typeof SliderPart, SliderHorizontalOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      min,
+      max,
+      dir,
+      children,
+      onSlideStart,
+      onSlideMove,
+      onStepKeyDown,
+      ...sliderProps
+    } = props;
+    const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
+    const ref = useComposedRefs(forwardedRef, sliderRef);
+    const rectRef = React.useRef<ClientRect>();
+    const direction = useDirection({ ref: sliderRef, directionProp: dir });
+    const isDirectionLTR = direction === 'ltr';
 
-  function getValueFromPointer(pointerPosition: number) {
-    const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
-    const input: [number, number] = [0, rect.width];
-    const output: [number, number] = isDirectionLTR ? [min, max] : [max, min];
-    const value = linearScale(input, output);
+    function getValueFromPointer(pointerPosition: number) {
+      const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
+      const input: [number, number] = [0, rect.width];
+      const output: [number, number] = isDirectionLTR ? [min, max] : [max, min];
+      const value = linearScale(input, output);
 
-    rectRef.current = rect;
-    return value(pointerPosition - rect.left);
-  }
+      rectRef.current = rect;
+      return value(pointerPosition - rect.left);
+    }
 
-  return (
-    <SliderPart
-      {...sliderProps}
-      ref={ref}
-      style={{
-        ...sliderProps.style,
-        ['--interop-ui-slider-thumb-transform' as any]: 'translateX(-50%)',
-      }}
-      data-orientation="horizontal"
-      onSlideMouseDown={(event) => {
-        const value = getValueFromPointer(event.clientX);
-        onSlideStart?.(value);
-      }}
-      onSlideMouseMove={(event) => {
-        const value = getValueFromPointer(event.clientX);
-        onSlideMove?.(value);
-      }}
-      onSlideMouseUp={() => (rectRef.current = undefined)}
-      onSlideTouchStart={(event) => {
-        const touch = event.targetTouches[0];
-        const value = getValueFromPointer(touch.clientX);
-        onSlideStart?.(value);
-      }}
-      onSlideTouchMove={(event) => {
-        const touch = event.targetTouches[0];
-        const value = getValueFromPointer(touch.clientX);
-        onSlideMove?.(value);
-      }}
-      onSlideTouchEnd={() => (rectRef.current = undefined)}
-      onStepKeyDown={(event) => {
-        const isBackKey = BACK_KEYS[direction].includes(event.key);
-        onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
-      }}
-    >
-      <SliderOrientationContext.Provider
-        value={React.useMemo(() => ({ startEdge: 'left', endEdge: 'right', size: 'width' }), [])}
+    return (
+      <SliderPart
+        {...sliderProps}
+        ref={ref}
+        style={{
+          ...sliderProps.style,
+          ['--interop-ui-slider-thumb-transform' as any]: 'translateX(-50%)',
+        }}
+        data-orientation="horizontal"
+        onSlideMouseDown={(event) => {
+          const value = getValueFromPointer(event.clientX);
+          onSlideStart?.(value);
+        }}
+        onSlideMouseMove={(event) => {
+          const value = getValueFromPointer(event.clientX);
+          onSlideMove?.(value);
+        }}
+        onSlideMouseUp={() => (rectRef.current = undefined)}
+        onSlideTouchStart={(event) => {
+          const touch = event.targetTouches[0];
+          const value = getValueFromPointer(touch.clientX);
+          onSlideStart?.(value);
+        }}
+        onSlideTouchMove={(event) => {
+          const touch = event.targetTouches[0];
+          const value = getValueFromPointer(touch.clientX);
+          onSlideMove?.(value);
+        }}
+        onSlideTouchEnd={() => (rectRef.current = undefined)}
+        onStepKeyDown={(event) => {
+          const isBackKey = BACK_KEYS[direction].includes(event.key);
+          onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
+        }}
       >
-        {isDirectionLTR ? (
-          children
-        ) : (
-          <span
-            style={{
-              flexGrow: 1,
-              display: 'flex',
-              alignItems: 'center',
-              transform: 'rotate(180deg)',
-            }}
-          >
-            {children}
-          </span>
-        )}
-      </SliderOrientationContext.Provider>
-    </SliderPart>
-  );
-});
+        <SliderOrientationContext.Provider
+          value={React.useMemo(() => ({ startEdge: 'left', endEdge: 'right', size: 'width' }), [])}
+        >
+          {isDirectionLTR ? (
+            children
+          ) : (
+            <span
+              style={{
+                flexGrow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                transform: 'rotate(180deg)',
+              }}
+            >
+              {children}
+            </span>
+          )}
+        </SliderOrientationContext.Provider>
+      </SliderPart>
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SliderVertical
  * -----------------------------------------------------------------------------------------------*/
 
-const SliderVertical = forwardRefWithAs<
-  IntrinsicElement<typeof SliderPart>,
-  SliderOrientationOwnProps
->((props, forwardedRef) => {
-  const { min, max, children, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
-  const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
-  const ref = useComposedRefs(forwardedRef, sliderRef);
-  const rectRef = React.useRef<ClientRect>();
+const SliderVertical = forwardRefWithAs<typeof SliderPart, SliderOrientationOwnProps>(
+  (props, forwardedRef) => {
+    const { min, max, children, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
+    const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
+    const ref = useComposedRefs(forwardedRef, sliderRef);
+    const rectRef = React.useRef<ClientRect>();
 
-  function getValueFromPointer(pointerPosition: number) {
-    const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
-    const input: [number, number] = [0, rect.height];
-    const output: [number, number] = [max, min];
-    const value = linearScale(input, output);
+    function getValueFromPointer(pointerPosition: number) {
+      const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
+      const input: [number, number] = [0, rect.height];
+      const output: [number, number] = [max, min];
+      const value = linearScale(input, output);
 
-    rectRef.current = rect;
-    return value(pointerPosition - rect.top);
-  }
+      rectRef.current = rect;
+      return value(pointerPosition - rect.top);
+    }
 
-  return (
-    <SliderPart
-      {...sliderProps}
-      ref={ref}
-      style={{
-        ...sliderProps.style,
-        ['--interop-ui-slider-thumb-transform' as any]: 'translateY(50%)',
-      }}
-      data-orientation="vertical"
-      onSlideMouseDown={(event) => {
-        const value = getValueFromPointer(event.clientY);
-        onSlideStart?.(value);
-      }}
-      onSlideMouseMove={(event) => {
-        const value = getValueFromPointer(event.clientY);
-        onSlideMove?.(value);
-      }}
-      onSlideMouseUp={() => (rectRef.current = undefined)}
-      onSlideTouchStart={(event) => {
-        const touch = event.targetTouches[0];
-        const value = getValueFromPointer(touch.clientY);
-        onSlideStart?.(value);
-      }}
-      onSlideTouchMove={(event) => {
-        const touch = event.targetTouches[0];
-        const value = getValueFromPointer(touch.clientY);
-        onSlideMove?.(value);
-      }}
-      onSlideTouchEnd={() => (rectRef.current = undefined)}
-      onStepKeyDown={(event) => {
-        const isBackKey = BACK_KEYS.ltr.includes(event.key);
-        onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
-      }}
-    >
-      <SliderOrientationContext.Provider
-        value={React.useMemo(() => ({ startEdge: 'bottom', endEdge: 'top', size: 'height' }), [])}
+    return (
+      <SliderPart
+        {...sliderProps}
+        ref={ref}
+        style={{
+          ...sliderProps.style,
+          ['--interop-ui-slider-thumb-transform' as any]: 'translateY(50%)',
+        }}
+        data-orientation="vertical"
+        onSlideMouseDown={(event) => {
+          const value = getValueFromPointer(event.clientY);
+          onSlideStart?.(value);
+        }}
+        onSlideMouseMove={(event) => {
+          const value = getValueFromPointer(event.clientY);
+          onSlideMove?.(value);
+        }}
+        onSlideMouseUp={() => (rectRef.current = undefined)}
+        onSlideTouchStart={(event) => {
+          const touch = event.targetTouches[0];
+          const value = getValueFromPointer(touch.clientY);
+          onSlideStart?.(value);
+        }}
+        onSlideTouchMove={(event) => {
+          const touch = event.targetTouches[0];
+          const value = getValueFromPointer(touch.clientY);
+          onSlideMove?.(value);
+        }}
+        onSlideTouchEnd={() => (rectRef.current = undefined)}
+        onStepKeyDown={(event) => {
+          const isBackKey = BACK_KEYS.ltr.includes(event.key);
+          onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
+        }}
       >
-        {children}
-      </SliderOrientationContext.Provider>
-    </SliderPart>
-  );
-});
+        <SliderOrientationContext.Provider
+          value={React.useMemo(() => ({ startEdge: 'bottom', endEdge: 'top', size: 'height' }), [])}
+        >
+          {children}
+        </SliderOrientationContext.Provider>
+      </SliderPart>
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SliderPart
@@ -574,7 +576,9 @@ SliderRange.displayName = RANGE_NAME;
 const THUMB_NAME = 'SliderThumb';
 const THUMB_DEFAULT_TAG = 'span';
 
-const SliderThumb = forwardRefWithAs<IntrinsicElement<typeof SliderThumbImpl>>(
+type SliderThumbOwnProps = { value?: never; index?: never };
+
+const SliderThumb = forwardRefWithAs<typeof SliderThumbImpl, SliderThumbOwnProps>(
   (props, forwardedRef) => {
     const { ref: collectionRef, index } = useSliderCollectionItem();
     const ref = useComposedRefs(forwardedRef, collectionRef);
