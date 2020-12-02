@@ -2,20 +2,16 @@ import * as React from 'react';
 import {
   composeEventHandlers,
   createContext,
-  createStyleObj,
-  forwardRef,
   useCallbackRef,
   useControlledState,
-  RovingTabIndexProvider,
-  useRovingTabIndex,
   useComposedRefs,
-  useId,
 } from '@interop-ui/react-utils';
-import { Radio, styles as radioStyles } from './Radio';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { Radio, RadioIndicator } from './Radio';
 import { useLabelContext } from '@interop-ui/react-label';
 
-import type { RadioProps } from './Radio';
-import { cssReset } from '@interop-ui/utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
+import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
@@ -23,14 +19,12 @@ import { cssReset } from '@interop-ui/utils';
 const RADIO_GROUP_NAME = 'RadioGroup';
 const RADIO_GROUP_DEFAULT_TAG = 'div';
 
-type RadioGroupDOMProps = React.ComponentPropsWithoutRef<typeof RADIO_GROUP_DEFAULT_TAG>;
 type RadioGroupOwnProps = {
   value?: string;
   defaultValue?: string;
-  required?: RadioProps['required'];
+  required?: React.ComponentProps<typeof Radio>['required'];
   onValueChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
-type RadioGroupProps = Omit<RadioGroupDOMProps, 'onChange'> & RadioGroupOwnProps;
 
 type RadioGroupContextValue = {
   value: RadioGroupOwnProps['value'];
@@ -43,136 +37,126 @@ const [RadioGroupContext, useRadioGroupContext] = createContext<RadioGroupContex
   RADIO_GROUP_NAME
 );
 
-const RadioGroup = forwardRef<
-  typeof RADIO_GROUP_DEFAULT_TAG,
-  RadioGroupProps,
-  RadioGroupStaticProps
->(function RagioGroup(props, forwardedRef) {
-  const {
-    as: Comp = RADIO_GROUP_DEFAULT_TAG,
-    'aria-labelledby': ariaLabelledby,
-    defaultValue,
-    children,
-    value: valueProp,
-    required,
-    onValueChange,
-    ...groupProps
-  } = props;
-  const labelId = useLabelContext();
-  const labelledBy = ariaLabelledby || labelId;
-  const handleValueChange = useCallbackRef(onValueChange);
-  const [value, setValue] = useControlledState({
-    prop: valueProp,
-    defaultProp: defaultValue,
-  });
-
-  const context = React.useMemo(
-    () => ({
-      value,
+const RadioGroup = forwardRefWithAs<typeof RADIO_GROUP_DEFAULT_TAG, RadioGroupOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = RADIO_GROUP_DEFAULT_TAG,
+      'aria-labelledby': ariaLabelledby,
+      defaultValue,
+      children,
+      value: valueProp,
       required,
-      onValueChange: composeEventHandlers(handleValueChange, (event) => {
-        setValue(event.target.value);
-      }),
-    }),
-    [value, required, handleValueChange, setValue]
-  );
+      onValueChange,
+      ...groupProps
+    } = props;
+    const labelId = useLabelContext();
+    const labelledBy = ariaLabelledby || labelId;
+    const handleValueChange = useCallbackRef(onValueChange);
+    const [value, setValue] = useControlledState({
+      prop: valueProp,
+      defaultProp: defaultValue,
+    });
 
-  return (
-    <Comp
-      {...groupProps}
-      {...interopDataAttrObj('root')}
-      ref={forwardedRef}
-      role="radiogroup"
-      aria-labelledby={labelledBy}
-    >
-      <RadioGroupContext.Provider value={context}>
-        <RovingTabIndexProvider>{children}</RovingTabIndexProvider>
-      </RadioGroupContext.Provider>
-    </Comp>
-  );
-});
+    const context = React.useMemo(
+      () => ({
+        value,
+        required,
+        onValueChange: composeEventHandlers(handleValueChange, (event) => {
+          setValue(event.target.value);
+        }),
+      }),
+      [value, required, handleValueChange, setValue]
+    );
+
+    return (
+      <Comp
+        {...groupProps}
+        {...getPartDataAttrObj(RADIO_GROUP_NAME)}
+        ref={forwardedRef}
+        role="radiogroup"
+        aria-labelledby={labelledBy}
+      >
+        <RadioGroupContext.Provider value={context}>
+          <RovingFocusGroup loop>{children}</RovingFocusGroup>
+        </RadioGroupContext.Provider>
+      </Comp>
+    );
+  }
+);
+
+RadioGroup.displayName = RADIO_GROUP_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroupItem
  * -----------------------------------------------------------------------------------------------*/
 
-const ITEM_NAME = 'RadioGroup.Item';
-const ITEM_DEFAULT_TAG = 'button';
+const ITEM_NAME = 'RadioGroupItem';
 
-type RadioGroupItemProps = Omit<RadioProps, 'value' | 'as'> & { value: string };
+type RadioGroupItemOwnProps = { value: string };
 
-const RadioGroupItem = forwardRef<typeof ITEM_DEFAULT_TAG, RadioGroupItemProps>(
-  function RadioGroupItem(props, forwardedRef) {
-    const { as, required, ...itemProps } = props;
-    const id = `radio-group-item-${useId()}`;
+const RadioGroupItem = forwardRefWithAs<typeof Radio, RadioGroupItemOwnProps>(
+  (props, forwardedRef) => {
+    const { as, disabled, required, ...itemProps } = props;
     const context = useRadioGroupContext(ITEM_NAME);
     const radioRef = React.useRef<React.ElementRef<typeof Radio>>(null);
     const ref = useComposedRefs(forwardedRef, radioRef);
     const isChecked = context.value === props.value;
-    const handleChange = composeEventHandlers(props.onCheckedChange, context.onValueChange);
-    const { onFocus, onKeyDown, tabIndex } = useRovingTabIndex({
-      id,
-      /**
-       * Roving index will set all items to `tabIndex={-1}` unless one is selected. Radio groups
-       * can have no items selected by default, which would mean none are focusable. We need
-       * one/them to be focusable on page load to pass the space bar critieria here:
-       * https://w3c.github.io/aria-practices/examples/radio/radio-activedescendant.html#key-space
-       */
-      isSelected: !context.value || isChecked,
-      elementRef: radioRef,
-    });
+    const rovingFocusProps = useRovingFocus({ disabled, active: isChecked });
 
-    function handleFocus(event: React.FocusEvent<React.ElementRef<typeof Radio>>) {
-      onFocus(event);
-
-      /**
-       * Roving index will focus the radio and we need to check it when this happens.
-       * We do this imperatively instead of updating `context.value` because changing via
-       * state would not trigger change events (e.g. when in a form).
-       */
-      if (context.value !== undefined) {
-        radioRef.current?.click();
-      }
-    }
+    const handleChange = composeEventHandlers(itemProps.onCheckedChange, context.onValueChange);
+    const handleKeyDown = composeEventHandlers(itemProps.onKeyDown, rovingFocusProps.onKeyDown);
+    const handleMouseDown = composeEventHandlers(
+      itemProps.onMouseDown,
+      rovingFocusProps.onMouseDown
+    );
+    const handleFocus = composeEventHandlers(
+      itemProps.onFocus,
+      composeEventHandlers(rovingFocusProps.onFocus, () => {
+        /**
+         * Roving index will focus the radio and we need to check it when this happens.
+         * We do this imperatively instead of updating `context.value` because changing via
+         * state would not trigger change events (e.g. when in a form).
+         */
+        if (context.value !== undefined) {
+          radioRef.current?.click();
+        }
+      })
+    );
 
     return (
       <Radio
         as={as}
+        {...getPartDataAttrObj(ITEM_NAME)}
         {...itemProps}
-        {...interopDataAttrObj('item')}
+        {...rovingFocusProps}
+        disabled={disabled}
+        data-disabled={disabled ? '' : undefined}
         required={required ?? context.required}
         checked={isChecked}
         ref={ref}
-        tabIndex={tabIndex}
         onCheckedChange={handleChange}
-        onKeyDown={composeEventHandlers(itemProps.onKeyDown, onKeyDown)}
-        onFocus={composeEventHandlers(itemProps.onFocus, handleFocus, {
-          checkForDefaultPrevented: false,
-        })}
+        onKeyDown={handleKeyDown}
+        onMouseDown={handleMouseDown}
+        onFocus={handleFocus}
       />
     );
   }
 );
 
-/* ---------------------------------------------------------------------------------------------- */
+RadioGroupItem.displayName = ITEM_NAME;
 
-RadioGroup.Item = RadioGroupItem;
-RadioGroup.Indicator = Radio.Indicator;
+/* -------------------------------------------------------------------------------------------------
+ * RadioGroupIndicator
+ * -----------------------------------------------------------------------------------------------*/
 
-RadioGroup.displayName = RADIO_GROUP_NAME;
-RadioGroup.Item.displayName = ITEM_NAME;
-RadioGroup.Indicator.displayName = 'RadioGroup.Indicator';
+const INDICATOR_NAME = 'RadioGroupIndicator';
 
-interface RadioGroupStaticProps {
-  Item: typeof RadioGroupItem;
-  Indicator: typeof Radio.Indicator;
-}
-
-const [styles, interopDataAttrObj] = createStyleObj(RADIO_GROUP_NAME, {
-  root: cssReset(RADIO_GROUP_DEFAULT_TAG),
-  item: radioStyles.root,
-  indicator: radioStyles.indicator,
+const RadioGroupIndicator = forwardRefWithAs<typeof RadioIndicator>((props, forwardedRef) => {
+  return <RadioIndicator {...props} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
 });
 
-export { RadioGroup, styles };
-export type { RadioGroupProps, RadioGroupItemProps };
+RadioGroupIndicator.displayName = INDICATOR_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
+
+export { RadioGroup, RadioGroupItem, RadioGroupIndicator };

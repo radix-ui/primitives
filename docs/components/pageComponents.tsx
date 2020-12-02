@@ -2,14 +2,16 @@ import * as React from 'react';
 import {
   AspectRatio,
   Box,
-  Heading as RadixHeading,
-  Text,
+  Code,
   Divider as RadixDivider,
+  Heading as RadixHeading,
+  HeadingProps,
+  Text,
+  TextProps,
 } from '@modulz/radix';
-import { Code, Table, Thead, Tr, Th, Td, Tbody } from '@modulz/radix';
 import { QuickNavItem } from './QuickNav';
-
-import type { HeadingProps, TextProps } from '@modulz/radix';
+import { Kbd } from './Kbd';
+import { Caption, Table, Th, Thead, Tr, Tbody, Td, Tfoot } from './Table';
 
 function Hero() {
   return (
@@ -89,19 +91,88 @@ function Divider() {
   return <RadixDivider size={2} sx={{ mx: 'auto', my: 8 }} aria-hidden />;
 }
 
+const SAFARI_FIX_TH_STYLES = {
+  // Safari aligns th to the center when set to `unset`, other browsers align to the left. should be
+  // fixed in Radix
+  textAlign: 'left',
+} as const;
+
+function KeyboardInteractionTable({
+  interactions,
+}: {
+  interactions: { keys: string[]; description: React.ReactNode }[];
+}) {
+  return (
+    <React.Fragment>
+      <Table aria-label="Keyboard interactions">
+        <Thead>
+          <Tr>
+            <Th scope="col" sx={SAFARI_FIX_TH_STYLES}>
+              Key
+            </Th>
+            <Th scope="col" sx={SAFARI_FIX_TH_STYLES}>
+              Function
+            </Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {interactions.map(({ keys, description }, i) => (
+            <Tr key={i}>
+              <Td
+                // Td doesn't support `as` prop, but this should be a `th` since it's really a
+                // column heading. `as` still works but a) gives us a TS error, and b) breaks the
+                // style a bit because of how radix uses `&:last-of-type` for the `Td` component. We
+                // need to fix this in Radix, but I'm patching the styles for now.
+                // @see https://github.com/modulz/radix/issues/285
+                // @ts-ignore
+                as="th"
+                scope="row"
+                sx={{
+                  ...SAFARI_FIX_TH_STYLES,
+                  pr: 2,
+                  whiteSpace: 'nowrap',
+                  '* + *': {
+                    marginLeft: 2,
+                  },
+                  // See comment above
+                  '&:last-of-type': {
+                    pr: 2,
+                  },
+                }}
+              >
+                {keys.map((key) => (
+                  <Kbd key={key}>{key}</Kbd>
+                ))}
+              </Td>
+              <Td>
+                <Text as="span" size={3}>
+                  {description}
+                </Text>
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+    </React.Fragment>
+  );
+}
+
 export {
-  Hero,
-  Title,
-  Description,
-  Heading,
-  SubHeading,
-  Paragraph,
-  Divider,
+  Caption,
   Code,
+  Description,
+  Divider,
+  Heading,
+  Hero,
+  KeyboardInteractionTable,
+  Paragraph,
+  SubHeading,
   Table,
-  Thead,
-  Tr,
-  Th,
-  Td,
   Tbody,
+  Td,
+  Th,
+  Thead,
+  Tfoot,
+  Title,
+  Tr,
 };

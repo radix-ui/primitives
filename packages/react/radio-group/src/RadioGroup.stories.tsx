@@ -1,43 +1,31 @@
 import * as React from 'react';
-import { Label as LabelPrimitive, styles as labelStyles } from '@interop-ui/react-label';
-import { RadioGroup, styles } from './RadioGroup';
+import { Label as LabelPrimitive } from '@interop-ui/react-label';
+import { RadioGroup, RadioGroupItem, RadioGroupIndicator } from './RadioGroup';
+import { styled } from '../../../../stitches.config';
+import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 
 export default { title: 'Components/RadioGroup' };
 
-export const Basic = () => (
-  <RadioGroup style={styles.root} defaultValue="1">
-    <RadioGroup.Item style={styles.item} value="1">
-      <RadioGroup.Indicator style={styles.indicator} />
-    </RadioGroup.Item>
-    <RadioGroup.Item style={styles.item} value="2">
-      <RadioGroup.Indicator style={styles.indicator} />
-    </RadioGroup.Item>
-    <RadioGroup.Item style={styles.item} value="3">
-      <RadioGroup.Indicator style={styles.indicator} />
-    </RadioGroup.Item>
-  </RadioGroup>
-);
-
-export const InlineStyle = () => (
+export const Styled = () => (
   <Label>
     Favourite pet
-    <RadioGroup as={Root} defaultValue="1">
+    <RadioGroup as={StyledRoot} defaultValue="1">
       <Label>
-        <RadioGroup.Item as={Item} value="1">
-          <RadioGroup.Indicator as={Indicator} />
-        </RadioGroup.Item>
+        <RadioGroupItem as={StyledItem} value="1">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
         Cat
       </Label>{' '}
       <Label>
-        <RadioGroup.Item as={Item} value="2">
-          <RadioGroup.Indicator as={Indicator} />
-        </RadioGroup.Item>
+        <RadioGroupItem as={StyledItem} value="2">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
         Dog
       </Label>{' '}
       <Label>
-        <RadioGroup.Item as={Item} value="3">
-          <RadioGroup.Indicator as={Indicator} />
-        </RadioGroup.Item>
+        <RadioGroupItem as={StyledItem} value="3">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
         Rabbit
       </Label>
     </RadioGroup>
@@ -49,67 +37,85 @@ export const Controlled = () => {
 
   return (
     <RadioGroup
-      as={Root}
+      as={StyledRoot}
       value={value}
       onValueChange={(event: React.ChangeEvent<HTMLInputElement>) => setValue(event.target.value)}
     >
-      <RadioGroup.Item as={Item} value="1">
-        <RadioGroup.Indicator as={Indicator} />
-      </RadioGroup.Item>
-      <RadioGroup.Item as={Item} value="2">
-        <RadioGroup.Indicator as={Indicator} />
-      </RadioGroup.Item>
-      <RadioGroup.Item as={Item} value="3">
-        <RadioGroup.Indicator as={Indicator} />
-      </RadioGroup.Item>
+      <RadioGroupItem as={StyledItem} value="1">
+        <RadioGroupIndicator as={StyledIndicator} />
+      </RadioGroupItem>
+      <RadioGroupItem as={StyledItem} value="2">
+        <RadioGroupIndicator as={StyledIndicator} />
+      </RadioGroupItem>
+      <RadioGroupItem as={StyledItem} value="3">
+        <RadioGroupIndicator as={StyledIndicator} />
+      </RadioGroupItem>
     </RadioGroup>
   );
 };
 
-/* -------------------------------------------------------------------------------------------------
- * Label
- * -----------------------------------------------------------------------------------------------*/
+export const Unset = () => (
+  <Label>
+    Favourite pet
+    <RadioGroup as={StyledRoot}>
+      <Label>
+        <RadioGroupItem as={StyledItem} value="1">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
+        Cat
+      </Label>{' '}
+      <Label>
+        <RadioGroupItem as={StyledItem} value="2" disabled>
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
+        Dog
+      </Label>{' '}
+      <Label>
+        <RadioGroupItem as={StyledItem} value="3">
+          <RadioGroupIndicator as={StyledIndicator} />
+        </RadioGroupItem>
+        Rabbit
+      </Label>
+    </RadioGroup>
+  </Label>
+);
 
-const Label = (props: any) => <LabelPrimitive {...props} style={labelStyles.root} />;
+const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL__ROOT} />;
 
-/* -------------------------------------------------------------------------------------------------
- * Styled components
- * -----------------------------------------------------------------------------------------------*/
+const StyledRoot = styled('div', {});
 
-const Root = React.forwardRef((props: any, forwardedRef) => (
-  <RadioGroup {...props} ref={forwardedRef} style={styles.root} />
-));
+const RECOMMENDED_CSS__RADIO_GROUP__ITEM = {
+  // better default alignment
+  verticalAlign: 'middle',
+};
 
-const Item = React.forwardRef((props: any, forwardedRef) => (
-  <button
-    {...props}
-    type="button"
-    ref={forwardedRef}
-    style={{
-      ...styles.item,
-      width: 30,
-      height: 30,
-      display: 'inline-grid',
-      placeItems: 'center',
-      border: '1px solid gainsboro',
-      borderRadius: 9999,
-    }}
-  />
-));
+const StyledItem = styled('button', {
+  ...RECOMMENDED_CSS__RADIO_GROUP__ITEM,
+  width: 30,
+  height: 30,
+  display: 'inline-grid',
+  padding: 0,
+  placeItems: 'center',
+  border: '1px solid $gray300',
+  borderRadius: 9999,
 
-const Indicator = React.forwardRef((props: any, forwardedRef) => (
-  <span
-    {...props}
-    ref={forwardedRef}
-    style={{
-      ...styles.indicator,
-      width: 18,
-      height: 18,
-      backgroundColor: 'dodgerblue',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 'inherit',
-    }}
-  />
-));
+  '&:focus': {
+    outline: 'none',
+    borderColor: '$red',
+    boxShadow: '0 0 0 1px $red',
+  },
+
+  '&[data-disabled]': {
+    opacity: 0.5,
+  },
+});
+
+const StyledIndicator = styled('span', {
+  width: 18,
+  height: 18,
+  backgroundColor: '$red',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: 'inherit',
+});

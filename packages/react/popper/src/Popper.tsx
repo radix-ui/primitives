@@ -1,16 +1,13 @@
 import * as React from 'react';
 import { getPlacementData } from '@interop-ui/popper';
 import { useSize } from '@interop-ui/react-use-size';
-import {
-  createContext,
-  forwardRef,
-  useRect,
-  createStyleObj,
-  useComposedRefs,
-} from '@interop-ui/react-utils';
-import { Side, Align, cssReset } from '@interop-ui/utils';
-import { ArrowProps, Arrow } from '@interop-ui/react-arrow';
+import { createContext, useRect, useComposedRefs } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { Arrow } from '@interop-ui/react-arrow';
 import { useDebugContext } from '@interop-ui/react-debug-context';
+import { getPartDataAttrObj } from '@interop-ui/utils';
+
+import type { Side, Align } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -35,7 +32,6 @@ const [PopperContext, usePopperContext] = createContext<PopperContextValue>(
 const POPPER_NAME = 'Popper';
 const POPPER_DEFAULT_TAG = 'div';
 
-type PopperDOMProps = React.ComponentPropsWithoutRef<typeof POPPER_DEFAULT_TAG>;
 type PopperOwnProps = {
   anchorRef: React.RefObject<HTMLElement>;
   side?: Side;
@@ -45,14 +41,8 @@ type PopperOwnProps = {
   collisionTolerance?: number;
   shouldAvoidCollisions?: boolean;
 };
-type PopperProps = PopperDOMProps & PopperOwnProps;
 
-interface PopperStaticProps {
-  Content: typeof PopperContent;
-  Arrow: typeof PopperArrow;
-}
-
-const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticProps>(
+const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
   (props, forwardedRef) => {
     const {
       as: Comp = POPPER_DEFAULT_TAG,
@@ -98,7 +88,7 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
     return (
       <div style={popperStyles}>
         <Comp
-          {...interopDataAttrObj('root')}
+          {...getPartDataAttrObj(POPPER_NAME)}
           {...popperProps}
           style={{
             ...popperProps.style,
@@ -117,44 +107,39 @@ const Popper = forwardRef<typeof POPPER_DEFAULT_TAG, PopperProps, PopperStaticPr
   }
 );
 
+Popper.displayName = POPPER_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * PopperContent
  * -----------------------------------------------------------------------------------------------*/
 
-const CONTENT_NAME = 'Popper.Content';
+const CONTENT_NAME = 'PopperContent';
 const CONTENT_DEFAULT_TAG = 'div';
 
-type PopperContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type PopperContentOwnProps = {};
-type PopperContentProps = PopperContentDOMProps & PopperContentOwnProps;
+const PopperContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = CONTENT_DEFAULT_TAG, ...contentProps } = props;
+  const { contentRef } = usePopperContext(CONTENT_NAME);
+  const composedContentRef = useComposedRefs(forwardedRef, contentRef);
+  return <Comp {...getPartDataAttrObj(CONTENT_NAME)} {...contentProps} ref={composedContentRef} />;
+});
 
-const PopperContent = forwardRef<typeof CONTENT_DEFAULT_TAG, PopperContentProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = CONTENT_DEFAULT_TAG, ...contentProps } = props;
-    const { contentRef } = usePopperContext(CONTENT_NAME);
-    const composedContentRef = useComposedRefs(forwardedRef, contentRef);
-
-    return <Comp {...interopDataAttrObj('content')} {...contentProps} ref={composedContentRef} />;
-  }
-);
+PopperContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopperArrow
  * -----------------------------------------------------------------------------------------------*/
 
-const ARROW_NAME = 'Popper.Arrow';
-const ARROW_DEFAULT_TAG = 'svg';
+const ARROW_NAME = 'PopperArrow';
 
 type PopperArrowOwnProps = {
   offset?: number;
 };
-type PopperArrowProps = ArrowProps & PopperArrowOwnProps;
 
-const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(function PopperArrow(
+const PopperArrow = forwardRefWithAs<typeof Arrow, PopperArrowOwnProps>(function PopperArrow(
   props,
   forwardedRef
 ) {
-  const { as: Comp = Arrow, offset, ...arrowProps } = props;
+  const { offset, ...arrowProps } = props;
   const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
 
   // send the Arrow's offset up to Popper
@@ -173,33 +158,23 @@ const PopperArrow = forwardRef<typeof ARROW_DEFAULT_TAG, PopperArrowProps>(funct
           pointerEvents: 'auto',
         }}
       >
-        <Comp {...interopDataAttrObj('arrow')} {...arrowProps} ref={forwardedRef} />
+        <Arrow
+          {...getPartDataAttrObj(ARROW_NAME)}
+          {...arrowProps}
+          ref={forwardedRef}
+          style={{
+            ...arrowProps.style,
+            // ensures the element can be measured correctly (mostly for if SVG)
+            display: 'block',
+          }}
+        />
       </span>
     </span>
   );
 });
 
+PopperArrow.displayName = ARROW_NAME;
+
 /* -----------------------------------------------------------------------------------------------*/
 
-Popper.Content = PopperContent;
-Popper.Arrow = PopperArrow;
-
-Popper.displayName = POPPER_NAME;
-Popper.Content.displayName = CONTENT_NAME;
-Popper.Arrow.displayName = ARROW_NAME;
-
-const [styles, interopDataAttrObj] = createStyleObj(POPPER_NAME, {
-  root: {
-    ...cssReset(POPPER_DEFAULT_TAG),
-    transformOrigin: 'var(--interop-popper-transform-origin)',
-  },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-  },
-  arrow: {
-    ...cssReset(ARROW_DEFAULT_TAG),
-  },
-});
-
-export type { PopperProps, PopperContentProps, PopperArrowProps };
-export { Popper, styles };
+export { Popper, PopperContent, PopperArrow };

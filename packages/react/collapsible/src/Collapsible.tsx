@@ -1,17 +1,26 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
 import {
   createContext,
-  createStyleObj,
-  forwardRef,
   useId,
   composeEventHandlers,
   useControlledState,
 } from '@interop-ui/react-utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
- * Root level context
+ * Collapsible
  * -----------------------------------------------------------------------------------------------*/
+
+const COLLAPSIBLE_NAME = 'Collapsible';
+const COLLAPSIBLE_DEFAULT_TAG = 'div';
+
+type CollapsibleOwnProps = {
+  defaultIsOpen?: boolean;
+  isOpen?: boolean;
+  disabled?: boolean;
+  onToggle?(isOpen?: boolean): void;
+};
 
 type CollapsibleContextValue = {
   contentId?: string;
@@ -23,175 +32,117 @@ type CollapsibleContextValue = {
 
 const [CollapsibleContext, useCollapsibleContext] = createContext<CollapsibleContextValue>(
   'CollapsibleContext',
-  'Collapsible'
+  COLLAPSIBLE_NAME
 );
 
-/* -------------------------------------------------------------------------------------------------
- * CollapsibleButton
- * -----------------------------------------------------------------------------------------------*/
-
-const BUTTON_NAME = 'Collapsible.Button';
-const BUTTON_DEFAULT_TAG = 'button';
-
-type CollapsibleButtonDOMProps = React.ComponentPropsWithoutRef<typeof BUTTON_DEFAULT_TAG>;
-type CollapsibleButtonOwnProps = {};
-type CollapsibleButtonProps = CollapsibleButtonDOMProps & CollapsibleButtonOwnProps;
-
-const CollapsibleButton = forwardRef<typeof BUTTON_DEFAULT_TAG, CollapsibleButtonProps>(
+const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, CollapsibleOwnProps>(
   (props, forwardedRef) => {
-    const { as: Comp = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
-    const context = useCollapsibleContext(BUTTON_NAME);
+    const {
+      as: Comp = COLLAPSIBLE_DEFAULT_TAG,
+      id: idProp,
+      children,
+      isOpen: isOpenProp,
+      defaultIsOpen,
+      disabled: isDisabled,
+      onToggle,
+      ...collapsibleProps
+    } = props;
 
-    return (
-      <Comp
-        {...interopDataAttrObj('button')}
-        ref={forwardedRef}
-        aria-controls={context.contentId}
-        aria-expanded={context.isOpen || false}
-        data-state={getState(context.isOpen)}
-        {...buttonProps}
-        onClick={composeEventHandlers(onClick, context.toggle)}
-        disabled={context.isDisabled}
-      />
+    const [isOpen, setIsOpen] = useControlledState({
+      prop: isOpenProp,
+      defaultProp: defaultIsOpen,
+      onChange: onToggle,
+    });
+    const [contentId, setContentId] = React.useState<string>();
+    const context = React.useMemo(
+      () => ({
+        contentId,
+        isOpen,
+        isDisabled,
+        toggle: () => setIsOpen((prevIsOpen) => !prevIsOpen),
+        setContentId,
+      }),
+      [contentId, isDisabled, isOpen, setIsOpen]
     );
-  }
-);
-
-/* -------------------------------------------------------------------------------------------------
- * CollapsibleContent
- * -----------------------------------------------------------------------------------------------*/
-
-const CONTENT_NAME = 'Collapsible.Content';
-const CONTENT_DEFAULT_TAG = 'div';
-
-type CollapsibleContentDOMProps = React.ComponentPropsWithoutRef<typeof CONTENT_DEFAULT_TAG>;
-type CollapsibleContentOwnProps = {};
-type CollapsibleContentProps = CollapsibleContentOwnProps & CollapsibleContentDOMProps;
-
-const CollapsibleContent = forwardRef<typeof CONTENT_DEFAULT_TAG, CollapsibleContentProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = CONTENT_DEFAULT_TAG, id: idProp, children, ...contentProps } = props;
-    const { setContentId, isOpen } = useCollapsibleContext(CONTENT_NAME);
-    const generatedId = `collapsible-${useId()}`;
-    const id = idProp || generatedId;
-
-    React.useEffect(() => {
-      setContentId(id);
-    }, [id, setContentId]);
 
     return (
       <Comp
-        {...interopDataAttrObj('content')}
+        {...getPartDataAttrObj(COLLAPSIBLE_NAME)}
+        {...collapsibleProps}
+        data-state={getState(context.isOpen)}
         ref={forwardedRef}
-        {...contentProps}
-        id={id}
-        hidden={!isOpen}
       >
-        {isOpen && children}
+        <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
       </Comp>
     );
   }
 );
 
+Collapsible.displayName = COLLAPSIBLE_NAME;
+
 /* -------------------------------------------------------------------------------------------------
- * Collapsible
+ * CollapsibleButton
  * -----------------------------------------------------------------------------------------------*/
 
-const COLLAPSIBLE_NAME = 'Collapsible';
-const COLLAPSIBLE_DEFAULT_TAG = 'div';
+const BUTTON_NAME = 'CollapsibleButton';
+const BUTTON_DEFAULT_TAG = 'button';
 
-type CollapsibleDOMProps = Omit<
-  React.ComponentPropsWithoutRef<typeof COLLAPSIBLE_DEFAULT_TAG>,
-  'onToggle'
->;
-type CollapsibleOwnProps = {
-  defaultIsOpen?: boolean;
-  isOpen?: boolean;
-  disabled?: boolean;
-  onToggle?(isOpen?: boolean): void;
-};
-type CollapsibleProps = CollapsibleDOMProps & CollapsibleOwnProps;
-
-interface CollapsibleStaticProps {
-  Button: typeof CollapsibleButton;
-  Content: typeof CollapsibleContent;
-}
-
-const Collapsible = forwardRef<
-  typeof COLLAPSIBLE_DEFAULT_TAG,
-  CollapsibleProps,
-  CollapsibleStaticProps
->((props, forwardedRef) => {
-  const {
-    as: Comp = COLLAPSIBLE_DEFAULT_TAG,
-    id: idProp,
-    children,
-    isOpen: isOpenProp,
-    defaultIsOpen,
-    disabled: isDisabled,
-    onToggle,
-    ...collapsibleProps
-  } = props;
-
-  const [isOpen, setIsOpen] = useControlledState({
-    prop: isOpenProp,
-    defaultProp: defaultIsOpen,
-    onChange: onToggle,
-  });
-  const [contentId, setContentId] = React.useState<string>();
-  const context = React.useMemo(
-    () => ({
-      contentId,
-      isOpen,
-      isDisabled,
-      toggle: () => setIsOpen((prevIsOpen) => !prevIsOpen),
-      setContentId,
-    }),
-    [contentId, isDisabled, isOpen, setIsOpen]
-  );
+const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
+  const context = useCollapsibleContext(BUTTON_NAME);
 
   return (
     <Comp
-      {...interopDataAttrObj('root')}
-      {...collapsibleProps}
-      data-state={getState(context.isOpen)}
+      {...getPartDataAttrObj(BUTTON_NAME)}
       ref={forwardedRef}
+      aria-controls={context.contentId}
+      aria-expanded={context.isOpen || false}
+      data-state={getState(context.isOpen)}
+      {...buttonProps}
+      onClick={composeEventHandlers(onClick, context.toggle)}
+      disabled={context.isDisabled}
+    />
+  );
+});
+
+CollapsibleButton.displayName = BUTTON_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * CollapsibleContent
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONTENT_NAME = 'CollapsibleContent';
+const CONTENT_DEFAULT_TAG = 'div';
+
+const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = CONTENT_DEFAULT_TAG, id: idProp, children, ...contentProps } = props;
+  const { setContentId, isOpen } = useCollapsibleContext(CONTENT_NAME);
+  const generatedId = `collapsible-${useId()}`;
+  const id = idProp || generatedId;
+
+  React.useEffect(() => {
+    setContentId(id);
+  }, [id, setContentId]);
+
+  return (
+    <Comp
+      {...getPartDataAttrObj(CONTENT_NAME)}
+      ref={forwardedRef}
+      {...contentProps}
+      id={id}
+      hidden={!isOpen}
     >
-      <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
+      {isOpen && children}
     </Comp>
   );
 });
 
-Collapsible.Button = CollapsibleButton;
-Collapsible.Content = CollapsibleContent;
+CollapsibleContent.displayName = CONTENT_NAME;
 
-Collapsible.displayName = COLLAPSIBLE_NAME;
-Collapsible.Button.displayName = BUTTON_NAME;
-Collapsible.Content.displayName = CONTENT_NAME;
-
-const [styles, interopDataAttrObj] = createStyleObj(COLLAPSIBLE_NAME, {
-  root: {
-    ...cssReset(COLLAPSIBLE_DEFAULT_TAG),
-  },
-  button: {
-    ...cssReset(BUTTON_DEFAULT_TAG),
-    display: 'block',
-    width: '100%',
-    textAlign: 'inherit',
-    userSelect: 'none',
-
-    '&:disabled': {
-      pointerEvents: 'none',
-    },
-  },
-  content: {
-    ...cssReset(CONTENT_DEFAULT_TAG),
-  },
-});
-
-export type { CollapsibleProps, CollapsibleButtonProps, CollapsibleContentProps };
-export { Collapsible, styles };
+/* -----------------------------------------------------------------------------------------------*/
 
 function getState(isOpen?: boolean) {
   return isOpen ? 'open' : 'closed';
 }
+
+export { Collapsible, CollapsibleButton, CollapsibleContent };

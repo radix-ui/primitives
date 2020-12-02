@@ -12,18 +12,17 @@ $ npm install @interop-ui/react-avatar
 
 ```js
 import * as React from 'react';
-import { Avatar, styles } from '@interop-ui/react-avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@interop-ui/react-avatar';
 
 function MyComponent(props) {
   return (
-    <Avatar {...props} style={{ ...styles.root, ...props.style }}>
-      <Avatar.Image
+    <Avatar>
+      <AvatarImage
         alt={props.userDisplayName}
         src={props.userAvatar}
-        style={styles.image}
         onLoadingStatusChange={() => props.loadingCallback()}
       />
-      <Avatar.Fallback>{props.userInitials}</Avatar.Fallback>
+      <AvatarFallback>{props.userInitials}</AvatarFallback>
     </Avatar>
   );
 }

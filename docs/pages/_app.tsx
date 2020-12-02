@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { AppProps } from 'next/app';
 import { MDXProvider } from '@mdx-js/react';
 import Head from 'next/head';
@@ -13,16 +13,22 @@ const GlobalStyles = createGlobalStyle`
 		color: ${Radix.theme.colors.white};
 	}
 
-	/* reset selection for live code blocks */
+  /* reset selection for live code blocks */
+  .react-live-code-block,
 	.react-live-code-block textarea {
-		outline: none;
+    outline: none;
+  }
 
-		&::selection {
-			background-color: ${Radix.theme.colors.blue300};
-		}
+	.react-live-code-block textarea::selection {
+    background-color: ${Radix.theme.colors.blue300};
 	}
 
   svg { vertical-align: middle }
+
+  summary {
+    cursor: pointer;
+    user-select: none;
+  }
 `;
 
 function App({ Component, pageProps, router }: AppProps) {

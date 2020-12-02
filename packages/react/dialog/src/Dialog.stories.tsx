@@ -1,41 +1,16 @@
 import * as React from 'react';
-import { Dialog, styles } from './Dialog';
-
-import type { DialogContentProps } from './Dialog';
+import { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogClose } from './Dialog';
+import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Dialog' };
 
-export const Basic = () => (
+export const Styled = () => (
   <Dialog>
-    <Dialog.Trigger style={styles.trigger}>open</Dialog.Trigger>
-    <Dialog.Overlay style={styles.overlay} />
-    <Dialog.Content style={styles.content}>
-      <Dialog.Close style={styles.close}>close</Dialog.Close>
-    </Dialog.Content>
-  </Dialog>
-);
-
-export const InlineStyle = () => (
-  <Dialog>
-    <Dialog.Trigger>open</Dialog.Trigger>
-    <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
-    <Dialog.Content
-      style={{
-        ...styles.content,
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        background: 'white',
-        minWidth: 500,
-        minHeight: 300,
-        padding: 50,
-        borderRadius: 10,
-        backgroundColor: 'white',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
-      }}
-    >
-      <Dialog.Close>close</Dialog.Close>
-    </Dialog.Content>
+    <DialogTrigger as={StyledTrigger}>open</DialogTrigger>
+    <DialogOverlay as={StyledOverlay} />
+    <DialogContent as={StyledContent}>
+      <DialogClose as={StyledClose}>close</DialogClose>
+    </DialogContent>
   </Dialog>
 );
 
@@ -43,11 +18,11 @@ export const Controlled = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   return (
     <Dialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
-      <Dialog.Trigger>{isOpen ? 'close' : 'open'}</Dialog.Trigger>
-      <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
-      <Dialog.Content as={Content}>
-        <Dialog.Close>close</Dialog.Close>
-      </Dialog.Content>
+      <DialogTrigger>{isOpen ? 'close' : 'open'}</DialogTrigger>
+      <DialogOverlay as={StyledOverlay} />
+      <DialogContent as={StyledContent}>
+        <DialogClose>close</DialogClose>
+      </DialogContent>
     </Dialog>
   );
 };
@@ -55,10 +30,10 @@ export const Controlled = () => {
 export const FocusTrap = () => (
   <>
     <Dialog>
-      <Dialog.Trigger>open</Dialog.Trigger>
-      <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
-      <Dialog.Content as={Content}>
-        <Dialog.Close>close</Dialog.Close>
+      <DialogTrigger>open</DialogTrigger>
+      <DialogOverlay as={StyledOverlay} />
+      <DialogContent as={StyledContent}>
+        <DialogClose>close</DialogClose>
         <div>
           <label htmlFor="firstName">First Name</label>
           <input type="text" id="firstName" placeholder="John" />
@@ -68,7 +43,7 @@ export const FocusTrap = () => (
 
           <button type="submit">Send</button>
         </div>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
 
     <p>These elements can't be focused when the dialog is opened.</p>
@@ -83,10 +58,10 @@ export const CustomFocus = () => {
   return (
     <>
       <Dialog>
-        <Dialog.Trigger>open</Dialog.Trigger>
-        <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
-        <Dialog.Content
-          as={Content}
+        <DialogTrigger>open</DialogTrigger>
+        <DialogOverlay as={StyledOverlay} />
+        <DialogContent
+          as={StyledContent}
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             firstNameRef.current?.focus();
@@ -96,7 +71,7 @@ export const CustomFocus = () => {
             searchFieldRef.current?.focus();
           }}
         >
-          <Dialog.Close>close</Dialog.Close>
+          <DialogClose>close</DialogClose>
 
           <div>
             <p>The first name input will receive the focus after opening the dialog.</p>
@@ -108,7 +83,7 @@ export const CustomFocus = () => {
 
             <button type="submit">Send</button>
           </div>
-        </Dialog.Content>
+        </DialogContent>
       </Dialog>
 
       <div>
@@ -121,46 +96,60 @@ export const CustomFocus = () => {
 
 export const NoEscapeDismiss = () => (
   <Dialog>
-    <Dialog.Trigger>open</Dialog.Trigger>
-    <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
-    <Dialog.Content as={Content} onEscapeKeyDown={(event) => event.preventDefault()}>
-      <Dialog.Close>close</Dialog.Close>
-    </Dialog.Content>
+    <DialogTrigger>open</DialogTrigger>
+    <DialogOverlay as={StyledOverlay} />
+    <DialogContent as={StyledContent} onEscapeKeyDown={(event) => event.preventDefault()}>
+      <DialogClose>close</DialogClose>
+    </DialogContent>
   </Dialog>
 );
 
 export const NoInteractOutsideDismiss = () => (
   <Dialog>
-    <Dialog.Trigger>open</Dialog.Trigger>
-    <Dialog.Overlay style={{ ...styles.overlay, backgroundColor: 'black', opacity: 0.2 }} />
-    <Dialog.Content as={Content} onPointerDownOutside={(event) => event.preventDefault()}>
-      <Dialog.Close>close</Dialog.Close>
-    </Dialog.Content>
+    <DialogTrigger>open</DialogTrigger>
+    <DialogOverlay as={StyledOverlay} />
+    <DialogContent as={StyledContent} onPointerDownOutside={(event) => event.preventDefault()}>
+      <DialogClose>close</DialogClose>
+    </DialogContent>
   </Dialog>
 );
 
-const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(function Content(
-  props,
-  forwardedRef
-) {
-  return (
-    <div
-      {...props}
-      ref={forwardedRef}
-      style={{
-        ...styles.content,
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        background: 'white',
-        minWidth: 500,
-        minHeight: 300,
-        padding: 50,
-        borderRadius: 10,
-        backgroundColor: 'white',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
-        ...props.style,
-      }}
-    />
-  );
+const StyledTrigger = styled('button', {});
+
+const RECOMMENDED_CSS__DIALOG__OVERLAY: any = {
+  // ensures overlay is positionned correctly
+  position: 'fixed',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+};
+
+const StyledOverlay = styled('div', {
+  ...RECOMMENDED_CSS__DIALOG__OVERLAY,
+  backgroundColor: 'black',
+  opacity: 0.2,
 });
+
+const RECOMMENDED_CSS__DIALOG__CONTENT: any = {
+  // ensures good default position for content
+  position: 'fixed',
+  top: 0,
+  left: 0,
+};
+
+const StyledContent = styled('div', {
+  ...RECOMMENDED_CSS__DIALOG__CONTENT,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  background: 'white',
+  minWidth: 300,
+  minHeight: 150,
+  padding: 50,
+  borderRadius: 10,
+  backgroundColor: 'white',
+  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
+});
+
+const StyledClose = styled('button', {});

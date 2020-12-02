@@ -12,17 +12,12 @@ import * as React from 'react';
 import {
   composeEventHandlers,
   createContext,
-  createStyleObj,
-  forwardRef,
-  RovingTabIndexProvider,
-  useAccessibleMouseDown,
-  useComposedRefs,
   useControlledState,
   useId,
-  useRovingTabIndex,
-  ForwardRefExoticComponentWithAs,
 } from '@interop-ui/react-utils';
-import { cssReset, makeId } from '@interop-ui/utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
+import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -32,8 +27,8 @@ type TabsContextValue = {
   tabsId: string;
   selectedId?: string;
   setSelectedId?: (id: string) => void;
-  orientation?: TabsProps['orientation'];
-  activationMode?: TabsProps['activationMode'];
+  orientation?: TabsOwnProps['orientation'];
+  activationMode?: TabsOwnProps['activationMode'];
   shouldLoop?: boolean;
 };
 
@@ -46,7 +41,6 @@ const [TabsContext, useTabsContext] = createContext<TabsContextValue>('TabsConte
 const TABS_NAME = 'Tabs';
 const TABS_DEFAULT_TAG = 'div';
 
-type TabsDOMProps = Omit<React.ComponentProps<typeof TABS_DEFAULT_TAG>, 'onSelect'>;
 type TabsOwnProps = {
   /** The id of the selected tab, if controlled */
   selectedId?: string;
@@ -65,9 +59,8 @@ type TabsOwnProps = {
   /** Whether tab navigation loops around or not (default: true) */
   shouldLoop?: boolean;
 };
-type TabsProps = TabsDOMProps & TabsOwnProps;
 
-const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props, forwardedRef) {
+const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = TABS_DEFAULT_TAG,
     children,
@@ -104,209 +97,165 @@ const Tabs = forwardRef<typeof TABS_DEFAULT_TAG, TabsProps>(function Tabs(props,
 
   return (
     <TabsContext.Provider value={ctx}>
-      <Comp {...interopDataAttrObj('tabs')} ref={forwardedRef} id={tabsId} {...tabsProps}>
+      <Comp
+        {...getPartDataAttrObj(TABS_NAME)}
+        ref={forwardedRef}
+        id={tabsId}
+        data-orientation={orientation}
+        {...tabsProps}
+      >
         {children}
       </Comp>
     </TabsContext.Provider>
   );
-}) as ITabs;
+});
+
+Tabs.displayName = TABS_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TabsList
  * -----------------------------------------------------------------------------------------------*/
 
-const TAB_LIST_NAME = 'Tabs.List';
+const TAB_LIST_NAME = 'TabsList';
 const TAB_LIST_DEFAULT_TAG = 'div';
 
-type TabsListProps = React.ComponentProps<typeof TAB_LIST_DEFAULT_TAG>;
-
-const TabsList = forwardRef<typeof TAB_LIST_DEFAULT_TAG, TabsListProps>(function TabsList(
-  props,
-  forwardedRef
-) {
+const TabsList = forwardRefWithAs<typeof TAB_LIST_DEFAULT_TAG>((props, forwardedRef) => {
   const { orientation, shouldLoop } = useTabsContext(TAB_LIST_NAME);
-  const { as: Comp = TAB_LIST_DEFAULT_TAG, ...otherProps } = props;
+  const { as: Comp = TAB_LIST_DEFAULT_TAG, children, ...otherProps } = props;
 
   return (
-    <RovingTabIndexProvider orientation={orientation} shouldLoop={shouldLoop}>
-      <Comp
-        {...interopDataAttrObj('tabList')}
-        data-orientation={orientation}
-        role="tablist"
-        aria-orientation={orientation}
-        ref={forwardedRef}
-        {...otherProps}
-      />
-    </RovingTabIndexProvider>
+    <Comp
+      {...getPartDataAttrObj(TAB_LIST_NAME)}
+      data-orientation={orientation}
+      role="tablist"
+      aria-orientation={orientation}
+      ref={forwardedRef}
+      {...otherProps}
+    >
+      <RovingFocusGroup orientation={orientation} loop={shouldLoop}>
+        {children}
+      </RovingFocusGroup>
+    </Comp>
   );
 });
+
+TabsList.displayName = TAB_LIST_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TabsTab
  * -----------------------------------------------------------------------------------------------*/
 
-const TAB_NAME = 'Tabs.Tab';
+const TAB_NAME = 'TabsTab';
 const TAB_DEFAULT_TAG = 'div';
 
-type TabsTabDOMProps = React.ComponentProps<typeof TAB_DEFAULT_TAG>;
 type TabsTabOwnProps = {
   id: string;
   disabled?: boolean;
 };
-type TabsTabProps = TabsTabDOMProps & TabsTabOwnProps;
 
-const TabsTab = forwardRef<typeof TAB_DEFAULT_TAG, TabsTabProps>(function TabsTab(
-  props,
-  forwardedRef
-) {
-  const {
-    as: Comp = TAB_DEFAULT_TAG,
-    id,
-    disabled,
-    onMouseDown: originalOnMouseDown,
-    onKeyDown: originalOnKeyDown,
-    onFocus: originalOnFocus,
-    ...tabProps
-  } = props;
-
-  const { tabsId, selectedId, setSelectedId, activationMode } = useTabsContext(TAB_NAME);
-
+const TabsTab = forwardRefWithAs<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>((props, forwardedRef) => {
+  const { as: Comp = TAB_DEFAULT_TAG, id, disabled, ...tabProps } = props;
+  const { tabsId, selectedId, setSelectedId, activationMode, orientation } = useTabsContext(
+    TAB_NAME
+  );
   const tabId = makeTabId(tabsId, id);
   const tabPanelId = makeTabsPanelId(tabsId, id);
   const isSelected = id === selectedId;
-  const ref = React.useRef<HTMLDivElement>(null);
-  const composedRef = useComposedRefs(forwardedRef, ref);
-
+  const rovingFocusProps = useRovingFocus({ disabled, active: isSelected });
   const selectTab = React.useCallback(() => setSelectedId?.(id), [id, setSelectedId]);
 
-  const {
-    onFocus: rovingTabIndexFocusHandler,
-    onKeyDown: rovingTabIndexKeyDownHandler,
-    tabIndex,
-  } = useRovingTabIndex({
-    id: tabId,
-    isSelected: Boolean(isSelected),
-    elementRef: ref,
-    onFocus: originalOnFocus,
-    onKeyDown: originalOnKeyDown,
-  });
+  const handleKeyDown = composeEventHandlers(
+    tabProps.onKeyDown,
+    composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
+      if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
+        selectTab();
+      }
+    })
+  );
 
-  // handle "automatic" activation if necessary
-  // ie. activate tab following focus
-  function handleFocus() {
-    const isAutomaticActivation = activationMode !== 'manual';
-    if (!isSelected && !disabled && isAutomaticActivation) {
-      selectTab();
-    }
-  }
+  const handleMouseDown = composeEventHandlers(
+    tabProps.onMouseDown,
+    composeEventHandlers(rovingFocusProps.onMouseDown, (event) => {
+      // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
+      // but not when the control key is pressed (avoiding MacOS right click)
+      if (!disabled && event.button === 0 && event.ctrlKey === false) {
+        selectTab();
+      }
+    })
+  );
+
+  const handleFocus = composeEventHandlers(
+    tabProps.onFocus,
+    composeEventHandlers(rovingFocusProps.onFocus, () => {
+      // handle "automatic" activation if necessary
+      // ie. activate tab following focus
+      const isAutomaticActivation = activationMode !== 'manual';
+      if (!isSelected && !disabled && isAutomaticActivation) {
+        selectTab();
+      }
+    })
+  );
 
   return (
     <Comp
-      {...interopDataAttrObj('tab')}
-      data-state={isSelected ? 'active' : 'inactive'}
-      data-disabled={disabled ? '' : undefined}
-      data-tab-id={id}
-      id={tabId}
+      {...getPartDataAttrObj(TAB_NAME)}
       role="tab"
       aria-selected={isSelected}
       aria-controls={tabPanelId}
       aria-disabled={disabled || undefined}
-      tabIndex={tabIndex}
-      onFocus={composeEventHandlers(rovingTabIndexFocusHandler, handleFocus, {
-        checkForDefaultPrevented: false,
-      })}
-      {...useAccessibleMouseDown(selectTab, {
-        isDisabled: disabled,
-        onMouseDown: originalOnMouseDown,
-        onKeyDown: rovingTabIndexKeyDownHandler,
-      })}
-      ref={composedRef}
       {...tabProps}
+      {...rovingFocusProps}
+      data-state={isSelected ? 'active' : 'inactive'}
+      data-disabled={disabled ? '' : undefined}
+      data-orientation={orientation}
+      data-tab-id={id}
+      id={tabId}
+      ref={forwardedRef}
+      onKeyDown={handleKeyDown}
+      onMouseDown={handleMouseDown}
+      onFocus={handleFocus}
     />
   );
 });
+
+TabsTab.displayName = TAB_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TabsPanel
  * -----------------------------------------------------------------------------------------------*/
 
-const TAB_PANEL_NAME = 'Tabs.Panel';
+const TAB_PANEL_NAME = 'TabsPanel';
 const TAB_PANEL_DEFAULT_TAG = 'div';
 
-type TabsPanelProps = React.ComponentProps<typeof TAB_PANEL_DEFAULT_TAG> & { id: string };
+type TabsPanelPropsOwnProps = { id: string };
 
-const TabsPanel = forwardRef<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelProps>(function TabsPanel(
-  props,
-  forwardedRef
-) {
-  const { as: Comp = TAB_PANEL_DEFAULT_TAG, id, ...tabPanelProps } = props;
-  const { tabsId, selectedId } = useTabsContext(TAB_PANEL_NAME);
-  const tabId = makeTabId(tabsId, id);
-  const tabPanelId = makeTabsPanelId(tabsId, id);
-  const isSelected = id === selectedId;
+const TabsPanel = forwardRefWithAs<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelPropsOwnProps>(
+  (props, forwardedRef) => {
+    const { as: Comp = TAB_PANEL_DEFAULT_TAG, id, ...tabPanelProps } = props;
+    const { tabsId, selectedId, orientation } = useTabsContext(TAB_PANEL_NAME);
+    const tabId = makeTabId(tabsId, id);
+    const tabPanelId = makeTabsPanelId(tabsId, id);
+    const isSelected = id === selectedId;
 
-  return (
-    <Comp
-      {...interopDataAttrObj('tabPanel')}
-      data-state={isSelected ? 'active' : 'inactive'}
-      id={tabPanelId}
-      role="tabpanel"
-      aria-labelledby={tabId}
-      tabIndex={0}
-      hidden={!isSelected}
-      // other props
-      ref={forwardedRef}
-      {...tabPanelProps}
-    />
-  );
-});
+    return (
+      <Comp
+        {...getPartDataAttrObj(TAB_PANEL_NAME)}
+        data-state={isSelected ? 'active' : 'inactive'}
+        data-orientation={orientation}
+        id={tabPanelId}
+        role="tabpanel"
+        aria-labelledby={tabId}
+        tabIndex={0}
+        hidden={!isSelected}
+        // other props
+        ref={forwardedRef}
+        {...tabPanelProps}
+      />
+    );
+  }
+);
 
-/* -------------------------------------------------------------------------------------------------
- * Styles
- * -----------------------------------------------------------------------------------------------*/
-
-const [styles, interopDataAttrObj] = createStyleObj(TABS_NAME, {
-  root: {},
-  tabList: {
-    ...cssReset(TAB_LIST_DEFAULT_TAG),
-    flexShrink: 0,
-    display: 'flex',
-  },
-  tab: {
-    // reset styles
-    ...cssReset(TAB_DEFAULT_TAG),
-    display: 'flex',
-    flexShrink: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    lineHeight: '1',
-    cursor: 'default',
-    whiteSpace: 'nowrap',
-
-    // enable overlapping adjacent tabs via z-index
-    position: 'relative',
-  },
-  tabPanel: {
-    ...cssReset(TAB_PANEL_DEFAULT_TAG),
-    flexGrow: 1,
-  },
-  tabs: {
-    ...cssReset(TABS_DEFAULT_TAG),
-    display: 'flex',
-  },
-});
-
-Tabs.Panel = TabsPanel;
-Tabs.Tab = TabsTab;
-Tabs.List = TabsList;
-
-Tabs.displayName = TABS_NAME;
-Tabs.List.displayName = TAB_LIST_NAME;
-Tabs.Tab.displayName = TAB_NAME;
-Tabs.Panel.displayName = TAB_PANEL_NAME;
-
-export { Tabs, styles };
-export type { TabsProps, TabsListProps, TabsTabProps, TabsPanelProps, ITabs };
+TabsPanel.displayName = TAB_PANEL_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -318,8 +267,4 @@ function makeTabsPanelId(tabsId: string, tabId: string) {
   return `${tabsId}-tabPanel-${tabId}`;
 }
 
-interface ITabs extends ForwardRefExoticComponentWithAs<typeof TABS_DEFAULT_TAG, TabsProps> {
-  List: typeof TabsList;
-  Tab: typeof TabsTab;
-  Panel: typeof TabsPanel;
-}
+export { Tabs, TabsList, TabsTab, TabsPanel };

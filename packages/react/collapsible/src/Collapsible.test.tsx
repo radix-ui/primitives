@@ -2,16 +2,16 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent } from '@testing-library/react';
-import { interopDataAttr } from '@interop-ui/utils';
-import { Collapsible } from './Collapsible';
+import { getPartDataAttr } from '@interop-ui/utils';
+import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
 
 const BUTTON_TEXT = 'Button';
 const CONTENT_TEXT = 'Content';
 
 const CollapsibleTest = (props: React.ComponentProps<typeof Collapsible>) => (
   <Collapsible {...props}>
-    <Collapsible.Button>{BUTTON_TEXT}</Collapsible.Button>
-    <Collapsible.Content>{CONTENT_TEXT}</Collapsible.Content>
+    <CollapsibleButton>{BUTTON_TEXT}</CollapsibleButton>
+    <CollapsibleContent>{CONTENT_TEXT}</CollapsibleContent>
   </Collapsible>
 );
 
@@ -33,8 +33,8 @@ describe('given a default Collapsible', () => {
   });
 
   it('should have an interop attribute on the container', () => {
-    const interopAttr = interopDataAttr('Collapsible');
-    expect(collapsible).toHaveAttribute(interopAttr);
+    const partDataAttr = getPartDataAttr('Collapsible');
+    expect(collapsible).toHaveAttribute(partDataAttr);
   });
 
   it('should have a data-state attribute on the container set to `closed`', () => {
@@ -50,8 +50,8 @@ describe('given a default Collapsible', () => {
   });
 
   it('should have an interop attribute on the button', () => {
-    const interopAttr = interopDataAttr('CollapsibleButton');
-    expect(button).toHaveAttribute(interopAttr);
+    const partDataAttr = getPartDataAttr('CollapsibleButton');
+    expect(button).toHaveAttribute(partDataAttr);
   });
 
   it('should not render content', () => {
@@ -71,8 +71,8 @@ describe('given a default Collapsible', () => {
     });
 
     it('should have an interop attribute on the content', () => {
-      const interopAttr = interopDataAttr('CollapsibleContent');
-      expect(content).toHaveAttribute(interopAttr);
+      const partDataAttr = getPartDataAttr('CollapsibleContent');
+      expect(content).toHaveAttribute(partDataAttr);
     });
 
     it('should have a data-state attribute on the container set to `open`', () => {
@@ -182,8 +182,8 @@ describe('given styled parts', () => {
   beforeEach(() => {
     rendered = render(
       <Collapsible className="container-class" isOpen={true}>
-        <Collapsible.Button className="button-class">{BUTTON_TEXT}</Collapsible.Button>
-        <Collapsible.Content className="content-class">{CONTENT_TEXT}</Collapsible.Content>
+        <CollapsibleButton className="button-class">{BUTTON_TEXT}</CollapsibleButton>
+        <CollapsibleContent className="content-class">{CONTENT_TEXT}</CollapsibleContent>
       </Collapsible>
     );
   });

@@ -1,38 +1,22 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
-import { createStyleObj, forwardRef, useId, useComposedRefs } from '@interop-ui/react-utils';
+import { getPartDataAttrObj } from '@interop-ui/utils';
+import { useId, useComposedRefs } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
  * -----------------------------------------------------------------------------------------------*/
 
-const LABEL_NAME = 'Label';
-const LABEL_DEFAULT_TAG = 'span';
+const NAME = 'Label';
+const DEFAULT_TAG = 'span';
 
-type LabelDOMProps = React.ComponentPropsWithoutRef<typeof LABEL_DEFAULT_TAG>;
 type LabelOwnProps = { htmlFor?: string };
-type LabelProps = LabelOwnProps & LabelDOMProps;
 
 type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
-const useLabelContext = <E extends HTMLElement>(ref?: React.RefObject<E>) => {
-  const context = React.useContext(LabelContext);
-
-  React.useEffect(() => {
-    const label = context?.ref.current;
-    const element = ref?.current;
-
-    if (label && element) {
-      return addLabelClickEventListener(label, element);
-    }
-  }, [context, ref]);
-
-  return context?.id;
-};
-
-const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(props, forwardedRef) {
-  const { htmlFor, as: Comp = LABEL_DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
+const Label = forwardRefWithAs<typeof DEFAULT_TAG, LabelOwnProps>((props, forwardedRef) => {
+  const { htmlFor, as: Comp = DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
   const generatedId = `label-${useId()}`;
@@ -81,13 +65,32 @@ const Label = forwardRef<typeof LABEL_DEFAULT_TAG, LabelProps>(function Label(pr
   }, [id, htmlFor]);
 
   return (
-    <Comp {...labelProps} {...interopDataAttrObj('root')} id={id} ref={ref} role="label">
+    <Comp {...labelProps} {...getPartDataAttrObj(NAME)} id={id} ref={ref} role="label">
       <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
         {children}
       </LabelContext.Provider>
     </Comp>
   );
 });
+
+Label.displayName = 'Label';
+
+/* -----------------------------------------------------------------------------------------------*/
+
+const useLabelContext = <E extends HTMLElement>(ref?: React.RefObject<E>) => {
+  const context = React.useContext(LabelContext);
+
+  React.useEffect(() => {
+    const label = context?.ref.current;
+    const element = ref?.current;
+
+    if (label && element) {
+      return addLabelClickEventListener(label, element);
+    }
+  }, [context, ref]);
+
+  return context?.id;
+};
 
 function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement) {
   const handleClick = (event: MouseEvent) => {
@@ -106,19 +109,4 @@ function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement
   return () => label.removeEventListener('click', handleClick);
 }
 
-/* ---------------------------------------------------------------------------------------------- */
-
-Label.displayName = LABEL_NAME;
-
-const [styles, interopDataAttrObj] = createStyleObj(LABEL_NAME, {
-  root: {
-    ...cssReset(LABEL_DEFAULT_TAG),
-    // allow vertical margins
-    display: 'inline-block',
-    verticalAlign: 'middle',
-    cursor: 'default',
-  },
-});
-
-export type { LabelProps };
-export { Label, styles, useLabelContext };
+export { Label, useLabelContext };

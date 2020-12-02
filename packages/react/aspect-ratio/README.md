@@ -12,12 +12,16 @@ $ npm install @interop-ui/react-aspect-ratio
 
 ```js
 import * as React from 'react';
-import { AspectRatio, styles } from '@interop-ui/react-aspect-ratio';
+import { AspectRatio } from '@interop-ui/react-aspect-ratio';
 
-function MyComponent(props) {
+function MyComponent() {
   return (
-    <AspectRatio {...props} ratio={2 / 1} style={{ ...styles.root, ...props.style }}>
-      <img src="https://picsum.photos/id/10/400/600" alt="" style={{ width: '100%' }} />
+    <AspectRatio ratio={2 / 1}>
+      <img
+        src="https://picsum.photos/id/10/400/600"
+        alt=""
+        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+      />
     </AspectRatio>
   );
 }

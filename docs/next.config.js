@@ -6,11 +6,7 @@ const withMdxEnhanced = require('next-mdx-enhanced')({
   layoutPath: 'layouts',
   defaultLayout: true,
   fileExtensions: ['mdx'],
-  remarkPlugins: [
-    require('remark-images'),
-    require('remark-slug'),
-    require('@ngsctt/remark-smartypants'),
-  ],
+  remarkPlugins: [require('remark-images'), require('@ngsctt/remark-smartypants')],
   rehypePlugins: [],
   extendFrontMatter: {},
   usesSrc: false,

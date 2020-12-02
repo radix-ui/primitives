@@ -1,0 +1,8 @@
+releases:
+  "@interop-ui/react-accordion": prerelease
+  "@interop-ui/react-collapsible": prerelease
+  "@interop-ui/react-polymorphic": prerelease
+
+declined:
+  - interop-ui
+  - "@interop-ui/docs"

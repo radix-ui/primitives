@@ -1,79 +1,46 @@
 import * as React from 'react';
-import { Separator, styles } from './Separator';
+import { Separator } from './Separator';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/Separator' };
 
-export const Basic = () => <Separator />;
+export const Styled = () => (
+  <>
+    <h1>Horizontal</h1>
+    <p>The following separator is horizontal and has semantic meaning.</p>
+    <Separator as={StyledRoot} orientation="horizontal" />
+    <p>
+      The following separator is horizontal and is purely decorative. Assistive technology will
+      ignore this element.
+    </p>
+    <Separator as={StyledRoot} orientation="horizontal" decorative />
 
-export const HorizontalOrientation = () => {
-  return (
-    <div>
-      <div>
-        <p>The following separator is horizontal and has semantic meaning.</p>
-      </div>
-      <Separator as={Root} orientation="horizontal" />
-      <div>
-        <p>
-          The following separator is horizontal and is purely decorative. Assistive technology will
-          ignore this element.
-        </p>
-      </div>
-      <Separator as={Root} orientation="horizontal" decorative />
+    <h1>Vertical</h1>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <p>The following separator is vertical and has semantic meaning.</p>
+      <Separator as={StyledRoot} orientation="vertical" />
+      <p>
+        The following separator is vertical and is purely decorative. Assistive technology will
+        ignore this element.
+      </p>
+      <Separator as={StyledRoot} orientation="vertical" decorative />
     </div>
-  );
-};
+  </>
+);
 
-export const VerticalOrientation = () => {
-  return (
-    <VerticalSeparatorBox>
-      <VerticalSeparatorInner>
-        <p>The following separator is vertical and has semantic meaning.</p>
-      </VerticalSeparatorInner>
-      <Separator as={Root} orientation="vertical" />
-      <VerticalSeparatorInner>
-        <p>
-          The following separator is vertical and is purely decorative. Assistive technology will
-          ignore this element.
-        </p>
-      </VerticalSeparatorInner>
-      <Separator as={Root} orientation="vertical" decorative />
-    </VerticalSeparatorBox>
-  );
-};
-
-/* -------------------------------------------------------------------------------------------------
- * Styled components
- * -----------------------------------------------------------------------------------------------*/
-
-function VerticalSeparatorBox({ children }: any) {
-  return (
-    <div
-      style={{
-        height: '200px',
-        width: '100%',
-        display: 'flex',
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function VerticalSeparatorInner({ children }: any) {
-  return <div style={{ width: '200px', margin: '0 20px' }}>{children}</div>;
-}
-
-const Root = styled('hr', {
-  ...(styles.root as any),
-  height: '1px',
-  width: '100%',
+const StyledRoot = styled('div', {
   border: 'none',
-  backgroundColor: '$gray300',
+  backgroundColor: '$red',
+
+  '&[data-orientation="horizontal"]': {
+    height: '1px',
+    width: '100%',
+    margin: '20px 0',
+  },
+
   '&[data-orientation="vertical"]': {
-    height: '100%',
+    height: '100px',
     width: '1px',
+    margin: '0 20px',
   },
 });

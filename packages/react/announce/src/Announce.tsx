@@ -1,12 +1,8 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { cssReset, interopDataAttr } from '@interop-ui/utils';
-import {
-  forwardRef,
-  createStyleObj,
-  useComposedRefs,
-  useLayoutEffect,
-} from '@interop-ui/react-utils';
+import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
+import { useComposedRefs, useLayoutEffect } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';
@@ -27,7 +23,6 @@ const listenerMap = new Map<Element, number>();
 const NAME = 'Announce';
 const DEFAULT_TAG = 'div';
 
-type AnnounceDOMProps = React.ComponentPropsWithoutRef<typeof DEFAULT_TAG>;
 type AnnounceOwnProps = {
   /**
    * Mirrors the `aria-atomic` DOM attribute for live regions. It is an optional attribute that
@@ -86,13 +81,10 @@ type AnnounceOwnProps = {
    */
   type?: RegionType;
 };
-type AnnounceProps = AnnounceDOMProps & AnnounceOwnProps;
+
 type AnnounceDOMElement = HTMLElementTagNameMap[typeof DEFAULT_TAG];
 
-const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce(
-  props,
-  forwardedRef
-) {
+const Announce = forwardRefWithAs<typeof DEFAULT_TAG, AnnounceOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = DEFAULT_TAG,
     'aria-relevant': ariaRelevant,
@@ -177,7 +169,7 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
 
   return (
     <React.Fragment>
-      <Comp {...regionProps} {...interopDataAttrObj('root')} ref={ref}>
+      <Comp {...regionProps} {...getPartDataAttrObj(NAME)} ref={ref}>
         {children}
       </Comp>
 
@@ -188,15 +180,6 @@ const Announce = forwardRef<typeof DEFAULT_TAG, AnnounceProps>(function Announce
 });
 
 Announce.displayName = NAME;
-
-const [styles, interopDataAttrObj] = createStyleObj(NAME, {
-  root: {
-    ...cssReset(DEFAULT_TAG),
-  },
-});
-
-export { Announce, styles };
-export type { AnnounceProps };
 
 type LiveRegionOptions = {
   type: string;
@@ -211,7 +194,7 @@ function buildLiveRegionElement(
   { type, relevant, role, atomic, id }: LiveRegionOptions
 ) {
   const element = ownerDocument.createElement('div');
-  element.setAttribute(getInteropAttr(id), '');
+  element.setAttribute(getLiveRegionPartDataAttr(id), '');
   element.setAttribute(
     'style',
     'position: absolute; top: -1px; width: 1px; height: 1px; overflow: hidden;'
@@ -229,7 +212,7 @@ function buildLiveRegionElement(
 }
 
 function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) {
-  return `[${getInteropAttr(id)}]${[
+  return `[${getLiveRegionPartDataAttr(id)}]${[
     ['aria-live', type],
     ['aria-atomic', atomic],
     ['aria-relevant', relevant],
@@ -240,6 +223,8 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
     .join('')}`;
 }
 
-function getInteropAttr(id?: string) {
-  return interopDataAttr('AnnounceRegion' + (id ? `-${id}` : ''));
+function getLiveRegionPartDataAttr(id?: string) {
+  return getPartDataAttr(NAME + 'Region') + (id ? `-${id}` : '');
 }
+
+export { Announce };

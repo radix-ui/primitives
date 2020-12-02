@@ -12,17 +12,23 @@ $ npm install @interop-ui/react-dialog
 
 ```js
 import * as React from 'react';
-import { Dialog, styles } from '@interop-ui/react-dialog';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogOverlay,
+  DialogContent,
+  DialogClose,
+} from '@interop-ui/react-dialog';
 
-function MyComponent(props) {
+function MyComponent() {
   return (
     <Dialog>
-      <Dialog.Trigger style={styles.trigger}>Open the dialog</Dialog.Trigger>
-      <Dialog.Overlay style={styles.overlay} />
-      <Dialog.Content style={styles.content}>
+      <DialogTrigger>Open the dialog</DialogTrigger>
+      <DialogOverlay />
+      <DialogContent>
         <p>Some really cool dialog content!</p>
-        <Dialog.Close style={styles.close}>Close the dialog</Dialog.Close>
-      </Dialog.Content>
+        <DialogClose>Close the dialog</DialogClose>
+      </DialogContent>
     </Dialog>
   );
 }

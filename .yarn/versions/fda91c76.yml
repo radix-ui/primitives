@@ -1,0 +1,32 @@
+releases:
+  "@interop-ui/react-menu": prerelease
+  "@interop-ui/utils": prerelease
+
+declined:
+  - interop-ui
+  - "@interop-ui/popper"
+  - "@interop-ui/react-accessible-icon"
+  - "@interop-ui/react-accordion"
+  - "@interop-ui/react-alert-dialog"
+  - "@interop-ui/react-announce"
+  - "@interop-ui/react-arrow"
+  - "@interop-ui/react-aspect-ratio"
+  - "@interop-ui/react-avatar"
+  - "@interop-ui/react-checkbox"
+  - "@interop-ui/react-collapsible"
+  - "@interop-ui/react-dialog"
+  - "@interop-ui/react-focus-scope"
+  - "@interop-ui/react-label"
+  - "@interop-ui/react-popover"
+  - "@interop-ui/react-popper"
+  - "@interop-ui/react-progress-bar"
+  - "@interop-ui/react-radio-group"
+  - "@interop-ui/react-separator"
+  - "@interop-ui/react-slider"
+  - "@interop-ui/react-switch"
+  - "@interop-ui/react-tabs"
+  - "@interop-ui/react-toggle-button"
+  - "@interop-ui/react-tooltip"
+  - "@interop-ui/react-use-size"
+  - "@interop-ui/react-utils"
+  - "@interop-ui/react-visually-hidden"

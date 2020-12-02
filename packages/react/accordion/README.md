@@ -12,26 +12,32 @@ $ npm install @interop-ui/react-accordion
 
 ```js
 import * as React from 'react';
-import { Accordion, styles } from '@interop-ui/react-accordion';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionHeader,
+  AccordionButton,
+  AccordionPanel,
+} from '@interop-ui/react-accordion';
 
-function MyComponent(domProps) {
+function MyComponent() {
   return (
-    <Accordion {...domProps} style={{ ...styles.root, ...domProps.style }}>
+    <Accordion>
       {/* start items */}
 
-      <Accordion.Item style={styles.item} value="one">
-        <Accordion.Header style={styles.header}>
-          <Accordion.Button style={styles.button}>One</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel>Content for item 1</Accordion.Panel>
-      </Accordion.Item>
+      <AccordionItem value="one">
+        <AccordionHeader>
+          <AccordionButton>One</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel>Content for item 1</AccordionPanel>
+      </AccordionItem>
 
-      <Accordion.Item style={styles.item} value="two">
-        <Accordion.Header style={styles.header}>
-          <Accordion.Button style={styles.button}>Two</Accordion.Button>
-        </Accordion.Header>
-        <Accordion.Panel>Content for item 2</Accordion.Panel>
-      </Accordion.Item>
+      <AccordionItem value="two">
+        <AccordionHeader>
+          <AccordionButton>Two</AccordionButton>
+        </AccordionHeader>
+        <AccordionPanel>Content for item 2</AccordionPanel>
+      </AccordionItem>
 
       {/* end items */}
     </Accordion>

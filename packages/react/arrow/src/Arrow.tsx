@@ -1,38 +1,32 @@
 import * as React from 'react';
-import { cssReset } from '@interop-ui/utils';
-import { createStyleObj } from '@interop-ui/react-utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { getPartDataAttrObj } from '@interop-ui/utils';
 
 const NAME = 'Arrow';
 const DEFAULT_TAG = 'svg';
 
-type ArrowDOMProps = React.ComponentPropsWithRef<typeof DEFAULT_TAG>;
-type ArrowProps = ArrowDOMProps;
+const Arrow = forwardRefWithAs<typeof ArrowImpl>((props, forwardedRef) => {
+  const { as: Comp = ArrowImpl, ...arrowProps } = props;
+  return <Comp {...arrowProps} ref={forwardedRef} />;
+});
 
-const Arrow = React.forwardRef<SVGSVGElement, ArrowProps>(function Arrow(props, forwardedRef) {
+const ArrowImpl = forwardRefWithAs<typeof DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = DEFAULT_TAG, width = 10, height = 5, ...arrowProps } = props;
   return (
-    <svg
-      {...interopDataAttrObj('root')}
-      {...props}
+    <Comp
+      {...getPartDataAttrObj(NAME)}
+      {...arrowProps}
       ref={forwardedRef}
       viewBox="0 0 30 10"
+      width={width}
+      height={height}
       preserveAspectRatio="none"
     >
       <polygon points="0,0 30,0 15,10" />
-    </svg>
+    </Comp>
   );
 });
 
 Arrow.displayName = NAME;
-Arrow.defaultProps = {
-  width: 10,
-  height: 5,
-};
 
-const [styles, interopDataAttrObj] = createStyleObj(NAME, {
-  root: {
-    ...cssReset(DEFAULT_TAG),
-  },
-});
-
-export { Arrow, styles };
-export type { ArrowProps };
+export { Arrow };
