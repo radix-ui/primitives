@@ -5,7 +5,7 @@ import { styled } from '../../../../stitches.config';
 export default { title: 'Components/Slider' };
 
 export const Styled = () => (
-  <Slider defaultValue={[10]} as={StyledRoot}>
+  <Slider as={StyledRoot}>
     <SliderTrack as={StyledTrack}>
       <SliderRange as={StyledRange} />
     </SliderTrack>

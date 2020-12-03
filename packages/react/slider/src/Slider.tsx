@@ -72,7 +72,7 @@ const Slider = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>(
       orientation = 'horizontal',
       disabled = false,
       minStepsBetweenThumbs = 0,
-      defaultValue,
+      defaultValue = [min],
       value,
       onValueChange = () => {},
       ...sliderProps
