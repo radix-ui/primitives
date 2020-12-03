@@ -6,6 +6,7 @@ import {
   useComposedRefs,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { Presence } from '@interop-ui/react-presence';
 import { useLabelContext } from '@interop-ui/react-label';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
@@ -109,12 +110,25 @@ Radio.displayName = RADIO_NAME;
 const INDICATOR_NAME = 'RadioIndicator';
 const INDICATOR_DEFAULT_TAG = 'span';
 
-const RadioIndicator = forwardRefWithAs<typeof RadioIndicatorImpl>((props, forwardedRef) => {
-  const checked = useRadioContext(INDICATOR_NAME);
-  return checked ? (
-    <RadioIndicatorImpl {...props} data-state={getState(checked)} ref={forwardedRef} />
-  ) : null;
-});
+type RadioIndicatorOwnProps = {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+};
+
+const RadioIndicator = forwardRefWithAs<typeof RadioIndicatorImpl, RadioIndicatorOwnProps>(
+  (props, forwardedRef) => {
+    const { forceMount, ...indicatorProps } = props;
+    const checked = useRadioContext(INDICATOR_NAME);
+    return (
+      <Presence present={forceMount || checked}>
+        <RadioIndicatorImpl {...indicatorProps} data-state={getState(checked)} ref={forwardedRef} />
+      </Presence>
+    );
+  }
+);
 
 const RadioIndicatorImpl = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
   function RadioIndicatorImpl(props, forwardedRef) {
