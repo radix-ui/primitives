@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Label as LabelPrimitive } from '@interop-ui/react-label';
 import { Checkbox, CheckboxIndicator } from './Checkbox';
-import { styled } from '../../../../stitches.config';
+import { styled, css } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 
 export default { title: 'Components/Checkbox' };
@@ -91,6 +91,15 @@ export const WithinForm = () => {
   );
 };
 
+export const Animated = () => (
+  <Label>
+    Label{' '}
+    <Checkbox as={StyledRoot}>
+      <CheckboxIndicator as={AnimatedIndicator} />
+    </Checkbox>
+  </Label>
+);
+
 const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL__ROOT} />;
 
 const RECOMMENDED_CSS__CHECKBOX__ROOT = {
@@ -122,3 +131,22 @@ const StyledIndicator = styled('span', {
 const Indicator = ({ indeterminate, ...props }: any) => (
   <StyledIndicator {...props} css={{ height: indeterminate ? 4 : undefined }} />
 );
+
+const fadeIn = css.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+});
+
+const fadeOut = css.keyframes({
+  from: { opacity: 1 },
+  to: { opacity: 0 },
+});
+
+const AnimatedIndicator = styled(StyledIndicator, {
+  '&[data-state="checked"]': {
+    animation: `${fadeIn} 300ms ease-out`,
+  },
+  '&[data-state="unchecked"]': {
+    animation: `${fadeOut} 300ms ease-in`,
+  },
+});
