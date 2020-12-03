@@ -121,27 +121,27 @@ export function Basic() {
           css={{ width: '400px', height: '400px' }}
         >
           <ScrollAreaScrollbarY as={Win98StyledScrollbarY}>
-            <ScrollAreaButtonStart as={Win98StyledScrollButtonStart}>
+            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
               <Arrow direction="up" />
             </ScrollAreaButtonStart>
 
             <ScrollAreaTrack as={Win98StyledScrollTrack}>
               <ScrollAreaThumb as={Win98StyledScrollThumb} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={Win98StyledScrollButtonEnd}>
+            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
               <Arrow direction="down" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarY>
 
           <ScrollAreaScrollbarX as={Win98StyledScrollbarX}>
-            <ScrollAreaButtonStart as={Win98StyledScrollButtonStart}>
+            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
               <Arrow direction="left" />
             </ScrollAreaButtonStart>
 
             <ScrollAreaTrack as={Win98StyledScrollTrack}>
               <ScrollAreaThumb as={Win98StyledScrollThumb} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={Win98StyledScrollButtonEnd}>
+            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
               <Arrow direction="right" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarX>
@@ -149,7 +149,7 @@ export function Basic() {
           <ScrollAreaCorner as={Win98StyledCorner} />
 
           <ScrollAreaViewport
-            as={StyledViewport}
+            as={BaseStyledViewport}
             css={{
               width: '2000px',
               padding: 20,
@@ -192,16 +192,18 @@ export function InsidePopover() {
               overflowX="scroll"
               scrollbarVisibility="scroll"
               trackClickBehavior="page"
-              as={AnySizeRoot}
+              as={BaseStyledRoot}
             >
-              <ScrollAreaScrollbarY as={Win98StyledScrollbarY} style={{ bottom: 0 }}>
-                <ScrollAreaTrack as={Win98StyledScrollTrack}>
-                  <ScrollAreaThumb as={Win98StyledScrollThumb} />
+              <ScrollAreaScrollbarY as={MacOsStyledScrollbarY} style={{ bottom: 0 }}>
+                <ScrollAreaTrack as={MacOsStyledScrollTrack}>
+                  <ScrollAreaThumb as={MacOsStyledScrollThumbY}>
+                    <MacOsStyledScrollThumbInner />
+                  </ScrollAreaThumb>
                 </ScrollAreaTrack>
               </ScrollAreaScrollbarY>
 
               <ScrollAreaViewport
-                as={StyledViewport}
+                as={BaseStyledViewport}
                 css={{
                   padding: 10,
                   '& > :first-child': {
@@ -212,7 +214,19 @@ export function InsidePopover() {
                   },
                 }}
               >
-                <LongContent />
+                <p>
+                  Lacinia hendrerit auctor nam quisque augue suscipit feugiat, sit at imperdiet
+                  vitae lacus. Dolor sit dui posuere faucibus non pharetra laoreet conubia, augue
+                  rhoncus cras nisl sodales proin hac ipsum, per hendrerit sed volutpat natoque
+                  curae consectetur. Curae blandit neque vehicula vel mauris vulputate per felis
+                  sociosqu, sodales integer sollicitudin id litora accumsan viverra pulvinar, mus
+                  non adipiscing dolor facilisis habitasse mi leo. Litora faucibus eu pulvinar
+                  tempus gravida iaculis consectetur risus euismod fringilla, dui posuere viverra
+                  sapien tortor mattis et dolor tempor sem conubia, taciti sociis mus rhoncus
+                  cubilia praesent dapibus aliquet quis. Diam hendrerit aliquam metus dolor fusce
+                  lorem, non gravida arcu primis posuere ipsum adipiscing, mus sollicitudin eros
+                  lacinia mollis.
+                </p>
               </ScrollAreaViewport>
             </ScrollArea>
           </PopoverContent>
@@ -270,6 +284,7 @@ const RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR: any = {
 };
 const RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_X: any = {
   ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR,
+  // Height is arbitrary here, but a fixed height is recommended
   height: `16px`,
   left: 0,
   bottom: 0,
@@ -278,6 +293,7 @@ const RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_X: any = {
 };
 const RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_Y: any = {
   ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR,
+  // Width is arbitrary here, but a fixed height is recommended
   width: '16px',
   right: 0,
   top: 0,
@@ -330,35 +346,62 @@ const TestButton = styled('button', {
   },
 });
 
-const Win98StyledRoot = styled('div', {
+const BaseStyledRoot = styled('div', {
+  ...RECOMMENDED_CSS__SCROLL_AREA__ROOT,
+  fontFamily: 'sans-serif',
+});
+
+const BaseStyledScrollbar = styled('div', {
+  ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR,
+  transition: '300ms opacity ease',
+});
+
+const BaseStyledScrollbarY = styled(BaseStyledScrollbar, {
+  ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_Y,
+});
+
+const BaseStyledScrollbarX = styled(BaseStyledScrollbar, {
+  ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_X,
+});
+
+const BaseStyledScrollButton = styled('div', {
+  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON,
+});
+
+const BaseStyledScrollThumb = styled('div', {
+  ...RECOMMENDED_CSS__SCROLL_AREA__THUMB,
+});
+
+const BaseStyledScrollTrack = styled('div', {
+  ...RECOMMENDED_CSS__SCROLL_AREA__TRACK,
+});
+
+const BaseStyledViewport = styled('div', {
+  ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
+});
+
+const Win98StyledRoot = styled(BaseStyledRoot, {
   ...RECOMMENDED_CSS__SCROLL_AREA__ROOT,
   border: '2px solid #FFF',
   borderTopColor: '#858585',
   borderLeftColor: '#858585',
   borderRightColor: '#C0C0C0',
   borderBottomColor: '#C0C0C0',
-  fontFamily: 'sans-serif',
 });
 
-const AnySizeRoot = styled('div', {
-  ...RECOMMENDED_CSS__SCROLL_AREA__ROOT,
-  fontFamily: 'sans-serif',
-});
-
-const Win98StyledScrollbarY = styled('div', {
-  ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_Y,
-  transition: '300ms opacity ease',
+const Win98StyledScrollbarY = styled(BaseStyledScrollbarY, {
   width: `16px`,
 });
 
-const Win98StyledScrollbarX = styled('div', {
-  ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_X,
-  transition: '300ms opacity ease',
+const Win98StyledScrollbarX = styled(BaseStyledScrollbarX, {
   height: `16px`,
 });
 
-const Win98StyledScrollButton = styled('div', {
-  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON,
+const MacOsStyledScrollbarY = styled(BaseStyledScrollbarY, {
+  width: `14px`,
+});
+
+const Win98StyledScrollButton = styled(BaseStyledScrollButton, {
   position: 'relative',
   backgroundColor: '#C0C0C0',
   border: '2px solid #FFF',
@@ -371,12 +414,7 @@ const Win98StyledScrollButton = styled('div', {
   padding: '3px',
 });
 
-const Win98StyledScrollButtonStart = styled(Win98StyledScrollButton, {});
-
-const Win98StyledScrollButtonEnd = styled(Win98StyledScrollButton, {});
-
-const Win98StyledScrollThumb = styled('div', {
-  ...RECOMMENDED_CSS__SCROLL_AREA__THUMB,
+const Win98StyledScrollThumb = styled(BaseStyledScrollThumb, {
   backgroundColor: '#C0C0C0',
   border: '2px solid #FFF',
   borderTopColor: '#FFF',
@@ -385,13 +423,24 @@ const Win98StyledScrollThumb = styled('div', {
   borderBottomColor: '#858585',
 });
 
-const Win98StyledScrollTrack = styled('div', {
-  ...RECOMMENDED_CSS__SCROLL_AREA__TRACK,
-  background: 'rgba(65, 105, 225, 0.3)',
+const MacOsStyledScrollThumbY = styled(BaseStyledScrollThumb, {
+  backgroundColor: 'transparent',
+  padding: '2px 3px',
 });
 
-const StyledViewport = styled('div', {
-  ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
+const MacOsStyledScrollThumbInner = styled('div', {
+  width: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  borderRadius: '999px',
+});
+
+const Win98StyledScrollTrack = styled(BaseStyledScrollTrack, {
+  background: '#DEDEDE',
+});
+
+const MacOsStyledScrollTrack = styled(BaseStyledScrollTrack, {
+  background: 'transparent',
 });
 
 const Win98StyledCorner = styled('div', {
