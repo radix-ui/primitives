@@ -224,17 +224,6 @@ AlertDialogDescription.displayName = DESCRIPTION_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-export {
-  AlertDialog,
-  AlertDialogTitle,
-  AlertDialogCancel,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogOverlay,
-  AlertDialogTrigger,
-};
-
 // TODO: Add link to docs when available
 const LABEL_WARNING = `${CONTENT_NAME} requires a label for the component to be accessible for screen reader users.
 
@@ -284,4 +273,23 @@ const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialog
   }, [titleId, ariaLabel, ariaDescribedBy, descriptionId, ariaLabelledBy, ownerDocumentRef]);
 
   return null;
+};
+
+export {
+  AlertDialog,
+  AlertDialogTitle,
+  AlertDialogCancel,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
+  AlertDialog as Root,
+  AlertDialogTitle as Title,
+  AlertDialogCancel as Cancel,
+  AlertDialogAction as Action,
+  AlertDialogContent as Content,
+  AlertDialogDescription as Description,
+  AlertDialogOverlay as Overlay,
+  AlertDialogTrigger as Trigger,
 };

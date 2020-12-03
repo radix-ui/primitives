@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RovingFocusGroup, useRovingFocus } from './RovingFocusGroup';
 import { composeEventHandlers } from '@interop-ui/react-utils';
 
-import type { RovingFocusGroupProps } from './RovingFocusGroup';
+type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
 
 export default { title: 'Components/RovingFocusGroup' };
 

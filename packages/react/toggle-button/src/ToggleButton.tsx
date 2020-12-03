@@ -59,4 +59,4 @@ const ToggleButton = forwardRefWithAs<typeof DEFAULT_TAG, ToggleButtonOwnProps>(
 
 ToggleButton.displayName = NAME;
 
-export { ToggleButton };
+export { ToggleButton, ToggleButton as Root };

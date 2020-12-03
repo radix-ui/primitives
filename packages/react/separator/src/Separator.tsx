@@ -74,4 +74,4 @@ function isValidOrientation(orientation: any): orientation is Orientation {
   return ORIENTATIONS.includes(orientation);
 }
 
-export { Separator };
+export { Separator, Separator as Root };

@@ -277,4 +277,15 @@ function isButton(element: HTMLElement): element is HTMLButtonElement {
   return element instanceof HTMLButtonElement;
 }
 
-export { Accordion, AccordionItem, AccordionHeader, AccordionButton, AccordionPanel };
+export {
+  Accordion,
+  AccordionItem,
+  AccordionHeader,
+  AccordionButton,
+  AccordionPanel,
+  Accordion as Root,
+  AccordionItem as Item,
+  AccordionHeader as Header,
+  AccordionButton as Button,
+  AccordionPanel as Panel,
+};

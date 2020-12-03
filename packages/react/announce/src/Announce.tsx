@@ -227,4 +227,4 @@ function getLiveRegionPartDataAttr(id?: string) {
   return getPartDataAttr(NAME + 'Region') + (id ? `-${id}` : '');
 }
 
-export { Announce };
+export { Announce, Announce as Root };

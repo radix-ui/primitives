@@ -36,4 +36,4 @@ function createFocusGuard() {
   return element;
 }
 
-export { FocusGuards, useFocusGuards };
+export { FocusGuards, FocusGuards as Root, useFocusGuards };

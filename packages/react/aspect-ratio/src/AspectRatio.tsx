@@ -48,4 +48,4 @@ const AspectRatio = forwardRefWithAs<typeof DEFAULT_TAG, AspectRatioOwnProps>(
 
 AspectRatio.displayName = NAME;
 
-export { AspectRatio };
+export { AspectRatio, AspectRatio as Root };
