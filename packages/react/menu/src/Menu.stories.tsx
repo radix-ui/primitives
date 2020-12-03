@@ -71,11 +71,6 @@ const suits = [
 export const Typeahead = () => (
   <>
     <h1>Testing ground for typeahead behaviour</h1>
-    <p style={{ maxWidth: 400, marginBottom: 30 }}>
-      I recommend opening this story frame in it's own window (outside of the storybook frame)
-      because Storybook has a bunch of shortcuts on certain keys (A, D, F, S, T) which get triggered
-      all the time whilst testing the typeahead.
-    </p>
 
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 100 }}>
       <div>
