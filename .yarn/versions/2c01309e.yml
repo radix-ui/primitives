@@ -1,5 +1,0 @@
-releases:
-  "@interop-ui/react-radio-group": prerelease
-
-declined:
-  - interop-ui
