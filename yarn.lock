@@ -2358,6 +2358,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-scroll-area@workspace:packages/react/scroll-area"
   dependencies:
+    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     "@stitches/react": canary
