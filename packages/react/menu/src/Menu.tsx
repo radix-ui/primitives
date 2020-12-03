@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { composeEventHandlers, useCallbackRef, useComposedRefs } from '@interop-ui/react-utils';
+import {
+  composeEventHandlers,
+  createContext,
+  useCallbackRef,
+  useComposedRefs,
+} from '@interop-ui/react-utils';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
@@ -15,6 +20,15 @@ const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 const MENU_NAME = 'Menu';
 const MENU_DEFAULT_TAG = 'div';
+
+type MenuContextValue = {
+  menuRef: React.RefObject<HTMLDivElement>;
+  setItemsReachable: React.Dispatch<React.SetStateAction<boolean>>;
+};
+const [MenuContext, useMenuContext] = createContext<MenuContextValue>(
+  MENU_NAME + 'Context',
+  MENU_NAME
+);
 
 type MenuOwnProps = { loop?: boolean };
 
@@ -54,17 +68,9 @@ const Menu = forwardRefWithAs<typeof MENU_DEFAULT_TAG, MenuOwnProps>((props, for
           }
         }
       })}
-      // make items unreachable when an item is blurred
-      onBlur={composeEventHandlers(menuProps.onBlur, (event) => {
-        if (isItemOrInsideItem(event.target)) setItemsReachable(false);
-      })}
       // focus the menu if the mouse is moved over anything else than an item
       onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
         if (!isItemOrInsideItem(event.target)) menuRef.current?.focus();
-      })}
-      // focus the menu if the mouse is moved outside an item
-      onMouseOut={composeEventHandlers(menuProps.onMouseOut, (event) => {
-        if (isItemOrInsideItem(event.target)) menuRef.current?.focus();
       })}
     >
       <RovingFocusGroup
@@ -73,7 +79,9 @@ const Menu = forwardRefWithAs<typeof MENU_DEFAULT_TAG, MenuOwnProps>((props, for
         orientation="vertical"
         loop={loop}
       >
-        {children}
+        <MenuContext.Provider value={React.useMemo(() => ({ menuRef, setItemsReachable }), [])}>
+          {children}
+        </MenuContext.Provider>
       </RovingFocusGroup>
     </Comp>
   );
@@ -131,6 +139,7 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
     const { as: Comp = ITEM_DEFAULT_TAG, disabled, textValue, onSelect, ...itemProps } = props;
     const menuItemRef = React.useRef<HTMLDivElement>(null);
     const composedRef = useComposedRefs(forwardedRef, menuItemRef);
+    const context = useMenuContext(ITEM_NAME);
 
     // get the item's `.textContent` as default strategy for typeahead `textValue`
     const [textContent, setTextContent] = React.useState('');
@@ -189,6 +198,14 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
             const item = event.currentTarget;
             item.focus();
           }
+        })}
+        // make items unreachable when an item is blurred
+        onBlur={composeEventHandlers(itemProps.onBlur, (event) => {
+          context.setItemsReachable(false);
+        })}
+        // focus the menu if the mouse leaves an item
+        onMouseLeave={composeEventHandlers(itemProps.onMouseLeave, (event) => {
+          context.menuRef.current?.focus();
         })}
       />
     );
