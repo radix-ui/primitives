@@ -383,6 +383,8 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
     ]);
 
     const ref = useComposedRefs(forwardedRef, scrollAreaRef);
+    useExtendedScrollAreaRef(forwardedRef, scrollAreaRef, positionRef);
+
     useBorderBoxResizeObserver(scrollAreaRef, (size, scrollAreaElement) => {
       const scrollAreaComputedStyle = window.getComputedStyle(scrollAreaElement);
       dispatch({
@@ -1730,6 +1732,63 @@ function scrollAreaStateReducer(
   }
 
   return context;
+}
+
+// We don't expose the position element directly, so we should assume that if consumers want to
+// do anything to the scroll position with imperative DOM APIs that those properties should
+// target the positionRef's element. Unfortunately I don't think there's a good way to override
+// the actual properties of a DOM node, so the solution here provides new properties
+// ([prop]Intent) that users can target for imperative handling of the scroll position.
+//
+// NOTE: I don't think we can add these types properly with the current implementation of
+// forwardRefWithAs, but I do think this will be incredibly useful. Should we consider removing
+// this and exposing this functionality some other way? useImperativeHandle is super awkward
+// anyway but this seemed like a reasonable approach for this particular challenge.
+// Alternatively we could reconsider exposing the Position component, or we could allow users to
+// pass their own positionRef with a prop.
+function useExtendedScrollAreaRef(
+  forwardedRef: React.ForwardedRef<any>,
+  scrollAreaRef: React.RefObject<HTMLElement | null | undefined>,
+  positionRef: React.RefObject<HTMLElement | null | undefined>
+) {
+  React.useImperativeHandle(forwardedRef, () => {
+    const scrollAreaElement = scrollAreaRef.current!;
+    const positionElement = positionRef.current;
+    const elementToHandle = positionElement || scrollAreaElement;
+
+    return Object.assign(scrollAreaElement, {
+      scrollIntent(...args: Parameters<HTMLElement['scroll']>) {
+        elementToHandle.scroll.call(elementToHandle, ...args);
+      },
+      scrollByIntent(...args: Parameters<HTMLElement['scrollBy']>) {
+        elementToHandle.scrollBy.call(elementToHandle, ...args);
+      },
+      scrollIntoViewIntent(...args: Parameters<HTMLElement['scrollIntoView']>) {
+        elementToHandle.scrollIntoView.call(elementToHandle, ...args);
+      },
+      scrollToIntent(...args: Parameters<HTMLElement['scrollTo']>) {
+        elementToHandle.scrollTo.call(elementToHandle, ...args);
+      },
+      get scrollTopIntent() {
+        return elementToHandle.scrollTop;
+      },
+      set scrollTopIntent(val: number) {
+        elementToHandle.scrollTop = val;
+      },
+      get scrollLeftIntent() {
+        return elementToHandle.scrollLeft;
+      },
+      set scrollLeftIntent(val: number) {
+        elementToHandle.scrollLeft = val;
+      },
+      get scrollHeightIntent() {
+        return elementToHandle.scrollHeight;
+      },
+      get scrollWidthIntent() {
+        return elementToHandle.scrollWidth;
+      },
+    });
+  });
 }
 
 function useBorderBoxResizeObserver(
