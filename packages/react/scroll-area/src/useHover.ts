@@ -18,11 +18,11 @@ export interface HoverEvent {
 
 export interface HoverEvents {
   /** Handler that is called when a hover interaction starts. */
-  onHoverStart?: (e: HoverEvent) => void;
+  onHoverStart?(e: HoverEvent): void;
   /** Handler that is called when a hover interaction ends. */
-  onHoverEnd?: (e: HoverEvent) => void;
+  onHoverEnd?(e: HoverEvent): void;
   /** Handler that is called when the hover state changes. */
-  onHoverChange?: (isHovering: boolean) => void;
+  onHoverChange?(isHovering: boolean): void;
 }
 
 export interface HoverProps extends HoverEvents {
@@ -49,7 +49,7 @@ function setGlobalIgnoreEmulatedMouseEvents() {
   // pointerType="mouse" immediately after onPointerUp and before onFocus. On other devices that
   // don't have this quirk, we don't want to ignore a mouse hover sometime in the distant future
   // because a user previously touched the element.
-  setTimeout(() => {
+  setTimeout(function clearGlobalIgnoreEmulatedMouseEvents() {
     globalIgnoreEmulatedMouseEvents = false;
   }, 50);
 }
@@ -68,7 +68,7 @@ function setupGlobalTouchEvents() {
   document.addEventListener('pointerup', handleGlobalPointerEvent);
 
   hoverCount++;
-  return () => {
+  return function teardownGlobalTouchEvents() {
     hoverCount--;
     if (hoverCount > 0) {
       return;
@@ -92,73 +92,76 @@ export function useHover(props: HoverProps = {}): HoverResult {
 
   React.useEffect(setupGlobalTouchEvents, []);
 
-  const hoverProps = React.useMemo(() => {
-    function triggerHoverStart(
-      event: PointerEvent | React.PointerEvent | MouseEvent | React.MouseEvent,
-      pointerType: 'mouse' | 'pen' | 'touch'
-    ) {
-      if (isDisabled || pointerType === 'touch' || state.isHovered) {
-        return;
-      }
-
-      state.isHovered = true;
-      const target = event.target as HTMLElement;
-
-      if (onHoverStart) {
-        onHoverStart({
-          type: 'hoverstart',
-          target,
-          pointerType,
-        });
-      }
-
-      if (onHoverChange) {
-        onHoverChange(true);
-      }
-
-      setHovered(true);
-    }
-
-    function triggerHoverEnd(
-      event: PointerEvent | React.PointerEvent | MouseEvent | React.MouseEvent,
-      pointerType: 'mouse' | 'pen' | 'touch'
-    ) {
-      if (isDisabled || pointerType === 'touch' || !state.isHovered) {
-        return;
-      }
-
-      state.isHovered = false;
-      const target = event.target as HTMLElement;
-
-      if (onHoverEnd) {
-        onHoverEnd({
-          type: 'hoverend',
-          target,
-          pointerType,
-        });
-      }
-
-      if (onHoverChange) {
-        onHoverChange(false);
-      }
-
-      setHovered(false);
-    }
-
-    const hoverProps: React.HTMLAttributes<HTMLElement> = {
-      onPointerEnter(event: React.PointerEvent<HTMLElement>) {
-        if (globalIgnoreEmulatedMouseEvents && event.pointerType === 'mouse') {
+  const hoverProps = React.useMemo(
+    function getHoverProps() {
+      function triggerHoverStart(
+        event: PointerEvent | React.PointerEvent | MouseEvent | React.MouseEvent,
+        pointerType: 'mouse' | 'pen' | 'touch'
+      ) {
+        if (isDisabled || pointerType === 'touch' || state.isHovered) {
           return;
         }
-        triggerHoverStart(event, event.pointerType);
-      },
-      onPointerLeave(event: React.PointerEvent<HTMLElement>) {
-        triggerHoverEnd(event, event.pointerType);
-      },
-    };
 
-    return hoverProps;
-  }, [isDisabled, state, onHoverStart, onHoverChange, onHoverEnd]);
+        state.isHovered = true;
+        const target = event.target as HTMLElement;
+
+        if (onHoverStart) {
+          onHoverStart({
+            type: 'hoverstart',
+            target,
+            pointerType,
+          });
+        }
+
+        if (onHoverChange) {
+          onHoverChange(true);
+        }
+
+        setHovered(true);
+      }
+
+      function triggerHoverEnd(
+        event: PointerEvent | React.PointerEvent | MouseEvent | React.MouseEvent,
+        pointerType: 'mouse' | 'pen' | 'touch'
+      ) {
+        if (isDisabled || pointerType === 'touch' || !state.isHovered) {
+          return;
+        }
+
+        state.isHovered = false;
+        const target = event.target as HTMLElement;
+
+        if (onHoverEnd) {
+          onHoverEnd({
+            type: 'hoverend',
+            target,
+            pointerType,
+          });
+        }
+
+        if (onHoverChange) {
+          onHoverChange(false);
+        }
+
+        setHovered(false);
+      }
+
+      const hoverProps: React.HTMLAttributes<HTMLElement> = {
+        onPointerEnter(event: React.PointerEvent<HTMLElement>) {
+          if (globalIgnoreEmulatedMouseEvents && event.pointerType === 'mouse') {
+            return;
+          }
+          triggerHoverStart(event, event.pointerType);
+        },
+        onPointerLeave(event: React.PointerEvent<HTMLElement>) {
+          triggerHoverEnd(event, event.pointerType);
+        },
+      };
+
+      return hoverProps;
+    },
+    [isDisabled, state, onHoverStart, onHoverChange, onHoverEnd]
+  );
 
   return {
     hoverProps,

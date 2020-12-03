@@ -19,50 +19,20 @@ import {
   usePrefersReducedMotion,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { clamp, getPartDataAttrObj, isMainClick, namespaced } from '@interop-ui/utils';
-import * as React from 'react';
 import {
-  Axis,
-  LogicalDirection,
-  ResizeBehavior,
-  ScrollAreaContextValue,
-  ScrollAreaEvent,
-  ScrollAreaOwnProps,
-  ScrollAreaReducerState,
-  ScrollAreaRefs,
-  ScrollbarContextValue,
-  Size,
-} from './types';
-import { ScrollAreaState, ScrollAreaEvents, reducer } from './scrollAreaState';
+  canUseDOM,
+  clamp,
+  getPartDataAttrObj,
+  getResizeObserverEntryBorderBoxSize,
+  isMainClick,
+  namespaced,
+} from '@interop-ui/utils';
+import * as React from 'react';
 import { bezier } from './bezier-easing';
 import { Queue } from './queue';
-import {
-  animate,
-  canScroll,
-  determineScrollDirectionFromTrackClick,
-  getButtonRef,
-  getClientSize,
-  getLogicalRect,
-  getLongPagedDraw,
-  getLongPagedScrollDistance,
-  getNewScrollPosition,
-  getPagedDraw,
-  getPagedScrollDistance,
-  getPointerPosition,
-  getScrollbarRef,
-  getScrollPosition,
-  getScrollSize,
-  getThumbRef,
-  getTrackRef,
-  getVisibleToTotalRatio,
-  pointerIsOutsideElement,
-  scrollBy,
-  setScrollPosition,
-  shouldFallbackToNativeScroll,
-  shouldOverflow,
-  useBorderBoxResizeObserver,
-} from './scrollAreaUtils';
 import { useHover } from './useHover';
+
+import type { Axis, Size } from '@interop-ui/utils';
 
 const SCROLL_AREA_CSS_PROPS_LIST = [
   'scrollAreaWidth',
@@ -84,14 +54,66 @@ const SCROLL_AREA_CSS_PROPS_LIST = [
 ] as const;
 const SCROLL_AREA_CSS_PROPS = SCROLL_AREA_CSS_PROPS_LIST.reduce(reduceToCssProperties, {} as any);
 
+enum ScrollAreaState {
+  Idle = 'Idle',
+  Thumbing = 'Thumbing',
+  Tracking = 'Tracking',
+  ButtonScrolling = 'ButtonScrolling',
+}
+
+enum ScrollAreaEvents {
+  DeriveStateFromProps,
+  HandleScrollAreaResize,
+  HandleViewportResize,
+  HandleScrollbarResize,
+  HandleTrackResize,
+  SetContentOverflowing,
+  SetExplicitResize,
+  StartTracking,
+  StopTracking,
+  StartThumbing,
+  StopThumbing,
+  StartButtonPress,
+  StopButtonPress,
+  SetScrollbarIsVisible,
+}
+
 const ROOT_DEFAULT_TAG = 'div';
 const ROOT_NAME = 'ScrollArea';
+
+interface ScrollAreaRefs {
+  buttonLeftRef: React.RefObject<HTMLDivElement>;
+  buttonRightRef: React.RefObject<HTMLDivElement>;
+  buttonUpRef: React.RefObject<HTMLDivElement>;
+  buttonDownRef: React.RefObject<HTMLDivElement>;
+  viewportRef: React.RefObject<HTMLDivElement>;
+  positionRef: React.RefObject<HTMLDivElement>;
+  scrollAreaRef: React.RefObject<HTMLDivElement>;
+  scrollbarYRef: React.RefObject<HTMLDivElement>;
+  scrollbarXRef: React.RefObject<HTMLDivElement>;
+  thumbYRef: React.RefObject<HTMLDivElement>;
+  thumbXRef: React.RefObject<HTMLDivElement>;
+  trackYRef: React.RefObject<HTMLDivElement>;
+  trackXRef: React.RefObject<HTMLDivElement>;
+}
 
 // Keeping refs in a separate context; should be a stable reference throughout the tree
 const [ScrollAreaRefsContext, useScrollAreaRefs] = createContext<ScrollAreaRefs>(
   'ScrollAreaRefsContext',
   ROOT_NAME
 );
+
+interface ScrollAreaContextValue {
+  dir?: 'rtl' | 'ltr';
+  overflowX: OverflowBehavior;
+  overflowY: OverflowBehavior;
+  prefersReducedMotion: boolean;
+  scrollbarVisibility: ScrollbarVisibility;
+  scrollbarVisibilityRestTimeout: number;
+  trackClickBehavior: TrackClickBehavior;
+  onScroll: React.ComponentProps<'div'>['onScroll'];
+  isHovered: boolean;
+}
 
 const [ScrollAreaContext, useScrollAreaContext] = createContext<ScrollAreaContextValue>(
   'ScrollAreaContext',
@@ -120,57 +142,103 @@ const [DispatchContext, useDispatchContext] = createContext<React.Dispatch<Scrol
  * ScrollArea
  * -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaDOMProps = Omit<React.ComponentPropsWithoutRef<typeof ROOT_DEFAULT_TAG>, 'children'>;
-type ScrollAreaProps = ScrollAreaDOMProps & ScrollAreaOwnProps;
+type ScrollAreaOwnProps = {
+  children: React.ReactNode;
+  /**
+   * Overflow behavior for the x axis. Mirrors the `overflow-x` CSS property.
+   *
+   * (default: `"auto"`)
+   */
+  overflowX?: OverflowBehavior;
+  /**
+   * Overflow behavior for the y axis. Mirrors the `overflow-y` CSS property.
+   *
+   * (default: `"auto"`)
+   */
+  overflowY?: OverflowBehavior;
+  /**
+   * Describes the nature of scrollbar visibility, similar to how the scrollbar preferences in MacOS
+   * control visibility of native scrollbars.
+   * - `"always"`: Scrollbars are always visible when content is overflowing
+   * - `"scroll"`: Scrollbars are visible when the user is scrolling along its corresponding axis
+   * - `"hover"`: Scrollbars are visible when the user is scrolling along its corresponding axis and
+   *   when the user is hovering over scrollable area
+   *
+   * (default: `"always"`)
+   */
+  scrollbarVisibility?: ScrollbarVisibility;
+  /**
+   * If `scrollbarVisibility` is set to either `"scroll"`, this prop determines the length of time,
+   * in milliseconds, before the scrollbars are hidden after the user stops interacting with
+   * scrollbars.
+   *
+   * (default: 600)
+   */
+  scrollbarVisibilityRestTimeout?: number;
+  /**
+   * Describes the action that occurs when a user clicks on the scroll track. When `"relative"`, the
+   * scroll area will jump to a spot relative to where the user has clicked in relation to the
+   * track. When `"page"`, the scroll area will initially jump to the next or previous page of
+   * the viewable area, depending on which direction on the track is clicked.
+   *
+   * (default: `"relative"`)
+   */
+  trackClickBehavior?: TrackClickBehavior;
+  /**
+   * Mostly here for debugging, but these might be useful for consumers
+   */
+  unstable_forceNative?: boolean;
+  unstable_prefersReducedMotion?: boolean;
+  dir?: 'rtl' | 'ltr';
+};
 
-const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaProps>(function ScrollArea(
-  props,
-  forwardedRef
-) {
-  const {
-    as = ROOT_DEFAULT_TAG,
-    children,
-    overflowX = 'auto',
-    overflowY = 'auto',
-    scrollbarVisibility = 'always',
-    scrollbarVisibilityRestTimeout = 600,
-    dir,
-    trackClickBehavior = 'relative',
-    unstable_forceNative: forceNative = false,
-    unstable_prefersReducedMotion = false,
-    ...domProps
-  } = props;
-  const [usesNative, setUsesNative] = React.useState(true);
-  // Check to make sure the user's browser supports our custom scrollbar features. We use a layout
-  // effect here to avoid a visible flash when the custom scroll area replaces the native version.
-  useLayoutEffect(() => {
-    setUsesNative(forceNative || shouldFallbackToNativeScroll());
-  }, [forceNative]);
+const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaOwnProps>(
+  function ScrollArea(props, forwardedRef) {
+    const {
+      as = ROOT_DEFAULT_TAG,
+      children,
+      overflowX = 'auto',
+      overflowY = 'auto',
+      scrollbarVisibility = 'always',
+      scrollbarVisibilityRestTimeout = 600,
+      dir,
+      trackClickBehavior = 'relative',
+      unstable_forceNative: forceNative = false,
+      unstable_prefersReducedMotion = false,
+      ...domProps
+    } = props;
+    const [usesNative, setUsesNative] = React.useState(true);
+    // Check to make sure the user's browser supports our custom scrollbar features. We use a layout
+    // effect here to avoid a visible flash when the custom scroll area replaces the native version.
+    useLayoutEffect(() => {
+      setUsesNative(forceNative || shouldFallbackToNativeScroll());
+    }, [forceNative]);
 
-  const ScrollAreaCustomOrNative = usesNative ? ScrollAreaNative : ScrollAreaImpl;
+    const ScrollAreaCustomOrNative = usesNative ? ScrollAreaNative : ScrollAreaImpl;
 
-  return (
-    <ScrollAreaCustomOrNative
-      {...getPartDataAttrObj(ROOT_NAME)}
-      {...domProps}
-      as={as}
-      overflowX={overflowX}
-      overflowY={overflowY}
-      scrollbarVisibility={scrollbarVisibility}
-      scrollbarVisibilityRestTimeout={scrollbarVisibilityRestTimeout}
-      dir={dir!}
-      trackClickBehavior={trackClickBehavior}
-      unstable_prefersReducedMotion={unstable_prefersReducedMotion}
-      ref={forwardedRef}
-    >
-      <NativeScrollContext.Provider value={usesNative}>{children}</NativeScrollContext.Provider>
-    </ScrollAreaCustomOrNative>
-  );
-});
+    return (
+      <ScrollAreaCustomOrNative
+        {...getPartDataAttrObj(ROOT_NAME)}
+        {...domProps}
+        as={as}
+        overflowX={overflowX}
+        overflowY={overflowY}
+        scrollbarVisibility={scrollbarVisibility}
+        scrollbarVisibilityRestTimeout={scrollbarVisibilityRestTimeout}
+        dir={dir!}
+        trackClickBehavior={trackClickBehavior}
+        unstable_prefersReducedMotion={unstable_prefersReducedMotion}
+        ref={forwardedRef}
+      >
+        <NativeScrollContext.Provider value={usesNative}>{children}</NativeScrollContext.Provider>
+      </ScrollAreaCustomOrNative>
+    );
+  }
+);
 
-type ScrollAreaNativeProps = Omit<ScrollAreaProps, 'unstable_forceNative'> & {
-  overflowX: NonNullable<ScrollAreaProps['overflowX']>;
-  overflowY: NonNullable<ScrollAreaProps['overflowY']>;
+type ScrollAreaNativeProps = Omit<ScrollAreaOwnProps, 'unstable_forceNative'> & {
+  overflowX: NonNullable<ScrollAreaOwnProps['overflowX']>;
+  overflowY: NonNullable<ScrollAreaOwnProps['overflowY']>;
 };
 
 const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNativeProps>(
@@ -204,8 +272,7 @@ const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNat
   }
 );
 
-type ScrollAreaImplProps = ScrollAreaDOMProps &
-  Required<Omit<ScrollAreaOwnProps, 'unstable_forceNative'>>;
+type ScrollAreaImplProps = Required<Omit<ScrollAreaOwnProps, 'unstable_forceNative'>>;
 
 const initialSize = { width: 0, height: 0 };
 const initialState: ScrollAreaReducerState = {
@@ -280,7 +347,7 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
     const _prefersReducedMotion = usePrefersReducedMotion(scrollAreaRef);
     const prefersReducedMotion = unstable_prefersReducedMotion ?? _prefersReducedMotion;
 
-    const [reducerState, dispatch] = React.useReducer(reducer, {
+    const [reducerState, dispatch] = React.useReducer(scrollAreaStateReducer, {
       ...initialState,
       scrollbarIsVisibleX: scrollbarVisibility === 'always',
       scrollbarIsVisibleY: scrollbarVisibility === 'always',
@@ -392,174 +459,170 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
  * -----------------------------------------------------------------------------------------------*/
 
 const VIEWPORT_DEFAULT_TAG = 'div';
-const VIEWPORT_NAME = 'ScrollArea.Viewport';
-type ScrollAreaViewportDOMProps = React.ComponentPropsWithoutRef<typeof VIEWPORT_DEFAULT_TAG>;
-type ScrollAreaViewportOwnProps = {};
-type ScrollAreaViewportProps = ScrollAreaViewportDOMProps & ScrollAreaViewportOwnProps;
+const VIEWPORT_NAME = 'ScrollAreaViewport';
 
-const ScrollAreaViewportImpl = forwardRefWithAs<
-  typeof VIEWPORT_DEFAULT_TAG,
-  ScrollAreaViewportProps
->(function ScrollAreaViewportImpl(props, forwardedRef) {
-  const { as: Comp = VIEWPORT_DEFAULT_TAG, ...domProps } = props;
-  const {
-    positionRef,
-    thumbXRef,
-    thumbYRef,
-    trackXRef,
-    trackYRef,
-    viewportRef,
-  } = useScrollAreaRefs(VIEWPORT_NAME);
-  const { onScroll, overflowX, overflowY, scrollbarVisibility } = useScrollAreaContext(
-    VIEWPORT_NAME
-  );
-  const stateContext = useScrollAreaStateContext();
-  const dispatch = useDispatchContext(VIEWPORT_NAME);
-  const ref = useComposedRefs(forwardedRef, viewportRef);
+const ScrollAreaViewportImpl = forwardRefWithAs<typeof VIEWPORT_DEFAULT_TAG>(
+  function ScrollAreaViewportImpl(props, forwardedRef) {
+    const { as: Comp = VIEWPORT_DEFAULT_TAG, ...domProps } = props;
+    const {
+      positionRef,
+      thumbXRef,
+      thumbYRef,
+      trackXRef,
+      trackYRef,
+      viewportRef,
+    } = useScrollAreaRefs(VIEWPORT_NAME);
+    const { onScroll, overflowX, overflowY, scrollbarVisibility } = useScrollAreaContext(
+      VIEWPORT_NAME
+    );
+    const stateContext = useScrollAreaStateContext();
+    const dispatch = useDispatchContext(VIEWPORT_NAME);
+    const ref = useComposedRefs(forwardedRef, viewportRef);
 
-  useBorderBoxResizeObserver(viewportRef, (size: ResizeObserverSize) => {
-    dispatch({
-      type: ScrollAreaEvents.HandleViewportResize,
-      width: size.inlineSize,
-      height: size.blockSize,
-    });
-  });
-
-  // Update the scrollbar thumb position as the user scrolls. This is simpler to execute here with
-  // the scroll handler rather than in the thumb components.
-  const updateThumbsWithScrollPosition = React.useCallback(
-    function updateThumbsWithScrollPosition() {
-      const positionElement = positionRef.current;
-      const thumbXElement = thumbXRef.current;
-      const thumbYElement = thumbYRef.current;
-      const trackXElement = trackXRef.current;
-      const trackYElement = trackYRef.current;
-      if (thumbXElement && trackXElement && positionElement) {
-        updateThumbPosition({
-          thumbElement: thumbXElement,
-          trackElement: trackXElement,
-          axis: 'x',
-          positionElement,
-        });
-      }
-      if (thumbYElement && trackYElement && positionElement) {
-        updateThumbPosition({
-          thumbElement: thumbYElement,
-          trackElement: trackYElement,
-          axis: 'y',
-          positionElement,
-        });
-      }
-    },
-    [positionRef, thumbXRef, thumbYRef, trackXRef, trackYRef]
-  );
-
-  // When the user scrolls we need to update the visibility of scrollbars. This, too, is simpler
-  // to execute here with the scroll handler rather than in the scrollbar components.
-  const lastScrollTop = React.useRef(0);
-  const lastScrollLeft = React.useRef(0);
-  function setScrollbarVisibilityOnScroll() {
-    if (!positionRef.current) return;
-    const scrollTop = positionRef.current.scrollTop;
-    const scrollLeft = positionRef.current.scrollLeft;
-    const scrollbarIsVisibleY = scrollTop !== lastScrollTop.current;
-    const scrollbarIsVisibleX = scrollLeft !== lastScrollLeft.current;
-
-    if (
-      scrollbarIsVisibleY !== stateContext.scrollbarIsVisibleY ||
-      scrollbarIsVisibleX !== stateContext.scrollbarIsVisibleX
-    ) {
+    useBorderBoxResizeObserver(viewportRef, (size: ResizeObserverSize) => {
       dispatch({
-        type: ScrollAreaEvents.SetScrollbarIsVisible,
-        scrollbarVisibility,
-        x: scrollbarIsVisibleX,
-        y: scrollbarIsVisibleY,
+        type: ScrollAreaEvents.HandleViewportResize,
+        width: size.inlineSize,
+        height: size.blockSize,
       });
-    }
-    lastScrollTop.current = scrollTop <= 0 ? 0 : scrollTop;
-    lastScrollLeft.current = scrollLeft <= 0 ? 0 : scrollLeft;
-  }
+    });
 
-  const handleScroll = composeEventHandlers(onScroll, function handleScroll() {
-    if (!positionRef.current) return;
-    updateThumbsWithScrollPosition();
-    setScrollbarVisibilityOnScroll();
-  });
+    // Update the scrollbar thumb position as the user scrolls. This is simpler to execute here with
+    // the scroll handler rather than in the thumb components.
+    const updateThumbsWithScrollPosition = React.useCallback(
+      function updateThumbsWithScrollPosition() {
+        const positionElement = positionRef.current;
+        const thumbXElement = thumbXRef.current;
+        const thumbYElement = thumbYRef.current;
+        const trackXElement = trackXRef.current;
+        const trackYElement = trackYRef.current;
+        if (thumbXElement && trackXElement && positionElement) {
+          updateThumbPosition({
+            thumbElement: thumbXElement,
+            trackElement: trackXElement,
+            axis: 'x',
+            positionElement,
+          });
+        }
+        if (thumbYElement && trackYElement && positionElement) {
+          updateThumbPosition({
+            thumbElement: thumbYElement,
+            trackElement: trackYElement,
+            axis: 'y',
+            positionElement,
+          });
+        }
+      },
+      [positionRef, thumbXRef, thumbYRef, trackXRef, trackYRef]
+    );
 
-  useLayoutEffect(() => {
-    updateThumbsWithScrollPosition();
-  }, [updateThumbsWithScrollPosition]);
+    // When the user scrolls we need to update the visibility of scrollbars. This, too, is simpler
+    // to execute here with the scroll handler rather than in the scrollbar components.
+    const lastScrollTop = React.useRef(0);
+    const lastScrollLeft = React.useRef(0);
+    function setScrollbarVisibilityOnScroll() {
+      if (!positionRef.current) return;
+      const scrollTop = positionRef.current.scrollTop;
+      const scrollLeft = positionRef.current.scrollLeft;
+      const scrollbarIsVisibleY = scrollTop !== lastScrollTop.current;
+      const scrollbarIsVisibleX = scrollLeft !== lastScrollLeft.current;
 
-  // Determine whether or not content is overflowing in either direction and update context
-  // accordingly.
-  useLayoutEffect(
-    function handleContentOverflow() {
-      const positionElement = positionRef.current;
-      if (!positionElement) return;
-
-      const contentIsOverflowingX = shouldOverflow(positionElement, { axis: 'x' });
-      const contentIsOverflowingY = shouldOverflow(positionElement, { axis: 'y' });
       if (
-        contentIsOverflowingX !== stateContext.contentIsOverflowingX ||
-        contentIsOverflowingY !== stateContext.contentIsOverflowingY
+        scrollbarIsVisibleY !== stateContext.scrollbarIsVisibleY ||
+        scrollbarIsVisibleX !== stateContext.scrollbarIsVisibleX
       ) {
         dispatch({
-          type: ScrollAreaEvents.SetContentOverflowing,
-          x: contentIsOverflowingX,
-          y: contentIsOverflowingY,
+          type: ScrollAreaEvents.SetScrollbarIsVisible,
+          scrollbarVisibility,
+          x: scrollbarIsVisibleX,
+          y: scrollbarIsVisibleY,
         });
       }
-    },
-    [
-      stateContext.contentIsOverflowingX,
-      stateContext.contentIsOverflowingY,
-      dispatch,
-      positionRef,
+      lastScrollTop.current = scrollTop <= 0 ? 0 : scrollTop;
+      lastScrollLeft.current = scrollLeft <= 0 ? 0 : scrollLeft;
+    }
 
-      // trigger update when any size changes occur
-      stateContext.domSizes.position.height,
-      stateContext.domSizes.position.width,
-      stateContext.domSizes.viewport.height,
-      stateContext.domSizes.viewport.width,
-    ]
-  );
+    const handleScroll = composeEventHandlers(onScroll, function handleScroll() {
+      if (!positionRef.current) return;
+      updateThumbsWithScrollPosition();
+      setScrollbarVisibilityOnScroll();
+    });
 
-  return (
-    <div
-      {...getPartDataAttrObj('ScrollAreaPosition')}
-      ref={positionRef}
-      onScroll={handleScroll}
-      style={{
-        zIndex: 1,
-        width: `var(${SCROLL_AREA_CSS_PROPS.positionWidth})`,
-        height: `var(${SCROLL_AREA_CSS_PROPS.positionHeight})`,
-        scrollbarWidth: 'none',
-        // @ts-ignore
-        overflowScrolling: 'touch',
-        resize: 'none',
-        overflowX,
-        overflowY,
-      }}
-    >
+    useLayoutEffect(() => {
+      updateThumbsWithScrollPosition();
+    }, [updateThumbsWithScrollPosition]);
+
+    // Determine whether or not content is overflowing in either direction and update context
+    // accordingly.
+    useLayoutEffect(
+      function handleContentOverflow() {
+        const positionElement = positionRef.current;
+        if (!positionElement) return;
+
+        const contentIsOverflowingX = shouldOverflow(positionElement, { axis: 'x' });
+        const contentIsOverflowingY = shouldOverflow(positionElement, { axis: 'y' });
+        if (
+          contentIsOverflowingX !== stateContext.contentIsOverflowingX ||
+          contentIsOverflowingY !== stateContext.contentIsOverflowingY
+        ) {
+          dispatch({
+            type: ScrollAreaEvents.SetContentOverflowing,
+            x: contentIsOverflowingX,
+            y: contentIsOverflowingY,
+          });
+        }
+      },
+      [
+        stateContext.contentIsOverflowingX,
+        stateContext.contentIsOverflowingY,
+        dispatch,
+        positionRef,
+
+        // trigger update when any size changes occur
+        stateContext.domSizes.position.height,
+        stateContext.domSizes.position.width,
+        stateContext.domSizes.viewport.height,
+        stateContext.domSizes.viewport.width,
+      ]
+    );
+
+    return (
       <div
-        {...getPartDataAttrObj('ScrollAreaPositionInner')}
+        {...getPartDataAttrObj('ScrollAreaPosition')}
+        ref={positionRef}
+        onScroll={handleScroll}
         style={{
-          // The browser won’t add right padding of the viewport when you scroll to the end of the
-          // x axis if we put the scrollbar offset padding directly on the position element. We
-          // get around this with an extra wrapper with `display: table`.
-          // https://blog.alexandergottlieb.com/overflow-scroll-and-the-right-padding-problem-a-css-only-solution-6d442915b3f4
-          display: 'table',
-          paddingBottom: `var(${SCROLL_AREA_CSS_PROPS.scrollbarXOffset})`,
-          paddingRight: `var(${SCROLL_AREA_CSS_PROPS.scrollbarYOffset})`,
+          zIndex: 1,
+          width: `var(${SCROLL_AREA_CSS_PROPS.positionWidth})`,
+          height: `var(${SCROLL_AREA_CSS_PROPS.positionHeight})`,
+          scrollbarWidth: 'none',
+          // @ts-ignore
+          overflowScrolling: 'touch',
+          resize: 'none',
+          overflowX,
+          overflowY,
         }}
       >
-        <Comp {...getPartDataAttrObj(VIEWPORT_NAME)} ref={ref} {...domProps} />
+        <div
+          {...getPartDataAttrObj('ScrollAreaPositionInner')}
+          style={{
+            // The browser won’t add right padding of the viewport when you scroll to the end of the
+            // x axis if we put the scrollbar offset padding directly on the position element. We
+            // get around this with an extra wrapper with `display: table`.
+            // https://blog.alexandergottlieb.com/overflow-scroll-and-the-right-padding-problem-a-css-only-solution-6d442915b3f4
+            display: 'table',
+            paddingBottom: `var(${SCROLL_AREA_CSS_PROPS.scrollbarXOffset})`,
+            paddingRight: `var(${SCROLL_AREA_CSS_PROPS.scrollbarYOffset})`,
+          }}
+        >
+          <Comp {...getPartDataAttrObj(VIEWPORT_NAME)} ref={ref} {...domProps} />
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
-const ScrollAreaViewport = forwardRefWithAs<typeof VIEWPORT_DEFAULT_TAG, ScrollAreaViewportProps>(
+const ScrollAreaViewport = forwardRefWithAs<typeof VIEWPORT_DEFAULT_TAG>(
   function ScrollAreaViewport(props, forwardedRef) {
     const { as: Comp = VIEWPORT_DEFAULT_TAG, ...domProps } = props;
     return useNativeScrollArea() ? (
@@ -576,17 +639,17 @@ ScrollAreaViewport.displayName = VIEWPORT_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const SCROLLBAR_DEFAULT_TAG = 'div';
-const SCROLLBAR_X_NAME = 'ScrollArea.ScrollbarX';
-const SCROLLBAR_Y_NAME = 'ScrollArea.ScrollbarY';
-type ScrollAreaScrollbarDOMProps = React.ComponentPropsWithoutRef<typeof SCROLLBAR_DEFAULT_TAG>;
-type ScrollAreaScrollbarOwnProps = {};
-type ScrollAreaScrollbarProps = ScrollAreaScrollbarDOMProps & ScrollAreaScrollbarOwnProps;
-type ScrollAreaScrollbarXProps = ScrollAreaScrollbarProps;
-type ScrollAreaScrollbarYProps = ScrollAreaScrollbarProps;
-type InternalScrollbarProps = ScrollAreaScrollbarProps & {
+const SCROLLBAR_X_NAME = 'ScrollAreaScrollbarX';
+const SCROLLBAR_Y_NAME = 'ScrollAreaScrollbarY';
+interface InternalScrollbarProps {
   axis: Axis;
   name: string;
-};
+}
+
+interface ScrollbarContextValue {
+  axis: Axis;
+  scrollAnimationQueue: Queue<any>;
+}
 
 const [ScrollbarContext, useScrollbarContext] = createContext<ScrollbarContextValue>(
   'ScrollbarContext',
@@ -745,52 +808,50 @@ const ScrollAreaScrollbarImpl = forwardRefWithAs<
   );
 });
 
-const ScrollAreaScrollbarX = forwardRefWithAs<
-  typeof SCROLLBAR_DEFAULT_TAG,
-  ScrollAreaScrollbarXProps
->(function ScrollAreaScrollbarX(props, forwardedRef) {
-  const { domSizes } = useScrollAreaStateContext();
-  return useNativeScrollArea() ? null : (
-    <ScrollAreaScrollbarImpl
-      {...getPartDataAttrObj(SCROLLBAR_X_NAME)}
-      ref={forwardedRef}
-      {...props}
-      axis="x"
-      name={SCROLLBAR_X_NAME}
-      style={{
-        ...props.style,
-        // @ts-ignore
-        [SCROLL_AREA_CSS_PROPS.scrollbarXSize]: domSizes.scrollbarX.height
-          ? domSizes.scrollbarX.height + 'px'
-          : 0,
-      }}
-    />
-  );
-});
+const ScrollAreaScrollbarX = forwardRefWithAs<typeof SCROLLBAR_DEFAULT_TAG>(
+  function ScrollAreaScrollbarX(props, forwardedRef) {
+    const { domSizes } = useScrollAreaStateContext();
+    return useNativeScrollArea() ? null : (
+      <ScrollAreaScrollbarImpl
+        {...getPartDataAttrObj(SCROLLBAR_X_NAME)}
+        ref={forwardedRef}
+        {...props}
+        axis="x"
+        name={SCROLLBAR_X_NAME}
+        style={{
+          ...props.style,
+          // @ts-ignore
+          [SCROLL_AREA_CSS_PROPS.scrollbarXSize]: domSizes.scrollbarX.height
+            ? domSizes.scrollbarX.height + 'px'
+            : 0,
+        }}
+      />
+    );
+  }
+);
 ScrollAreaScrollbarX.displayName = SCROLLBAR_X_NAME;
 
-const ScrollAreaScrollbarY = forwardRefWithAs<
-  typeof SCROLLBAR_DEFAULT_TAG,
-  ScrollAreaScrollbarYProps
->(function ScrollAreaScrollbarY(props, forwardedRef) {
-  const { domSizes } = useScrollAreaStateContext();
-  return useNativeScrollArea() ? null : (
-    <ScrollAreaScrollbarImpl
-      {...getPartDataAttrObj(SCROLLBAR_Y_NAME)}
-      ref={forwardedRef}
-      {...props}
-      axis="y"
-      name={SCROLLBAR_Y_NAME}
-      style={{
-        ...props.style,
-        // @ts-ignore
-        [SCROLL_AREA_CSS_PROPS.scrollbarYSize]: domSizes.scrollbarY.width
-          ? domSizes.scrollbarY.width + 'px'
-          : 0,
-      }}
-    />
-  );
-});
+const ScrollAreaScrollbarY = forwardRefWithAs<typeof SCROLLBAR_DEFAULT_TAG>(
+  function ScrollAreaScrollbarY(props, forwardedRef) {
+    const { domSizes } = useScrollAreaStateContext();
+    return useNativeScrollArea() ? null : (
+      <ScrollAreaScrollbarImpl
+        {...getPartDataAttrObj(SCROLLBAR_Y_NAME)}
+        ref={forwardedRef}
+        {...props}
+        axis="y"
+        name={SCROLLBAR_Y_NAME}
+        style={{
+          ...props.style,
+          // @ts-ignore
+          [SCROLL_AREA_CSS_PROPS.scrollbarYSize]: domSizes.scrollbarY.width
+            ? domSizes.scrollbarY.width + 'px'
+            : 0,
+        }}
+      />
+    );
+  }
+);
 ScrollAreaScrollbarY.displayName = SCROLLBAR_Y_NAME;
 
 /* -------------------------------------------------------------------------------------------------
@@ -798,225 +859,222 @@ ScrollAreaScrollbarY.displayName = SCROLLBAR_Y_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRACK_DEFAULT_TAG = 'div';
-const TRACK_NAME = 'ScrollArea.Track';
-type ScrollAreaTrackDOMProps = React.ComponentPropsWithoutRef<typeof TRACK_DEFAULT_TAG>;
-type ScrollAreaTrackOwnProps = {};
-type ScrollAreaTrackProps = ScrollAreaTrackDOMProps & ScrollAreaTrackOwnProps;
+const TRACK_NAME = 'ScrollAreaTrack';
 
-const ScrollAreaTrack = forwardRefWithAs<typeof TRACK_DEFAULT_TAG, ScrollAreaTrackProps>(
-  function ScrollAreaTrack(props, forwardedRef) {
-    const { as: Comp = TRACK_DEFAULT_TAG, onPointerDown: onPointerDownProp, ...domProps } = props;
-    const { axis, scrollAnimationQueue } = useScrollbarContext(TRACK_NAME);
-    const dispatch = useDispatchContext(TRACK_NAME);
-    const refsContext = useScrollAreaRefs(TRACK_NAME);
-    const { trackClickBehavior, prefersReducedMotion } = useScrollAreaContext(TRACK_NAME);
-    const { positionRef } = refsContext;
-    const trackRef = getTrackRef(axis, refsContext);
-    const thumbRef = getThumbRef(axis, refsContext);
-    const ref = useComposedRefs(trackRef, forwardedRef);
+const ScrollAreaTrack = forwardRefWithAs<typeof TRACK_DEFAULT_TAG>(function ScrollAreaTrack(
+  props,
+  forwardedRef
+) {
+  const { as: Comp = TRACK_DEFAULT_TAG, onPointerDown: onPointerDownProp, ...domProps } = props;
+  const { axis, scrollAnimationQueue } = useScrollbarContext(TRACK_NAME);
+  const dispatch = useDispatchContext(TRACK_NAME);
+  const refsContext = useScrollAreaRefs(TRACK_NAME);
+  const { trackClickBehavior, prefersReducedMotion } = useScrollAreaContext(TRACK_NAME);
+  const { positionRef } = refsContext;
+  const trackRef = getTrackRef(axis, refsContext);
+  const thumbRef = getThumbRef(axis, refsContext);
+  const ref = useComposedRefs(trackRef, forwardedRef);
 
-    const onPointerDown = useCallbackRef(onPointerDownProp);
+  const onPointerDown = useCallbackRef(onPointerDownProp);
 
-    useBorderBoxResizeObserver(trackRef, (size: ResizeObserverSize) => {
-      dispatch({
-        type: ScrollAreaEvents.HandleTrackResize,
-        width: size.inlineSize,
-        height: size.blockSize,
-        axis,
-      });
+  useBorderBoxResizeObserver(trackRef, (size: ResizeObserverSize) => {
+    dispatch({
+      type: ScrollAreaEvents.HandleTrackResize,
+      width: size.inlineSize,
+      height: size.blockSize,
+      axis,
     });
-    const rafIdRef = React.useRef<number>();
+  });
+  const rafIdRef = React.useRef<number>();
 
-    React.useEffect(() => {
-      let trackPointerDownTimeoutId: number | null = null;
-      let trackPointerUpTimeoutId: number | null = null;
-      const trackElement = trackRef.current!;
-      const thumbElement = thumbRef.current!;
-      const positionElement = positionRef.current!;
+  React.useEffect(() => {
+    let trackPointerDownTimeoutId: number | null = null;
+    let trackPointerUpTimeoutId: number | null = null;
+    const trackElement = trackRef.current!;
+    const thumbElement = thumbRef.current!;
+    const positionElement = positionRef.current!;
 
-      if (!trackElement || !thumbElement || !positionElement) {
-        // TODO:
-        throw Error('PAPA NEEDS SOME REFS!');
+    if (!trackElement || !thumbElement || !positionElement) {
+      // TODO:
+      throw Error('PAPA NEEDS SOME REFS!');
+    }
+
+    const handlePointerDown = composeEventHandlers(onPointerDown as any, function handlePointerDown(
+      event: PointerEvent
+    ) {
+      if (
+        !isMainClick(event) ||
+        // We don't want to stop propogation because we need the scrollbar itself to fire pointer
+        // events, but we don't want pointer events on the thumb to trigger events on the track.
+        event.target === thumbElement ||
+        thumbElement.contains(event.target as HTMLElement)
+      ) {
+        return;
       }
 
-      const handlePointerDown = composeEventHandlers(
-        onPointerDown as any,
-        function handlePointerDown(event: PointerEvent) {
+      const direction = determineScrollDirectionFromTrackClick({
+        event,
+        axis,
+        thumbElement,
+      });
+      window.clearTimeout(trackPointerUpTimeoutId!);
+
+      if (trackClickBehavior === 'page') {
+        dispatch({ type: ScrollAreaEvents.StartTracking });
+        document.addEventListener('pointermove', handlePointerMove);
+        document.addEventListener('pointerup', handlePointerUp);
+        trackElement.setPointerCapture(event.pointerId);
+
+        // Handle immediate scroll event.
+        if (prefersReducedMotion) {
+          // Scroll immediately
+          const distance = getPagedScrollDistance({ direction, positionElement, axis });
+          const value = getNewScrollPosition(positionElement, { direction, distance, axis });
+          setScrollPosition(positionElement, { axis, value });
+        } else {
+          // Queue scroll animation
+          scrollAnimationQueue.enqueue(() => {
+            return animate({
+              duration: 200,
+              timing: bezier(0.16, 0, 0.73, 1),
+              draw: getPagedDraw({ positionElement, direction, axis }),
+              rafIdRef,
+            });
+          });
+        }
+
+        // After some time 400ms, if the user still has the pointer down we'll start to scroll
+        // further to some relative distance near the pointer in relation to the track.
+        trackPointerDownTimeoutId = window.setTimeout(() => {
+          const pointerPosition = getPointerPosition(event);
+          const totalScrollDistance = getLongPagedScrollDistance({
+            axis,
+            direction,
+            pointerPosition,
+            positionElement,
+            trackElement,
+          });
+
+          // If the initial scroll event already moved us past the point where we need to go
           if (
-            !isMainClick(event) ||
-            // We don't want to stop propogation because we need the scrollbar itself to fire pointer
-            // events, but we don't want pointer events on the thumb to trigger events on the track.
-            event.target === thumbElement ||
-            thumbElement.contains(event.target as HTMLElement)
+            (direction === 'start' && totalScrollDistance > 0) ||
+            (direction === 'end' && totalScrollDistance < 0)
           ) {
             return;
           }
 
-          const direction = determineScrollDirectionFromTrackClick({
-            event,
-            axis,
-            thumbElement,
-          });
-          window.clearTimeout(trackPointerUpTimeoutId!);
-
-          if (trackClickBehavior === 'page') {
-            dispatch({ type: ScrollAreaEvents.StartTracking });
-            document.addEventListener('pointermove', handlePointerMove);
-            document.addEventListener('pointerup', handlePointerUp);
-            trackElement.setPointerCapture(event.pointerId);
-
-            // Handle immediate scroll event.
-            if (prefersReducedMotion) {
-              // Scroll immediately
-              const distance = getPagedScrollDistance({ direction, positionElement, axis });
-              const value = getNewScrollPosition(positionElement, { direction, distance, axis });
-              setScrollPosition(positionElement, { axis, value });
-            } else {
-              // Queue scroll animation
-              scrollAnimationQueue.enqueue(() => {
-                return animate({
-                  duration: 200,
-                  timing: bezier(0.16, 0, 0.73, 1),
-                  draw: getPagedDraw({ positionElement, direction, axis }),
-                  rafIdRef,
-                });
-              });
-            }
-
-            // After some time 400ms, if the user still has the pointer down we'll start to scroll
-            // further to some relative distance near the pointer in relation to the track.
-            trackPointerDownTimeoutId = window.setTimeout(() => {
-              const pointerPosition = getPointerPosition(event);
-              const totalScrollDistance = getLongPagedScrollDistance({
-                axis,
-                direction,
-                pointerPosition,
-                positionElement,
-                trackElement,
-              });
-
-              // If the initial scroll event already moved us past the point where we need to go
-              if (
-                (direction === 'start' && totalScrollDistance > 0) ||
-                (direction === 'end' && totalScrollDistance < 0)
-              ) {
-                return;
-              }
-
-              if (prefersReducedMotion) {
-                const newPosition = getNewScrollPosition(positionElement, {
-                  direction,
-                  distance: totalScrollDistance,
-                  axis,
-                });
-                setScrollPosition(positionElement, { axis, value: newPosition });
-              } else {
-                const durationBasis = Math.round(Math.abs(totalScrollDistance));
-                const duration = clamp(durationBasis, [100, 500]);
-                scrollAnimationQueue.enqueue(() =>
-                  animate({
-                    duration,
-                    timing: (n) => n,
-                    draw: getLongPagedDraw({
-                      axis,
-                      direction,
-                      pointerPosition,
-                      positionElement,
-                      trackElement,
-                    }),
-                    rafIdRef,
-                  })
-                );
-              }
-              window.clearTimeout(trackPointerDownTimeoutId!);
-            }, 400);
-
-            return function () {
-              window.clearTimeout(trackPointerDownTimeoutId!);
-            };
-          } else {
-            const pointerPosition = getPointerPosition(event);
-            const totalScrollDistance = getLongPagedScrollDistance({
-              axis,
-              direction,
-              pointerPosition,
-              positionElement,
-              trackElement,
-            });
+          if (prefersReducedMotion) {
             const newPosition = getNewScrollPosition(positionElement, {
               direction,
               distance: totalScrollDistance,
               axis,
             });
             setScrollPosition(positionElement, { axis, value: newPosition });
-            const thumbPointerDown = new PointerEvent('pointerdown', event);
-
-            // Wait a tick for the DOM measurements to update, then fire event on the thumb to
-            // immediately shift to a thumbing state.
-            window.requestAnimationFrame(() => {
-              thumbElement.dispatchEvent(thumbPointerDown);
-            });
+          } else {
+            const durationBasis = Math.round(Math.abs(totalScrollDistance));
+            const duration = clamp(durationBasis, [100, 500]);
+            scrollAnimationQueue.enqueue(() =>
+              animate({
+                duration,
+                timing: (n) => n,
+                draw: getLongPagedDraw({
+                  axis,
+                  direction,
+                  pointerPosition,
+                  positionElement,
+                  trackElement,
+                }),
+                rafIdRef,
+              })
+            );
           }
-        }
-      );
-
-      trackElement.addEventListener('pointerdown', handlePointerDown);
-      return function () {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        window.cancelAnimationFrame(rafIdRef.current!);
-        window.clearTimeout(trackPointerDownTimeoutId!);
-        window.clearTimeout(trackPointerUpTimeoutId!);
-        trackElement.removeEventListener('pointerdown', handlePointerDown);
-        document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerUp);
-        dispatch({ type: ScrollAreaEvents.StopTracking });
-        scrollAnimationQueue.stop();
-      };
-
-      /**
-       * If a mouse pointer leaves the bounds of the track before the track pointer timeout has been
-       * executed, we need to clear the timeout as if the pointer was released.
-       * @param event
-       */
-      function handlePointerMove(event: PointerEvent) {
-        if (event.pointerType === 'mouse' && pointerIsOutsideElement(event, trackElement)) {
           window.clearTimeout(trackPointerDownTimeoutId!);
-          document.removeEventListener('pointermove', handlePointerMove);
-          scrollAnimationQueue.stop();
-        }
-      }
+        }, 400);
 
-      function handlePointerUp(event: PointerEvent) {
-        trackElement.releasePointerCapture(event.pointerId);
+        return function () {
+          window.clearTimeout(trackPointerDownTimeoutId!);
+        };
+      } else {
+        const pointerPosition = getPointerPosition(event);
+        const totalScrollDistance = getLongPagedScrollDistance({
+          axis,
+          direction,
+          pointerPosition,
+          positionElement,
+          trackElement,
+        });
+        const newPosition = getNewScrollPosition(positionElement, {
+          direction,
+          distance: totalScrollDistance,
+          axis,
+        });
+        setScrollPosition(positionElement, { axis, value: newPosition });
+        const thumbPointerDown = new PointerEvent('pointerdown', event);
+
+        // Wait a tick for the DOM measurements to update, then fire event on the thumb to
+        // immediately shift to a thumbing state.
+        window.requestAnimationFrame(() => {
+          thumbElement.dispatchEvent(thumbPointerDown);
+        });
+      }
+    });
+
+    trackElement.addEventListener('pointerdown', handlePointerDown);
+    return function () {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      window.cancelAnimationFrame(rafIdRef.current!);
+      window.clearTimeout(trackPointerDownTimeoutId!);
+      window.clearTimeout(trackPointerUpTimeoutId!);
+      trackElement.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
+      dispatch({ type: ScrollAreaEvents.StopTracking });
+      scrollAnimationQueue.stop();
+    };
+
+    /**
+     * If a mouse pointer leaves the bounds of the track before the track pointer timeout has been
+     * executed, we need to clear the timeout as if the pointer was released.
+     * @param event
+     */
+    function handlePointerMove(event: PointerEvent) {
+      if (event.pointerType === 'mouse' && pointerIsOutsideElement(event, trackElement)) {
         window.clearTimeout(trackPointerDownTimeoutId!);
         document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerUp);
         scrollAnimationQueue.stop();
-        dispatch({ type: ScrollAreaEvents.StopTracking });
-
-        // Rapid clicks on the track will result in janky repeat animation if we stop the queue
-        // immediately. Set a short timeout to make sure the user is finished clicking and then stop
-        // the queue.
-        trackPointerUpTimeoutId = window.setTimeout(() => {
-          scrollAnimationQueue.stop();
-        }, 200);
       }
-    }, [
-      axis,
-      prefersReducedMotion,
-      trackClickBehavior,
-      // these should be stable references
-      dispatch,
-      onPointerDown,
-      positionRef,
-      scrollAnimationQueue,
-      thumbRef,
-      trackRef,
-    ]);
+    }
 
-    return <Comp {...getPartDataAttrObj(TRACK_NAME)} ref={ref} {...domProps} data-axis={axis} />;
-  }
-);
+    function handlePointerUp(event: PointerEvent) {
+      trackElement.releasePointerCapture(event.pointerId);
+      window.clearTimeout(trackPointerDownTimeoutId!);
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
+      scrollAnimationQueue.stop();
+      dispatch({ type: ScrollAreaEvents.StopTracking });
+
+      // Rapid clicks on the track will result in janky repeat animation if we stop the queue
+      // immediately. Set a short timeout to make sure the user is finished clicking and then stop
+      // the queue.
+      trackPointerUpTimeoutId = window.setTimeout(() => {
+        scrollAnimationQueue.stop();
+      }, 200);
+    }
+  }, [
+    axis,
+    prefersReducedMotion,
+    trackClickBehavior,
+    // these should be stable references
+    dispatch,
+    onPointerDown,
+    positionRef,
+    scrollAnimationQueue,
+    thumbRef,
+    trackRef,
+  ]);
+
+  return <Comp {...getPartDataAttrObj(TRACK_NAME)} ref={ref} {...domProps} data-axis={axis} />;
+});
 
 ScrollAreaTrack.displayName = TRACK_NAME;
 
@@ -1025,194 +1083,191 @@ ScrollAreaTrack.displayName = TRACK_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const THUMB_DEFAULT_TAG = 'div';
-const THUMB_NAME = 'ScrollArea.Thumb';
-type ScrollAreaThumbDOMProps = React.ComponentPropsWithoutRef<typeof THUMB_DEFAULT_TAG>;
-type ScrollAreaThumbOwnProps = {};
-type ScrollAreaThumbProps = ScrollAreaThumbDOMProps & ScrollAreaThumbOwnProps;
+const THUMB_NAME = 'ScrollAreaThumb';
 
-const ScrollAreaThumb = forwardRefWithAs<typeof THUMB_DEFAULT_TAG, ScrollAreaThumbProps>(
-  function ScrollAreaThumb(props, forwardedRef) {
-    const { as: Comp = THUMB_DEFAULT_TAG, onPointerDown: onPointerDownProp, ...domProps } = props;
-    const { axis } = useScrollbarContext(THUMB_NAME);
-    const refsContext = useScrollAreaRefs(THUMB_NAME);
-    const dispatch = useDispatchContext(THUMB_NAME);
-    const { positionRef } = refsContext;
-    const thumbRef = getThumbRef(axis, refsContext);
-    const trackRef = getTrackRef(axis, refsContext);
-    const ref = useComposedRefs(thumbRef, forwardedRef);
-    const stateContext = useScrollAreaStateContext();
-    const onPointerDown = useCallbackRef(onPointerDownProp);
+const ScrollAreaThumb = forwardRefWithAs<typeof THUMB_DEFAULT_TAG>(function ScrollAreaThumb(
+  props,
+  forwardedRef
+) {
+  const { as: Comp = THUMB_DEFAULT_TAG, onPointerDown: onPointerDownProp, ...domProps } = props;
+  const { axis } = useScrollbarContext(THUMB_NAME);
+  const refsContext = useScrollAreaRefs(THUMB_NAME);
+  const dispatch = useDispatchContext(THUMB_NAME);
+  const { positionRef } = refsContext;
+  const thumbRef = getThumbRef(axis, refsContext);
+  const trackRef = getTrackRef(axis, refsContext);
+  const ref = useComposedRefs(thumbRef, forwardedRef);
+  const stateContext = useScrollAreaStateContext();
+  const onPointerDown = useCallbackRef(onPointerDownProp);
 
-    const pointerInitialStartPointRef = React.useRef<number>(0);
-    const pointerStartPointRef = React.useRef<number>(0);
-    const thumbInitialData = React.useRef({ size: 0, positionStart: 0 });
-    const trackInitialData = React.useRef({ size: 0, positionStart: 0 });
+  const pointerInitialStartPointRef = React.useRef<number>(0);
+  const pointerStartPointRef = React.useRef<number>(0);
+  const thumbInitialData = React.useRef({ size: 0, positionStart: 0 });
+  const trackInitialData = React.useRef({ size: 0, positionStart: 0 });
 
-    // Update the thumb's size and position anytime any element in the scroll area tree is resized.
-    const mounted = React.useRef(false);
-    useLayoutEffect(() => {
-      if (!mounted.current) {
-        mounted.current = true;
-        return;
-      }
+  // Update the thumb's size and position anytime any element in the scroll area tree is resized.
+  const mounted = React.useRef(false);
+  useLayoutEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
 
-      const thumbElement = thumbRef.current;
-      const trackElement = trackRef.current;
-      const positionElement = positionRef.current;
-      if (!thumbElement || !positionElement || !trackElement) {
-        // TODO:
-        throw Error('why no refs 😢');
-      }
+    const thumbElement = thumbRef.current;
+    const trackElement = trackRef.current;
+    const positionElement = positionRef.current;
+    if (!thumbElement || !positionElement || !trackElement) {
+      // TODO:
+      throw Error('why no refs 😢');
+    }
 
-      updateThumbPosition({ thumbElement, trackElement, positionElement, axis });
-    }, [
-      thumbRef,
-      trackRef,
-      positionRef,
-      axis,
+    updateThumbPosition({ thumbElement, trackElement, positionElement, axis });
+  }, [
+    thumbRef,
+    trackRef,
+    positionRef,
+    axis,
 
-      // trigger update when any size changes occur
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      ...getValuesFromSizeObjects(stateContext.domSizes),
-    ]);
+    // trigger update when any size changes occur
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ...getValuesFromSizeObjects(stateContext.domSizes),
+  ]);
 
-    // We need a stable reference to the track size so that changes don't detach the mousemove
-    // listener while the user is moving the thumb.
-    const trackSize =
-      axis === 'x' ? stateContext.domSizes.trackX.width : stateContext.domSizes.trackY.height;
-    const trackSizeRef = React.useRef(trackSize);
-    useLayoutEffect(() => {
-      trackSizeRef.current = trackSize;
+  // We need a stable reference to the track size so that changes don't detach the mousemove
+  // listener while the user is moving the thumb.
+  const trackSize =
+    axis === 'x' ? stateContext.domSizes.trackX.width : stateContext.domSizes.trackY.height;
+  const trackSizeRef = React.useRef(trackSize);
+  useLayoutEffect(() => {
+    trackSizeRef.current = trackSize;
+  });
+
+  React.useEffect(() => {
+    const thumbElement = thumbRef.current!;
+    const trackElement = trackRef.current!;
+    const positionElement = refsContext.positionRef.current!;
+    if (!thumbElement || !trackElement || !positionElement) {
+      // TODO:
+      throw Error('why no refs 😢');
+    }
+
+    const handlePointerDown = composeEventHandlers(onPointerDown as any, function handlePointerDown(
+      event: PointerEvent
+    ) {
+      if (!isMainClick(event)) return;
+
+      // const pointerPosition = getPointerPosition(event)[axis];
+
+      const pointerPosition = getPointerPosition(event)[axis];
+
+      // As the user moves the pointer, we want the thumb to stay positioned relative to the
+      // pointer position at the time of the initial pointerdown event. We'll store some data in a
+      // few refs that the pointermove handler can access to calculate this properly.
+      thumbInitialData.current = getLogicalRect(thumbElement, { axis });
+      trackInitialData.current = getLogicalRect(trackElement, { axis });
+
+      pointerStartPointRef.current = pointerPosition;
+      pointerInitialStartPointRef.current = pointerPosition;
+
+      thumbElement.setPointerCapture(event.pointerId);
+      document.addEventListener('pointerup', handlePointerUp);
+      document.addEventListener('pointermove', handlePointerMove);
+      dispatch({ type: ScrollAreaEvents.StartThumbing });
     });
 
-    React.useEffect(() => {
-      const thumbElement = thumbRef.current!;
-      const trackElement = trackRef.current!;
-      const positionElement = refsContext.positionRef.current!;
-      if (!thumbElement || !trackElement || !positionElement) {
-        // TODO:
-        throw Error('why no refs 😢');
+    thumbElement.addEventListener('pointerdown', handlePointerDown);
+    return function () {
+      thumbElement.removeEventListener('pointerdown', handlePointerDown);
+      stopThumbing();
+    };
+
+    function stopThumbing() {
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
+      dispatch({ type: ScrollAreaEvents.StopThumbing });
+    }
+
+    function handlePointerMove(event: PointerEvent) {
+      const pointerPosition = getPointerPosition(event)[axis];
+      const delta = pointerPosition - pointerStartPointRef.current;
+      const trackSize = trackSizeRef.current;
+
+      if (canScroll(positionElement, { axis, delta })) {
+        // Offset by the distance between the initial pointer's distance from the initial
+        // position of the thumb
+        const { positionStart: trackPosition } = trackInitialData.current;
+        const { positionStart: thumbInitialPosition } = thumbInitialData.current;
+        const pointerOffset = pointerInitialStartPointRef.current - thumbInitialPosition;
+
+        const pointerPositionRelativeToTrack = Math.round(pointerPosition - trackPosition);
+        const viewportRatioFromPointer =
+          Math.round(((pointerPositionRelativeToTrack - pointerOffset) / trackSize) * 100) / 100;
+        const scrollSize = getScrollSize(positionElement, { axis });
+        const value = viewportRatioFromPointer * scrollSize;
+        setScrollPosition(positionElement, { axis, value });
+
+        // Reset the pointer start point for the next pointer movement
+        pointerStartPointRef.current = pointerPosition;
+
+        dispatch({ type: ScrollAreaEvents.StartThumbing });
       }
+    }
 
-      const handlePointerDown = composeEventHandlers(
-        onPointerDown as any,
-        function handlePointerDown(event: PointerEvent) {
-          if (!isMainClick(event)) return;
+    function handlePointerUp(event: PointerEvent) {
+      thumbElement.releasePointerCapture(event.pointerId);
+      stopThumbing();
+    }
+  }, [
+    axis,
+    // these should be stable references
+    onPointerDown,
+    dispatch,
+    refsContext,
+    thumbRef,
+    trackRef,
+  ]);
 
-          // const pointerPosition = getPointerPosition(event)[axis];
+  const [thumbStyles, setThumbStyles] = React.useState<React.CSSProperties>({});
 
-          const pointerPosition = getPointerPosition(event)[axis];
+  useLayoutEffect(() => {
+    const positionElement = positionRef.current;
+    const trackElement = trackRef.current;
+    setThumbStyles(getThumbSize({ positionElement, trackElement, axis }));
+  }, [
+    axis,
+    positionRef,
+    trackRef,
 
-          // As the user moves the pointer, we want the thumb to stay positioned relative to the
-          // pointer position at the time of the initial pointerdown event. We'll store some data in a
-          // few refs that the pointermove handler can access to calculate this properly.
-          thumbInitialData.current = getLogicalRect(thumbElement, { axis });
-          trackInitialData.current = getLogicalRect(trackElement, { axis });
+    // trigger update when any size changes occur
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ...getValuesFromSizeObjects(stateContext.domSizes),
+  ]);
 
-          pointerStartPointRef.current = pointerPosition;
-          pointerInitialStartPointRef.current = pointerPosition;
-
-          thumbElement.setPointerCapture(event.pointerId);
-          document.addEventListener('pointerup', handlePointerUp);
-          document.addEventListener('pointermove', handlePointerMove);
-          dispatch({ type: ScrollAreaEvents.StartThumbing });
-        }
-      );
-
-      thumbElement.addEventListener('pointerdown', handlePointerDown);
-      return function () {
-        thumbElement.removeEventListener('pointerdown', handlePointerDown);
-        stopThumbing();
-      };
-
-      function stopThumbing() {
-        document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerUp);
-        dispatch({ type: ScrollAreaEvents.StopThumbing });
-      }
-
-      function handlePointerMove(event: PointerEvent) {
-        const pointerPosition = getPointerPosition(event)[axis];
-        const delta = pointerPosition - pointerStartPointRef.current;
-        const trackSize = trackSizeRef.current;
-
-        if (canScroll(positionElement, { axis, delta })) {
-          // Offset by the distance between the initial pointer's distance from the initial
-          // position of the thumb
-          const { positionStart: trackPosition } = trackInitialData.current;
-          const { positionStart: thumbInitialPosition } = thumbInitialData.current;
-          const pointerOffset = pointerInitialStartPointRef.current - thumbInitialPosition;
-
-          const pointerPositionRelativeToTrack = Math.round(pointerPosition - trackPosition);
-          const viewportRatioFromPointer =
-            Math.round(((pointerPositionRelativeToTrack - pointerOffset) / trackSize) * 100) / 100;
-          const scrollSize = getScrollSize(positionElement, { axis });
-          const value = viewportRatioFromPointer * scrollSize;
-          setScrollPosition(positionElement, { axis, value });
-
-          // Reset the pointer start point for the next pointer movement
-          pointerStartPointRef.current = pointerPosition;
-
-          dispatch({ type: ScrollAreaEvents.StartThumbing });
-        }
-      }
-
-      function handlePointerUp(event: PointerEvent) {
-        thumbElement.releasePointerCapture(event.pointerId);
-        stopThumbing();
-      }
-    }, [
-      axis,
-      // these should be stable references
-      onPointerDown,
-      dispatch,
-      refsContext,
-      thumbRef,
-      trackRef,
-    ]);
-
-    const [thumbStyles, setThumbStyles] = React.useState<React.CSSProperties>({});
-
-    useLayoutEffect(() => {
-      const positionElement = positionRef.current;
-      const trackElement = trackRef.current;
-      setThumbStyles(getThumbSize({ positionElement, trackElement, axis }));
-    }, [
-      axis,
-      positionRef,
-      trackRef,
-
-      // trigger update when any size changes occur
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      ...getValuesFromSizeObjects(stateContext.domSizes),
-    ]);
-
-    return (
-      <Comp
-        {...getPartDataAttrObj(THUMB_NAME)}
-        ref={ref}
-        {...domProps}
-        data-axis={axis}
-        style={{
-          ...domProps.style,
-          ...thumbStyles,
-          // @ts-ignore
-          ...(axis === 'x'
-            ? {
-                [SCROLL_AREA_CSS_PROPS.scrollbarThumbWillChange]: 'left',
-                [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: '100%',
-                [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: 'auto',
-              }
-            : {
-                [SCROLL_AREA_CSS_PROPS.scrollbarThumbWillChange]: 'top',
-                [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: 'auto',
-                [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: '100%',
-              }),
-        }}
-      />
-    );
-  }
-);
+  return (
+    <Comp
+      {...getPartDataAttrObj(THUMB_NAME)}
+      ref={ref}
+      {...domProps}
+      data-axis={axis}
+      style={{
+        ...domProps.style,
+        ...thumbStyles,
+        // @ts-ignore
+        ...(axis === 'x'
+          ? {
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbWillChange]: 'left',
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: '100%',
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: 'auto',
+            }
+          : {
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbWillChange]: 'top',
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: 'auto',
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: '100%',
+            }),
+      }}
+    />
+  );
+});
 
 ScrollAreaThumb.displayName = THUMB_NAME;
 
@@ -1221,13 +1276,8 @@ ScrollAreaThumb.displayName = THUMB_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const BUTTON_DEFAULT_TAG = 'div';
-const BUTTON_START_NAME = 'ScrollArea.ButtonStart';
-const BUTTON_END_NAME = 'ScrollArea.ButtonEnd';
-type ScrollAreaButtonDOMProps = React.ComponentPropsWithoutRef<typeof BUTTON_DEFAULT_TAG>;
-type ScrollAreaButtonOwnProps = {};
-type ScrollAreaButtonProps = ScrollAreaButtonDOMProps & ScrollAreaButtonOwnProps;
-type ScrollAreaButtonStartProps = ScrollAreaButtonProps;
-type ScrollAreaButtonEndProps = ScrollAreaButtonProps;
+const BUTTON_START_NAME = 'ScrollAreaButtonStart';
+const BUTTON_END_NAME = 'ScrollAreaButtonEnd';
 
 // For directional scroll buttons, we emulate native Windows behavior as closely as possible. There,
 // when a user presses a scroll button, the browser triggers 9 separate scroll events in ~16
@@ -1237,10 +1287,10 @@ type ScrollAreaButtonEndProps = ScrollAreaButtonProps;
 // We are concerned more about the bezier curve effect this creates vs. the actual values.
 const BUTTON_SCROLL_TIME = 135;
 
-type ScrollAreaButtonInternalProps = ScrollAreaButtonStartProps & {
+interface ScrollAreaButtonInternalProps {
   direction: LogicalDirection;
   name: string;
-};
+}
 
 const ScrollAreaButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonInternalProps>(
   function ScrollAreaButton(props, forwardedRef) {
@@ -1392,24 +1442,23 @@ const ScrollAreaButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, ScrollAreaB
   }
 );
 
-const ScrollAreaButtonStart = forwardRefWithAs<
-  typeof BUTTON_DEFAULT_TAG,
-  ScrollAreaButtonStartProps
->(function ScrollAreaButtonStart(props, forwardedRef) {
-  return (
-    <ScrollAreaButton
-      {...props}
-      name={BUTTON_START_NAME}
-      direction="start"
-      {...getPartDataAttrObj(BUTTON_START_NAME)}
-      ref={forwardedRef}
-    />
-  );
-});
+const ScrollAreaButtonStart = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG>(
+  function ScrollAreaButtonStart(props, forwardedRef) {
+    return (
+      <ScrollAreaButton
+        {...props}
+        name={BUTTON_START_NAME}
+        direction="start"
+        {...getPartDataAttrObj(BUTTON_START_NAME)}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
 
 ScrollAreaButtonStart.displayName = BUTTON_START_NAME;
 
-const ScrollAreaButtonEnd = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, ScrollAreaButtonEndProps>(
+const ScrollAreaButtonEnd = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG>(
   function ScrollAreaButtonEnd(props, forwardedRef) {
     return (
       <ScrollAreaButton
@@ -1430,12 +1479,10 @@ ScrollAreaButtonEnd.displayName = BUTTON_END_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const CORNER_DEFAULT_TAG = 'div';
-const CORNER_NAME = 'ScrollArea.Corner';
-type ScrollAreaCornerDOMProps = React.ComponentPropsWithoutRef<typeof CORNER_DEFAULT_TAG>;
-type ScrollAreaCornerOwnProps = {};
-type ScrollAreaCornerProps = ScrollAreaCornerDOMProps & ScrollAreaCornerOwnProps;
+const CORNER_NAME = 'ScrollAreaCorner';
+type ScrollAreaCornerProps = {};
 
-const ScrollAreaCornerImpl = forwardRefWithAs<typeof CORNER_DEFAULT_TAG, ScrollAreaCornerProps>(
+const ScrollAreaCornerImpl = forwardRefWithAs<typeof CORNER_DEFAULT_TAG>(
   function ScrollAreaCornerImpl(props, forwardedRef) {
     const { as: Comp = CORNER_DEFAULT_TAG, ...domProps } = props;
 
@@ -1538,19 +1585,384 @@ export {
   ScrollAreaCorner,
   SCROLL_AREA_CSS_PROPS,
 };
-export type {
-  ScrollAreaProps,
-  ScrollAreaViewportProps,
-  ScrollAreaScrollbarXProps,
-  ScrollAreaScrollbarYProps,
-  ScrollAreaButtonStartProps,
-  ScrollAreaButtonEndProps,
-  ScrollAreaTrackProps,
-  ScrollAreaThumbProps,
-  ScrollAreaCornerProps,
-};
 
-/* ---------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------
+   Utils
+   ---------------------------------------------------------------------------------------------- */
+
+function scrollAreaStateReducer(
+  context: ScrollAreaReducerState,
+  event: ScrollAreaEvent
+): ScrollAreaReducerState {
+  switch (event.type) {
+    case ScrollAreaEvents.SetExplicitResize: {
+      return {
+        ...context,
+        explicitResize: event.value,
+      };
+    }
+    case ScrollAreaEvents.HandleScrollAreaResize: {
+      // We need a fixed width for the position element based on the content box size of the scroll
+      // area. Since the inner elements rely on some absolute positioning, technically the content
+      // box size will always be zero so we need to calculate it ourselves with computed styles.
+      // Since scroll area doesn't update React state in response to events, it shouldn't re-render
+      // very often in a real app so I don't think this will be a bottleneck for us. The
+      // computations will be more critical in the composer where we need style changes to trigger
+      // re-renders.
+      const computedStyle = event.scrollAreaComputedStyle;
+      const borderTopWidth = parseInt(computedStyle.borderTopWidth);
+      const borderRightWidth = parseInt(computedStyle.borderRightWidth);
+      const borderBottomWidth = parseInt(computedStyle.borderBottomWidth);
+      const borderLeftWidth = parseInt(computedStyle.borderLeftWidth);
+      const paddingTop = parseInt(computedStyle.paddingTop);
+      const paddingRight = parseInt(computedStyle.paddingRight);
+      const paddingBottom = parseInt(computedStyle.paddingBottom);
+      const paddingLeft = parseInt(computedStyle.paddingLeft);
+
+      return {
+        ...context,
+        domSizes: {
+          ...context.domSizes,
+          scrollArea: {
+            width: event.width,
+            height: event.height,
+          },
+          position: {
+            width: event.width - borderLeftWidth - borderRightWidth - paddingLeft - paddingRight,
+            height: event.height - borderTopWidth - borderBottomWidth - paddingTop - paddingBottom,
+          },
+        },
+      };
+    }
+    case ScrollAreaEvents.SetContentOverflowing: {
+      return {
+        ...context,
+        contentIsOverflowingX: event.x,
+        contentIsOverflowingY: event.y,
+      };
+    }
+    case ScrollAreaEvents.SetScrollbarIsVisible: {
+      if (event.scrollbarVisibility === 'always') {
+        return {
+          ...context,
+          scrollbarIsVisibleX: true,
+          scrollbarIsVisibleY: true,
+        };
+      }
+      return {
+        ...context,
+        scrollbarIsVisibleX: event.x ?? context.scrollbarIsVisibleX,
+        scrollbarIsVisibleY: event.y ?? context.scrollbarIsVisibleY,
+      };
+    }
+    case ScrollAreaEvents.HandleViewportResize: {
+      return {
+        ...context,
+        domSizes: {
+          ...context.domSizes,
+          viewport: {
+            width: event.width,
+            height: event.height,
+          },
+        },
+      };
+    }
+    case ScrollAreaEvents.HandleScrollbarResize: {
+      return {
+        ...context,
+        domSizes: {
+          ...context.domSizes,
+          [event.axis === 'x' ? 'scrollbarX' : 'scrollbarY']: {
+            height: event.height,
+            width: event.width,
+          },
+        },
+      };
+    }
+    case ScrollAreaEvents.HandleTrackResize: {
+      return {
+        ...context,
+        domSizes: {
+          ...context.domSizes,
+          [event.axis === 'x' ? 'trackX' : 'trackY']: {
+            height: event.height,
+            width: event.width,
+          },
+        },
+      };
+    }
+    case ScrollAreaEvents.StartTracking: {
+      return {
+        ...context,
+        state: ScrollAreaState.Tracking,
+      };
+    }
+    case ScrollAreaEvents.StopTracking: {
+      return {
+        ...context,
+        state: ScrollAreaState.Idle,
+      };
+    }
+    case ScrollAreaEvents.StartThumbing: {
+      return {
+        ...context,
+        state: ScrollAreaState.Thumbing,
+      };
+    }
+    case ScrollAreaEvents.StopThumbing: {
+      return {
+        ...context,
+        state: ScrollAreaState.Idle,
+      };
+    }
+    case ScrollAreaEvents.StartButtonPress: {
+      return {
+        ...context,
+        state: ScrollAreaState.ButtonScrolling,
+      };
+    }
+    case ScrollAreaEvents.StopButtonPress: {
+      return {
+        ...context,
+        state: ScrollAreaState.Idle,
+      };
+    }
+  }
+
+  return context;
+}
+
+function useBorderBoxResizeObserver(
+  ref: React.RefObject<HTMLElement>,
+  callback: (size: ResizeObserverSize, targetElement: Element) => void
+) {
+  const onResize = useCallbackRef(callback);
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) {
+      // TODO:
+      throw Error('GIMME DAT REF');
+    }
+
+    // @ts-ignore
+    const observer = new ResizeObserver(([entry]) => {
+      const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
+      onResize(borderBoxSize, entry.target);
+    });
+
+    const initialRect = element.getBoundingClientRect();
+    onResize(
+      {
+        inlineSize: initialRect.width,
+        blockSize: initialRect.height,
+      },
+      element
+    );
+    observer.observe?.(element);
+
+    return function () {
+      observer.disconnect();
+    };
+  }, [onResize, ref]);
+}
+
+function animate({ duration, draw, timing, done, rafIdRef }: AnimationOptions) {
+  return new Promise((resolve) => {
+    let start = performance.now();
+    let stopped = false;
+    rafIdRef.current = requestAnimationFrame(function animate(time: number) {
+      // In some cases there are discrepencies between performance.now() and the timestamp in rAF.
+      // In those cases we reset the start time to the timestamp in the first frame.
+      // https://stackoverflow.com/questions/38360250/requestanimationframe-now-vs-performance-now-time-discrepancy
+      start = time < start ? time : start;
+      const timeFraction = clamp((time - start) / duration, [0, 1]);
+      draw(timing(timeFraction));
+
+      if (timeFraction < 1) {
+        // If we haven't cancelled, keep the animation going
+        !stopped && (rafIdRef.current = requestAnimationFrame(animate));
+      } else {
+        // Callback to `done` only if the animation wasn't cancelled early
+        cleanup();
+        resolve('done');
+        done && done();
+      }
+    });
+
+    function cleanup() {
+      stopped = true;
+      cancelAnimationFrame(rafIdRef.current!);
+    }
+  });
+}
+
+/**
+ * Returns the animation draw function for PageUp/PageDown movements
+ * @param param0
+ */
+function getPagedDraw({
+  axis,
+  direction,
+  positionElement,
+}: {
+  axis: Axis;
+  direction: LogicalDirection;
+  positionElement: Element;
+}) {
+  let totalScrollDistance = getPagedScrollDistance({ axis, direction, positionElement });
+  return function draw(progress: number) {
+    const distance = totalScrollDistance * Math.min(progress, 1);
+    const value = getNewScrollPosition(positionElement, {
+      direction,
+      distance,
+      axis,
+    });
+    totalScrollDistance -= distance;
+    setScrollPosition(positionElement, { axis, value });
+  };
+}
+
+function getLongPagedDraw({
+  axis,
+  direction,
+  pointerPosition,
+  positionElement,
+  trackElement,
+}: {
+  axis: Axis;
+  direction: LogicalDirection;
+  pointerPosition: PointerPosition;
+  positionElement: Element;
+  trackElement: Element;
+}) {
+  let totalScrollDistance = getLongPagedScrollDistance({
+    axis,
+    direction,
+    pointerPosition,
+    positionElement,
+    trackElement,
+  });
+  return function draw(progress: number) {
+    const multiplier = Math.pow(10, 3 || 0);
+    const distance =
+      Math.round(totalScrollDistance * Math.min(progress, 1) * multiplier) / multiplier;
+    const newPosition = getNewScrollPosition(positionElement, {
+      direction,
+      distance,
+      axis,
+    });
+    totalScrollDistance -= distance;
+    setScrollPosition(positionElement, { axis, value: newPosition });
+  };
+}
+
+function getButtonRef(direction: LogicalDirection, axis: Axis, ctx: ScrollAreaRefs) {
+  const actualDirection = getActualScrollDirection(direction, axis);
+  switch (actualDirection) {
+    case 'down':
+      return ctx.buttonDownRef;
+    case 'up':
+      return ctx.buttonUpRef;
+    case 'left':
+      return ctx.buttonLeftRef;
+    case 'right':
+      return ctx.buttonRightRef;
+  }
+}
+
+function getScrollbarRef(axis: Axis, ctx: ScrollAreaRefs) {
+  return axis === 'x' ? ctx.scrollbarXRef : ctx.scrollbarYRef;
+}
+
+function getThumbRef(axis: Axis, ctx: ScrollAreaRefs) {
+  return axis === 'x' ? ctx.thumbXRef : ctx.thumbYRef;
+}
+
+function getTrackRef(axis: Axis, ctx: ScrollAreaRefs) {
+  return axis === 'x' ? ctx.trackXRef : ctx.trackYRef;
+}
+
+/**
+ * Gets the distance of needed to move a scroll area when a the user holds the pointer down on a
+ * track for and extended period of time, and the scroll handle jumps to the pointer.
+ */
+function getLongPagedScrollDistance({
+  axis,
+  direction,
+  pointerPosition,
+  positionElement,
+  trackElement,
+}: {
+  axis: Axis;
+  direction: LogicalDirection;
+  pointerPosition: PointerPosition;
+  positionElement: Element;
+  trackElement: Element;
+}) {
+  const startPosition = getScrollPosition(positionElement, { axis });
+  const scrollSize = getScrollSize(positionElement, { axis });
+  const visibleSize = getClientSize(positionElement, { axis });
+  const { positionStart: trackPosition, size: trackSize } = getLogicalRect(trackElement, {
+    axis,
+  });
+  const pointerPositionRelativeToTrack = Math.round(pointerPosition[axis] - trackPosition);
+  const viewportRatioFromPointer =
+    Math.round((pointerPositionRelativeToTrack / trackSize) * 100) / 100;
+  const destScrollPosition =
+    direction === 'start'
+      ? viewportRatioFromPointer * scrollSize
+      : viewportRatioFromPointer * scrollSize - visibleSize;
+  return destScrollPosition < startPosition
+    ? destScrollPosition - startPosition - visibleSize / 2
+    : destScrollPosition - startPosition + visibleSize / 2;
+}
+
+/**
+ * Gets the distance of needed to move a scroll area when a PageUp/PageDown event occurs, which we
+ * need to determine when the user clicks on the scroll track.
+ *
+ * So how much does the scroll area scroll when a user presses spacebar or PageDown on a native
+ * scrollbar? The answer is: depends! It's 100% of the viewport heiht minus ... some mysterious
+ * value that differs from env to env. Whatever this value is should be the same value that is
+ * scrolled when the user presses the scrollbar track. Several env's do roughly 100% of the viewport
+ * height minus ~40px, so that's what I used to recreate the track functionality.
+ *
+ * @see https://vasilis.nl/nerd/high-scroll-height-scrolling-space-bar/
+ */
+function getPagedScrollDistance({
+  axis,
+  direction,
+  positionElement,
+}: {
+  axis: Axis;
+  direction: LogicalDirection;
+  positionElement: Element;
+}) {
+  const visibleSize = getClientSize(positionElement, { axis });
+  return (visibleSize - 40) * (direction === 'end' ? 1 : -1);
+}
+
+function getVisibleToTotalRatio(positionElement: HTMLElement, { axis }: { axis: Axis }) {
+  const totalScrollSize = getScrollSize(positionElement, { axis });
+  const visibleSize = getClientSize(positionElement, { axis });
+  return visibleSize / totalScrollSize;
+}
+
+function getScrollPosition(element: Element, { axis }: { axis: Axis }) {
+  return element[axis === 'x' ? 'scrollLeft' : 'scrollTop'];
+}
+
+function setScrollPosition(element: Element, { axis, value }: { axis: Axis; value: number }) {
+  element[axis === 'x' ? 'scrollLeft' : 'scrollTop'] = value;
+}
+
+function getClientSize(element: Element, { axis }: { axis: Axis }) {
+  return element[axis === 'x' ? 'clientWidth' : 'clientHeight'];
+}
+
+function getScrollSize(element: Element, { axis }: { axis: Axis }) {
+  return element[axis === 'x' ? 'scrollWidth' : 'scrollHeight'];
+}
 
 function getThumbSize(args: {
   trackElement: HTMLElement | null | undefined;
@@ -1579,6 +1991,120 @@ function getThumbSize(args: {
   };
 }
 
+function getLogicalRect(element: Element, { axis }: { axis: Axis }) {
+  const {
+    [axis]: coord,
+    [axis === 'y' ? 'top' : 'left']: positionStart,
+    [axis === 'y' ? 'bottom' : 'right']: positionEnd,
+    [axis === 'y' ? 'height' : 'width']: size,
+  } = element.getBoundingClientRect();
+  return { coord, positionStart, positionEnd, size };
+}
+
+function getPointerPosition(event: PointerEvent): PointerPosition {
+  return {
+    x: event.clientX,
+    y: event.clientY,
+  };
+}
+
+function scrollBy(element: Element, { axis, value }: { axis: Axis; value: number }) {
+  element[axis === 'x' ? 'scrollLeft' : 'scrollTop'] += value;
+}
+
+function isScrolledToTop(element: Element | null) {
+  return !!(element && element.scrollTop === 0);
+}
+
+function isScrolledToRight(element: Element | null) {
+  return !!(element && element.scrollLeft === getMaxScrollLeftValue(element));
+}
+
+function isScrolledToBottom(element: Element | null) {
+  return !!(element && element.scrollTop === getMaxScrollTopValue(element));
+}
+
+function isScrolledToLeft(element: Element | null) {
+  return !!(element && element.scrollLeft === 0);
+}
+
+function getMaxScrollTopValue(element: Element) {
+  return element.scrollHeight - element.clientHeight;
+}
+
+function getMaxScrollLeftValue(element: Element) {
+  return element.scrollWidth - element.clientWidth;
+}
+
+function getMaxScrollStartValue(element: Element, axis: Axis) {
+  return axis === 'x' ? getMaxScrollLeftValue(element) : getMaxScrollTopValue(element);
+}
+
+function getActualScrollDirection(dir: LogicalDirection, axis: Axis): ScrollDirection {
+  if (dir === 'start') {
+    return axis === 'x' ? 'left' : 'up';
+  }
+  return axis === 'x' ? 'right' : 'down';
+}
+
+/**
+ * Determines whether or not the user is scrolling towards the end or start of a scrollbar when they
+ * click the track. Direction is determined by their click position in relation to the scroll thumb.
+ * @param props
+ */
+function determineScrollDirectionFromTrackClick({
+  event,
+  axis,
+  thumbElement,
+}: {
+  event: PointerEvent;
+  axis: Axis;
+  thumbElement: Element;
+}): LogicalDirection {
+  const { [axis]: scrollPosition } = getPointerPosition(event);
+  return scrollPosition < thumbElement.getBoundingClientRect()[axis === 'y' ? 'top' : 'left']
+    ? 'start'
+    : 'end';
+}
+
+/**
+ * Determines the new scroll position (scrollTop/scrollLeft depending on the axis) for the scroll
+ * area based on a given distance we want to scroll.
+ * @param props
+ */
+function getNewScrollPosition(
+  element: Element,
+  {
+    direction,
+    distance,
+    axis,
+  }: {
+    direction: LogicalDirection;
+    distance: number;
+    axis: Axis;
+  }
+) {
+  const { [axis === 'x' ? 'scrollLeft' : 'scrollTop']: scrollPosition } = element;
+  const calculatedScrollPosition = scrollPosition + distance;
+  const boundary = direction === 'end' ? getMaxScrollStartValue(element, axis) : 0;
+  return direction === 'end'
+    ? Math.min(boundary, calculatedScrollPosition)
+    : Math.max(boundary, calculatedScrollPosition);
+}
+
+function getValuesFromSizeObjects(obj: Record<string, Size>) {
+  const sizes: number[] = [];
+  for (const k of Object.keys(obj)) {
+    const o = obj[k];
+    sizes.push(o.height, o.width);
+  }
+  return sizes;
+}
+
+function makeCssProperty(name: string) {
+  return `--${namespaced(`ScrollArea${ucFirst(name)}`)}`;
+}
+
 function reduceToCssProperties(
   prev: Record<typeof SCROLL_AREA_CSS_PROPS_LIST[number], string>,
   cur: typeof SCROLL_AREA_CSS_PROPS_LIST[number]
@@ -1589,8 +2115,41 @@ function reduceToCssProperties(
   };
 }
 
-function makeCssProperty(name: string) {
-  return `--${namespaced(`ScrollArea${ucFirst(name)}`)}`;
+function pointerIsOutsideElement(event: PointerEvent, element: Element, rect?: DOMRect) {
+  rect = rect || element.getBoundingClientRect();
+  const pos = getPointerPosition(event);
+  return pos.x < rect.left || pos.x > rect.right || pos.y < rect.top || pos.y > rect.bottom;
+}
+
+function shouldOverflow(positionElement: HTMLElement, { axis }: { axis: Axis }) {
+  return getVisibleToTotalRatio(positionElement, { axis }) < 1;
+}
+
+function canScroll(element: Element, { axis, delta }: { axis: Axis; delta: number }) {
+  return !(
+    delta === 0 || // No relevant directional change
+    // Scroll area is already scrolled to the furthest possible point in the pointer movement's direction
+    (delta < 0 && (axis === 'x' ? isScrolledToLeft : isScrolledToTop)(element)) ||
+    (delta > 0 && (axis === 'x' ? isScrolledToRight : isScrolledToBottom)(element))
+  );
+}
+
+function shouldFallbackToNativeScroll() {
+  return !('ResizeObserver' in window && supportsCustomScrollbars());
+}
+
+function supportsCustomScrollbars() {
+  if (!canUseDOM()) return false;
+  let supportsWebkitScrollbarSelector = false;
+  try {
+    // We cannot rely on `CSS.supports('selector(::-webkit-scrollbar)')` because the selector syntax
+    // isn't supported in Safari. document.querySelector will throw if it receives an invalid
+    // selector, so we can use that instead and swallow the error.
+    document.querySelector('::-webkit-scrollbar');
+    supportsWebkitScrollbarSelector = true;
+  } catch (error) {}
+
+  return !!(window.CSS?.supports?.('scrollbar-width: none') || supportsWebkitScrollbarSelector);
 }
 
 function ucFirst(string: string) {
@@ -1621,13 +2180,55 @@ function updateThumbPosition(args: {
   }
 }
 
-function getValuesFromSizeObjects(obj: Record<string, Size>) {
-  const sizes: number[] = [];
-  for (const k of Object.keys(obj)) {
-    const o = obj[k];
-    sizes.push(o.height, o.width);
-  }
-  return sizes;
+/* -------------------------------------------------------------------------------------------------
+   Types
+   ---------------------------------------------------------------------------------------------- */
+
+type LogicalDirection = 'start' | 'end';
+type OverflowBehavior = 'auto' | 'hidden' | 'scroll' | 'visible';
+type PointerPosition = { x: number; y: number };
+type ResizeBehavior = 'none' | 'both' | 'horizontal' | 'vertical' | 'initial' | 'inherit';
+type ScrollbarVisibility = 'always' | 'scroll' | 'hover';
+type ScrollDirection = 'up' | 'down' | 'left' | 'right';
+type TrackClickBehavior = 'page' | 'relative';
+
+// prettier-ignore
+type ScrollAreaEvent =
+  | { type: ScrollAreaEvents.SetExplicitResize; value: ResizeBehavior }
+  | { type: ScrollAreaEvents.HandleScrollAreaResize; width: number; height: number; scrollAreaComputedStyle: CSSStyleDeclaration }
+  | { type: ScrollAreaEvents.HandleViewportResize; width: number; height: number }
+  | { type: ScrollAreaEvents.HandleScrollbarResize; axis: Axis; width: number; height: number }
+  | { type: ScrollAreaEvents.HandleTrackResize; axis: Axis; width: number; height: number }
+  | { type: ScrollAreaEvents.StartTracking }
+  | { type: ScrollAreaEvents.StopTracking }
+  | { type: ScrollAreaEvents.StartThumbing }
+  | { type: ScrollAreaEvents.StopThumbing }
+  | { type: ScrollAreaEvents.StartButtonPress }
+  | { type: ScrollAreaEvents.StopButtonPress }
+  | { type: ScrollAreaEvents.SetContentOverflowing; x: boolean; y: boolean }
+  | { type: ScrollAreaEvents.SetScrollbarIsVisible; scrollbarVisibility: ScrollbarVisibility; x?: boolean; y?: boolean; }
+
+type ScrollAreaDomSizes = Record<
+  'scrollArea' | 'viewport' | 'position' | 'scrollbarY' | 'scrollbarX' | 'trackY' | 'trackX',
+  Size
+>;
+
+interface ScrollAreaReducerState {
+  state: ScrollAreaState;
+  explicitResize: ResizeBehavior;
+  contentIsOverflowingX: boolean;
+  contentIsOverflowingY: boolean;
+  scrollbarIsVisibleX: boolean;
+  scrollbarIsVisibleY: boolean;
+  domSizes: ScrollAreaDomSizes;
+}
+
+interface AnimationOptions {
+  duration: number;
+  draw(progress: number): any;
+  timing(frac: number): number;
+  done?(): any;
+  rafIdRef: React.MutableRefObject<number | undefined>;
 }
 
 // TODO: Currently parcel does not recognize global types in our type root directories. Patching
@@ -1643,13 +2244,6 @@ interface ResizeObserverEntry {
   readonly borderBoxSize: ResizeObserverSize[] | ResizeObserverSize;
   readonly contentBoxSize: ResizeObserverSize[] | ResizeObserverSize;
   readonly devicePixelContentBoxSize: ResizeObserverSize[];
-}
-
-declare class ResizeObserver {
-  constructor(callback: ResizeObserverCallback);
-  observe: (target: Element, options?: ResizeObserverOptions) => void;
-  unobserve: (target: Element) => void;
-  disconnect: () => void;
 }
 
 type ResizeObserverBoxOptions = 'border-box' | 'content-box' | 'device-pixel-content-box';

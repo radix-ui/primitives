@@ -1,11 +1,11 @@
-const STATES = {
-  IDLE: 'IDLE',
-  STOPPED: 'STOPPED',
-  QUEUING: 'QUEUING',
-  PENDING: 'PENDING',
-  RESOLVED: 'RESOLVED',
-  ERROR: 'ERROR',
-} as const;
+enum QueueState {
+  Idle,
+  Stopped,
+  Queuing,
+  Pending,
+  Resolved,
+  Error,
+}
 
 /**
  * A queue for async things. Calling Queue.enqueue will fire an async task immediately if no other
@@ -13,32 +13,32 @@ const STATES = {
  */
 export class Queue<T = any> {
   queue: QueueItem<T>[] = [];
-  private _state: QueueState = STATES.IDLE;
+  private _state: QueueState = QueueState.Idle;
 
   restart() {
-    if (this.state === STATES.STOPPED) {
-      this._state = STATES.IDLE;
+    if (this.state === QueueState.Stopped) {
+      this._state = QueueState.Idle;
     }
   }
 
   private rejectItem(reject: any, error: any) {
-    if (this.stateIs(STATES.PENDING, STATES.QUEUING)) {
-      this._state = this.isEmpty() ? STATES.ERROR : STATES.QUEUING;
+    if (this.stateIs(QueueState.Pending, QueueState.Queuing)) {
+      this._state = this.isEmpty() ? QueueState.Error : QueueState.Queuing;
       reject(error);
       this.dequeue();
     }
   }
 
   private resolveItem(resolve: any, value: any) {
-    if (this.stateIs(STATES.PENDING, STATES.QUEUING)) {
-      this._state = this.isEmpty() ? STATES.RESOLVED : STATES.QUEUING;
+    if (this.stateIs(QueueState.Pending, QueueState.Queuing)) {
+      this._state = this.isEmpty() ? QueueState.Resolved : QueueState.Queuing;
       resolve(value);
       this.dequeue();
     }
   }
 
   public get isBusy() {
-    return this.state === 'QUEUING' || this.state === 'PENDING';
+    return this.state === QueueState.Queuing || this.state === QueueState.Pending;
   }
 
   enqueue(promise: () => Promise<T>) {
@@ -54,13 +54,13 @@ export class Queue<T = any> {
   }
 
   dequeue() {
-    if (this.stateIs(STATES.ERROR, STATES.RESOLVED, STATES.IDLE, STATES.QUEUING)) {
+    if (this.stateIs(QueueState.Error, QueueState.Resolved, QueueState.Idle, QueueState.Queuing)) {
       if (this.isEmpty()) {
         return;
       }
       const item = this.queue.shift()!;
       try {
-        this._state = 'PENDING';
+        this._state = QueueState.Pending;
         item
           .promise()
           .then((value) => {
@@ -88,16 +88,14 @@ export class Queue<T = any> {
   }
 
   stop() {
-    if (this.stateIs(STATES.PENDING, STATES.QUEUING)) {
-      this._state = STATES.STOPPED;
+    if (this.stateIs(QueueState.Pending, QueueState.Queuing)) {
+      this._state = QueueState.Stopped;
       this.queue = [];
     }
   }
 }
 
 type ValueOf<T> = T[keyof T];
-
-type QueueState = ValueOf<typeof STATES>;
 
 type QueueItem<T> = {
   promise(): Promise<T>;

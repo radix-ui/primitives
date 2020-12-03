@@ -19,7 +19,6 @@ import {
   PopoverContent,
   PopoverArrow,
 } from '@interop-ui/react-popover';
-import { TrackClickBehavior, ScrollbarVisibility } from './types';
 
 export default { title: 'Components/ScrollArea' };
 
@@ -515,3 +514,6 @@ function RadioGroup(props: {
     </fieldset>
   );
 }
+
+type TrackClickBehavior = 'page' | 'relative';
+type ScrollbarVisibility = 'always' | 'scroll' | 'hover';

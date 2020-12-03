@@ -42,19 +42,6 @@ function getResizeObserverEntryBorderBoxSize(entry: ResizeObserverEntry): Resize
   };
 }
 
-// export function getResizeObserverEntryContentBoxSize(
-//   entry: ResizeObserverEntry
-// ): ResizeObserverSize {
-//   if ('contentBoxSize' in entry) {
-//     return Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-//   }
-
-//   return {
-//     inlineSize: (entry as ResizeObserverEntry).contentRect.width,
-//     blockSize: (entry as ResizeObserverEntry).contentRect.height,
-//   };
-// }
-
 // TODO: Currently parcel does not recognize global types in our type root directories. Patching
 // here until we can address it properly. Move these back to types/index.d.ts
 interface ResizeObserverSize {
@@ -69,6 +56,7 @@ interface ResizeObserverEntry {
   readonly contentBoxSize: ResizeObserverSize[] | ResizeObserverSize;
   readonly devicePixelContentBoxSize: ResizeObserverSize[];
 }
+
 export {
   getPartDataAttr,
   getPartDataAttrObj,
