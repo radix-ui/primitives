@@ -19,7 +19,7 @@ import {
   usePrefersReducedMotion,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { clamp, getPartDataAttrObj, isMainClick } from '@interop-ui/utils';
+import { clamp, getPartDataAttrObj, isMainClick, namespaced } from '@interop-ui/utils';
 import * as React from 'react';
 import {
   Axis,
@@ -64,23 +64,25 @@ import {
 } from './scrollAreaUtils';
 import { useHover } from './useHover';
 
-const SCROLL_AREA_CSS_PROPS = {
-  scrollAreaWidth: '--interop-scroll-area-width',
-  scrollAreaHeight: '--interop-scroll-area-height',
-  positionWidth: '--interop-scroll-area-position-width',
-  positionHeight: '--interop-scroll-area-position-height',
-  scrollbarXOffset: '--interop-scroll-area-scrollbar-x-offset',
-  scrollbarYOffset: '--interop-scroll-area-scrollbar-y-offset',
-  scrollbarXSize: '--interop-scroll-area-scrollbar-x-size',
-  scrollbarYSize: '--interop-scroll-area-scrollbar-y-size',
-  scrollbarThumbWillChange: '--interop-scroll-area-scrollbar-thumb-will-change',
-  scrollbarThumbHeight: '--interop-scroll-area-scrollbar-thumb-height',
-  scrollbarThumbWidth: '--interop-scroll-area-scrollbar-thumb-width',
-  cornerLeft: '--interop-scroll-area-corner-left',
-  cornerRight: '--interop-scroll-area-corner-right',
-  cornerWidth: '--interop-scroll-area-corner-width',
-  cornerHeight: '--interop-scroll-area-corner-height',
-} as const;
+const SCROLL_AREA_CSS_PROPS_LIST = [
+  'scrollAreaWidth',
+  'scrollAreaHeight',
+  'positionWidth',
+  'positionHeight',
+  'scrollbarXOffset',
+  'scrollbarYOffset',
+  'scrollbarXSize',
+  'scrollbarYSize',
+  'scrollbarThumbWillChange',
+  'scrollbarThumbHeight',
+  'scrollbarThumbWidth',
+  'scrollbarThumbWidth',
+  'cornerLeft',
+  'cornerRight',
+  'cornerWidth',
+  'cornerHeight',
+] as const;
+const SCROLL_AREA_CSS_PROPS = SCROLL_AREA_CSS_PROPS_LIST.reduce(reduceToCssProperties, {} as any);
 
 const ROOT_DEFAULT_TAG = 'div';
 const ROOT_NAME = 'ScrollArea';
@@ -1575,6 +1577,24 @@ function getThumbSize(args: {
   return {
     [axis === 'x' ? 'width' : 'height']: thumbSize,
   };
+}
+
+function reduceToCssProperties(
+  prev: Record<typeof SCROLL_AREA_CSS_PROPS_LIST[number], string>,
+  cur: typeof SCROLL_AREA_CSS_PROPS_LIST[number]
+): Record<typeof SCROLL_AREA_CSS_PROPS_LIST[number], string> {
+  return {
+    ...prev,
+    [cur]: makeCssProperty(cur),
+  };
+}
+
+function makeCssProperty(name: string) {
+  return `--${namespaced(`ScrollArea${ucFirst(name)}`)}`;
+}
+
+function ucFirst(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 function updateThumbPosition(args: {

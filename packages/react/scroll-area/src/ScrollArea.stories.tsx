@@ -112,43 +112,58 @@ export function Basic() {
         }}
       >
         <ScrollArea
-          as={FixedSizeRoot}
+          as={Win98StyledRoot}
           unstable_forceNative={usesNative}
           unstable_prefersReducedMotion={prefersReducedMotion}
           overflowX="scroll"
           scrollbarVisibility={scrollbarVisibility}
           scrollbarVisibilityRestTimeout={restTimeout}
           trackClickBehavior={trackClickBehavior}
+          css={{ width: '400px', height: '400px' }}
         >
-          <ScrollAreaScrollbarY as={ScrollbarY}>
-            <ScrollAreaButtonStart as={ScrollButtonStart}>
+          <ScrollAreaScrollbarY as={Win98StyledScrollbarY}>
+            <ScrollAreaButtonStart as={Win98StyledScrollButtonStart}>
               <Arrow direction="up" />
             </ScrollAreaButtonStart>
 
-            <ScrollAreaTrack as={ScrollTrack}>
-              <ScrollAreaThumb as={ScrollThumb} />
+            <ScrollAreaTrack as={Win98StyledScrollTrack}>
+              <ScrollAreaThumb as={Win98StyledScrollThumb} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={ScrollButtonEnd}>
+            <ScrollAreaButtonEnd as={Win98StyledScrollButtonEnd}>
               <Arrow direction="down" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarY>
 
-          <ScrollAreaScrollbarX as={ScrollbarX}>
-            <ScrollAreaButtonStart as={ScrollButtonStart}>
+          <ScrollAreaScrollbarX as={Win98StyledScrollbarX}>
+            <ScrollAreaButtonStart as={Win98StyledScrollButtonStart}>
               <Arrow direction="left" />
             </ScrollAreaButtonStart>
 
-            <ScrollAreaTrack as={ScrollTrack}>
-              <ScrollAreaThumb as={ScrollThumb} />
+            <ScrollAreaTrack as={Win98StyledScrollTrack}>
+              <ScrollAreaThumb as={Win98StyledScrollThumb} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={ScrollButtonEnd}>
+            <ScrollAreaButtonEnd as={Win98StyledScrollButtonEnd}>
               <Arrow direction="right" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarX>
 
-          <ScrollAreaCorner as={Corner} />
+          <ScrollAreaCorner as={Win98StyledCorner} />
 
-          <ScrollAreaViewport as={ScrollViewportFixedLargeWidth}>
+          <ScrollAreaViewport
+            as={StyledViewport}
+            css={{
+              width: '2000px',
+              padding: 20,
+
+              '& > :first-child': {
+                marginTop: 0,
+              },
+
+              '& > :last-child': {
+                marginBottom: 0,
+              },
+            }}
+          >
             <LongContent />
             <LongContent />
             <LongContent />
@@ -167,36 +182,44 @@ export function Basic() {
 export function InsidePopover() {
   const [isOpen, setIsOpen] = React.useState(false);
   return (
-    <div>
-      <p>TODO: Not sure I've composed this right but there are some issues!</p>
-      <div
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
-      >
-        <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
-          <PopoverTrigger as="button">{isOpen ? 'close' : 'open'}</PopoverTrigger>
-          <PopoverPopper style={{ ...RECOMMENDED_CSS__POPOVER__POPPER }}>
-            <PopoverContent style={{ backgroundColor: '#eee', width: 250, height: 150 }}>
-              <ScrollArea
-                overflowX="scroll"
-                scrollbarVisibility="scroll"
-                trackClickBehavior="page"
-                as={AnySizeRoot}
-              >
-                <ScrollAreaScrollbarY as={ScrollbarY} style={{ bottom: 0 }}>
-                  <ScrollAreaTrack as={ScrollTrack}>
-                    <ScrollAreaThumb as={ScrollThumb} />
-                  </ScrollAreaTrack>
-                </ScrollAreaScrollbarY>
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
+    >
+      <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
+        <PopoverTrigger as="button">{isOpen ? 'close' : 'open'}</PopoverTrigger>
+        <PopoverPopper style={{ ...RECOMMENDED_CSS__POPOVER__POPPER }}>
+          <PopoverContent style={{ backgroundColor: '#eee', width: 250, height: 150 }}>
+            <ScrollArea
+              overflowX="scroll"
+              scrollbarVisibility="scroll"
+              trackClickBehavior="page"
+              as={AnySizeRoot}
+            >
+              <ScrollAreaScrollbarY as={Win98StyledScrollbarY} style={{ bottom: 0 }}>
+                <ScrollAreaTrack as={Win98StyledScrollTrack}>
+                  <ScrollAreaThumb as={Win98StyledScrollThumb} />
+                </ScrollAreaTrack>
+              </ScrollAreaScrollbarY>
 
-                <ScrollAreaViewport as={ScrollViewportAnySize}>
-                  <LongContent />
-                </ScrollAreaViewport>
-              </ScrollArea>
-            </PopoverContent>
-            <PopoverArrow width={50} height={20} />
-          </PopoverPopper>
-        </Popover>
-      </div>
+              <ScrollAreaViewport
+                as={StyledViewport}
+                css={{
+                  padding: 10,
+                  '& > :first-child': {
+                    marginTop: 0,
+                  },
+                  '& > :last-child': {
+                    marginBottom: 0,
+                  },
+                }}
+              >
+                <LongContent />
+              </ScrollAreaViewport>
+            </ScrollArea>
+          </PopoverContent>
+          <PopoverArrow width={50} height={20} />
+        </PopoverPopper>
+      </Popover>
     </div>
   );
 }
@@ -288,12 +311,6 @@ const RECOMMENDED_CSS__SCROLL_AREA__BUTTON: any = {
   flexShrink: 0,
   flexBasis: 'auto',
 };
-const RECOMMENDED_CSS__SCROLL_AREA__BUTTON_START: any = {
-  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON,
-};
-const RECOMMENDED_CSS__SCROLL_AREA__BUTTON_END: any = {
-  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON,
-};
 const RECOMMENDED_CSS__SCROLL_AREA__CORNER: any = {
   userSelect: 'none',
   zIndex: 2,
@@ -314,10 +331,8 @@ const TestButton = styled('button', {
   },
 });
 
-const FixedSizeRoot = styled('div', {
+const Win98StyledRoot = styled('div', {
   ...RECOMMENDED_CSS__SCROLL_AREA__ROOT,
-  width: '400px',
-  height: '400px',
   border: '2px solid #FFF',
   borderTopColor: '#858585',
   borderLeftColor: '#858585',
@@ -331,19 +346,19 @@ const AnySizeRoot = styled('div', {
   fontFamily: 'sans-serif',
 });
 
-const ScrollbarY = styled('div', {
+const Win98StyledScrollbarY = styled('div', {
   ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_Y,
   transition: '300ms opacity ease',
   width: `16px`,
 });
 
-const ScrollbarX = styled('div', {
+const Win98StyledScrollbarX = styled('div', {
   ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_X,
   transition: '300ms opacity ease',
   height: `16px`,
 });
 
-const ScrollButton = styled('div', {
+const Win98StyledScrollButton = styled('div', {
   ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON,
   position: 'relative',
   backgroundColor: '#C0C0C0',
@@ -357,15 +372,11 @@ const ScrollButton = styled('div', {
   padding: '3px',
 });
 
-const ScrollButtonStart = styled(ScrollButton, {
-  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON_START,
-});
+const Win98StyledScrollButtonStart = styled(Win98StyledScrollButton, {});
 
-const ScrollButtonEnd = styled(ScrollButton, {
-  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON_END,
-});
+const Win98StyledScrollButtonEnd = styled(Win98StyledScrollButton, {});
 
-const ScrollThumb = styled('div', {
+const Win98StyledScrollThumb = styled('div', {
   ...RECOMMENDED_CSS__SCROLL_AREA__THUMB,
   backgroundColor: '#C0C0C0',
   border: '2px solid #FFF',
@@ -375,39 +386,16 @@ const ScrollThumb = styled('div', {
   borderBottomColor: '#858585',
 });
 
-const ScrollTrack = styled('div', {
+const Win98StyledScrollTrack = styled('div', {
   ...RECOMMENDED_CSS__SCROLL_AREA__TRACK,
   background: 'rgba(65, 105, 225, 0.3)',
 });
 
-const ScrollViewportFixedLargeWidth = styled('div', {
+const StyledViewport = styled('div', {
   ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
-  width: '2000px',
-  padding: 20,
-
-  '& > :first-child': {
-    marginTop: 0,
-  },
-
-  '& > :last-child': {
-    marginBottom: 0,
-  },
 });
 
-const ScrollViewportAnySize = styled('div', {
-  ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
-  padding: 10,
-
-  '& > :first-child': {
-    marginTop: 0,
-  },
-
-  '& > :last-child': {
-    marginBottom: 0,
-  },
-});
-
-const Corner = styled('div', {
+const Win98StyledCorner = styled('div', {
   ...RECOMMENDED_CSS__SCROLL_AREA__CORNER,
   backgroundColor: '#C0C0C0',
 });

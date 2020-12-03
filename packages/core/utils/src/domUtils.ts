@@ -74,6 +74,7 @@ export {
   getPartDataAttrObj,
   canUseDOM,
   makeId,
+  namespaced,
   isMainClick,
   getResizeObserverEntryBorderBoxSize,
 };
