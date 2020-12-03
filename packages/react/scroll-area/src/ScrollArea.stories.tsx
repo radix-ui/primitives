@@ -1,10 +1,27 @@
 import * as React from 'react';
 import { styled } from '../../../../stitches.config';
-import { ScrollArea, styles } from './ScrollArea';
-import { Popover as PopoverPrimitive, styles as popoverStyles } from '@interop-ui/react-popover';
+import {
+  ScrollArea,
+  ScrollAreaViewport,
+  ScrollAreaButtonEnd,
+  ScrollAreaButtonStart,
+  ScrollAreaScrollbarX,
+  ScrollAreaScrollbarY,
+  ScrollAreaCorner,
+  ScrollAreaTrack,
+  ScrollAreaThumb,
+  SCROLL_AREA_CSS_PROPS,
+} from './ScrollArea';
+import {
+  Popover,
+  PopoverPopper,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+} from '@interop-ui/react-popover';
 import { TrackClickBehavior, ScrollbarVisibility } from './types';
 
-export default { title: 'ScrollArea' };
+export default { title: 'Components/ScrollArea' };
 
 export function Basic() {
   const [usesNative, setNative] = React.useState(false);
@@ -103,33 +120,35 @@ export function Basic() {
           scrollbarVisibilityRestTimeout={restTimeout}
           trackClickBehavior={trackClickBehavior}
         >
-          <ScrollArea.ScrollbarY as={ScrollbarY}>
-            <ScrollArea.ButtonStart as={ScrollButtonStart}>
+          <ScrollAreaScrollbarY as={ScrollbarY}>
+            <ScrollAreaButtonStart as={ScrollButtonStart}>
               <Arrow direction="up" />
-            </ScrollArea.ButtonStart>
+            </ScrollAreaButtonStart>
 
-            <ScrollArea.Track as={ScrollTrack}>
-              <ScrollArea.Thumb as={ScrollThumb} />
-            </ScrollArea.Track>
-            <ScrollArea.ButtonEnd as={ScrollButtonEnd}>
+            <ScrollAreaTrack as={ScrollTrack}>
+              <ScrollAreaThumb as={ScrollThumb} />
+            </ScrollAreaTrack>
+            <ScrollAreaButtonEnd as={ScrollButtonEnd}>
               <Arrow direction="down" />
-            </ScrollArea.ButtonEnd>
-          </ScrollArea.ScrollbarY>
-          <ScrollArea.ScrollbarX as={ScrollbarX}>
-            <ScrollArea.ButtonStart as={ScrollButtonStart}>
+            </ScrollAreaButtonEnd>
+          </ScrollAreaScrollbarY>
+
+          <ScrollAreaScrollbarX as={ScrollbarX}>
+            <ScrollAreaButtonStart as={ScrollButtonStart}>
               <Arrow direction="left" />
-            </ScrollArea.ButtonStart>
+            </ScrollAreaButtonStart>
 
-            <ScrollArea.Track as={ScrollTrack}>
-              <ScrollArea.Thumb as={ScrollThumb} />
-            </ScrollArea.Track>
-            <ScrollArea.ButtonEnd as={ScrollButtonEnd}>
+            <ScrollAreaTrack as={ScrollTrack}>
+              <ScrollAreaThumb as={ScrollThumb} />
+            </ScrollAreaTrack>
+            <ScrollAreaButtonEnd as={ScrollButtonEnd}>
               <Arrow direction="right" />
-            </ScrollArea.ButtonEnd>
-          </ScrollArea.ScrollbarX>
-          <ScrollArea.Corner as={Corner} />
+            </ScrollAreaButtonEnd>
+          </ScrollAreaScrollbarX>
 
-          <ScrollArea.Viewport as={ScrollViewportFixedLargeWidth}>
+          <ScrollAreaCorner as={Corner} />
+
+          <ScrollAreaViewport as={ScrollViewportFixedLargeWidth}>
             <LongContent />
             <LongContent />
             <LongContent />
@@ -137,7 +156,7 @@ export function Basic() {
             <LongContent />
             <LongContent />
             <LongContent />
-          </ScrollArea.Viewport>
+          </ScrollAreaViewport>
         </ScrollArea>
         <TestButton onClick={() => alert('whoa')}>Test for pointer events</TestButton>
       </div>
@@ -153,34 +172,30 @@ export function InsidePopover() {
       <div
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
       >
-        <PopoverPrimitive isOpen={isOpen} onIsOpenChange={setIsOpen}>
-          <PopoverPrimitive.Trigger as="button">
-            {isOpen ? 'close' : 'open'}
-          </PopoverPrimitive.Trigger>
-          <PopoverPrimitive.Popper style={{ ...popoverStyles.popper }}>
-            <PopoverPrimitive.Content
-              style={{ ...popoverStyles.content, backgroundColor: '#eee', width: 250, height: 150 }}
-            >
+        <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
+          <PopoverTrigger as="button">{isOpen ? 'close' : 'open'}</PopoverTrigger>
+          <PopoverPopper style={{ ...RECOMMENDED_CSS__POPOVER__POPPER }}>
+            <PopoverContent style={{ backgroundColor: '#eee', width: 250, height: 150 }}>
               <ScrollArea
                 overflowX="scroll"
                 scrollbarVisibility="scroll"
                 trackClickBehavior="page"
                 as={AnySizeRoot}
               >
-                <ScrollArea.ScrollbarY as={ScrollbarY} style={{ bottom: 0 }}>
-                  <ScrollArea.Track as={ScrollTrack}>
-                    <ScrollArea.Thumb as={ScrollThumb} />
-                  </ScrollArea.Track>
-                </ScrollArea.ScrollbarY>
+                <ScrollAreaScrollbarY as={ScrollbarY} style={{ bottom: 0 }}>
+                  <ScrollAreaTrack as={ScrollTrack}>
+                    <ScrollAreaThumb as={ScrollThumb} />
+                  </ScrollAreaTrack>
+                </ScrollAreaScrollbarY>
 
-                <ScrollArea.Viewport as={ScrollViewportAnySize}>
+                <ScrollAreaViewport as={ScrollViewportAnySize}>
                   <LongContent />
-                </ScrollArea.Viewport>
+                </ScrollAreaViewport>
               </ScrollArea>
-            </PopoverPrimitive.Content>
-            <PopoverPrimitive.Arrow width={50} height={20} style={{ ...popoverStyles.arrow }} />
-          </PopoverPrimitive.Popper>
-        </PopoverPrimitive>
+            </PopoverContent>
+            <PopoverArrow width={50} height={20} />
+          </PopoverPopper>
+        </Popover>
       </div>
     </div>
   );
@@ -189,6 +204,105 @@ export function InsidePopover() {
 /* -------------------------------------------------------------------------------------------------
  * Reset components
  * -----------------------------------------------------------------------------------------------*/
+
+const RECOMMENDED_CSS__POPOVER__POPPER: any = {
+  boxSizing: 'border-box',
+  transformOrigin: 'var(--interop-ui-popover-popper-transform-origin)',
+};
+
+const RECOMMENDED_CSS__SCROLL_AREA__ROOT: any = {
+  boxSizing: 'border-box',
+  position: 'relative',
+  // Root z-index set to 0 so we can set a new baseline for its children Apps may need to override
+  // this if they have higher z-indices that conflict with their scrollbars, but they should not
+  // need to change the z-indices for other elements in the tree. We'll want to document this
+  // well!
+  zIndex: 0,
+  maxWidth: '100%',
+  maxHeight: '100%',
+  '&[data-dragging], &[data-scrolling]': {
+    pointerEvents: 'auto !important',
+  },
+  '& [data-interop-ui-scroll-area-position]::-webkit-scrollbar': {
+    display: 'none',
+  },
+};
+
+const RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT: any = {
+  boxSizing: 'border-box',
+  zIndex: 1,
+  position: 'relative',
+
+  '&[data-dragging], &[data-scrolling]': {
+    // Remove pointer events from the content area while dragging or scrolling
+    pointerEvents: 'none !important',
+  },
+};
+
+const RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR: any = {
+  boxSizing: 'border-box',
+  zIndex: 2,
+  position: 'absolute',
+  display: 'flex',
+  userSelect: 'none',
+};
+const RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_X: any = {
+  ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR,
+  height: `16px`,
+  left: 0,
+  bottom: 0,
+  right: `var(${SCROLL_AREA_CSS_PROPS.scrollbarXSize}, 0)`,
+  flexDirection: 'row',
+};
+const RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_Y: any = {
+  ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR,
+  width: '16px',
+  right: 0,
+  top: 0,
+  bottom: `var(${SCROLL_AREA_CSS_PROPS.scrollbarYSize}, 0)`,
+  flexDirection: 'column',
+};
+const RECOMMENDED_CSS__SCROLL_AREA__TRACK: any = {
+  boxSizing: 'border-box',
+  zIndex: -1,
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+};
+const RECOMMENDED_CSS__SCROLL_AREA__THUMB: any = {
+  boxSizing: 'border-box',
+  position: 'absolute',
+  top: '0',
+  left: '0',
+  userSelect: 'none',
+  willChange: `var(${SCROLL_AREA_CSS_PROPS.scrollbarThumbWillChange})`,
+  height: `var(${SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight})`,
+  width: `var(${SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth})`,
+};
+const RECOMMENDED_CSS__SCROLL_AREA__BUTTON: any = {
+  boxSizing: 'border-box',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexGrow: 0,
+  flexShrink: 0,
+  flexBasis: 'auto',
+};
+const RECOMMENDED_CSS__SCROLL_AREA__BUTTON_START: any = {
+  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON,
+};
+const RECOMMENDED_CSS__SCROLL_AREA__BUTTON_END: any = {
+  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON,
+};
+const RECOMMENDED_CSS__SCROLL_AREA__CORNER: any = {
+  userSelect: 'none',
+  zIndex: 2,
+  bottom: 0,
+  right: `var(${SCROLL_AREA_CSS_PROPS.cornerRight})`,
+  left: `var(${SCROLL_AREA_CSS_PROPS.cornerLeft})`,
+  width: `var(${SCROLL_AREA_CSS_PROPS.cornerWidth})`,
+  height: `var(${SCROLL_AREA_CSS_PROPS.cornerHeight})`,
+};
 
 const TestButton = styled('button', {
   appearance: 'none',
@@ -201,7 +315,7 @@ const TestButton = styled('button', {
 });
 
 const FixedSizeRoot = styled('div', {
-  ...styles.root,
+  ...RECOMMENDED_CSS__SCROLL_AREA__ROOT,
   width: '400px',
   height: '400px',
   border: '2px solid #FFF',
@@ -213,23 +327,24 @@ const FixedSizeRoot = styled('div', {
 });
 
 const AnySizeRoot = styled('div', {
-  ...styles.root,
+  ...RECOMMENDED_CSS__SCROLL_AREA__ROOT,
   fontFamily: 'sans-serif',
 });
 
 const ScrollbarY = styled('div', {
-  ...styles.scrollbarY,
+  ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_Y,
   transition: '300ms opacity ease',
   width: `16px`,
 });
 
 const ScrollbarX = styled('div', {
-  ...styles.scrollbarX,
+  ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_X,
   transition: '300ms opacity ease',
   height: `16px`,
 });
 
 const ScrollButton = styled('div', {
+  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON,
   position: 'relative',
   backgroundColor: '#C0C0C0',
   border: '2px solid #FFF',
@@ -239,19 +354,19 @@ const ScrollButton = styled('div', {
   borderBottomColor: '#858585',
   width: '16px',
   height: '16px',
-  padding: 3,
+  padding: '3px',
 });
 
 const ScrollButtonStart = styled(ScrollButton, {
-  ...styles.buttonStart,
+  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON_START,
 });
 
 const ScrollButtonEnd = styled(ScrollButton, {
-  ...styles.buttonEnd,
+  ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON_END,
 });
 
 const ScrollThumb = styled('div', {
-  ...styles.thumb,
+  ...RECOMMENDED_CSS__SCROLL_AREA__THUMB,
   backgroundColor: '#C0C0C0',
   border: '2px solid #FFF',
   borderTopColor: '#FFF',
@@ -261,12 +376,12 @@ const ScrollThumb = styled('div', {
 });
 
 const ScrollTrack = styled('div', {
-  ...styles.track,
+  ...RECOMMENDED_CSS__SCROLL_AREA__TRACK,
   background: 'rgba(65, 105, 225, 0.3)',
 });
 
 const ScrollViewportFixedLargeWidth = styled('div', {
-  ...styles.viewport,
+  ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
   width: '2000px',
   padding: 20,
 
@@ -280,7 +395,7 @@ const ScrollViewportFixedLargeWidth = styled('div', {
 });
 
 const ScrollViewportAnySize = styled('div', {
-  ...styles.viewport,
+  ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
   padding: 10,
 
   '& > :first-child': {
@@ -293,7 +408,7 @@ const ScrollViewportAnySize = styled('div', {
 });
 
 const Corner = styled('div', {
-  ...styles.corner,
+  ...RECOMMENDED_CSS__SCROLL_AREA__CORNER,
   backgroundColor: '#C0C0C0',
 });
 
