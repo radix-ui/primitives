@@ -19,6 +19,7 @@
   "dependencies": {
     "@interop-ui/react-label": "workspace:*",
     "@interop-ui/react-polymorphic": "workspace:*",
+    "@interop-ui/react-roving-focus": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },
