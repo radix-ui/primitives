@@ -2089,7 +2089,6 @@ __metadata:
   resolution: "@interop-ui/react-arrow@workspace:packages/react/arrow"
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
@@ -2102,7 +2101,6 @@ __metadata:
   resolution: "@interop-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio"
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
@@ -2245,6 +2243,7 @@ __metadata:
   resolution: "@interop-ui/react-menu@workspace:packages/react/menu"
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-roving-focus": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2334,6 +2333,7 @@ __metadata:
   dependencies:
     "@interop-ui/react-label": "workspace:*"
     "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-roving-focus": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2342,7 +2342,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-roving-focus@workspace:packages/react/roving-focus":
+"@interop-ui/react-roving-focus@workspace:*, @interop-ui/react-roving-focus@workspace:packages/react/roving-focus":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-roving-focus@workspace:packages/react/roving-focus"
   dependencies:
@@ -2359,7 +2359,6 @@ __metadata:
   resolution: "@interop-ui/react-separator@workspace:packages/react/separator"
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
@@ -2401,6 +2400,7 @@ __metadata:
   resolution: "@interop-ui/react-tabs@workspace:packages/react/tabs"
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-roving-focus": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2426,8 +2426,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-tooltip@workspace:packages/react/tooltip"
   dependencies:
-    "@interop-ui/popper": "workspace:*"
-    "@interop-ui/react-arrow": "workspace:*"
     "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
@@ -2444,7 +2442,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-use-size@workspace:packages/react/use-size"
   dependencies:
-    "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
     resize-observer-polyfill: ^1.5.1
@@ -2469,7 +2466,6 @@ __metadata:
   resolution: "@interop-ui/react-visually-hidden@workspace:packages/react/visually-hidden"
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
