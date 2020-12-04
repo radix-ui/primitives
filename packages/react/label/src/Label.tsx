@@ -109,4 +109,6 @@ function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement
   return () => label.removeEventListener('click', handleClick);
 }
 
-export { Label, Label as Root, useLabelContext };
+const Root = Label;
+
+export { Label, Root, useLabelContext };

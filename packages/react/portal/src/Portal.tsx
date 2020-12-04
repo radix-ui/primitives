@@ -57,4 +57,6 @@ function getHostElement() {
   return null;
 }
 
-export { Portal, Portal as Root };
+const Root = Portal;
+
+export { Portal, Root };

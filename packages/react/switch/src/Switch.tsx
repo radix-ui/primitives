@@ -136,4 +136,7 @@ function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
 
-export { Switch, SwitchThumb, Switch as Root, SwitchThumb as Thumb };
+const Root = Switch;
+const Thumb = SwitchThumb;
+
+export { Switch, SwitchThumb, Root, Thumb };

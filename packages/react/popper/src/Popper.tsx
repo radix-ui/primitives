@@ -177,11 +177,8 @@ PopperArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-export {
-  Popper,
-  PopperContent,
-  PopperArrow,
-  Popper as Root,
-  PopperContent as Content,
-  PopperArrow as Arrow,
-};
+const Root = Popper;
+const Content = PopperContent;
+const ArrowPart = PopperArrow;
+
+export { Popper, PopperContent, PopperArrow, Root, Content, ArrowPart as Arrow };

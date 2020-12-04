@@ -36,4 +36,6 @@ function createFocusGuard() {
   return element;
 }
 
-export { FocusGuards, FocusGuards as Root, useFocusGuards };
+const Root = FocusGuards;
+
+export { FocusGuards, Root, useFocusGuards };

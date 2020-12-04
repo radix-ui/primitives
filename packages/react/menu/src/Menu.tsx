@@ -361,6 +361,16 @@ function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
 
+const Root = Menu;
+const Group = MenuGroup;
+const Label = MenuLabel;
+const Item = MenuItem;
+const CheckboxItem = MenuCheckboxItem;
+const RadioGroup = MenuRadioGroup;
+const RadioItem = MenuRadioItem;
+const ItemIndicator = MenuItemIndicator;
+const Separator = MenuSeparator;
+
 export {
   Menu,
   MenuGroup,
@@ -371,13 +381,13 @@ export {
   MenuRadioItem,
   MenuItemIndicator,
   MenuSeparator,
-  Menu as Root,
-  MenuGroup as Group,
-  MenuLabel as Label,
-  MenuItem as Item,
-  MenuCheckboxItem as CheckboxItem,
-  MenuRadioGroup as RadioGroup,
-  MenuRadioItem as RadioItem,
-  MenuItemIndicator as ItemIndicator,
-  MenuSeparator as Separator,
+  Root,
+  Group,
+  Label,
+  Item,
+  CheckboxItem,
+  RadioGroup,
+  RadioItem,
+  ItemIndicator,
+  Separator,
 };

@@ -37,9 +37,10 @@ const [AlertDialogContext, useAlertDialogContext] = createContext<AlertDialogCon
   ROOT_NAME
 );
 
-const [AlertDialogContentContext, useAlertDialogContentContext] = createContext<
-  AlertDialogContentContextValue
->('AlertDialogContext', ROOT_NAME);
+const [
+  AlertDialogContentContext,
+  useAlertDialogContentContext,
+] = createContext<AlertDialogContentContextValue>('AlertDialogContext', ROOT_NAME);
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
@@ -275,6 +276,15 @@ const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialog
   return null;
 };
 
+const Root = AlertDialog;
+const Title = AlertDialogTitle;
+const Cancel = AlertDialogCancel;
+const Action = AlertDialogAction;
+const Content = AlertDialogContent;
+const Description = AlertDialogDescription;
+const Overlay = AlertDialogOverlay;
+const Trigger = AlertDialogTrigger;
+
 export {
   AlertDialog,
   AlertDialogTitle,
@@ -284,12 +294,12 @@ export {
   AlertDialogDescription,
   AlertDialogOverlay,
   AlertDialogTrigger,
-  AlertDialog as Root,
-  AlertDialogTitle as Title,
-  AlertDialogCancel as Cancel,
-  AlertDialogAction as Action,
-  AlertDialogContent as Content,
-  AlertDialogDescription as Description,
-  AlertDialogOverlay as Overlay,
-  AlertDialogTrigger as Trigger,
+  Root,
+  Title,
+  Cancel,
+  Action,
+  Content,
+  Description,
+  Overlay,
+  Trigger,
 };

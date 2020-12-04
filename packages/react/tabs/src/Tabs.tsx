@@ -267,13 +267,9 @@ function makeTabsPanelId(tabsId: string, tabId: string) {
   return `${tabsId}-tabPanel-${tabId}`;
 }
 
-export {
-  Tabs,
-  TabsList,
-  TabsTab,
-  TabsPanel,
-  Tabs as Root,
-  TabsList as List,
-  TabsTab as Tab,
-  TabsPanel as Panel,
-};
+const Root = Tabs;
+const List = TabsList;
+const Tab = TabsTab;
+const Panel = TabsPanel;
+
+export { Tabs, TabsList, TabsTab, TabsPanel, Root, List, Tab, Panel };
