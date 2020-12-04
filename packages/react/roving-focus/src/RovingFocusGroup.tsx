@@ -157,4 +157,6 @@ function getRovingFocusItems(groupId: string): HTMLElement[] {
   return Array.from(document.querySelectorAll(`[${getItemDataAttr(groupId)}]`));
 }
 
-export { RovingFocusGroup, RovingFocusGroup as Root, useRovingFocus };
+const Root = RovingFocusGroup;
+
+export { RovingFocusGroup, Root, useRovingFocus };

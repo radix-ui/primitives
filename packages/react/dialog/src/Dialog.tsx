@@ -276,15 +276,21 @@ DialogClose.displayName = CLOSE_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
+const Root = Dialog;
+const Trigger = DialogTrigger;
+const Overlay = DialogOverlay;
+const Content = DialogContent;
+const Close = DialogClose;
+
 export {
   Dialog,
   DialogTrigger,
   DialogOverlay,
   DialogContent,
   DialogClose,
-  Dialog as Root,
-  DialogTrigger as Trigger,
-  DialogOverlay as Overlay,
-  DialogContent as Content,
-  DialogClose as Close,
+  Root,
+  Trigger,
+  Overlay,
+  Content,
+  Close,
 };

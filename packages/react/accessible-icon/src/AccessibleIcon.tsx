@@ -28,4 +28,6 @@ const AccessibleIcon = forwardRefWithAs<typeof DEFAULT_TAG, AccessibleIconOwnPro
 
 AccessibleIcon.displayName = NAME;
 
-export { AccessibleIcon, AccessibleIcon as Root };
+const Root = AccessibleIcon;
+
+export { AccessibleIcon, Root };

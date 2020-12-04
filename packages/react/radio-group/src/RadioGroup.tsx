@@ -159,11 +159,8 @@ RadioGroupIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-export {
-  RadioGroup,
-  RadioGroupItem,
-  RadioGroupIndicator,
-  RadioGroup as Root,
-  RadioGroupItem as Item,
-  RadioGroupIndicator as Indicator,
-};
+const Root = RadioGroup;
+const Item = RadioGroupItem;
+const Indicator = RadioGroupIndicator;
+
+export { RadioGroup, RadioGroupItem, RadioGroupIndicator, Root, Item, Indicator };

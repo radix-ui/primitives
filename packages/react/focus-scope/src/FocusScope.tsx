@@ -75,4 +75,6 @@ function FocusScopeImpl(props: FocusScopeProps & { containerRef: React.RefObject
   return children({ ref: containerRef });
 }
 
-export { FocusScope, FocusScope as Root };
+const Root = FocusScope;
+
+export { FocusScope, Root };

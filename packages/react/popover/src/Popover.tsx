@@ -356,6 +356,13 @@ PopoverArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
+const Root = Popover;
+const Trigger = PopoverTrigger;
+const PopperPart = PopoverPopper;
+const Content = PopoverContent;
+const Close = PopoverClose;
+const Arrow = PopoverArrow;
+
 export {
   Popover,
   PopoverTrigger,
@@ -363,10 +370,10 @@ export {
   PopoverContent,
   PopoverClose,
   PopoverArrow,
-  Popover as Root,
-  PopoverTrigger as Trigger,
-  PopoverPopper as Popper,
-  PopoverContent as Content,
-  PopoverClose as Close,
-  PopoverArrow as Arrow,
+  Root,
+  Trigger,
+  PopperPart as Popper,
+  Content,
+  Close,
+  Arrow,
 };

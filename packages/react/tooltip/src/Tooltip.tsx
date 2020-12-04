@@ -309,15 +309,21 @@ function CheckTriggerMoved() {
   return null;
 }
 
+const Root = Tooltip;
+const Trigger = TooltipTrigger;
+const PopperPart = TooltipPopper;
+const Content = TooltipContent;
+const Arrow = TooltipArrow;
+
 export {
   Tooltip,
   TooltipTrigger,
   TooltipPopper,
   TooltipContent,
   TooltipArrow,
-  Tooltip as Root,
-  TooltipTrigger as Trigger,
-  TooltipPopper as Popper,
-  TooltipContent as Content,
-  TooltipArrow as Arrow,
+  Root,
+  Trigger,
+  PopperPart as Popper,
+  Content,
+  Arrow,
 };

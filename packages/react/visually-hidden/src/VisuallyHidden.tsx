@@ -31,4 +31,6 @@ const VisuallyHidden = forwardRefWithAs<typeof DEFAULT_TAG>(
 
 VisuallyHidden.displayName = NAME;
 
-export { VisuallyHidden, VisuallyHidden as Root };
+const Root = VisuallyHidden;
+
+export { VisuallyHidden, Root };
