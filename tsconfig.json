@@ -7,6 +7,7 @@
       "@interop-ui/utils": ["./packages/core/utils/src"],
       "@interop-ui/react-accessible-icon": ["./packages/react/accessible-icon/src"],
       "@interop-ui/react-accordion": ["./packages/react/accordion/src"],
+      "@interop-ui/react-alert-dialog": ["./packages/react/alert-dialog/src"],
       "@interop-ui/react-announce": ["./packages/react/announce/src"],
       "@interop-ui/react-arrow": ["./packages/react/arrow/src"],
       "@interop-ui/react-aspect-ratio": ["./packages/react/aspect-ratio/src"],
