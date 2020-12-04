@@ -20,104 +20,27 @@ import {
   PopoverArrow,
 } from '@interop-ui/react-popover';
 
-export default { title: 'Components/ScrollArea' };
+export default {
+  title: 'Components/ScrollArea',
+  decorators: [
+    (Story: any) => (
+      <ScrollPropControlProvider>
+        <Story />
+      </ScrollPropControlProvider>
+    ),
+  ],
+};
 
 export function Basic() {
-  const [usesNative, setNative] = React.useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
-  const [restTimeout, setRestTimeout] = React.useState(600);
-  const [scrollbarVisibility, setScrollbarVisibility] = React.useState<ScrollbarVisibility>(
-    'always'
-  );
-  const [trackClickBehavior, setTrackClickBehavior] = React.useState<TrackClickBehavior>('page');
-
   return (
-    <div>
-      <label>
-        <input
-          name="usesNative"
-          type="checkbox"
-          checked={usesNative}
-          onChange={(e) => setNative(e.target.checked)}
-        />
-        <span>Force native scrollbars</span>
-      </label>
-      <label>
-        <input
-          name="prefersReducedMotion"
-          type="checkbox"
-          checked={prefersReducedMotion}
-          onChange={(e) => setPrefersReducedMotion(e.target.checked)}
-          disabled={usesNative}
-        />
-        <span>Simulate preference for reduced motion</span>
-      </label>
-
-      <div style={{ display: 'flex', margin: '10px 0' }}>
-        <RadioGroup
-          name="autoHide"
-          legend="Show scrollbars:"
-          fields={
-            [
-              { value: 'always', label: 'Always', disabled: usesNative },
-              { value: 'scroll', label: 'When scrolling', disabled: usesNative },
-              {
-                value: 'hover',
-                label: 'When scrolling and when the pointer is over the scrollable area',
-                disabled: usesNative,
-              },
-            ] as { value: ScrollbarVisibility; label: string; disabled: boolean }[]
-          }
-          checked={scrollbarVisibility}
-          onChange={(newValue) => {
-            setScrollbarVisibility(newValue as ScrollbarVisibility);
-          }}
-        />
-        <RadioGroup
-          name="trackClickBehavior"
-          legend="Click the scrollbar track to:"
-          fields={[
-            { value: 'page', label: 'Jump to the next page', disabled: usesNative },
-            { value: 'relative', label: "Jump to the spot that's clicked", disabled: usesNative },
-          ]}
-          checked={trackClickBehavior}
-          onChange={(newValue) => {
-            setTrackClickBehavior(newValue as TrackClickBehavior);
-          }}
-        />
-        <label>
-          <span>Rest timeout (Min: 100ms, Max: 2000ms)</span>
-          <input
-            value={restTimeout}
-            onChange={(e) => {
-              setRestTimeout(Number(e.target.value));
-            }}
-            type="range"
-            min={100}
-            max={2000}
-            disabled={scrollbarVisibility !== 'scroll'}
-          />
-        </label>
-      </div>
-
+    <React.Fragment>
+      <ScrollPropControls />
       <hr />
-      <div
-        className="resizable"
-        style={{
-          padding: 10,
-          border: '1px solid gray',
-          resize: 'both',
-          overflow: 'auto',
-        }}
-      >
+      <Resizable>
         <ScrollArea
           as={Win98StyledRoot}
-          unstable_forceNative={usesNative}
-          unstable_prefersReducedMotion={prefersReducedMotion}
           overflowX="scroll"
-          scrollbarVisibility={scrollbarVisibility}
-          scrollbarVisibilityRestTimeout={restTimeout}
-          trackClickBehavior={trackClickBehavior}
+          {...useScrollAreaControlProps()}
           css={{ width: '400px', height: '400px' }}
         >
           <ScrollAreaScrollbarY as={Win98StyledScrollbarY}>
@@ -173,27 +96,23 @@ export function Basic() {
           </ScrollAreaViewport>
         </ScrollArea>
         <TestButton onClick={() => alert('whoa')}>Test for pointer events</TestButton>
-      </div>
-    </div>
+      </Resizable>
+    </React.Fragment>
   );
 }
 
 export function InsidePopover() {
   const [isOpen, setIsOpen] = React.useState(false);
   return (
-    <div
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
-    >
+    <React.Fragment>
+      <ScrollPropControls />
+      <hr />
+
       <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
         <PopoverTrigger as="button">{isOpen ? 'close' : 'open'}</PopoverTrigger>
         <PopoverPopper style={{ ...RECOMMENDED_CSS__POPOVER__POPPER }}>
           <PopoverContent style={{ backgroundColor: '#eee', width: 250, height: 150 }}>
-            <ScrollArea
-              overflowX="scroll"
-              scrollbarVisibility="scroll"
-              trackClickBehavior="page"
-              as={BaseStyledRoot}
-            >
+            <ScrollArea overflowX="scroll" {...useScrollAreaControlProps()} as={BaseStyledRoot}>
               <ScrollAreaScrollbarY as={MacOsStyledScrollbarY} style={{ bottom: 0 }}>
                 <ScrollAreaTrack as={MacOsStyledScrollTrack}>
                   <ScrollAreaThumb as={MacOsStyledScrollThumbY}>
@@ -233,7 +152,7 @@ export function InsidePopover() {
           <PopoverArrow width={50} height={20} />
         </PopoverPopper>
       </Popover>
-    </div>
+    </React.Fragment>
   );
 }
 
@@ -531,36 +450,294 @@ function LongContent() {
   );
 }
 
-function RadioGroup(props: {
-  name: string;
-  legend?: string;
-  fields: { value: string; label: string; disabled?: boolean }[];
-  checked: string;
-  onChange: (checked: string) => void;
-}) {
+function CheckedInput({ children, ...props }: React.ComponentProps<'input'>) {
   return (
-    <fieldset>
-      {props.legend && <legend>{props.legend}</legend>}
-      {props.fields.map((field) => (
-        <div key={field.value}>
-          <label>
-            <input
-              type="radio"
-              name={props.name}
-              value={field.value}
-              checked={props.checked === field.value}
-              disabled={field.disabled}
-              onChange={(event) => {
-                if (event.target.checked) {
-                  props.onChange(field.value);
-                }
-              }}
-            />
-            <span>{field.label}</span>
-          </label>
-        </div>
-      ))}
-    </fieldset>
+    <label style={{ display: 'flex', gap: 4, marginTop: '0.25em' }}>
+      <input {...props} />
+      <span>{children}</span>
+    </label>
+  );
+}
+
+function Checkbox({ ...props }: Omit<React.ComponentProps<'input'>, 'type'>) {
+  return <CheckedInput {...props} type="checkbox" />;
+}
+
+function Radio({ ...props }: Omit<React.ComponentProps<'input'>, 'type'> & { value: string }) {
+  const { name, checked, getChangeHandler } = React.useContext(RadioGroupContext);
+  const handleChange = props.onChange || getChangeHandler?.(props.value);
+  return (
+    <CheckedInput
+      name={name}
+      checked={checked != null ? checked === props.value : undefined}
+      onChange={handleChange}
+      {...props}
+      type="radio"
+    />
+  );
+}
+
+function RangeInput({ children, ...props }: Omit<React.ComponentProps<'input'>, 'type'>) {
+  return (
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <span>{children}</span>
+      <input {...props} type="range" />
+    </label>
+  );
+}
+
+// Internal stuff
+
+const ScrollPropControlContext = React.createContext<{
+  forceNative: boolean;
+  setForceNative: React.Dispatch<React.SetStateAction<boolean>>;
+  prefersReducedMotion: boolean;
+  setPrefersReducedMotion: React.Dispatch<React.SetStateAction<boolean>>;
+  scrollbarVisibilityRestTimeout: number;
+  setScrollbarVisibilityRestTimeout: React.Dispatch<React.SetStateAction<number>>;
+  scrollbarVisibility: ScrollbarVisibility;
+  setScrollbarVisibility: React.Dispatch<React.SetStateAction<ScrollbarVisibility>>;
+  trackClickBehavior: TrackClickBehavior;
+  setTrackClickBehavior: React.Dispatch<React.SetStateAction<TrackClickBehavior>>;
+}>({} as any);
+
+const ScrollPropControlProvider: React.FC = ({ children }) => {
+  const [forceNative, setForceNative] = React.useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
+  const [scrollbarVisibilityRestTimeout, setScrollbarVisibilityRestTimeout] = React.useState(600);
+  const [scrollbarVisibility, setScrollbarVisibility] = React.useState<ScrollbarVisibility>(
+    'hover'
+  );
+  const [trackClickBehavior, setTrackClickBehavior] = React.useState<TrackClickBehavior>(
+    'relative'
+  );
+  return (
+    <ScrollPropControlContext.Provider
+      value={{
+        forceNative,
+        setForceNative,
+        prefersReducedMotion,
+        setPrefersReducedMotion,
+        scrollbarVisibilityRestTimeout,
+        setScrollbarVisibilityRestTimeout,
+        scrollbarVisibility,
+        setScrollbarVisibility,
+        trackClickBehavior,
+        setTrackClickBehavior,
+      }}
+    >
+      {children}
+    </ScrollPropControlContext.Provider>
+  );
+};
+
+function useScrollAreaControlProps() {
+  const {
+    forceNative,
+    prefersReducedMotion,
+    scrollbarVisibilityRestTimeout,
+    scrollbarVisibility,
+    trackClickBehavior,
+  } = React.useContext(ScrollPropControlContext);
+  return {
+    unstable_forceNative: forceNative,
+    unstable_prefersReducedMotion: prefersReducedMotion,
+    scrollbarVisibilityRestTimeout,
+    scrollbarVisibility,
+    trackClickBehavior,
+  };
+}
+
+function ScrollPropControls() {
+  const {
+    forceNative,
+    setForceNative,
+    prefersReducedMotion,
+    setPrefersReducedMotion,
+    scrollbarVisibility,
+    setScrollbarVisibility,
+    trackClickBehavior,
+    setTrackClickBehavior,
+    scrollbarVisibilityRestTimeout,
+    setScrollbarVisibilityRestTimeout,
+  } = React.useContext(ScrollPropControlContext);
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexFlow: 'row wrap',
+        gap: 8,
+        fontFamily: 'sans-serif',
+        fontSize: '12px',
+      }}
+    >
+      <Box>
+        <Fieldset>
+          <Legend>Simulation options:</Legend>
+          <Checkbox
+            name="forceNative"
+            checked={forceNative}
+            onChange={(e) => setForceNative(e.target.checked)}
+          >
+            Force native scrollbars
+          </Checkbox>
+          <Checkbox
+            name="prefersReducedMotion"
+            checked={prefersReducedMotion}
+            onChange={(e) => setPrefersReducedMotion(e.target.checked)}
+            disabled={forceNative}
+          >
+            Simulate preference for reduced motion
+          </Checkbox>
+        </Fieldset>
+      </Box>
+
+      <Box>
+        <RadioGroup
+          name="scrollbarVisibility"
+          checked={scrollbarVisibility}
+          onChange={(newValue) => {
+            setScrollbarVisibility(newValue as ScrollbarVisibility);
+          }}
+        >
+          <Legend>
+            Show scrollbars <Code>scrollbarVisibility</Code>
+          </Legend>
+          <Radio value="always" disabled={forceNative}>
+            Always <Code>"always"</Code>
+          </Radio>
+          <Radio value="scroll" disabled={forceNative}>
+            When scrolling <Code>"scroll"</Code>
+          </Radio>
+          <Radio value="hover" disabled={forceNative}>
+            When scrolling and when the pointer is over the scrollable area <Code>"hover"</Code>
+          </Radio>
+        </RadioGroup>
+      </Box>
+
+      <Box>
+        <RadioGroup
+          name="trackClickBehavior"
+          checked={trackClickBehavior}
+          onChange={(newValue) => {
+            setTrackClickBehavior(newValue as TrackClickBehavior);
+          }}
+        >
+          <Legend>
+            Track click behavior <Code>trackClickBehavior</Code>
+          </Legend>
+          <Radio value="page" disabled={forceNative}>
+            Jump to the next page <Code>"page"</Code>
+          </Radio>
+          <Radio value="relative" disabled={forceNative}>
+            Jump to the spot that's clicked <Code>"relative"</Code>
+          </Radio>
+        </RadioGroup>
+      </Box>
+
+      <Box>
+        <RangeInput
+          name="scrollbarVisibilityRestTimeout"
+          value={scrollbarVisibilityRestTimeout}
+          onChange={(e) => {
+            setScrollbarVisibilityRestTimeout(Number(e.target.value));
+          }}
+          min={100}
+          max={2000}
+          disabled={scrollbarVisibility === 'always'}
+        >
+          <span style={{ fontWeight: 'bolder' }}>Rest timeout</span>{' '}
+          <span style={{ display: 'block' }}>(Min: 100ms, Max: 2000ms)</span>
+          <Code>scrollbarVisibilityRestTimeout</Code>
+        </RangeInput>
+      </Box>
+    </div>
+  );
+}
+
+function Box({ as: Comp = 'div', ...props }: any) {
+  return (
+    <Comp
+      {...props}
+      style={{ padding: 16, background: '#eee', flexBasis: 200, flexShrink: 0, ...props.style }}
+    />
+  );
+}
+
+function Resizable({ ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      {...props}
+      style={{
+        padding: 10,
+        border: '1px solid gray',
+        resize: 'both',
+        overflow: 'auto',
+        ...props.style,
+      }}
+    />
+  );
+}
+
+const RadioGroupContext = React.createContext<{
+  name?: string;
+  checked?: string;
+  getChangeHandler?(value: string): (event: React.ChangeEvent<HTMLInputElement>) => void;
+}>({});
+
+function RadioGroup({
+  children,
+  name,
+  checked,
+  onChange,
+  ...props
+}: Omit<React.ComponentProps<'fieldset'>, 'onChange'> & {
+  name: string;
+  checked: string;
+  onChange(value: string): void;
+}) {
+  function getChangeHandler(value: string) {
+    return function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+      if (event.target.checked) {
+        onChange(value);
+      }
+    };
+  }
+
+  return (
+    <Fieldset {...props}>
+      <RadioGroupContext.Provider value={{ name, checked, getChangeHandler }}>
+        {children}
+      </RadioGroupContext.Provider>
+    </Fieldset>
+  );
+}
+
+function Fieldset({ ...props }: React.ComponentProps<'fieldset'>) {
+  return <fieldset {...props} style={{ padding: 0, margin: 0, border: 0, ...props.style }} />;
+}
+
+function Legend({ ...props }: React.ComponentProps<'legend'>) {
+  return (
+    <legend {...props} style={{ fontWeight: 'bolder', marginBottom: '0.5em', ...props.style }} />
+  );
+}
+
+function Code({ ...props }: React.ComponentProps<'code'>) {
+  return (
+    <code
+      {...props}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        background: '#fff',
+        border: '1px solid #bbb',
+        borderRadius: 3,
+        padding: '2px 3px',
+        lineHeight: 1,
+        ...props.style,
+      }}
+    />
   );
 }
 
