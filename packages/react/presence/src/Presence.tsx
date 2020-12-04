@@ -123,10 +123,10 @@ function waitForAfterNextFrame(cb = () => {}) {
   let nextFrameRaf: number;
   let afterNextFrameRaf: number;
   /**
-   * We call `requestAnimationFrame` twice because `requestAnimationFrame` fires *before* the
-   * next frame and we need *next* frame. This is to ensure our live CSSStyleDeclaration
-   * has updated before we compare values for animation. The third `requestAnimationFrame`
-   * is to ensure the callback fires after the transition run event.
+   * This first two `requestAnimationFrame` calls are needed because `requestAnimationFrame`
+   * fires *before* the next frame and we need *next* frame. This is to ensure our live
+   * CSSStyleDeclaration has updated before we compare values for animation. The third
+   * `requestAnimationFrame` is to ensure the callback fires after the `transitionrun` event.
    */
   const beforeNextFrameRaf = requestAnimationFrame(() => {
     nextFrameRaf = requestAnimationFrame(() => {
