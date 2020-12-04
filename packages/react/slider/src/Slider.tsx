@@ -47,17 +47,6 @@ const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
   SLIDER_NAME
 );
 
-type SliderSingleThumbProps = {
-  value?: number;
-  defaultValue?: number;
-};
-
-type SliderMultiThumbProps = {
-  minStepsBetweenThumbs?: number;
-  value?: number[];
-  defaultValue?: number[];
-};
-
 type SliderOwnProps = {
   name?: string;
   disabled?: boolean;
@@ -66,8 +55,11 @@ type SliderOwnProps = {
   min?: number;
   max?: number;
   step?: number;
-  onChange?(value: number | number[]): void;
-} & (SliderSingleThumbProps | SliderMultiThumbProps);
+  minStepsBetweenThumbs?: number;
+  value?: number[];
+  defaultValue?: number[];
+  onValueChange?(value: number[]): void;
+};
 
 const Slider = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>(
   (props, forwardedRef) => {
@@ -79,10 +71,11 @@ const Slider = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>(
       step: stepProp = 1,
       orientation = 'horizontal',
       disabled = false,
-      defaultValue,
+      minStepsBetweenThumbs = 0,
+      defaultValue = [min],
       value,
-      onChange = () => {},
-      ...restProps
+      onValueChange = () => {},
+      ...sliderProps
     } = props;
 
     const step = Math.max(stepProp, 1);
@@ -93,21 +86,10 @@ const Slider = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>(
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
-    const { minStepsBetweenThumbs = 0 } = restProps as SliderMultiThumbProps;
-    const sliderProps = restProps as SliderSingleThumbProps;
-    // @ts-ignore
-    delete sliderProps.minStepsBetweenThumbs;
-
     const [values = [], setValues] = useControlledState({
-      prop: value === undefined ? undefined : toArray(value),
-      defaultProp: defaultValue === undefined ? undefined : toArray(defaultValue),
-      onChange: (values) => {
-        if (Array.isArray(value || defaultValue)) {
-          onChange(values);
-        } else {
-          onChange(values[0]);
-        }
-      },
+      prop: value,
+      defaultProp: defaultValue,
+      onChange: onValueChange,
     });
 
     function handleSlideStart(value: number) {
@@ -721,10 +703,6 @@ function getNextSortedValues(prevValues: number[] = [], nextValue: number, atInd
   const nextValues = [...prevValues];
   nextValues[atIndex] = nextValue;
   return nextValues.sort((a, b) => a - b);
-}
-
-function toArray(value: number | number[]): number[] {
-  return Array.isArray(value) ? value : [value];
 }
 
 function isThumb(node: any): node is HTMLElement {

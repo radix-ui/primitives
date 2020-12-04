@@ -5,7 +5,7 @@ import { styled } from '../../../../stitches.config';
 export default { title: 'Components/Slider' };
 
 export const Styled = () => (
-  <Slider defaultValue={10} as={StyledRoot}>
+  <Slider as={StyledRoot}>
     <SliderTrack as={StyledTrack}>
       <SliderRange as={StyledRange} />
     </SliderTrack>
@@ -19,7 +19,7 @@ export const Horizontal = () => (
       as={StyledRoot}
       defaultValue={[10, 30]}
       minStepsBetweenThumbs={1}
-      onChange={(value) => console.log(value)}
+      onValueChange={(value) => console.log(value)}
     >
       <SliderTrack as={StyledTrack}>
         <SliderRange as={StyledRange} />
@@ -30,7 +30,7 @@ export const Horizontal = () => (
 
     <br />
 
-    <Slider as={StyledRoot} defaultValue={10}>
+    <Slider as={StyledRoot} defaultValue={[10]}>
       <SliderTrack as={StyledTrack}>
         <SliderRange as={StyledRange} />
       </SliderTrack>
@@ -51,7 +51,7 @@ export const Vertical = () => (
 
     <br />
 
-    <Slider as={StyledRoot} defaultValue={10} orientation="vertical">
+    <Slider as={StyledRoot} defaultValue={[10]} orientation="vertical">
       <SliderTrack as={StyledTrack}>
         <SliderRange as={StyledRange} />
       </SliderTrack>
