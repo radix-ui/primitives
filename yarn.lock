@@ -2019,16 +2019,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/popper@workspace:*, @interop-ui/popper@workspace:packages/core/popper":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/popper@workspace:packages/core/popper"
-  dependencies:
-    "@interop-ui/utils": "workspace:*"
-    csstype: ^3.0.4
-    parcel: ^2.0.0-beta.1
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-accessible-icon@workspace:packages/react/accessible-icon":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-accessible-icon@workspace:packages/react/accessible-icon"
@@ -2056,20 +2046,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-alert-dialog@workspace:packages/react/alert-dialog":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-alert-dialog@workspace:packages/react/alert-dialog"
-  dependencies:
-    "@interop-ui/react-dialog": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16.8"
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-announce@workspace:packages/react/announce":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-announce@workspace:packages/react/announce"
@@ -2084,7 +2060,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-arrow@workspace:*, @interop-ui/react-arrow@workspace:packages/react/arrow":
+"@interop-ui/react-arrow@workspace:packages/react/arrow":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-arrow@workspace:packages/react/arrow"
   dependencies:
@@ -2171,40 +2147,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-dialog@workspace:*, @interop-ui/react-dialog@workspace:packages/react/dialog":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-dialog@workspace:packages/react/dialog"
-  dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-dismissable-layer": "workspace:*"
-    "@interop-ui/react-focus-guards": "workspace:*"
-    "@interop-ui/react-focus-scope": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    aria-hidden: ^1.1.1
-    parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.4.0
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-dismissable-layer@workspace:*, @interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
-  dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.4.0
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-focus-guards@workspace:*, @interop-ui/react-focus-guards@workspace:packages/react/focus-guards":
+"@interop-ui/react-focus-guards@workspace:packages/react/focus-guards":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-focus-guards@workspace:packages/react/focus-guards"
   dependencies:
@@ -2214,7 +2157,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-focus-scope@workspace:*, @interop-ui/react-focus-scope@workspace:packages/react/focus-scope":
+"@interop-ui/react-focus-scope@workspace:packages/react/focus-scope":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-focus-scope@workspace:packages/react/focus-scope"
   dependencies:
@@ -2240,19 +2183,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-menu@workspace:packages/react/menu":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-menu@workspace:packages/react/menu"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-polymorphic@workspace:*, @interop-ui/react-polymorphic@workspace:packages/react/polymorphic":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-polymorphic@workspace:packages/react/polymorphic"
@@ -2264,45 +2194,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-popover@workspace:packages/react/popover":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-popover@workspace:packages/react/popover"
-  dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-dismissable-layer": "workspace:*"
-    "@interop-ui/react-focus-guards": "workspace:*"
-    "@interop-ui/react-focus-scope": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-popper": "workspace:*"
-    "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    aria-hidden: ^1.1.1
-    parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.4.0
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-popper@workspace:*, @interop-ui/react-popper@workspace:packages/react/popper":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-popper@workspace:packages/react/popper"
-  dependencies:
-    "@interop-ui/popper": "workspace:*"
-    "@interop-ui/react-arrow": "workspace:*"
-    "@interop-ui/react-debug-context": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-use-size": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-portal@workspace:*, @interop-ui/react-portal@workspace:packages/react/portal":
+"@interop-ui/react-portal@workspace:packages/react/portal":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-portal@workspace:packages/react/portal"
   dependencies:
@@ -2415,24 +2307,6 @@ __metadata:
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-tooltip@workspace:packages/react/tooltip":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-tooltip@workspace:packages/react/tooltip"
-  dependencies:
-    "@interop-ui/popper": "workspace:*"
-    "@interop-ui/react-arrow": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-popper": "workspace:*"
-    "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/react-visually-hidden": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
@@ -8769,7 +8643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2, csstype@npm:^3.0.4":
+"csstype@npm:^3.0.2":
   version: 3.0.4
   resolution: "csstype@npm:3.0.4"
   checksum: 90cd2ff9aced9049010c5c69470b30643761d511b4250f6ce2bbdbab23229822c325fd841be6066a94a9ba800112026e3c046be879cd44a066e8705991cdc700
@@ -9059,13 +8933,6 @@ __metadata:
   version: 3.1.0
   resolution: "detect-newline@npm:3.1.0"
   checksum: 6d3f67971da681403c1b1920eb3994c0718a4e70d32ae4cfc5369f3e30b4746f075a3986cb5a5c762fac36597d8f8a33b6c98bd5ce822589773313f29ce4544f
-  languageName: node
-  linkType: hard
-
-"detect-node-es@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "detect-node-es@npm:1.0.0"
-  checksum: 95d2223ede53583a145a44def12b1becc6bf170c92249e4c23a7004c135d989288090762030c0d98b19c622217ce88d2d17b36cd8d2e3329db331b62eae54722
   languageName: node
   linkType: hard
 
@@ -11008,13 +10875,6 @@ fsevents@^1.2.7:
     has: ^1.0.3
     has-symbols: ^1.0.1
   checksum: c38bc558f1eca73bde2d9e22c7798b06c4b93650f39b2053a875a23a6c00fbafb0919ad20fe0d3a3e16916a8a59450502f91e75a918d264456c8ded070fe93c4
-  languageName: node
-  linkType: hard
-
-"get-nonce@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "get-nonce@npm:1.0.1"
-  checksum: 6414e4ba765537c3c7ed802dac8a8e48d7af0e4ed3ff65a395080bdeecd10c0d4dfa0c698168800558f748649bca4be5624bea016ddbff44954c925b17dda129
   languageName: node
   linkType: hard
 
@@ -17329,41 +17189,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-remove-scroll-bar@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "react-remove-scroll-bar@npm:2.1.0"
-  dependencies:
-    react-style-singleton: ^2.1.0
-    tslib: ^1.0.0
-  peerDependencies:
-    "@types/react": ^16.8.0
-    react: ^16.8.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 3eeba34610b8ea0c9df1331aed9bc39019d7a80de51c4ee03b83de05cf4d531f4f5e3a6e36d59b031c8d665cb9de6f7a5b83d4c2b4e5e58e8bba5b8615b6cc2d
-  languageName: node
-  linkType: hard
-
-"react-remove-scroll@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "react-remove-scroll@npm:2.4.0"
-  dependencies:
-    react-remove-scroll-bar: ^2.1.0
-    react-style-singleton: ^2.1.0
-    tslib: ^1.0.0
-    use-callback-ref: ^1.2.3
-    use-sidecar: ^1.0.1
-  peerDependencies:
-    "@types/react": ^16.8.0
-    react: ^16.8.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 2710c559fc5c478a5641f3bbcec0287c0fc4dd50a1821a6049e1c952d333589e103b64e5407ebf2a91f2caa2bd018c9c51e27735d6ba065f2c2ab12ccba69cb2
-  languageName: node
-  linkType: hard
-
 "react-shallow-renderer@npm:^16.13.1":
   version: 16.14.1
   resolution: "react-shallow-renderer@npm:16.14.1"
@@ -17398,23 +17223,6 @@ fsevents@^1.2.7:
     react: ^0.14.0 || ^15.0.0-0 || ^16.0.0
     react-dom: ^0.14.0 || ^15.0.0-0 || ^16.0.0
   checksum: 1e46afd8851bb855cd4b533dbbacc5b24c3b4b174cba78df0cc0b2567ed38e23e85254aa7c205d1f1dea3002bf17d70555404aea8011c200bab3abfeb8cc32af
-  languageName: node
-  linkType: hard
-
-"react-style-singleton@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "react-style-singleton@npm:2.1.0"
-  dependencies:
-    get-nonce: ^1.0.0
-    invariant: ^2.2.4
-    tslib: ^1.0.0
-  peerDependencies:
-    "@types/react": ^16.8.0
-    react: ^16.8.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: ba018eb21b0e29d6c4a30634eacd180d9139ea418768e82e5dda155c29b90f3b609ea89d59c13b8d2d11add4403079881072a8d43d8e83ac0800aa6c4cc09449
   languageName: node
   linkType: hard
 
@@ -19971,7 +19779,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.0.0, tslib@npm:^1.10.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
+"tslib@npm:^1.0.0, tslib@npm:^1.10.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: f44fe7f216946b17d3e3074df3746372703cf24e9127b4c045511456e8e4bf25515fb0a1bb3937676cc305651c5d4fcb6377b0588a4c6a957e748c4c28905d17
@@ -20502,19 +20310,6 @@ typescript@^4.0.5:
   languageName: node
   linkType: hard
 
-"use-callback-ref@npm:^1.2.3":
-  version: 1.2.4
-  resolution: "use-callback-ref@npm:1.2.4"
-  peerDependencies:
-    "@types/react": ^16.8.0
-    react: ^16.8.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 7e559af86fc2776d334ea93aba52fecfff38ee2aa0fd253fd5ae02b0517bcdcf657ea4656d610743a52a524b0f7c276bc44accef20dce757c3c57aea426d9c4d
-  languageName: node
-  linkType: hard
-
 "use-composed-ref@npm:^1.0.0":
   version: 1.1.0
   resolution: "use-composed-ref@npm:1.1.0"
@@ -20551,18 +20346,6 @@ typescript@^4.0.5:
     "@types/react":
       optional: true
   checksum: 4d0e0543f16cb64cf0f01c3db22f2fdb67beca1bdd2a14d255300f4f106e9bf960d9b7605641ee7ad5faf5fc64bce721f8686fbb7d6ecf413999ed2b6a17aea5
-  languageName: node
-  linkType: hard
-
-"use-sidecar@npm:^1.0.1":
-  version: 1.0.3
-  resolution: "use-sidecar@npm:1.0.3"
-  dependencies:
-    detect-node-es: ^1.0.0
-    tslib: ^1.9.3
-  peerDependencies:
-    react: ^16.8.0
-  checksum: c370f88fba8532ca5ea10762fe08828be91550932edf12ef72ccfd4315c150f6d6b97ec7777c0678a9883443b0d35b1b4991b2a8b7ebda7e58497e424408f071
   languageName: node
   linkType: hard
 

@@ -1,1 +1,0 @@
-export { getPlacementData } from './popper';
