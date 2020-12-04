@@ -29,4 +29,4 @@ const ArrowImpl = forwardRefWithAs<typeof DEFAULT_TAG>((props, forwardedRef) => 
 
 Arrow.displayName = NAME;
 
-export { Arrow };
+export { Arrow, Arrow as Root };

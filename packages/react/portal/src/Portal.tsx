@@ -57,5 +57,4 @@ function getHostElement() {
   return null;
 }
 
-export { Portal };
-export type { PortalProps };
+export { Portal, Portal as Root };

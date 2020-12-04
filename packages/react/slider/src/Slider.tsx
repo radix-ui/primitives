@@ -800,4 +800,13 @@ function linearScale(domain: [number, number], range: [number, number]) {
   };
 }
 
-export { Slider, SliderTrack, SliderRange, SliderThumb };
+export {
+  Slider,
+  SliderTrack,
+  SliderRange,
+  SliderThumb,
+  Slider as Root,
+  SliderTrack as Track,
+  SliderRange as Range,
+  SliderThumb as Thumb,
+};

@@ -9,8 +9,8 @@ import { FocusGuards } from '@interop-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from './DismissableLayer';
 
-import type { FocusScopeProps } from '@interop-ui/react-focus-scope';
-import type { DismissableLayerProps } from './DismissableLayer';
+type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
+type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 
 export default { title: 'Components/DismissableLayer' };
 

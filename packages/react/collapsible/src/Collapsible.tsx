@@ -145,4 +145,11 @@ function getState(isOpen?: boolean) {
   return isOpen ? 'open' : 'closed';
 }
 
-export { Collapsible, CollapsibleButton, CollapsibleContent };
+export {
+  Collapsible,
+  CollapsibleButton,
+  CollapsibleContent,
+  Collapsible as Root,
+  CollapsibleButton as Button,
+  CollapsibleContent as Content,
+};

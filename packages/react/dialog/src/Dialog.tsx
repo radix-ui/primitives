@@ -17,8 +17,8 @@ import { useFocusGuards } from '@interop-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
-import type { DismissableLayerProps } from '@interop-ui/react-dismissable-layer';
-import type { FocusScopeProps } from '@interop-ui/react-focus-scope';
+type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
+type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -276,4 +276,15 @@ DialogClose.displayName = CLOSE_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-export { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogClose };
+export {
+  Dialog,
+  DialogTrigger,
+  DialogOverlay,
+  DialogContent,
+  DialogClose,
+  Dialog as Root,
+  DialogTrigger as Trigger,
+  DialogOverlay as Overlay,
+  DialogContent as Content,
+  DialogClose as Close,
+};

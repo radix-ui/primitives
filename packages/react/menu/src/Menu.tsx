@@ -371,4 +371,13 @@ export {
   MenuRadioItem,
   MenuItemIndicator,
   MenuSeparator,
+  Menu as Root,
+  MenuGroup as Group,
+  MenuLabel as Label,
+  MenuItem as Item,
+  MenuCheckboxItem as CheckboxItem,
+  MenuRadioGroup as RadioGroup,
+  MenuRadioItem as RadioItem,
+  MenuItemIndicator as ItemIndicator,
+  MenuSeparator as Separator,
 };
