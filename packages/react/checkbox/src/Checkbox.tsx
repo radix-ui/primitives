@@ -143,4 +143,4 @@ function getState(checked: CheckedState) {
   return checked === 'indeterminate' ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
-export { Checkbox, CheckboxIndicator };
+export { Checkbox, CheckboxIndicator, Checkbox as Root, CheckboxIndicator as Indicator };

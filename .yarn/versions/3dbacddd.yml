@@ -8,9 +8,9 @@ releases:
   "@interop-ui/react-avatar": prerelease
   "@interop-ui/react-checkbox": prerelease
   "@interop-ui/react-collapsible": prerelease
-  "@interop-ui/react-collection": prerelease
   "@interop-ui/react-dialog": prerelease
   "@interop-ui/react-dismissable-layer": prerelease
+  "@interop-ui/react-focus-guards": prerelease
   "@interop-ui/react-focus-scope": prerelease
   "@interop-ui/react-label": prerelease
   "@interop-ui/react-menu": prerelease
@@ -26,8 +26,6 @@ releases:
   "@interop-ui/react-tabs": prerelease
   "@interop-ui/react-toggle-button": prerelease
   "@interop-ui/react-tooltip": prerelease
-  "@interop-ui/react-use-size": prerelease
-  "@interop-ui/react-utils": prerelease
   "@interop-ui/react-visually-hidden": prerelease
 
 declined:

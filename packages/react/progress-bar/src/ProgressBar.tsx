@@ -160,5 +160,10 @@ function getInvalidValueError(propValue: string, componentName: string) {
 Defaulting to \`null\`.`;
 }
 
-export { ProgressBar, ProgressBarIndicator, useProgressBarState };
-export type { ProgressBarState };
+export {
+  ProgressBar,
+  ProgressBarIndicator,
+  ProgressBar as Root,
+  ProgressBarIndicator as Indicator,
+  useProgressBarState,
+};

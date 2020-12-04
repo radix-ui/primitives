@@ -309,4 +309,15 @@ function CheckTriggerMoved() {
   return null;
 }
 
-export { Tooltip, TooltipTrigger, TooltipPopper, TooltipContent, TooltipArrow };
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipPopper,
+  TooltipContent,
+  TooltipArrow,
+  Tooltip as Root,
+  TooltipTrigger as Trigger,
+  TooltipPopper as Popper,
+  TooltipContent as Content,
+  TooltipArrow as Arrow,
+};

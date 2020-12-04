@@ -16,7 +16,7 @@ import { Slider, SliderTrack, SliderRange, SliderThumb } from '@interop-ui/react
 
 function SingleThumbSlider() {
   return (
-    <Slider defaultValue={10} step={1} min={1} max={10}>
+    <Slider defaultValue={[10]} step={1} min={1} max={10}>
       <SliderTrack>
         <SliderRange />
       </SliderTrack>
@@ -40,8 +40,8 @@ function MultipleThumbSlider() {
 
 | Prop                    | Type                                      | Description                                                                                                                         |
 | ----------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `defaultValue`          | `number \| number[]`                      | Value for an uncontrolled slider. When passed as an array it will become a range slider.                                            |
-| `value`                 | `number \| number[]`                      | Value for a controlled slider. When passed as an array it will become a range slider.                                               |
+| `defaultValue`          | `number[]`                                | Value for an uncontrolled slider.                                                                                                   |
+| `value`                 | `number[]`                                | Value for a controlled slider.                                                                                                      |
 | `dir`                   | `"ltr" \| "rtl" \| undefined`             | Indicates the directionality of the slider (default: `"ltr"`).                                                                      |
 | `disabled`              | `boolean \| undefined`                    | Prevents the user from interacting with the slider (default: `false`).                                                              |
 | `min`                   | `number \| undefined`                     | The minimum permitted value (default: `0`).                                                                                         |
@@ -50,4 +50,4 @@ function MultipleThumbSlider() {
 | `step`                  | `number \| undefined`                     | The stepping interval.                                                                                                              |
 | `name`                  | `string \| undefined`                     | Name of the slider. For example used to identify the fields in form submits.                                                        |
 | `orientation`           | `"horizontal" \| "vertical" \| undefined` | Indicates horizontal or vertical orientation. (default: `"horizontal"`).                                                            |
-| `onChange`              | `(value: number \| number[]) => void`     | Callback that fires when the value changes.                                                                                         |
+| `onValueChange`         | `(value: number[]) => void`               | Callback that fires when the value changes.                                                                                         |

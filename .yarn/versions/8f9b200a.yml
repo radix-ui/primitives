@@ -1,5 +1,0 @@
-releases:
-  "@interop-ui/react-progress-bar": prerelease
-
-declined:
-  - interop-ui

@@ -134,4 +134,11 @@ function useImageLoadingStatus(src?: string) {
   return loadingStatus;
 }
 
-export { Avatar, AvatarImage, AvatarFallback };
+export {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  Avatar as Root,
+  AvatarImage as Image,
+  AvatarFallback as Fallback,
+};
