@@ -145,11 +145,8 @@ function getState(isOpen?: boolean) {
   return isOpen ? 'open' : 'closed';
 }
 
-export {
-  Collapsible,
-  CollapsibleButton,
-  CollapsibleContent,
-  Collapsible as Root,
-  CollapsibleButton as Button,
-  CollapsibleContent as Content,
-};
+const Root = Collapsible;
+const Button = CollapsibleButton;
+const Content = CollapsibleContent;
+
+export { Collapsible, CollapsibleButton, CollapsibleContent, Root, Button, Content };

@@ -133,12 +133,8 @@ function useImageLoadingStatus(src?: string) {
 
   return loadingStatus;
 }
+const Root = Avatar;
+const ImagePart = AvatarImage;
+const Fallback = AvatarFallback;
 
-export {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-  Avatar as Root,
-  AvatarImage as Image,
-  AvatarFallback as Fallback,
-};
+export { Avatar, AvatarImage, AvatarFallback, Root, ImagePart as Image, Fallback };
