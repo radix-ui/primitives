@@ -17,7 +17,6 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*",
     "resize-observer-polyfill": "^1.5.1"
   },
