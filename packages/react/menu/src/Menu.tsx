@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { composeEventHandlers, useComposedRefs, useControlledState } from '@interop-ui/react-utils';
+import {
+  composeEventHandlers,
+  createContext,
+  useCallbackRef,
+  useComposedRefs,
+} from '@interop-ui/react-utils';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
@@ -15,6 +20,15 @@ const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 const MENU_NAME = 'Menu';
 const MENU_DEFAULT_TAG = 'div';
+
+type MenuContextValue = {
+  menuRef: React.RefObject<HTMLDivElement>;
+  setItemsReachable: React.Dispatch<React.SetStateAction<boolean>>;
+};
+const [MenuContext, useMenuContext] = createContext<MenuContextValue>(
+  MENU_NAME + 'Context',
+  MENU_NAME
+);
 
 type MenuOwnProps = { loop?: boolean };
 
@@ -54,17 +68,9 @@ const Menu = forwardRefWithAs<typeof MENU_DEFAULT_TAG, MenuOwnProps>((props, for
           }
         }
       })}
-      // make items unreachable when an item is blurred
-      onBlur={composeEventHandlers(menuProps.onBlur, (event) => {
-        if (isItem(event.target)) setItemsReachable(false);
-      })}
       // focus the menu if the mouse is moved over anything else than an item
       onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
-        if (!isItem(event.target)) menuRef.current?.focus();
-      })}
-      // focus the menu if the mouse is moved outside an item
-      onMouseOut={composeEventHandlers(menuProps.onMouseOut, (event) => {
-        if (isItem(event.target)) menuRef.current?.focus();
+        if (!isItemOrInsideItem(event.target)) menuRef.current?.focus();
       })}
     >
       <RovingFocusGroup
@@ -73,7 +79,9 @@ const Menu = forwardRefWithAs<typeof MENU_DEFAULT_TAG, MenuOwnProps>((props, for
         orientation="vertical"
         loop={loop}
       >
-        {children}
+        <MenuContext.Provider value={React.useMemo(() => ({ menuRef, setItemsReachable }), [])}>
+          {children}
+        </MenuContext.Provider>
       </RovingFocusGroup>
     </Comp>
   );
@@ -123,6 +131,7 @@ type MenuItemOwnProps = {
   disabled?: boolean;
   textValue?: string;
   onSelect?: () => void;
+  onSelectCapture?: never;
 };
 
 const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
@@ -130,6 +139,7 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
     const { as: Comp = ITEM_DEFAULT_TAG, disabled, textValue, onSelect, ...itemProps } = props;
     const menuItemRef = React.useRef<HTMLDivElement>(null);
     const composedRef = useComposedRefs(forwardedRef, menuItemRef);
+    const context = useMenuContext(ITEM_NAME);
 
     // get the item's `.textContent` as default strategy for typeahead `textValue`
     const [textContent, setTextContent] = React.useState('');
@@ -189,6 +199,14 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
             item.focus();
           }
         })}
+        // make items unreachable when an item is blurred
+        onBlur={composeEventHandlers(itemProps.onBlur, (event) => {
+          context.setItemsReachable(false);
+        })}
+        // focus the menu if the mouse leaves an item
+        onMouseLeave={composeEventHandlers(itemProps.onMouseLeave, (event) => {
+          context.menuRef.current?.focus();
+        })}
       />
     );
   }
@@ -203,27 +221,13 @@ MenuItem.displayName = ITEM_NAME;
 const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
 type MenuCheckboxItemOwnProps = {
-  value: string;
   checked?: boolean;
-  defaultChecked?: boolean;
-  onCheckedChange?: (checked?: boolean) => void;
+  onCheckedChange?: (checked: boolean) => void;
 };
 
 const MenuCheckboxItem = forwardRefWithAs<typeof MenuItem, MenuCheckboxItemOwnProps>(
   (props, forwardedRef) => {
-    const {
-      value,
-      checked: checkedProp,
-      defaultChecked,
-      onCheckedChange,
-      children,
-      ...checkboxItemProps
-    } = props;
-    const [checked = false, setChecked] = useControlledState({
-      prop: checkedProp,
-      defaultProp: defaultChecked,
-      onChange: onCheckedChange,
-    });
+    const { checked = false, onCheckedChange, children, ...checkboxItemProps } = props;
     return (
       <MenuItem
         role="menuitemcheckbox"
@@ -232,7 +236,7 @@ const MenuCheckboxItem = forwardRefWithAs<typeof MenuItem, MenuCheckboxItemOwnPr
         {...getPartDataAttrObj(CHECKBOX_ITEM_NAME)}
         data-state={getState(checked)}
         ref={forwardedRef}
-        onSelect={() => setChecked((prevChecked) => !prevChecked)}
+        onSelect={() => onCheckedChange?.(!checked)}
       >
         <ItemIndicatorContext.Provider value={checked}>{children}</ItemIndicatorContext.Provider>
       </MenuItem>
@@ -248,20 +252,21 @@ MenuCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
 
 const RADIO_GROUP_NAME = 'MenuRadioGroup';
 
-type ReactStateTuple<T> = readonly [T, React.Dispatch<React.SetStateAction<T>>];
-type RadioGroupContextType = ReactStateTuple<string | undefined>;
-const RadioGroupContext = React.createContext<RadioGroupContextType>({} as any);
+const RadioGroupContext = React.createContext<MenuRadioGroupOwnProps>({} as any);
 
 type MenuRadioGroupOwnProps = {
   value?: string;
-  defaultValue?: string;
-  onValueChange?: (value?: string) => void;
+  onValueChange?: (value: string) => void;
 };
 
 const MenuRadioGroup: React.FC<MenuRadioGroupOwnProps> = (props) => {
-  const { children, value, defaultValue, onValueChange: onChange } = props;
-  const state = useControlledState({ prop: value, defaultProp: defaultValue, onChange });
-  return <RadioGroupContext.Provider value={state}>{children}</RadioGroupContext.Provider>;
+  const { children, value, onValueChange } = props;
+  const handleValueChange = useCallbackRef(onValueChange);
+  const context = React.useMemo(() => ({ value, onValueChange: handleValueChange }), [
+    value,
+    handleValueChange,
+  ]);
+  return <RadioGroupContext.Provider value={context}>{children}</RadioGroupContext.Provider>;
 };
 
 MenuRadioGroup.displayName = RADIO_GROUP_NAME;
@@ -277,8 +282,8 @@ type MenuRadioItemOwnProps = { value: string };
 const MenuRadioItem = forwardRefWithAs<typeof MenuItem, MenuRadioItemOwnProps>(
   (props, forwardedRef) => {
     const { value, children, ...radioItemProps } = props;
-    const [valueFromContext, setValue] = React.useContext(RadioGroupContext);
-    const checked = value === valueFromContext;
+    const context = React.useContext(RadioGroupContext);
+    const checked = value === context.value;
     return (
       <MenuItem
         role="menuitemradio"
@@ -287,7 +292,7 @@ const MenuRadioItem = forwardRefWithAs<typeof MenuItem, MenuRadioItemOwnProps>(
         {...getPartDataAttrObj(RADIO_ITEM_NAME)}
         data-state={getState(checked)}
         ref={forwardedRef}
-        onSelect={() => setValue(value)}
+        onSelect={() => context.onValueChange?.(value)}
       >
         <ItemIndicatorContext.Provider value={checked}>{children}</ItemIndicatorContext.Provider>
       </MenuItem>
@@ -347,8 +352,9 @@ MenuSeparator.displayName = SEPARATOR_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function isItem(target: EventTarget) {
-  return (target as HTMLElement).matches(ENABLED_ITEM_SELECTOR);
+function isItemOrInsideItem(target: EventTarget) {
+  const item = (target as HTMLElement).closest(ENABLED_ITEM_SELECTOR);
+  return item !== null;
 }
 
 function getState(checked: boolean) {

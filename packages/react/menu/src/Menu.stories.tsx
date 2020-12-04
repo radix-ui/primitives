@@ -129,79 +129,73 @@ export const Typeahead = () => (
   </>
 );
 
-export const CheckboxItem = () => (
-  <Menu as={StyledRoot}>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
-      Show fonts
-    </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('bigger')}>
-      Bigger
-    </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
-      Smaller
-    </MenuItem>
-    <MenuSeparator as={StyledSeparator} />
-    <MenuCheckboxItem as={StyledItem} value="bold" onCheckedChange={console.log}>
-      Bold
-      <MenuItemIndicator>
-        <TickIcon />
-      </MenuItemIndicator>
-    </MenuCheckboxItem>
-    <MenuCheckboxItem as={StyledItem} value="italic" defaultChecked>
-      Italic
-      <MenuItemIndicator>
-        <TickIcon />
-      </MenuItemIndicator>
-    </MenuCheckboxItem>
-    <MenuCheckboxItem as={StyledItem} value="underline">
-      Underline
-      <MenuItemIndicator>
-        <TickIcon />
-      </MenuItemIndicator>
-    </MenuCheckboxItem>
-    <MenuCheckboxItem as={StyledItem} value="strikethrough" disabled>
-      Strikethrough
-      <MenuItemIndicator>
-        <TickIcon />
-      </MenuItemIndicator>
-    </MenuCheckboxItem>
-  </Menu>
-);
+export const CheckboxItems = () => {
+  const checkboxItems = [
+    { label: 'Bold', state: React.useState(false) },
+    { label: 'Italic', state: React.useState(true) },
+    { label: 'Underline', state: React.useState(false) },
+    { label: 'Strikethrough', state: React.useState(false), disabled: true },
+  ];
 
-export const RadioItems = () => (
-  <Menu as={StyledRoot}>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
-      Minimize window
-    </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('zoom')}>
-      Zoom
-    </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
-      Smaller
-    </MenuItem>
-    <MenuSeparator as={StyledSeparator} />
-    <MenuRadioGroup defaultValue="index.js">
-      <MenuRadioItem as={StyledItem} value="readme.md">
-        README.md
-        <MenuItemIndicator>
-          <TickIcon />
-        </MenuItemIndicator>
-      </MenuRadioItem>
-      <MenuRadioItem as={StyledItem} value="index.js">
-        index.js
-        <MenuItemIndicator>
-          <TickIcon />
-        </MenuItemIndicator>
-      </MenuRadioItem>
-      <MenuRadioItem as={StyledItem} value="page.css">
-        page.css
-        <MenuItemIndicator>
-          <TickIcon />
-        </MenuItemIndicator>
-      </MenuRadioItem>
-    </MenuRadioGroup>
-  </Menu>
-);
+  return (
+    <Menu as={StyledRoot}>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
+        Show fonts
+      </MenuItem>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('bigger')}>
+        Bigger
+      </MenuItem>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+        Smaller
+      </MenuItem>
+      <MenuSeparator as={StyledSeparator} />
+      {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+        <MenuCheckboxItem
+          key={label}
+          as={StyledItem}
+          checked={checked}
+          onCheckedChange={setChecked}
+          disabled={disabled}
+        >
+          {label}
+          <MenuItemIndicator>
+            <TickIcon />
+          </MenuItemIndicator>
+        </MenuCheckboxItem>
+      ))}
+    </Menu>
+  );
+};
+
+export const RadioItems = () => {
+  const files = ['README.md', 'index.js', 'page.css'];
+  const [file, setFile] = React.useState(files[1]);
+
+  return (
+    <Menu as={StyledRoot}>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
+        Minimize window
+      </MenuItem>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('zoom')}>
+        Zoom
+      </MenuItem>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+        Smaller
+      </MenuItem>
+      <MenuSeparator as={StyledSeparator} />
+      <MenuRadioGroup value={file} onValueChange={setFile}>
+        {files.map((file) => (
+          <MenuRadioItem key={file} as={StyledItem} value={file}>
+            {file}
+            <MenuItemIndicator>
+              <TickIcon />
+            </MenuItemIndicator>
+          </MenuRadioItem>
+        ))}
+      </MenuRadioGroup>
+    </Menu>
+  );
+};
 
 const StyledRoot = styled('div', {
   display: 'inline-block',
@@ -215,7 +209,7 @@ const StyledRoot = styled('div', {
   fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
   fontSize: 13,
   '&:focus-within': {
-    borderColor: 'black',
+    borderColor: '$black',
   },
 });
 
@@ -229,7 +223,7 @@ const itemCss: any = {
   whiteSpace: 'nowrap',
   height: 25,
   padding: '0 10px',
-  color: 'black',
+  color: '$black',
   borderRadius: 3,
 };
 
@@ -243,7 +237,7 @@ const StyledItem = styled('div', {
 
   '&:focus': {
     outline: 'none',
-    backgroundColor: 'black',
+    backgroundColor: '$black',
     color: 'white',
   },
 
