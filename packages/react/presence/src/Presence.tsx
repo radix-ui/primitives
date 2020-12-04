@@ -10,14 +10,14 @@ type PresenceProps = {
 const Presence: React.FC<PresenceProps> = (props) => {
   const { present, children } = props;
   const presence = usePresence(present);
-  const isPresent = typeof children === 'function' || presence.isPresent;
 
   const child = (typeof children === 'function'
     ? children({ present: presence.isPresent })
     : React.Children.only(children)) as React.ReactElement;
 
   const ref = useComposedRefs(presence.ref, (child as any).ref);
-  return isPresent ? React.cloneElement(child, { ref }) : null;
+  const forceMount = typeof children === 'function';
+  return forceMount || presence.isPresent ? React.cloneElement(child, { ref }) : null;
 };
 
 Presence.displayName = 'Presence';
