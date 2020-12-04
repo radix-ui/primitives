@@ -11,7 +11,7 @@ import {
   MenuItemIndicator,
   MenuSeparator,
 } from './Menu';
-import { styled } from '../../../../stitches.config';
+import { styled, css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 import { makeRect } from '@interop-ui/utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
@@ -243,6 +243,48 @@ const Menu = forwardRefWithAs<typeof MenuPrimitive, MenuOwnProps>((props, forwar
   </div>
 ));
 
+export const Animated = () => {
+  const files = ['README.md', 'index.js', 'page.css'];
+  const [file, setFile] = React.useState(files[1]);
+  const checkboxItems = [
+    { label: 'Bold', state: React.useState(false) },
+    { label: 'Italic', state: React.useState(true) },
+    { label: 'Underline', state: React.useState(false) },
+    { label: 'Strikethrough', state: React.useState(false), disabled: true },
+  ];
+
+  return (
+    <Menu>
+      <MenuContent as={StyledContent}>
+        {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+          <MenuCheckboxItem
+            key={label}
+            as={StyledItem}
+            checked={checked}
+            onCheckedChange={setChecked}
+            disabled={disabled}
+          >
+            {label}
+            <AnimatedMenuItemIndicator>
+              <TickIcon />
+            </AnimatedMenuItemIndicator>
+          </MenuCheckboxItem>
+        ))}
+        <MenuRadioGroup value={file} onValueChange={setFile}>
+          {files.map((file) => (
+            <MenuRadioItem key={file} as={StyledItem} value={file}>
+              {file}
+              <AnimatedMenuItemIndicator>
+                <TickIcon />
+              </AnimatedMenuItemIndicator>
+            </MenuRadioItem>
+          ))}
+        </MenuRadioGroup>
+      </MenuContent>
+    </Menu>
+  );
+};
+
 function useStaticElementRef() {
   return React.useRef({
     getBoundingClientRect: () => makeRect({ width: 0, height: 0 }, { x: 0, y: 0 }),
@@ -304,6 +346,25 @@ const StyledSeparator = styled('div', {
   height: 1,
   margin: '5px 10px',
   backgroundColor: '$gray100',
+});
+
+const fadeIn = css.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+});
+
+const fadeOut = css.keyframes({
+  from: { opacity: 1 },
+  to: { opacity: 0 },
+});
+
+const AnimatedMenuItemIndicator = styled(MenuItemIndicator, {
+  '&[data-state="checked"]': {
+    animation: `${fadeIn} 300ms ease-out`,
+  },
+  '&[data-state="unchecked"]': {
+    animation: `${fadeOut} 300ms ease-in`,
+  },
 });
 
 const TickIcon = () => (
