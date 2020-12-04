@@ -7,7 +7,7 @@ import { Arrow } from '@interop-ui/react-arrow';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
-import type { Side, Align } from '@interop-ui/utils';
+import type { Side, Align, MeasurableElement } from '@interop-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -33,7 +33,7 @@ const POPPER_NAME = 'Popper';
 const POPPER_DEFAULT_TAG = 'div';
 
 type PopperOwnProps = {
-  anchorRef: React.RefObject<HTMLElement>;
+  anchorRef: React.RefObject<MeasurableElement>;
   side?: Side;
   sideOffset?: number;
   align?: Align;

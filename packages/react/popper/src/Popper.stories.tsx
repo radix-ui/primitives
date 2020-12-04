@@ -3,6 +3,7 @@ import { Popper, PopperContent, PopperArrow } from './Popper';
 import { Portal } from '@interop-ui/react-portal';
 import { Arrow } from '@interop-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
+import { makeRect } from '@interop-ui/utils';
 
 export default { title: 'Components/Popper' };
 
@@ -84,6 +85,28 @@ export const WithPortal = () => {
         </Portal>
       )}
     </Scrollable>
+  );
+};
+
+export const WithVirtualElement = () => {
+  const mousePosRef = React.useRef({ x: 0, y: 0 });
+  const anchorRef = React.useRef({
+    getBoundingClientRect: () =>
+      makeRect({ width: 0, height: 0 }, { x: mousePosRef.current.x, y: mousePosRef.current.y }),
+  });
+
+  React.useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      mousePosRef.current = { x: event.pageX, y: event.pageY };
+    };
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  return (
+    <Popper as={StyledRoot} anchorRef={anchorRef} align="start">
+      <PopperContent as={StyledContent} />
+    </Popper>
   );
 };
 
