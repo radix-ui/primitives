@@ -1,15 +1,9 @@
 import * as CSS from 'csstype';
-import {
-  Axis,
-  Side,
-  Align,
-  Point,
-  makeRect,
-  getOppositeSide,
-  Size,
-  getCollisions,
-  Collisions,
-} from '@interop-ui/utils';
+import { makeRect, getOppositeSide, getCollisions } from '@interop-ui/utils';
+
+import type { Axis, Side, Align, Point, Size } from '@interop-ui/utils';
+
+type Collisions = ReturnType<typeof getCollisions>;
 
 type GetPlacementDataOptions = {
   /** The rect of the anchor we are placing around */

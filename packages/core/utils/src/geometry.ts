@@ -1,35 +1,28 @@
-export const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const;
-export const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
+const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const;
+const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
 
-export type Axis = 'x' | 'y';
+type Axis = 'x' | 'y';
 
-export type Side = typeof SIDE_OPTIONS[number];
+type Side = typeof SIDE_OPTIONS[number];
 
-export type Align = typeof ALIGN_OPTIONS[number];
+type Align = typeof ALIGN_OPTIONS[number];
 
-export type Point = { x: number; y: number };
+type Point = { x: number; y: number };
 
-export type Size = { width: number; height: number };
+type Size = { width: number; height: number };
 
 /**
  * Creates a rect (`ClientRect`) based on a Size and and a position (x, y).
  * This is useful to compute the rect of an element without having to actually move it.
  */
-export function makeRect({ width, height }: Size, { x, y }: Point): ClientRect {
-  return {
-    width,
-    height,
-    top: y,
-    bottom: y + height,
-    left: x,
-    right: x + width,
-  };
+function makeRect({ width, height }: Size, { x, y }: Point): ClientRect {
+  return DOMRect.fromRect({ width, height, x, y });
 }
 
 /**
  * Gets the opposite side of a given side (ie. top => bottom, left => right, …)
  */
-export function getOppositeSide(side: Side): Side {
+function getOppositeSide(side: Side): Side {
   const oppositeSides: Record<Side, Side> = {
     top: 'bottom',
     right: 'left',
@@ -42,7 +35,7 @@ export function getOppositeSide(side: Side): Side {
 /**
  * Returns whether 2 rects are equal in values
  */
-export function rectEquals(rect1: ClientRect, rect2: ClientRect) {
+function rectEquals(rect1: ClientRect, rect2: ClientRect) {
   return (
     rect1.width === rect2.width &&
     rect1.height === rect2.height &&
@@ -53,7 +46,7 @@ export function rectEquals(rect1: ClientRect, rect2: ClientRect) {
   );
 }
 
-export function isInsideRect(rect: ClientRect, point: Point, { inclusive = true } = {}) {
+function isInsideRect(rect: ClientRect, point: Point, { inclusive = true } = {}) {
   if (inclusive) {
     return (
       point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom
@@ -65,17 +58,15 @@ export function isInsideRect(rect: ClientRect, point: Point, { inclusive = true 
   }
 }
 
-export type Collisions = Record<Side, boolean>;
-
 /**
  * Gets collisions for each side of a rect (top, right, bottom, left)
  */
-export function getCollisions(
+function getCollisions(
   /** The rect to test collisions against */
   rect: ClientRect,
   /** An optional tolerance if you want the collisions to trigger a bit before/after */
   tolerance = 0
-): Collisions {
+) {
   return {
     top: rect.top < tolerance,
     right: rect.right > window.innerWidth - tolerance,
@@ -83,3 +74,14 @@ export function getCollisions(
     left: rect.left < tolerance,
   };
 }
+
+export {
+  SIDE_OPTIONS,
+  ALIGN_OPTIONS,
+  makeRect,
+  getOppositeSide,
+  rectEquals,
+  isInsideRect,
+  getCollisions,
+};
+export type { Axis, Side, Align, Point, Size };
