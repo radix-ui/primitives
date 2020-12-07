@@ -1,0 +1,26 @@
+diff --git a/node_modules/@parcel/core/lib/serializer.js b/node_modules/@parcel/core/lib/serializer.js
+index 0ebf725..d8b5c8f 100644
+--- a/node_modules/@parcel/core/lib/serializer.js
++++ b/node_modules/@parcel/core/lib/serializer.js
+@@ -19,7 +19,7 @@ const ctorToName = new Map();
+ 
+ function registerSerializableClass(name, ctor) {
+   if (nameToCtor.has(name)) {
+-    throw new Error('Name already registered with serializer');
++    // throw new Error('Name already registered with serializer');
+   }
+ 
+   if (ctorToName.has(ctor)) {
+diff --git a/node_modules/@parcel/core/src/serializer.js b/node_modules/@parcel/core/src/serializer.js
+index 994abf6..0427908 100644
+--- a/node_modules/@parcel/core/src/serializer.js
++++ b/node_modules/@parcel/core/src/serializer.js
+@@ -6,7 +6,7 @@ const ctorToName: Map<Class<*>, string> = new Map();
+ 
+ export function registerSerializableClass(name: string, ctor: Class<*>) {
+   if (nameToCtor.has(name)) {
+-    throw new Error('Name already registered with serializer');
++    // throw new Error('Name already registered with serializer');
+   }
+ 
+   if (ctorToName.has(ctor)) {
