@@ -3,7 +3,7 @@ import { getPlacementData } from '@interop-ui/popper';
 import { useSize } from '@interop-ui/react-use-size';
 import { createContext, useRect, useComposedRefs } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { Arrow } from '@interop-ui/react-arrow';
+import { Arrow as ArrowPrimitive } from '@interop-ui/react-arrow';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
@@ -135,43 +135,42 @@ type PopperArrowOwnProps = {
   offset?: number;
 };
 
-const PopperArrow = forwardRefWithAs<typeof Arrow, PopperArrowOwnProps>(function PopperArrow(
-  props,
-  forwardedRef
-) {
-  const { offset, ...arrowProps } = props;
-  const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
+const PopperArrow = forwardRefWithAs<typeof ArrowPrimitive, PopperArrowOwnProps>(
+  function PopperArrow(props, forwardedRef) {
+    const { offset, ...arrowProps } = props;
+    const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
 
-  // send the Arrow's offset up to Popper
-  React.useEffect(() => setArrowOffset(offset), [setArrowOffset, offset]);
+    // send the Arrow's offset up to Popper
+    React.useEffect(() => setArrowOffset(offset), [setArrowOffset, offset]);
 
-  return (
-    <span style={{ ...arrowStyles, pointerEvents: 'none' }}>
-      <span
-        // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
-        // doesn't report size as we'd expect on SVG elements.
-        // it reports their bounding box which is effectively the largest path inside the SVG.
-        ref={arrowRef}
-        style={{
-          display: 'inline-block',
-          verticalAlign: 'top',
-          pointerEvents: 'auto',
-        }}
-      >
-        <Arrow
-          {...getPartDataAttrObj(ARROW_NAME)}
-          {...arrowProps}
-          ref={forwardedRef}
+    return (
+      <span style={{ ...arrowStyles, pointerEvents: 'none' }}>
+        <span
+          // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
+          // doesn't report size as we'd expect on SVG elements.
+          // it reports their bounding box which is effectively the largest path inside the SVG.
+          ref={arrowRef}
           style={{
-            ...arrowProps.style,
-            // ensures the element can be measured correctly (mostly for if SVG)
-            display: 'block',
+            display: 'inline-block',
+            verticalAlign: 'top',
+            pointerEvents: 'auto',
           }}
-        />
+        >
+          <ArrowPrimitive
+            {...getPartDataAttrObj(ARROW_NAME)}
+            {...arrowProps}
+            ref={forwardedRef}
+            style={{
+              ...arrowProps.style,
+              // ensures the element can be measured correctly (mostly for if SVG)
+              display: 'block',
+            }}
+          />
+        </span>
       </span>
-    </span>
-  );
-});
+    );
+  }
+);
 
 PopperArrow.displayName = ARROW_NAME;
 
@@ -179,6 +178,6 @@ PopperArrow.displayName = ARROW_NAME;
 
 const Root = Popper;
 const Content = PopperContent;
-const ArrowPart = PopperArrow;
+const Arrow = PopperArrow;
 
-export { Popper, PopperContent, PopperArrow, Root, Content, ArrowPart as Arrow };
+export { Popper, PopperContent, PopperArrow, Root, Content, Arrow };
