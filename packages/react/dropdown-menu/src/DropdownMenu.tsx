@@ -19,7 +19,7 @@ const DROPDOWN_MENU_NAME = 'DropdownMenu';
 
 type DropdownMenuContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
-  menuId: string;
+  id: string;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 };
@@ -40,15 +40,14 @@ const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
   const { children, id: idProp, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const generatedId = useId();
-  const id = idProp || `dropdown-${generatedId}`;
-  const menuId = `${id}-menu`;
+  const id = idProp || `dropdown-menu-${generatedId}`;
   const [isOpen = false, setIsOpen] = useControlledState({
     prop: isOpenProp,
     defaultProp: defaultIsOpen,
     onChange: onIsOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, menuId, isOpen, setIsOpen }), [
-    menuId,
+  const context = React.useMemo(() => ({ triggerRef, id, isOpen, setIsOpen }), [
+    id,
     isOpen,
     setIsOpen,
   ]);
@@ -81,7 +80,7 @@ const DropdownMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props,
       type="button"
       aria-haspopup="menu"
       aria-expanded={context.isOpen ? true : undefined}
-      aria-controls={context.isOpen ? context.menuId : undefined}
+      aria-controls={context.isOpen ? context.id : undefined}
       {...triggerProps}
       onMouseDown={composeEventHandlers(triggerProps.onMouseDown, (event) => {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
@@ -192,7 +191,7 @@ const DropdownMenuItems = forwardRefWithAs<typeof MenuPrimitive.Items>((props, f
       {...getPartDataAttrObj(ITEMS_NAME)}
       {...props}
       ref={forwardedRef}
-      id={context.menuId}
+      id={context.id}
     />
   );
 });
