@@ -44,32 +44,30 @@ export const Styled = () => {
 };
 
 export const WithLabels = () => (
-  <div style={{ position: 'relative' }}>
-    <MenuPopper>
-      <Menu as={StyledRoot}>
-        {foodGroups.map((foodGroup, index) => (
-          <MenuGroup key={index}>
-            {foodGroup.label && (
-              <MenuLabel as={StyledLabel} key={foodGroup.label}>
-                {foodGroup.label}
-              </MenuLabel>
-            )}
-            {foodGroup.foods.map((food) => (
-              <MenuItem
-                key={food.value}
-                as={StyledItem}
-                disabled={food.disabled}
-                onSelect={() => window.alert(food.label)}
-              >
-                {food.label}
-              </MenuItem>
-            ))}
-            {index < foodGroups.length - 1 && <MenuSeparator as={StyledSeparator} />}
-          </MenuGroup>
-        ))}
-      </Menu>
-    </MenuPopper>
-  </div>
+  <MenuPopper>
+    <Menu as={StyledRoot}>
+      {foodGroups.map((foodGroup, index) => (
+        <MenuGroup key={index}>
+          {foodGroup.label && (
+            <MenuLabel as={StyledLabel} key={foodGroup.label}>
+              {foodGroup.label}
+            </MenuLabel>
+          )}
+          {foodGroup.foods.map((food) => (
+            <MenuItem
+              key={food.value}
+              as={StyledItem}
+              disabled={food.disabled}
+              onSelect={() => window.alert(food.label)}
+            >
+              {food.label}
+            </MenuItem>
+          ))}
+          {index < foodGroups.length - 1 && <MenuSeparator as={StyledSeparator} />}
+        </MenuGroup>
+      ))}
+    </Menu>
+  </MenuPopper>
 );
 
 const suits = [
@@ -110,39 +108,35 @@ export const Typeahead = () => (
       <div>
         <h2>Complex children</h2>
         <p>(relying on `.textContent` — default)</p>
-        <div style={{ position: 'relative' }}>
-          <MenuPopper>
-            <Menu as={StyledRoot}>
-              {suits.map((suit) => (
-                <MenuItem key={suit.emoji} as={StyledItem}>
-                  {suit.label}
-                  <span role="img" aria-label={suit.label}>
-                    {suit.emoji}
-                  </span>
-                </MenuItem>
-              ))}
-            </Menu>
-          </MenuPopper>
-        </div>
+        <MenuPopper>
+          <Menu as={StyledRoot}>
+            {suits.map((suit) => (
+              <MenuItem key={suit.emoji} as={StyledItem}>
+                {suit.label}
+                <span role="img" aria-label={suit.label}>
+                  {suit.emoji}
+                </span>
+              </MenuItem>
+            ))}
+          </Menu>
+        </MenuPopper>
       </div>
 
       <div>
         <h2>Complex children</h2>
         <p>(with explicit `textValue` prop)</p>
-        <div style={{ position: 'relative' }}>
-          <MenuPopper>
-            <Menu as={StyledRoot}>
-              {suits.map((suit) => (
-                <MenuItem key={suit.emoji} as={StyledItem} textValue={suit.label}>
-                  <span role="img" aria-label={suit.label}>
-                    {suit.emoji}
-                  </span>
-                  {suit.label}
-                </MenuItem>
-              ))}
-            </Menu>
-          </MenuPopper>
-        </div>
+        <MenuPopper>
+          <Menu as={StyledRoot}>
+            {suits.map((suit) => (
+              <MenuItem key={suit.emoji} as={StyledItem} textValue={suit.label}>
+                <span role="img" aria-label={suit.label}>
+                  {suit.emoji}
+                </span>
+                {suit.label}
+              </MenuItem>
+            ))}
+          </Menu>
+        </MenuPopper>
       </div>
     </div>
   </>
