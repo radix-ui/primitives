@@ -137,7 +137,7 @@ const DropdownMenuPopper = forwardRefWithAs<
       style={{
         ...popperProps.style,
         // re-namespace exposed popper custom property
-        ['--interop-ui-dropdown-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
+        ['--interop-ui-dropdown-menu-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
       }}
       anchorRef={anchorRef || context.triggerRef}
       trapFocus
