@@ -18,30 +18,28 @@ import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 
 export default { title: 'Components/Menu', excludeStories: ['styledComponents'] };
 
-export const Styled = () => {
-  return (
-    <MenuPopper>
-      <Menu as={StyledRoot}>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('undo')}>
-          Undo
-        </MenuItem>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('redo')}>
-          Redo
-        </MenuItem>
-        <MenuSeparator as={StyledSeparator} />
-        <MenuItem as={StyledItem} disabled onSelect={() => window.alert('cut')}>
-          Cut
-        </MenuItem>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('copy')}>
-          Copy
-        </MenuItem>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('paste')}>
-          Paste
-        </MenuItem>
-      </Menu>
-    </MenuPopper>
-  );
-};
+export const Styled = () => (
+  <MenuPopper>
+    <Menu as={StyledRoot}>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('undo')}>
+        Undo
+      </MenuItem>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('redo')}>
+        Redo
+      </MenuItem>
+      <MenuSeparator as={StyledSeparator} />
+      <MenuItem as={StyledItem} disabled onSelect={() => window.alert('cut')}>
+        Cut
+      </MenuItem>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('copy')}>
+        Copy
+      </MenuItem>
+      <MenuItem as={StyledItem} onSelect={() => window.alert('paste')}>
+        Paste
+      </MenuItem>
+    </Menu>
+  </MenuPopper>
+);
 
 export const WithLabels = () => (
   <MenuPopper>
