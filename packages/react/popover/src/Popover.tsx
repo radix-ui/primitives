@@ -9,7 +9,7 @@ import {
   composeRefs,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import * as PopperPrimitive from '@interop-ui/react-popper';
+import * as PopperP from '@interop-ui/react-popper';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
@@ -166,7 +166,7 @@ type PopoverPopperOwnProps = {
    */
   shouldPortal?: boolean;
 
-  anchorRef?: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
+  anchorRef?: React.ComponentProps<typeof PopperP.Root>['anchorRef'];
 };
 
 const PopoverPopper = forwardRefWithAs<typeof PopoverPopperImpl>((props, forwardedRef) => {
@@ -174,7 +174,7 @@ const PopoverPopper = forwardRefWithAs<typeof PopoverPopperImpl>((props, forward
   return context.isOpen ? <PopoverPopperImpl ref={forwardedRef} {...props} /> : null;
 });
 
-const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverPopperOwnProps>(
+const PopoverPopperImpl = forwardRefWithAs<typeof PopperP.Root, PopoverPopperOwnProps>(
   (props, forwardedRef) => {
     const {
       children,
@@ -252,7 +252,7 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
                 onDismiss={() => context.setIsOpen(false)}
               >
                 {(dismissableLayerProps) => (
-                  <PopperPrimitive.Root
+                  <PopperP.Root
                     {...getPartDataAttrObj(POPPER_NAME)}
                     role="dialog"
                     aria-modal
@@ -293,7 +293,7 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
                     )}
                   >
                     {children}
-                  </PopperPrimitive.Root>
+                  </PopperP.Root>
                 )}
               </DismissableLayer>
             )}
@@ -312,10 +312,8 @@ PopoverPopper.displayName = POPPER_NAME;
 
 const CONTENT_NAME = 'PopoverContent';
 
-const PopoverContent = forwardRefWithAs<typeof PopperPrimitive.Content>((props, forwardedRef) => {
-  return (
-    <PopperPrimitive.Content {...getPartDataAttrObj(CONTENT_NAME)} {...props} ref={forwardedRef} />
-  );
+const PopoverContent = forwardRefWithAs<typeof PopperP.Content>((props, forwardedRef) => {
+  return <PopperP.Content {...getPartDataAttrObj(CONTENT_NAME)} {...props} ref={forwardedRef} />;
 });
 
 PopoverContent.displayName = CONTENT_NAME;
@@ -350,10 +348,8 @@ PopoverClose.displayName = CLOSE_NAME;
 
 const ARROW_NAME = 'PopoverArrow';
 
-const PopoverArrow = forwardRefWithAs<typeof PopperPrimitive.Arrow>((props, forwardedRef) => {
-  return (
-    <PopperPrimitive.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />
-  );
+const PopoverArrow = forwardRefWithAs<typeof PopperP.Arrow>((props, forwardedRef) => {
+  return <PopperP.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
 });
 
 PopoverArrow.displayName = ARROW_NAME;

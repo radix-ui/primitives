@@ -3,7 +3,7 @@ import { getPlacementData } from '@interop-ui/popper';
 import { useSize } from '@interop-ui/react-use-size';
 import { createContext, useRect, useComposedRefs } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { Arrow as ArrowPrimitive } from '@interop-ui/react-arrow';
+import * as ArrowP from '@interop-ui/react-arrow';
 import { useDebugContext } from '@interop-ui/react-debug-context';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
@@ -135,8 +135,8 @@ type PopperArrowOwnProps = {
   offset?: number;
 };
 
-const PopperArrow = forwardRefWithAs<typeof ArrowPrimitive, PopperArrowOwnProps>(
-  function PopperArrow(props, forwardedRef) {
+const PopperArrow = forwardRefWithAs<typeof ArrowP.Root, PopperArrowOwnProps>(
+  (props, forwardedRef) => {
     const { offset, ...arrowProps } = props;
     const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
 
@@ -156,7 +156,7 @@ const PopperArrow = forwardRefWithAs<typeof ArrowPrimitive, PopperArrowOwnProps>
             pointerEvents: 'auto',
           }}
         >
-          <ArrowPrimitive
+          <ArrowP.Root
             {...getPartDataAttrObj(ARROW_NAME)}
             {...arrowProps}
             ref={forwardedRef}

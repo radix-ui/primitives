@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  MenuPopper as MenuPrimitivePopper,
   Menu,
   MenuGroup,
   MenuLabel,
@@ -12,53 +13,63 @@ import {
 } from './Menu';
 import { styled } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
+import { makeRect } from '@interop-ui/utils';
+import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 
-export default { title: 'Components/Menu' };
+export default { title: 'Components/Menu', excludeStories: ['styledComponents'] };
 
-export const Styled = () => (
-  <Menu as={StyledRoot}>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('undo')}>
-      Undo
-    </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('redo')}>
-      Redo
-    </MenuItem>
-    <MenuSeparator as={StyledSeparator} />
-    <MenuItem as={StyledItem} disabled onSelect={() => window.alert('cut')}>
-      Cut
-    </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('copy')}>
-      Copy
-    </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('paste')}>
-      Paste
-    </MenuItem>
-  </Menu>
-);
+export const Styled = () => {
+  return (
+    <MenuPopper>
+      <Menu as={StyledRoot}>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('undo')}>
+          Undo
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('redo')}>
+          Redo
+        </MenuItem>
+        <MenuSeparator as={StyledSeparator} />
+        <MenuItem as={StyledItem} disabled onSelect={() => window.alert('cut')}>
+          Cut
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('copy')}>
+          Copy
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('paste')}>
+          Paste
+        </MenuItem>
+      </Menu>
+    </MenuPopper>
+  );
+};
 
 export const WithLabels = () => (
-  <Menu as={StyledRoot}>
-    {foodGroups.map((foodGroup, index) => (
-      <MenuGroup key={index}>
-        {foodGroup.label && (
-          <MenuLabel as={StyledLabel} key={foodGroup.label}>
-            {foodGroup.label}
-          </MenuLabel>
-        )}
-        {foodGroup.foods.map((food) => (
-          <MenuItem
-            key={food.value}
-            as={StyledItem}
-            disabled={food.disabled}
-            onSelect={() => window.alert(food.label)}
-          >
-            {food.label}
-          </MenuItem>
+  <div style={{ position: 'relative' }}>
+    <MenuPopper>
+      <Menu as={StyledRoot}>
+        {foodGroups.map((foodGroup, index) => (
+          <MenuGroup key={index}>
+            {foodGroup.label && (
+              <MenuLabel as={StyledLabel} key={foodGroup.label}>
+                {foodGroup.label}
+              </MenuLabel>
+            )}
+            {foodGroup.foods.map((food) => (
+              <MenuItem
+                key={food.value}
+                as={StyledItem}
+                disabled={food.disabled}
+                onSelect={() => window.alert(food.label)}
+              >
+                {food.label}
+              </MenuItem>
+            ))}
+            {index < foodGroups.length - 1 && <MenuSeparator as={StyledSeparator} />}
+          </MenuGroup>
         ))}
-        {index < foodGroups.length - 1 && <MenuSeparator as={StyledSeparator} />}
-      </MenuGroup>
-    ))}
-  </Menu>
+      </Menu>
+    </MenuPopper>
+  </div>
 );
 
 const suits = [
@@ -75,8 +86,7 @@ export const Typeahead = () => (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 100 }}>
       <div>
         <h2>Text labels</h2>
-        <WithLabels />
-        <div style={{ marginTop: 20 }}>
+        <div style={{ marginBottom: 20 }}>
           <p>
             For comparison
             <br />
@@ -94,36 +104,45 @@ export const Typeahead = () => (
             ))}
           </select>
         </div>
+        <WithLabels />
       </div>
 
       <div>
         <h2>Complex children</h2>
         <p>(relying on `.textContent` — default)</p>
-        <Menu as={StyledRoot}>
-          {suits.map((suit) => (
-            <MenuItem key={suit.emoji} as={StyledItem}>
-              {suit.label}
-              <span role="img" aria-label={suit.label}>
-                {suit.emoji}
-              </span>
-            </MenuItem>
-          ))}
-        </Menu>
+        <div style={{ position: 'relative' }}>
+          <MenuPopper>
+            <Menu as={StyledRoot}>
+              {suits.map((suit) => (
+                <MenuItem key={suit.emoji} as={StyledItem}>
+                  {suit.label}
+                  <span role="img" aria-label={suit.label}>
+                    {suit.emoji}
+                  </span>
+                </MenuItem>
+              ))}
+            </Menu>
+          </MenuPopper>
+        </div>
       </div>
 
       <div>
         <h2>Complex children</h2>
         <p>(with explicit `textValue` prop)</p>
-        <Menu as={StyledRoot}>
-          {suits.map((suit) => (
-            <MenuItem key={suit.emoji} as={StyledItem} textValue={suit.label}>
-              <span role="img" aria-label={suit.label}>
-                {suit.emoji}
-              </span>
-              {suit.label}
-            </MenuItem>
-          ))}
-        </Menu>
+        <div style={{ position: 'relative' }}>
+          <MenuPopper>
+            <Menu as={StyledRoot}>
+              {suits.map((suit) => (
+                <MenuItem key={suit.emoji} as={StyledItem} textValue={suit.label}>
+                  <span role="img" aria-label={suit.label}>
+                    {suit.emoji}
+                  </span>
+                  {suit.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </MenuPopper>
+        </div>
       </div>
     </div>
   </>
@@ -138,32 +157,34 @@ export const CheckboxItems = () => {
   ];
 
   return (
-    <Menu as={StyledRoot}>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
-        Show fonts
-      </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('bigger')}>
-        Bigger
-      </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
-        Smaller
-      </MenuItem>
-      <MenuSeparator as={StyledSeparator} />
-      {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
-        <MenuCheckboxItem
-          key={label}
-          as={StyledItem}
-          checked={checked}
-          onCheckedChange={setChecked}
-          disabled={disabled}
-        >
-          {label}
-          <MenuItemIndicator>
-            <TickIcon />
-          </MenuItemIndicator>
-        </MenuCheckboxItem>
-      ))}
-    </Menu>
+    <MenuPopper>
+      <Menu as={StyledRoot}>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
+          Show fonts
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('bigger')}>
+          Bigger
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+          Smaller
+        </MenuItem>
+        <MenuSeparator as={StyledSeparator} />
+        {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+          <MenuCheckboxItem
+            key={label}
+            as={StyledItem}
+            checked={checked}
+            onCheckedChange={setChecked}
+            disabled={disabled}
+          >
+            {label}
+            <MenuItemIndicator>
+              <TickIcon />
+            </MenuItemIndicator>
+          </MenuCheckboxItem>
+        ))}
+      </Menu>
+    </MenuPopper>
   );
 };
 
@@ -172,30 +193,65 @@ export const RadioItems = () => {
   const [file, setFile] = React.useState(files[1]);
 
   return (
-    <Menu as={StyledRoot}>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
-        Minimize window
-      </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('zoom')}>
-        Zoom
-      </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
-        Smaller
-      </MenuItem>
-      <MenuSeparator as={StyledSeparator} />
-      <MenuRadioGroup value={file} onValueChange={setFile}>
-        {files.map((file) => (
-          <MenuRadioItem key={file} as={StyledItem} value={file}>
-            {file}
-            <MenuItemIndicator>
-              <TickIcon />
-            </MenuItemIndicator>
-          </MenuRadioItem>
-        ))}
-      </MenuRadioGroup>
-    </Menu>
+    <MenuPopper>
+      <Menu as={StyledRoot}>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
+          Minimize window
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('zoom')}>
+          Zoom
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+          Smaller
+        </MenuItem>
+        <MenuSeparator as={StyledSeparator} />
+        <MenuRadioGroup value={file} onValueChange={setFile}>
+          {files.map((file) => (
+            <MenuRadioItem key={file} as={StyledItem} value={file}>
+              {file}
+              <MenuItemIndicator>
+                <TickIcon />
+              </MenuItemIndicator>
+            </MenuRadioItem>
+          ))}
+        </MenuRadioGroup>
+      </Menu>
+    </MenuPopper>
   );
 };
+
+type MenuPopperOwnProps = {
+  isOpen?: never;
+  anchorRef?: never;
+  shouldPortal?: never;
+  trapFocus?: never;
+  onOpenAutoFocus?: never;
+  onCloseAutoFocus?: never;
+  disableOutsidePointerEvents?: never;
+  disableOutsideScroll?: never;
+};
+
+const MenuPopper = forwardRefWithAs<typeof MenuPrimitivePopper, MenuPopperOwnProps>((props) => (
+  <div style={{ position: 'relative' }}>
+    <MenuPrimitivePopper
+      isOpen
+      anchorRef={useStaticElementRef()}
+      shouldPortal={false}
+      trapFocus={false}
+      onOpenAutoFocus={(event) => event.preventDefault()}
+      onCloseAutoFocus={(event) => event.preventDefault()}
+      disableOutsidePointerEvents={false}
+      disableOutsideScroll={false}
+      {...props}
+    />
+  </div>
+));
+
+function useStaticElementRef() {
+  return React.useRef({
+    getBoundingClientRect: () => makeRect({ width: 0, height: 0 }, { x: 0, y: 0 }),
+  });
+}
 
 const StyledRoot = styled('div', {
   display: 'inline-block',
@@ -267,3 +323,11 @@ const TickIcon = () => (
     <path d="M2 20 L12 28 30 4" />
   </svg>
 );
+
+export const styledComponents = {
+  StyledRoot,
+  StyledLabel,
+  StyledItem,
+  StyledSeparator,
+  TickIcon,
+};

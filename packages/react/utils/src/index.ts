@@ -1,5 +1,6 @@
 export * from './composeEventHandlers';
 export * from './createContext';
+export * from './extendComponent';
 export * from './useCallbackRef';
 export * from './useComposedRefs';
 export * from './useConstant';

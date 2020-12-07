@@ -11,7 +11,7 @@ import {
   useLayoutEffect,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import * as PopperPrimitive from '@interop-ui/react-popper';
+import * as PopperP from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
 import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
@@ -203,7 +203,7 @@ type TooltipPopperOwnProps = {
    */
   shouldPortal?: boolean;
 
-  anchorRef?: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
+  anchorRef?: React.ComponentProps<typeof PopperP.Root>['anchorRef'];
 };
 
 const TooltipPopper = forwardRefWithAs<typeof TooltipPopperImpl>((props, forwardedRef) => {
@@ -211,7 +211,7 @@ const TooltipPopper = forwardRefWithAs<typeof TooltipPopperImpl>((props, forward
   return context.isOpen ? <TooltipPopperImpl ref={forwardedRef} {...props} /> : null;
 });
 
-const TooltipPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipPopperOwnProps>(
+const TooltipPopperImpl = forwardRefWithAs<typeof PopperP.Root, TooltipPopperOwnProps>(
   (props, forwardedRef) => {
     const { children, anchorRef, shouldPortal = true, ...popperProps } = props;
     const context = useTooltipContext(POPPER_NAME);
@@ -220,7 +220,7 @@ const TooltipPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipP
     return (
       <PortalWrapper>
         <CheckTriggerMoved />
-        <PopperPrimitive.Root
+        <PopperP.Root
           {...getPartDataAttrObj(POPPER_NAME)}
           {...popperProps}
           data-state={context.stateAttribute}
@@ -233,7 +233,7 @@ const TooltipPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipP
           }}
         >
           {children}
-        </PopperPrimitive.Root>
+        </PopperP.Root>
       </PortalWrapper>
     );
   }
@@ -254,22 +254,18 @@ type TooltipContentOwnProps = {
   'aria-label'?: string;
 };
 
-const TooltipContent = forwardRefWithAs<typeof PopperPrimitive.Content, TooltipContentOwnProps>(
+const TooltipContent = forwardRefWithAs<typeof PopperP.Content, TooltipContentOwnProps>(
   (props, forwardedRef) => {
     const { children, 'aria-label': ariaLabel, ...contentProps } = props;
     const context = useTooltipContext(CONTENT_NAME);
 
     return (
-      <PopperPrimitive.Content
-        {...getPartDataAttrObj(CONTENT_NAME)}
-        {...contentProps}
-        ref={forwardedRef}
-      >
+      <PopperP.Content {...getPartDataAttrObj(CONTENT_NAME)} {...contentProps} ref={forwardedRef}>
         {children}
         <VisuallyHidden id={context.id} role="tooltip">
           {ariaLabel || children}
         </VisuallyHidden>
-      </PopperPrimitive.Content>
+      </PopperP.Content>
     );
   }
 );
@@ -282,10 +278,8 @@ TooltipContent.displayName = CONTENT_NAME;
 
 const ARROW_NAME = 'TooltipArrow';
 
-const TooltipArrow = forwardRefWithAs<typeof PopperPrimitive.Arrow>((props, forwardedRef) => {
-  return (
-    <PopperPrimitive.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />
-  );
+const TooltipArrow = forwardRefWithAs<typeof PopperP.Arrow>((props, forwardedRef) => {
+  return <PopperP.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />;
 });
 
 TooltipArrow.displayName = ARROW_NAME;
