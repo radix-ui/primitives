@@ -1,5 +1,5 @@
 releases:
-  "@interop-ui/react-dropdown": prerelease
+  "@interop-ui/react-dropdown-menu": prerelease
   "@interop-ui/react-menu": prerelease
   "@interop-ui/react-utils": prerelease
 
