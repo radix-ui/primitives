@@ -3,6 +3,7 @@ import {
   composeEventHandlers,
   composeRefs,
   createContext,
+  extendComponent,
   useCallbackRef,
   useComposedRefs,
 } from '@interop-ui/react-utils';
@@ -26,19 +27,43 @@ const LAST_KEYS = ['ArrowUp', 'PageDown', 'End'];
 const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 /* -------------------------------------------------------------------------------------------------
+ * Menu
+ * -----------------------------------------------------------------------------------------------*/
+
+const MENU_NAME = 'Menu';
+
+type MenuContextValue = MenuOwnProps;
+const [MenuContext, useMenuContext] = createContext<MenuContextValue>(
+  MENU_NAME + 'Context',
+  MENU_NAME
+);
+
+type MenuOwnProps = {
+  isOpen?: boolean;
+  onIsOpenChange?: (isOpen: boolean) => void;
+};
+
+const Menu: React.FC<MenuOwnProps> = (props) => {
+  const { children, isOpen, onIsOpenChange } = props;
+  const handleIsOpenChange = useCallbackRef(onIsOpenChange);
+  const context = React.useMemo(() => ({ isOpen, onIsOpenChange: handleIsOpenChange }), [
+    handleIsOpenChange,
+    isOpen,
+  ]);
+
+  return <MenuContext.Provider value={context}>{children}</MenuContext.Provider>;
+};
+
+Menu.displayName = MENU_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * MenuPopper
  * -----------------------------------------------------------------------------------------------*/
 
 const POPPER_NAME = 'MenuPopper';
 
-const MenuPopperContext = React.createContext<MenuPopperOwnProps['onIsOpenChange']>(undefined);
-
 type MenuPopperOwnProps = {
   anchorRef: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
-
-  isOpen?: boolean;
-
-  onIsOpenChange?: (isOpen: boolean) => void;
 
   /**
    * Whether focus should be trapped within the `Menu`
@@ -107,14 +132,13 @@ type MenuPopperOwnProps = {
 };
 
 const MenuPopper = forwardRefWithAs<typeof MenuPopperImpl>((props, forwardedRef) => {
-  const { isOpen, ...popperProps } = props;
-  return isOpen ? <MenuPopperImpl ref={forwardedRef} {...popperProps} /> : null;
+  const context = useMenuContext(POPPER_NAME);
+  return context.isOpen ? <MenuPopperImpl ref={forwardedRef} {...props} /> : null;
 });
 
 const MenuPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuPopperOwnProps>(
   (props, forwardedRef) => {
     const {
-      onIsOpenChange,
       children,
       anchorRef,
       trapFocus,
@@ -131,7 +155,6 @@ const MenuPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuPopperO
       ...popperProps
     } = props;
 
-    const handleIsOpenChange = useCallbackRef(onIsOpenChange);
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
 
@@ -196,9 +219,7 @@ const MenuPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuPopperO
                       { checkForDefaultPrevented: false }
                     )}
                   >
-                    <MenuPopperContext.Provider value={handleIsOpenChange}>
-                      {children}
-                    </MenuPopperContext.Provider>
+                    {children}
                   </PopperPrimitive.Root>
                 )}
               </DismissableLayer>
@@ -213,23 +234,23 @@ const MenuPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuPopperO
 MenuPopper.displayName = POPPER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * Menu
+ * MenuItems
  * -----------------------------------------------------------------------------------------------*/
 
-const MENU_NAME = 'Menu';
+const ITEMS_NAME = 'MenuItems';
 
-type MenuContextValue = {
+type MenuItemsContextValue = {
   menuRef: React.RefObject<HTMLDivElement>;
   setItemsReachable: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const [MenuContext, useMenuContext] = createContext<MenuContextValue>(
-  MENU_NAME + 'Context',
-  MENU_NAME
+const [MenuItemsContext, useMenuItemsContext] = createContext<MenuItemsContextValue>(
+  ITEMS_NAME + 'Context',
+  ITEMS_NAME
 );
 
-type MenuOwnProps = { loop?: boolean };
+type MenuItemsOwnProps = { loop?: boolean };
 
-const Menu = forwardRefWithAs<typeof PopperPrimitive.Content, MenuOwnProps>(
+const MenuItems = forwardRefWithAs<typeof PopperPrimitive.Content, MenuItemsOwnProps>(
   (props, forwardedRef) => {
     const { children, loop = false, ...menuProps } = props;
     const menuRef = React.useRef<HTMLDivElement>(null);
@@ -277,16 +298,18 @@ const Menu = forwardRefWithAs<typeof PopperPrimitive.Content, MenuOwnProps>(
           orientation="vertical"
           loop={loop}
         >
-          <MenuContext.Provider value={React.useMemo(() => ({ menuRef, setItemsReachable }), [])}>
+          <MenuItemsContext.Provider
+            value={React.useMemo(() => ({ menuRef, setItemsReachable }), [])}
+          >
             {children}
-          </MenuContext.Provider>
+          </MenuItemsContext.Provider>
         </RovingFocusGroup>
       </PopperPrimitive.Content>
     );
   }
 );
 
-Menu.displayName = MENU_NAME;
+MenuItems.displayName = ITEMS_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuGroup
@@ -339,8 +362,8 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
     const { as: Comp = ITEM_DEFAULT_TAG, disabled, textValue, onSelect, ...itemProps } = props;
     const menuItemRef = React.useRef<HTMLDivElement>(null);
     const composedRef = useComposedRefs(forwardedRef, menuItemRef);
-    const context = useMenuContext(ITEM_NAME);
-    const onIsOpenChange = React.useContext(MenuPopperContext);
+    const menuContext = useMenuContext(ITEM_NAME);
+    const itemsContext = useMenuItemsContext(ITEM_NAME);
     const rovingFocusProps = useRovingFocus({ disabled });
 
     // get the item's `.textContent` as default strategy for typeahead `textValue`
@@ -363,7 +386,7 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
         const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
         menuItem.dispatchEvent(itemSelectEvent);
         if (itemSelectEvent.defaultPrevented) return;
-        onIsOpenChange?.(false);
+        menuContext.onIsOpenChange?.(false);
       }
     };
 
@@ -419,11 +442,11 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
         })}
         // make items unreachable when an item is blurred
         onBlur={composeEventHandlers(itemProps.onBlur, (event) => {
-          context.setItemsReachable(false);
+          itemsContext.setItemsReachable(false);
         })}
         // focus the menu if the mouse leaves an item
         onMouseLeave={composeEventHandlers(itemProps.onMouseLeave, (event) => {
-          context.menuRef.current?.focus();
+          itemsContext.menuRef.current?.focus();
         })}
       />
     );
@@ -582,6 +605,12 @@ const MenuSeparator = forwardRefWithAs<typeof SEPARATOR_DEFAULT_TAG>((props, for
 
 MenuSeparator.displayName = SEPARATOR_NAME;
 
+/* -------------------------------------------------------------------------------------------------
+ * MenuArrow
+ * -----------------------------------------------------------------------------------------------*/
+
+const MenuArrow = extendComponent(PopperPrimitive.Arrow, 'MenuArrow');
+
 /* -----------------------------------------------------------------------------------------------*/
 
 function isItemOrInsideItem(target: EventTarget) {
@@ -593,8 +622,9 @@ function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
 
-const Popper = MenuPopper;
 const Root = Menu;
+const Popper = MenuPopper;
+const Items = MenuItems;
 const Group = MenuGroup;
 const Label = MenuLabel;
 const Item = MenuItem;
@@ -603,10 +633,12 @@ const RadioGroup = MenuRadioGroup;
 const RadioItem = MenuRadioItem;
 const ItemIndicator = MenuItemIndicator;
 const Separator = MenuSeparator;
+const Arrow = MenuArrow;
 
 export {
-  MenuPopper,
   Menu,
+  MenuPopper,
+  MenuItems,
   MenuGroup,
   MenuLabel,
   MenuItem,
@@ -615,9 +647,11 @@ export {
   MenuRadioItem,
   MenuItemIndicator,
   MenuSeparator,
+  MenuArrow,
   //
-  Popper,
   Root,
+  Popper,
+  Items,
   Group,
   Label,
   Item,
@@ -626,4 +660,5 @@ export {
   RadioItem,
   ItemIndicator,
   Separator,
+  Arrow,
 };

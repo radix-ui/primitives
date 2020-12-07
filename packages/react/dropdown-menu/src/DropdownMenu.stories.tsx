@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownPopper,
   DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuPopper,
+  DropdownMenuItems,
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuItem,
@@ -12,22 +12,29 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuItemIndicator,
   DropdownMenuSeparator,
-  DropdownArrow,
-} from './Dropdown';
+  DropdownMenuArrow,
+} from './DropdownMenu';
 import { styled } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 import { styledComponents } from '../../menu/src/Menu.stories';
 
-const { StyledRoot, StyledItem, StyledLabel, StyledSeparator, TickIcon } = styledComponents;
+const {
+  StyledPopper,
+  StyledItems,
+  StyledItem,
+  StyledLabel,
+  StyledSeparator,
+  TickIcon,
+} = styledComponents;
 
-export default { title: 'Components/Dropdown' };
+export default { title: 'Components/DropdownMenu' };
 
 export const Styled = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}>
-    <Dropdown>
-      <DropdownTrigger as={StyledTrigger}>Open</DropdownTrigger>
-      <DropdownPopper sideOffset={5}>
-        <DropdownMenu as={StyledRoot}>
+    <DropdownMenu>
+      <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
+      <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
+        <DropdownMenuItems as={StyledItems}>
           <DropdownMenuItem as={StyledItem} onSelect={() => console.log('undo')}>
             Undo
           </DropdownMenuItem>
@@ -44,19 +51,19 @@ export const Styled = () => (
           <DropdownMenuItem as={StyledItem} onSelect={() => console.log('paste')}>
             Paste
           </DropdownMenuItem>
-        </DropdownMenu>
-        <DropdownArrow />
-      </DropdownPopper>
-    </Dropdown>
+        </DropdownMenuItems>
+        <DropdownMenuArrow />
+      </DropdownMenuPopper>
+    </DropdownMenu>
   </div>
 );
 
 export const WithLabels = () => (
   <div style={{ textAlign: 'center', margin: 50 }}>
-    <Dropdown>
-      <DropdownTrigger as={StyledTrigger}>Open</DropdownTrigger>
-      <DropdownPopper sideOffset={5}>
-        <DropdownMenu as={StyledRoot}>
+    <DropdownMenu>
+      <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
+      <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
+        <DropdownMenuItems as={StyledItems}>
           {foodGroups.map((foodGroup, index) => (
             <DropdownMenuGroup key={index}>
               {foodGroup.label && (
@@ -77,10 +84,10 @@ export const WithLabels = () => (
               {index < foodGroups.length - 1 && <DropdownMenuSeparator as={StyledSeparator} />}
             </DropdownMenuGroup>
           ))}
-        </DropdownMenu>
-        <DropdownArrow />
-      </DropdownPopper>
-    </Dropdown>
+        </DropdownMenuItems>
+        <DropdownMenuArrow />
+      </DropdownMenuPopper>
+    </DropdownMenu>
   </div>
 );
 
@@ -94,10 +101,10 @@ export const CheckboxItems = () => {
 
   return (
     <div style={{ textAlign: 'center', margin: 50 }}>
-      <Dropdown>
-        <DropdownTrigger as={StyledTrigger}>Open</DropdownTrigger>
-        <DropdownPopper sideOffset={5}>
-          <DropdownMenu as={StyledRoot}>
+      <DropdownMenu>
+        <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
+        <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
+          <DropdownMenuItems as={StyledItems}>
             <DropdownMenuItem as={StyledItem} onSelect={() => console.log('show')}>
               Show fonts
             </DropdownMenuItem>
@@ -122,10 +129,10 @@ export const CheckboxItems = () => {
                 </DropdownMenuItemIndicator>
               </DropdownMenuCheckboxItem>
             ))}
-          </DropdownMenu>
-          <DropdownArrow />
-        </DropdownPopper>
-      </Dropdown>
+          </DropdownMenuItems>
+          <DropdownMenuArrow />
+        </DropdownMenuPopper>
+      </DropdownMenu>
     </div>
   );
 };
@@ -136,10 +143,10 @@ export const RadioItems = () => {
 
   return (
     <div style={{ textAlign: 'center', margin: 50 }}>
-      <Dropdown>
-        <DropdownTrigger as={StyledTrigger}>Open</DropdownTrigger>
-        <DropdownPopper sideOffset={5}>
-          <DropdownMenu as={StyledRoot}>
+      <DropdownMenu>
+        <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
+        <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
+          <DropdownMenuItems as={StyledItems}>
             <DropdownMenuItem as={StyledItem} onSelect={() => console.log('minimize')}>
               Minimize window
             </DropdownMenuItem>
@@ -160,10 +167,10 @@ export const RadioItems = () => {
                 </DropdownMenuRadioItem>
               ))}
             </DropdownMenuRadioGroup>
-          </DropdownMenu>
-          <DropdownArrow />
-        </DropdownPopper>
-      </Dropdown>
+          </DropdownMenuItems>
+          <DropdownMenuArrow />
+        </DropdownMenuPopper>
+      </DropdownMenu>
       <p>Selected file: {file}</p>
     </div>
   );
@@ -171,10 +178,10 @@ export const RadioItems = () => {
 
 export const PreventClosing = () => (
   <div style={{ textAlign: 'center', margin: 50 }}>
-    <Dropdown>
-      <DropdownTrigger as={StyledTrigger}>Open</DropdownTrigger>
-      <DropdownPopper sideOffset={5}>
-        <DropdownMenu as={StyledRoot}>
+    <DropdownMenu>
+      <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
+      <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
+        <DropdownMenuItems as={StyledItems}>
           <DropdownMenuItem as={StyledItem} onSelect={() => window.alert('action 1')}>
             I will close
           </DropdownMenuItem>
@@ -188,10 +195,10 @@ export const PreventClosing = () => (
           >
             I won't close
           </DropdownMenuItem>
-        </DropdownMenu>
-        <DropdownArrow />
-      </DropdownPopper>
-    </Dropdown>
+        </DropdownMenuItems>
+        <DropdownMenuArrow />
+      </DropdownMenuPopper>
+    </DropdownMenu>
   </div>
 );
 

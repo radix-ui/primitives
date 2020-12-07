@@ -2189,14 +2189,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-dropdown@workspace:packages/react/dropdown":
+"@interop-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu":
   version: 0.0.0-use.local
-  resolution: "@interop-ui/react-dropdown@workspace:packages/react/dropdown"
+  resolution: "@interop-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu"
   dependencies:
-    "@interop-ui/react-dismissable-layer": "workspace:*"
     "@interop-ui/react-menu": "workspace:*"
     "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1

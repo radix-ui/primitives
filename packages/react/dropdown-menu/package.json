@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@interop-ui/react-dropdown",
+  "name": "@interop-ui/react-dropdown-menu",
   "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
@@ -18,10 +18,8 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-dismissable-layer": "workspace:*",
     "@interop-ui/react-menu": "workspace:*",
     "@interop-ui/react-polymorphic": "workspace:*",
-    "@interop-ui/react-popper": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },

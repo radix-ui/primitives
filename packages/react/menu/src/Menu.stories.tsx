@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {
-  MenuPopper as MenuPrimitivePopper,
   Menu,
+  MenuPopper as MenuPrimitivePopper,
+  MenuItems,
   MenuGroup,
   MenuLabel,
   MenuItem,
@@ -19,53 +20,57 @@ import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 export default { title: 'Components/Menu', excludeStories: ['styledComponents'] };
 
 export const Styled = () => (
-  <MenuPopper>
-    <Menu as={StyledRoot}>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('undo')}>
-        Undo
-      </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('redo')}>
-        Redo
-      </MenuItem>
-      <MenuSeparator as={StyledSeparator} />
-      <MenuItem as={StyledItem} disabled onSelect={() => window.alert('cut')}>
-        Cut
-      </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('copy')}>
-        Copy
-      </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('paste')}>
-        Paste
-      </MenuItem>
-    </Menu>
-  </MenuPopper>
+  <Menu isOpen>
+    <MenuPopper>
+      <MenuItems as={StyledItems}>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('undo')}>
+          Undo
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('redo')}>
+          Redo
+        </MenuItem>
+        <MenuSeparator as={StyledSeparator} />
+        <MenuItem as={StyledItem} disabled onSelect={() => window.alert('cut')}>
+          Cut
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('copy')}>
+          Copy
+        </MenuItem>
+        <MenuItem as={StyledItem} onSelect={() => window.alert('paste')}>
+          Paste
+        </MenuItem>
+      </MenuItems>
+    </MenuPopper>
+  </Menu>
 );
 
 export const WithLabels = () => (
-  <MenuPopper>
-    <Menu as={StyledRoot}>
-      {foodGroups.map((foodGroup, index) => (
-        <MenuGroup key={index}>
-          {foodGroup.label && (
-            <MenuLabel as={StyledLabel} key={foodGroup.label}>
-              {foodGroup.label}
-            </MenuLabel>
-          )}
-          {foodGroup.foods.map((food) => (
-            <MenuItem
-              key={food.value}
-              as={StyledItem}
-              disabled={food.disabled}
-              onSelect={() => window.alert(food.label)}
-            >
-              {food.label}
-            </MenuItem>
-          ))}
-          {index < foodGroups.length - 1 && <MenuSeparator as={StyledSeparator} />}
-        </MenuGroup>
-      ))}
-    </Menu>
-  </MenuPopper>
+  <Menu isOpen>
+    <MenuPopper>
+      <MenuItems as={StyledItems}>
+        {foodGroups.map((foodGroup, index) => (
+          <MenuGroup key={index}>
+            {foodGroup.label && (
+              <MenuLabel as={StyledLabel} key={foodGroup.label}>
+                {foodGroup.label}
+              </MenuLabel>
+            )}
+            {foodGroup.foods.map((food) => (
+              <MenuItem
+                key={food.value}
+                as={StyledItem}
+                disabled={food.disabled}
+                onSelect={() => window.alert(food.label)}
+              >
+                {food.label}
+              </MenuItem>
+            ))}
+            {index < foodGroups.length - 1 && <MenuSeparator as={StyledSeparator} />}
+          </MenuGroup>
+        ))}
+      </MenuItems>
+    </MenuPopper>
+  </Menu>
 );
 
 const suits = [
@@ -106,35 +111,39 @@ export const Typeahead = () => (
       <div>
         <h2>Complex children</h2>
         <p>(relying on `.textContent` — default)</p>
-        <MenuPopper>
-          <Menu as={StyledRoot}>
-            {suits.map((suit) => (
-              <MenuItem key={suit.emoji} as={StyledItem}>
-                {suit.label}
-                <span role="img" aria-label={suit.label}>
-                  {suit.emoji}
-                </span>
-              </MenuItem>
-            ))}
-          </Menu>
-        </MenuPopper>
+        <Menu isOpen>
+          <MenuPopper>
+            <MenuItems as={StyledItems}>
+              {suits.map((suit) => (
+                <MenuItem key={suit.emoji} as={StyledItem}>
+                  {suit.label}
+                  <span role="img" aria-label={suit.label}>
+                    {suit.emoji}
+                  </span>
+                </MenuItem>
+              ))}
+            </MenuItems>
+          </MenuPopper>
+        </Menu>
       </div>
 
       <div>
         <h2>Complex children</h2>
         <p>(with explicit `textValue` prop)</p>
-        <MenuPopper>
-          <Menu as={StyledRoot}>
-            {suits.map((suit) => (
-              <MenuItem key={suit.emoji} as={StyledItem} textValue={suit.label}>
-                <span role="img" aria-label={suit.label}>
-                  {suit.emoji}
-                </span>
-                {suit.label}
-              </MenuItem>
-            ))}
-          </Menu>
-        </MenuPopper>
+        <Menu isOpen>
+          <MenuPopper>
+            <MenuItems as={StyledItems}>
+              {suits.map((suit) => (
+                <MenuItem key={suit.emoji} as={StyledItem} textValue={suit.label}>
+                  <span role="img" aria-label={suit.label}>
+                    {suit.emoji}
+                  </span>
+                  {suit.label}
+                </MenuItem>
+              ))}
+            </MenuItems>
+          </MenuPopper>
+        </Menu>
       </div>
     </div>
   </>
@@ -149,34 +158,36 @@ export const CheckboxItems = () => {
   ];
 
   return (
-    <MenuPopper>
-      <Menu as={StyledRoot}>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
-          Show fonts
-        </MenuItem>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('bigger')}>
-          Bigger
-        </MenuItem>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
-          Smaller
-        </MenuItem>
-        <MenuSeparator as={StyledSeparator} />
-        {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
-          <MenuCheckboxItem
-            key={label}
-            as={StyledItem}
-            checked={checked}
-            onCheckedChange={setChecked}
-            disabled={disabled}
-          >
-            {label}
-            <MenuItemIndicator>
-              <TickIcon />
-            </MenuItemIndicator>
-          </MenuCheckboxItem>
-        ))}
-      </Menu>
-    </MenuPopper>
+    <Menu isOpen>
+      <MenuPopper>
+        <MenuItems as={StyledItems}>
+          <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
+            Show fonts
+          </MenuItem>
+          <MenuItem as={StyledItem} onSelect={() => window.alert('bigger')}>
+            Bigger
+          </MenuItem>
+          <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+            Smaller
+          </MenuItem>
+          <MenuSeparator as={StyledSeparator} />
+          {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+            <MenuCheckboxItem
+              key={label}
+              as={StyledItem}
+              checked={checked}
+              onCheckedChange={setChecked}
+              disabled={disabled}
+            >
+              {label}
+              <MenuItemIndicator>
+                <TickIcon />
+              </MenuItemIndicator>
+            </MenuCheckboxItem>
+          ))}
+        </MenuItems>
+      </MenuPopper>
+    </Menu>
   );
 };
 
@@ -185,30 +196,32 @@ export const RadioItems = () => {
   const [file, setFile] = React.useState(files[1]);
 
   return (
-    <MenuPopper>
-      <Menu as={StyledRoot}>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
-          Minimize window
-        </MenuItem>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('zoom')}>
-          Zoom
-        </MenuItem>
-        <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
-          Smaller
-        </MenuItem>
-        <MenuSeparator as={StyledSeparator} />
-        <MenuRadioGroup value={file} onValueChange={setFile}>
-          {files.map((file) => (
-            <MenuRadioItem key={file} as={StyledItem} value={file}>
-              {file}
-              <MenuItemIndicator>
-                <TickIcon />
-              </MenuItemIndicator>
-            </MenuRadioItem>
-          ))}
-        </MenuRadioGroup>
-      </Menu>
-    </MenuPopper>
+    <Menu isOpen>
+      <MenuPopper>
+        <MenuItems as={StyledItems}>
+          <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
+            Minimize window
+          </MenuItem>
+          <MenuItem as={StyledItem} onSelect={() => window.alert('zoom')}>
+            Zoom
+          </MenuItem>
+          <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+            Smaller
+          </MenuItem>
+          <MenuSeparator as={StyledSeparator} />
+          <MenuRadioGroup value={file} onValueChange={setFile}>
+            {files.map((file) => (
+              <MenuRadioItem key={file} as={StyledItem} value={file}>
+                {file}
+                <MenuItemIndicator>
+                  <TickIcon />
+                </MenuItemIndicator>
+              </MenuRadioItem>
+            ))}
+          </MenuRadioGroup>
+        </MenuItems>
+      </MenuPopper>
+    </Menu>
   );
 };
 
@@ -226,7 +239,7 @@ type MenuPopperOwnProps = {
 const MenuPopper = forwardRefWithAs<typeof MenuPrimitivePopper, MenuPopperOwnProps>((props) => (
   <div style={{ position: 'relative' }}>
     <MenuPrimitivePopper
-      isOpen
+      as={StyledPopper}
       anchorRef={useStaticElementRef()}
       shouldPortal={false}
       trapFocus={false}
@@ -245,7 +258,9 @@ function useStaticElementRef() {
   });
 }
 
-const StyledRoot = styled('div', {
+const StyledPopper = styled('div', {});
+
+const StyledItems = styled('div', {
   display: 'inline-block',
   boxSizing: 'border-box',
   minWidth: 130,
@@ -317,7 +332,8 @@ const TickIcon = () => (
 );
 
 export const styledComponents = {
-  StyledRoot,
+  StyledPopper,
+  StyledItems,
   StyledLabel,
   StyledItem,
   StyledSeparator,
