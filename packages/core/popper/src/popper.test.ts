@@ -1,5 +1,7 @@
 import { getSideAccountingForCollisions, getAlignAccountingForCollisions } from './popper';
-import { Collisions, SIDE_OPTIONS, Align, Size } from '@interop-ui/utils';
+import { SIDE_OPTIONS, Align, Size, getCollisions } from '@interop-ui/utils';
+
+type Collisions = ReturnType<typeof getCollisions>;
 
 const COLLISION_NONE: Collisions = { top: false, right: false, bottom: false, left: false };
 const COLLISION_TOP: Collisions = { top: true, right: false, bottom: false, left: false };

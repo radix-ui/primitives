@@ -1,13 +1,15 @@
 import { rectEquals } from './geometry';
 
+type MeasurableElement = { getBoundingClientRect(): ClientRect };
+
 /**
  * Observes an element's rectangle on screen (getBoundingClientRect)
  * This is useful to track elements on the screen and attach other elements
  * that might be in different layers, etc.
  */
-export function observeElementRect(
+function observeElementRect(
   /** The element whose rect to observe */
-  elementToObserve: HTMLElement | SVGElement,
+  elementToObserve: MeasurableElement,
   /** The callback which will be called when the rect changes */
   callback: CallbackFn
 ) {
@@ -61,7 +63,7 @@ type ObservedData = {
 };
 
 let rafId: number;
-const observedElements: Map<HTMLElement | SVGElement, ObservedData> = new Map();
+const observedElements: Map<MeasurableElement, ObservedData> = new Map();
 
 function runLoop() {
   const changedRectsData: Array<ObservedData> = [];
@@ -86,3 +88,6 @@ function runLoop() {
   rafId = requestAnimationFrame(runLoop);
 }
 // ========================================================================
+
+export { observeElementRect };
+export type { MeasurableElement };
