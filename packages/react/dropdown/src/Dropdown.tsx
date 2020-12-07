@@ -9,9 +9,9 @@ import {
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { getPartDataAttrObj } from '@interop-ui/utils';
-import * as PopperP from '@interop-ui/react-popper';
+import * as PopperPrimitive from '@interop-ui/react-popper';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
-import * as MenuP from '@interop-ui/react-menu';
+import * as MenuPrimitive from '@interop-ui/react-menu';
 
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 
@@ -163,10 +163,10 @@ type DropdownPopperOwnProps = {
    */
   shouldPortal?: boolean;
 
-  anchorRef?: React.ComponentProps<typeof MenuP.Popper>['anchorRef'];
+  anchorRef?: React.ComponentProps<typeof MenuPrimitive.Popper>['anchorRef'];
 };
 
-const DropdownPopper = forwardRefWithAs<typeof MenuP.Popper, DropdownPopperOwnProps>(
+const DropdownPopper = forwardRefWithAs<typeof MenuPrimitive.Popper, DropdownPopperOwnProps>(
   (props, forwardedRef) => {
     const {
       anchorRef,
@@ -180,7 +180,7 @@ const DropdownPopper = forwardRefWithAs<typeof MenuP.Popper, DropdownPopperOwnPr
     const context = useDropdownContext(POPPER_NAME);
     const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
     return (
-      <MenuP.Popper
+      <MenuPrimitive.Popper
         ref={forwardedRef}
         {...popperProps}
         style={{
@@ -236,10 +236,10 @@ DropdownPopper.displayName = POPPER_NAME;
 
 const MENU_NAME = 'DropdownMenu';
 
-const DropdownMenu = forwardRefWithAs<typeof MenuP.Root>((props, forwardedRef) => {
+const DropdownMenu = forwardRefWithAs<typeof MenuPrimitive.Root>((props, forwardedRef) => {
   const context = useDropdownContext(MENU_NAME);
   return (
-    <MenuP.Root
+    <MenuPrimitive.Root
       {...getPartDataAttrObj(MENU_NAME)}
       {...props}
       ref={forwardedRef}
@@ -252,15 +252,21 @@ DropdownMenu.displayName = MENU_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const DropdownMenuGroup = extendComponent(MenuP.Group, 'DropdownMenuGroup');
-const DropdownMenuLabel = extendComponent(MenuP.Label, 'DropdownMenuLabel');
-const DropdownMenuItem = extendComponent(MenuP.Item, 'DropdownMenuItem');
-const DropdownMenuCheckboxItem = extendComponent(MenuP.CheckboxItem, 'DropdownMenuCheckboxItem');
-const DropdownMenuRadioGroup = extendComponent(MenuP.RadioGroup, 'DropdownMenuRadioGroup');
-const DropdownMenuRadioItem = extendComponent(MenuP.RadioItem, 'DropdownMenuRadioItem');
-const DropdownMenuItemIndicator = extendComponent(MenuP.ItemIndicator, 'DropdownMenuItemIndicator');
-const DropdownMenuSeparator = extendComponent(MenuP.Separator, 'DropdownMenuSeparator');
-const DropdownArrow = extendComponent(PopperP.Arrow, 'DropdownArrow');
+const DropdownMenuGroup = extendComponent(MenuPrimitive.Group, 'DropdownMenuGroup');
+const DropdownMenuLabel = extendComponent(MenuPrimitive.Label, 'DropdownMenuLabel');
+const DropdownMenuItem = extendComponent(MenuPrimitive.Item, 'DropdownMenuItem');
+const DropdownMenuCheckboxItem = extendComponent(
+  MenuPrimitive.CheckboxItem,
+  'DropdownMenuCheckboxItem'
+);
+const DropdownMenuRadioGroup = extendComponent(MenuPrimitive.RadioGroup, 'DropdownMenuRadioGroup');
+const DropdownMenuRadioItem = extendComponent(MenuPrimitive.RadioItem, 'DropdownMenuRadioItem');
+const DropdownMenuItemIndicator = extendComponent(
+  MenuPrimitive.ItemIndicator,
+  'DropdownMenuItemIndicator'
+);
+const DropdownMenuSeparator = extendComponent(MenuPrimitive.Separator, 'DropdownMenuSeparator');
+const DropdownArrow = extendComponent(PopperPrimitive.Arrow, 'DropdownArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 

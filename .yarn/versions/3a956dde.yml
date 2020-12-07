@@ -1,9 +1,6 @@
 releases:
   "@interop-ui/react-dropdown": prerelease
   "@interop-ui/react-menu": prerelease
-  "@interop-ui/react-popover": prerelease
-  "@interop-ui/react-popper": prerelease
-  "@interop-ui/react-tooltip": prerelease
   "@interop-ui/react-utils": prerelease
 
 declined:
@@ -19,6 +16,8 @@ declined:
   - "@interop-ui/react-dismissable-layer"
   - "@interop-ui/react-focus-scope"
   - "@interop-ui/react-label"
+  - "@interop-ui/react-popover"
+  - "@interop-ui/react-popper"
   - "@interop-ui/react-portal"
   - "@interop-ui/react-progress-bar"
   - "@interop-ui/react-radio-group"
@@ -27,4 +26,5 @@ declined:
   - "@interop-ui/react-switch"
   - "@interop-ui/react-tabs"
   - "@interop-ui/react-toggle-button"
+  - "@interop-ui/react-tooltip"
   - "@interop-ui/docs"
