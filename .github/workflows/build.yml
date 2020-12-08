@@ -9,12 +9,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - run: nvmrc=$(cat .nvmrc)
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: '14.15.1'
+          node-version: $nvmrc
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
