@@ -1572,6 +1572,15 @@ export {
   ScrollAreaTrack,
   ScrollAreaThumb,
   ScrollAreaCorner,
+  ScrollArea as Root,
+  ScrollAreaViewport as Viewport,
+  ScrollAreaScrollbarX as ScrollbarX,
+  ScrollAreaScrollbarY as ScrollbarY,
+  ScrollAreaButtonStart as ButtonStart,
+  ScrollAreaButtonEnd as ButtonEnd,
+  ScrollAreaTrack as Track,
+  ScrollAreaThumb as Thumb,
+  ScrollAreaCorner as Corner,
   SCROLL_AREA_CSS_PROPS,
 };
 
