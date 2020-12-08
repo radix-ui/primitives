@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Label as LabelPrimitive } from '@interop-ui/react-label';
 import { RadioGroup, RadioGroupItem, RadioGroupIndicator } from './RadioGroup';
-import { styled } from '../../../../stitches.config';
+import { styled, css } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 
 export default { title: 'Components/RadioGroup' };
@@ -80,6 +80,32 @@ export const Unset = () => (
   </Label>
 );
 
+export const Animated = () => (
+  <Label>
+    Favourite pet
+    <RadioGroup as={StyledRoot} defaultValue="1">
+      <Label>
+        <RadioGroupItem as={StyledItem} value="1">
+          <RadioGroupIndicator as={AnimatedIndicator} />
+        </RadioGroupItem>
+        Cat
+      </Label>{' '}
+      <Label>
+        <RadioGroupItem as={StyledItem} value="2">
+          <RadioGroupIndicator as={AnimatedIndicator} />
+        </RadioGroupItem>
+        Dog
+      </Label>{' '}
+      <Label>
+        <RadioGroupItem as={StyledItem} value="3">
+          <RadioGroupIndicator as={AnimatedIndicator} />
+        </RadioGroupItem>
+        Rabbit
+      </Label>
+    </RadioGroup>
+  </Label>
+);
+
 const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL__ROOT} />;
 
 const StyledRoot = styled('div', {});
@@ -118,4 +144,23 @@ const StyledIndicator = styled('span', {
   alignItems: 'center',
   justifyContent: 'center',
   borderRadius: 'inherit',
+});
+
+const fadeIn = css.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+});
+
+const fadeOut = css.keyframes({
+  from: { opacity: 1 },
+  to: { opacity: 0 },
+});
+
+const AnimatedIndicator = styled(StyledIndicator, {
+  '&[data-state="checked"]': {
+    animation: `${fadeIn} 300ms ease-out`,
+  },
+  '&[data-state="unchecked"]': {
+    animation: `${fadeOut} 300ms ease-in`,
+  },
 });
