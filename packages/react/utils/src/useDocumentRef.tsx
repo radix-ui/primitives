@@ -30,9 +30,9 @@ export function getOwnerWindow(nodeRef: React.RefObject<Element | null | undefin
 }
 
 export function getOwnerGlobals(nodeRef: React.RefObject<Element | null | undefined>) {
-  const doc = getOwnerDocument(nodeRef);
+  const ownerDocument = getOwnerDocument(nodeRef);
   return {
-    doc,
-    win: doc.defaultView || window,
+    ownerDocument,
+    ownerWindow: ownerDocument.defaultView || window,
   };
 }
