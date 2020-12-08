@@ -9,6 +9,7 @@ import {
 } from '@interop-ui/react-utils';
 import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { Presence } from '@interop-ui/react-presence';
 import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
 import * as PopperPrimitive from '@interop-ui/react-popper';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
@@ -556,20 +557,31 @@ const ITEM_INDICATOR_DEFAULT_TAG = 'span';
 
 const ItemIndicatorContext = React.createContext(false);
 
-const MenuItemIndicator = forwardRefWithAs<typeof ITEM_INDICATOR_DEFAULT_TAG>(
-  (props, forwardedRef) => {
-    const { as: Comp = ITEM_INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-    const checked = React.useContext(ItemIndicatorContext);
-    return checked ? (
+type MenuItemIndicatorOwnProps = {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+};
+
+const MenuItemIndicator = forwardRefWithAs<
+  typeof ITEM_INDICATOR_DEFAULT_TAG,
+  MenuItemIndicatorOwnProps
+>((props, forwardedRef) => {
+  const { as: Comp = ITEM_INDICATOR_DEFAULT_TAG, forceMount, ...indicatorProps } = props;
+  const checked = React.useContext(ItemIndicatorContext);
+  return (
+    <Presence present={forceMount || checked}>
       <Comp
         {...indicatorProps}
         {...getPartDataAttrObj(ITEM_INDICATOR_NAME)}
         data-state={getState(checked)}
         ref={forwardedRef}
       />
-    ) : null;
-  }
-);
+    </Presence>
+  );
+});
 
 MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 
