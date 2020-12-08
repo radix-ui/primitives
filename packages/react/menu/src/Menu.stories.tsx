@@ -236,21 +236,24 @@ type MenuPopperOwnProps = {
   disableOutsideScroll?: never;
 };
 
-const MenuPopper = forwardRefWithAs<typeof MenuPrimitivePopper, MenuPopperOwnProps>((props) => (
-  <div style={{ position: 'relative' }}>
-    <MenuPrimitivePopper
-      as={StyledPopper}
-      anchorRef={useStaticElementRef()}
-      shouldPortal={false}
-      trapFocus={false}
-      onOpenAutoFocus={(event) => event.preventDefault()}
-      onCloseAutoFocus={(event) => event.preventDefault()}
-      disableOutsidePointerEvents={false}
-      disableOutsideScroll={false}
-      {...props}
-    />
-  </div>
-));
+const MenuPopper = forwardRefWithAs<typeof MenuPrimitivePopper, MenuPopperOwnProps>(
+  (props, forwardedRef) => (
+    <div style={{ position: 'relative' }}>
+      <MenuPrimitivePopper
+        as={StyledPopper}
+        ref={forwardedRef}
+        anchorRef={useStaticElementRef()}
+        shouldPortal={false}
+        trapFocus={false}
+        onOpenAutoFocus={(event) => event.preventDefault()}
+        onCloseAutoFocus={(event) => event.preventDefault()}
+        disableOutsidePointerEvents={false}
+        disableOutsideScroll={false}
+        {...props}
+      />
+    </div>
+  )
+);
 
 function useStaticElementRef() {
   return React.useRef({
