@@ -73,11 +73,11 @@ ContextMenuTrigger.displayName = TRIGGER_NAME;
 const POPPER_NAME = 'ContextMenuPopper';
 
 type ContextMenuPopperOwnProps = {
-  trapFocus?: never;
-  onCloseAutoFocus?: never;
-  onOpenAutoFocus?: never;
-  onDismiss?: never;
   anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
+  trapFocus: never;
+  onCloseAutoFocus: never;
+  onOpenAutoFocus: never;
+  onDismiss: never;
 };
 
 const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMenuPopperOwnProps>(
