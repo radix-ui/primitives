@@ -34,7 +34,7 @@ export const Styled = () => (
     <ContextMenu>
       <ContextMenuTrigger as={StyledTrigger} />
       <ContextMenuTrigger as={StyledTrigger} />
-      <ContextMenuPopper as={StyledRoot} sideOffset={-5} loop>
+      <ContextMenuPopper as={StyledRoot} sideOffset={-5}>
         <ContextMenuItem as={StyledItem} onSelect={() => console.log('undo')}>
           Undo
         </ContextMenuItem>
