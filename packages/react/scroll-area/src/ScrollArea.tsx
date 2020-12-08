@@ -2355,5 +2355,3 @@ type ResizeObserverBoxOptions = 'border-box' | 'content-box' | 'device-pixel-con
 interface ResizeObserverOptions {
   box?: ResizeObserverBoxOptions;
 }
-
-type ResizeObserverCallback = (entries: ResizeObserverEntry[], observer: ResizeObserver) => void;
