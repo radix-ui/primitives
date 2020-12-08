@@ -1517,24 +1517,6 @@ const ScrollAreaCornerImpl = forwardRefWithAs<typeof CORNER_DEFAULT_TAG>(
         : '16px',
 
       position: 'absolute',
-
-      // Cursor depends on the direction in which the user is able to resize the container. If the
-      // container can be resized in either direction, the cursor will be either 'sw-resize' or
-      // 'se-resize' depending on the writing mode.
-      //
-      // TODO: This code will be useful when resize handles are properly supported. We can safely
-      // remove this before merging but keeping it for now for my own reference!
-
-      // [CSS_PROPS.cornerCursor]:
-      //   resize === 'horizontal'
-      //     ? 'ew-resize'
-      //     : resize === 'vertical'
-      //     ? 'ns-resize'
-      //     : resize === 'both'
-      //     ? isRTL
-      //       ? 'sw-resize'
-      //       : 'se-resize'
-      //     : 'initial',
     };
 
     /**
@@ -1973,16 +1955,14 @@ function getElementFromRef(
 function getTrackElementFromRef(ref: React.RefObject<HTMLElement | null | undefined>): HTMLElement {
   return getElementFromRef(
     ref,
-    `A ref for ${TRACK_NAME} was not placed as expected. ${TRACK_NAME} should always be used within a ${ROOT_NAME} component, and it should not be rendered conditionally.
-See https://[LINK_TO_DOCS]` // TODO: Add link to docs site when we know the URL
+    `A ref for ${TRACK_NAME} was not placed as expected. ${TRACK_NAME} should always be used within a ${ROOT_NAME} component, and it should not be rendered conditionally.`
   );
 }
 
 function getThumbElementFromRef(ref: React.RefObject<HTMLElement | null | undefined>): HTMLElement {
   return getElementFromRef(
     ref,
-    `A ref for ${THUMB_NAME} was not placed as expected. ${THUMB_NAME} should always be used within a ${ROOT_NAME} component, and it should not be rendered conditionally.
-See https://[LINK_TO_DOCS]` // TODO: Add link to docs site when we know the URL
+    `A ref for ${THUMB_NAME} was not placed as expected. ${THUMB_NAME} should always be used within a ${ROOT_NAME} component, and it should not be rendered conditionally.`
   );
 }
 
@@ -1991,8 +1971,7 @@ function getPositionElementFromRef(
 ): HTMLElement {
   return getElementFromRef(
     ref,
-    `A ref for an internal component in ${VIEWPORT_NAME} was not placed as expected. ${VIEWPORT_NAME} should always be used within a ${ROOT_NAME} component, and it should not be rendered conditionally.
-See https://[LINK_TO_DOCS]` // TODO: Add link to docs site when we know the URL
+    `A ref for an internal component in ${VIEWPORT_NAME} was not placed as expected. ${VIEWPORT_NAME} should always be used within a ${ROOT_NAME} component, and it should not be rendered conditionally.`
   );
 }
 
@@ -2003,8 +1982,7 @@ function getButtonElementFromRef(
   const name = direction === 'end' ? BUTTON_END_NAME : BUTTON_START_NAME;
   return getElementFromRef(
     ref,
-    `A ref for ${name} was not placed as expected. ${name} should always be used within a ${ROOT_NAME} component, and it should not be rendered conditionally.
-See https://[LINK_TO_DOCS]` // TODO: Add link to docs site when we know the URL
+    `A ref for ${name} was not placed as expected. ${name} should always be used within a ${ROOT_NAME} component, and it should not be rendered conditionally.`
   );
 }
 
