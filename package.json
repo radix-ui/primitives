@@ -18,7 +18,7 @@
     "build-storybook": "build-storybook",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
-    "build:packages": "yarn workspaces foreach -ptv --exclude interop-ui --exclude @interop-ui/docs run build",
+    "build:packages": "yarn workspaces foreach -t --exclude interop-ui --exclude @interop-ui/docs run build",
     "build:cleanup": "mv tsconfig.json tsconfig.production.json && mv tsconfig.tmp.json tsconfig.json",
     "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude interop-ui --exclude @interop-ui/docs npm publish --tolerate-republish --access public",
     "clean": "yarn workspaces foreach -pv --exclude interop-ui run clean",

@@ -13,6 +13,7 @@ import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
+import { Presence } from '@interop-ui/react-presence';
 import { useFocusGuards } from '@interop-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
@@ -105,14 +106,32 @@ DialogTrigger.displayName = TRIGGER_NAME;
 const OVERLAY_NAME = 'DialogOverlay';
 const OVERLAY_DEFAULT_TAG = 'div';
 
-const DialogOverlay = forwardRefWithAs<typeof DialogOverlayImpl>((props, forwardedRef) => {
-  const context = useDialogContext(OVERLAY_NAME);
-  return context.isOpen ? <DialogOverlayImpl ref={forwardedRef} {...props} /> : null;
-});
+type DialogOverlayOwnProps = {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+};
+
+const DialogOverlay = forwardRefWithAs<typeof DialogOverlayImpl, DialogOverlayOwnProps>(
+  (props, forwardedRef) => {
+    const { forceMount, ...overlayProps } = props;
+    const context = useDialogContext(OVERLAY_NAME);
+    return (
+      <Presence present={forceMount || context.isOpen}>
+        <DialogOverlayImpl
+          {...overlayProps}
+          data-state={getState(context.isOpen)}
+          ref={forwardedRef}
+        />
+      </Presence>
+    );
+  }
+);
 
 const DialogOverlayImpl = forwardRefWithAs<typeof OVERLAY_DEFAULT_TAG>((props, forwardedRef) => {
   const { as: Comp = OVERLAY_DEFAULT_TAG, ...overlayProps } = props;
-
   return (
     <Portal>
       <Comp {...getPartDataAttrObj(OVERLAY_NAME)} ref={forwardedRef} {...overlayProps} />
@@ -130,6 +149,30 @@ const CONTENT_NAME = 'DialogContent';
 const CONTENT_DEFAULT_TAG = 'div';
 
 type DialogContentOwnProps = {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+};
+
+const DialogContent = forwardRefWithAs<typeof DialogContentImpl, DialogContentOwnProps>(
+  (props, forwardedRef) => {
+    const { forceMount, ...contentProps } = props;
+    const context = useDialogContext(CONTENT_NAME);
+    return (
+      <Presence present={forceMount || context.isOpen}>
+        <DialogContentImpl
+          {...contentProps}
+          data-state={getState(context.isOpen)}
+          ref={forwardedRef}
+        />
+      </Presence>
+    );
+  }
+);
+
+type DialogContentImplOwnProps = {
   /**
    * Event handler called when auto-focusing on open.
    * Can be prevented.
@@ -155,12 +198,7 @@ type DialogContentOwnProps = {
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 };
 
-const DialogContent = forwardRefWithAs<typeof DialogContentImpl>((props, forwardedRef) => {
-  const context = useDialogContext(CONTENT_NAME);
-  return context.isOpen ? <DialogContentImpl ref={forwardedRef} {...props} /> : null;
-});
-
-const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogContentOwnProps>(
+const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogContentImplOwnProps>(
   (props, forwardedRef) => {
     const {
       as: Comp = CONTENT_DEFAULT_TAG,
@@ -275,6 +313,10 @@ const DialogClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwarded
 DialogClose.displayName = CLOSE_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function getState(open: boolean) {
+  return open ? 'open' : 'closed';
+}
 
 const Root = Dialog;
 const Trigger = DialogTrigger;

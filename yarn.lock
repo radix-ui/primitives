@@ -2070,20 +2070,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-announce@workspace:packages/react/announce":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-announce@workspace:packages/react/announce"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-arrow@workspace:*, @interop-ui/react-arrow@workspace:packages/react/arrow":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-arrow@workspace:packages/react/arrow"
@@ -2148,7 +2134,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-collection@workspace:*, @interop-ui/react-collection@workspace:packages/react/collection":
+"@interop-ui/react-collection@workspace:packages/react/collection":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-collection@workspace:packages/react/collection"
   dependencies:
@@ -2179,6 +2165,7 @@ __metadata:
     "@interop-ui/react-focus-scope": "workspace:*"
     "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
+    "@interop-ui/react-presence": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     aria-hidden: ^1.1.1
@@ -2314,6 +2301,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-presence@workspace:*, @interop-ui/react-presence@workspace:packages/react/presence":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-presence@workspace:packages/react/presence"
+  dependencies:
+    "@interop-ui/react-utils": "workspace:*"
+    "@xstate/fsm": ^1.5.1
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ">=16.8"
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-progress-bar@workspace:packages/react/progress-bar":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-progress-bar@workspace:packages/react/progress-bar"
@@ -2373,21 +2372,6 @@ __metadata:
   resolution: "@interop-ui/react-separator@workspace:packages/react/separator"
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-slider@workspace:packages/react/slider":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-slider@workspace:packages/react/slider"
-  dependencies:
-    "@interop-ui/react-collection": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-use-size": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
@@ -5563,6 +5547,13 @@ __metadata:
   peerDependencies:
     webpack: ^3.0.0 || ^4.0.0
   checksum: 56e3db73a8de54be64dc3794bd9a997f412dbddc21903f1e507bc5a0d803a46d6b4524f99a77c967d232e32962bcd88e3c4aa1d27e89c4c2f5f1e73d614ae28c
+  languageName: node
+  linkType: hard
+
+"@xstate/fsm@npm:^1.5.1":
+  version: 1.5.2
+  resolution: "@xstate/fsm@npm:1.5.2"
+  checksum: 01c22520e3a312d6fbacb822af28ae32d147d66247e1555b1c744c40057fc81e520503d42c8a17416d17c6744c09e11d9a3c9967007deef032a72efe010bb4f8
   languageName: node
   linkType: hard
 
@@ -9485,9 +9476,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.3.378, electron-to-chromium@npm:^1.3.488, electron-to-chromium@npm:^1.3.591":
-  version: 1.3.591
-  resolution: "electron-to-chromium@npm:1.3.591"
-  checksum: c2ed7fabea7f195f07c0de8747b0f526824e719fb4469e5622de98cfe6f390ba0ffd6576ec9f858d39296196e8f0f9c92247d43e3daad5d2cd627a38dbb1e3b6
+  version: 1.3.617
+  resolution: "electron-to-chromium@npm:1.3.617"
+  checksum: d08ea583945d4bbeb11c7993db3be4975449e26b392a8c2faa68ea53d678bca1c19262490a37f1486398e0f2127b7d5cae77961409f83475d7378739e28f3da4
   languageName: node
   linkType: hard
 
