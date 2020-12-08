@@ -32,7 +32,18 @@ const [AccordionContext, useAccordionContext] = createContext<AccordionContextVa
 
 const ITEM_NAME = 'AccordionItem';
 
-type AccordionItemOwnProps = { value: string };
+type AccordionItemOwnProps = {
+  /**
+   * Whether or not an accordion item is disabled from user interaction.
+   *
+   * @defaultValue false
+   */
+  disabled?: boolean;
+  /**
+   * A string value for the accordion item. All items within an accordion should use a unique value.
+   */
+  value: string;
+};
 type AccordionItemContextValue = { isOpen?: boolean; buttonId: string };
 
 const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionItemContextValue>(
@@ -40,6 +51,9 @@ const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionI
   ITEM_NAME
 );
 
+/**
+ * `AccordionItem` contains all of the parts of a collapsible section inside of an `Accordion`.
+ */
 const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps>(
   (props, forwardedRef) => {
     const {
@@ -91,6 +105,10 @@ const HEADER_DEFAULT_TAG = 'h3';
 
 type AccordionHeaderOwnProps = {};
 
+/**
+ * `AccordionHeader` contains the content for the parts of an `AccordionItem` that will be visible
+ * whether or not its content is collapsed.
+ */
 const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG, AccordionHeaderOwnProps>(
   (props, forwardedRef) => {
     const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
@@ -108,6 +126,10 @@ const BUTTON_NAME = 'AccordionButton';
 
 type AccordionButtonOwnProps = {};
 
+/**
+ * `AccordionButton` is the trigger that toggles the collapsed state of an `AccordionItem`. It
+ * should always be nested inside of an `AccordionHeader`.
+ */
 const AccordionButton = forwardRefWithAs<typeof CollapsibleButton, AccordionButtonOwnProps>(
   (props, forwardedRef) => {
     const { ...buttonProps } = props;
@@ -152,6 +174,9 @@ const PANEL_NAME = 'AccordionPanel';
 
 type AccordionPanelOwnProps = {};
 
+/**
+ * `AccordionPanel` contains the collapsible content for an `AccordionItem`.
+ */
 const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent, AccordionPanelOwnProps>(
   (props, forwardedRef) => {
     const itemContext = useAccordionItemContext(PANEL_NAME);
@@ -178,12 +203,32 @@ const ACCORDION_DEFAULT_TAG = 'div';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
 
 type AccordionOwnProps = {
+  /**
+   * The controlled stateful value of the accordion item whose panel is expanded.
+   */
   value?: string;
+  /**
+   * The value of the item whose panel is expanded when the accordion is initially rendered. Use
+   * `defaultValue` if you do not need to control the state of an accordion.
+   */
   defaultValue?: string;
+  /**
+   * Whether or not an accordion is disabled from user interaction.
+   *
+   * @defaultValue false
+   */
   disabled?: boolean;
+  /**
+   * The callback that fires when the state of the accordion changes.
+   *
+   * @param value
+   */
   onChange?(value: string): void;
 };
 
+/**
+ * `Accordion` is the root component.
+ */
 const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnProps>(
   (props, forwardedRef) => {
     const {
