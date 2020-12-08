@@ -1,7 +1,7 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { getPartDataAttr } from '@interop-ui/utils';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
 
@@ -59,15 +59,12 @@ describe('given a default Collapsible', () => {
   });
 
   describe('when clicking the button', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       fireEvent.click(button);
-      content = rendered.getByText(CONTENT_TEXT);
-      button = rendered.getByText(BUTTON_TEXT);
-      collapsible = rendered.container.firstChild;
-    });
-
-    it('should open the content', () => {
-      expect(content).toBeVisible();
+      await waitFor(() => {
+        content = rendered.getByText(CONTENT_TEXT);
+        expect(content).toBeVisible();
+      });
     });
 
     it('should have an interop attribute on the content', () => {
@@ -84,12 +81,9 @@ describe('given a default Collapsible', () => {
     });
 
     describe('and clicking the button again', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         fireEvent.click(button);
-      });
-
-      it('should close the content', () => {
-        expect(content).not.toBeVisible();
+        await waitForElementToBeRemoved(() => rendered.getByText(CONTENT_TEXT));
       });
 
       it('should have a data-state attribute on the container set to `closed`', () => {
@@ -131,17 +125,14 @@ describe('given an open uncontrolled Collapsible', () => {
   });
 
   describe('when clicking the button', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const button = rendered.getByText(BUTTON_TEXT);
       fireEvent.click(button);
+      await waitForElementToBeRemoved(() => rendered.getByText(CONTENT_TEXT));
     });
 
     it('should call `onToggle` prop with `false` value', () => {
       expect(onToggle).toHaveBeenCalledWith(false);
-    });
-
-    it('should close the content', () => {
-      expect(content).not.toBeVisible();
     });
   });
 });
