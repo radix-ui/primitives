@@ -3,7 +3,7 @@ import {
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuPopper,
-  ContextMenuItems,
+  ContextMenuContent,
   ContextMenuGroup,
   ContextMenuLabel,
   ContextMenuItem,
@@ -19,7 +19,7 @@ import { styledComponents } from '../../menu/src/Menu.stories';
 
 const {
   StyledPopper,
-  StyledItems,
+  StyledContent,
   StyledItem,
   StyledLabel,
   StyledSeparator,
@@ -43,7 +43,7 @@ export const Styled = () => (
       <ContextMenuTrigger as={StyledTrigger} />
       <ContextMenuTrigger as={StyledTrigger} />
       <ContextMenuPopper as={StyledPopper} sideOffset={-5}>
-        <ContextMenuItems as={StyledItems}>
+        <ContextMenuContent as={StyledContent}>
           <ContextMenuItem as={StyledItem} onSelect={() => console.log('undo')}>
             Undo
           </ContextMenuItem>
@@ -60,7 +60,7 @@ export const Styled = () => (
           <ContextMenuItem as={StyledItem} onSelect={() => console.log('paste')}>
             Paste
           </ContextMenuItem>
-        </ContextMenuItems>
+        </ContextMenuContent>
       </ContextMenuPopper>
     </ContextMenu>
   </div>
@@ -71,7 +71,7 @@ export const WithLabels = () => (
     <ContextMenu>
       <ContextMenuTrigger as={StyledTrigger} />
       <ContextMenuPopper as={StyledPopper} sideOffset={-5}>
-        <ContextMenuItems as={StyledItems}>
+        <ContextMenuContent as={StyledContent}>
           {foodGroups.map((foodGroup, index) => (
             <ContextMenuGroup key={index}>
               {foodGroup.label && (
@@ -92,7 +92,7 @@ export const WithLabels = () => (
               {index < foodGroups.length - 1 && <ContextMenuSeparator as={StyledSeparator} />}
             </ContextMenuGroup>
           ))}
-        </ContextMenuItems>
+        </ContextMenuContent>
       </ContextMenuPopper>
     </ContextMenu>
   </div>
@@ -111,7 +111,7 @@ export const CheckboxItems = () => {
       <ContextMenu>
         <ContextMenuTrigger as={StyledTrigger} />
         <ContextMenuPopper as={StyledPopper} sideOffset={-5}>
-          <ContextMenuItems as={StyledItems}>
+          <ContextMenuContent as={StyledContent}>
             <ContextMenuItem as={StyledItem} onSelect={() => console.log('show')}>
               Show fonts
             </ContextMenuItem>
@@ -136,7 +136,7 @@ export const CheckboxItems = () => {
                 </ContextMenuItemIndicator>
               </ContextMenuCheckboxItem>
             ))}
-          </ContextMenuItems>
+          </ContextMenuContent>
         </ContextMenuPopper>
       </ContextMenu>
     </div>
@@ -152,7 +152,7 @@ export const RadioItems = () => {
       <ContextMenu>
         <ContextMenuTrigger as={StyledTrigger} />
         <ContextMenuPopper as={StyledPopper} sideOffset={-5}>
-          <ContextMenuItems as={StyledItems}>
+          <ContextMenuContent as={StyledContent}>
             <ContextMenuItem as={StyledItem} onSelect={() => console.log('minimize')}>
               Minimize window
             </ContextMenuItem>
@@ -173,7 +173,7 @@ export const RadioItems = () => {
                 </ContextMenuRadioItem>
               ))}
             </ContextMenuRadioGroup>
-          </ContextMenuItems>
+          </ContextMenuContent>
         </ContextMenuPopper>
       </ContextMenu>
       <p>Selected file: {file}</p>
@@ -186,7 +186,7 @@ export const PreventClosing = () => (
     <ContextMenu>
       <ContextMenuTrigger as={StyledTrigger} />
       <ContextMenuPopper as={StyledPopper} sideOffset={-5}>
-        <ContextMenuItems as={StyledItems}>
+        <ContextMenuContent as={StyledContent}>
           <ContextMenuItem as={StyledItem} onSelect={() => window.alert('action 1')}>
             I will close
           </ContextMenuItem>
@@ -199,7 +199,7 @@ export const PreventClosing = () => (
           >
             I won't close
           </ContextMenuItem>
-        </ContextMenuItems>
+        </ContextMenuContent>
       </ContextMenuPopper>
     </ContextMenu>
   </div>
@@ -218,7 +218,7 @@ export const Multiple = () => {
         return (
           <ContextMenu key={i}>
             <ContextMenuPopper as={StyledPopper}>
-              <ContextMenuItems as={StyledItems}>
+              <ContextMenuContent as={StyledContent}>
                 <ContextMenuLabel as={StyledLabel}>Color</ContextMenuLabel>
                 <ContextMenuRadioGroup
                   value={customColor}
@@ -254,7 +254,7 @@ export const Multiple = () => {
                     <TickIcon />
                   </ContextMenuItemIndicator>
                 </ContextMenuCheckboxItem>
-              </ContextMenuItems>
+              </ContextMenuContent>
             </ContextMenuPopper>
             <ContextMenuTrigger>
               <div
@@ -291,7 +291,7 @@ export const Nested = () => (
         <ContextMenu>
           <ContextMenuTrigger as={StyledTrigger} style={{ backgroundColor: 'tomato' }} />{' '}
           <ContextMenuPopper as={StyledPopper} sideOffset={-5}>
-            <ContextMenuItems as={StyledItems}>
+            <ContextMenuContent as={StyledContent}>
               <ContextMenuLabel as={StyledLabel}>Red box menu</ContextMenuLabel>
               <ContextMenuSeparator as={StyledSeparator} />
               <ContextMenuItem as={StyledItem} onSelect={() => console.log('red action1')}>
@@ -300,12 +300,12 @@ export const Nested = () => (
               <ContextMenuItem as={StyledItem} onSelect={() => console.log('red action2')}>
                 Red action 2
               </ContextMenuItem>
-            </ContextMenuItems>
+            </ContextMenuContent>
           </ContextMenuPopper>
         </ContextMenu>
       </ContextMenuTrigger>
       <ContextMenuPopper as={StyledPopper} sideOffset={-5}>
-        <ContextMenuItems as={StyledItems}>
+        <ContextMenuContent as={StyledContent}>
           <ContextMenuLabel as={StyledLabel}>Blue box menu</ContextMenuLabel>
           <ContextMenuSeparator as={StyledSeparator} />
           <ContextMenuItem as={StyledItem} onSelect={() => console.log('blue action1')}>
@@ -314,7 +314,7 @@ export const Nested = () => (
           <ContextMenuItem as={StyledItem} onSelect={() => console.log('blue action2')}>
             Blue action 2
           </ContextMenuItem>
-        </ContextMenuItems>
+        </ContextMenuContent>
       </ContextMenuPopper>
     </ContextMenu>
   </div>

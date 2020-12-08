@@ -13,9 +13,10 @@ import type { Point, MeasurableElement } from '@interop-ui/utils';
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
 type ContextMenuContextValue = {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  anchorPointRef: React.MutableRefObject<Point>;
   anchorRef: React.MutableRefObject<MeasurableElement | null>;
-  openMenu: (point: Point) => void;
-  closeMenu: () => void;
 };
 
 const [ContextMenuContext, useContextMenuContext] = createContext<ContextMenuContextValue>(
@@ -30,18 +31,9 @@ const ContextMenu: React.FC = (props) => {
   const anchorRef = React.useRef({
     getBoundingClientRect: () => makeRect({ width: 0, height: 0 }, anchorPointRef.current),
   });
-  const openMenu = React.useCallback((point: Point) => {
-    setIsOpen(true);
-    anchorPointRef.current = point;
-  }, []);
-  const closeMenu = React.useCallback(() => setIsOpen(false), []);
-  const context = React.useMemo(() => ({ anchorRef, openMenu, closeMenu }), [openMenu, closeMenu]);
+  const context = React.useMemo(() => ({ isOpen, setIsOpen, anchorPointRef, anchorRef }), [isOpen]);
 
-  return (
-    <MenuPrimitive.Root isOpen={isOpen} onIsOpenChange={setIsOpen}>
-      <ContextMenuContext.Provider value={context}>{children}</ContextMenuContext.Provider>
-    </MenuPrimitive.Root>
-  );
+  return <ContextMenuContext.Provider value={context}>{children}</ContextMenuContext.Provider>;
 };
 
 ContextMenu.displayName = CONTEXT_MENU_NAME;
@@ -65,7 +57,8 @@ const ContextMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, 
       onContextMenu={composeEventHandlers(triggerProps.onContextMenu, (event) => {
         event.preventDefault();
         const point = { x: event.clientX, y: event.clientY };
-        context.openMenu(point);
+        context.setIsOpen(true);
+        context.anchorPointRef.current = point;
       })}
     />
   );
@@ -84,10 +77,10 @@ type ContextMenuPopperOwnProps = {
   onCloseAutoFocus?: never;
   onOpenAutoFocus?: never;
   onDismiss?: never;
-  anchorRef?: React.ComponentProps<typeof MenuPrimitive.Popper>['anchorRef'];
+  anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
 };
 
-const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Popper, ContextMenuPopperOwnProps>(
+const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMenuPopperOwnProps>(
   (props, forwardedRef) => {
     const {
       anchorRef,
@@ -98,9 +91,11 @@ const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Popper, ContextM
     } = props;
     const context = useContextMenuContext(POPPER_NAME);
     return (
-      <MenuPrimitive.Popper
+      <MenuPrimitive.Root
         ref={forwardedRef}
         {...popperProps}
+        isOpen={context.isOpen}
+        onIsOpenChange={context.setIsOpen}
         style={{
           ...popperProps.style,
           // re-namespace exposed popper custom property
@@ -113,7 +108,7 @@ const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Popper, ContextM
         disableOutsidePointerEvents={disableOutsidePointerEvents}
         disableOutsideScroll={disableOutsideScroll}
         shouldPortal={shouldPortal}
-        onDismiss={() => context.closeMenu()}
+        onDismiss={() => context.setIsOpen(false)}
       />
     );
   }
@@ -123,7 +118,7 @@ ContextMenuPopper.displayName = POPPER_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const ContextMenuItems = extendComponent(MenuPrimitive.Items, 'ContextMenuItems');
+const ContextMenuContent = extendComponent(MenuPrimitive.Content, 'ContextMenuContent');
 const ContextMenuGroup = extendComponent(MenuPrimitive.Group, 'ContextMenuGroup');
 const ContextMenuLabel = extendComponent(MenuPrimitive.Label, 'ContextMenuLabel');
 const ContextMenuItem = extendComponent(MenuPrimitive.Item, 'ContextMenuItem');
@@ -144,7 +139,7 @@ const ContextMenuSeparator = extendComponent(MenuPrimitive.Separator, 'ContextMe
 const Root = ContextMenu;
 const Trigger = ContextMenuTrigger;
 const Popper = ContextMenuPopper;
-const Items = ContextMenuItems;
+const Content = ContextMenuContent;
 const MenuGroup = ContextMenuGroup;
 const MenuLabel = ContextMenuLabel;
 const MenuItem = ContextMenuItem;
@@ -158,7 +153,7 @@ export {
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuPopper,
-  ContextMenuItems,
+  ContextMenuContent,
   ContextMenuGroup,
   ContextMenuLabel,
   ContextMenuItem,
@@ -171,7 +166,7 @@ export {
   Root,
   Trigger,
   Popper,
-  Items,
+  Content,
   MenuGroup,
   MenuLabel,
   MenuItem,
