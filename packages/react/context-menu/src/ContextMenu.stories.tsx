@@ -13,7 +13,7 @@ import {
   ContextMenuItemIndicator,
   ContextMenuSeparator,
 } from './ContextMenu';
-import { styled } from '../../../../stitches.config';
+import { styled, css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 import { styledComponents } from '../../menu/src/Menu.stories';
 
@@ -217,7 +217,7 @@ export const Multiple = () => {
         const customColor = customColors[i];
         return (
           <ContextMenu key={i}>
-            <ContextMenuPopper as={StyledPopper}>
+            <ContextMenuPopper as={AnimatedPopper}>
               <ContextMenuContent as={StyledContent}>
                 <ContextMenuLabel as={StyledLabel}>Color</ContextMenuLabel>
                 <ContextMenuRadioGroup
@@ -331,4 +331,15 @@ const StyledTrigger = styled('div', {
     outline: 'none',
     boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.5)',
   },
+});
+
+const scaleIn = css.keyframes({
+  '0%': { transform: 'scale(0) rotateZ(-10deg)' },
+  '20%': { transform: 'scale(1.1)' },
+  '100%': { transform: 'scale(1)' },
+});
+
+const AnimatedPopper = styled(StyledPopper, {
+  transformOrigin: 'var(--interop-ui-context-menu-popper-transform-origin)',
+  animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
 });
