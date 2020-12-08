@@ -47,38 +47,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
 export function Test() {
   return (
     <>
-      {/* Link accepts onToggle prop */}
-      <Link onToggle={(isOpen) => console.log(isOpen)} />
-
-      {/* Link accepts isPrimary prop */}
-      <Link isPrimary />
-
-      {/* Button does not accept href prop */}
-      {/* @ts-expect-error */}
-      <Button href="#" />
-
-      {/* Button accepts form prop */}
-      <Button form="form" />
-
-      {/* Button accepts isDisabled prop */}
-      <Button isDisabled />
-
-      {/* Button as "a" accepts href prop */}
-      <Button as="a" href="#" />
-
-      {/* Button as "a" does not accept form prop */}
-      {/* @ts-expect-error */}
-      <Button as="a" form="form" />
-
-      {/* Button as Link accepts href prop */}
-      <Button as={Link} href="#" />
-
-      {/* Button as Link accepts isPrimary prop */}
-      <Button as={Link} isPrimary />
-
-      {/* Button as Link accepts isDisabled prop */}
-      <Button as={Link} isDisabled />
-
       {/* ExtendedButton as Link does not accept form prop */}
       {/* @ts-expect-error */}
       <ExtendedButton as={Link} form="form" />
