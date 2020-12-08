@@ -7,6 +7,7 @@ import {
 } from '@interop-ui/react-utils';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { Presence } from '@interop-ui/react-presence';
 
 /* -------------------------------------------------------------------------------------------------
  * Collapsible
@@ -25,7 +26,7 @@ type CollapsibleOwnProps = {
 type CollapsibleContextValue = {
   contentId?: string;
   setContentId(id: string): void;
-  isOpen?: boolean;
+  isOpen: boolean;
   isDisabled?: boolean;
   toggle(): void;
 };
@@ -48,7 +49,7 @@ const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, Collapsible
       ...collapsibleProps
     } = props;
 
-    const [isOpen, setIsOpen] = useControlledState({
+    const [isOpen = false, setIsOpen] = useControlledState({
       prop: isOpenProp,
       defaultProp: defaultIsOpen,
       onChange: onToggle,
@@ -125,15 +126,20 @@ const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, 
   }, [id, setContentId]);
 
   return (
-    <Comp
-      {...getPartDataAttrObj(CONTENT_NAME)}
-      ref={forwardedRef}
-      {...contentProps}
-      id={id}
-      hidden={!isOpen}
-    >
-      {isOpen && children}
-    </Comp>
+    <Presence present={isOpen}>
+      {({ present }) => (
+        <Comp
+          {...contentProps}
+          {...getPartDataAttrObj(CONTENT_NAME)}
+          ref={forwardedRef}
+          id={id}
+          hidden={!present}
+          data-state={getState(isOpen)}
+        >
+          {present && children}
+        </Comp>
+      )}
+    </Presence>
   );
 });
 

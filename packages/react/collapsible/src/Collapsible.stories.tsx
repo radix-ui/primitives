@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { styled } from '../../../../stitches.config';
+import { styled, css } from '../../../../stitches.config';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
 
 export default { title: 'Components/Collapsible' };
@@ -8,6 +8,13 @@ export const Styled = () => (
   <Collapsible as={StyledRoot}>
     <CollapsibleButton as={StyledButton}>Button</CollapsibleButton>
     <CollapsibleContent as={StyledContent}>Content 1</CollapsibleContent>
+  </Collapsible>
+);
+
+export const Animated = () => (
+  <Collapsible as={StyledRoot}>
+    <CollapsibleButton as={StyledButton}>Button</CollapsibleButton>
+    <CollapsibleContent as={AnimatedContent}>Content 1</CollapsibleContent>
   </Collapsible>
 );
 
@@ -60,4 +67,23 @@ const StyledButton = styled('button', {
 const StyledContent = styled('div', {
   padding: 10,
   lineHeight: 1.5,
+});
+
+const fadeIn = css.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+});
+
+const fadeOut = css.keyframes({
+  from: { opacity: 1 },
+  to: { opacity: 0 },
+});
+
+const AnimatedContent = styled(StyledContent, {
+  '&[data-state="open"]': {
+    animation: `${fadeIn} 300ms ease-out`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${fadeOut} 300ms ease-in`,
+  },
 });

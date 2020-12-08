@@ -2,14 +2,22 @@ import * as React from 'react';
 import { useComposedRefs } from '@interop-ui/react-utils';
 import { useStateMachine } from './useStateMachine';
 
-type PresenceProps = { present: boolean };
+type PresenceProps = {
+  present: boolean;
+  children: React.ReactElement | ((props: { present: boolean }) => React.ReactElement);
+};
 
 const Presence: React.FC<PresenceProps> = (props) => {
   const { present, children } = props;
-  const child = React.Children.only(children) as React.ReactElement;
   const presence = usePresence(present);
+
+  const child = (typeof children === 'function'
+    ? children({ present: presence.isPresent })
+    : React.Children.only(children)) as React.ReactElement;
+
   const ref = useComposedRefs(presence.ref, (child as any).ref);
-  return presence.isPresent ? React.cloneElement(child, { ref }) : null;
+  const forceMount = typeof children === 'function';
+  return forceMount || presence.isPresent ? React.cloneElement(child, { ref }) : null;
 };
 
 Presence.displayName = 'Presence';
