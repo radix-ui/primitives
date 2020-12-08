@@ -196,7 +196,7 @@ const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaOwnProps>
       overflowY = 'auto',
       scrollbarVisibility = 'hover',
       scrollbarVisibilityRestTimeout = 600,
-      dir,
+      dir = 'ltr',
       trackClickBehavior = 'relative',
       unstable_forceNative: forceNative = false,
       unstable_prefersReducedMotion = false,
@@ -225,7 +225,7 @@ const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaOwnProps>
         overflowY={overflowY}
         scrollbarVisibility={scrollbarVisibility}
         scrollbarVisibilityRestTimeout={scrollbarVisibilityRestTimeout}
-        dir={dir!}
+        dir={dir}
         positionRef={positionRef}
         scrollAreaRef={scrollAreaRef}
         trackClickBehavior={trackClickBehavior}
