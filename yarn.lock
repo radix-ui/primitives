@@ -2204,6 +2204,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu"
+  dependencies:
+    "@interop-ui/react-menu": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-focus-guards@workspace:*, @interop-ui/react-focus-guards@workspace:packages/react/focus-guards":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-focus-guards@workspace:packages/react/focus-guards"
@@ -2240,15 +2254,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-menu@workspace:packages/react/menu":
+"@interop-ui/react-menu@workspace:*, @interop-ui/react-menu@workspace:packages/react/menu":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-menu@workspace:packages/react/menu"
   dependencies:
+    "@interop-ui/react-dismissable-layer": "workspace:*"
+    "@interop-ui/react-focus-guards": "workspace:*"
+    "@interop-ui/react-focus-scope": "workspace:*"
     "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-popper": "workspace:*"
+    "@interop-ui/react-portal": "workspace:*"
     "@interop-ui/react-roving-focus": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
+    aria-hidden: ^1.1.1
     parcel: ^2.0.0-beta.1
+    react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -2485,6 +2506,7 @@ __metadata:
   resolution: "@interop-ui/react-utils@workspace:packages/react/utils"
   dependencies:
     "@interop-ui/utils": "workspace:*"
+    "@testing-library/react": ^10.4.8
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0

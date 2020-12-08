@@ -1,7 +1,7 @@
 {
   "private": true,
-  "name": "@interop-ui/react-menu",
-  "version": "0.0.1-0",
+  "name": "@interop-ui/react-dropdown-menu",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -18,17 +18,10 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-dismissable-layer": "workspace:*",
-    "@interop-ui/react-focus-guards": "workspace:*",
-    "@interop-ui/react-focus-scope": "workspace:*",
+    "@interop-ui/react-menu": "workspace:*",
     "@interop-ui/react-polymorphic": "workspace:*",
-    "@interop-ui/react-popper": "workspace:*",
-    "@interop-ui/react-portal": "workspace:*",
-    "@interop-ui/react-roving-focus": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "workspace:*",
-    "aria-hidden": "^1.1.1",
-    "react-remove-scroll": "^2.4.0"
+    "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"
