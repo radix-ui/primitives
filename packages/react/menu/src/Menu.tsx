@@ -32,7 +32,7 @@ const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 const MENU_NAME = 'Menu';
 
-type MenuContextValue = MenuOwnProps;
+type MenuContextValue = { onIsOpenChange?: (isOpen: boolean) => void };
 const [MenuContext, useMenuContext] = createContext<MenuContextValue>(
   MENU_NAME + 'Context',
   MENU_NAME
@@ -43,26 +43,21 @@ type MenuOwnProps = {
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
-const Menu: React.FC<MenuOwnProps> = (props) => {
-  const { children, isOpen, onIsOpenChange } = props;
+const Menu = forwardRefWithAs<typeof MenuImpl, MenuOwnProps>((props, forwardedRef) => {
+  const { children, isOpen, onIsOpenChange, ...menuProps } = props;
   const handleIsOpenChange = useCallbackRef(onIsOpenChange);
-  const context = React.useMemo(() => ({ isOpen, onIsOpenChange: handleIsOpenChange }), [
+  const context = React.useMemo(() => ({ onIsOpenChange: handleIsOpenChange }), [
     handleIsOpenChange,
-    isOpen,
   ]);
 
-  return <MenuContext.Provider value={context}>{children}</MenuContext.Provider>;
-};
+  return isOpen ? (
+    <MenuImpl ref={forwardedRef} {...menuProps}>
+      <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
+    </MenuImpl>
+  ) : null;
+});
 
-Menu.displayName = MENU_NAME;
-
-/* -------------------------------------------------------------------------------------------------
- * MenuPopper
- * -----------------------------------------------------------------------------------------------*/
-
-const POPPER_NAME = 'MenuPopper';
-
-type MenuPopperOwnProps = {
+type MenuImplOwnProps = {
   anchorRef: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
 
   /**
@@ -131,12 +126,7 @@ type MenuPopperOwnProps = {
   shouldPortal?: boolean;
 };
 
-const MenuPopper = forwardRefWithAs<typeof MenuPopperImpl>((props, forwardedRef) => {
-  const context = useMenuContext(POPPER_NAME);
-  return context.isOpen ? <MenuPopperImpl ref={forwardedRef} {...props} /> : null;
-});
-
-const MenuPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuPopperOwnProps>(
+const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>(
   (props, forwardedRef) => {
     const {
       children,
@@ -188,7 +178,7 @@ const MenuPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuPopperO
               >
                 {(dismissableLayerProps) => (
                   <PopperPrimitive.Root
-                    {...getPartDataAttrObj(POPPER_NAME)}
+                    {...getPartDataAttrObj(MENU_NAME)}
                     {...popperProps}
                     ref={composeRefs(
                       forwardedRef,
@@ -231,7 +221,7 @@ const MenuPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuPopperO
   }
 );
 
-MenuPopper.displayName = POPPER_NAME;
+Menu.displayName = MENU_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuContent
@@ -623,7 +613,6 @@ function getState(checked: boolean) {
 }
 
 const Root = Menu;
-const Popper = MenuPopper;
 const Content = MenuContent;
 const Group = MenuGroup;
 const Label = MenuLabel;
@@ -637,7 +626,6 @@ const Arrow = MenuArrow;
 
 export {
   Menu,
-  MenuPopper,
   MenuContent,
   MenuGroup,
   MenuLabel,
@@ -650,7 +638,6 @@ export {
   MenuArrow,
   //
   Root,
-  Popper,
   Content,
   Group,
   Label,

@@ -52,11 +52,7 @@ const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
     setIsOpen,
   ]);
 
-  return (
-    <MenuPrimitive.Root isOpen={isOpen} onIsOpenChange={setIsOpen}>
-      <DropdownMenuContext.Provider value={context}>{children}</DropdownMenuContext.Provider>
-    </MenuPrimitive.Root>
-  );
+  return <DropdownMenuContext.Provider value={context}>{children}</DropdownMenuContext.Provider>;
 };
 
 DropdownMenu.displayName = DROPDOWN_MENU_NAME;
@@ -108,73 +104,74 @@ DropdownMenuTrigger.displayName = TRIGGER_NAME;
 const POPPER_NAME = 'DropdownMenuPopper';
 
 type DropdownMenuPopperOwnProps = {
-  anchorRef?: React.ComponentProps<typeof MenuPrimitive.Popper>['anchorRef'];
+  anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
   trapFocus: never;
   onCloseAutoFocus: never;
   onOpenAutoFocus: never;
   onDismiss: never;
 };
 
-const DropdownMenuPopper = forwardRefWithAs<
-  typeof MenuPrimitive.Popper,
-  DropdownMenuPopperOwnProps
->((props, forwardedRef) => {
-  const {
-    anchorRef,
-    disableOutsidePointerEvents = true,
-    onPointerDownOutside,
-    onInteractOutside,
-    disableOutsideScroll = true,
-    shouldPortal = true,
-    ...popperProps
-  } = props;
-  const context = useDropdownMenuContext(POPPER_NAME);
-  const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
-  return (
-    <MenuPrimitive.Popper
-      ref={forwardedRef}
-      {...popperProps}
-      style={{
-        ...popperProps.style,
-        // re-namespace exposed popper custom property
-        ['--interop-ui-dropdown-menu-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
-      }}
-      anchorRef={anchorRef || context.triggerRef}
-      trapFocus
-      onCloseAutoFocus={(event) => {
-        if (skipCloseAutoFocus) {
-          event.preventDefault();
-        } else {
-          context.triggerRef.current?.focus();
-        }
-      }}
-      disableOutsidePointerEvents={disableOutsidePointerEvents}
-      onPointerDownOutside={(event) => {
-        const wasTrigger = event.target === context.triggerRef.current;
+const DropdownMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, DropdownMenuPopperOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      anchorRef,
+      disableOutsidePointerEvents = true,
+      onPointerDownOutside,
+      onInteractOutside,
+      disableOutsideScroll = true,
+      shouldPortal = true,
+      ...popperProps
+    } = props;
+    const context = useDropdownMenuContext(POPPER_NAME);
+    const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
+    return (
+      <MenuPrimitive.Root
+        ref={forwardedRef}
+        {...popperProps}
+        style={{
+          ...popperProps.style,
+          // re-namespace exposed popper custom property
+          ['--interop-ui-dropdown-menu-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
+        }}
+        isOpen={context.isOpen}
+        onIsOpenChange={context.setIsOpen}
+        anchorRef={anchorRef || context.triggerRef}
+        trapFocus
+        onCloseAutoFocus={(event) => {
+          if (skipCloseAutoFocus) {
+            event.preventDefault();
+          } else {
+            context.triggerRef.current?.focus();
+          }
+        }}
+        disableOutsidePointerEvents={disableOutsidePointerEvents}
+        onPointerDownOutside={(event) => {
+          const wasTrigger = event.target === context.triggerRef.current;
 
-        // skip autofocus on close if clicking outside is allowed and it happened
-        setSkipCloseAutoFocus(!disableOutsidePointerEvents);
+          // skip autofocus on close if clicking outside is allowed and it happened
+          setSkipCloseAutoFocus(!disableOutsidePointerEvents);
 
-        // prevent dismissing when clicking the trigger
-        // as it's already setup to close, otherwise it would close and immediately open.
-        if (wasTrigger) {
-          event.preventDefault();
-        } else {
-          onInteractOutside?.(event);
-        }
+          // prevent dismissing when clicking the trigger
+          // as it's already setup to close, otherwise it would close and immediately open.
+          if (wasTrigger) {
+            event.preventDefault();
+          } else {
+            onInteractOutside?.(event);
+          }
 
-        if (event.defaultPrevented) {
-          // reset this because the event was prevented
-          setSkipCloseAutoFocus(false);
-        }
-      }}
-      onInteractOutside={onInteractOutside}
-      disableOutsideScroll={disableOutsideScroll}
-      shouldPortal={shouldPortal}
-      onDismiss={() => context.setIsOpen(false)}
-    />
-  );
-});
+          if (event.defaultPrevented) {
+            // reset this because the event was prevented
+            setSkipCloseAutoFocus(false);
+          }
+        }}
+        onInteractOutside={onInteractOutside}
+        disableOutsideScroll={disableOutsideScroll}
+        shouldPortal={shouldPortal}
+        onDismiss={() => context.setIsOpen(false)}
+      />
+    );
+  }
+);
 
 DropdownMenuPopper.displayName = POPPER_NAME;
 
