@@ -44,12 +44,29 @@ const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
 const DIALOG_NAME = 'Dialog';
 
 type DialogOwnProps = {
+  /**
+   * A unique identifier for the dialog component. The `id` is used to generate DOM id attributes
+   * for nested components. If no `id` prop is provided, a generated id will be used.
+   */
   id?: string;
+  /**
+   * The controlled open state of the dialog. Must be used in conjunction with `onIsOpenChange`.
+   */
   isOpen?: boolean;
+  /**
+   * The value of the item whose panel is expanded when the accordion is initially rendered. Use
+   * `defaultValue` if you do not need to control the state of an accordion.
+   */
   defaultIsOpen?: boolean;
+  /**
+   * The callback that fires when the state of the dialog changes.
+   */
   onIsOpenChange?: (isOpen: boolean) => void;
 };
 
+/**
+ * `Dialog` is the root component.
+ */
 const Dialog: React.FC<DialogOwnProps> = (props) => {
   const { children, id: idProp, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -78,6 +95,10 @@ Dialog.displayName = DIALOG_NAME;
 const TRIGGER_NAME = 'DialogTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
+/**
+ * `DialogTrigger` is the button that triggers the `Dialog`. Use this when an uncontrolled
+ * state is desired.
+ */
 const DialogTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwardedRef) => {
   const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
   const context = useDialogContext(TRIGGER_NAME);
@@ -108,12 +129,15 @@ const OVERLAY_DEFAULT_TAG = 'div';
 
 type DialogOverlayOwnProps = {
   /**
-   * Used to force mounting when more control is needed. Useful when
-   * controlling animation with React animation libraries.
+   * Used to force mounting when more control is needed. Useful when controlling animation with
+   * React animation libraries.
    */
   forceMount?: true;
 };
 
+/**
+ * `DialogOverlay` is the overlay that covers the inert portion of the view when a dialog is open.
+ */
 const DialogOverlay = forwardRefWithAs<typeof DialogOverlayImpl, DialogOverlayOwnProps>(
   (props, forwardedRef) => {
     const { forceMount, ...overlayProps } = props;
@@ -150,12 +174,15 @@ const CONTENT_DEFAULT_TAG = 'div';
 
 type DialogContentOwnProps = {
   /**
-   * Used to force mounting when more control is needed. Useful when
-   * controlling animation with React animation libraries.
+   * Used to force mounting when more control is needed. Useful when controlling animation with
+   * React animation libraries.
    */
   forceMount?: true;
 };
 
+/**
+ * `DialogContent` is the component that contains content to be rendered in an open `Dialog`.
+ */
 const DialogContent = forwardRefWithAs<typeof DialogContentImpl, DialogContentOwnProps>(
   (props, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
@@ -174,26 +201,23 @@ const DialogContent = forwardRefWithAs<typeof DialogContentImpl, DialogContentOw
 
 type DialogContentImplOwnProps = {
   /**
-   * Event handler called when auto-focusing on open.
-   * Can be prevented.
+   * Event handler called when auto-focusing on open. It can be prevented by calling
+   * `event.preventDefault`.
    */
   onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
-
   /**
-   * Event handler called when auto-focusing on close.
-   * Can be prevented.
+   * Event handler called when auto-focusing on close. It can be prevented by calling
+   * `event.preventDefault`.
    */
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
-
   /**
-   * Event handler called when the escape key is down.
-   * Can be prevented.
+   * Event handler called when the escape key is down. It can be prevented by calling
+   * `event.preventDefault`.
    */
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
-
   /**
-   * Event handler called when the a pointer event happens outside of the `Dialog`.
-   * Can be prevented.
+   * Event handler called when the a pointer event happens outside of the `Dialog`. It can be
+   * prevented by calling `event.preventDefault`.
    */
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 };
@@ -295,6 +319,10 @@ DialogContent.displayName = CONTENT_NAME;
 const CLOSE_NAME = 'DialogClose';
 const CLOSE_DEFAULT_TAG = 'button';
 
+/**
+ * `DialogClose` is the button that closes an open `Dialog`. Use this when an uncontrolled state is
+ * desired.
+ */
 const DialogClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwardedRef) => {
   const { as: Comp = CLOSE_DEFAULT_TAG, onClick, ...closeProps } = props;
   const context = useDialogContext(CLOSE_NAME);

@@ -37,15 +37,17 @@ const [AlertDialogContext, useAlertDialogContext] = createContext<AlertDialogCon
   ROOT_NAME
 );
 
-const [
-  AlertDialogContentContext,
-  useAlertDialogContentContext,
-] = createContext<AlertDialogContentContextValue>('AlertDialogContext', ROOT_NAME);
+const [AlertDialogContentContext, useAlertDialogContentContext] = createContext<
+  AlertDialogContentContextValue
+>('AlertDialogContext', ROOT_NAME);
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
  * -----------------------------------------------------------------------------------------------*/
 
+/**
+ * `AlertDialog` is the root component.
+ */
 const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => {
   const { children, id: idProp, ...dialogProps } = props;
   const generatedId = makeId('alert-dialog', useId());
@@ -72,6 +74,10 @@ AlertDialog.displayName = ROOT_NAME;
 
 const TRIGGER_NAME = 'AlertDialogTrigger';
 
+/**
+ * `AlertDialogTrigger` is the button that triggers the `AlertDialog`. Use this when an uncontrolled
+ * state is desired.
+ */
 const AlertDialogTrigger = forwardRefWithAs<typeof DialogTrigger>((props, forwardedRef) => {
   return <DialogTrigger {...getPartDataAttrObj(TRIGGER_NAME)} ref={forwardedRef} {...props} />;
 });
@@ -84,6 +90,10 @@ AlertDialogTrigger.displayName = TRIGGER_NAME;
 
 const OVERLAY_NAME = 'AlertDialogOverlay';
 
+/**
+ * `AlertDialogOverlay` is the overlay that covers the inert portion of the view when a dialog is
+ * open.
+ */
 const AlertDialogOverlay = forwardRefWithAs<typeof DialogOverlay>((props, forwardedRef) => {
   return <DialogOverlay {...getPartDataAttrObj(OVERLAY_NAME)} ref={forwardedRef} {...props} />;
 });
@@ -96,6 +106,11 @@ AlertDialogOverlay.displayName = OVERLAY_NAME;
 
 const CANCEL_NAME = 'AlertDialogCancel';
 
+/**
+ * `AlertDialogCancel` is a button that closes the `AlertDialog` and assumes no subsequent action is
+ * expected by the user. This button should be distinguished visually from `AlertDialogAction`
+ * buttons for the best usability.
+ */
 const AlertDialogCancel = forwardRefWithAs<typeof DialogClose>((props, forwardedRef) => {
   const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
   const ref = useComposedRefs(forwardedRef, cancelRef);
@@ -110,6 +125,11 @@ AlertDialogCancel.displayName = CANCEL_NAME;
 
 const ACTION_NAME = 'AlertDialogAction';
 
+/**
+ * `AlertDialogAction` is a button that closes the `AlertDialog` and assumes that a subsequent
+ * action is expected by the user. These buttons should be distinguished visually from the
+ * `AlertDialogCancel` button for the best usability.
+ */
 const AlertDialogAction = forwardRefWithAs<typeof DialogClose>((props, forwardedRef) => {
   return <DialogClose {...getPartDataAttrObj(ACTION_NAME)} ref={forwardedRef} {...props} />;
 });
@@ -127,6 +147,10 @@ type AlertDialogContentOwnProps = {
   id: never;
 };
 
+/**
+ * `AlertDialogContent` is the component that contains content to be rendered in an open
+ * `AlertDialog`.
+ */
 const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogContentOwnProps>(
   (props, forwardedRef) => {
     const {
@@ -189,6 +213,11 @@ AlertDialogContent.displayName = CONTENT_NAME;
 const TITLE_NAME = 'AlertDialogTitle';
 const TITLE_DEFAULT_TAG = 'h2';
 
+/**
+ * A component to provide an accessible name to be announced when an `AlertDialog` is opened.
+ * Alternatively, you can provide `aria-label` or `aria-labelledby` to `AlertDialogContent` and
+ * exclude this component.
+ */
 const AlertDialogTitle = forwardRefWithAs<typeof TITLE_DEFAULT_TAG>((props, forwardedRef) => {
   const { as: Comp = TITLE_DEFAULT_TAG, ...titleProps } = props;
   const { titleId } = useAlertDialogContext(TITLE_NAME);
@@ -206,6 +235,11 @@ AlertDialogTitle.displayName = TITLE_NAME;
 const DESCRIPTION_NAME = 'AlertDialogDescription';
 const DESCRIPTION_DEFAULT_TAG = 'p';
 
+/**
+ * A component to provide an accessible description to be announced when an `AlertDialog` is opened.
+ * Alternatively, you can provide `aria-describedby` to `AlertDialogContent` and exclude this
+ * component.
+ */
 const AlertDialogDescription = forwardRefWithAs<typeof DESCRIPTION_DEFAULT_TAG>(
   (props, forwardedRef) => {
     const { as: Comp = DESCRIPTION_DEFAULT_TAG, ...descriptionProps } = props;
