@@ -213,7 +213,6 @@ export const RadioItems = () => {
 };
 
 type MenuOwnProps = {
-  isOpen: never;
   onIsOpenChange: never;
   anchorRef: never;
   shouldPortal: never;
@@ -224,28 +223,32 @@ type MenuOwnProps = {
   disableOutsideScroll: never;
 };
 
-const Menu = forwardRefWithAs<typeof MenuPrimitive, MenuOwnProps>((props, forwardedRef) => (
-  <div style={{ position: 'relative' }}>
-    <MenuPrimitive
-      as={StyledPopper}
-      ref={forwardedRef}
-      isOpen
-      onIsOpenChange={() => {}}
-      anchorRef={useStaticElementRef()}
-      shouldPortal={false}
-      trapFocus={false}
-      onOpenAutoFocus={(event) => event.preventDefault()}
-      onCloseAutoFocus={(event) => event.preventDefault()}
-      disableOutsidePointerEvents={false}
-      disableOutsideScroll={false}
-      {...props}
-    />
-  </div>
-));
+const Menu = forwardRefWithAs<typeof MenuPrimitive, MenuOwnProps>((props, forwardedRef) => {
+  const { isOpen = true } = props;
+  return (
+    <div style={{ position: 'relative' }}>
+      <MenuPrimitive
+        as={StyledPopper}
+        ref={forwardedRef}
+        isOpen={isOpen}
+        onIsOpenChange={() => {}}
+        anchorRef={useStaticElementRef()}
+        shouldPortal={false}
+        trapFocus={false}
+        onOpenAutoFocus={(event) => event.preventDefault()}
+        onCloseAutoFocus={(event) => event.preventDefault()}
+        disableOutsidePointerEvents={false}
+        disableOutsideScroll={false}
+        {...props}
+      />
+    </div>
+  );
+});
 
 export const Animated = () => {
   const files = ['README.md', 'index.js', 'page.css'];
   const [file, setFile] = React.useState(files[1]);
+  const [open, setOpen] = React.useState(true);
   const checkboxItems = [
     { label: 'Bold', state: React.useState(false) },
     { label: 'Italic', state: React.useState(true) },
@@ -254,34 +257,42 @@ export const Animated = () => {
   ];
 
   return (
-    <Menu>
-      <MenuContent as={StyledContent}>
-        {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
-          <MenuCheckboxItem
-            key={label}
-            as={StyledItem}
-            checked={checked}
-            onCheckedChange={setChecked}
-            disabled={disabled}
-          >
-            {label}
-            <AnimatedMenuItemIndicator>
-              <TickIcon />
-            </AnimatedMenuItemIndicator>
-          </MenuCheckboxItem>
-        ))}
-        <MenuRadioGroup value={file} onValueChange={setFile}>
-          {files.map((file) => (
-            <MenuRadioItem key={file} as={StyledItem} value={file}>
-              {file}
+    <>
+      <label>
+        <input type="checkbox" checked={open} onChange={(event) => setOpen(event.target.checked)} />{' '}
+        isOpen
+      </label>
+      <br />
+      <br />
+      <AnimatedMenu isOpen={open}>
+        <MenuContent as={StyledContent}>
+          {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+            <MenuCheckboxItem
+              key={label}
+              as={StyledItem}
+              checked={checked}
+              onCheckedChange={setChecked}
+              disabled={disabled}
+            >
+              {label}
               <AnimatedMenuItemIndicator>
                 <TickIcon />
               </AnimatedMenuItemIndicator>
-            </MenuRadioItem>
+            </MenuCheckboxItem>
           ))}
-        </MenuRadioGroup>
-      </MenuContent>
-    </Menu>
+          <MenuRadioGroup value={file} onValueChange={setFile}>
+            {files.map((file) => (
+              <MenuRadioItem key={file} as={StyledItem} value={file}>
+                {file}
+                <AnimatedMenuItemIndicator>
+                  <TickIcon />
+                </AnimatedMenuItemIndicator>
+              </MenuRadioItem>
+            ))}
+          </MenuRadioGroup>
+        </MenuContent>
+      </AnimatedMenu>
+    </>
   );
 };
 
@@ -356,6 +367,15 @@ const fadeIn = css.keyframes({
 const fadeOut = css.keyframes({
   from: { opacity: 1 },
   to: { opacity: 0 },
+});
+
+const AnimatedMenu = styled(Menu, {
+  '&[data-state="open"]': {
+    animation: `${fadeIn} 300ms ease-out`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${fadeOut} 300ms ease-in`,
+  },
 });
 
 const AnimatedMenuItemIndicator = styled(MenuItemIndicator, {

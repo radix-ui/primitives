@@ -42,20 +42,28 @@ const [MenuContext, useMenuContext] = createContext<MenuContextValue>(
 type MenuOwnProps = {
   isOpen?: boolean;
   onIsOpenChange?: (isOpen: boolean) => void;
+
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
 };
 
 const Menu = forwardRefWithAs<typeof MenuImpl, MenuOwnProps>((props, forwardedRef) => {
-  const { children, isOpen, onIsOpenChange, ...menuProps } = props;
+  const { children, forceMount, isOpen = false, onIsOpenChange, ...menuProps } = props;
   const handleIsOpenChange = useCallbackRef(onIsOpenChange);
   const context = React.useMemo(() => ({ onIsOpenChange: handleIsOpenChange }), [
     handleIsOpenChange,
   ]);
 
-  return isOpen ? (
-    <MenuImpl ref={forwardedRef} {...menuProps}>
-      <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
-    </MenuImpl>
-  ) : null;
+  return (
+    <Presence present={forceMount || isOpen}>
+      <MenuImpl ref={forwardedRef} {...menuProps} data-state={getOpenState(isOpen)}>
+        <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
+      </MenuImpl>
+    </Presence>
+  );
 });
 
 type MenuImplOwnProps = {
@@ -466,7 +474,7 @@ const MenuCheckboxItem = forwardRefWithAs<typeof MenuItem, MenuCheckboxItemOwnPr
         aria-checked={checked}
         {...checkboxItemProps}
         {...getPartDataAttrObj(CHECKBOX_ITEM_NAME)}
-        data-state={getState(checked)}
+        data-state={getCheckedState(checked)}
         ref={forwardedRef}
         onSelect={composeEventHandlers(
           checkboxItemProps.onSelect,
@@ -532,7 +540,7 @@ const MenuRadioItem = forwardRefWithAs<typeof MenuItem, MenuRadioItemOwnProps>(
         aria-checked={checked}
         {...radioItemProps}
         {...getPartDataAttrObj(RADIO_ITEM_NAME)}
-        data-state={getState(checked)}
+        data-state={getCheckedState(checked)}
         ref={forwardedRef}
         onSelect={composeEventHandlers(
           radioItemProps.onSelect,
@@ -576,7 +584,7 @@ const MenuItemIndicator = forwardRefWithAs<
       <Comp
         {...indicatorProps}
         {...getPartDataAttrObj(ITEM_INDICATOR_NAME)}
-        data-state={getState(checked)}
+        data-state={getCheckedState(checked)}
         ref={forwardedRef}
       />
     </Presence>
@@ -620,7 +628,11 @@ function isItemOrInsideItem(target: EventTarget) {
   return item !== null;
 }
 
-function getState(checked: boolean) {
+function getOpenState(open: boolean) {
+  return open ? 'open' : 'closed';
+}
+
+function getCheckedState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
 
