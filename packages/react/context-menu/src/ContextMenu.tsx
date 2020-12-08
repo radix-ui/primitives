@@ -14,8 +14,8 @@ const CONTEXT_MENU_NAME = 'ContextMenu';
 
 type ContextMenuContextValue = {
   anchorRef: React.MutableRefObject<MeasurableElement | null>;
-  open: (point: Point) => void;
-  close: () => void;
+  openMenu: (point: Point) => void;
+  closeMenu: () => void;
 };
 
 const [ContextMenuContext, useContextMenuContext] = createContext<ContextMenuContextValue>(
@@ -30,12 +30,12 @@ const ContextMenu: React.FC = (props) => {
   const anchorRef = React.useRef({
     getBoundingClientRect: () => makeRect({ width: 0, height: 0 }, anchorPointRef.current),
   });
-  const open = React.useCallback((point: Point) => {
+  const openMenu = React.useCallback((point: Point) => {
     setIsOpen(true);
     anchorPointRef.current = point;
   }, []);
-  const close = React.useCallback(() => setIsOpen(false), []);
-  const context = React.useMemo(() => ({ anchorRef, open, close }), [open, close]);
+  const closeMenu = React.useCallback(() => setIsOpen(false), []);
+  const context = React.useMemo(() => ({ anchorRef, openMenu, closeMenu }), [openMenu, closeMenu]);
 
   return (
     <MenuPrimitive.Root isOpen={isOpen} onIsOpenChange={setIsOpen}>
@@ -65,7 +65,7 @@ const ContextMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, 
       onContextMenu={composeEventHandlers(triggerProps.onContextMenu, (event) => {
         event.preventDefault();
         const point = { x: event.clientX, y: event.clientY };
-        context.open(point);
+        context.openMenu(point);
       })}
     />
   );
@@ -113,7 +113,7 @@ const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Popper, ContextM
         disableOutsidePointerEvents={disableOutsidePointerEvents}
         disableOutsideScroll={disableOutsideScroll}
         shouldPortal={shouldPortal}
-        onDismiss={() => context.close()}
+        onDismiss={() => context.closeMenu()}
       />
     );
   }
