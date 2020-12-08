@@ -6,7 +6,13 @@ import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
 const NAME = 'AccessibleIcon';
 const DEFAULT_TAG = 'span';
 
-type AccessibleIconOwnProps = { label: string };
+type AccessibleIconOwnProps = {
+  /**
+   * The accessible label for the icon. This label will be visually hidden but announced to screen
+   * reader users, similar to `alt` text for `img` tags.
+   */
+  label: string;
+};
 
 const AccessibleIcon = forwardRefWithAs<typeof DEFAULT_TAG, AccessibleIconOwnProps>(
   (props, forwardedRef) => {

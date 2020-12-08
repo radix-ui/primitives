@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-accessible-icon": prerelease
+
+declined:
+  - interop-ui
