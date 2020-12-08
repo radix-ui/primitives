@@ -354,7 +354,7 @@ type MenuItemOwnProps = {
   disabled?: boolean;
   textValue?: string;
   onSelect?: (event: Event) => void;
-  onSelectCapture?: never;
+  onSelectCapture: never;
 };
 
 const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(

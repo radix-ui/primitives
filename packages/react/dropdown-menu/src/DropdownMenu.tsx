@@ -108,11 +108,11 @@ DropdownMenuTrigger.displayName = TRIGGER_NAME;
 const POPPER_NAME = 'DropdownMenuPopper';
 
 type DropdownMenuPopperOwnProps = {
-  trapFocus?: never;
-  onCloseAutoFocus?: never;
-  onOpenAutoFocus?: never;
-  onDismiss?: never;
   anchorRef?: React.ComponentProps<typeof MenuPrimitive.Popper>['anchorRef'];
+  trapFocus: never;
+  onCloseAutoFocus: never;
+  onOpenAutoFocus: never;
+  onDismiss: never;
 };
 
 const DropdownMenuPopper = forwardRefWithAs<
