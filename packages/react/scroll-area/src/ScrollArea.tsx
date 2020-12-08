@@ -33,8 +33,6 @@ import { useHover } from './useHover';
 import type { Axis, Size } from '@interop-ui/utils';
 
 const SCROLL_AREA_CSS_PROPS_LIST = [
-  'scrollAreaWidth',
-  'scrollAreaHeight',
   'positionWidth',
   'positionHeight',
   'scrollbarXOffset',
@@ -43,7 +41,6 @@ const SCROLL_AREA_CSS_PROPS_LIST = [
   'scrollbarYSize',
   'scrollbarThumbWillChange',
   'scrollbarThumbHeight',
-  'scrollbarThumbWidth',
   'scrollbarThumbWidth',
   'cornerLeft',
   'cornerRight',
