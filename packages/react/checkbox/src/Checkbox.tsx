@@ -8,6 +8,7 @@ import {
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { useLabelContext } from '@interop-ui/react-label';
+import { Presence } from '@interop-ui/react-presence';
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
@@ -121,12 +122,29 @@ Checkbox.displayName = CHECKBOX_NAME;
 const INDICATOR_NAME = 'CheckboxIndicator';
 const INDICATOR_DEFAULT_TAG = 'span';
 
-const CheckboxIndicator = forwardRefWithAs<typeof CheckboxIndicatorImpl>((props, forwardedRef) => {
-  const checked = useCheckboxContext(INDICATOR_NAME);
-  return checked ? (
-    <CheckboxIndicatorImpl {...props} data-state={getState(checked)} ref={forwardedRef} />
-  ) : null;
-});
+type CheckboxIndicatorOwnProps = {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+};
+
+const CheckboxIndicator = forwardRefWithAs<typeof CheckboxIndicatorImpl, CheckboxIndicatorOwnProps>(
+  (props, forwardedRef) => {
+    const { forceMount, ...indicatorProps } = props;
+    const checked = useCheckboxContext(INDICATOR_NAME);
+    return (
+      <Presence present={forceMount || checked === 'indeterminate' || checked === true}>
+        <CheckboxIndicatorImpl
+          {...indicatorProps}
+          data-state={getState(checked)}
+          ref={forwardedRef}
+        />
+      </Presence>
+    );
+  }
+);
 
 const CheckboxIndicatorImpl = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
   function CheckboxIndicatorImpl(props, forwardedRef) {
