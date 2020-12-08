@@ -10,6 +10,7 @@ import type { RenderResult } from '@testing-library/react';
 
 type ButtonProps = {
   isDisabled?: boolean;
+  another?: number;
 };
 
 const Button = forwardRefWithAs<'button', ButtonProps>((props, forwardedRef) => {
@@ -42,7 +43,12 @@ export function ExtendedButtonUsingReactUtilsWithInternalInlineAs(
  * Extended Polymorphic Button
  * -----------------------------------------------------------------------------------------------*/
 
-const ExtendedButton = forwardRefWithAs<typeof Button, { isExtended?: boolean }>(
+type ExtendedButtonProps = {
+  isExtended?: boolean;
+  another: never;
+};
+
+const ExtendedButton = forwardRefWithAs<typeof Button, ExtendedButtonProps>(
   (props, forwardedRef) => {
     const { isExtended, ...extendedButtonProps } = props;
     return <Button {...extendedButtonProps} ref={forwardedRef} />;
@@ -139,6 +145,10 @@ export function Test() {
 
       {/* ExtendedButton accepts isDisabled prop */}
       <ExtendedButton isDisabled />
+
+      {/* ExtendedButton does not accept another prop */}
+      {/* @ts-expect-error */}
+      <ExtendedButton another={1} />
 
       {/* ExtendedButton accepts onClick prop */}
       <ExtendedButton onClick={(event) => event.currentTarget.form} />

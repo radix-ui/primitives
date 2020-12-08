@@ -3,7 +3,9 @@ import * as React from 'react';
 /* -------------------------------------------------------------------------------------------------
  * Utility types
  * -----------------------------------------------------------------------------------------------*/
-type MergeProps<P1 = {}, P2 = {}> = Omit<P1, keyof P2> & P2;
+type NeverKeys<T> = { [P in keyof T]: T[P] extends never ? P : never }[keyof T];
+type MergeProps<P1 = {}, P2 = {}> = Omit<P1, keyof P2> &
+  (NeverKeys<P2> extends never ? P2 : Omit<P2, NeverKeys<P2>>);
 
 type MergeWithDOMProps<E extends React.ElementType, P = {}> = MergeProps<
   React.ComponentPropsWithRef<E>,

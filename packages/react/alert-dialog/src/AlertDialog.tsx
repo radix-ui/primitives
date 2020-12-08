@@ -123,8 +123,8 @@ AlertDialogAction.displayName = ACTION_NAME;
 const CONTENT_NAME = 'AlertDialogContent';
 
 type AlertDialogContentOwnProps = {
-  refToFocusOnOpen?: never;
-  id?: never;
+  refToFocusOnOpen: never;
+  id: never;
 };
 
 const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogContentOwnProps>(
