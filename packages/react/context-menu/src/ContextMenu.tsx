@@ -118,7 +118,6 @@ ContextMenuPopper.displayName = POPPER_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const ContextMenuContent = extendComponent(MenuPrimitive.Content, 'ContextMenuContent');
 const ContextMenuGroup = extendComponent(MenuPrimitive.Group, 'ContextMenuGroup');
 const ContextMenuLabel = extendComponent(MenuPrimitive.Label, 'ContextMenuLabel');
 const ContextMenuItem = extendComponent(MenuPrimitive.Item, 'ContextMenuItem');
@@ -139,7 +138,6 @@ const ContextMenuSeparator = extendComponent(MenuPrimitive.Separator, 'ContextMe
 const Root = ContextMenu;
 const Trigger = ContextMenuTrigger;
 const Popper = ContextMenuPopper;
-const Content = ContextMenuContent;
 const MenuGroup = ContextMenuGroup;
 const MenuLabel = ContextMenuLabel;
 const MenuItem = ContextMenuItem;
@@ -153,7 +151,6 @@ export {
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuPopper,
-  ContextMenuContent,
   ContextMenuGroup,
   ContextMenuLabel,
   ContextMenuItem,
@@ -166,7 +163,6 @@ export {
   Root,
   Trigger,
   Popper,
-  Content,
   MenuGroup,
   MenuLabel,
   MenuItem,

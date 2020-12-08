@@ -14,7 +14,6 @@ import type { Side, Align, MeasurableElement } from '@interop-ui/utils';
  * -----------------------------------------------------------------------------------------------*/
 
 type PopperContextValue = {
-  contentRef: React.RefObject<HTMLDivElement>;
   arrowRef: React.RefObject<HTMLElement>;
   setArrowOffset: (offset?: number) => void;
   arrowStyles: React.CSSProperties;
@@ -59,15 +58,17 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
 
     const [arrowOffset, setArrowOffset] = React.useState<number>();
     const anchorRect = useRect(anchorRef);
-    const contentRef = React.useRef<HTMLDivElement>(null);
-    const contentSize = useSize(contentRef);
+    const popperRef = React.useRef<HTMLDivElement>(null);
+    const popperSize = useSize(popperRef);
     const arrowRef = React.useRef<HTMLSpanElement>(null);
     const arrowSize = useSize(arrowRef);
     const debugContext = useDebugContext();
 
+    const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
+
     const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
       anchorRect,
-      popperSize: contentSize,
+      popperSize,
       arrowSize,
 
       // config
@@ -81,9 +82,7 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
     });
     const isPlaced = placedSide !== undefined;
 
-    const context = React.useMemo(() => ({ contentRef, arrowRef, arrowStyles, setArrowOffset }), [
-      arrowStyles,
-    ]);
+    const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
 
     return (
       <div style={popperStyles}>
@@ -96,7 +95,7 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
             // we prevent animations so that users's animation don't kick in too early referring wrong sides
             animation: !isPlaced ? 'none' : undefined,
           }}
-          ref={forwardedRef}
+          ref={composedPopperRef}
           data-side={placedSide}
           data-align={placedAlign}
         >
@@ -108,22 +107,6 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
 );
 
 Popper.displayName = POPPER_NAME;
-
-/* -------------------------------------------------------------------------------------------------
- * PopperContent
- * -----------------------------------------------------------------------------------------------*/
-
-const CONTENT_NAME = 'PopperContent';
-const CONTENT_DEFAULT_TAG = 'div';
-
-const PopperContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = CONTENT_DEFAULT_TAG, ...contentProps } = props;
-  const { contentRef } = usePopperContext(CONTENT_NAME);
-  const composedContentRef = useComposedRefs(forwardedRef, contentRef);
-  return <Comp {...getPartDataAttrObj(CONTENT_NAME)} {...contentProps} ref={composedContentRef} />;
-});
-
-PopperContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopperArrow
@@ -177,7 +160,6 @@ PopperArrow.displayName = ARROW_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 const Root = Popper;
-const Content = PopperContent;
 const Arrow = PopperArrow;
 
-export { Popper, PopperContent, PopperArrow, Root, Content, Arrow };
+export { Popper, PopperArrow, Root, Arrow };

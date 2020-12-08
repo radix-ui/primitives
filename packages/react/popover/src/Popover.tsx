@@ -323,20 +323,6 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
 PopoverPopper.displayName = POPPER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * PopoverContent
- * -----------------------------------------------------------------------------------------------*/
-
-const CONTENT_NAME = 'PopoverContent';
-
-const PopoverContent = forwardRefWithAs<typeof PopperPrimitive.Content>((props, forwardedRef) => {
-  return (
-    <PopperPrimitive.Content {...getPartDataAttrObj(CONTENT_NAME)} {...props} ref={forwardedRef} />
-  );
-});
-
-PopoverContent.displayName = CONTENT_NAME;
-
-/* -------------------------------------------------------------------------------------------------
  * PopoverClose
  * -----------------------------------------------------------------------------------------------*/
 
@@ -379,7 +365,6 @@ PopoverArrow.displayName = ARROW_NAME;
 const Root = Popover;
 const Trigger = PopoverTrigger;
 const Popper = PopoverPopper;
-const Content = PopoverContent;
 const Close = PopoverClose;
 const Arrow = PopoverArrow;
 
@@ -387,13 +372,11 @@ export {
   Popover,
   PopoverTrigger,
   PopoverPopper,
-  PopoverContent,
   PopoverClose,
   PopoverArrow,
   Root,
   Trigger,
   Popper,
-  Content,
   Close,
   Arrow,
 };

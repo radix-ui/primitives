@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { FocusScope } from '@interop-ui/react-focus-scope';
-import { Popper, PopperContent, PopperArrow } from '@interop-ui/react-popper';
+import { Popper, PopperArrow } from '@interop-ui/react-popper';
 import { Portal } from '@interop-ui/react-portal';
 import { composeRefs } from '@interop-ui/react-utils';
 import { FocusGuards } from '@interop-ui/react-focus-guards';
@@ -644,30 +644,25 @@ function DummyPopover({
                         anchorRef={openButtonRef}
                         style={{
                           filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.12))',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: 10,
+                          background: 'white',
+                          minWidth: 200,
+                          minHeight: 150,
+                          padding: 20,
+                          borderRadius: 4,
+                          backgroundColor: color,
                           ...dismissableLayerProps.style,
                         }}
                         side="bottom"
                         sideOffset={10}
                       >
-                        <PopperContent
-                          style={{
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            gap: 10,
-                            background: 'white',
-                            minWidth: 200,
-                            minHeight: 150,
-                            padding: 20,
-                            borderRadius: 4,
-                            backgroundColor: color,
-                          }}
-                        >
-                          {children}
-                          <button type="button" onClick={() => setOpen(false)}>
-                            {closeLabel}
-                          </button>
-                          <input type="text" defaultValue="hello world" />
-                        </PopperContent>
+                        {children}
+                        <button type="button" onClick={() => setOpen(false)}>
+                          {closeLabel}
+                        </button>
+                        <input type="text" defaultValue="hello world" />
                         <PopperArrow width={10} height={4} style={{ fill: color }} offset={20} />
                       </Popper>
                     )}
