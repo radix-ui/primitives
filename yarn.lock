@@ -2160,6 +2160,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-context-menu@workspace:packages/react/context-menu":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-context-menu@workspace:packages/react/context-menu"
+  dependencies:
+    "@interop-ui/react-menu": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-debug-context@workspace:*, @interop-ui/react-debug-context@workspace:packages/react/debug-context":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-debug-context@workspace:packages/react/debug-context"
