@@ -188,7 +188,6 @@ export const PreventClosing = () => (
           <DropdownMenuItem
             as={StyledItem}
             onSelect={(event) => {
-              console.log(event.target, event.currentTarget);
               event.preventDefault();
               window.alert('action 1');
             }}
