@@ -478,10 +478,10 @@ const SliderPart = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderPartOwnProp
          * even when mouse moves outside the document.
          */
         onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-          event.currentTarget.setPointerCapture(event.pointerId);
+          (event.target as HTMLElement).setPointerCapture(event.pointerId);
         })}
         onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
-          event.currentTarget.releasePointerCapture(event.pointerId);
+          (event.target as HTMLElement).releasePointerCapture(event.pointerId);
         })}
       />
     );
