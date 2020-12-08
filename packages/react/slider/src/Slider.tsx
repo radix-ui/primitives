@@ -217,12 +217,12 @@ type SliderOrientationOwnProps = {
   onHomeKeyDown(event: React.KeyboardEvent): void;
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
-  onSlideMouseDown?: never;
-  onSlideMouseMove?: never;
-  onSlideMouseUp?: never;
-  onSlideTouchStart?: never;
-  onSlideTouchMove?: never;
-  onSlideTouchEnd?: never;
+  onSlideMouseDown: never;
+  onSlideMouseMove: never;
+  onSlideMouseUp: never;
+  onSlideTouchStart: never;
+  onSlideTouchMove: never;
+  onSlideTouchEnd: never;
 };
 
 type SliderHorizontalOwnProps = SliderOrientationOwnProps & {
@@ -520,7 +520,7 @@ const RANGE_NAME = 'SliderRange';
 const RANGE_DEFAULT_TAG = 'span';
 
 type SliderRangeOwnProps = {
-  children?: never;
+  children: never;
 };
 
 const SliderRange = forwardRefWithAs<typeof RANGE_DEFAULT_TAG, SliderRangeOwnProps>(
@@ -562,7 +562,7 @@ SliderRange.displayName = RANGE_NAME;
 const THUMB_NAME = 'SliderThumb';
 const THUMB_DEFAULT_TAG = 'span';
 
-type SliderThumbOwnProps = { value?: never; index?: never };
+type SliderThumbOwnProps = { value: never; index: never };
 
 const SliderThumb = forwardRefWithAs<typeof SliderThumbImpl, SliderThumbOwnProps>(
   (props, forwardedRef) => {
