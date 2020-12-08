@@ -1562,6 +1562,16 @@ ScrollAreaCorner.displayName = CORNER_NAME;
 
 /* ------------------------------------------------------------------------------------------------*/
 
+const Root = ScrollArea;
+const Viewport = ScrollAreaViewport;
+const ScrollbarX = ScrollAreaScrollbarX;
+const ScrollbarY = ScrollAreaScrollbarY;
+const ButtonStart = ScrollAreaButtonStart;
+const ButtonEnd = ScrollAreaButtonEnd;
+const Track = ScrollAreaTrack;
+const Thumb = ScrollAreaThumb;
+const Corner = ScrollAreaCorner;
+
 export {
   ScrollArea,
   ScrollAreaViewport,
@@ -1572,15 +1582,15 @@ export {
   ScrollAreaTrack,
   ScrollAreaThumb,
   ScrollAreaCorner,
-  ScrollArea as Root,
-  ScrollAreaViewport as Viewport,
-  ScrollAreaScrollbarX as ScrollbarX,
-  ScrollAreaScrollbarY as ScrollbarY,
-  ScrollAreaButtonStart as ButtonStart,
-  ScrollAreaButtonEnd as ButtonEnd,
-  ScrollAreaTrack as Track,
-  ScrollAreaThumb as Thumb,
-  ScrollAreaCorner as Corner,
+  Root,
+  Viewport,
+  ScrollbarX,
+  ScrollbarY,
+  ButtonStart,
+  ButtonEnd,
+  Track,
+  Thumb,
+  Corner,
   SCROLL_AREA_CSS_PROPS,
 };
 
