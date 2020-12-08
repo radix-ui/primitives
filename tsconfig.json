@@ -28,6 +28,7 @@
       "@interop-ui/react-progress-bar": ["./packages/react/progress-bar/src"],
       "@interop-ui/react-radio-group": ["./packages/react/radio-group/src"],
       "@interop-ui/react-roving-focus": ["./packages/react/roving-focus/src"],
+      "@interop-ui/react-scroll-area": ["./packages/react/react-scroll-area/src"],
       "@interop-ui/react-separator": ["./packages/react/separator/src"],
       "@interop-ui/react-slider": ["./packages/react/slider/src"],
       "@interop-ui/react-switch": ["./packages/react/switch/src"],
