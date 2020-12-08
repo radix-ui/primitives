@@ -114,7 +114,7 @@ function useImageLoadingStatus(src?: string) {
     }
 
     let isMounted = true;
-    const image = new Image();
+    const image = new window.Image();
 
     const updateStatus = (status: ImageLoadingStatus) => () => {
       if (!isMounted) return;
@@ -134,7 +134,7 @@ function useImageLoadingStatus(src?: string) {
   return loadingStatus;
 }
 const Root = Avatar;
-const ImagePart = AvatarImage;
+const Image = AvatarImage;
 const Fallback = AvatarFallback;
 
-export { Avatar, AvatarImage, AvatarFallback, Root, ImagePart as Image, Fallback };
+export { Avatar, AvatarImage, AvatarFallback, Root, Image, Fallback };
