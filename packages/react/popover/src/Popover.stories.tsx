@@ -8,7 +8,7 @@ import {
   PopoverArrow,
 } from './Popover';
 import { Arrow } from '@interop-ui/react-arrow';
-import { styled } from '../../../../stitches.config';
+import { styled, css } from '../../../../stitches.config';
 
 export default { title: 'Components/Popover' };
 
@@ -39,6 +39,42 @@ export const Controlled = () => {
       <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
         <PopoverTrigger as={StyledTrigger}>{isOpen ? 'close' : 'open'}</PopoverTrigger>
         <PopoverPopper as={StyledPopper}>
+          <PopoverContent as={StyledContent}>
+            <PopoverClose as={StyledClose}>close</PopoverClose>
+          </PopoverContent>
+          <PopoverArrow as={StyledArrow} width={20} height={10} />
+        </PopoverPopper>
+      </Popover>
+    </div>
+  );
+};
+
+export const Animated = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
+    >
+      <Popover>
+        <PopoverTrigger as={StyledTrigger}>open</PopoverTrigger>
+        <PopoverPopper as={AnimatedPopper} sideOffset={10}>
+          <PopoverContent as={StyledContent}>
+            <PopoverClose as={StyledClose}>close</PopoverClose>
+          </PopoverContent>
+          <PopoverArrow as={StyledArrow} width={20} height={10} />
+        </PopoverPopper>
+      </Popover>
+    </div>
+  );
+};
+
+export const ForcedMount = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
+    >
+      <Popover>
+        <PopoverTrigger as={StyledTrigger}>open</PopoverTrigger>
+        <PopoverPopper as={StyledPopper} sideOffset={10} forceMount>
           <PopoverContent as={StyledContent}>
             <PopoverClose as={StyledClose}>close</PopoverClose>
           </PopoverContent>
@@ -180,4 +216,23 @@ const StyledClose = styled('button', {});
 
 const StyledArrow = styled(Arrow, {
   fill: '$gray300',
+});
+
+const fadeIn = css.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+});
+
+const fadeOut = css.keyframes({
+  from: { opacity: 1 },
+  to: { opacity: 0 },
+});
+
+const AnimatedPopper = styled(StyledPopper, {
+  '&[data-state="open"]': {
+    animation: `${fadeIn} 300ms ease-out`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${fadeOut} 300ms ease-in`,
+  },
 });

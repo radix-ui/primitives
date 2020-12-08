@@ -15,6 +15,7 @@ import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
 import { useFocusGuards } from '@interop-ui/react-focus-guards';
+import { Presence } from '@interop-ui/react-presence';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
@@ -166,12 +167,27 @@ type PopoverPopperOwnProps = {
    */
   shouldPortal?: boolean;
 
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+
   anchorRef?: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
 };
 
 const PopoverPopper = forwardRefWithAs<typeof PopoverPopperImpl>((props, forwardedRef) => {
+  const { forceMount, ...popperProps } = props;
   const context = usePopoverContext(POPPER_NAME);
-  return context.isOpen ? <PopoverPopperImpl ref={forwardedRef} {...props} /> : null;
+  return (
+    <Presence present={forceMount || context.isOpen}>
+      <PopoverPopperImpl
+        {...popperProps}
+        ref={forwardedRef}
+        data-state={context.isOpen ? 'open' : 'closed'}
+      />
+    </Presence>
+  );
 });
 
 const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverPopperOwnProps>(

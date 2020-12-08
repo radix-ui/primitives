@@ -2070,6 +2070,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interop-ui/react-announce@workspace:packages/react/announce":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-announce@workspace:packages/react/announce"
+  dependencies:
+    "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@interop-ui/react-arrow@workspace:*, @interop-ui/react-arrow@workspace:packages/react/arrow":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-arrow@workspace:packages/react/arrow"
@@ -2134,7 +2148,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-collection@workspace:packages/react/collection":
+"@interop-ui/react-collection@workspace:*, @interop-ui/react-collection@workspace:packages/react/collection":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-collection@workspace:packages/react/collection"
   dependencies:
@@ -2261,6 +2275,7 @@ __metadata:
     "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-popper": "workspace:*"
     "@interop-ui/react-portal": "workspace:*"
+    "@interop-ui/react-presence": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     aria-hidden: ^1.1.1
@@ -2372,6 +2387,21 @@ __metadata:
   resolution: "@interop-ui/react-separator@workspace:packages/react/separator"
   dependencies:
     "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@interop-ui/react-slider@workspace:packages/react/slider":
+  version: 0.0.0-use.local
+  resolution: "@interop-ui/react-slider@workspace:packages/react/slider"
+  dependencies:
+    "@interop-ui/react-collection": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-use-size": "workspace:*"
+    "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
