@@ -179,24 +179,26 @@ const DropdownMenuPopper = forwardRefWithAs<
 DropdownMenuPopper.displayName = POPPER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * DropdownMenuItems
+ * DropdownMenuContent
  * -----------------------------------------------------------------------------------------------*/
 
-const ITEMS_NAME = 'DropdownMenuItems';
+const CONTENT_NAME = 'DropdownMenuContent';
 
-const DropdownMenuItems = forwardRefWithAs<typeof MenuPrimitive.Items>((props, forwardedRef) => {
-  const context = useDropdownMenuContext(ITEMS_NAME);
-  return (
-    <MenuPrimitive.Items
-      {...getPartDataAttrObj(ITEMS_NAME)}
-      {...props}
-      ref={forwardedRef}
-      id={context.id}
-    />
-  );
-});
+const DropdownMenuContent = forwardRefWithAs<typeof MenuPrimitive.Content>(
+  (props, forwardedRef) => {
+    const context = useDropdownMenuContext(CONTENT_NAME);
+    return (
+      <MenuPrimitive.Content
+        {...getPartDataAttrObj(CONTENT_NAME)}
+        {...props}
+        ref={forwardedRef}
+        id={context.id}
+      />
+    );
+  }
+);
 
-DropdownMenuItems.displayName = ITEMS_NAME;
+DropdownMenuContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -221,7 +223,7 @@ const DropdownMenuArrow = extendComponent(MenuPrimitive.Arrow, 'DropdownMenuArro
 const Root = DropdownMenu;
 const Trigger = DropdownMenuTrigger;
 const Popper = DropdownMenuPopper;
-const Items = DropdownMenuItems;
+const Content = DropdownMenuContent;
 const MenuGroup = DropdownMenuGroup;
 const MenuLabel = DropdownMenuLabel;
 const MenuItem = DropdownMenuItem;
@@ -236,7 +238,7 @@ export {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuPopper,
-  DropdownMenuItems,
+  DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuItem,
@@ -250,7 +252,7 @@ export {
   Root,
   Trigger,
   Popper,
-  Items,
+  Content,
   MenuGroup,
   MenuLabel,
   MenuItem,

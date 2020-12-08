@@ -234,23 +234,23 @@ const MenuPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuPopperO
 MenuPopper.displayName = POPPER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * MenuItems
+ * MenuContent
  * -----------------------------------------------------------------------------------------------*/
 
-const ITEMS_NAME = 'MenuItems';
+const CONTENT_NAME = 'MenuContent';
 
-type MenuItemsContextValue = {
+type MenuContentContextValue = {
   menuRef: React.RefObject<HTMLDivElement>;
   setItemsReachable: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const [MenuItemsContext, useMenuItemsContext] = createContext<MenuItemsContextValue>(
-  ITEMS_NAME + 'Context',
-  ITEMS_NAME
+const [MenuContentContext, useMenuContentContext] = createContext<MenuContentContextValue>(
+  CONTENT_NAME + 'Context',
+  CONTENT_NAME
 );
 
-type MenuItemsOwnProps = { loop?: boolean };
+type MenuContentOwnProps = { loop?: boolean };
 
-const MenuItems = forwardRefWithAs<typeof PopperPrimitive.Content, MenuItemsOwnProps>(
+const MenuContent = forwardRefWithAs<typeof PopperPrimitive.Content, MenuContentOwnProps>(
   (props, forwardedRef) => {
     const { children, loop = false, ...menuProps } = props;
     const menuRef = React.useRef<HTMLDivElement>(null);
@@ -298,18 +298,18 @@ const MenuItems = forwardRefWithAs<typeof PopperPrimitive.Content, MenuItemsOwnP
           orientation="vertical"
           loop={loop}
         >
-          <MenuItemsContext.Provider
+          <MenuContentContext.Provider
             value={React.useMemo(() => ({ menuRef, setItemsReachable }), [])}
           >
             {children}
-          </MenuItemsContext.Provider>
+          </MenuContentContext.Provider>
         </RovingFocusGroup>
       </PopperPrimitive.Content>
     );
   }
 );
 
-MenuItems.displayName = ITEMS_NAME;
+MenuContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuGroup
@@ -363,7 +363,7 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
     const menuItemRef = React.useRef<HTMLDivElement>(null);
     const composedRef = useComposedRefs(forwardedRef, menuItemRef);
     const menuContext = useMenuContext(ITEM_NAME);
-    const itemsContext = useMenuItemsContext(ITEM_NAME);
+    const contentContext = useMenuContentContext(ITEM_NAME);
     const rovingFocusProps = useRovingFocus({ disabled });
 
     // get the item's `.textContent` as default strategy for typeahead `textValue`
@@ -442,11 +442,11 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
         })}
         // make items unreachable when an item is blurred
         onBlur={composeEventHandlers(itemProps.onBlur, (event) => {
-          itemsContext.setItemsReachable(false);
+          contentContext.setItemsReachable(false);
         })}
         // focus the menu if the mouse leaves an item
         onMouseLeave={composeEventHandlers(itemProps.onMouseLeave, (event) => {
-          itemsContext.menuRef.current?.focus();
+          contentContext.menuRef.current?.focus();
         })}
       />
     );
@@ -624,7 +624,7 @@ function getState(checked: boolean) {
 
 const Root = Menu;
 const Popper = MenuPopper;
-const Items = MenuItems;
+const Content = MenuContent;
 const Group = MenuGroup;
 const Label = MenuLabel;
 const Item = MenuItem;
@@ -638,7 +638,7 @@ const Arrow = MenuArrow;
 export {
   Menu,
   MenuPopper,
-  MenuItems,
+  MenuContent,
   MenuGroup,
   MenuLabel,
   MenuItem,
@@ -651,7 +651,7 @@ export {
   //
   Root,
   Popper,
-  Items,
+  Content,
   Group,
   Label,
   Item,

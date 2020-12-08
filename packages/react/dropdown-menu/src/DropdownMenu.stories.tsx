@@ -3,7 +3,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuPopper,
-  DropdownMenuItems,
+  DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuItem,
@@ -20,7 +20,7 @@ import { styledComponents } from '../../menu/src/Menu.stories';
 
 const {
   StyledPopper,
-  StyledItems,
+  StyledContent,
   StyledItem,
   StyledLabel,
   StyledSeparator,
@@ -34,7 +34,7 @@ export const Styled = () => (
     <DropdownMenu>
       <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
       <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-        <DropdownMenuItems as={StyledItems}>
+        <DropdownMenuContent as={StyledContent}>
           <DropdownMenuItem as={StyledItem} onSelect={() => console.log('undo')}>
             Undo
           </DropdownMenuItem>
@@ -51,7 +51,7 @@ export const Styled = () => (
           <DropdownMenuItem as={StyledItem} onSelect={() => console.log('paste')}>
             Paste
           </DropdownMenuItem>
-        </DropdownMenuItems>
+        </DropdownMenuContent>
         <DropdownMenuArrow />
       </DropdownMenuPopper>
     </DropdownMenu>
@@ -63,7 +63,7 @@ export const WithLabels = () => (
     <DropdownMenu>
       <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
       <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-        <DropdownMenuItems as={StyledItems}>
+        <DropdownMenuContent as={StyledContent}>
           {foodGroups.map((foodGroup, index) => (
             <DropdownMenuGroup key={index}>
               {foodGroup.label && (
@@ -84,7 +84,7 @@ export const WithLabels = () => (
               {index < foodGroups.length - 1 && <DropdownMenuSeparator as={StyledSeparator} />}
             </DropdownMenuGroup>
           ))}
-        </DropdownMenuItems>
+        </DropdownMenuContent>
         <DropdownMenuArrow />
       </DropdownMenuPopper>
     </DropdownMenu>
@@ -104,7 +104,7 @@ export const CheckboxItems = () => {
       <DropdownMenu>
         <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
         <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-          <DropdownMenuItems as={StyledItems}>
+          <DropdownMenuContent as={StyledContent}>
             <DropdownMenuItem as={StyledItem} onSelect={() => console.log('show')}>
               Show fonts
             </DropdownMenuItem>
@@ -129,7 +129,7 @@ export const CheckboxItems = () => {
                 </DropdownMenuItemIndicator>
               </DropdownMenuCheckboxItem>
             ))}
-          </DropdownMenuItems>
+          </DropdownMenuContent>
           <DropdownMenuArrow />
         </DropdownMenuPopper>
       </DropdownMenu>
@@ -146,7 +146,7 @@ export const RadioItems = () => {
       <DropdownMenu>
         <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
         <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-          <DropdownMenuItems as={StyledItems}>
+          <DropdownMenuContent as={StyledContent}>
             <DropdownMenuItem as={StyledItem} onSelect={() => console.log('minimize')}>
               Minimize window
             </DropdownMenuItem>
@@ -167,7 +167,7 @@ export const RadioItems = () => {
                 </DropdownMenuRadioItem>
               ))}
             </DropdownMenuRadioGroup>
-          </DropdownMenuItems>
+          </DropdownMenuContent>
           <DropdownMenuArrow />
         </DropdownMenuPopper>
       </DropdownMenu>
@@ -181,7 +181,7 @@ export const PreventClosing = () => (
     <DropdownMenu>
       <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
       <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-        <DropdownMenuItems as={StyledItems}>
+        <DropdownMenuContent as={StyledContent}>
           <DropdownMenuItem as={StyledItem} onSelect={() => window.alert('action 1')}>
             I will close
           </DropdownMenuItem>
@@ -194,7 +194,7 @@ export const PreventClosing = () => (
           >
             I won't close
           </DropdownMenuItem>
-        </DropdownMenuItems>
+        </DropdownMenuContent>
         <DropdownMenuArrow />
       </DropdownMenuPopper>
     </DropdownMenu>

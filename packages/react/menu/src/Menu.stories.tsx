@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   Menu,
   MenuPopper as MenuPrimitivePopper,
-  MenuItems,
+  MenuContent,
   MenuGroup,
   MenuLabel,
   MenuItem,
@@ -22,7 +22,7 @@ export default { title: 'Components/Menu', excludeStories: ['styledComponents'] 
 export const Styled = () => (
   <Menu isOpen>
     <MenuPopper>
-      <MenuItems as={StyledItems}>
+      <MenuContent as={StyledContent}>
         <MenuItem as={StyledItem} onSelect={() => window.alert('undo')}>
           Undo
         </MenuItem>
@@ -39,7 +39,7 @@ export const Styled = () => (
         <MenuItem as={StyledItem} onSelect={() => window.alert('paste')}>
           Paste
         </MenuItem>
-      </MenuItems>
+      </MenuContent>
     </MenuPopper>
   </Menu>
 );
@@ -47,7 +47,7 @@ export const Styled = () => (
 export const WithLabels = () => (
   <Menu isOpen>
     <MenuPopper>
-      <MenuItems as={StyledItems}>
+      <MenuContent as={StyledContent}>
         {foodGroups.map((foodGroup, index) => (
           <MenuGroup key={index}>
             {foodGroup.label && (
@@ -68,7 +68,7 @@ export const WithLabels = () => (
             {index < foodGroups.length - 1 && <MenuSeparator as={StyledSeparator} />}
           </MenuGroup>
         ))}
-      </MenuItems>
+      </MenuContent>
     </MenuPopper>
   </Menu>
 );
@@ -113,7 +113,7 @@ export const Typeahead = () => (
         <p>(relying on `.textContent` — default)</p>
         <Menu isOpen>
           <MenuPopper>
-            <MenuItems as={StyledItems}>
+            <MenuContent as={StyledContent}>
               {suits.map((suit) => (
                 <MenuItem key={suit.emoji} as={StyledItem}>
                   {suit.label}
@@ -122,7 +122,7 @@ export const Typeahead = () => (
                   </span>
                 </MenuItem>
               ))}
-            </MenuItems>
+            </MenuContent>
           </MenuPopper>
         </Menu>
       </div>
@@ -132,7 +132,7 @@ export const Typeahead = () => (
         <p>(with explicit `textValue` prop)</p>
         <Menu isOpen>
           <MenuPopper>
-            <MenuItems as={StyledItems}>
+            <MenuContent as={StyledContent}>
               {suits.map((suit) => (
                 <MenuItem key={suit.emoji} as={StyledItem} textValue={suit.label}>
                   <span role="img" aria-label={suit.label}>
@@ -141,7 +141,7 @@ export const Typeahead = () => (
                   {suit.label}
                 </MenuItem>
               ))}
-            </MenuItems>
+            </MenuContent>
           </MenuPopper>
         </Menu>
       </div>
@@ -160,7 +160,7 @@ export const CheckboxItems = () => {
   return (
     <Menu isOpen>
       <MenuPopper>
-        <MenuItems as={StyledItems}>
+        <MenuContent as={StyledContent}>
           <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
             Show fonts
           </MenuItem>
@@ -185,7 +185,7 @@ export const CheckboxItems = () => {
               </MenuItemIndicator>
             </MenuCheckboxItem>
           ))}
-        </MenuItems>
+        </MenuContent>
       </MenuPopper>
     </Menu>
   );
@@ -198,7 +198,7 @@ export const RadioItems = () => {
   return (
     <Menu isOpen>
       <MenuPopper>
-        <MenuItems as={StyledItems}>
+        <MenuContent as={StyledContent}>
           <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
             Minimize window
           </MenuItem>
@@ -219,7 +219,7 @@ export const RadioItems = () => {
               </MenuRadioItem>
             ))}
           </MenuRadioGroup>
-        </MenuItems>
+        </MenuContent>
       </MenuPopper>
     </Menu>
   );
@@ -263,7 +263,7 @@ function useStaticElementRef() {
 
 const StyledPopper = styled('div', {});
 
-const StyledItems = styled('div', {
+const StyledContent = styled('div', {
   display: 'inline-block',
   boxSizing: 'border-box',
   minWidth: 130,
@@ -336,7 +336,7 @@ const TickIcon = () => (
 
 export const styledComponents = {
   StyledPopper,
-  StyledItems,
+  StyledContent,
   StyledLabel,
   StyledItem,
   StyledSeparator,
