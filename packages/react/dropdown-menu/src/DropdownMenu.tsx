@@ -128,11 +128,12 @@ const DropdownMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, DropdownM
       <MenuPrimitive.Root
         ref={forwardedRef}
         {...popperProps}
+        {...getPartDataAttrObj(POPPER_NAME)}
         id={context.id}
         style={{
           ...popperProps.style,
           // re-namespace exposed popper custom property
-          ['--interop-ui-dropdown-menu-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
+          ['--radix-dropdown-menu-popper-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
         }}
         isOpen={context.isOpen}
         onIsOpenChange={context.setIsOpen}

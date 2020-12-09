@@ -96,7 +96,7 @@ All `Collapsible` components are unstyled by default. Each component renders a s
 `Collapsible` should work fairly well out-of-the-box without any styles at all. Make sure that your global stylesheet respects setting `display: none` on all elements with the `hidden` attribute in order to properly hiden `CollapsibleContent`. If it does not, you can add it explicitly and have a functional `Collapsible` component.
 
 ```css
-[data-interop-ui-collapsible-content][hidden] {
+[data-radix-collapsible-content][hidden] {
   display: none;
 }
 ```
@@ -104,7 +104,7 @@ All `Collapsible` components are unstyled by default. Each component renders a s
 It is also important to include focus rings on interactive elements. By default, `CollapsibleButton` will render a button element. If you are overriding global focus styles and indpendently adding them to you component, be sure to include a focus ring to aide users who navigate without a mouse.
 
 ```css
-[data-interop-ui-collapsible-button]:focus {
+[data-radix-collapsible-button]:focus {
   outline: 2px solid var(--color-focus-ring);
 }
 ```

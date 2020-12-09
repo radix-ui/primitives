@@ -314,6 +314,6 @@ const scaleIn = css.keyframes({
 });
 
 const AnimatedPopper = styled(StyledRoot, {
-  transformOrigin: 'var(--interop-ui-context-menu-popper-transform-origin)',
+  transformOrigin: 'var(--radix-context-menu-popper-transform-origin)',
   animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
 });

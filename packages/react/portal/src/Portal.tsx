@@ -20,8 +20,8 @@ const Portal: React.FC<PortalProps> = ({ children, containerRef }) => {
   }, []);
 
   if (hostElement) {
-    const InteropPortal = 'interop-portal' as any;
-    return ReactDOM.createPortal(<InteropPortal>{children}</InteropPortal>, hostElement);
+    const RadixPortal = 'radix-portal' as any;
+    return ReactDOM.createPortal(<RadixPortal>{children}</RadixPortal>, hostElement);
   }
 
   // bail out of ssr

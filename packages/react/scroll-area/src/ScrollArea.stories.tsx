@@ -160,7 +160,7 @@ export function InsidePopover() {
 
 const RECOMMENDED_CSS__POPOVER__POPPER: any = {
   boxSizing: 'border-box',
-  transformOrigin: 'var(--interop-ui-popover-popper-transform-origin)',
+  transformOrigin: 'var(--radix-popover-popper-transform-origin)',
 };
 
 const RECOMMENDED_CSS__SCROLL_AREA__ROOT: any = {
@@ -176,7 +176,7 @@ const RECOMMENDED_CSS__SCROLL_AREA__ROOT: any = {
   '&[data-dragging], &[data-scrolling]': {
     pointerEvents: 'auto !important',
   },
-  '& [data-interop-ui-scroll-area-position]::-webkit-scrollbar': {
+  '& [data-radix-scroll-area-position]::-webkit-scrollbar': {
     display: 'none',
   },
 };

@@ -1,4 +1,4 @@
-const NAMESPACE = 'interop-ui';
+const NAMESPACE = 'radix';
 
 function namespaced(componentPart: string) {
   const part = componentPart

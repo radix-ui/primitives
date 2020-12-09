@@ -28,7 +28,7 @@ export function CollapsibleButton({
             sx={{
               mr: 1,
               display: 'inline-block',
-              '[data-interop-ui-collapsible-button][data-state="closed"] > &': {
+              '[data-radix-collapsible-button][data-state="closed"] > &': {
                 transform: 'rotate(-90deg)',
               },
             }}

@@ -373,7 +373,7 @@ const PositionButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsW
 const StyledTrigger = styled('button', {});
 
 const RECOMMENDED_CSS__TOOLTIP__POPPER: any = {
-  transformOrigin: 'var(--interop-ui-tooltip-popper-transform-origin)',
+  transformOrigin: 'var(--radix-tooltip-popper-transform-origin)',
   // ensures content isn't selectable and cannot receive events
   // this is just a detterent to people putting interactive content inside a `Tooltip`
   userSelect: 'none',

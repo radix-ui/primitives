@@ -8,9 +8,9 @@ describe('Portal', () => {
     expect(baseElement).toMatchInlineSnapshot(`
       <body>
         <div />
-        <interop-portal>
+        <radix-portal>
           portal
-        </interop-portal>
+        </radix-portal>
       </body>
     `);
   });
@@ -25,12 +25,12 @@ describe('Portal', () => {
     expect(baseElement).toMatchInlineSnapshot(`
       <body>
         <div />
-        <interop-portal>
+        <radix-portal>
           portal 1
-        </interop-portal>
-        <interop-portal>
+        </radix-portal>
+        <radix-portal>
           portal 2
-        </interop-portal>
+        </radix-portal>
       </body>
     `);
   });
@@ -52,9 +52,9 @@ describe('Portal', () => {
           <section
             id="portal-container"
           >
-            <interop-portal>
+            <radix-portal>
               portal inside custom container
-            </interop-portal>
+            </radix-portal>
           </section>
         </div>
       </body>
