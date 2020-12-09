@@ -128,6 +128,7 @@ const DropdownMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, DropdownM
       <MenuPrimitive.Root
         ref={forwardedRef}
         {...popperProps}
+        id={context.id}
         style={{
           ...popperProps.style,
           // re-namespace exposed popper custom property
@@ -175,28 +176,6 @@ const DropdownMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, DropdownM
 
 DropdownMenuPopper.displayName = POPPER_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * DropdownMenuContent
- * -----------------------------------------------------------------------------------------------*/
-
-const CONTENT_NAME = 'DropdownMenuContent';
-
-const DropdownMenuContent = forwardRefWithAs<typeof MenuPrimitive.Content>(
-  (props, forwardedRef) => {
-    const context = useDropdownMenuContext(CONTENT_NAME);
-    return (
-      <MenuPrimitive.Content
-        {...getPartDataAttrObj(CONTENT_NAME)}
-        {...props}
-        ref={forwardedRef}
-        id={context.id}
-      />
-    );
-  }
-);
-
-DropdownMenuContent.displayName = CONTENT_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 const DropdownMenuGroup = extendComponent(MenuPrimitive.Group, 'DropdownMenuGroup');
@@ -220,7 +199,6 @@ const DropdownMenuArrow = extendComponent(MenuPrimitive.Arrow, 'DropdownMenuArro
 const Root = DropdownMenu;
 const Trigger = DropdownMenuTrigger;
 const Popper = DropdownMenuPopper;
-const Content = DropdownMenuContent;
 const MenuGroup = DropdownMenuGroup;
 const MenuLabel = DropdownMenuLabel;
 const MenuItem = DropdownMenuItem;
@@ -235,7 +213,6 @@ export {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuPopper,
-  DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuItem,
@@ -249,7 +226,6 @@ export {
   Root,
   Trigger,
   Popper,
-  Content,
   MenuGroup,
   MenuLabel,
   MenuItem,

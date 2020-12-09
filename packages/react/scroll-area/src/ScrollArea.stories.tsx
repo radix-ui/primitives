@@ -12,13 +12,7 @@ import {
   ScrollAreaThumb,
   SCROLL_AREA_CSS_PROPS,
 } from './ScrollArea';
-import {
-  Popover,
-  PopoverPopper,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-} from '@interop-ui/react-popover';
+import { Popover, PopoverPopper, PopoverTrigger, PopoverArrow } from '@interop-ui/react-popover';
 
 export default {
   title: 'Components/ScrollArea',
@@ -110,45 +104,49 @@ export function InsidePopover() {
 
       <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
         <PopoverTrigger as="button">{isOpen ? 'close' : 'open'}</PopoverTrigger>
-        <PopoverPopper style={{ ...RECOMMENDED_CSS__POPOVER__POPPER }}>
-          <PopoverContent style={{ backgroundColor: '#eee', width: 250, height: 150 }}>
-            <ScrollArea overflowX="scroll" {...useScrollAreaControlProps()} as={BaseStyledRoot}>
-              <ScrollAreaScrollbarY as={MacOsStyledScrollbarY} style={{ bottom: 0 }}>
-                <ScrollAreaTrack as={MacOsStyledScrollTrack}>
-                  <ScrollAreaThumb as={MacOsStyledScrollThumbY}>
-                    <MacOsStyledScrollThumbInner />
-                  </ScrollAreaThumb>
-                </ScrollAreaTrack>
-              </ScrollAreaScrollbarY>
+        <PopoverPopper
+          style={{
+            ...RECOMMENDED_CSS__POPOVER__POPPER,
+            backgroundColor: '#eee',
+            width: 250,
+            height: 150,
+          }}
+        >
+          <ScrollArea overflowX="scroll" {...useScrollAreaControlProps()} as={BaseStyledRoot}>
+            <ScrollAreaScrollbarY as={MacOsStyledScrollbarY} style={{ bottom: 0 }}>
+              <ScrollAreaTrack as={MacOsStyledScrollTrack}>
+                <ScrollAreaThumb as={MacOsStyledScrollThumbY}>
+                  <MacOsStyledScrollThumbInner />
+                </ScrollAreaThumb>
+              </ScrollAreaTrack>
+            </ScrollAreaScrollbarY>
 
-              <ScrollAreaViewport
-                as={BaseStyledViewport}
-                css={{
-                  padding: 10,
-                  '& > :first-child': {
-                    marginTop: 0,
-                  },
-                  '& > :last-child': {
-                    marginBottom: 0,
-                  },
-                }}
-              >
-                <p>
-                  Lacinia hendrerit auctor nam quisque augue suscipit feugiat, sit at imperdiet
-                  vitae lacus. Dolor sit dui posuere faucibus non pharetra laoreet conubia, augue
-                  rhoncus cras nisl sodales proin hac ipsum, per hendrerit sed volutpat natoque
-                  curae consectetur. Curae blandit neque vehicula vel mauris vulputate per felis
-                  sociosqu, sodales integer sollicitudin id litora accumsan viverra pulvinar, mus
-                  non adipiscing dolor facilisis habitasse mi leo. Litora faucibus eu pulvinar
-                  tempus gravida iaculis consectetur risus euismod fringilla, dui posuere viverra
-                  sapien tortor mattis et dolor tempor sem conubia, taciti sociis mus rhoncus
-                  cubilia praesent dapibus aliquet quis. Diam hendrerit aliquam metus dolor fusce
-                  lorem, non gravida arcu primis posuere ipsum adipiscing, mus sollicitudin eros
-                  lacinia mollis.
-                </p>
-              </ScrollAreaViewport>
-            </ScrollArea>
-          </PopoverContent>
+            <ScrollAreaViewport
+              as={BaseStyledViewport}
+              css={{
+                padding: 10,
+                '& > :first-child': {
+                  marginTop: 0,
+                },
+                '& > :last-child': {
+                  marginBottom: 0,
+                },
+              }}
+            >
+              <p>
+                Lacinia hendrerit auctor nam quisque augue suscipit feugiat, sit at imperdiet vitae
+                lacus. Dolor sit dui posuere faucibus non pharetra laoreet conubia, augue rhoncus
+                cras nisl sodales proin hac ipsum, per hendrerit sed volutpat natoque curae
+                consectetur. Curae blandit neque vehicula vel mauris vulputate per felis sociosqu,
+                sodales integer sollicitudin id litora accumsan viverra pulvinar, mus non adipiscing
+                dolor facilisis habitasse mi leo. Litora faucibus eu pulvinar tempus gravida iaculis
+                consectetur risus euismod fringilla, dui posuere viverra sapien tortor mattis et
+                dolor tempor sem conubia, taciti sociis mus rhoncus cubilia praesent dapibus aliquet
+                quis. Diam hendrerit aliquam metus dolor fusce lorem, non gravida arcu primis
+                posuere ipsum adipiscing, mus sollicitudin eros lacinia mollis.
+              </p>
+            </ScrollAreaViewport>
+          </ScrollArea>
           <PopoverArrow width={50} height={20} />
         </PopoverPopper>
       </Popover>

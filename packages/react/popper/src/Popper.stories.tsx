@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Popper, PopperContent, PopperArrow } from './Popper';
+import { Popper, PopperArrow } from './Popper';
 import { Portal } from '@interop-ui/react-portal';
 import { Arrow } from '@interop-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
@@ -16,9 +16,7 @@ export const Styled = () => {
 
       {isOpen && (
         <Popper as={StyledRoot} anchorRef={anchorRef} sideOffset={5}>
-          <PopperContent as={StyledContent}>
-            <button onClick={() => setIsOpen(false)}>close</button>
-          </PopperContent>
+          <button onClick={() => setIsOpen(false)}>close</button>
           <PopperArrow as={StyledArrow} width={20} height={10} />
         </Popper>
       )}
@@ -35,9 +33,7 @@ export const WithCustomArrow = () => {
 
       {isOpen && (
         <Popper as={StyledRoot} anchorRef={anchorRef} side="right" sideOffset={5}>
-          <PopperContent as={StyledContent}>
-            <button onClick={() => setIsOpen(false)}>close</button>
-          </PopperContent>
+          <button onClick={() => setIsOpen(false)}>close</button>
           <PopperArrow as={CustomArrow} width={20} height={10} offset={20} />
         </Popper>
       )}
@@ -56,9 +52,7 @@ export const Animated = () => {
       {isOpen && (
         <Portal>
           <Popper as={AnimatedPopper} anchorRef={anchorRef} sideOffset={5}>
-            <PopperContent as={StyledContent}>
-              <button onClick={() => setIsOpen(false)}>close</button>
-            </PopperContent>
+            <button onClick={() => setIsOpen(false)}>close</button>
             <PopperArrow as={StyledArrow} width={20} height={10} offset={25} />
           </Popper>
         </Portal>
@@ -77,9 +71,7 @@ export const WithPortal = () => {
       {isOpen && (
         <Portal>
           <Popper as={StyledRoot} anchorRef={anchorRef} sideOffset={5}>
-            <PopperContent as={StyledContent}>
-              <button onClick={() => setIsOpen(false)}>close</button>
-            </PopperContent>
+            <button onClick={() => setIsOpen(false)}>close</button>
             <PopperArrow as={StyledArrow} width={20} height={10} />
           </Popper>
         </Portal>
@@ -103,11 +95,7 @@ export const WithVirtualElement = () => {
     return () => document.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  return (
-    <Popper as={StyledRoot} anchorRef={anchorRef} align="start">
-      <PopperContent as={StyledContent} />
-    </Popper>
-  );
+  return <Popper as={StyledRoot} anchorRef={anchorRef} align="start" />;
 };
 
 const Scrollable = (props: any) => (
@@ -143,9 +131,8 @@ const RECOMMENDED_CSS__POPPER__ROOT = {
   transformOrigin: 'var(--interop-ui-popper-transform-origin)',
 };
 
-const StyledRoot = styled('div', RECOMMENDED_CSS__POPPER__ROOT);
-
-const StyledContent = styled('div', {
+const StyledRoot = styled('div', {
+  ...RECOMMENDED_CSS__POPPER__ROOT,
   backgroundColor: '$gray100',
   width: 300,
   height: 150,

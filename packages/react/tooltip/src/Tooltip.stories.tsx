@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tooltip, TooltipTrigger, TooltipPopper, TooltipContent, TooltipArrow } from './Tooltip';
+import { Tooltip, TooltipTrigger, TooltipPopper, TooltipArrow } from './Tooltip';
 import { Arrow } from '@interop-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
 
@@ -10,10 +10,8 @@ export const Styled = () => (
     <TooltipTrigger as={StyledTrigger} style={{ margin: 100 }}>
       Hover or Focus me
     </TooltipTrigger>
-    <TooltipPopper as={StyledPopper} sideOffset={5}>
-      <TooltipContent as={StyledContent} aria-label="Even better done this way!">
-        Nicely done!
-      </TooltipContent>
+    <TooltipPopper as={StyledPopper} sideOffset={5} aria-label="Even better done this way!">
+      Nicely done!
       <TooltipArrow as={StyledArrow} offset={10} />
     </TooltipPopper>
   </Tooltip>
@@ -28,7 +26,7 @@ export const Controlled = () => {
         I'm controlled, look I'm {isOpen ? 'open' : 'closed'}
       </TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>Nicely done!</TooltipContent>
+        Nicely done!
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -40,9 +38,7 @@ export const CustomContent = () => (
     <Tooltip>
       <TooltipTrigger>Heading</TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>
-          <h1>Some heading</h1>
-        </TooltipContent>
+        <h1>Some heading</h1>
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -50,9 +46,7 @@ export const CustomContent = () => (
     <Tooltip>
       <TooltipTrigger>Paragraph</TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>
-          <p>Some paragraph</p>
-        </TooltipContent>
+        <p>Some paragraph</p>
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -60,13 +54,11 @@ export const CustomContent = () => (
     <Tooltip>
       <TooltipTrigger>List</TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>
-          <ul>
-            <li>One</li>
-            <li>Two</li>
-            <li>Three</li>
-          </ul>
-        </TooltipContent>
+        <ul>
+          <li>One</li>
+          <li>Two</li>
+          <li>Three</li>
+        </ul>
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -74,13 +66,11 @@ export const CustomContent = () => (
     <Tooltip>
       <TooltipTrigger>Article</TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>
-          <article>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum, quae qui. Magnam
-            delectus ex totam repellat amet distinctio unde, porro architecto voluptatibus nemo et
-            nisi, voluptatem eligendi earum autem fugit.
-          </article>
-        </TooltipContent>
+        <article>
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum, quae qui. Magnam delectus
+          ex totam repellat amet distinctio unde, porro architecto voluptatibus nemo et nisi,
+          voluptatem eligendi earum autem fugit.
+        </article>
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -88,16 +78,14 @@ export const CustomContent = () => (
     <Tooltip>
       <TooltipTrigger>Figure</TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>
-          <figure style={{ margin: 0 }}>
-            <img
-              src="https://pbs.twimg.com/profile_images/864164353771229187/Catw6Nmh_400x400.jpg"
-              alt=""
-              width={100}
-            />
-            <figcaption>Colm Tuite</figcaption>
-          </figure>
-        </TooltipContent>
+        <figure style={{ margin: 0 }}>
+          <img
+            src="https://pbs.twimg.com/profile_images/864164353771229187/Catw6Nmh_400x400.jpg"
+            alt=""
+            width={100}
+          />
+          <figcaption>Colm Tuite</figcaption>
+        </figure>
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -105,10 +93,8 @@ export const CustomContent = () => (
     <Tooltip>
       <TooltipTrigger>Time</TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>
-          {/* @ts-ignore */}
-          <time datetime="2017-10-31T11:21:00+02:00">Tuesday, 31 October 2017</time>
-        </TooltipContent>
+        {/* @ts-ignore */}
+        <time datetime="2017-10-31T11:21:00+02:00">Tuesday, 31 October 2017</time>
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -116,9 +102,7 @@ export const CustomContent = () => (
     <Tooltip>
       <TooltipTrigger>Link</TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>
-          View in <a href="https://modulz.app">Modulz</a>
-        </TooltipContent>
+        View in <a href="https://modulz.app">Modulz</a>
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -126,17 +110,15 @@ export const CustomContent = () => (
     <Tooltip>
       <TooltipTrigger>Form</TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>
-          <form>
-            <label htmlFor="fname">First name:</label>
-            <br />
-            <input type="text" id="fname" name="fname" />
-            <br />
-            <label htmlFor="lname">Last name:</label>
-            <br />
-            <input type="text" id="lname" name="lname" />
-          </form>
-        </TooltipContent>
+        <form>
+          <label htmlFor="fname">First name:</label>
+          <br />
+          <input type="text" id="fname" name="fname" />
+          <br />
+          <label htmlFor="lname">Last name:</label>
+          <br />
+          <input type="text" id="lname" name="lname" />
+        </form>
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -144,31 +126,29 @@ export const CustomContent = () => (
     <Tooltip>
       <TooltipTrigger>Mini layout</TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
-        <TooltipContent as={StyledContent}>
-          <p
-            style={{
-              margin: 0,
-              textAlign: 'center',
-              fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
-              fontSize: 14,
-            }}
-          >
-            Start video call
-            <span style={{ display: 'block', color: '#999' }}>
-              press{' '}
-              <kbd
-                style={{
-                  fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
-                  fontWeight: 'bold',
-                  color: 'white',
-                }}
-                aria-label="c key"
-              >
-                c
-              </kbd>
-            </span>
-          </p>
-        </TooltipContent>
+        <p
+          style={{
+            margin: 0,
+            textAlign: 'center',
+            fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
+            fontSize: 14,
+          }}
+        >
+          Start video call
+          <span style={{ display: 'block', color: '#999' }}>
+            press{' '}
+            <kbd
+              style={{
+                fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
+                fontWeight: 'bold',
+                color: 'white',
+              }}
+              aria-label="c key"
+            >
+              c
+            </kbd>
+          </span>
+        </p>
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -372,10 +352,8 @@ function SimpleTooltip({
   return (
     <Tooltip isOpen={isOpen} onIsOpenChange={onOpenChange}>
       {children}
-      <TooltipPopper as={StyledPopper} sideOffset={5} {...props}>
-        <TooltipContent as={StyledContent} aria-label={ariaLabel}>
-          {label}
-        </TooltipContent>
+      <TooltipPopper as={StyledPopper} sideOffset={5} aria-label={ariaLabel} {...props}>
+        {label}
         <TooltipArrow as={StyledArrow} offset={10} />
       </TooltipPopper>
     </Tooltip>
@@ -394,21 +372,16 @@ const PositionButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsW
 
 const StyledTrigger = styled('button', {});
 
-const RECOMMENDED_CSS__TOOLTIP__POPPER = {
+const RECOMMENDED_CSS__TOOLTIP__POPPER: any = {
   transformOrigin: 'var(--interop-ui-tooltip-popper-transform-origin)',
-};
-
-const StyledPopper = styled('div', RECOMMENDED_CSS__TOOLTIP__POPPER);
-
-const RECOMMENDED_CSS__TOOLTIP__CONTENT: any = {
   // ensures content isn't selectable and cannot receive events
   // this is just a detterent to people putting interactive content inside a `Tooltip`
   userSelect: 'none',
   pointerEvents: 'none',
 };
 
-const StyledContent = styled('div', {
-  ...RECOMMENDED_CSS__TOOLTIP__CONTENT,
+const StyledPopper = styled('div', {
+  ...RECOMMENDED_CSS__TOOLTIP__POPPER,
   backgroundColor: '$black',
   color: '$white',
   borderRadius: 5,

@@ -78,6 +78,8 @@ function createFocusScope(container: HTMLElement) {
  * -----------------------------------------------------------------------------------------------*/
 
 function makeContainerFocusable(container: HTMLElement) {
+  // TODO: do better on this, should be brought to React-level probably
+  if (container.tabIndex > -1) return;
   container.tabIndex = -1;
 }
 

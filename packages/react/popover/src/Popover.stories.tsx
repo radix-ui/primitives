@@ -1,12 +1,5 @@
 import * as React from 'react';
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverPopper,
-  PopoverContent,
-  PopoverClose,
-  PopoverArrow,
-} from './Popover';
+import { Popover, PopoverTrigger, PopoverPopper, PopoverClose, PopoverArrow } from './Popover';
 import { Arrow } from '@interop-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
 
@@ -20,9 +13,7 @@ export const Styled = () => {
       <Popover>
         <PopoverTrigger as={StyledTrigger}>open</PopoverTrigger>
         <PopoverPopper as={StyledPopper} sideOffset={5}>
-          <PopoverContent as={StyledContent}>
-            <PopoverClose as={StyledClose}>close</PopoverClose>
-          </PopoverContent>
+          <PopoverClose as={StyledClose}>close</PopoverClose>
           <PopoverArrow as={StyledArrow} width={20} height={10} />
         </PopoverPopper>
       </Popover>
@@ -39,9 +30,7 @@ export const Controlled = () => {
       <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
         <PopoverTrigger as={StyledTrigger}>{isOpen ? 'close' : 'open'}</PopoverTrigger>
         <PopoverPopper as={StyledPopper}>
-          <PopoverContent as={StyledContent}>
-            <PopoverClose as={StyledClose}>close</PopoverClose>
-          </PopoverContent>
+          <PopoverClose as={StyledClose}>close</PopoverClose>
           <PopoverArrow as={StyledArrow} width={20} height={10} />
         </PopoverPopper>
       </Popover>
@@ -57,9 +46,7 @@ export const Animated = () => {
       <Popover>
         <PopoverTrigger as={StyledTrigger}>open</PopoverTrigger>
         <PopoverPopper as={AnimatedPopper} sideOffset={10}>
-          <PopoverContent as={StyledContent}>
-            <PopoverClose as={StyledClose}>close</PopoverClose>
-          </PopoverContent>
+          <PopoverClose as={StyledClose}>close</PopoverClose>
           <PopoverArrow as={StyledArrow} width={20} height={10} />
         </PopoverPopper>
       </Popover>
@@ -75,9 +62,7 @@ export const ForcedMount = () => {
       <Popover>
         <PopoverTrigger as={StyledTrigger}>open</PopoverTrigger>
         <PopoverPopper as={StyledPopper} sideOffset={10} forceMount>
-          <PopoverContent as={StyledContent}>
-            <PopoverClose as={StyledClose}>close</PopoverClose>
-          </PopoverContent>
+          <PopoverClose as={StyledClose}>close</PopoverClose>
           <PopoverArrow as={StyledArrow} width={20} height={10} />
         </PopoverPopper>
       </Popover>
@@ -111,28 +96,30 @@ export const Nested = () => {
           Open popover
         </PopoverTrigger>
 
-        <PopoverPopper as={StyledPopper} sideOffset={5}>
-          <PopoverContent as={StyledContent} css={{ backgroundColor: '$red' }}>
-            <Popover>
-              <PopoverTrigger as={StyledTrigger}>Open nested popover</PopoverTrigger>
-              <PopoverPopper as={StyledPopper} side="top" align="center" sideOffset={5}>
-                <PopoverContent as={StyledContent} css={{ backgroundColor: '$green' }}>
-                  <PopoverClose as={StyledClose}>close</PopoverClose>
-                </PopoverContent>
-                <PopoverArrow
-                  as={StyledArrow}
-                  width={20}
-                  height={10}
-                  offset={20}
-                  css={{ fill: '$green' }}
-                />
-              </PopoverPopper>
-            </Popover>
+        <PopoverPopper as={StyledPopper} sideOffset={5} css={{ backgroundColor: '$red' }}>
+          <Popover>
+            <PopoverTrigger as={StyledTrigger}>Open nested popover</PopoverTrigger>
+            <PopoverPopper
+              as={StyledPopper}
+              side="top"
+              align="center"
+              sideOffset={5}
+              css={{ backgroundColor: '$green' }}
+            >
+              <PopoverClose as={StyledClose}>close</PopoverClose>
+              <PopoverArrow
+                as={StyledArrow}
+                width={20}
+                height={10}
+                offset={20}
+                css={{ fill: '$green' }}
+              />
+            </PopoverPopper>
+          </Popover>
 
-            <PopoverClose as={StyledClose} css={{ marginLeft: 10 }}>
-              close
-            </PopoverClose>
-          </PopoverContent>
+          <PopoverClose as={StyledClose} css={{ marginLeft: 10 }}>
+            close
+          </PopoverClose>
           <PopoverArrow
             as={StyledArrow}
             width={20}
@@ -171,10 +158,9 @@ export const CustomAnchor = () => {
           side="right"
           sideOffset={1}
           align="start"
+          css={{ borderRadius: 0, width: 200, height: 100 }}
         >
-          <PopoverContent as={StyledContent} css={{ borderRadius: 0, width: 200, height: 100 }}>
-            <PopoverClose>close</PopoverClose>
-          </PopoverContent>
+          <PopoverClose>close</PopoverClose>
         </PopoverPopper>
       </Popover>
     </div>
@@ -187,9 +173,7 @@ export const NonModal = () => {
       <Popover>
         <PopoverTrigger as={StyledTrigger}>open</PopoverTrigger>
         <PopoverPopper as={StyledPopper} sideOffset={5} trapFocus={false}>
-          <PopoverContent as={StyledContent}>
-            <PopoverClose as={StyledClose}>close</PopoverClose>
-          </PopoverContent>
+          <PopoverClose as={StyledClose}>close</PopoverClose>
           <PopoverArrow as={StyledArrow} width={20} height={10} offset={10} />
         </PopoverPopper>
       </Popover>
@@ -204,9 +188,8 @@ const RECOMMENDED_CSS__POPOVER__POPPER = {
   transformOrigin: 'var(--interop-ui-popover-popper-transform-origin)',
 };
 
-const StyledPopper = styled('div', RECOMMENDED_CSS__POPOVER__POPPER);
-
-const StyledContent = styled('div', {
+const StyledPopper = styled('div', {
+  ...RECOMMENDED_CSS__POPOVER__POPPER,
   backgroundColor: '$gray300',
   padding: 20,
   borderRadius: 5,

@@ -3,7 +3,6 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuPopper,
-  DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuItem,
@@ -18,14 +17,7 @@ import { styled } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 import { styledComponents } from '../../menu/src/Menu.stories';
 
-const {
-  StyledPopper,
-  StyledContent,
-  StyledItem,
-  StyledLabel,
-  StyledSeparator,
-  TickIcon,
-} = styledComponents;
+const { StyledRoot, StyledItem, StyledLabel, StyledSeparator, TickIcon } = styledComponents;
 
 export default { title: 'Components/DropdownMenu' };
 
@@ -33,25 +25,23 @@ export const Styled = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}>
     <DropdownMenu>
       <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-      <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-        <DropdownMenuContent as={StyledContent}>
-          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('undo')}>
-            Undo
-          </DropdownMenuItem>
-          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('redo')}>
-            Redo
-          </DropdownMenuItem>
-          <DropdownMenuSeparator as={StyledSeparator} />
-          <DropdownMenuItem as={StyledItem} disabled onSelect={() => console.log('cut')}>
-            Cut
-          </DropdownMenuItem>
-          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('copy')}>
-            Copy
-          </DropdownMenuItem>
-          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('paste')}>
-            Paste
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+      <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+        <DropdownMenuItem as={StyledItem} onSelect={() => console.log('undo')}>
+          Undo
+        </DropdownMenuItem>
+        <DropdownMenuItem as={StyledItem} onSelect={() => console.log('redo')}>
+          Redo
+        </DropdownMenuItem>
+        <DropdownMenuSeparator as={StyledSeparator} />
+        <DropdownMenuItem as={StyledItem} disabled onSelect={() => console.log('cut')}>
+          Cut
+        </DropdownMenuItem>
+        <DropdownMenuItem as={StyledItem} onSelect={() => console.log('copy')}>
+          Copy
+        </DropdownMenuItem>
+        <DropdownMenuItem as={StyledItem} onSelect={() => console.log('paste')}>
+          Paste
+        </DropdownMenuItem>
         <DropdownMenuArrow />
       </DropdownMenuPopper>
     </DropdownMenu>
@@ -62,29 +52,27 @@ export const WithLabels = () => (
   <div style={{ textAlign: 'center', margin: 50 }}>
     <DropdownMenu>
       <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-      <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-        <DropdownMenuContent as={StyledContent}>
-          {foodGroups.map((foodGroup, index) => (
-            <DropdownMenuGroup key={index}>
-              {foodGroup.label && (
-                <DropdownMenuLabel as={StyledLabel} key={foodGroup.label}>
-                  {foodGroup.label}
-                </DropdownMenuLabel>
-              )}
-              {foodGroup.foods.map((food) => (
-                <DropdownMenuItem
-                  key={food.value}
-                  as={StyledItem}
-                  disabled={food.disabled}
-                  onSelect={() => console.log(food.label)}
-                >
-                  {food.label}
-                </DropdownMenuItem>
-              ))}
-              {index < foodGroups.length - 1 && <DropdownMenuSeparator as={StyledSeparator} />}
-            </DropdownMenuGroup>
-          ))}
-        </DropdownMenuContent>
+      <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+        {foodGroups.map((foodGroup, index) => (
+          <DropdownMenuGroup key={index}>
+            {foodGroup.label && (
+              <DropdownMenuLabel as={StyledLabel} key={foodGroup.label}>
+                {foodGroup.label}
+              </DropdownMenuLabel>
+            )}
+            {foodGroup.foods.map((food) => (
+              <DropdownMenuItem
+                key={food.value}
+                as={StyledItem}
+                disabled={food.disabled}
+                onSelect={() => console.log(food.label)}
+              >
+                {food.label}
+              </DropdownMenuItem>
+            ))}
+            {index < foodGroups.length - 1 && <DropdownMenuSeparator as={StyledSeparator} />}
+          </DropdownMenuGroup>
+        ))}
         <DropdownMenuArrow />
       </DropdownMenuPopper>
     </DropdownMenu>
@@ -103,33 +91,31 @@ export const CheckboxItems = () => {
     <div style={{ textAlign: 'center', margin: 50 }}>
       <DropdownMenu>
         <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-        <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-          <DropdownMenuContent as={StyledContent}>
-            <DropdownMenuItem as={StyledItem} onSelect={() => console.log('show')}>
-              Show fonts
-            </DropdownMenuItem>
-            <DropdownMenuItem as={StyledItem} onSelect={() => console.log('bigger')}>
-              Bigger
-            </DropdownMenuItem>
-            <DropdownMenuItem as={StyledItem} onSelect={() => console.log('smaller')}>
-              Smaller
-            </DropdownMenuItem>
-            <DropdownMenuSeparator as={StyledSeparator} />
-            {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
-              <DropdownMenuCheckboxItem
-                key={label}
-                as={StyledItem}
-                checked={checked}
-                onCheckedChange={setChecked}
-                disabled={disabled}
-              >
-                {label}
-                <DropdownMenuItemIndicator>
-                  <TickIcon />
-                </DropdownMenuItemIndicator>
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
+        <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('show')}>
+            Show fonts
+          </DropdownMenuItem>
+          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('bigger')}>
+            Bigger
+          </DropdownMenuItem>
+          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('smaller')}>
+            Smaller
+          </DropdownMenuItem>
+          <DropdownMenuSeparator as={StyledSeparator} />
+          {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+            <DropdownMenuCheckboxItem
+              key={label}
+              as={StyledItem}
+              checked={checked}
+              onCheckedChange={setChecked}
+              disabled={disabled}
+            >
+              {label}
+              <DropdownMenuItemIndicator>
+                <TickIcon />
+              </DropdownMenuItemIndicator>
+            </DropdownMenuCheckboxItem>
+          ))}
           <DropdownMenuArrow />
         </DropdownMenuPopper>
       </DropdownMenu>
@@ -145,29 +131,27 @@ export const RadioItems = () => {
     <div style={{ textAlign: 'center', margin: 50 }}>
       <DropdownMenu>
         <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-        <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-          <DropdownMenuContent as={StyledContent}>
-            <DropdownMenuItem as={StyledItem} onSelect={() => console.log('minimize')}>
-              Minimize window
-            </DropdownMenuItem>
-            <DropdownMenuItem as={StyledItem} onSelect={() => console.log('zoom')}>
-              Zoom
-            </DropdownMenuItem>
-            <DropdownMenuItem as={StyledItem} onSelect={() => console.log('smaller')}>
-              Smaller
-            </DropdownMenuItem>
-            <DropdownMenuSeparator as={StyledSeparator} />
-            <DropdownMenuRadioGroup value={file} onValueChange={setFile}>
-              {files.map((file) => (
-                <DropdownMenuRadioItem key={file} as={StyledItem} value={file}>
-                  {file}
-                  <DropdownMenuItemIndicator>
-                    <TickIcon />
-                  </DropdownMenuItemIndicator>
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
+        <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('minimize')}>
+            Minimize window
+          </DropdownMenuItem>
+          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('zoom')}>
+            Zoom
+          </DropdownMenuItem>
+          <DropdownMenuItem as={StyledItem} onSelect={() => console.log('smaller')}>
+            Smaller
+          </DropdownMenuItem>
+          <DropdownMenuSeparator as={StyledSeparator} />
+          <DropdownMenuRadioGroup value={file} onValueChange={setFile}>
+            {files.map((file) => (
+              <DropdownMenuRadioItem key={file} as={StyledItem} value={file}>
+                {file}
+                <DropdownMenuItemIndicator>
+                  <TickIcon />
+                </DropdownMenuItemIndicator>
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
           <DropdownMenuArrow />
         </DropdownMenuPopper>
       </DropdownMenu>
@@ -180,21 +164,19 @@ export const PreventClosing = () => (
   <div style={{ textAlign: 'center', margin: 50 }}>
     <DropdownMenu>
       <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-      <DropdownMenuPopper as={StyledPopper} sideOffset={5}>
-        <DropdownMenuContent as={StyledContent}>
-          <DropdownMenuItem as={StyledItem} onSelect={() => window.alert('action 1')}>
-            I will close
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            as={StyledItem}
-            onSelect={(event) => {
-              event.preventDefault();
-              window.alert('action 1');
-            }}
-          >
-            I won't close
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+      <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+        <DropdownMenuItem as={StyledItem} onSelect={() => window.alert('action 1')}>
+          I will close
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          as={StyledItem}
+          onSelect={(event) => {
+            event.preventDefault();
+            window.alert('action 1');
+          }}
+        >
+          I won't close
+        </DropdownMenuItem>
         <DropdownMenuArrow />
       </DropdownMenuPopper>
     </DropdownMenu>
