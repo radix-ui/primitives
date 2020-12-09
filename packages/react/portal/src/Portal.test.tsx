@@ -40,8 +40,8 @@ describe('Portal', () => {
       const portalContainerRef = React.useRef(null);
       return (
         <>
-          <section id="portal-container" ref={portalContainerRef} />
           <Portal containerRef={portalContainerRef}>portal inside custom container</Portal>
+          <section id="portal-container" ref={portalContainerRef} />
         </>
       );
     }
