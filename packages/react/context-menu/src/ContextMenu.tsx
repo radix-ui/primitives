@@ -43,10 +43,10 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'ContextMenuTrigger';
-const TRIGGER_DEFAULT_TAG = 'div';
+const TRIGGER_DEFAULT_TAG = 'span';
 
 const ContextMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
+  const { as: Comp = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useContextMenuContext(TRIGGER_NAME);
 
   return (
@@ -75,6 +75,8 @@ const POPPER_NAME = 'ContextMenuPopper';
 type ContextMenuPopperOwnProps = {
   anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
   trapFocus: never;
+  disableOutsideScroll: never;
+  souldPortal: never;
   onCloseAutoFocus: never;
   onOpenAutoFocus: never;
   onDismiss: never;
@@ -85,11 +87,12 @@ const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMen
     const {
       anchorRef,
       disableOutsidePointerEvents = true,
-      disableOutsideScroll = true,
-      shouldPortal = true,
+      side = 'bottom',
+      align = 'start',
       ...popperProps
     } = props;
     const context = useContextMenuContext(POPPER_NAME);
+
     return (
       <MenuPrimitive.Root
         ref={forwardedRef}
@@ -101,13 +104,13 @@ const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMen
           // re-namespace exposed popper custom property
           ['--interop-ui-context-menu-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
         }}
-        side="bottom"
-        align="start"
+        side={side}
+        align={align}
         anchorRef={context.anchorRef}
         trapFocus
         disableOutsidePointerEvents={disableOutsidePointerEvents}
-        disableOutsideScroll={disableOutsideScroll}
-        shouldPortal={shouldPortal}
+        disableOutsideScroll
+        shouldPortal
         onDismiss={() => context.setIsOpen(false)}
       />
     );
