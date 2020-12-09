@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-accordion": prerelease
+
+declined:
+  - interop-ui
