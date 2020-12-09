@@ -8,25 +8,47 @@ type PortalProps = {
 };
 
 const Portal: React.FC<PortalProps> = ({ children, containerRef }) => {
-  const hostElement = containerRef?.current ?? (document ? document.body : undefined);
-  const [, forceUpdate] = React.useState({});
+  // Lazy initialization of the host element
+  // This is to make sure we don't recreate a new DOM element on each render
+  const [hostElement] = React.useState(getHostElement);
 
-  /**
-   * containerRef.current won't be set on first render, so we force a re-render.
-   * Because we do this in `useLayoutEffect`, we still avoid a flash.
-   */
+  // We append the host element and remove it when necessary
   useLayoutEffect(() => {
-    forceUpdate({});
-  }, []);
+    if (!hostElement) {
+      return;
+    }
+
+    // prioritize a custom container via `containerRef` prop
+    if (containerRef && containerRef.current) {
+      containerRef.current.appendChild(hostElement);
+    }
+    // default to `document.body`
+    else {
+      document.body.appendChild(hostElement);
+    }
+
+    return () => {
+      hostElement.remove();
+    };
+  }, [hostElement, containerRef]);
 
   if (hostElement) {
-    const InteropPortal = 'interop-portal' as any;
-    return ReactDOM.createPortal(<InteropPortal>{children}</InteropPortal>, hostElement);
+    // Render the children of `Portal` inside the host element
+    return ReactDOM.createPortal(children, hostElement);
   }
 
   // bail out of ssr
   return null;
 };
+
+function getHostElement() {
+  if (typeof document !== 'undefined') {
+    return document.createElement('interop-portal');
+  }
+
+  // bail out of ssr
+  return null;
+}
 
 const Root = Portal;
 
