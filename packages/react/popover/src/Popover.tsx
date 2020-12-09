@@ -7,6 +7,7 @@ import {
   useControlledState,
   useId,
   composeRefs,
+  extendComponent,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import * as PopperPrimitive from '@interop-ui/react-popper';
@@ -343,19 +344,9 @@ const PopoverClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwarde
 
 PopoverClose.displayName = CLOSE_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * PopoverArrow
- * -----------------------------------------------------------------------------------------------*/
+/* -----------------------------------------------------------------------------------------------*/
 
-const ARROW_NAME = 'PopoverArrow';
-
-const PopoverArrow = forwardRefWithAs<typeof PopperPrimitive.Arrow>((props, forwardedRef) => {
-  return (
-    <PopperPrimitive.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />
-  );
-});
-
-PopoverArrow.displayName = ARROW_NAME;
+const PopoverArrow = extendComponent(PopperPrimitive.Arrow, 'PopoverArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 

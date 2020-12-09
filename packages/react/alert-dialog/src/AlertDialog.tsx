@@ -6,6 +6,7 @@ import {
   useId,
   useDocumentRef,
   composeEventHandlers,
+  extendComponent,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import {
@@ -37,10 +38,9 @@ const [AlertDialogContext, useAlertDialogContext] = createContext<AlertDialogCon
   ROOT_NAME
 );
 
-const [
-  AlertDialogContentContext,
-  useAlertDialogContentContext,
-] = createContext<AlertDialogContentContextValue>('AlertDialogContext', ROOT_NAME);
+const [AlertDialogContentContext, useAlertDialogContentContext] = createContext<
+  AlertDialogContentContextValue
+>('AlertDialogContext', ROOT_NAME);
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
@@ -67,30 +67,6 @@ const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => {
 AlertDialog.displayName = ROOT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * AlertDialogTrigger
- * -----------------------------------------------------------------------------------------------*/
-
-const TRIGGER_NAME = 'AlertDialogTrigger';
-
-const AlertDialogTrigger = forwardRefWithAs<typeof DialogTrigger>((props, forwardedRef) => {
-  return <DialogTrigger {...getPartDataAttrObj(TRIGGER_NAME)} ref={forwardedRef} {...props} />;
-});
-
-AlertDialogTrigger.displayName = TRIGGER_NAME;
-
-/* -------------------------------------------------------------------------------------------------
- * AlertDialogOverlay
- * -----------------------------------------------------------------------------------------------*/
-
-const OVERLAY_NAME = 'AlertDialogOverlay';
-
-const AlertDialogOverlay = forwardRefWithAs<typeof DialogOverlay>((props, forwardedRef) => {
-  return <DialogOverlay {...getPartDataAttrObj(OVERLAY_NAME)} ref={forwardedRef} {...props} />;
-});
-
-AlertDialogOverlay.displayName = OVERLAY_NAME;
-
-/* -------------------------------------------------------------------------------------------------
  * AlertDialogCancel
  * -----------------------------------------------------------------------------------------------*/
 
@@ -103,18 +79,6 @@ const AlertDialogCancel = forwardRefWithAs<typeof DialogClose>((props, forwarded
 });
 
 AlertDialogCancel.displayName = CANCEL_NAME;
-
-/* -------------------------------------------------------------------------------------------------
- * AlertDialogAction
- * -----------------------------------------------------------------------------------------------*/
-
-const ACTION_NAME = 'AlertDialogAction';
-
-const AlertDialogAction = forwardRefWithAs<typeof DialogClose>((props, forwardedRef) => {
-  return <DialogClose {...getPartDataAttrObj(ACTION_NAME)} ref={forwardedRef} {...props} />;
-});
-
-AlertDialogAction.displayName = ACTION_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogContent
@@ -222,6 +186,12 @@ const AlertDialogDescription = forwardRefWithAs<typeof DESCRIPTION_DEFAULT_TAG>(
 );
 
 AlertDialogDescription.displayName = DESCRIPTION_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
+
+const AlertDialogTrigger = extendComponent(DialogTrigger, 'AlertDialogTrigger');
+const AlertDialogOverlay = extendComponent(DialogOverlay, 'AlertDialogOverlay');
+const AlertDialogAction = extendComponent(DialogClose, 'AlertDialogAction');
 
 /* ---------------------------------------------------------------------------------------------- */
 
