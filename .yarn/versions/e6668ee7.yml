@@ -1,0 +1,8 @@
+releases:
+  "@interop-ui/react-alert-dialog": prerelease
+  "@interop-ui/react-popover": prerelease
+  "@interop-ui/react-radio-group": prerelease
+  "@interop-ui/react-tooltip": prerelease
+
+declined:
+  - interop-ui

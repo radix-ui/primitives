@@ -9,6 +9,7 @@ import {
   usePrevious,
   useControlledState,
   useLayoutEffect,
+  extendComponent,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import * as PopperPrimitive from '@interop-ui/react-popper';
@@ -255,19 +256,9 @@ const TooltipPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipP
 
 TooltipPopper.displayName = POPPER_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * TooltipArrow
- * -----------------------------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------------------------------*/
 
-const ARROW_NAME = 'TooltipArrow';
-
-const TooltipArrow = forwardRefWithAs<typeof PopperPrimitive.Arrow>((props, forwardedRef) => {
-  return (
-    <PopperPrimitive.Arrow {...getPartDataAttrObj(ARROW_NAME)} {...props} ref={forwardedRef} />
-  );
-});
-
-TooltipArrow.displayName = ARROW_NAME;
+const TooltipArrow = extendComponent(PopperPrimitive.Arrow, 'TooltipArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 

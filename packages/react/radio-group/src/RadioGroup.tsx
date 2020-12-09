@@ -5,6 +5,7 @@ import {
   useCallbackRef,
   useControlledState,
   useComposedRefs,
+  extendComponent,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { Radio, RadioIndicator } from './Radio';
@@ -145,17 +146,9 @@ const RadioGroupItem = forwardRefWithAs<typeof Radio, RadioGroupItemOwnProps>(
 
 RadioGroupItem.displayName = ITEM_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * RadioGroupIndicator
- * -----------------------------------------------------------------------------------------------*/
+/* -----------------------------------------------------------------------------------------------*/
 
-const INDICATOR_NAME = 'RadioGroupIndicator';
-
-const RadioGroupIndicator = forwardRefWithAs<typeof RadioIndicator>((props, forwardedRef) => {
-  return <RadioIndicator {...props} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
-});
-
-RadioGroupIndicator.displayName = INDICATOR_NAME;
+const RadioGroupIndicator = extendComponent(RadioIndicator, 'RadioGroupIndicator');
 
 /* ---------------------------------------------------------------------------------------------- */
 
