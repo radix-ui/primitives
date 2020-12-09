@@ -15,7 +15,6 @@
       "@interop-ui/react-collapsible": ["./packages/react/collapsible/src"],
       "@interop-ui/react-collection": ["./packages/react/collection/src"],
       "@interop-ui/react-context-menu": ["packages/react/context-menu/src"],
-      "@interop-ui/react-debug-context": ["./packages/react/debug-context/src"],
       "@interop-ui/react-dialog": ["./packages/react/dialog/src"],
       "@interop-ui/react-dismissable-layer": ["./packages/react/dismissable-layer/src"],
       "@interop-ui/react-dropdown-menu": ["packages/react/dropdown-menu/src"],

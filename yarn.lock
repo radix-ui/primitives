@@ -2175,21 +2175,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-debug-context@workspace:*, @interop-ui/react-debug-context@workspace:packages/react/debug-context":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-debug-context@workspace:packages/react/debug-context"
-  dependencies:
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-dialog@workspace:*, @interop-ui/react-dialog@workspace:packages/react/dialog":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-dialog@workspace:packages/react/dialog"
   dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
     "@interop-ui/react-dismissable-layer": "workspace:*"
     "@interop-ui/react-focus-guards": "workspace:*"
     "@interop-ui/react-focus-scope": "workspace:*"
@@ -2210,7 +2199,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
   dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
@@ -2247,7 +2235,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-focus-scope@workspace:packages/react/focus-scope"
   dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2306,7 +2293,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-popover@workspace:packages/react/popover"
   dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
     "@interop-ui/react-dismissable-layer": "workspace:*"
     "@interop-ui/react-focus-guards": "workspace:*"
     "@interop-ui/react-focus-scope": "workspace:*"
@@ -2330,7 +2316,6 @@ __metadata:
   dependencies:
     "@interop-ui/popper": "workspace:*"
     "@interop-ui/react-arrow": "workspace:*"
-    "@interop-ui/react-debug-context": "workspace:*"
     "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-use-size": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
@@ -2345,7 +2330,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-portal@workspace:packages/react/portal"
   dependencies:
-    "@interop-ui/react-debug-context": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:

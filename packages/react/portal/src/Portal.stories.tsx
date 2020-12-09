@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Portal } from './Portal';
-import { DebugContextProvider } from '@interop-ui/react-debug-context';
 
 export default { title: 'Components/Portal' };
 
@@ -43,34 +42,6 @@ export const CustomContainer = () => {
             because we have used Container B as a container element for the Portal.
           </p>
         </Portal>
-      </div>
-
-      <div
-        ref={portalContainerRef}
-        style={{ maxWidth: 300, padding: 10, margin: 10, border: '1px solid' }}
-      >
-        <h1>Container B</h1>
-      </div>
-    </>
-  );
-};
-
-export const CustomContainerViaDebugContextProvider = () => {
-  const portalContainerRef = React.useRef<HTMLDivElement>(null);
-
-  return (
-    <>
-      <div style={{ maxWidth: 300, padding: 10, margin: 10, border: '1px solid' }}>
-        <h1>Container A</h1>
-        <DebugContextProvider portalContainerRef={portalContainerRef}>
-          <Portal>
-            <p>
-              This content is rendered in a portal inside Container A but appears inside Container B
-              because we have used Container B as a container element for the Portal (via
-              `DebugContextProvider`).
-            </p>
-          </Portal>
-        </DebugContextProvider>
       </div>
 
       <div

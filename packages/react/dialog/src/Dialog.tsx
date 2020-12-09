@@ -9,7 +9,6 @@ import {
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
-import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
@@ -209,8 +208,6 @@ const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogCon
       ...contentProps
     } = props;
     const context = useDialogContext(CONTENT_NAME);
-    const debugContext = useDebugContext();
-    const ScrollLockWrapper = !debugContext.disableLock ? RemoveScroll : React.Fragment;
 
     // Make sure the whole tree has focus guards as our `Dialog` will be
     // the last element in the DOM (beacuse of the `Portal`)
@@ -225,7 +222,7 @@ const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogCon
 
     return (
       <Portal>
-        <ScrollLockWrapper>
+        <RemoveScroll>
           <FocusScope
             trapped
             onMountAutoFocus={onOpenAutoFocus}
@@ -280,7 +277,7 @@ const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogCon
               </DismissableLayer>
             )}
           </FocusScope>
-        </ScrollLockWrapper>
+        </RemoveScroll>
       </Portal>
     );
   }

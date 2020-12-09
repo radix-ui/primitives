@@ -10,7 +10,6 @@ import {
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import * as PopperPrimitive from '@interop-ui/react-popper';
-import { useDebugContext } from '@interop-ui/react-debug-context';
 import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
 import { FocusScope } from '@interop-ui/react-focus-scope';
 import { Portal } from '@interop-ui/react-portal';
@@ -208,12 +207,10 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
       ...popperProps
     } = props;
     const context = usePopoverContext(POPPER_NAME);
-    const debugContext = useDebugContext();
     const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
 
     const PortalWrapper = shouldPortal ? Portal : React.Fragment;
-    const ScrollLockWrapper =
-      disableOutsideScroll && !debugContext.disableLock ? RemoveScroll : React.Fragment;
+    const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
 
     // Make sure the whole tree has focus guards as our `Popover` may be
     // the last element in the DOM (beacuse of the `Portal`)

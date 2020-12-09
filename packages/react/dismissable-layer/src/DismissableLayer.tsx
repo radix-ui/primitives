@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useCallbackRef, useDisableBodyPointerEvents } from '@interop-ui/react-utils';
-import { useDebugContext } from '@interop-ui/react-debug-context';
 
 // We need to compute the total count of layers AND a running count of all layers
 // in order to find which layer is the deepest one.
@@ -72,27 +71,9 @@ type DismissableLayerProps = {
 };
 
 function DismissableLayer(props: DismissableLayerProps) {
-  const debugContext = useDebugContext();
-  const nodeRef = React.useRef<HTMLElement>(null);
-  if (debugContext.disableLock) {
-    return props.children({
-      ref: nodeRef,
-      style: {},
-      onBlurCapture: () => {},
-      onFocusCapture: () => {},
-      onMouseDownCapture: () => {},
-      onTouchStartCapture: () => {},
-    });
-  }
-  return <DismissableLayerImpl1 nodeRef={nodeRef} {...props} />;
-}
-
-function DismissableLayerImpl1(
-  props: DismissableLayerProps & { nodeRef: React.RefObject<HTMLElement> }
-) {
   const runningLayerCount = usePreviousRunningLayerCount();
   const isRootLayer = runningLayerCount === 0;
-  const layer = <DismissableLayerImpl2 {...props} />;
+  const layer = <DismissableLayerImpl {...props} />;
 
   // if it's the root layer, we wrap it with our necessary root providers
   // (effectively we wrap the whole tree of nested layers)
@@ -107,9 +88,8 @@ function DismissableLayerImpl1(
   );
 }
 
-function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLayerImpl1>) {
+function DismissableLayerImpl(props: React.ComponentProps<typeof DismissableLayer>) {
   const {
-    nodeRef,
     children,
     disableOutsidePointerEvents = false,
     onEscapeKeyDown,
@@ -118,6 +98,8 @@ function DismissableLayerImpl2(props: React.ComponentProps<typeof DismissableLay
     onInteractOutside,
     onDismiss,
   } = props;
+
+  const nodeRef = React.useRef<HTMLElement>(null);
 
   const totalLayerCount = useTotalLayerCount();
   const prevRunningLayerCount = usePreviousRunningLayerCount();
