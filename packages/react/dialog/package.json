@@ -17,7 +17,6 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-debug-context": "workspace:*",
     "@interop-ui/react-dismissable-layer": "workspace:*",
     "@interop-ui/react-focus-guards": "workspace:*",
     "@interop-ui/react-focus-scope": "workspace:*",

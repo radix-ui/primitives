@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Portal } from './Portal';
-import { DebugContextProvider } from '@interop-ui/react-debug-context';
 
 describe('Portal', () => {
   test('render (default appends to body)', () => {
@@ -43,34 +42,6 @@ describe('Portal', () => {
         <>
           <section id="portal-container" ref={portalContainerRef} />
           <Portal containerRef={portalContainerRef}>portal inside custom container</Portal>
-        </>
-      );
-    }
-    const { baseElement } = render(<Example />);
-    expect(baseElement).toMatchInlineSnapshot(`
-      <body>
-        <div>
-          <section
-            id="portal-container"
-          >
-            <interop-portal>
-              portal inside custom container
-            </interop-portal>
-          </section>
-        </div>
-      </body>
-    `);
-  });
-
-  test('render in custom container (via DebugContextProvider)', () => {
-    function Example() {
-      const portalContainerRef = React.useRef(null);
-      return (
-        <>
-          <section id="portal-container" ref={portalContainerRef} />
-          <DebugContextProvider portalContainerRef={portalContainerRef}>
-            <Portal>portal inside custom container</Portal>
-          </DebugContextProvider>
         </>
       );
     }

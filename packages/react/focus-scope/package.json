@@ -17,7 +17,6 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-debug-context": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },

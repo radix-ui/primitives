@@ -4,7 +4,6 @@ import { useSize } from '@interop-ui/react-use-size';
 import { createContext, useRect, useComposedRefs } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { Arrow as ArrowPrimitive } from '@interop-ui/react-arrow';
-import { useDebugContext } from '@interop-ui/react-debug-context';
 import { getPartDataAttrObj } from '@interop-ui/utils';
 
 import type { Side, Align, MeasurableElement } from '@interop-ui/utils';
@@ -62,7 +61,6 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
     const popperSize = useSize(popperRef);
     const arrowRef = React.useRef<HTMLSpanElement>(null);
     const arrowSize = useSize(arrowRef);
-    const debugContext = useDebugContext();
 
     const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
 
@@ -78,7 +76,7 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
       align,
       alignOffset,
       collisionTolerance,
-      shouldAvoidCollisions: shouldAvoidCollisions && !debugContext.disableCollisionChecking,
+      shouldAvoidCollisions,
     });
     const isPlaced = placedSide !== undefined;
 

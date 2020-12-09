@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { createFocusScope, AUTOFOCUS_ON_CREATE, AUTOFOCUS_ON_DESTROY } from './createFocusScope';
-import { useDebugContext } from '@interop-ui/react-debug-context';
 import { useCallbackRef } from '@interop-ui/react-utils';
 
 type FocusScopeProps = {
@@ -26,16 +25,8 @@ type FocusScopeProps = {
 };
 
 function FocusScope(props: FocusScopeProps) {
-  const debugContext = useDebugContext();
+  const { children, trapped = false } = props;
   const containerRef = React.useRef<HTMLElement>(null);
-  if (debugContext.disableLock) {
-    return props.children({ ref: containerRef });
-  }
-  return <FocusScopeImpl containerRef={containerRef} {...props} />;
-}
-
-function FocusScopeImpl(props: FocusScopeProps & { containerRef: React.RefObject<HTMLElement> }) {
-  const { children, trapped = false, containerRef } = props;
   const focusScopeRef = React.useRef<ReturnType<typeof createFocusScope>>();
   const onMountAutoFocus = useCallbackRef(props.onMountAutoFocus);
   const onUnmountAutoFocus = useCallbackRef(props.onUnmountAutoFocus);
