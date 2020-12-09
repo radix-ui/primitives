@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-context-menu": prerelease
+
+declined:
+  - interop-ui
