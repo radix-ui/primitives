@@ -95,6 +95,58 @@ export function Basic() {
   );
 }
 
+export function FillWidth() {
+  return (
+    <React.Fragment>
+      <ScrollPropControls />
+      <hr />
+      <Resizable>
+        <ScrollArea
+          as={Win98StyledRoot}
+          {...useScrollAreaControlProps()}
+          css={{ width: '400px', height: '400px' }}
+        >
+          <ScrollAreaScrollbarY as={Win98StyledScrollbarY}>
+            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+              <Arrow direction="up" />
+            </ScrollAreaButtonStart>
+
+            <ScrollAreaTrack as={Win98StyledScrollTrack}>
+              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            </ScrollAreaTrack>
+            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+              <Arrow direction="down" />
+            </ScrollAreaButtonEnd>
+          </ScrollAreaScrollbarY>
+
+          <ScrollAreaScrollbarX as={Win98StyledScrollbarX}>
+            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+              <Arrow direction="left" />
+            </ScrollAreaButtonStart>
+
+            <ScrollAreaTrack as={Win98StyledScrollTrack}>
+              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            </ScrollAreaTrack>
+            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+              <Arrow direction="right" />
+            </ScrollAreaButtonEnd>
+          </ScrollAreaScrollbarX>
+          <ScrollAreaCorner as={Win98StyledCorner} />
+          <ScrollAreaViewport as={BaseStyledViewport}>
+            <div
+              style={{
+                height: 1000,
+                backgroundImage:
+                  'repeating-linear-gradient(0deg, dodgerblue, dodgerblue 10px, transparent 10px, transparent 20px)',
+              }}
+            />
+          </ScrollAreaViewport>
+        </ScrollArea>
+      </Resizable>
+    </React.Fragment>
+  );
+}
+
 export function InsidePopover() {
   const [isOpen, setIsOpen] = React.useState(false);
   return (
