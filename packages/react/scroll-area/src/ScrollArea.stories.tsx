@@ -225,9 +225,6 @@ const RECOMMENDED_CSS__SCROLL_AREA__ROOT: any = {
   zIndex: 0,
   maxWidth: '100%',
   maxHeight: '100%',
-  '&[data-dragging], &[data-scrolling]': {
-    pointerEvents: 'auto !important',
-  },
   '& [data-radix-scroll-area-position]::-webkit-scrollbar': {
     display: 'none',
   },
