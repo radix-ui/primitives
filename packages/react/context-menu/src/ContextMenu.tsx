@@ -97,12 +97,13 @@ const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMen
       <MenuPrimitive.Root
         ref={forwardedRef}
         {...popperProps}
+        {...getPartDataAttrObj(POPPER_NAME)}
         isOpen={context.isOpen}
         onIsOpenChange={context.setIsOpen}
         style={{
           ...popperProps.style,
           // re-namespace exposed popper custom property
-          ['--interop-ui-context-menu-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
+          ['--radix-context-menu-popper-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
         }}
         side={side}
         align={align}

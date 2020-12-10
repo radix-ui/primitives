@@ -283,7 +283,7 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
                       ...dismissableLayerProps.style,
                       ...popperProps.style,
                       // re-namespace exposed popper custom property
-                      ['--interop-ui-popover-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
+                      ['--radix-popover-popper-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
                     }}
                     onBlurCapture={composeEventHandlers(
                       popperProps.onBlurCapture,

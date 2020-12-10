@@ -263,7 +263,7 @@ const SliderHorizontal = forwardRefWithAs<typeof SliderPart, SliderHorizontalOwn
         ref={ref}
         style={{
           ...sliderProps.style,
-          ['--interop-ui-slider-thumb-transform' as any]: 'translateX(-50%)',
+          ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
         }}
         data-orientation="horizontal"
         onSlideMouseDown={(event) => {
@@ -341,7 +341,7 @@ const SliderVertical = forwardRefWithAs<typeof SliderPart, SliderOrientationOwnP
         ref={ref}
         style={{
           ...sliderProps.style,
-          ['--interop-ui-slider-thumb-transform' as any]: 'translateY(50%)',
+          ['--radix-slider-thumb-transform' as any]: 'translateY(50%)',
         }}
         data-orientation="vertical"
         onSlideMouseDown={(event) => {
@@ -606,7 +606,7 @@ const SliderThumbImpl = forwardRefWithAs<typeof THUMB_DEFAULT_TAG, SliderThumbIm
     return (
       <span
         style={{
-          transform: 'var(--interop-ui-slider-thumb-transform)',
+          transform: 'var(--radix-slider-thumb-transform)',
           position: 'absolute',
           [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
         }}

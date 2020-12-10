@@ -93,7 +93,7 @@ export function getPlacementData({
     return {
       popperStyles: {
         ...popperStyles,
-        ['--interop-ui-popper-transform-origin' as any]: transformOrigin,
+        ['--radix-popper-transform-origin' as any]: transformOrigin,
       },
       arrowStyles,
       placedSide: side,
@@ -160,7 +160,7 @@ export function getPlacementData({
   return {
     popperStyles: {
       ...popperStyles,
-      ['--interop-ui-popper-transform-origin' as any]: transformOrigin,
+      ['--radix-popper-transform-origin' as any]: transformOrigin,
     },
     arrowStyles,
     placedSide,

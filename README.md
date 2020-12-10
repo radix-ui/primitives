@@ -1,4 +1,4 @@
-# interop-ui
+# Primitives
 
 ## Project structure conventions
 
@@ -7,7 +7,7 @@ Keeping the structure consistent across packages helps us simplify and speed up 
 - Each package lives in a sub-directory of the `packages` directory with the following structure.
 
   ```
-  interop-ui
+  primitives
   -- packages
   ---- [package_type]
   ------ [package]

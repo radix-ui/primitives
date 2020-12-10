@@ -241,7 +241,7 @@ const TooltipPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipP
           style={{
             ...popperProps.style,
             // re-namespace exposed popper custom property
-            ['--interop-ui-tooltip-popper-transform-origin' as any]: 'var(--interop-ui-popper-transform-origin)',
+            ['--radix-tooltip-popper-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
           }}
         >
           {children}
