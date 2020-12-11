@@ -17,8 +17,8 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/utils": "workspace:*",
-    "@interop-ui/react-polymorphic": "workspace:*"
+    "@interop-ui/react-polymorphic": "workspace:*",
+    "@interop-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/react": "^10.4.8",
