@@ -15,7 +15,7 @@ import * as React from 'react';
 import {
   Tooltip,
   TooltipTrigger,
-  TooltipPopper,
+  TooltipContent,
   TooltipContent,
   TooltipArrow,
 } from '@interop-ui/react-tooltip';
@@ -24,10 +24,10 @@ function MyComponent() {
   return (
     <Tooltip>
       <TooltipTrigger>Hover or Focus me</TooltipTrigger>
-      <TooltipPopper sideOffset={5}>
+      <TooltipContent sideOffset={5}>
         <TooltipContent aria-label="Very useful label">Nicely done!</TooltipContent>
         <TooltipArrow offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
   );
 }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   ContextMenu,
   ContextMenuTrigger,
-  ContextMenuPopper,
+  ContextMenuContent,
   ContextMenuGroup,
   ContextMenuLabel,
   ContextMenuItem,
@@ -34,7 +34,7 @@ export const Styled = () => (
     <ContextMenu>
       <ContextMenuTrigger as={StyledTrigger} />
       <ContextMenuTrigger as={StyledTrigger} />
-      <ContextMenuPopper as={StyledRoot} sideOffset={-5}>
+      <ContextMenuContent as={StyledRoot} sideOffset={-5}>
         <ContextMenuItem as={StyledItem} onSelect={() => console.log('undo')}>
           Undo
         </ContextMenuItem>
@@ -51,7 +51,7 @@ export const Styled = () => (
         <ContextMenuItem as={StyledItem} onSelect={() => console.log('paste')}>
           Paste
         </ContextMenuItem>
-      </ContextMenuPopper>
+      </ContextMenuContent>
     </ContextMenu>
   </div>
 );
@@ -60,7 +60,7 @@ export const WithLabels = () => (
   <div style={{ textAlign: 'center', margin: 50 }}>
     <ContextMenu>
       <ContextMenuTrigger as={StyledTrigger} />
-      <ContextMenuPopper as={StyledRoot} sideOffset={-5}>
+      <ContextMenuContent as={StyledRoot} sideOffset={-5}>
         {foodGroups.map((foodGroup, index) => (
           <ContextMenuGroup key={index}>
             {foodGroup.label && (
@@ -81,7 +81,7 @@ export const WithLabels = () => (
             {index < foodGroups.length - 1 && <ContextMenuSeparator as={StyledSeparator} />}
           </ContextMenuGroup>
         ))}
-      </ContextMenuPopper>
+      </ContextMenuContent>
     </ContextMenu>
   </div>
 );
@@ -98,7 +98,7 @@ export const CheckboxItems = () => {
     <div style={{ textAlign: 'center', margin: 50 }}>
       <ContextMenu>
         <ContextMenuTrigger as={StyledTrigger} />
-        <ContextMenuPopper as={StyledRoot} sideOffset={-5}>
+        <ContextMenuContent as={StyledRoot} sideOffset={-5}>
           <ContextMenuItem as={StyledItem} onSelect={() => console.log('show')}>
             Show fonts
           </ContextMenuItem>
@@ -123,7 +123,7 @@ export const CheckboxItems = () => {
               </ContextMenuItemIndicator>
             </ContextMenuCheckboxItem>
           ))}
-        </ContextMenuPopper>
+        </ContextMenuContent>
       </ContextMenu>
     </div>
   );
@@ -137,7 +137,7 @@ export const RadioItems = () => {
     <div style={{ textAlign: 'center', margin: 50 }}>
       <ContextMenu>
         <ContextMenuTrigger as={StyledTrigger} />
-        <ContextMenuPopper as={StyledRoot} sideOffset={-5}>
+        <ContextMenuContent as={StyledRoot} sideOffset={-5}>
           <ContextMenuItem as={StyledItem} onSelect={() => console.log('minimize')}>
             Minimize window
           </ContextMenuItem>
@@ -158,7 +158,7 @@ export const RadioItems = () => {
               </ContextMenuRadioItem>
             ))}
           </ContextMenuRadioGroup>
-        </ContextMenuPopper>
+        </ContextMenuContent>
       </ContextMenu>
       <p>Selected file: {file}</p>
     </div>
@@ -169,7 +169,7 @@ export const PreventClosing = () => (
   <div style={{ textAlign: 'center', margin: 50 }}>
     <ContextMenu>
       <ContextMenuTrigger as={StyledTrigger} />
-      <ContextMenuPopper as={StyledRoot} sideOffset={-5}>
+      <ContextMenuContent as={StyledRoot} sideOffset={-5}>
         <ContextMenuItem as={StyledItem} onSelect={() => window.alert('action 1')}>
           I will close
         </ContextMenuItem>
@@ -182,7 +182,7 @@ export const PreventClosing = () => (
         >
           I won't close
         </ContextMenuItem>
-      </ContextMenuPopper>
+      </ContextMenuContent>
     </ContextMenu>
   </div>
 );
@@ -199,7 +199,7 @@ export const Multiple = () => {
         const customColor = customColors[i];
         return (
           <ContextMenu key={i}>
-            <ContextMenuPopper as={AnimatedPopper}>
+            <ContextMenuContent as={AnimatedContent}>
               <ContextMenuLabel as={StyledLabel}>Color</ContextMenuLabel>
               <ContextMenuRadioGroup
                 value={customColor}
@@ -233,7 +233,7 @@ export const Multiple = () => {
                   <TickIcon />
                 </ContextMenuItemIndicator>
               </ContextMenuCheckboxItem>
-            </ContextMenuPopper>
+            </ContextMenuContent>
             <ContextMenuTrigger>
               <div
                 style={{
@@ -268,7 +268,7 @@ export const Nested = () => (
       <ContextMenuTrigger as={StyledTrigger} style={{ padding: 100, backgroundColor: 'royalblue' }}>
         <ContextMenu>
           <ContextMenuTrigger as={StyledTrigger} style={{ backgroundColor: 'tomato' }} />{' '}
-          <ContextMenuPopper as={StyledRoot} sideOffset={-5}>
+          <ContextMenuContent as={StyledRoot} sideOffset={-5}>
             <ContextMenuLabel as={StyledLabel}>Red box menu</ContextMenuLabel>
             <ContextMenuSeparator as={StyledSeparator} />
             <ContextMenuItem as={StyledItem} onSelect={() => console.log('red action1')}>
@@ -277,10 +277,10 @@ export const Nested = () => (
             <ContextMenuItem as={StyledItem} onSelect={() => console.log('red action2')}>
               Red action 2
             </ContextMenuItem>
-          </ContextMenuPopper>
+          </ContextMenuContent>
         </ContextMenu>
       </ContextMenuTrigger>
-      <ContextMenuPopper as={StyledRoot} sideOffset={-5}>
+      <ContextMenuContent as={StyledRoot} sideOffset={-5}>
         <ContextMenuLabel as={StyledLabel}>Blue box menu</ContextMenuLabel>
         <ContextMenuSeparator as={StyledSeparator} />
         <ContextMenuItem as={StyledItem} onSelect={() => console.log('blue action1')}>
@@ -289,7 +289,7 @@ export const Nested = () => (
         <ContextMenuItem as={StyledItem} onSelect={() => console.log('blue action2')}>
           Blue action 2
         </ContextMenuItem>
-      </ContextMenuPopper>
+      </ContextMenuContent>
     </ContextMenu>
   </div>
 );
@@ -313,7 +313,7 @@ const scaleIn = css.keyframes({
   '100%': { transform: 'scale(1)' },
 });
 
-const AnimatedPopper = styled(StyledRoot, {
-  transformOrigin: 'var(--radix-context-menu-popper-transform-origin)',
+const AnimatedContent = styled(StyledRoot, {
+  transformOrigin: 'var(--radix-context-menu-content-transform-origin)',
   animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
 });
