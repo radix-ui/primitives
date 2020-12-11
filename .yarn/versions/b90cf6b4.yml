@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-popover": prerelease
+
+declined:
+  - interop-ui
