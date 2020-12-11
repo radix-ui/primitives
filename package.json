@@ -5,8 +5,7 @@
   "license": "MIT",
   "workspaces": [
     "packages/core/*",
-    "packages/react/*",
-    "docs"
+    "packages/react/*"
   ],
   "scripts": {
     "lint": "eslint packages --ext .js,.ts,.tsx",
@@ -14,13 +13,12 @@
     "test:ci": "jest --ci",
     "storybook": "start-storybook -p 9009 --ci",
     "dev": "yarn storybook",
-    "dev:docs": "yarn workspace @interop-ui/docs dev",
     "build-storybook": "build-storybook",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
-    "build:packages": "yarn workspaces foreach -t --exclude interop-ui --exclude @interop-ui/docs run build",
+    "build:packages": "yarn workspaces foreach -t --exclude interop-ui run build",
     "build:cleanup": "mv tsconfig.json tsconfig.production.json && mv tsconfig.tmp.json tsconfig.json",
-    "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude interop-ui --exclude @interop-ui/docs npm publish --tolerate-republish --access public",
+    "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude interop-ui npm publish --tolerate-republish --access public",
     "clean": "yarn workspaces foreach -pv --exclude interop-ui run clean",
     "reset": "yarn clean && rm -rf .yarn/cache node_modules",
     "bump": "yarn version apply --all",

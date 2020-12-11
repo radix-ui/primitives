@@ -1,7 +1,0 @@
-{
-  "presets": ["next/babel"],
-  "plugins": [
-    "import-glob-array",
-    ["styled-components", { "ssr": true, "displayName": true, "preprocess": false }]
-  ]
-}
