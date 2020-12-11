@@ -7,54 +7,54 @@ export default { title: 'Components/Tabs' };
 export const Styled = () => (
   <>
     <h1>Horizontal (automatic activation)</h1>
-    <Tabs defaultSelectedId="tab1" as={StyledRoot}>
+    <Tabs defaultValue="tab1" as={StyledRoot}>
       <TabsList aria-label="tabs example" as={StyledTabList}>
-        <TabsTab id="tab1" as={StyledTab}>
+        <TabsTab value="tab1" as={StyledTab}>
           Tab 1
         </TabsTab>
-        <TabsTab id="tab2" disabled as={StyledTab}>
+        <TabsTab value="tab2" disabled as={StyledTab}>
           Tab 2
         </TabsTab>
-        <TabsTab id="tab3" as={StyledTab}>
+        <TabsTab value="tab3" as={StyledTab}>
           Tab 3
         </TabsTab>
       </TabsList>
-      <TabsPanel id="tab1" as={StyledTabPanel}>
+      <TabsPanel value="tab1" as={StyledTabPanel}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
       </TabsPanel>
-      <TabsPanel id="tab2" as={StyledTabPanel}>
+      <TabsPanel value="tab2" as={StyledTabPanel}>
         You'll never find me!
       </TabsPanel>
-      <TabsPanel id="tab3" as={StyledTabPanel}>
+      <TabsPanel value="tab3" as={StyledTabPanel}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
       </TabsPanel>
     </Tabs>
 
     <h1>Vertical (manual activation)</h1>
-    <Tabs defaultSelectedId="tab1" as={StyledRoot} orientation="vertical" activationMode="manual">
+    <Tabs defaultValue="tab1" as={StyledRoot} orientation="vertical" activationMode="manual">
       <TabsList aria-label="tabs example" as={StyledTabList}>
-        <TabsTab id="tab1" as={StyledTab}>
+        <TabsTab value="tab1" as={StyledTab}>
           Tab 1
         </TabsTab>
-        <TabsTab id="tab2" disabled as={StyledTab}>
+        <TabsTab value="tab2" disabled as={StyledTab}>
           Tab 2
         </TabsTab>
-        <TabsTab id="tab3" as={StyledTab}>
+        <TabsTab value="tab3" as={StyledTab}>
           Tab 3
         </TabsTab>
       </TabsList>
-      <TabsPanel id="tab1" as={StyledTabPanel}>
+      <TabsPanel value="tab1" as={StyledTabPanel}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
       </TabsPanel>
-      <TabsPanel id="tab2" as={StyledTabPanel}>
+      <TabsPanel value="tab2" as={StyledTabPanel}>
         You'll never find me!
       </TabsPanel>
-      <TabsPanel id="tab3" as={StyledTabPanel}>
+      <TabsPanel value="tab3" as={StyledTabPanel}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
       </TabsPanel>
