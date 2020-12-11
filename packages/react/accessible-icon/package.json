@@ -17,9 +17,7 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-polymorphic": "workspace:*",
-    "@interop-ui/react-visually-hidden": "workspace:*",
-    "@interop-ui/utils": "workspace:*"
+    "@interop-ui/react-visually-hidden": "workspace:*"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"

@@ -2,7 +2,6 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { getPartDataAttr } from '@interop-ui/utils';
 import { AccessibleIcon } from './AccessibleIcon';
 
 const LABEL_TEXT = 'Close';
@@ -38,12 +37,6 @@ describe('given a default AccessibleIcon', () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
-  it('should have an interop attribute on the container', () => {
-    const container = rendered.container.firstChild;
-    const partDataAttr = getPartDataAttr('AccessibleIcon');
-    expect(container).toHaveAttribute(partDataAttr);
-  });
-
   it('should have a label', () => {
     expect(label).toBeInTheDocument();
   });
@@ -69,22 +62,5 @@ describe('given an AccessibleIcon without children', () => {
     // Mock error to prevent it from logging to console
     spy.mockImplementation(() => ({ TypeError: () => {} }));
     expect(() => render(<AccessibleIconTest />)).toThrowError();
-  });
-});
-
-describe('given a styled AccessibleIcon', () => {
-  let rendered: RenderResult;
-
-  beforeEach(() => {
-    rendered = render(
-      <AccessibleIconTest className="icon-class">
-        <b>Foo</b>
-      </AccessibleIconTest>
-    );
-  });
-
-  it('should pass the className to the container', () => {
-    const container = rendered.container.firstChild;
-    expect(container).toHaveClass('icon-class');
   });
 });

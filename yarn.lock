@@ -2033,9 +2033,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-accessible-icon@workspace:packages/react/accessible-icon"
   dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/react-visually-hidden": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
