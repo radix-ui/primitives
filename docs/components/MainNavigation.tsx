@@ -194,7 +194,7 @@ function NavPanel({
   }, [id, router]);
 
   return (
-    <CollapsiblePrimitive isOpen={isOpen} onToggle={(state) => setIsOpen(state!)}>
+    <CollapsiblePrimitive open={isOpen} onOpenChange={(state) => setIsOpen(state!)}>
       <CollapsibleButton isOpen={isOpen}>{heading}</CollapsibleButton>
       <CollapsiblePrimitiveContent>
         <List sx={{ py: 0 }} aria-label={heading}>

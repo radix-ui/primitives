@@ -29,7 +29,7 @@ export const Styled = () => (
 );
 
 export const Controlled = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const [housePurchased, setHousePurchased] = React.useState(false);
 
   return (
@@ -37,7 +37,7 @@ export const Controlled = () => {
       <div>
         <img src="https://i.ibb.co/K54hsKt/house.jpg" alt="a large white house with a red roof" />
       </div>
-      <AlertDialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
+      <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger
           onClick={(e) => {
             if (housePurchased) {

@@ -27,8 +27,8 @@ type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 };
 
 const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
@@ -44,26 +44,22 @@ const DIALOG_NAME = 'Dialog';
 
 type DialogOwnProps = {
   id?: string;
-  isOpen?: boolean;
-  defaultIsOpen?: boolean;
-  onIsOpenChange?: (isOpen: boolean) => void;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const Dialog: React.FC<DialogOwnProps> = (props) => {
-  const { children, id: idProp, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
+  const { children, id: idProp, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const generatedId = makeId('dialog', useId());
   const id = idProp || generatedId;
-  const [isOpen = false, setIsOpen] = useControlledState({
-    prop: isOpenProp,
-    defaultProp: defaultIsOpen,
-    onChange: onIsOpenChange,
+  const [open = false, setOpen] = useControlledState({
+    prop: openProp,
+    defaultProp: defaultOpen,
+    onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, id, isOpen, setIsOpen }), [
-    id,
-    isOpen,
-    setIsOpen,
-  ]);
+  const context = React.useMemo(() => ({ triggerRef, id, open, setOpen }), [id, open, setOpen]);
 
   return <DialogContext.Provider value={context}>{children}</DialogContext.Provider>;
 };
@@ -88,9 +84,9 @@ const DialogTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwa
       ref={composedTriggerRef}
       type="button"
       aria-haspopup="dialog"
-      aria-expanded={context.isOpen}
+      aria-expanded={context.open}
       aria-controls={context.id}
-      onClick={composeEventHandlers(onClick, () => context.setIsOpen(true))}
+      onClick={composeEventHandlers(onClick, () => context.setOpen(true))}
       {...triggerProps}
     />
   );
@@ -118,10 +114,10 @@ const DialogOverlay = forwardRefWithAs<typeof DialogOverlayImpl, DialogOverlayOw
     const { forceMount, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME);
     return (
-      <Presence present={forceMount || context.isOpen}>
+      <Presence present={forceMount || context.open}>
         <DialogOverlayImpl
           {...overlayProps}
-          data-state={getState(context.isOpen)}
+          data-state={getState(context.open)}
           ref={forwardedRef}
         />
       </Presence>
@@ -160,10 +156,10 @@ const DialogContent = forwardRefWithAs<typeof DialogContentImpl, DialogContentOw
     const { forceMount, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME);
     return (
-      <Presence present={forceMount || context.isOpen}>
+      <Presence present={forceMount || context.open}>
         <DialogContentImpl
           {...contentProps}
-          data-state={getState(context.isOpen)}
+          data-state={getState(context.open)}
           ref={forwardedRef}
         />
       </Presence>
@@ -233,7 +229,7 @@ const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogCon
                 disableOutsidePointerEvents
                 onEscapeKeyDown={onEscapeKeyDown}
                 onPointerDownOutside={onPointerDownOutside}
-                onDismiss={() => context.setIsOpen(false)}
+                onDismiss={() => context.setOpen(false)}
               >
                 {(dismissableLayerProps) => (
                   <Comp
@@ -302,7 +298,7 @@ const DialogClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwarded
       ref={forwardedRef}
       type="button"
       {...closeProps}
-      onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
+      onClick={composeEventHandlers(onClick, () => context.setOpen(false))}
     />
   );
 });

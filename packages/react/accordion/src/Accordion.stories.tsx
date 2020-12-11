@@ -58,7 +58,7 @@ export const Controlled = () => {
   const [value, setValue] = React.useState('one');
 
   return (
-    <Accordion as={StyledRoot} value={value} onChange={(value) => setValue(value)}>
+    <Accordion as={StyledRoot} value={value} onValueChange={(value) => setValue(value)}>
       <AccordionItem as={StyledItem} value="one">
         <AccordionHeader as={StyledHeader}>
           <AccordionButton as={StyledButton}>One</AccordionButton>

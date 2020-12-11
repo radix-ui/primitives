@@ -17,10 +17,10 @@ import * as React from 'react';
 import { Presence } from '@interop-ui/react-presence';
 
 function MyComponent(props) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   return (
-    <Presence present={isOpen}>
+    <Presence present={open}>
       <div {...props}>Content</div>
     </Presence>
   );

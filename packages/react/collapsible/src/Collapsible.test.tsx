@@ -113,10 +113,10 @@ describe('given a disabled Collapsible', () => {
 describe('given an open uncontrolled Collapsible', () => {
   let rendered: RenderResult;
   let content: HTMLElement;
-  const onToggle = jest.fn();
+  const onOpenChange = jest.fn();
 
   beforeEach(() => {
-    rendered = render(<CollapsibleTest defaultIsOpen={true} onToggle={onToggle} />);
+    rendered = render(<CollapsibleTest defaultOpen={true} onOpenChange={onOpenChange} />);
     content = rendered.getByText(CONTENT_TEXT);
   });
 
@@ -131,8 +131,8 @@ describe('given an open uncontrolled Collapsible', () => {
       await waitForElementToBeRemoved(() => rendered.getByText(CONTENT_TEXT));
     });
 
-    it('should call `onToggle` prop with `false` value', () => {
-      expect(onToggle).toHaveBeenCalledWith(false);
+    it('should call `onOpenChange` prop with `false` value', () => {
+      expect(onOpenChange).toHaveBeenCalledWith(false);
     });
   });
 });
@@ -140,10 +140,10 @@ describe('given an open uncontrolled Collapsible', () => {
 describe('given an open controlled Collapsible', () => {
   let rendered: RenderResult;
   let content: HTMLElement;
-  const onToggle = jest.fn();
+  const onOpenChange = jest.fn();
 
   beforeEach(() => {
-    rendered = render(<CollapsibleTest isOpen={true} onToggle={onToggle} />);
+    rendered = render(<CollapsibleTest open={true} onOpenChange={onOpenChange} />);
     content = rendered.getByText(CONTENT_TEXT);
   });
 
@@ -157,8 +157,8 @@ describe('given an open controlled Collapsible', () => {
       fireEvent.click(button);
     });
 
-    it('should call `onToggle` prop with `false` value', () => {
-      expect(onToggle).toHaveBeenCalledWith(false);
+    it('should call `onOpenChange` prop with `false` value', () => {
+      expect(onOpenChange).toHaveBeenCalledWith(false);
     });
 
     it('should not close the content', () => {
@@ -172,7 +172,7 @@ describe('given styled parts', () => {
 
   beforeEach(() => {
     rendered = render(
-      <Collapsible className="container-class" isOpen={true}>
+      <Collapsible className="container-class" open={true}>
         <CollapsibleButton className="button-class">{BUTTON_TEXT}</CollapsibleButton>
         <CollapsibleContent className="content-class">{CONTENT_TEXT}</CollapsibleContent>
       </Collapsible>

@@ -5,13 +5,13 @@ import { styled, css } from '../../../../stitches.config';
 export default { title: 'Components/Presence' };
 
 export const Basic = () => {
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(true);
 
   return (
     <>
-      <button onClick={() => setIsOpen((prevIsOpen) => !prevIsOpen)}>toggle</button>
+      <button onClick={() => setOpen((prevOpen) => !prevOpen)}>toggle</button>
 
-      <Presence present={isOpen}>
+      <Presence present={open}>
         <div>Content</div>
       </Presence>
     </>
@@ -20,13 +20,13 @@ export const Basic = () => {
 
 export const WithSuspendedUnmountAnimation = () => {
   const ref = React.useRef<React.ElementRef<typeof Animated>>(null);
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   return (
     <>
-      <Toggles nodeRef={ref} open={isOpen} onOpenChange={setIsOpen} />
-      <Presence present={isOpen}>
-        <Animated data-state={isOpen ? 'open' : 'closed'} ref={ref}>
+      <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
+      <Presence present={open}>
+        <Animated data-state={open ? 'open' : 'closed'} ref={ref}>
           Content
         </Animated>
       </Presence>
@@ -36,12 +36,12 @@ export const WithSuspendedUnmountAnimation = () => {
 
 export const WithSuspendedUnmountTransition = () => {
   const ref = React.useRef<React.ElementRef<typeof Transitioned>>(null);
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   return (
     <>
-      <Toggles nodeRef={ref} open={isOpen} onOpenChange={setIsOpen} />
-      <Presence present={isOpen}>
-        <Transitioned data-state={isOpen ? 'open' : 'closed'} ref={ref}>
+      <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
+      <Presence present={open}>
+        <Transitioned data-state={open ? 'open' : 'closed'} ref={ref}>
           Content
         </Transitioned>
       </Presence>

@@ -18,12 +18,12 @@ export const Styled = () => (
 );
 
 export const Controlled = () => {
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(true);
 
   return (
-    <Tooltip isOpen={isOpen} onIsOpenChange={setIsOpen}>
+    <Tooltip open={open} onOpenChange={setOpen}>
       <TooltipTrigger style={{ margin: 100 }}>
-        I'm controlled, look I'm {isOpen ? 'open' : 'closed'}
+        I'm controlled, look I'm {open ? 'open' : 'closed'}
       </TooltipTrigger>
       <TooltipPopper as={StyledPopper} sideOffset={5}>
         Nicely done!
@@ -345,12 +345,12 @@ function SimpleTooltip({
   children,
   label,
   'aria-label': ariaLabel,
-  isOpen,
+  open,
   onOpenChange,
   ...props
 }: any) {
   return (
-    <Tooltip isOpen={isOpen} onIsOpenChange={onOpenChange}>
+    <Tooltip open={open} onOpenChange={onOpenChange}>
       {children}
       <TooltipPopper as={StyledPopper} sideOffset={5} aria-label={ariaLabel} {...props}>
         {label}

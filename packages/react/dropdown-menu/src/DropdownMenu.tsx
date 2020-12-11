@@ -20,8 +20,8 @@ const DROPDOWN_MENU_NAME = 'DropdownMenu';
 type DropdownMenuContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 };
 
 const [DropdownMenuContext, useDropdownMenuContext] = createContext<DropdownMenuContextValue>(
@@ -31,26 +31,22 @@ const [DropdownMenuContext, useDropdownMenuContext] = createContext<DropdownMenu
 
 type DropdownMenuOwnProps = {
   id?: string;
-  isOpen?: boolean;
-  defaultIsOpen?: boolean;
-  onIsOpenChange?: (isOpen: boolean) => void;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
-  const { children, id: idProp, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
+  const { children, id: idProp, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const generatedId = useId();
   const id = idProp || `dropdown-menu-${generatedId}`;
-  const [isOpen = false, setIsOpen] = useControlledState({
-    prop: isOpenProp,
-    defaultProp: defaultIsOpen,
-    onChange: onIsOpenChange,
+  const [open = false, setOpen] = useControlledState({
+    prop: openProp,
+    defaultProp: defaultOpen,
+    onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, id, isOpen, setIsOpen }), [
-    id,
-    isOpen,
-    setIsOpen,
-  ]);
+  const context = React.useMemo(() => ({ triggerRef, id, open, setOpen }), [id, open, setOpen]);
 
   return <DropdownMenuContext.Provider value={context}>{children}</DropdownMenuContext.Provider>;
 };
@@ -75,20 +71,20 @@ const DropdownMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props,
       ref={composedTriggerRef}
       type="button"
       aria-haspopup="menu"
-      aria-expanded={context.isOpen ? true : undefined}
-      aria-controls={context.isOpen ? context.id : undefined}
+      aria-expanded={context.open ? true : undefined}
+      aria-controls={context.open ? context.id : undefined}
       {...triggerProps}
       onMouseDown={composeEventHandlers(triggerProps.onMouseDown, (event) => {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)
         if (event.button === 0 && event.ctrlKey === false) {
-          context.setIsOpen((prevOpen) => !prevOpen);
+          context.setOpen((prevOpen) => !prevOpen);
         }
       })}
       onKeyDown={composeEventHandlers(triggerProps.onKeyDown, (event: React.KeyboardEvent) => {
         if (event.key === ' ' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
           event.preventDefault();
-          context.setIsOpen(true);
+          context.setOpen(true);
         }
       })}
     />
@@ -119,7 +115,7 @@ const DropdownMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, DropdownM
       onPointerDownOutside,
       onInteractOutside,
       disableOutsideScroll = true,
-      shouldPortal = true,
+      portalled = true,
       ...popperProps
     } = props;
     const context = useDropdownMenuContext(POPPER_NAME);
@@ -135,8 +131,8 @@ const DropdownMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, DropdownM
           // re-namespace exposed popper custom property
           ['--radix-dropdown-menu-popper-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
         }}
-        isOpen={context.isOpen}
-        onIsOpenChange={context.setIsOpen}
+        open={context.open}
+        onOpenChange={context.setOpen}
         anchorRef={anchorRef || context.triggerRef}
         trapFocus
         onCloseAutoFocus={(event) => {
@@ -168,8 +164,8 @@ const DropdownMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, DropdownM
         }}
         onInteractOutside={onInteractOutside}
         disableOutsideScroll={disableOutsideScroll}
-        shouldPortal={shouldPortal}
-        onDismiss={() => context.setIsOpen(false)}
+        portalled={portalled}
+        onDismiss={() => context.setOpen(false)}
       />
     );
   }

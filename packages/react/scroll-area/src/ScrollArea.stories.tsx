@@ -148,14 +148,14 @@ export function FillWidth() {
 }
 
 export function InsidePopover() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   return (
     <React.Fragment>
       <ScrollPropControls />
       <hr />
 
-      <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
-        <PopoverTrigger as="button">{isOpen ? 'close' : 'open'}</PopoverTrigger>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger as="button">{open ? 'close' : 'open'}</PopoverTrigger>
         <PopoverPopper
           style={{
             ...RECOMMENDED_CSS__POPOVER__POPPER,

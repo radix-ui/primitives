@@ -18,7 +18,7 @@ const SYSTEM_FONT =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"';
 
 export const Basic = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
 
   const [dismissOnEscape, setDismissOnEscape] = React.useState(false);
@@ -71,12 +71,12 @@ export const Basic = () => {
       </div>
 
       <div style={{ marginBottom: 20 }}>
-        <button ref={openButtonRef} type="button" onClick={() => setIsOpen((isOpen) => !isOpen)}>
-          {isOpen ? 'Close' : 'Open'} layer
+        <button ref={openButtonRef} type="button" onClick={() => setOpen((open) => !open)}>
+          {open ? 'Close' : 'Open'} layer
         </button>
       </div>
 
-      {isOpen ? (
+      {open ? (
         <DismissableLayer
           onEscapeKeyDown={(event) => {
             if (dismissOnEscape === false) {
@@ -94,7 +94,7 @@ export const Basic = () => {
             }
           }}
           disableOutsidePointerEvents={disabledOutsidePointerEvents}
-          onDismiss={() => setIsOpen(false)}
+          onDismiss={() => setOpen(false)}
         >
           {(props) => (
             <div
@@ -138,19 +138,19 @@ export const Nested = () => {
 };
 
 export const WithFocusScope = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
 
   return (
     <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
       <h1>DismissableLayer + FocusScope</h1>
       <div style={{ marginBottom: 20 }}>
-        <button ref={openButtonRef} type="button" onClick={() => setIsOpen((isOpen) => !isOpen)}>
-          {isOpen ? 'Close' : 'Open'} layer
+        <button ref={openButtonRef} type="button" onClick={() => setOpen((open) => !open)}>
+          {open ? 'Close' : 'Open'} layer
         </button>
       </div>
 
-      {isOpen ? (
+      {open ? (
         <DismissableLayer
           onPointerDownOutside={(event) => {
             if (event.target === openButtonRef.current) {
@@ -158,7 +158,7 @@ export const WithFocusScope = () => {
             }
           }}
           disableOutsidePointerEvents
-          onDismiss={() => setIsOpen(false)}
+          onDismiss={() => setOpen(false)}
         >
           {({ ref: dismissableLayerContainerRef, ...props }) => (
             <FocusScope trapped>
@@ -200,7 +200,7 @@ export const WithFocusScope = () => {
 type DismissableBoxProps = Omit<DismissableLayerProps, 'children'>;
 
 function DismissableBox(props: DismissableBoxProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
 
   return (
@@ -219,16 +219,12 @@ function DismissableBox(props: DismissableBoxProps) {
           }}
         >
           <div>
-            <button
-              ref={openButtonRef}
-              type="button"
-              onClick={() => setIsOpen((isOpen) => !isOpen)}
-            >
-              {isOpen ? 'Close' : 'Open'} new layer
+            <button ref={openButtonRef} type="button" onClick={() => setOpen((open) => !open)}>
+              {open ? 'Close' : 'Open'} new layer
             </button>
           </div>
 
-          {isOpen ? (
+          {open ? (
             <DismissableBox
               onPointerDownOutside={(event) => {
                 if (event.target === openButtonRef.current) {
@@ -236,7 +232,7 @@ function DismissableBox(props: DismissableBoxProps) {
                 }
               }}
               onFocusOutside={(event) => event.preventDefault()}
-              onDismiss={() => setIsOpen(false)}
+              onDismiss={() => setOpen(false)}
             />
           ) : null}
         </div>

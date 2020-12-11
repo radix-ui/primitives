@@ -8,15 +8,15 @@ import { makeRect } from '@interop-ui/utils';
 export default { title: 'Components/Popper' };
 
 export const Styled = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   return (
     <Scrollable>
-      <Anchor ref={anchorRef} onClick={() => setIsOpen(true)} />
+      <Anchor ref={anchorRef} onClick={() => setOpen(true)} />
 
-      {isOpen && (
+      {open && (
         <Popper as={StyledRoot} anchorRef={anchorRef} sideOffset={5}>
-          <button onClick={() => setIsOpen(false)}>close</button>
+          <button onClick={() => setOpen(false)}>close</button>
           <PopperArrow as={StyledArrow} width={20} height={10} />
         </Popper>
       )}
@@ -25,15 +25,15 @@ export const Styled = () => {
 };
 
 export const WithCustomArrow = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   return (
     <Scrollable>
-      <Anchor ref={anchorRef} onClick={() => setIsOpen(true)} />
+      <Anchor ref={anchorRef} onClick={() => setOpen(true)} />
 
-      {isOpen && (
+      {open && (
         <Popper as={StyledRoot} anchorRef={anchorRef} side="right" sideOffset={5}>
-          <button onClick={() => setIsOpen(false)}>close</button>
+          <button onClick={() => setOpen(false)}>close</button>
           <PopperArrow as={CustomArrow} width={20} height={10} offset={20} />
         </Popper>
       )}
@@ -42,17 +42,17 @@ export const WithCustomArrow = () => {
 };
 
 export const Animated = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <Scrollable>
-      <Anchor ref={anchorRef} onClick={() => setIsOpen(true)} />
+      <Anchor ref={anchorRef} onClick={() => setOpen(true)} />
 
-      {isOpen && (
+      {open && (
         <Portal>
           <Popper as={AnimatedPopper} anchorRef={anchorRef} sideOffset={5}>
-            <button onClick={() => setIsOpen(false)}>close</button>
+            <button onClick={() => setOpen(false)}>close</button>
             <PopperArrow as={StyledArrow} width={20} height={10} offset={25} />
           </Popper>
         </Portal>
@@ -62,16 +62,16 @@ export const Animated = () => {
 };
 
 export const WithPortal = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   return (
     <Scrollable>
-      <Anchor ref={anchorRef} onClick={() => setIsOpen(true)} />
+      <Anchor ref={anchorRef} onClick={() => setOpen(true)} />
 
-      {isOpen && (
+      {open && (
         <Portal>
           <Popper as={StyledRoot} anchorRef={anchorRef} sideOffset={5}>
-            <button onClick={() => setIsOpen(false)}>close</button>
+            <button onClick={() => setOpen(false)}>close</button>
             <PopperArrow as={StyledArrow} width={20} height={10} />
           </Popper>
         </Portal>
