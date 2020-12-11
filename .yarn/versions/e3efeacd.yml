@@ -1,0 +1,5 @@
+releases:
+  "@interop-ui/react-tabs": prerelease
+
+declined:
+  - interop-ui

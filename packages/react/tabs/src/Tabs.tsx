@@ -1,13 +1,3 @@
-// Eventually, when we have our dream of cross-framework bliss, this file would
-// construct a working primitive React component from our definition and state
-// chart in @interop-ui/primitives
-
-// We could potentially abstract this into an interpreter package, something
-// like React DOM interprets React for the DOM. This seems like it would get
-// pretty complex and may not be a worthwhile goal in the end. But having the
-// state and props centrally defined and consumed by all of our framework
-// packages could still be achieved in this manner.
-
 import * as React from 'react';
 import {
   composeEventHandlers,
@@ -25,8 +15,8 @@ import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus
 
 type TabsContextValue = {
   tabsId: string;
-  selectedId?: string;
-  setSelectedId?: (id: string) => void;
+  value?: string;
+  setValue?: (value: string) => void;
   orientation?: TabsOwnProps['orientation'];
   activationMode?: TabsOwnProps['activationMode'];
 };
@@ -41,12 +31,12 @@ const TABS_NAME = 'Tabs';
 const TABS_DEFAULT_TAG = 'div';
 
 type TabsOwnProps = {
-  /** The id of the selected tab, if controlled */
-  selectedId?: string;
-  /** The id of the tab to select by default, if uncontrolled */
-  defaultSelectedId?: string;
+  /** The value for the selected tab, if controlled */
+  value?: string;
+  /** The value of the tab to select by default, if uncontrolled */
+  defaultValue?: string;
   /** A function called when a new tab is selected */
-  onSelectedIdChange?: (id: string) => void;
+  onValueChange?: (value: string) => void;
   /**
    * The orientation the tabs are layed out.
    * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
@@ -62,9 +52,9 @@ const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, for
     as: Comp = TABS_DEFAULT_TAG,
     children,
     id,
-    selectedId: selectedIdProp,
-    onSelectedIdChange,
-    defaultSelectedId,
+    value: valueProp,
+    onValueChange,
+    defaultValue,
     orientation = 'horizontal',
     activationMode = 'automatic',
     ...tabsProps
@@ -73,21 +63,15 @@ const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, for
   const generatedTabsId = `tabs-${useId()}`;
   const tabsId = id || generatedTabsId;
 
-  const [selectedId, setSelectedId] = useControlledState({
-    prop: selectedIdProp,
-    onChange: onSelectedIdChange,
-    defaultProp: defaultSelectedId,
+  const [value, setValue] = useControlledState({
+    prop: valueProp,
+    onChange: onValueChange,
+    defaultProp: defaultValue,
   });
 
   const ctx: TabsContextValue = React.useMemo(
-    () => ({
-      tabsId,
-      selectedId,
-      setSelectedId,
-      orientation,
-      activationMode,
-    }),
-    [activationMode, orientation, selectedId, setSelectedId, tabsId]
+    () => ({ tabsId, value, setValue, orientation, activationMode }),
+    [activationMode, orientation, value, setValue, tabsId]
   );
 
   return (
@@ -154,20 +138,18 @@ const TAB_NAME = 'TabsTab';
 const TAB_DEFAULT_TAG = 'div';
 
 type TabsTabOwnProps = {
-  id: string;
+  value: string;
   disabled?: boolean;
 };
 
 const TabsTab = forwardRefWithAs<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>((props, forwardedRef) => {
-  const { as: Comp = TAB_DEFAULT_TAG, id, disabled, ...tabProps } = props;
-  const { tabsId, selectedId, setSelectedId, activationMode, orientation } = useTabsContext(
-    TAB_NAME
-  );
-  const tabId = makeTabId(tabsId, id);
-  const tabPanelId = makeTabsPanelId(tabsId, id);
-  const isSelected = id === selectedId;
+  const { as: Comp = TAB_DEFAULT_TAG, value, disabled, ...tabProps } = props;
+  const context = useTabsContext(TAB_NAME);
+  const tabId = makeTabId(context.tabsId, value);
+  const tabPanelId = makeTabsPanelId(context.tabsId, value);
+  const isSelected = value === context.value;
   const rovingFocusProps = useRovingFocus({ disabled, active: isSelected });
-  const selectTab = React.useCallback(() => setSelectedId?.(id), [id, setSelectedId]);
+  const selectTab = React.useCallback(() => context.setValue?.(value), [context.setValue, value]);
 
   const handleKeyDown = composeEventHandlers(
     tabProps.onKeyDown,
@@ -194,7 +176,7 @@ const TabsTab = forwardRefWithAs<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>((props
     composeEventHandlers(rovingFocusProps.onFocus, () => {
       // handle "automatic" activation if necessary
       // ie. activate tab following focus
-      const isAutomaticActivation = activationMode !== 'manual';
+      const isAutomaticActivation = context.activationMode !== 'manual';
       if (!isSelected && !disabled && isAutomaticActivation) {
         selectTab();
       }
@@ -212,8 +194,7 @@ const TabsTab = forwardRefWithAs<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>((props
       {...rovingFocusProps}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
-      data-orientation={orientation}
-      data-tab-id={id}
+      data-orientation={context.orientation}
       id={tabId}
       ref={forwardedRef}
       onKeyDown={handleKeyDown}
@@ -232,21 +213,21 @@ TabsTab.displayName = TAB_NAME;
 const TAB_PANEL_NAME = 'TabsPanel';
 const TAB_PANEL_DEFAULT_TAG = 'div';
 
-type TabsPanelPropsOwnProps = { id: string };
+type TabsPanelPropsOwnProps = { value: string };
 
 const TabsPanel = forwardRefWithAs<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelPropsOwnProps>(
   (props, forwardedRef) => {
-    const { as: Comp = TAB_PANEL_DEFAULT_TAG, id, ...tabPanelProps } = props;
-    const { tabsId, selectedId, orientation } = useTabsContext(TAB_PANEL_NAME);
-    const tabId = makeTabId(tabsId, id);
-    const tabPanelId = makeTabsPanelId(tabsId, id);
-    const isSelected = id === selectedId;
+    const { as: Comp = TAB_PANEL_DEFAULT_TAG, value, ...tabPanelProps } = props;
+    const context = useTabsContext(TAB_PANEL_NAME);
+    const tabId = makeTabId(context.tabsId, value);
+    const tabPanelId = makeTabsPanelId(context.tabsId, value);
+    const isSelected = value === context.value;
 
     return (
       <Comp
         {...getPartDataAttrObj(TAB_PANEL_NAME)}
         data-state={isSelected ? 'active' : 'inactive'}
-        data-orientation={orientation}
+        data-orientation={context.orientation}
         id={tabPanelId}
         role="tabpanel"
         aria-labelledby={tabId}
@@ -264,12 +245,12 @@ TabsPanel.displayName = TAB_PANEL_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function makeTabId(tabsId: string, tabId: string) {
-  return makeId(tabsId, 'tab', tabId);
+function makeTabId(tabsId: string, value: string) {
+  return makeId(tabsId, 'tab', value);
 }
 
-function makeTabsPanelId(tabsId: string, tabId: string) {
-  return `${tabsId}-tabPanel-${tabId}`;
+function makeTabsPanelId(tabsId: string, value: string) {
+  return `${tabsId}-tabPanel-${value}`;
 }
 
 const Root = Tabs;
