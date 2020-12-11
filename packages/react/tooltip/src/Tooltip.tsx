@@ -287,7 +287,7 @@ function CheckTriggerMoved() {
 
 const Root = Tooltip;
 const Trigger = TooltipTrigger;
-const Popper = TooltipContent;
+const Content = TooltipContent;
 const Arrow = TooltipArrow;
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow, Root, Trigger, Popper, Arrow };
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow, Root, Trigger, Content, Arrow };
