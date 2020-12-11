@@ -1,0 +1,6 @@
+releases:
+  "@interop-ui/react-dropdown-menu": prerelease
+  "@interop-ui/react-popover": prerelease
+
+declined:
+  - interop-ui

@@ -146,7 +146,7 @@ const DropdownMenuContent = forwardRefWithAs<
       }}
       disableOutsidePointerEvents={disableOutsidePointerEvents}
       onPointerDownOutside={(event) => {
-        const wasTrigger = event.target === context.triggerRef.current;
+        const wasTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
 
         // skip autofocus on close if clicking outside is allowed and it happened
         setSkipCloseAutoFocus(!disableOutsidePointerEvents);
