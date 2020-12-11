@@ -10,19 +10,4 @@ $ npm install @interop-ui/react-presence
 
 ## Usage
 
-Manages mounting/unmounting of its child component. It will suspend the unmount phase if the child component is animating or transitioning via CSS.
-
-```js
-import * as React from 'react';
-import { Presence } from '@interop-ui/react-presence';
-
-function MyComponent(props) {
-  const [open, setOpen] = React.useState(false);
-
-  return (
-    <Presence present={open}>
-      <div {...props}>Content</div>
-    </Presence>
-  );
-}
-```
+This is an internal utility, not intended for public usage.
