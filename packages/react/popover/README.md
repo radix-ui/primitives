@@ -15,7 +15,7 @@ import * as React from 'react';
 import {
   Popover,
   PopoverTrigger,
-  PopoverPopper,
+  PopoverContent,
   PopoverContent,
   PopoverClose,
   PopoverArrow,
@@ -25,13 +25,13 @@ function MyComponent(props) {
   return (
     <Popover>
       <PopoverTrigger>Open popover</PopoverTrigger>
-      <PopoverPopper sideOffset={10}>
+      <PopoverContent sideOffset={10}>
         <PopoverContent>
           <p>Some really cool popover content!</p>
           <PopoverClose>Close popover</PopoverClose>
         </PopoverContent>
         <PopoverArrow width={50} height={20} />
-      </PopoverPopper>
+      </PopoverContent>
     </Popover>
   );
 }

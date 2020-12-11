@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tooltip, TooltipTrigger, TooltipPopper, TooltipArrow } from './Tooltip';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow } from './Tooltip';
 import { Arrow } from '@interop-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
 
@@ -10,10 +10,10 @@ export const Styled = () => (
     <TooltipTrigger as={StyledTrigger} style={{ margin: 100 }}>
       Hover or Focus me
     </TooltipTrigger>
-    <TooltipPopper as={StyledPopper} sideOffset={5} aria-label="Even better done this way!">
+    <TooltipContent as={StyledContent} sideOffset={5} aria-label="Even better done this way!">
       Nicely done!
       <TooltipArrow as={StyledArrow} offset={10} />
-    </TooltipPopper>
+    </TooltipContent>
   </Tooltip>
 );
 
@@ -25,10 +25,10 @@ export const Controlled = () => {
       <TooltipTrigger style={{ margin: 100 }}>
         I'm controlled, look I'm {open ? 'open' : 'closed'}
       </TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         Nicely done!
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
   );
 };
@@ -37,47 +37,47 @@ export const CustomContent = () => (
   <div style={{ display: 'flex', gap: 20, padding: 100 }}>
     <Tooltip>
       <TooltipTrigger>Heading</TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         <h1>Some heading</h1>
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
 
     <Tooltip>
       <TooltipTrigger>Paragraph</TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         <p>Some paragraph</p>
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
 
     <Tooltip>
       <TooltipTrigger>List</TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         <ul>
           <li>One</li>
           <li>Two</li>
           <li>Three</li>
         </ul>
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
 
     <Tooltip>
       <TooltipTrigger>Article</TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         <article>
           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum, quae qui. Magnam delectus
           ex totam repellat amet distinctio unde, porro architecto voluptatibus nemo et nisi,
           voluptatem eligendi earum autem fugit.
         </article>
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
 
     <Tooltip>
       <TooltipTrigger>Figure</TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         <figure style={{ margin: 0 }}>
           <img
             src="https://pbs.twimg.com/profile_images/864164353771229187/Catw6Nmh_400x400.jpg"
@@ -87,29 +87,29 @@ export const CustomContent = () => (
           <figcaption>Colm Tuite</figcaption>
         </figure>
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
 
     <Tooltip>
       <TooltipTrigger>Time</TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         {/* @ts-ignore */}
         <time datetime="2017-10-31T11:21:00+02:00">Tuesday, 31 October 2017</time>
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
 
     <Tooltip>
       <TooltipTrigger>Link</TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         View in <a href="https://modulz.app">Modulz</a>
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
 
     <Tooltip>
       <TooltipTrigger>Form</TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         <form>
           <label htmlFor="fname">First name:</label>
           <br />
@@ -120,12 +120,12 @@ export const CustomContent = () => (
           <input type="text" id="lname" name="lname" />
         </form>
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
 
     <Tooltip>
       <TooltipTrigger>Mini layout</TooltipTrigger>
-      <TooltipPopper as={StyledPopper} sideOffset={5}>
+      <TooltipContent as={StyledContent} sideOffset={5}>
         <p
           style={{
             margin: 0,
@@ -150,7 +150,7 @@ export const CustomContent = () => (
           </span>
         </p>
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
   </div>
 );
@@ -331,10 +331,10 @@ export const Unmount = () => {
 export const Animated = () => {
   return (
     <div style={{ padding: 100 }}>
-      <SimpleTooltip as={AnimatedPopper} label="Hello world 1">
+      <SimpleTooltip as={AnimatedContent} label="Hello world 1">
         <TooltipTrigger style={{ marginRight: 10 }}>Hello 1</TooltipTrigger>
       </SimpleTooltip>
-      <SimpleTooltip as={AnimatedPopper} label="Hello world 2" side="top">
+      <SimpleTooltip as={AnimatedContent} label="Hello world 2" side="top">
         <TooltipTrigger>Hello 2</TooltipTrigger>
       </SimpleTooltip>
     </div>
@@ -352,10 +352,10 @@ function SimpleTooltip({
   return (
     <Tooltip open={open} onOpenChange={onOpenChange}>
       {children}
-      <TooltipPopper as={StyledPopper} sideOffset={5} aria-label={ariaLabel} {...props}>
+      <TooltipContent as={StyledContent} sideOffset={5} aria-label={ariaLabel} {...props}>
         {label}
         <TooltipArrow as={StyledArrow} offset={10} />
-      </TooltipPopper>
+      </TooltipContent>
     </Tooltip>
   );
 }
@@ -372,16 +372,16 @@ const PositionButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsW
 
 const StyledTrigger = styled('button', {});
 
-const RECOMMENDED_CSS__TOOLTIP__POPPER: any = {
-  transformOrigin: 'var(--radix-tooltip-popper-transform-origin)',
+const RECOMMENDED_CSS__TOOLTIP__CONTENT: any = {
+  transformOrigin: 'var(--radix-tooltip-content-transform-origin)',
   // ensures content isn't selectable and cannot receive events
   // this is just a detterent to people putting interactive content inside a `Tooltip`
   userSelect: 'none',
   pointerEvents: 'none',
 };
 
-const StyledPopper = styled('div', {
-  ...RECOMMENDED_CSS__TOOLTIP__POPPER,
+const StyledContent = styled('div', {
+  ...RECOMMENDED_CSS__TOOLTIP__CONTENT,
   backgroundColor: '$black',
   color: '$white',
   borderRadius: 5,
@@ -403,7 +403,7 @@ const fadeIn = css.keyframes({
   '100%': { opacity: 1 },
 });
 
-const AnimatedPopper = styled(StyledPopper, {
+const AnimatedContent = styled(StyledContent, {
   '&[data-state="delayed-open"]': {
     animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
   },

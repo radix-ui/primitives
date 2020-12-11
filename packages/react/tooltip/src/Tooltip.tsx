@@ -192,12 +192,12 @@ const TooltipTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forw
 TooltipTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * TooltipPopper
+ * TooltipContent
  * -----------------------------------------------------------------------------------------------*/
 
-const POPPER_NAME = 'TooltipPopper';
+const CONTENT_NAME = 'TooltipContent';
 
-type TooltipPopperOwnProps = {
+type TooltipContentOwnProps = {
   /**
    * A more descriptive label for accessibility purpose
    */
@@ -212,36 +212,36 @@ type TooltipPopperOwnProps = {
   portalled?: boolean;
 };
 
-const TooltipPopper = forwardRefWithAs<typeof TooltipPopperImpl>((props, forwardedRef) => {
-  const context = useTooltipContext(POPPER_NAME);
-  return context.open ? <TooltipPopperImpl ref={forwardedRef} {...props} /> : null;
+const TooltipContent = forwardRefWithAs<typeof TooltipContentImpl>((props, forwardedRef) => {
+  const context = useTooltipContext(CONTENT_NAME);
+  return context.open ? <TooltipContentImpl ref={forwardedRef} {...props} /> : null;
 });
 
-const TooltipPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipPopperOwnProps>(
+const TooltipContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipContentOwnProps>(
   (props, forwardedRef) => {
     const {
       children,
       'aria-label': ariaLabel,
       anchorRef,
       portalled = true,
-      ...popperProps
+      ...contentProps
     } = props;
-    const context = useTooltipContext(POPPER_NAME);
+    const context = useTooltipContext(CONTENT_NAME);
     const PortalWrapper = portalled ? Portal : React.Fragment;
 
     return (
       <PortalWrapper>
         <CheckTriggerMoved />
         <PopperPrimitive.Root
-          {...getPartDataAttrObj(POPPER_NAME)}
-          {...popperProps}
+          {...getPartDataAttrObj(CONTENT_NAME)}
+          {...contentProps}
           data-state={context.stateAttribute}
           ref={forwardedRef}
           anchorRef={anchorRef || context.triggerRef}
           style={{
-            ...popperProps.style,
-            // re-namespace exposed popper custom property
-            ['--radix-tooltip-popper-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
+            ...contentProps.style,
+            // re-namespace exposed content custom property
+            ['--radix-tooltip-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
           }}
         >
           {children}
@@ -254,7 +254,7 @@ const TooltipPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipP
   }
 );
 
-TooltipPopper.displayName = POPPER_NAME;
+TooltipContent.displayName = CONTENT_NAME;
 
 /* ------------------------------------------------------------------------------------------------*/
 
@@ -287,7 +287,7 @@ function CheckTriggerMoved() {
 
 const Root = Tooltip;
 const Trigger = TooltipTrigger;
-const Popper = TooltipPopper;
+const Popper = TooltipContent;
 const Arrow = TooltipArrow;
 
-export { Tooltip, TooltipTrigger, TooltipPopper, TooltipArrow, Root, Trigger, Popper, Arrow };
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow, Root, Trigger, Popper, Arrow };

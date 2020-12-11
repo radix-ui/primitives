@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
-  DropdownMenuPopper,
+  DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuItem,
@@ -25,7 +25,7 @@ export const Styled = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}>
     <DropdownMenu>
       <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-      <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+      <DropdownMenuContent as={StyledRoot} sideOffset={5}>
         <DropdownMenuItem as={StyledItem} onSelect={() => console.log('undo')}>
           Undo
         </DropdownMenuItem>
@@ -43,7 +43,7 @@ export const Styled = () => (
           Paste
         </DropdownMenuItem>
         <DropdownMenuArrow />
-      </DropdownMenuPopper>
+      </DropdownMenuContent>
     </DropdownMenu>
   </div>
 );
@@ -52,7 +52,7 @@ export const WithLabels = () => (
   <div style={{ textAlign: 'center', margin: 50 }}>
     <DropdownMenu>
       <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-      <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+      <DropdownMenuContent as={StyledRoot} sideOffset={5}>
         {foodGroups.map((foodGroup, index) => (
           <DropdownMenuGroup key={index}>
             {foodGroup.label && (
@@ -74,7 +74,7 @@ export const WithLabels = () => (
           </DropdownMenuGroup>
         ))}
         <DropdownMenuArrow />
-      </DropdownMenuPopper>
+      </DropdownMenuContent>
     </DropdownMenu>
   </div>
 );
@@ -91,7 +91,7 @@ export const CheckboxItems = () => {
     <div style={{ textAlign: 'center', margin: 50 }}>
       <DropdownMenu>
         <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-        <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+        <DropdownMenuContent as={StyledRoot} sideOffset={5}>
           <DropdownMenuItem as={StyledItem} onSelect={() => console.log('show')}>
             Show fonts
           </DropdownMenuItem>
@@ -117,7 +117,7 @@ export const CheckboxItems = () => {
             </DropdownMenuCheckboxItem>
           ))}
           <DropdownMenuArrow />
-        </DropdownMenuPopper>
+        </DropdownMenuContent>
       </DropdownMenu>
     </div>
   );
@@ -131,7 +131,7 @@ export const RadioItems = () => {
     <div style={{ textAlign: 'center', margin: 50 }}>
       <DropdownMenu>
         <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-        <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+        <DropdownMenuContent as={StyledRoot} sideOffset={5}>
           <DropdownMenuItem as={StyledItem} onSelect={() => console.log('minimize')}>
             Minimize window
           </DropdownMenuItem>
@@ -153,7 +153,7 @@ export const RadioItems = () => {
             ))}
           </DropdownMenuRadioGroup>
           <DropdownMenuArrow />
-        </DropdownMenuPopper>
+        </DropdownMenuContent>
       </DropdownMenu>
       <p>Selected file: {file}</p>
     </div>
@@ -164,7 +164,7 @@ export const PreventClosing = () => (
   <div style={{ textAlign: 'center', margin: 50 }}>
     <DropdownMenu>
       <DropdownMenuTrigger as={StyledTrigger}>Open</DropdownMenuTrigger>
-      <DropdownMenuPopper as={StyledRoot} sideOffset={5}>
+      <DropdownMenuContent as={StyledRoot} sideOffset={5}>
         <DropdownMenuItem as={StyledItem} onSelect={() => window.alert('action 1')}>
           I will close
         </DropdownMenuItem>
@@ -178,7 +178,7 @@ export const PreventClosing = () => (
           I won't close
         </DropdownMenuItem>
         <DropdownMenuArrow />
-      </DropdownMenuPopper>
+      </DropdownMenuContent>
     </DropdownMenu>
   </div>
 );
