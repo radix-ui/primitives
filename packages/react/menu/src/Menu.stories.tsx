@@ -213,11 +213,11 @@ export const Animated = () => {
     <>
       <label>
         <input type="checkbox" checked={open} onChange={(event) => setOpen(event.target.checked)} />{' '}
-        isOpen
+        open
       </label>
       <br />
       <br />
-      <AnimatedMenu isOpen={open}>
+      <AnimatedMenu open={open}>
         {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
           <MenuCheckboxItem
             key={label}
@@ -248,9 +248,9 @@ export const Animated = () => {
 };
 
 type MenuOwnProps = {
-  onIsOpenChange: never;
+  onOpenChange: never;
   anchorRef: never;
-  shouldPortal: never;
+  portalled: never;
   trapFocus: never;
   onOpenAutoFocus: never;
   onCloseAutoFocus: never;
@@ -259,7 +259,7 @@ type MenuOwnProps = {
 };
 
 const Menu = forwardRefWithAs<typeof MenuPrimitive, MenuOwnProps>((props, forwardedRef) => {
-  const { isOpen = true } = props;
+  const { open = true } = props;
   const ref = React.useRef<HTMLDivElement>(null);
   return (
     <>
@@ -268,10 +268,10 @@ const Menu = forwardRefWithAs<typeof MenuPrimitive, MenuOwnProps>((props, forwar
         {...props}
         as={StyledRoot}
         ref={forwardedRef}
-        isOpen={isOpen}
-        onIsOpenChange={() => {}}
+        open={open}
+        onOpenChange={() => {}}
         anchorRef={ref}
-        shouldPortal={true}
+        portalled={true}
         trapFocus={false}
         onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}

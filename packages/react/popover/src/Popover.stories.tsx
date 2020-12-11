@@ -22,13 +22,13 @@ export const Styled = () => {
 };
 
 export const Controlled = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   return (
     <div
       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
     >
-      <Popover isOpen={isOpen} onIsOpenChange={setIsOpen}>
-        <PopoverTrigger as={StyledTrigger}>{isOpen ? 'close' : 'open'}</PopoverTrigger>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger as={StyledTrigger}>{open ? 'close' : 'open'}</PopoverTrigger>
         <PopoverPopper as={StyledPopper}>
           <PopoverClose as={StyledClose}>close</PopoverClose>
           <PopoverArrow as={StyledArrow} width={20} height={10} />

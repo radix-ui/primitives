@@ -36,7 +36,7 @@ type PopperOwnProps = {
   align?: Align;
   alignOffset?: number;
   collisionTolerance?: number;
-  shouldAvoidCollisions?: boolean;
+  avoidCollisions?: boolean;
 };
 
 const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
@@ -50,7 +50,7 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
       align = 'center',
       alignOffset,
       collisionTolerance,
-      shouldAvoidCollisions = true,
+      avoidCollisions = true,
       ...popperProps
     } = props;
 
@@ -75,7 +75,7 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
       align,
       alignOffset,
       collisionTolerance,
-      shouldAvoidCollisions,
+      shouldAvoidCollisions: avoidCollisions,
     });
     const isPlaced = placedSide !== undefined;
 

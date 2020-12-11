@@ -17,17 +17,17 @@ const COLLAPSIBLE_NAME = 'Collapsible';
 const COLLAPSIBLE_DEFAULT_TAG = 'div';
 
 type CollapsibleOwnProps = {
-  defaultIsOpen?: boolean;
-  isOpen?: boolean;
+  defaultOpen?: boolean;
+  open?: boolean;
   disabled?: boolean;
-  onToggle?(isOpen?: boolean): void;
+  onOpenChange?(open?: boolean): void;
 };
 
 type CollapsibleContextValue = {
   contentId?: string;
   setContentId(id: string): void;
-  isOpen: boolean;
-  isDisabled?: boolean;
+  open: boolean;
+  disabled?: boolean;
   toggle(): void;
 };
 
@@ -42,35 +42,35 @@ const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, Collapsible
       as: Comp = COLLAPSIBLE_DEFAULT_TAG,
       id: idProp,
       children,
-      isOpen: isOpenProp,
-      defaultIsOpen,
-      disabled: isDisabled,
-      onToggle,
+      open: openProp,
+      defaultOpen,
+      disabled,
+      onOpenChange,
       ...collapsibleProps
     } = props;
 
-    const [isOpen = false, setIsOpen] = useControlledState({
-      prop: isOpenProp,
-      defaultProp: defaultIsOpen,
-      onChange: onToggle,
+    const [open = false, setOpen] = useControlledState({
+      prop: openProp,
+      defaultProp: defaultOpen,
+      onChange: onOpenChange,
     });
     const [contentId, setContentId] = React.useState<string>();
     const context = React.useMemo(
       () => ({
         contentId,
-        isOpen,
-        isDisabled,
-        toggle: () => setIsOpen((prevIsOpen) => !prevIsOpen),
+        open,
+        disabled,
+        toggle: () => setOpen((prevOpen) => !prevOpen),
         setContentId,
       }),
-      [contentId, isDisabled, isOpen, setIsOpen]
+      [contentId, disabled, open, setOpen]
     );
 
     return (
       <Comp
         {...getPartDataAttrObj(COLLAPSIBLE_NAME)}
         {...collapsibleProps}
-        data-state={getState(context.isOpen)}
+        data-state={getState(context.open)}
         ref={forwardedRef}
       >
         <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
@@ -97,11 +97,11 @@ const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG>((props, fo
       {...getPartDataAttrObj(BUTTON_NAME)}
       ref={forwardedRef}
       aria-controls={context.contentId}
-      aria-expanded={context.isOpen || false}
-      data-state={getState(context.isOpen)}
+      aria-expanded={context.open || false}
+      data-state={getState(context.open)}
       {...buttonProps}
       onClick={composeEventHandlers(onClick, context.toggle)}
-      disabled={context.isDisabled}
+      disabled={context.disabled}
     />
   );
 });
@@ -117,7 +117,7 @@ const CONTENT_DEFAULT_TAG = 'div';
 
 const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, forwardedRef) => {
   const { as: Comp = CONTENT_DEFAULT_TAG, id: idProp, children, ...contentProps } = props;
-  const { setContentId, isOpen } = useCollapsibleContext(CONTENT_NAME);
+  const { setContentId, open } = useCollapsibleContext(CONTENT_NAME);
   const generatedId = `collapsible-${useId()}`;
   const id = idProp || generatedId;
 
@@ -126,7 +126,7 @@ const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, 
   }, [id, setContentId]);
 
   return (
-    <Presence present={isOpen}>
+    <Presence present={open}>
       {({ present }) => (
         <Comp
           {...contentProps}
@@ -134,7 +134,7 @@ const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, 
           ref={forwardedRef}
           id={id}
           hidden={!present}
-          data-state={getState(isOpen)}
+          data-state={getState(open)}
         >
           {present && children}
         </Comp>
@@ -147,8 +147,8 @@ CollapsibleContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function getState(isOpen?: boolean) {
-  return isOpen ? 'open' : 'closed';
+function getState(open?: boolean) {
+  return open ? 'open' : 'closed';
 }
 
 const Root = Collapsible;

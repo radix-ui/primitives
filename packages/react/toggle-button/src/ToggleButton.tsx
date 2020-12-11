@@ -15,7 +15,7 @@ type ToggleButtonOwnProps = {
    */
   defaultToggled?: boolean;
   /** A function called when the button is toggled */
-  onToggle?(toggled: boolean): void;
+  onToggledChange?(toggled: boolean): void;
 };
 
 const ToggleButton = forwardRefWithAs<typeof DEFAULT_TAG, ToggleButtonOwnProps>(
@@ -25,14 +25,14 @@ const ToggleButton = forwardRefWithAs<typeof DEFAULT_TAG, ToggleButtonOwnProps>(
       toggled: toggledProp,
       defaultToggled = false,
       onClick,
-      onToggle,
+      onToggledChange,
       children,
       ...buttonProps
     } = props;
 
     const [toggled = false, setToggled] = useControlledState({
       prop: toggledProp,
-      onChange: onToggle,
+      onChange: onToggledChange,
       defaultProp: defaultToggled,
     });
 

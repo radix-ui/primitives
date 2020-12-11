@@ -61,7 +61,7 @@ const ExtendedButton = forwardRefWithAs<typeof Button, ExtendedButtonProps>(
 
 type LinkProps = React.ComponentProps<'a'> & {
   isPrimary?: boolean;
-  onToggle?(isOpen: boolean): void;
+  onToggle?(open: boolean): void;
 };
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
@@ -93,7 +93,7 @@ export function Test() {
   return (
     <>
       {/* Link accepts onToggle prop */}
-      <Link onToggle={(isOpen) => console.log(isOpen)} />
+      <Link onToggle={(open) => console.log(open)} />
 
       {/* Link accepts isPrimary prop */}
       <Link isPrimary />

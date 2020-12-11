@@ -26,7 +26,7 @@ type StateAttribute = 'closed' | 'delayed-open' | 'instant-open';
 type TooltipContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
-  isOpen: boolean;
+  open: boolean;
   stateAttribute: StateAttribute;
 };
 
@@ -48,36 +48,36 @@ const stateMachine = createStateMachine(stateChart);
 const TOOLTIP_NAME = 'Tooltip';
 
 type TooltipOwnProps = {
-  isOpen?: boolean;
-  defaultIsOpen?: boolean;
-  onIsOpenChange?: (isOpen: boolean) => void;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const Tooltip: React.FC<TooltipOwnProps> = (props) => {
-  const { children, isOpen: isOpenProp, defaultIsOpen = false, onIsOpenChange } = props;
+  const { children, open: openProp, defaultOpen = false, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `tooltip-${useId()}`;
-  const [isOpen = false, setIsOpen] = useControlledState({
-    prop: isOpenProp,
-    defaultProp: defaultIsOpen,
-    onChange: onIsOpenChange,
+  const [open = false, setOpen] = useControlledState({
+    prop: openProp,
+    defaultProp: defaultOpen,
+    onChange: onOpenChange,
   });
   const [stateAttribute, setStateAttribute] = React.useState<StateAttribute>(
-    isOpenProp ? 'instant-open' : 'closed'
+    openProp ? 'instant-open' : 'closed'
   );
 
   // control open state using state machine subscription
   React.useEffect(() => {
     const unsubscribe = stateMachine.subscribe(({ state, context }) => {
       if (state === 'OPEN' && context.id === id) {
-        setIsOpen(true);
+        setOpen(true);
       } else {
-        setIsOpen(false);
+        setOpen(false);
       }
     });
 
     return unsubscribe;
-  }, [id, setIsOpen]);
+  }, [id, setOpen]);
 
   // sync state attribute with using state machine subscription
   React.useEffect(() => {
@@ -111,14 +111,14 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   // if we're controlling the component
   // put the state machine in the appropriate state
   useLayoutEffect(() => {
-    if (isOpenProp === true) {
+    if (openProp === true) {
       stateMachine.transition('mouseEntered', { id });
     }
-  }, [id, isOpenProp]);
+  }, [id, openProp]);
 
-  const context = React.useMemo(() => ({ triggerRef, id, isOpen, stateAttribute }), [
+  const context = React.useMemo(() => ({ triggerRef, id, open, stateAttribute }), [
     id,
-    isOpen,
+    open,
     stateAttribute,
   ]);
 
@@ -154,7 +154,7 @@ const TooltipTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forw
       {...getPartDataAttrObj(TRIGGER_NAME)}
       ref={composedTriggerRef}
       type="button"
-      aria-describedby={context.isOpen ? context.id : undefined}
+      aria-describedby={context.open ? context.id : undefined}
       onMouseEnter={composeEventHandlers(onMouseEnter, () =>
         stateMachine.transition('mouseEntered', { id: context.id })
       )}
@@ -209,12 +209,12 @@ type TooltipPopperOwnProps = {
    * Whether the Tooltip should render in a Portal
    * (default: `true`)
    */
-  shouldPortal?: boolean;
+  portalled?: boolean;
 };
 
 const TooltipPopper = forwardRefWithAs<typeof TooltipPopperImpl>((props, forwardedRef) => {
   const context = useTooltipContext(POPPER_NAME);
-  return context.isOpen ? <TooltipPopperImpl ref={forwardedRef} {...props} /> : null;
+  return context.open ? <TooltipPopperImpl ref={forwardedRef} {...props} /> : null;
 });
 
 const TooltipPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipPopperOwnProps>(
@@ -223,11 +223,11 @@ const TooltipPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipP
       children,
       'aria-label': ariaLabel,
       anchorRef,
-      shouldPortal = true,
+      portalled = true,
       ...popperProps
     } = props;
     const context = useTooltipContext(POPPER_NAME);
-    const PortalWrapper = shouldPortal ? Portal : React.Fragment;
+    const PortalWrapper = portalled ? Portal : React.Fragment;
 
     return (
       <PortalWrapper>

@@ -36,7 +36,7 @@ const MENU_NAME = 'Menu';
 type MenuContextValue = {
   menuRef: React.RefObject<HTMLDivElement>;
   setItemsReachable: React.Dispatch<React.SetStateAction<boolean>>;
-  onIsOpenChange?: (isOpen: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
 };
 const [MenuContext, useMenuContext] = createContext<MenuContextValue>(
   MENU_NAME + 'Context',
@@ -44,7 +44,7 @@ const [MenuContext, useMenuContext] = createContext<MenuContextValue>(
 );
 
 type MenuOwnProps = {
-  isOpen?: boolean;
+  open?: boolean;
 
   /**
    * Used to force mounting when more control is needed. Useful when
@@ -54,11 +54,11 @@ type MenuOwnProps = {
 };
 
 const Menu = forwardRefWithAs<typeof MenuImpl, MenuOwnProps>((props, forwardedRef) => {
-  const { children, forceMount, isOpen = false, ...menuProps } = props;
+  const { children, forceMount, open = false, ...menuProps } = props;
 
   return (
-    <Presence present={forceMount || isOpen}>
-      <MenuImpl ref={forwardedRef} {...menuProps} data-state={getOpenState(isOpen)}>
+    <Presence present={forceMount || open}>
+      <MenuImpl ref={forwardedRef} {...menuProps} data-state={getOpenState(open)}>
         {children}
       </MenuImpl>
     </Presence>
@@ -67,7 +67,7 @@ const Menu = forwardRefWithAs<typeof MenuImpl, MenuOwnProps>((props, forwardedRe
 
 type MenuImplOwnProps = {
   anchorRef: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
-  onIsOpenChange?: (isOpen: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
   loop?: boolean;
 
   /**
@@ -133,14 +133,14 @@ type MenuImplOwnProps = {
    * Whether the `Menu` should render in a `Portal`
    * (default: `true`)
    */
-  shouldPortal?: boolean;
+  portalled?: boolean;
 };
 
 const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>(
   (props, forwardedRef) => {
     const {
       children,
-      onIsOpenChange,
+      onOpenChange,
       anchorRef,
       loop,
       trapFocus,
@@ -153,26 +153,26 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
       onInteractOutside,
       onDismiss,
       disableOutsideScroll,
-      shouldPortal,
+      portalled,
       ...menuProps
     } = props;
 
-    const handleIsOpenChange = useCallbackRef(onIsOpenChange);
+    const handleOpenChange = useCallbackRef(onOpenChange);
     const menuRef = React.useRef<HTMLDivElement>(null);
     const [menuTabIndex, setMenuTabIndex] = React.useState(0);
     const [itemsReachable, setItemsReachable] = React.useState(false);
     const menuTypeaheadProps = useMenuTypeahead();
 
     const context = React.useMemo(
-      () => ({ menuRef, setItemsReachable, onIsOpenChange: handleIsOpenChange }),
-      [handleIsOpenChange]
+      () => ({ menuRef, setItemsReachable, onOpenChange: handleOpenChange }),
+      [handleOpenChange]
     );
 
     React.useEffect(() => {
       setMenuTabIndex(itemsReachable ? -1 : 0);
     }, [itemsReachable]);
 
-    const PortalWrapper = shouldPortal ? Portal : React.Fragment;
+    const PortalWrapper = portalled ? Portal : React.Fragment;
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
 
     // Make sure the whole tree has focus guards as our `Menu` may be
@@ -354,7 +354,7 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
         const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
         menuItem.dispatchEvent(itemSelectEvent);
         if (itemSelectEvent.defaultPrevented) return;
-        context.onIsOpenChange?.(false);
+        context.onOpenChange?.(false);
       }
     };
 

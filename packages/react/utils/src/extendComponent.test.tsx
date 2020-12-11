@@ -30,7 +30,7 @@ const ExtendedButton = extendComponent(Button, 'ExtendedButton');
 
 type LinkProps = React.ComponentProps<'a'> & {
   isPrimary?: boolean;
-  onToggle?(isOpen: boolean): void;
+  onToggle?(open: boolean): void;
 };
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {

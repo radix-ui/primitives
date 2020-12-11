@@ -13,8 +13,8 @@ import type { Point, MeasurableElement } from '@interop-ui/utils';
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
 type ContextMenuContextValue = {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   anchorPointRef: React.MutableRefObject<Point>;
   anchorRef: React.MutableRefObject<MeasurableElement | null>;
 };
@@ -26,12 +26,12 @@ const [ContextMenuContext, useContextMenuContext] = createContext<ContextMenuCon
 
 const ContextMenu: React.FC = (props) => {
   const { children } = props;
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const anchorPointRef = React.useRef<Point>({ x: 0, y: 0 });
   const anchorRef = React.useRef({
     getBoundingClientRect: () => makeRect({ width: 0, height: 0 }, anchorPointRef.current),
   });
-  const context = React.useMemo(() => ({ isOpen, setIsOpen, anchorPointRef, anchorRef }), [isOpen]);
+  const context = React.useMemo(() => ({ open, setOpen, anchorPointRef, anchorRef }), [open]);
 
   return <ContextMenuContext.Provider value={context}>{children}</ContextMenuContext.Provider>;
 };
@@ -57,7 +57,7 @@ const ContextMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, 
       onContextMenu={composeEventHandlers(triggerProps.onContextMenu, (event) => {
         event.preventDefault();
         const point = { x: event.clientX, y: event.clientY };
-        context.setIsOpen(true);
+        context.setOpen(true);
         context.anchorPointRef.current = point;
       })}
     />
@@ -76,7 +76,7 @@ type ContextMenuPopperOwnProps = {
   anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
   trapFocus: never;
   disableOutsideScroll: never;
-  souldPortal: never;
+  portalled: never;
   onCloseAutoFocus: never;
   onOpenAutoFocus: never;
   onDismiss: never;
@@ -98,8 +98,8 @@ const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMen
         ref={forwardedRef}
         {...popperProps}
         {...getPartDataAttrObj(POPPER_NAME)}
-        isOpen={context.isOpen}
-        onIsOpenChange={context.setIsOpen}
+        open={context.open}
+        onOpenChange={context.setOpen}
         style={{
           ...popperProps.style,
           // re-namespace exposed popper custom property
@@ -111,8 +111,8 @@ const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMen
         trapFocus
         disableOutsidePointerEvents={disableOutsidePointerEvents}
         disableOutsideScroll
-        shouldPortal
-        onDismiss={() => context.setIsOpen(false)}
+        portalled
+        onDismiss={() => context.setOpen(false)}
       />
     );
   }

@@ -10,7 +10,7 @@ export const Controlled = () => {
   const [toggled, setToggled] = React.useState(true);
 
   return (
-    <ToggleButton as={StyledRoot} toggled={toggled} onToggle={setToggled}>
+    <ToggleButton as={StyledRoot} toggled={toggled} onToggledChange={setToggled}>
       {toggled ? 'On' : 'Off'}
     </ToggleButton>
   );

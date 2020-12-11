@@ -17,7 +17,7 @@ import { Collapsible, CollapsibleButton, CollapsibleContent } from '@interop-ui/
 type AccordionContextValue = {
   buttonNodesRef: React.MutableRefObject<Set<HTMLElement | null>>;
   value?: string;
-  isDisabled?: boolean;
+  disabled?: boolean;
   setValue(value: string): void;
 };
 
@@ -43,8 +43,12 @@ type AccordionItemOwnProps = {
    * A string value for the accordion item. All items within an accordion should use a unique value.
    */
   value: string;
+
+  open: never;
+  defaultOpen: never;
+  onOpenChange: never;
 };
-type AccordionItemContextValue = { isOpen?: boolean; buttonId: string };
+type AccordionItemContextValue = { open?: boolean; buttonId: string };
 
 const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionItemContextValue>(
   'AccordionItemContext',
@@ -56,22 +60,15 @@ const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionI
  */
 const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps>(
   (props, forwardedRef) => {
-    const {
-      value,
-      isOpen: isOpenProp,
-      defaultIsOpen,
-      children,
-      onToggle,
-      ...accordionItemProps
-    } = props;
+    const { value, children, ...accordionItemProps } = props;
     const accordionContext = useAccordionContext(ITEM_NAME);
     const generatedButtonId = `accordion-button-${useId()}`;
     const buttonId = props.id || generatedButtonId;
-    const isOpen = (value && value === accordionContext.value) || false;
-    const disabled = accordionContext.isDisabled ?? props.disabled;
+    const open = (value && value === accordionContext.value) || false;
+    const disabled = accordionContext.disabled ?? props.disabled;
 
-    const itemContext: AccordionItemContextValue = React.useMemo(() => ({ isOpen, buttonId }), [
-      isOpen,
+    const itemContext: AccordionItemContextValue = React.useMemo(() => ({ open, buttonId }), [
+      open,
       buttonId,
     ]);
 
@@ -80,11 +77,11 @@ const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps
         {...accordionItemProps}
         {...getPartDataAttrObj(ITEM_NAME)}
         ref={forwardedRef}
-        data-state={isOpen ? 'open' : 'closed'}
+        data-state={open ? 'open' : 'closed'}
         data-disabled={disabled || undefined}
         disabled={disabled}
-        isOpen={isOpen}
-        onToggle={() => accordionContext.setValue(value)}
+        open={open}
+        onOpenChange={() => accordionContext.setValue(value)}
       >
         <AccordionItemContext.Provider value={itemContext}>
           {children}
@@ -103,18 +100,14 @@ AccordionItem.displayName = ITEM_NAME;
 const HEADER_NAME = 'AccordionHeader';
 const HEADER_DEFAULT_TAG = 'h3';
 
-type AccordionHeaderOwnProps = {};
-
 /**
  * `AccordionHeader` contains the content for the parts of an `AccordionItem` that will be visible
  * whether or not its content is collapsed.
  */
-const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG, AccordionHeaderOwnProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
-    return <Comp ref={forwardedRef} {...headerProps} {...getPartDataAttrObj(HEADER_NAME)} />;
-  }
-);
+const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
+  return <Comp ref={forwardedRef} {...headerProps} {...getPartDataAttrObj(HEADER_NAME)} />;
+});
 
 AccordionHeader.displayName = HEADER_NAME;
 
@@ -124,45 +117,41 @@ AccordionHeader.displayName = HEADER_NAME;
 
 const BUTTON_NAME = 'AccordionButton';
 
-type AccordionButtonOwnProps = {};
-
 /**
  * `AccordionButton` is the trigger that toggles the collapsed state of an `AccordionItem`. It
  * should always be nested inside of an `AccordionHeader`.
  */
-const AccordionButton = forwardRefWithAs<typeof CollapsibleButton, AccordionButtonOwnProps>(
-  (props, forwardedRef) => {
-    const { ...buttonProps } = props;
-    const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
-    const itemContext = useAccordionItemContext(BUTTON_NAME);
+const AccordionButton = forwardRefWithAs<typeof CollapsibleButton>((props, forwardedRef) => {
+  const { ...buttonProps } = props;
+  const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
+  const itemContext = useAccordionItemContext(BUTTON_NAME);
 
-    const ref = React.useRef<React.ElementRef<typeof CollapsibleButton>>(null);
-    const composedRefs = useComposedRefs(ref, forwardedRef);
+  const ref = React.useRef<React.ElementRef<typeof CollapsibleButton>>(null);
+  const composedRefs = useComposedRefs(ref, forwardedRef);
 
-    React.useEffect(() => {
-      const buttonNodes = buttonNodesRef.current;
-      const buttonNode = ref.current;
+  React.useEffect(() => {
+    const buttonNodes = buttonNodesRef.current;
+    const buttonNode = ref.current;
 
-      if (buttonNode) {
-        buttonNodes.add(buttonNode);
-        return () => {
-          buttonNodes.delete(buttonNode);
-        };
-      }
-      return;
-    }, [buttonNodesRef]);
+    if (buttonNode) {
+      buttonNodes.add(buttonNode);
+      return () => {
+        buttonNodes.delete(buttonNode);
+      };
+    }
+    return;
+  }, [buttonNodesRef]);
 
-    return (
-      <CollapsibleButton
-        {...buttonProps}
-        {...getPartDataAttrObj(BUTTON_NAME)}
-        ref={composedRefs}
-        aria-disabled={itemContext.isOpen || undefined}
-        id={itemContext.buttonId}
-      />
-    );
-  }
-);
+  return (
+    <CollapsibleButton
+      {...buttonProps}
+      {...getPartDataAttrObj(BUTTON_NAME)}
+      ref={composedRefs}
+      aria-disabled={itemContext.open || undefined}
+      id={itemContext.buttonId}
+    />
+  );
+});
 
 AccordionButton.displayName = BUTTON_NAME;
 
@@ -172,25 +161,21 @@ AccordionButton.displayName = BUTTON_NAME;
 
 const PANEL_NAME = 'AccordionPanel';
 
-type AccordionPanelOwnProps = {};
-
 /**
  * `AccordionPanel` contains the collapsible content for an `AccordionItem`.
  */
-const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent, AccordionPanelOwnProps>(
-  (props, forwardedRef) => {
-    const itemContext = useAccordionItemContext(PANEL_NAME);
-    return (
-      <CollapsibleContent
-        {...props}
-        {...getPartDataAttrObj(PANEL_NAME)}
-        ref={forwardedRef}
-        role="region"
-        aria-labelledby={itemContext.buttonId}
-      />
-    );
-  }
-);
+const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent>((props, forwardedRef) => {
+  const itemContext = useAccordionItemContext(PANEL_NAME);
+  return (
+    <CollapsibleContent
+      {...props}
+      {...getPartDataAttrObj(PANEL_NAME)}
+      ref={forwardedRef}
+      role="region"
+      aria-labelledby={itemContext.buttonId}
+    />
+  );
+});
 
 AccordionPanel.displayName = PANEL_NAME;
 
@@ -220,10 +205,8 @@ type AccordionOwnProps = {
   disabled?: boolean;
   /**
    * The callback that fires when the state of the accordion changes.
-   *
-   * @param value
    */
-  onChange?(value: string): void;
+  onValueChange?(value: string): void;
 };
 
 /**
@@ -236,8 +219,8 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
       value: valueProp,
       defaultValue,
       children,
-      disabled: isDisabled,
-      onChange = () => {},
+      disabled,
+      onValueChange = () => {},
       ...accordionProps
     } = props;
 
@@ -248,7 +231,7 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
     const [value, setValue] = useControlledState({
       prop: valueProp,
       defaultProp: defaultValue,
-      onChange: (value) => value && onChange(value),
+      onChange: (value) => value && onValueChange(value),
     });
 
     const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
@@ -293,12 +276,12 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
 
     const context: AccordionContextValue = React.useMemo(
       () => ({
-        isDisabled,
+        disabled,
         buttonNodesRef,
         value,
         setValue,
       }),
-      [isDisabled, value, setValue]
+      [disabled, value, setValue]
     );
 
     return (
@@ -306,7 +289,7 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
         {...accordionProps}
         {...getPartDataAttrObj(ACCORDION_NAME)}
         ref={composedRefs}
-        onKeyDown={isDisabled ? undefined : handleKeyDown}
+        onKeyDown={disabled ? undefined : handleKeyDown}
       >
         <AccordionContext.Provider value={context}>{children}</AccordionContext.Provider>
       </Comp>

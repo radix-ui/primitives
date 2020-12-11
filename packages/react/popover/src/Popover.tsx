@@ -29,8 +29,8 @@ type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 type PopoverContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   id: string;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean | ((prevIsOpen?: boolean) => boolean)) => void;
+  open: boolean;
+  setOpen: (open: boolean | ((prevOpen?: boolean) => boolean)) => void;
 };
 
 const [PopoverContext, usePopoverContext] = createContext<PopoverContextValue>(
@@ -45,25 +45,21 @@ const [PopoverContext, usePopoverContext] = createContext<PopoverContextValue>(
 const POPOVER_NAME = 'Popover';
 
 type PopoverOwnProps = {
-  isOpen?: boolean;
-  defaultIsOpen?: boolean;
-  onIsOpenChange?: (isOpen: boolean) => void;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const Popover: React.FC<PopoverOwnProps> = (props) => {
-  const { children, isOpen: isOpenProp, defaultIsOpen, onIsOpenChange } = props;
+  const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const id = `popover-${useId()}`;
-  const [isOpen = false, setIsOpen] = useControlledState({
-    prop: isOpenProp,
-    defaultProp: defaultIsOpen,
-    onChange: onIsOpenChange,
+  const [open = false, setOpen] = useControlledState({
+    prop: openProp,
+    defaultProp: defaultOpen,
+    onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, id, isOpen, setIsOpen }), [
-    id,
-    isOpen,
-    setIsOpen,
-  ]);
+  const context = React.useMemo(() => ({ triggerRef, id, open, setOpen }), [id, open, setOpen]);
 
   return <PopoverContext.Provider value={context}>{children}</PopoverContext.Provider>;
 };
@@ -88,9 +84,9 @@ const PopoverTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forw
       ref={composedTriggerRef}
       type="button"
       aria-haspopup="dialog"
-      aria-expanded={context.isOpen}
+      aria-expanded={context.open}
       aria-controls={context.id}
-      onClick={composeEventHandlers(onClick, () => context.setIsOpen((prevIsOpen) => !prevIsOpen))}
+      onClick={composeEventHandlers(onClick, () => context.setOpen((prevOpen) => !prevOpen))}
       {...triggerProps}
     />
   );
@@ -165,7 +161,7 @@ type PopoverPopperOwnProps = {
    * Whether the `Popover` should render in a `Portal`
    * (default: `true`)
    */
-  shouldPortal?: boolean;
+  portalled?: boolean;
 
   /**
    * Used to force mounting when more control is needed. Useful when
@@ -180,11 +176,11 @@ const PopoverPopper = forwardRefWithAs<typeof PopoverPopperImpl>((props, forward
   const { forceMount, ...popperProps } = props;
   const context = usePopoverContext(POPPER_NAME);
   return (
-    <Presence present={forceMount || context.isOpen}>
+    <Presence present={forceMount || context.open}>
       <PopoverPopperImpl
         {...popperProps}
         ref={forwardedRef}
-        data-state={context.isOpen ? 'open' : 'closed'}
+        data-state={context.open ? 'open' : 'closed'}
       />
     </Presence>
   );
@@ -204,13 +200,13 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
       onFocusOutside,
       onInteractOutside,
       disableOutsideScroll = false,
-      shouldPortal = true,
+      portalled = true,
       ...popperProps
     } = props;
     const context = usePopoverContext(POPPER_NAME);
     const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
 
-    const PortalWrapper = shouldPortal ? Portal : React.Fragment;
+    const PortalWrapper = portalled ? Portal : React.Fragment;
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
 
     // Make sure the whole tree has focus guards as our `Popover` may be
@@ -263,7 +259,7 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
                 }}
                 onFocusOutside={onFocusOutside}
                 onInteractOutside={onInteractOutside}
-                onDismiss={() => context.setIsOpen(false)}
+                onDismiss={() => context.setOpen(false)}
               >
                 {(dismissableLayerProps) => (
                   <PopperPrimitive.Root
@@ -337,7 +333,7 @@ const PopoverClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwarde
       ref={forwardedRef}
       type="button"
       {...closeProps}
-      onClick={composeEventHandlers(onClick, () => context.setIsOpen(false))}
+      onClick={composeEventHandlers(onClick, () => context.setOpen(false))}
     />
   );
 });

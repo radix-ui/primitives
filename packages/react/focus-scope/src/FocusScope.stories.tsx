@@ -124,7 +124,7 @@ export const Multiple = () => {
 type FocusParam = boolean | React.RefObject<HTMLElement>;
 
 export const WithOptions = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const [isEmptyForm, setIsEmptyForm] = React.useState(false);
 
   const [trapFocus, setTrapFocus] = React.useState(false);
@@ -204,8 +204,8 @@ export const WithOptions = () => {
       </div>
 
       <div style={{ marginBottom: 20 }}>
-        <button type="button" onClick={() => setIsOpen((isOpen) => !isOpen)}>
-          {isOpen ? 'Close' : 'Open'} form in between buttons
+        <button type="button" onClick={() => setOpen((open) => !open)}>
+          {open ? 'Close' : 'Open'} form in between buttons
         </button>
       </div>
 
@@ -213,7 +213,7 @@ export const WithOptions = () => {
         previous
       </button>
 
-      {isOpen ? (
+      {open ? (
         <FocusScope
           trapped={trapFocus}
           onMountAutoFocus={(event) => {
@@ -248,7 +248,7 @@ export const WithOptions = () => {
                   <input type="text" placeholder="First name" />
                   <input type="text" placeholder="Last name" />
                   <input ref={ageFieldRef} type="number" placeholder="Age" />
-                  <button type="button" onClick={() => setIsOpen(false)}>
+                  <button type="button" onClick={() => setOpen(false)}>
                     Close
                   </button>
                 </>

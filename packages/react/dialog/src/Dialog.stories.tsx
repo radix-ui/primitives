@@ -15,10 +15,10 @@ export const Styled = () => (
 );
 
 export const Controlled = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   return (
-    <Dialog isOpen={isOpen} onIsOpenChange={setIsOpen}>
-      <DialogTrigger>{isOpen ? 'close' : 'open'}</DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>{open ? 'close' : 'open'}</DialogTrigger>
       <DialogOverlay as={StyledOverlay} />
       <DialogContent as={StyledContent}>
         <DialogClose>close</DialogClose>

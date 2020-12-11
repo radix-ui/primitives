@@ -29,7 +29,6 @@ type TabsContextValue = {
   setSelectedId?: (id: string) => void;
   orientation?: TabsOwnProps['orientation'];
   activationMode?: TabsOwnProps['activationMode'];
-  shouldLoop?: boolean;
 };
 
 const [TabsContext, useTabsContext] = createContext<TabsContextValue>('TabsContext', 'Tabs');
@@ -47,7 +46,7 @@ type TabsOwnProps = {
   /** The id of the tab to select by default, if uncontrolled */
   defaultSelectedId?: string;
   /** A function called when a new tab is selected */
-  onSelect?: (id: string) => void;
+  onSelectedIdChange?: (id: string) => void;
   /**
    * The orientation the tabs are layed out.
    * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
@@ -56,8 +55,6 @@ type TabsOwnProps = {
   orientation?: React.AriaAttributes['aria-orientation'];
   /** Whether a tab is activated automatically or manually (default: automatic) */
   activationMode?: 'automatic' | 'manual';
-  /** Whether tab navigation loops around or not (default: true) */
-  shouldLoop?: boolean;
 };
 
 const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, forwardedRef) => {
@@ -66,11 +63,10 @@ const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, for
     children,
     id,
     selectedId: selectedIdProp,
-    onSelect,
+    onSelectedIdChange,
     defaultSelectedId,
     orientation = 'horizontal',
     activationMode = 'automatic',
-    shouldLoop = true,
     ...tabsProps
   } = props;
 
@@ -79,7 +75,7 @@ const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, for
 
   const [selectedId, setSelectedId] = useControlledState({
     prop: selectedIdProp,
-    onChange: onSelect,
+    onChange: onSelectedIdChange,
     defaultProp: defaultSelectedId,
   });
 
@@ -90,9 +86,8 @@ const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, for
       setSelectedId,
       orientation,
       activationMode,
-      shouldLoop,
     }),
-    [activationMode, orientation, selectedId, setSelectedId, shouldLoop, tabsId]
+    [activationMode, orientation, selectedId, setSelectedId, tabsId]
   );
 
   return (
@@ -119,25 +114,35 @@ Tabs.displayName = TABS_NAME;
 const TAB_LIST_NAME = 'TabsList';
 const TAB_LIST_DEFAULT_TAG = 'div';
 
-const TabsList = forwardRefWithAs<typeof TAB_LIST_DEFAULT_TAG>((props, forwardedRef) => {
-  const { orientation, shouldLoop } = useTabsContext(TAB_LIST_NAME);
-  const { as: Comp = TAB_LIST_DEFAULT_TAG, children, ...otherProps } = props;
+type TabsListOwnProps = {
+  /**
+   * Whether keyboard navigation should loop focus
+   * @defaultValue true
+   */
+  loop?: boolean;
+};
 
-  return (
-    <Comp
-      {...getPartDataAttrObj(TAB_LIST_NAME)}
-      data-orientation={orientation}
-      role="tablist"
-      aria-orientation={orientation}
-      ref={forwardedRef}
-      {...otherProps}
-    >
-      <RovingFocusGroup orientation={orientation} loop={shouldLoop}>
-        {children}
-      </RovingFocusGroup>
-    </Comp>
-  );
-});
+const TabsList = forwardRefWithAs<typeof TAB_LIST_DEFAULT_TAG, TabsListOwnProps>(
+  (props, forwardedRef) => {
+    const { orientation } = useTabsContext(TAB_LIST_NAME);
+    const { as: Comp = TAB_LIST_DEFAULT_TAG, loop = true, children, ...otherProps } = props;
+
+    return (
+      <Comp
+        {...getPartDataAttrObj(TAB_LIST_NAME)}
+        data-orientation={orientation}
+        role="tablist"
+        aria-orientation={orientation}
+        ref={forwardedRef}
+        {...otherProps}
+      >
+        <RovingFocusGroup orientation={orientation} loop={loop}>
+          {children}
+        </RovingFocusGroup>
+      </Comp>
+    );
+  }
+);
 
 TabsList.displayName = TAB_LIST_NAME;
 
