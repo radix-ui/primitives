@@ -11,7 +11,6 @@ const AVATAR_NAME = 'Avatar';
 const AVATAR_DEFAULT_TAG = 'span';
 
 type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
-type AvatarOwnProps = { onLoadingStatusChange?: (status: ImageLoadingStatus) => void };
 type AvatarContextValue = [
   ImageLoadingStatus,
   React.Dispatch<React.SetStateAction<ImageLoadingStatus>>
@@ -22,17 +21,15 @@ const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
   AVATAR_NAME
 );
 
-const Avatar = forwardRefWithAs<typeof AVATAR_DEFAULT_TAG, AvatarOwnProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = AVATAR_DEFAULT_TAG, children, ...avatarProps } = props;
-    const context = React.useState<ImageLoadingStatus>('idle');
-    return (
-      <Comp {...getPartDataAttrObj(AVATAR_NAME)} {...avatarProps} ref={forwardedRef}>
-        <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
-      </Comp>
-    );
-  }
-);
+const Avatar = forwardRefWithAs<typeof AVATAR_DEFAULT_TAG>((props, forwardedRef) => {
+  const { as: Comp = AVATAR_DEFAULT_TAG, children, ...avatarProps } = props;
+  const context = React.useState<ImageLoadingStatus>('idle');
+  return (
+    <Comp {...getPartDataAttrObj(AVATAR_NAME)} {...avatarProps} ref={forwardedRef}>
+      <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
+    </Comp>
+  );
+});
 
 Avatar.displayName = AVATAR_NAME;
 
