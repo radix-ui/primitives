@@ -67,12 +67,12 @@ const ContextMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, 
 ContextMenuTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * ContextMenuPopper
+ * ContextMenuContent
  * -----------------------------------------------------------------------------------------------*/
 
-const POPPER_NAME = 'ContextMenuPopper';
+const CONTENT_NAME = 'ContextMenuContent';
 
-type ContextMenuPopperOwnProps = {
+type ContextMenuContentOwnProps = {
   anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
   trapFocus: never;
   disableOutsideScroll: never;
@@ -82,28 +82,28 @@ type ContextMenuPopperOwnProps = {
   onDismiss: never;
 };
 
-const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMenuPopperOwnProps>(
+const ContextMenuContent = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMenuContentOwnProps>(
   (props, forwardedRef) => {
     const {
       anchorRef,
       disableOutsidePointerEvents = true,
       side = 'bottom',
       align = 'start',
-      ...popperProps
+      ...contentProps
     } = props;
-    const context = useContextMenuContext(POPPER_NAME);
+    const context = useContextMenuContext(CONTENT_NAME);
 
     return (
       <MenuPrimitive.Root
         ref={forwardedRef}
-        {...popperProps}
-        {...getPartDataAttrObj(POPPER_NAME)}
+        {...contentProps}
+        {...getPartDataAttrObj(CONTENT_NAME)}
         open={context.open}
         onOpenChange={context.setOpen}
         style={{
-          ...popperProps.style,
-          // re-namespace exposed popper custom property
-          ['--radix-context-menu-popper-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
+          ...contentProps.style,
+          // re-namespace exposed content custom property
+          ['--radix-context-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
         }}
         side={side}
         align={align}
@@ -118,7 +118,7 @@ const ContextMenuPopper = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMen
   }
 );
 
-ContextMenuPopper.displayName = POPPER_NAME;
+ContextMenuContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -141,7 +141,7 @@ const ContextMenuSeparator = extendComponent(MenuPrimitive.Separator, 'ContextMe
 
 const Root = ContextMenu;
 const Trigger = ContextMenuTrigger;
-const Popper = ContextMenuPopper;
+const Content = ContextMenuContent;
 const MenuGroup = ContextMenuGroup;
 const MenuLabel = ContextMenuLabel;
 const MenuItem = ContextMenuItem;
@@ -154,7 +154,7 @@ const MenuSeparator = ContextMenuSeparator;
 export {
   ContextMenu,
   ContextMenuTrigger,
-  ContextMenuPopper,
+  ContextMenuContent,
   ContextMenuGroup,
   ContextMenuLabel,
   ContextMenuItem,
@@ -166,7 +166,7 @@ export {
   //
   Root,
   Trigger,
-  Popper,
+  Content,
   MenuGroup,
   MenuLabel,
   MenuItem,

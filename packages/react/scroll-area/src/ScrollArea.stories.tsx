@@ -12,7 +12,7 @@ import {
   ScrollAreaThumb,
   SCROLL_AREA_CSS_PROPS,
 } from './ScrollArea';
-import { Popover, PopoverPopper, PopoverTrigger, PopoverArrow } from '@interop-ui/react-popover';
+import { Popover, PopoverContent, PopoverTrigger, PopoverArrow } from '@interop-ui/react-popover';
 
 export default {
   title: 'Components/ScrollArea',
@@ -156,9 +156,9 @@ export function InsidePopover() {
 
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger as="button">{open ? 'close' : 'open'}</PopoverTrigger>
-        <PopoverPopper
+        <PopoverContent
           style={{
-            ...RECOMMENDED_CSS__POPOVER__POPPER,
+            ...RECOMMENDED_CSS__POPOVER__CONTENT,
             backgroundColor: '#eee',
             width: 250,
             height: 150,
@@ -200,7 +200,7 @@ export function InsidePopover() {
             </ScrollAreaViewport>
           </ScrollArea>
           <PopoverArrow width={50} height={20} />
-        </PopoverPopper>
+        </PopoverContent>
       </Popover>
     </React.Fragment>
   );
@@ -210,9 +210,9 @@ export function InsidePopover() {
  * Reset components
  * -----------------------------------------------------------------------------------------------*/
 
-const RECOMMENDED_CSS__POPOVER__POPPER: any = {
+const RECOMMENDED_CSS__POPOVER__CONTENT: any = {
   boxSizing: 'border-box',
-  transformOrigin: 'var(--radix-popover-popper-transform-origin)',
+  transformOrigin: 'var(--radix-popover-content-transform-origin)',
 };
 
 const RECOMMENDED_CSS__SCROLL_AREA__ROOT: any = {
