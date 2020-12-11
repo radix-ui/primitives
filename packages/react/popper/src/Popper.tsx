@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { getPlacementData } from '@interop-ui/popper';
-import { useSize } from '@interop-ui/react-use-size';
-import { createContext, useRect, useComposedRefs } from '@interop-ui/react-utils';
+import { createContext, useRect, useSize, useComposedRefs } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { Arrow as ArrowPrimitive } from '@interop-ui/react-arrow';
 import { getPartDataAttrObj } from '@interop-ui/utils';

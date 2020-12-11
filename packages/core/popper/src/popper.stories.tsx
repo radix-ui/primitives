@@ -1,6 +1,5 @@
 import React from 'react';
-import { useRect } from '@interop-ui/react-utils';
-import { useSize } from '@interop-ui/react-use-size';
+import { useRect, useSize } from '@interop-ui/react-utils';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@interop-ui/utils';
 import { getPlacementData } from './popper';
 

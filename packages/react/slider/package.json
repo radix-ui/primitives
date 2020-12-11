@@ -19,7 +19,6 @@
   "dependencies": {
     "@interop-ui/react-collection": "workspace:*",
     "@interop-ui/react-polymorphic": "workspace:*",
-    "@interop-ui/react-use-size": "workspace:*",
     "@interop-ui/react-utils": "workspace:*",
     "@interop-ui/utils": "workspace:*"
   },
