@@ -95,12 +95,12 @@ const PopoverTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forw
 PopoverTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * PopoverPopper
+ * PopoverContent
  * -----------------------------------------------------------------------------------------------*/
 
-const POPPER_NAME = 'PopoverPopper';
+const CONTENT_NAME = 'PopoverContent';
 
-type PopoverPopperOwnProps = {
+type PopoverContentOwnProps = {
   /**
    * Whether focus should be trapped within the `Popover`
    * (default: false)
@@ -172,13 +172,13 @@ type PopoverPopperOwnProps = {
   anchorRef?: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
 };
 
-const PopoverPopper = forwardRefWithAs<typeof PopoverPopperImpl>((props, forwardedRef) => {
-  const { forceMount, ...popperProps } = props;
-  const context = usePopoverContext(POPPER_NAME);
+const PopoverContent = forwardRefWithAs<typeof PopoverContentImpl>((props, forwardedRef) => {
+  const { forceMount, ...contentProps } = props;
+  const context = usePopoverContext(CONTENT_NAME);
   return (
     <Presence present={forceMount || context.open}>
-      <PopoverPopperImpl
-        {...popperProps}
+      <PopoverContentImpl
+        {...contentProps}
         ref={forwardedRef}
         data-state={context.open ? 'open' : 'closed'}
       />
@@ -186,7 +186,7 @@ const PopoverPopper = forwardRefWithAs<typeof PopoverPopperImpl>((props, forward
   );
 });
 
-const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverPopperOwnProps>(
+const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverContentOwnProps>(
   (props, forwardedRef) => {
     const {
       children,
@@ -201,9 +201,9 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
       onInteractOutside,
       disableOutsideScroll = false,
       portalled = true,
-      ...popperProps
+      ...contentProps
     } = props;
-    const context = usePopoverContext(POPPER_NAME);
+    const context = usePopoverContext(CONTENT_NAME);
     const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
 
     const PortalWrapper = portalled ? Portal : React.Fragment;
@@ -213,11 +213,11 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
     // the last element in the DOM (beacuse of the `Portal`)
     useFocusGuards();
 
-    // Hide everything from ARIA except the popper
-    const popperRef = React.useRef<HTMLDivElement>(null);
+    // Hide everything from ARIA except the content
+    const contentRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
-      const popper = popperRef.current;
-      if (popper) return hideOthers(popper);
+      const content = contentRef.current;
+      if (content) return hideOthers(content);
     }, []);
 
     return (
@@ -263,13 +263,13 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
               >
                 {(dismissableLayerProps) => (
                   <PopperPrimitive.Root
-                    {...getPartDataAttrObj(POPPER_NAME)}
+                    {...getPartDataAttrObj(CONTENT_NAME)}
                     role="dialog"
                     aria-modal
-                    {...popperProps}
+                    {...contentProps}
                     ref={composeRefs(
                       forwardedRef,
-                      popperRef,
+                      contentRef,
                       focusScopeProps.ref,
                       dismissableLayerProps.ref
                     )}
@@ -277,27 +277,27 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
                     anchorRef={anchorRef || context.triggerRef}
                     style={{
                       ...dismissableLayerProps.style,
-                      ...popperProps.style,
-                      // re-namespace exposed popper custom property
-                      ['--radix-popover-popper-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
+                      ...contentProps.style,
+                      // re-namespace exposed content custom property
+                      ['--radix-popover-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
                     }}
                     onBlurCapture={composeEventHandlers(
-                      popperProps.onBlurCapture,
+                      contentProps.onBlurCapture,
                       dismissableLayerProps.onBlurCapture,
                       { checkForDefaultPrevented: false }
                     )}
                     onFocusCapture={composeEventHandlers(
-                      popperProps.onFocusCapture,
+                      contentProps.onFocusCapture,
                       dismissableLayerProps.onFocusCapture,
                       { checkForDefaultPrevented: false }
                     )}
                     onMouseDownCapture={composeEventHandlers(
-                      popperProps.onMouseDownCapture,
+                      contentProps.onMouseDownCapture,
                       dismissableLayerProps.onMouseDownCapture,
                       { checkForDefaultPrevented: false }
                     )}
                     onTouchStartCapture={composeEventHandlers(
-                      popperProps.onTouchStartCapture,
+                      contentProps.onTouchStartCapture,
                       dismissableLayerProps.onTouchStartCapture,
                       { checkForDefaultPrevented: false }
                     )}
@@ -314,7 +314,7 @@ const PopoverPopperImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverP
   }
 );
 
-PopoverPopper.displayName = POPPER_NAME;
+PopoverContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverClose
@@ -348,19 +348,19 @@ const PopoverArrow = extendComponent(PopperPrimitive.Arrow, 'PopoverArrow');
 
 const Root = Popover;
 const Trigger = PopoverTrigger;
-const Popper = PopoverPopper;
+const Content = PopoverContent;
 const Close = PopoverClose;
 const Arrow = PopoverArrow;
 
 export {
   Popover,
   PopoverTrigger,
-  PopoverPopper,
+  PopoverContent,
   PopoverClose,
   PopoverArrow,
   Root,
   Trigger,
-  Popper,
+  Content,
   Close,
   Arrow,
 };
