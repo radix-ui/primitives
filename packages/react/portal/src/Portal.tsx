@@ -8,7 +8,8 @@ type PortalProps = {
 };
 
 const Portal: React.FC<PortalProps> = ({ children, containerRef }) => {
-  const hostElement = containerRef?.current ?? (document ? document.body : undefined);
+  const hostElement =
+    containerRef?.current ?? (typeof document !== 'undefined' ? document.body : undefined);
   const [, forceUpdate] = React.useState({});
 
   /**
