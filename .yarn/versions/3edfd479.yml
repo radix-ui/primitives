@@ -1,6 +1,0 @@
-releases:
-  "@interop-ui/react-collapsible": prerelease
-
-declined:
-  - interop-ui
-  - "@interop-ui/react-accordion"
