@@ -28,8 +28,8 @@ Presence.displayName = 'Presence';
 type PresenceEvent =
   | { type: 'MOUNT' }
   | { type: 'UNMOUNT' }
-  | { type: 'ANIMATION_RUN' }
-  | { type: 'TRANSITION_RUN' }
+  | { type: 'ANIMATION_OUT' }
+  | { type: 'TRANSITION_OUT' }
   | { type: 'ANIMATION_END' }
   | { type: 'TRANSITION_END' };
 
@@ -47,8 +47,8 @@ function usePresence(present: boolean) {
       mounted: {
         on: {
           UNMOUNT: 'unmounted',
-          ANIMATION_RUN: 'unmountSuspended',
-          TRANSITION_RUN: 'unmountSuspended',
+          ANIMATION_OUT: 'unmountSuspended',
+          TRANSITION_OUT: 'unmountSuspended',
         },
       },
       unmountSuspended: {
@@ -88,7 +88,7 @@ function usePresence(present: boolean) {
         send('MOUNT');
       } else if (wasPresent && isAnimating) {
         // If the element is hidden, it will not run the animation
-        send(styles?.display === 'none' ? 'UNMOUNT' : 'ANIMATION_RUN');
+        send(styles?.display === 'none' ? 'UNMOUNT' : 'ANIMATION_OUT');
       } else {
         send('UNMOUNT');
       }
@@ -97,14 +97,18 @@ function usePresence(present: boolean) {
 
   React.useEffect(() => {
     if (node) {
-      const handleAnimationEnd = (event: AnimationEvent) => {
-        if (event.target === node) send('ANIMATION_END');
-      };
       const handleTransitionRun = (event: TransitionEvent) => {
-        if (event.target === node) send('TRANSITION_RUN');
+        const wasPresent = prevPresentRef.current;
+        const isTransitionOut = !present && wasPresent;
+        if (event.target === node && isTransitionOut) {
+          send('TRANSITION_OUT');
+        }
       };
       const handleTransitionEnd = (event: TransitionEvent) => {
         if (event.target === node) send('TRANSITION_END');
+      };
+      const handleAnimationEnd = (event: AnimationEvent) => {
+        if (event.target === node) send('ANIMATION_END');
       };
 
       node.addEventListener('animationcancel', handleAnimationEnd);
