@@ -10,13 +10,4 @@ $ npm install @interop-ui/react-scroll-area
 
 ## Usage
 
-```js
-import * as React from 'react';
-import { ScrollArea, styles } from '@interop-ui/react-scroll-area';
-
-function MyComponent(props) {
-  return (
-    //
-  );
-}
-```
+View docs [here](https://radix-ui.com/primitives/docs/components/scrollbar).

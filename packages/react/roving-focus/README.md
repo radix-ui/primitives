@@ -10,7 +10,4 @@ $ npm install @interop-ui/react-roving-focus
 
 ## Usage
 
-```js
-import * as React from 'react';
-import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
-```
+This is an internal utility, not intended for public usage.

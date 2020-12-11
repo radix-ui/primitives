@@ -10,4 +10,4 @@ $ npm install @interop-ui/react-toggle-button
 
 ## Usage
 
-This package is currently in early development and not quite ready for usage.
+View docs [here](https://radix-ui.com/primitives/docs/components/toggle-button).
