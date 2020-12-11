@@ -29,7 +29,11 @@ export const WithHtmlFor = () => (
 
 const Control = (props: any) => {
   const id = useLabelContext();
-  return <span {...props}>{id}</span>;
+  return (
+    <span aria-labelledby={id} {...props}>
+      {id}
+    </span>
+  );
 };
 
 export const RECOMMENDED_CSS__LABEL__ROOT = {
