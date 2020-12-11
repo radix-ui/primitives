@@ -2317,7 +2317,6 @@ __metadata:
     "@interop-ui/popper": "workspace:*"
     "@interop-ui/react-arrow": "workspace:*"
     "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-use-size": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2423,7 +2422,6 @@ __metadata:
   dependencies:
     "@interop-ui/react-collection": "workspace:*"
     "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-use-size": "workspace:*"
     "@interop-ui/react-utils": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     parcel: ^2.0.0-beta.1
@@ -2489,18 +2487,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interop-ui/react-use-size@workspace:*, @interop-ui/react-use-size@workspace:packages/react/use-size":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-use-size@workspace:packages/react/use-size"
-  dependencies:
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-    resize-observer-polyfill: ^1.5.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
 "@interop-ui/react-utils@workspace:*, @interop-ui/react-utils@workspace:packages/react/utils":
   version: 0.0.0-use.local
   resolution: "@interop-ui/react-utils@workspace:packages/react/utils"
@@ -2508,6 +2494,7 @@ __metadata:
     "@interop-ui/react-polymorphic": "workspace:*"
     "@interop-ui/utils": "workspace:*"
     "@testing-library/react": ^10.4.8
+    "@types/resize-observer-browser": ^0.1.4
     parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -5212,6 +5199,13 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 5ac6dfc02c1b0cd3c6e85b9447e0a7eeff471cdd10e4b308f6f647678bf5fe996a6f2283ebac129f89e53abb533943633641c26420f25f0095b4de8a9cdb59b1
+  languageName: node
+  linkType: hard
+
+"@types/resize-observer-browser@npm:^0.1.4":
+  version: 0.1.4
+  resolution: "@types/resize-observer-browser@npm:0.1.4"
+  checksum: c620f74e61e840e9cb92218ea6d692c040a22d2e2450d0792e9cbc87723ce5d237ed505a1961844f13c6ecc49f80a4f02fe5e870bcf3cf115d752fb220c87b43
   languageName: node
   linkType: hard
 

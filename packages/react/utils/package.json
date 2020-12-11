@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^10.4.8",
+    "@types/resize-observer-browser": "^0.1.4",
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {

@@ -12,3 +12,4 @@ export * from './useLayoutEffect';
 export * from './usePrefersReducedMotion';
 export * from './usePrevious';
 export * from './useRect';
+export * from './useSize';

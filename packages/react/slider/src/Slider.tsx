@@ -6,10 +6,10 @@ import {
   useComposedRefs,
   useControlledState,
   useCallbackRef,
+  useSize,
 } from '@interop-ui/react-utils';
 import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
 import { createCollection } from '@interop-ui/react-collection';
-import { useSize } from '@interop-ui/react-use-size';
 
 type Direction = 'ltr' | 'rtl';
 

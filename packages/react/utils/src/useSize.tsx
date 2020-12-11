@@ -1,5 +1,6 @@
+/// <reference types="resize-observer-browser" />
+
 import * as React from 'react';
-import ResizeObserver from 'resize-observer-polyfill';
 
 import type { Size } from '@interop-ui/utils';
 
@@ -44,7 +45,6 @@ export function useSize(
         setSize({ width, height });
       });
 
-      // @ts-ignore: types are wrong as we're using the polyfill, will sort that out later
       resizeObserver.observe(elementToObserve, { box: 'border-box' });
 
       return () => {

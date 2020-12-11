@@ -1,3 +1,5 @@
+/// <reference types="resize-observer-browser" />
+
 const NAMESPACE = 'radix';
 
 function namespaced(componentPart: string) {
@@ -40,21 +42,6 @@ function getResizeObserverEntryBorderBoxSize(entry: ResizeObserverEntry): Resize
     inlineSize: rect.width,
     blockSize: rect.height,
   };
-}
-
-// TODO: Currently parcel does not recognize global types in our type root directories. Patching
-// here until we can address it properly. Move these back to types/index.d.ts
-interface ResizeObserverSize {
-  readonly inlineSize: number;
-  readonly blockSize: number;
-}
-
-interface ResizeObserverEntry {
-  readonly target: Element;
-  readonly contentRect: DOMRectReadOnly;
-  readonly borderBoxSize: ResizeObserverSize[] | ResizeObserverSize;
-  readonly contentBoxSize: ResizeObserverSize[] | ResizeObserverSize;
-  readonly devicePixelContentBoxSize: ResizeObserverSize[];
 }
 
 export {
