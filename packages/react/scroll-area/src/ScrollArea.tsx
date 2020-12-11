@@ -630,6 +630,7 @@ const ScrollAreaViewportImpl = forwardRefWithAs<typeof VIEWPORT_DEFAULT_TAG>(
             // get around this with an extra wrapper with `display: table`.
             // https://blog.alexandergottlieb.com/overflow-scroll-and-the-right-padding-problem-a-css-only-solution-6d442915b3f4
             display: 'table',
+            width: '100%',
             paddingBottom: `var(${SCROLL_AREA_CSS_PROPS.scrollbarXOffset})`,
             paddingRight: `var(${SCROLL_AREA_CSS_PROPS.scrollbarYOffset})`,
           }}
