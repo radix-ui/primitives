@@ -1,3 +1,5 @@
+/// <reference types="resize-observer-browser" />
+
 // This component is a progressive enhancement that will fallback to a staandard div with overflow:
 // scroll for browsers that don't support features we rely on.
 
@@ -2352,25 +2354,4 @@ interface AnimationOptions {
   timing(frac: number): number;
   done?(): any;
   rafIdRef: React.MutableRefObject<number | undefined>;
-}
-
-// TODO: Currently parcel does not recognize global types in our type root directories. Patching
-// here until we can address it properly. Move these back to types/index.d.ts
-interface ResizeObserverSize {
-  readonly inlineSize: number;
-  readonly blockSize: number;
-}
-
-interface ResizeObserverEntry {
-  readonly target: Element;
-  readonly contentRect: DOMRectReadOnly;
-  readonly borderBoxSize: ResizeObserverSize[] | ResizeObserverSize;
-  readonly contentBoxSize: ResizeObserverSize[] | ResizeObserverSize;
-  readonly devicePixelContentBoxSize: ResizeObserverSize[];
-}
-
-type ResizeObserverBoxOptions = 'border-box' | 'content-box' | 'device-pixel-content-box';
-
-interface ResizeObserverOptions {
-  box?: ResizeObserverBoxOptions;
 }
