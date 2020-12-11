@@ -97,9 +97,15 @@ function usePresence(present: boolean) {
 
   React.useEffect(() => {
     if (node) {
-      const handleAnimationEnd = () => send('ANIMATION_END');
-      const handleTransitionRun = () => send('TRANSITION_RUN');
-      const handleTransitionEnd = () => send('TRANSITION_END');
+      const handleAnimationEnd = (event: AnimationEvent) => {
+        if (event.target === node) send('ANIMATION_END');
+      };
+      const handleTransitionRun = (event: TransitionEvent) => {
+        if (event.target === node) send('TRANSITION_RUN');
+      };
+      const handleTransitionEnd = (event: TransitionEvent) => {
+        if (event.target === node) send('TRANSITION_END');
+      };
 
       node.addEventListener('animationcancel', handleAnimationEnd);
       node.addEventListener('animationend', handleAnimationEnd);
