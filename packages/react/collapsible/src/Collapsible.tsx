@@ -115,33 +115,49 @@ CollapsibleButton.displayName = BUTTON_NAME;
 const CONTENT_NAME = 'CollapsibleContent';
 const CONTENT_DEFAULT_TAG = 'div';
 
-const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = CONTENT_DEFAULT_TAG, id: idProp, children, ...contentProps } = props;
-  const { setContentId, open } = useCollapsibleContext(CONTENT_NAME);
-  const generatedId = `collapsible-${useId()}`;
-  const id = idProp || generatedId;
+type CollapsibleContentOwnProps = {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+};
 
-  React.useEffect(() => {
-    setContentId(id);
-  }, [id, setContentId]);
+const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, CollapsibleContentOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = CONTENT_DEFAULT_TAG,
+      id: idProp,
+      forceMount,
+      children,
+      ...contentProps
+    } = props;
+    const { setContentId, open } = useCollapsibleContext(CONTENT_NAME);
+    const generatedId = `collapsible-${useId()}`;
+    const id = idProp || generatedId;
 
-  return (
-    <Presence present={open}>
-      {({ present }) => (
-        <Comp
-          {...contentProps}
-          {...getPartDataAttrObj(CONTENT_NAME)}
-          ref={forwardedRef}
-          id={id}
-          hidden={!present}
-          data-state={getState(open)}
-        >
-          {present && children}
-        </Comp>
-      )}
-    </Presence>
-  );
-});
+    React.useEffect(() => {
+      setContentId(id);
+    }, [id, setContentId]);
+
+    return (
+      <Presence present={forceMount || open}>
+        {({ present }) => (
+          <Comp
+            {...contentProps}
+            {...getPartDataAttrObj(CONTENT_NAME)}
+            ref={forwardedRef}
+            id={id}
+            hidden={!present}
+            data-state={getState(open)}
+          >
+            {present && children}
+          </Comp>
+        )}
+      </Presence>
+    );
+  }
+);
 
 CollapsibleContent.displayName = CONTENT_NAME;
 
