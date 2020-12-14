@@ -164,4 +164,10 @@ function getState(checked: CheckedState) {
 const Root = Checkbox;
 const Indicator = CheckboxIndicator;
 
-export { Checkbox, CheckboxIndicator, Root, Indicator };
+export {
+  Checkbox,
+  CheckboxIndicator,
+  //
+  Root,
+  Indicator,
+};

@@ -134,4 +134,12 @@ const Root = Avatar;
 const Image = AvatarImage;
 const Fallback = AvatarFallback;
 
-export { Avatar, AvatarImage, AvatarFallback, Root, Image, Fallback };
+export {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  //
+  Root,
+  Image,
+  Fallback,
+};

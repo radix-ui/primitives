@@ -76,4 +76,8 @@ function isValidOrientation(orientation: any): orientation is Orientation {
 
 const Root = Separator;
 
-export { Separator, Root };
+export {
+  Separator,
+  //
+  Root,
+};

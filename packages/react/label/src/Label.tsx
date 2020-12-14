@@ -111,4 +111,10 @@ function addLabelClickEventListener(label: HTMLSpanElement, element: HTMLElement
 
 const Root = Label;
 
-export { Label, Root, useLabelContext };
+export {
+  Label,
+  //
+  Root,
+  //
+  useLabelContext,
+};

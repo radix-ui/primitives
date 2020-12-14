@@ -317,6 +317,7 @@ export {
   AccordionHeader,
   AccordionButton,
   AccordionPanel,
+  //
   Root,
   Item,
   Header,

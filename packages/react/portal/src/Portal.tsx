@@ -31,4 +31,8 @@ const Portal: React.FC<PortalProps> = ({ children, containerRef }) => {
 
 const Root = Portal;
 
-export { Portal, Root };
+export {
+  Portal,
+  //
+  Root,
+};

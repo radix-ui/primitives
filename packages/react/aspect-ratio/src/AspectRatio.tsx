@@ -50,4 +50,8 @@ AspectRatio.displayName = NAME;
 
 const Root = AspectRatio;
 
-export { AspectRatio, Root };
+export {
+  AspectRatio,
+  //
+  Root,
+};

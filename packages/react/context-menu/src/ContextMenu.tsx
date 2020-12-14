@@ -142,14 +142,14 @@ const ContextMenuSeparator = extendComponent(MenuPrimitive.Separator, 'ContextMe
 const Root = ContextMenu;
 const Trigger = ContextMenuTrigger;
 const Content = ContextMenuContent;
-const MenuGroup = ContextMenuGroup;
-const MenuLabel = ContextMenuLabel;
-const MenuItem = ContextMenuItem;
-const MenuCheckboxItem = ContextMenuCheckboxItem;
-const MenuRadioGroup = ContextMenuRadioGroup;
-const MenuRadioItem = ContextMenuRadioItem;
-const MenuItemIndicator = ContextMenuItemIndicator;
-const MenuSeparator = ContextMenuSeparator;
+const Group = ContextMenuGroup;
+const Label = ContextMenuLabel;
+const Item = ContextMenuItem;
+const CheckboxItem = ContextMenuCheckboxItem;
+const RadioGroup = ContextMenuRadioGroup;
+const RadioItem = ContextMenuRadioItem;
+const ItemIndicator = ContextMenuItemIndicator;
+const Separator = ContextMenuSeparator;
 
 export {
   ContextMenu,
@@ -167,12 +167,12 @@ export {
   Root,
   Trigger,
   Content,
-  MenuGroup,
-  MenuLabel,
-  MenuItem,
-  MenuCheckboxItem,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuItemIndicator,
-  MenuSeparator,
+  Group,
+  Label,
+  Item,
+  CheckboxItem,
+  RadioGroup,
+  RadioItem,
+  ItemIndicator,
+  Separator,
 };

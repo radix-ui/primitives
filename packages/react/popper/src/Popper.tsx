@@ -159,4 +159,10 @@ PopperArrow.displayName = ARROW_NAME;
 const Root = Popper;
 const Arrow = PopperArrow;
 
-export { Popper, PopperArrow, Root, Arrow };
+export {
+  Popper,
+  PopperArrow,
+  //
+  Root,
+  Arrow,
+};

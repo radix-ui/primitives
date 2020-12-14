@@ -156,4 +156,12 @@ const Root = RadioGroup;
 const Item = RadioGroupItem;
 const Indicator = RadioGroupIndicator;
 
-export { RadioGroup, RadioGroupItem, RadioGroupIndicator, Root, Item, Indicator };
+export {
+  RadioGroup,
+  RadioGroupItem,
+  RadioGroupIndicator,
+  //
+  Root,
+  Item,
+  Indicator,
+};

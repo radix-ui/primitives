@@ -290,4 +290,14 @@ const Trigger = TooltipTrigger;
 const Content = TooltipContent;
 const Arrow = TooltipArrow;
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow, Root, Trigger, Content, Arrow };
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipArrow,
+  //
+  Root,
+  Trigger,
+  Content,
+  Arrow,
+};

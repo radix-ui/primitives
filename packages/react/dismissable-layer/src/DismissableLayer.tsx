@@ -324,4 +324,8 @@ function createRunningLayerCount(displayName?: string) {
 
 const Root = DismissableLayer;
 
-export { DismissableLayer, Root };
+export {
+  DismissableLayer,
+  //
+  Root,
+};

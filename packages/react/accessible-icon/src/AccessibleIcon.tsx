@@ -29,4 +29,8 @@ AccessibleIcon.displayName = NAME;
 
 const Root = AccessibleIcon;
 
-export { AccessibleIcon, Root };
+export {
+  AccessibleIcon,
+  //
+  Root,
+};
