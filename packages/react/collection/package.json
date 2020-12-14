@@ -10,6 +10,7 @@
     "dist",
     "README.md"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
