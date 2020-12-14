@@ -163,4 +163,12 @@ Defaulting to \`null\`.`;
 const Root = ProgressBar;
 const Indicator = ProgressBarIndicator;
 
-export { ProgressBar, ProgressBarIndicator, Root, Indicator, useProgressBarState };
+export {
+  ProgressBar,
+  ProgressBarIndicator,
+  //
+  Root,
+  Indicator,
+  //
+  useProgressBarState,
+};

@@ -229,4 +229,8 @@ function getLiveRegionPartDataAttr(id?: string) {
 
 const Root = Announce;
 
-export { Announce, Root };
+export {
+  Announce,
+  //
+  Root,
+};

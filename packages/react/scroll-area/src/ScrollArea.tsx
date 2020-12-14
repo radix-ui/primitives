@@ -1585,6 +1585,7 @@ export {
   ScrollAreaTrack,
   ScrollAreaThumb,
   ScrollAreaCorner,
+  //
   Root,
   Viewport,
   ScrollbarX,
@@ -1594,6 +1595,7 @@ export {
   Track,
   Thumb,
   Corner,
+  //
   SCROLL_AREA_CSS_PROPS,
 };
 

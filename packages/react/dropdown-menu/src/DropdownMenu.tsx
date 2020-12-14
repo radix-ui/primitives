@@ -197,14 +197,14 @@ const DropdownMenuArrow = extendComponent(MenuPrimitive.Arrow, 'DropdownMenuArro
 const Root = DropdownMenu;
 const Trigger = DropdownMenuTrigger;
 const Content = DropdownMenuContent;
-const MenuGroup = DropdownMenuGroup;
-const MenuLabel = DropdownMenuLabel;
-const MenuItem = DropdownMenuItem;
-const MenuCheckboxItem = DropdownMenuCheckboxItem;
-const MenuRadioGroup = DropdownMenuRadioGroup;
-const MenuRadioItem = DropdownMenuRadioItem;
-const MenuItemIndicator = DropdownMenuItemIndicator;
-const MenuSeparator = DropdownMenuSeparator;
+const Group = DropdownMenuGroup;
+const Label = DropdownMenuLabel;
+const Item = DropdownMenuItem;
+const CheckboxItem = DropdownMenuCheckboxItem;
+const RadioGroup = DropdownMenuRadioGroup;
+const RadioItem = DropdownMenuRadioItem;
+const ItemIndicator = DropdownMenuItemIndicator;
+const Separator = DropdownMenuSeparator;
 const Arrow = DropdownMenuArrow;
 
 export {
@@ -224,13 +224,13 @@ export {
   Root,
   Trigger,
   Content,
-  MenuGroup,
-  MenuLabel,
-  MenuItem,
-  MenuCheckboxItem,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuItemIndicator,
-  MenuSeparator,
+  Group,
+  Label,
+  Item,
+  CheckboxItem,
+  RadioGroup,
+  RadioItem,
+  ItemIndicator,
+  Separator,
   Arrow,
 };

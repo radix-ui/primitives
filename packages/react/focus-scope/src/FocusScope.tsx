@@ -68,4 +68,8 @@ function FocusScope(props: FocusScopeProps) {
 
 const Root = FocusScope;
 
-export { FocusScope, Root };
+export {
+  FocusScope,
+  //
+  Root,
+};

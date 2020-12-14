@@ -258,4 +258,14 @@ const List = TabsList;
 const Tab = TabsTab;
 const Panel = TabsPanel;
 
-export { Tabs, TabsList, TabsTab, TabsPanel, Root, List, Tab, Panel };
+export {
+  Tabs,
+  TabsList,
+  TabsTab,
+  TabsPanel,
+  //
+  Root,
+  List,
+  Tab,
+  Panel,
+};

@@ -171,4 +171,12 @@ const Root = Collapsible;
 const Button = CollapsibleButton;
 const Content = CollapsibleContent;
 
-export { Collapsible, CollapsibleButton, CollapsibleContent, Root, Button, Content };
+export {
+  Collapsible,
+  CollapsibleButton,
+  CollapsibleContent,
+  //
+  Root,
+  Button,
+  Content,
+};

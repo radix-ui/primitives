@@ -159,4 +159,10 @@ function getRovingFocusItems(groupId: string): HTMLElement[] {
 
 const Root = RovingFocusGroup;
 
-export { RovingFocusGroup, Root, useRovingFocus };
+export {
+  RovingFocusGroup,
+  //
+  Root,
+  //
+  useRovingFocus,
+};

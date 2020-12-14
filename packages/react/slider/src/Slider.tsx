@@ -805,4 +805,14 @@ const Track = SliderTrack;
 const Range = SliderRange;
 const Thumb = SliderThumb;
 
-export { Slider, SliderTrack, SliderRange, SliderThumb, Root, Track, Range, Thumb };
+export {
+  Slider,
+  SliderTrack,
+  SliderRange,
+  SliderThumb,
+  //
+  Root,
+  Track,
+  Range,
+  Thumb,
+};

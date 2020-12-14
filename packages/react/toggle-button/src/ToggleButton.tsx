@@ -61,4 +61,8 @@ ToggleButton.displayName = NAME;
 
 const Root = ToggleButton;
 
-export { ToggleButton, Root };
+export {
+  ToggleButton,
+  //
+  Root,
+};

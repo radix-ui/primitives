@@ -139,4 +139,10 @@ function getState(checked: boolean) {
 const Root = Switch;
 const Thumb = SwitchThumb;
 
-export { Switch, SwitchThumb, Root, Thumb };
+export {
+  Switch,
+  SwitchThumb,
+  //
+  Root,
+  Thumb,
+};

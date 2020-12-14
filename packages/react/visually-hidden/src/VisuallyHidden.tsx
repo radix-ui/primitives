@@ -33,4 +33,8 @@ VisuallyHidden.displayName = NAME;
 
 const Root = VisuallyHidden;
 
-export { VisuallyHidden, Root };
+export {
+  VisuallyHidden,
+  //
+  Root,
+};

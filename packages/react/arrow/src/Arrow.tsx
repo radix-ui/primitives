@@ -31,4 +31,8 @@ Arrow.displayName = NAME;
 
 const Root = Arrow;
 
-export { Arrow, Root };
+export {
+  Arrow,
+  //
+  Root,
+};

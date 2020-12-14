@@ -38,4 +38,10 @@ function createFocusGuard() {
 
 const Root = FocusGuards;
 
-export { FocusGuards, Root, useFocusGuards };
+export {
+  FocusGuards,
+  //
+  Root,
+  //
+  useFocusGuards,
+};
