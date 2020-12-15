@@ -6,10 +6,10 @@ import {
   useComposedRefs,
   useControlledState,
   useId,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@interop-ui/utils';
-import * as MenuPrimitive from '@interop-ui/react-menu';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { getPartDataAttrObj } from '@radix-ui/utils';
+import * as MenuPrimitive from '@radix-ui/react-menu';
 
 /* -------------------------------------------------------------------------------------------------
  * DropdownMenu

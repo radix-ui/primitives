@@ -1,7 +1,7 @@
 import * as CSS from 'csstype';
-import { makeRect, getOppositeSide, getCollisions } from '@interop-ui/utils';
+import { makeRect, getOppositeSide, getCollisions } from '@radix-ui/utils';
 
-import type { Axis, Side, Align, Point, Size } from '@interop-ui/utils';
+import type { Axis, Side, Align, Point, Size } from '@radix-ui/utils';
 
 type Collisions = ReturnType<typeof getCollisions>;
 

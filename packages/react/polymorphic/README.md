@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-polymorphic
+$ yarn add @radix-ui/react-polymorphic
 # or
-$ npm install @interop-ui/react-polymorphic
+$ npm install @radix-ui/react-polymorphic
 ```
 
 ## Usage

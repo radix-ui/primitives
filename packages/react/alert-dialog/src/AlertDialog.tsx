@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj, makeId, warning } from '@interop-ui/utils';
+import { getPartDataAttrObj, makeId, warning } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -7,15 +7,15 @@ import {
   useDocumentRef,
   composeEventHandlers,
   extendComponent,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import {
   Dialog,
   DialogOverlay,
   DialogContent,
   DialogTrigger,
   DialogClose,
-} from '@interop-ui/react-dialog';
+} from '@radix-ui/react-dialog';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -208,7 +208,7 @@ const DESC_WARNING = `${CONTENT_NAME} requires a description for the component t
 
 You can add a description to the ${CONTENT_NAME} by passing a ${DESCRIPTION_NAME} component as a child, which also benefits sighted users by adding visible context to the dialog.
 
-Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in ${CONTENT_NAME}. If the description is confusing or duplicative for sighted users, you can use the \`interop-ui/react-visually-hidden\` component as a wrapper around your description component.
+Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in ${CONTENT_NAME}. If the description is confusing or duplicative for sighted users, you can use the \`@radix-ui/react-visually-hidden\` primitive as a wrapper around your description component.
 
 For more information, see https://LINK-TO-DOCS.com`;
 

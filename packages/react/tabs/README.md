@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-tabs
+$ yarn add @radix-ui/react-tabs
 # or
-$ npm install @interop-ui/react-tabs
+$ npm install @radix-ui/react-tabs
 ```
 
 ## Usage

@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-announce
+$ yarn add @radix-ui/react-announce
 # or
-$ npm install @interop-ui/react-announce
+$ npm install @radix-ui/react-announce
 ```
 
 ## Usage

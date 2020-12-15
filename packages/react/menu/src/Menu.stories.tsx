@@ -12,7 +12,7 @@ import {
 } from './Menu';
 import { styled, css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
 export default { title: 'Components/Menu', excludeStories: ['styledComponents'] };
 

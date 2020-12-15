@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/react-popover",
-  "version": "0.0.1-18",
+  "name": "@radix-ui/react-popover",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -18,15 +18,15 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-dismissable-layer": "workspace:*",
-    "@interop-ui/react-focus-guards": "workspace:*",
-    "@interop-ui/react-focus-scope": "workspace:*",
-    "@interop-ui/react-polymorphic": "workspace:*",
-    "@interop-ui/react-popper": "workspace:*",
-    "@interop-ui/react-portal": "workspace:*",
-    "@interop-ui/react-presence": "workspace:*",
-    "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "workspace:*",
+    "@radix-ui/react-dismissable-layer": "workspace:*",
+    "@radix-ui/react-focus-guards": "workspace:*",
+    "@radix-ui/react-focus-scope": "workspace:*",
+    "@radix-ui/react-polymorphic": "workspace:*",
+    "@radix-ui/react-popper": "workspace:*",
+    "@radix-ui/react-portal": "workspace:*",
+    "@radix-ui/react-presence": "workspace:*",
+    "@radix-ui/react-utils": "workspace:*",
+    "@radix-ui/utils": "workspace:*",
     "aria-hidden": "^1.1.1",
     "react-remove-scroll": "^2.4.0"
   },
@@ -35,5 +35,13 @@
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"
+  },
+  "homepage": "https://radix-ui.com/primitives",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radix-ui/primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/radix-ui/primitives/issues"
   }
 }

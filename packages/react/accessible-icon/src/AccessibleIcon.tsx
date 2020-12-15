@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const NAME = 'AccessibleIcon';
 

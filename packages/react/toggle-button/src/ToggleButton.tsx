@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useControlledState, composeEventHandlers } from '@interop-ui/react-utils';
-import { getPartDataAttrObj } from '@interop-ui/utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { useControlledState, composeEventHandlers } from '@radix-ui/react-utils';
+import { getPartDataAttrObj } from '@radix-ui/utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
 const NAME = 'ToggleButton';
 const DEFAULT_TAG = 'button';

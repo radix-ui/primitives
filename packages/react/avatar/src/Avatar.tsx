@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@interop-ui/utils';
-import { createContext, useCallbackRef, useLayoutEffect } from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { getPartDataAttrObj } from '@radix-ui/utils';
+import { createContext, useCallbackRef, useLayoutEffect } from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar

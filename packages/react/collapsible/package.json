@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/react-collapsible",
-  "version": "0.0.1-16",
+  "name": "@radix-ui/react-collapsible",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -18,15 +18,23 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-polymorphic": "workspace:*",
-    "@interop-ui/react-presence": "workspace:*",
-    "@interop-ui/react-utils": "workspace:*",
-    "@interop-ui/utils": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*",
+    "@radix-ui/react-presence": "workspace:*",
+    "@radix-ui/react-utils": "workspace:*",
+    "@radix-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"
+  },
+  "homepage": "https://radix-ui.com/primitives",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radix-ui/primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/radix-ui/primitives/issues"
   }
 }

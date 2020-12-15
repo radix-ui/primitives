@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-context-menu
+$ yarn add @radix-ui/react-context-menu
 # or
-$ npm install @interop-ui/react-context-menu
+$ npm install @radix-ui/react-context-menu
 ```
 
 ## Usage

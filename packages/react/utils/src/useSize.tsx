@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import type { Size } from '@interop-ui/utils';
+import type { Size } from '@radix-ui/utils';
 
 export function useSize(
   /** A reference to the element whose size to observe */

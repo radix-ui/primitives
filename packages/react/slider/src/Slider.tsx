@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { clamp, getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
+import { clamp, getPartDataAttr, getPartDataAttrObj } from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -7,9 +7,9 @@ import {
   useControlledState,
   useCallbackRef,
   useSize,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { createCollection } from '@interop-ui/react-collection';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { createCollection } from '@radix-ui/react-collection';
 
 type Direction = 'ltr' | 'rtl';
 

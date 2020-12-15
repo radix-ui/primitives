@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-portal
+$ yarn add @radix-ui/react-portal
 # or
-$ npm install @interop-ui/react-portal
+$ npm install @radix-ui/react-portal
 ```
 
 ## Usage

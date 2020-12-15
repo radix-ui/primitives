@@ -1,5 +1,5 @@
 import { getSideAccountingForCollisions, getAlignAccountingForCollisions } from './popper';
-import { SIDE_OPTIONS, Align, Size, getCollisions } from '@interop-ui/utils';
+import { SIDE_OPTIONS, Align, Size, getCollisions } from '@radix-ui/utils';
 
 type Collisions = ReturnType<typeof getCollisions>;
 

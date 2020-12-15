@@ -4,10 +4,10 @@ import {
   useId,
   composeEventHandlers,
   useControlledState,
-} from '@interop-ui/react-utils';
-import { getPartDataAttrObj } from '@interop-ui/utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { Presence } from '@interop-ui/react-presence';
+} from '@radix-ui/react-utils';
+import { getPartDataAttrObj } from '@radix-ui/utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Presence } from '@radix-ui/react-presence';
 
 /* -------------------------------------------------------------------------------------------------
  * Collapsible

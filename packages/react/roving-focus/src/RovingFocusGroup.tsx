@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { getPartDataAttr, wrap, clamp } from '@interop-ui/utils';
-import { createContext, useControlledState, useId } from '@interop-ui/react-utils';
+import { getPartDataAttr, wrap, clamp } from '@radix-ui/utils';
+import { createContext, useControlledState, useId } from '@radix-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * RovingFocusGroup

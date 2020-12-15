@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/popper",
-  "version": "0.0.1-15",
+  "name": "@radix-ui/popper",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -18,10 +18,18 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/utils": "workspace:*",
+    "@radix-ui/utils": "workspace:*",
     "csstype": "^3.0.4"
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"
+  },
+  "homepage": "https://radix-ui.com/primitives",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radix-ui/primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/radix-ui/primitives/issues"
   }
 }

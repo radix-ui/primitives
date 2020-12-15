@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttr, wrapArray } from '@interop-ui/utils';
+import { getPartDataAttr, wrapArray } from '@radix-ui/utils';
 
 function useMenuTypeahead() {
   const timerRef = React.useRef(0);

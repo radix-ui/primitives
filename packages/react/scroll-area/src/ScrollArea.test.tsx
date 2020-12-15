@@ -4,7 +4,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent } from '@testing-library/react';
-import { getPartDataAttr } from '@interop-ui/utils';
+import { getPartDataAttr } from '@radix-ui/utils';
 import {
   ScrollArea,
   ScrollAreaViewport,
@@ -100,7 +100,7 @@ describe('given a default ScrollArea', () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
-  it('should have an interop attribute on the container', () => {
+  it('should have a radix attribute on the container', () => {
     const partDataAttr = getPartDataAttr('ScrollArea');
     expect(scrollArea).toHaveAttribute(partDataAttr);
   });

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import type { ForwardRefExoticComponentWithAs } from '@interop-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@interop-ui/utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import type { ForwardRefExoticComponentWithAs } from '@radix-ui/react-polymorphic';
+import { getPartDataAttrObj } from '@radix-ui/utils';
 
 function extendComponent<As extends ForwardRefExoticComponentWithAs<any, any>>(
   Comp: As extends ForwardRefExoticComponentWithAs<infer I, infer P>

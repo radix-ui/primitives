@@ -6,16 +6,16 @@ import {
   extendComponent,
   useCallbackRef,
   useComposedRefs,
-} from '@interop-ui/react-utils';
-import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { Presence } from '@interop-ui/react-presence';
-import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
-import * as PopperPrimitive from '@interop-ui/react-popper';
-import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
-import { FocusScope } from '@interop-ui/react-focus-scope';
-import { Portal } from '@interop-ui/react-portal';
-import { useFocusGuards } from '@interop-ui/react-focus-guards';
+} from '@radix-ui/react-utils';
+import { getPartDataAttr, getPartDataAttrObj } from '@radix-ui/utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Presence } from '@radix-ui/react-presence';
+import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
+import * as PopperPrimitive from '@radix-ui/react-popper';
+import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { FocusScope } from '@radix-ui/react-focus-scope';
+import { Portal } from '@radix-ui/react-portal';
+import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';

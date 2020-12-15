@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-arrow
+$ yarn add @radix-ui/react-arrow
 # or
-$ npm install @interop-ui/react-arrow
+$ npm install @radix-ui/react-arrow
 ```
 
 ## Usage

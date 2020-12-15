@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Label as LabelPrimitive } from '@interop-ui/react-label';
+import { Label as LabelPrimitive } from '@radix-ui/react-label';
 import { RadioGroup, RadioGroupItem, RadioGroupIndicator } from './RadioGroup';
 import { styled, css } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';

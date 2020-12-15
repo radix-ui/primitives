@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { canUseDOM } from '@interop-ui/utils';
+import { canUseDOM } from '@radix-ui/utils';
 
 /**
  * On the server, React emits a warning when calling `useLayoutEffect`.

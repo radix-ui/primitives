@@ -1,4 +1,4 @@
-import { arrayRemove } from '@interop-ui/utils';
+import { arrayRemove } from '@radix-ui/utils';
 
 type FocusableTarget = HTMLElement | { focus(): void };
 

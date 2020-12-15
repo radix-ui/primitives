@@ -1,14 +1,14 @@
 import React from 'react';
-import { getPartDataAttrObj } from '@interop-ui/utils';
+import { getPartDataAttrObj } from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContext,
   useComposedRefs,
   useControlledState,
   useId,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { Collapsible, CollapsibleButton, CollapsibleContent } from '@interop-ui/react-collapsible';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Collapsible, CollapsibleButton, CollapsibleContent } from '@radix-ui/react-collapsible';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context

@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-popper
+$ yarn add @radix-ui/react-popper
 # or
-$ npm install @interop-ui/react-popper
+$ npm install @radix-ui/react-popper
 ```
 
 ## Usage

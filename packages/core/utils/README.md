@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/utils
+$ yarn add @radix-ui/utils
 # or
-$ npm install @interop-ui/utils
+$ npm install @radix-ui/utils
 ```
 
 ## Usage

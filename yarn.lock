@@ -1761,506 +1761,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@interop-ui/popper@workspace:*, @interop-ui/popper@workspace:packages/core/popper":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/popper@workspace:packages/core/popper"
-  dependencies:
-    "@interop-ui/utils": "workspace:*"
-    csstype: ^3.0.4
-    parcel: ^2.0.0-beta.1
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-accessible-icon@workspace:packages/react/accessible-icon":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-accessible-icon@workspace:packages/react/accessible-icon"
-  dependencies:
-    "@interop-ui/react-visually-hidden": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-accordion@workspace:packages/react/accordion":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-accordion@workspace:packages/react/accordion"
-  dependencies:
-    "@interop-ui/react-collapsible": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-alert-dialog@workspace:packages/react/alert-dialog":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-alert-dialog@workspace:packages/react/alert-dialog"
-  dependencies:
-    "@interop-ui/react-dialog": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16.8"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-announce@workspace:packages/react/announce":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-announce@workspace:packages/react/announce"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-arrow@workspace:*, @interop-ui/react-arrow@workspace:packages/react/arrow":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-arrow@workspace:packages/react/arrow"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-avatar@workspace:packages/react/avatar":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-avatar@workspace:packages/react/avatar"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-checkbox@workspace:packages/react/checkbox":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-checkbox@workspace:packages/react/checkbox"
-  dependencies:
-    "@interop-ui/react-label": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-presence": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-collapsible@workspace:*, @interop-ui/react-collapsible@workspace:packages/react/collapsible":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-collapsible@workspace:packages/react/collapsible"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-presence": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-collection@workspace:*, @interop-ui/react-collection@workspace:packages/react/collection":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-collection@workspace:packages/react/collection"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-context-menu@workspace:packages/react/context-menu":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-context-menu@workspace:packages/react/context-menu"
-  dependencies:
-    "@interop-ui/react-menu": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-dialog@workspace:*, @interop-ui/react-dialog@workspace:packages/react/dialog":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-dialog@workspace:packages/react/dialog"
-  dependencies:
-    "@interop-ui/react-dismissable-layer": "workspace:*"
-    "@interop-ui/react-focus-guards": "workspace:*"
-    "@interop-ui/react-focus-scope": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-presence": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    aria-hidden: ^1.1.1
-    parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.4.0
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-dismissable-layer@workspace:*, @interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.4.0
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu"
-  dependencies:
-    "@interop-ui/react-menu": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-focus-guards@workspace:*, @interop-ui/react-focus-guards@workspace:packages/react/focus-guards":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-focus-guards@workspace:packages/react/focus-guards"
-  dependencies:
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-focus-scope@workspace:*, @interop-ui/react-focus-scope@workspace:packages/react/focus-scope":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-focus-scope@workspace:packages/react/focus-scope"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-label@workspace:*, @interop-ui/react-label@workspace:packages/react/label":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-label@workspace:packages/react/label"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-menu@workspace:*, @interop-ui/react-menu@workspace:packages/react/menu":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-menu@workspace:packages/react/menu"
-  dependencies:
-    "@interop-ui/react-dismissable-layer": "workspace:*"
-    "@interop-ui/react-focus-guards": "workspace:*"
-    "@interop-ui/react-focus-scope": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-popper": "workspace:*"
-    "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-presence": "workspace:*"
-    "@interop-ui/react-roving-focus": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    aria-hidden: ^1.1.1
-    parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.4.0
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-polymorphic@workspace:*, @interop-ui/react-polymorphic@workspace:packages/react/polymorphic":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-polymorphic@workspace:packages/react/polymorphic"
-  dependencies:
-    "@testing-library/react": ^10.4.8
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-popover@workspace:packages/react/popover":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-popover@workspace:packages/react/popover"
-  dependencies:
-    "@interop-ui/react-dismissable-layer": "workspace:*"
-    "@interop-ui/react-focus-guards": "workspace:*"
-    "@interop-ui/react-focus-scope": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-popper": "workspace:*"
-    "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-presence": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    aria-hidden: ^1.1.1
-    parcel: ^2.0.0-beta.1
-    react-remove-scroll: ^2.4.0
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-popper@workspace:*, @interop-ui/react-popper@workspace:packages/react/popper":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-popper@workspace:packages/react/popper"
-  dependencies:
-    "@interop-ui/popper": "workspace:*"
-    "@interop-ui/react-arrow": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-portal@workspace:*, @interop-ui/react-portal@workspace:packages/react/portal":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-portal@workspace:packages/react/portal"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-presence@workspace:*, @interop-ui/react-presence@workspace:packages/react/presence":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-presence@workspace:packages/react/presence"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@xstate/fsm": ^1.5.1
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ">=16.8"
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-progress@workspace:packages/react/progress":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-progress@workspace:packages/react/progress"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-radio-group@workspace:packages/react/radio-group":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-radio-group@workspace:packages/react/radio-group"
-  dependencies:
-    "@interop-ui/react-label": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-presence": "workspace:*"
-    "@interop-ui/react-roving-focus": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-roving-focus@workspace:*, @interop-ui/react-roving-focus@workspace:packages/react/roving-focus":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-roving-focus@workspace:packages/react/roving-focus"
-  dependencies:
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-scroll-area@workspace:packages/react/scroll-area":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-scroll-area@workspace:packages/react/scroll-area"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    "@stitches/react": canary
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-separator@workspace:packages/react/separator":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-separator@workspace:packages/react/separator"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-slider@workspace:packages/react/slider":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-slider@workspace:packages/react/slider"
-  dependencies:
-    "@interop-ui/react-collection": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-switch@workspace:packages/react/switch":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-switch@workspace:packages/react/switch"
-  dependencies:
-    "@interop-ui/react-label": "workspace:*"
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-tabs@workspace:packages/react/tabs":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-tabs@workspace:packages/react/tabs"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-roving-focus": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-toggle-button@workspace:packages/react/toggle-button":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-toggle-button@workspace:packages/react/toggle-button"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-tooltip@workspace:packages/react/tooltip":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-tooltip@workspace:packages/react/tooltip"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/react-popper": "workspace:*"
-    "@interop-ui/react-portal": "workspace:*"
-    "@interop-ui/react-utils": "workspace:*"
-    "@interop-ui/react-visually-hidden": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-utils@workspace:*, @interop-ui/react-utils@workspace:packages/react/utils":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-utils@workspace:packages/react/utils"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    "@testing-library/react": ^10.4.8
-    "@types/resize-observer-browser": ^0.1.4
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/react-visually-hidden@workspace:*, @interop-ui/react-visually-hidden@workspace:packages/react/visually-hidden":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/react-visually-hidden@workspace:packages/react/visually-hidden"
-  dependencies:
-    "@interop-ui/react-polymorphic": "workspace:*"
-    "@interop-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@interop-ui/utils@workspace:*, @interop-ui/utils@workspace:packages/core/utils":
-  version: 0.0.0-use.local
-  resolution: "@interop-ui/utils@workspace:packages/core/utils"
-  dependencies:
-    parcel: ^2.0.0-beta.1
-  languageName: unknown
-  linkType: soft
-
 "@istanbuljs/load-nyc-config@npm:^1.0.0":
   version: 1.1.0
   resolution: "@istanbuljs/load-nyc-config@npm:1.1.0"
@@ -3525,6 +3025,506 @@ __metadata:
   checksum: 2f70875408c8d6fe43acd50f466db9d960ecd75828ac59544697854d6e7b43dbc1e13647133f99cc3e47e02fa781ca873aaa306545f942f10c7a2f0565b94442
   languageName: node
   linkType: hard
+
+"@radix-ui/popper@workspace:*, @radix-ui/popper@workspace:packages/core/popper":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/popper@workspace:packages/core/popper"
+  dependencies:
+    "@radix-ui/utils": "workspace:*"
+    csstype: ^3.0.4
+    parcel: ^2.0.0-beta.1
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-accessible-icon@workspace:packages/react/accessible-icon":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-accessible-icon@workspace:packages/react/accessible-icon"
+  dependencies:
+    "@radix-ui/react-visually-hidden": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-accordion@workspace:packages/react/accordion":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-accordion@workspace:packages/react/accordion"
+  dependencies:
+    "@radix-ui/react-collapsible": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-alert-dialog@workspace:packages/react/alert-dialog":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-alert-dialog@workspace:packages/react/alert-dialog"
+  dependencies:
+    "@radix-ui/react-dialog": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ">=16.8"
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-announce@workspace:packages/react/announce":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-announce@workspace:packages/react/announce"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-arrow@workspace:*, @radix-ui/react-arrow@workspace:packages/react/arrow":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-arrow@workspace:packages/react/arrow"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-avatar@workspace:packages/react/avatar":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-avatar@workspace:packages/react/avatar"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-checkbox@workspace:packages/react/checkbox":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-checkbox@workspace:packages/react/checkbox"
+  dependencies:
+    "@radix-ui/react-label": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-collapsible@workspace:*, @radix-ui/react-collapsible@workspace:packages/react/collapsible":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-collapsible@workspace:packages/react/collapsible"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-collection@workspace:*, @radix-ui/react-collection@workspace:packages/react/collection":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-collection@workspace:packages/react/collection"
+  dependencies:
+    "@radix-ui/react-utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-context-menu@workspace:packages/react/context-menu":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-context-menu@workspace:packages/react/context-menu"
+  dependencies:
+    "@radix-ui/react-menu": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-dialog@workspace:*, @radix-ui/react-dialog@workspace:packages/react/dialog":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-dialog@workspace:packages/react/dialog"
+  dependencies:
+    "@radix-ui/react-dismissable-layer": "workspace:*"
+    "@radix-ui/react-focus-guards": "workspace:*"
+    "@radix-ui/react-focus-scope": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-portal": "workspace:*"
+    "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    aria-hidden: ^1.1.1
+    parcel: ^2.0.0-beta.1
+    react-remove-scroll: ^2.4.0
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-dismissable-layer@workspace:*, @radix-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
+  dependencies:
+    "@radix-ui/react-utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+    react-remove-scroll: ^2.4.0
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu"
+  dependencies:
+    "@radix-ui/react-menu": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-focus-guards@workspace:*, @radix-ui/react-focus-guards@workspace:packages/react/focus-guards":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-focus-guards@workspace:packages/react/focus-guards"
+  dependencies:
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-focus-scope@workspace:*, @radix-ui/react-focus-scope@workspace:packages/react/focus-scope":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-focus-scope@workspace:packages/react/focus-scope"
+  dependencies:
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-label@workspace:*, @radix-ui/react-label@workspace:packages/react/label":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-label@workspace:packages/react/label"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-menu@workspace:*, @radix-ui/react-menu@workspace:packages/react/menu":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-menu@workspace:packages/react/menu"
+  dependencies:
+    "@radix-ui/react-dismissable-layer": "workspace:*"
+    "@radix-ui/react-focus-guards": "workspace:*"
+    "@radix-ui/react-focus-scope": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-popper": "workspace:*"
+    "@radix-ui/react-portal": "workspace:*"
+    "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    aria-hidden: ^1.1.1
+    parcel: ^2.0.0-beta.1
+    react-remove-scroll: ^2.4.0
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-polymorphic@workspace:*, @radix-ui/react-polymorphic@workspace:packages/react/polymorphic":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-polymorphic@workspace:packages/react/polymorphic"
+  dependencies:
+    "@testing-library/react": ^10.4.8
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-popover@workspace:packages/react/popover":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-popover@workspace:packages/react/popover"
+  dependencies:
+    "@radix-ui/react-dismissable-layer": "workspace:*"
+    "@radix-ui/react-focus-guards": "workspace:*"
+    "@radix-ui/react-focus-scope": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-popper": "workspace:*"
+    "@radix-ui/react-portal": "workspace:*"
+    "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    aria-hidden: ^1.1.1
+    parcel: ^2.0.0-beta.1
+    react-remove-scroll: ^2.4.0
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-popper@workspace:*, @radix-ui/react-popper@workspace:packages/react/popper":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-popper@workspace:packages/react/popper"
+  dependencies:
+    "@radix-ui/popper": "workspace:*"
+    "@radix-ui/react-arrow": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-portal@workspace:*, @radix-ui/react-portal@workspace:packages/react/portal":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-portal@workspace:packages/react/portal"
+  dependencies:
+    "@radix-ui/react-utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-presence@workspace:*, @radix-ui/react-presence@workspace:packages/react/presence":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-presence@workspace:packages/react/presence"
+  dependencies:
+    "@radix-ui/react-utils": "workspace:*"
+    "@xstate/fsm": ^1.5.1
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ">=16.8"
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-progress@workspace:packages/react/progress":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-progress@workspace:packages/react/progress"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-radio-group@workspace:packages/react/radio-group":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-radio-group@workspace:packages/react/radio-group"
+  dependencies:
+    "@radix-ui/react-label": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-roving-focus@workspace:*, @radix-ui/react-roving-focus@workspace:packages/react/roving-focus":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-roving-focus@workspace:packages/react/roving-focus"
+  dependencies:
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-scroll-area@workspace:packages/react/scroll-area":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-scroll-area@workspace:packages/react/scroll-area"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    "@stitches/react": canary
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-separator@workspace:packages/react/separator":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-separator@workspace:packages/react/separator"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-slider@workspace:packages/react/slider":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-slider@workspace:packages/react/slider"
+  dependencies:
+    "@radix-ui/react-collection": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-switch@workspace:packages/react/switch":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-switch@workspace:packages/react/switch"
+  dependencies:
+    "@radix-ui/react-label": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-tabs@workspace:packages/react/tabs":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-tabs@workspace:packages/react/tabs"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-toggle-button@workspace:packages/react/toggle-button":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-toggle-button@workspace:packages/react/toggle-button"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-tooltip@workspace:packages/react/tooltip":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-tooltip@workspace:packages/react/tooltip"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-popper": "workspace:*"
+    "@radix-ui/react-portal": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-visually-hidden": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-utils@workspace:*, @radix-ui/react-utils@workspace:packages/react/utils":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-utils@workspace:packages/react/utils"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    "@testing-library/react": ^10.4.8
+    "@types/resize-observer-browser": ^0.1.4
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-visually-hidden@workspace:*, @radix-ui/react-visually-hidden@workspace:packages/react/visually-hidden":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-visually-hidden@workspace:packages/react/visually-hidden"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+    parcel: ^2.0.0-beta.1
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/utils@workspace:*, @radix-ui/utils@workspace:packages/core/utils":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/utils@workspace:packages/core/utils"
+  dependencies:
+    parcel: ^2.0.0-beta.1
+  languageName: unknown
+  linkType: soft
 
 "@reach/router@npm:^1.3.3":
   version: 1.3.4
@@ -11001,48 +11001,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"interop-ui@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "interop-ui@workspace:."
-  dependencies:
-    "@babel/core": ^7.0.0
-    "@stitches/react": canary
-    "@storybook/addon-storysource": 6.1.0-beta.4
-    "@storybook/react": 6.1.0-beta.4
-    "@testing-library/jest-dom": ^5.11.3
-    "@testing-library/react": ^10.4.8
-    "@types/eslint": ^7
-    "@types/jest": ^26.0.10
-    "@types/jest-axe": ^3.5.0
-    "@types/parcel-bundler": ^1.12.1
-    "@types/react": ^16.9.55
-    "@types/react-dom": ^16.9.9
-    "@types/react-test-renderer": ^16.9.3
-    "@typescript-eslint/eslint-plugin": 2.x
-    "@typescript-eslint/parser": 2.x
-    babel-eslint: ^10.1.0
-    babel-loader: ^8.1.0
-    eslint: 6.x
-    eslint-config-react-app: ^5.2.1
-    eslint-plugin-flowtype: 4.x
-    eslint-plugin-import: ^2.22.0
-    eslint-plugin-jsx-a11y: ^6.3.1
-    eslint-plugin-react: ^7.20.6
-    eslint-plugin-react-hooks: 2.x
-    husky: ^4.2.5
-    jest: ^26.4.0
-    jest-axe: ^3.5.0
-    jest-watch-typeahead: ^0.6.0
-    prettier: ^2.0.5
-    pretty-quick: ^2.0.1
-    react: ^17.0.1
-    react-dom: ^17.0.1
-    react-test-renderer: ^17.0.1
-    ts-jest: ^26.2.0
-    typescript: ^3.9.7
-  languageName: unknown
-  linkType: soft
-
 "interpret@npm:^1.0.0":
   version: 1.4.0
   resolution: "interpret@npm:1.4.0"
@@ -15254,6 +15212,48 @@ fsevents@^1.2.7:
   checksum: 77d6db39464b9f4af1beeb30d1fa86c6e0376a530969248025b7ce0cba38a45ec61b375b89a8b5caf73e48a32ca5b734a405f39d68d5c63c968615d32c5cd02d
   languageName: node
   linkType: hard
+
+"primitives@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "primitives@workspace:."
+  dependencies:
+    "@babel/core": ^7.0.0
+    "@stitches/react": canary
+    "@storybook/addon-storysource": 6.1.0-beta.4
+    "@storybook/react": 6.1.0-beta.4
+    "@testing-library/jest-dom": ^5.11.3
+    "@testing-library/react": ^10.4.8
+    "@types/eslint": ^7
+    "@types/jest": ^26.0.10
+    "@types/jest-axe": ^3.5.0
+    "@types/parcel-bundler": ^1.12.1
+    "@types/react": ^16.9.55
+    "@types/react-dom": ^16.9.9
+    "@types/react-test-renderer": ^16.9.3
+    "@typescript-eslint/eslint-plugin": 2.x
+    "@typescript-eslint/parser": 2.x
+    babel-eslint: ^10.1.0
+    babel-loader: ^8.1.0
+    eslint: 6.x
+    eslint-config-react-app: ^5.2.1
+    eslint-plugin-flowtype: 4.x
+    eslint-plugin-import: ^2.22.0
+    eslint-plugin-jsx-a11y: ^6.3.1
+    eslint-plugin-react: ^7.20.6
+    eslint-plugin-react-hooks: 2.x
+    husky: ^4.2.5
+    jest: ^26.4.0
+    jest-axe: ^3.5.0
+    jest-watch-typeahead: ^0.6.0
+    prettier: ^2.0.5
+    pretty-quick: ^2.0.1
+    react: ^17.0.1
+    react-dom: ^17.0.1
+    react-test-renderer: ^17.0.1
+    ts-jest: ^26.2.0
+    typescript: ^3.9.7
+  languageName: unknown
+  linkType: soft
 
 "prismjs@npm:^1.21.0, prismjs@npm:~1.22.0":
   version: 1.22.0
