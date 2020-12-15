@@ -10,4 +10,4 @@ $ npm install @interop-ui/react-announce
 
 ## Usage
 
-View docs [here](https://radix-ui.com/primitives/docs/components/announce).
+View docs [here](https://radix-ui.com/primitives/docs/utilities/announce).

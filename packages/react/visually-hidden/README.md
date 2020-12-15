@@ -10,4 +10,4 @@ $ npm install @interop-ui/react-visually-hidden
 
 ## Usage
 
-View docs [here](https://radix-ui.com/primitives/docs/components/visually-hidden).
+View docs [here](https://radix-ui.com/primitives/docs/utilities/visually-hidden).
