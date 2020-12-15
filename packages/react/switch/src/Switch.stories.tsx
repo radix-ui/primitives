@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Switch, SwitchThumb } from './Switch';
-import { Label as LabelPrimitive } from '@interop-ui/react-label';
+import { Label as LabelPrimitive } from '@radix-ui/react-label';
 import { styled } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 

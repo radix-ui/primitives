@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@interop-ui/utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { getPartDataAttrObj } from '@radix-ui/utils';
 
 const NAME = 'Separator';
 const DEFAULT_TAG = 'div';

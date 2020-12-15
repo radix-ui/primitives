@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-toggle-button
+$ yarn add @radix-ui/react-toggle-button
 # or
-$ npm install @interop-ui/react-toggle-button
+$ npm install @radix-ui/react-toggle-button
 ```
 
 ## Usage

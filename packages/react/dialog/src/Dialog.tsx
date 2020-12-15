@@ -6,14 +6,14 @@ import {
   useControlledState,
   useId,
   composeRefs,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
-import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
-import { FocusScope } from '@interop-ui/react-focus-scope';
-import { Portal } from '@interop-ui/react-portal';
-import { Presence } from '@interop-ui/react-presence';
-import { useFocusGuards } from '@interop-ui/react-focus-guards';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { getPartDataAttrObj, makeId } from '@radix-ui/utils';
+import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { FocusScope } from '@radix-ui/react-focus-scope';
+import { Portal } from '@radix-ui/react-portal';
+import { Presence } from '@radix-ui/react-presence';
+import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 

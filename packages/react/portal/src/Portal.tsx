@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { useLayoutEffect } from '@interop-ui/react-utils';
+import { useLayoutEffect } from '@radix-ui/react-utils';
 
 type PortalProps = {
   children: React.ReactNode;

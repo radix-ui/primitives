@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-dismissable-layer
+$ yarn add @radix-ui/react-dismissable-layer
 # or
-$ npm install @interop-ui/react-dismissable-layer
+$ npm install @radix-ui/react-dismissable-layer
 ```
 
 ## Usage

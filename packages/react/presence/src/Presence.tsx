@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useComposedRefs } from '@interop-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { useStateMachine } from './useStateMachine';
 
 type PresenceProps = {

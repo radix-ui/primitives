@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/react-utils",
-  "version": "0.0.1-16",
+  "name": "@radix-ui/react-utils",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -18,8 +18,8 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@interop-ui/react-polymorphic": "workspace:*",
-    "@interop-ui/utils": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*",
+    "@radix-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/react": "^10.4.8",
@@ -28,5 +28,13 @@
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"
+  },
+  "homepage": "https://radix-ui.com/primitives",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radix-ui/primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/radix-ui/primitives/issues"
   }
 }

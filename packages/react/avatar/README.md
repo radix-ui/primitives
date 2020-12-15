@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-avatar
+$ yarn add @radix-ui/react-avatar
 # or
-$ npm install @interop-ui/react-avatar
+$ npm install @radix-ui/react-avatar
 ```
 
 ## Usage

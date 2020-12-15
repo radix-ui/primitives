@@ -4,10 +4,10 @@ import {
   createContext,
   useControlledState,
   useId,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { getPartDataAttrObj, makeId } from '@interop-ui/utils';
-import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { getPartDataAttrObj, makeId } from '@radix-ui/utils';
+import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context

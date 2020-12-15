@@ -1,8 +1,8 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { getPartDataAttr, getPartDataAttrObj } from '@interop-ui/utils';
-import { useComposedRefs, useLayoutEffect } from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { getPartDataAttr, getPartDataAttrObj } from '@radix-ui/utils';
+import { useComposedRefs, useLayoutEffect } from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';

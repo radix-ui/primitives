@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, useLayoutEffect } from '@interop-ui/react-utils';
+import { createContext, useLayoutEffect } from '@radix-ui/react-utils';
 
 function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: string) {
   const providerName = name + 'CollectionProvider';

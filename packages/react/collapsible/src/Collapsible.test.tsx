@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
-import { getPartDataAttr } from '@interop-ui/utils';
+import { getPartDataAttr } from '@radix-ui/utils';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
 
 const BUTTON_TEXT = 'Button';
@@ -32,7 +32,7 @@ describe('given a default Collapsible', () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
-  it('should have an interop attribute on the container', () => {
+  it('should have a radix attribute on the container', () => {
     const partDataAttr = getPartDataAttr('Collapsible');
     expect(collapsible).toHaveAttribute(partDataAttr);
   });
@@ -49,7 +49,7 @@ describe('given a default Collapsible', () => {
     expect(button).toHaveAttribute('data-state', 'closed');
   });
 
-  it('should have an interop attribute on the button', () => {
+  it('should have a radix attribute on the button', () => {
     const partDataAttr = getPartDataAttr('CollapsibleButton');
     expect(button).toHaveAttribute(partDataAttr);
   });
@@ -67,7 +67,7 @@ describe('given a default Collapsible', () => {
       });
     });
 
-    it('should have an interop attribute on the content', () => {
+    it('should have a radix attribute on the content', () => {
       const partDataAttr = getPartDataAttr('CollapsibleContent');
       expect(content).toHaveAttribute(partDataAttr);
     });

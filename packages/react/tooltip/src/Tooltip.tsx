@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@interop-ui/utils';
+import { getPartDataAttrObj } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -10,11 +10,11 @@ import {
   useControlledState,
   useLayoutEffect,
   extendComponent,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import * as PopperPrimitive from '@interop-ui/react-popper';
-import { Portal } from '@interop-ui/react-portal';
-import { VisuallyHidden } from '@interop-ui/react-visually-hidden';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import * as PopperPrimitive from '@radix-ui/react-popper';
+import { Portal } from '@radix-ui/react-portal';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
 
 /* -------------------------------------------------------------------------------------------------

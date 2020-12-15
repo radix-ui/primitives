@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "interop-ui",
+  "name": "primitives",
   "version": "0.0.0",
   "license": "MIT",
   "workspaces": [
@@ -16,10 +16,10 @@
     "build-storybook": "build-storybook",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
-    "build:packages": "yarn workspaces foreach -t --exclude interop-ui run build",
+    "build:packages": "yarn workspaces foreach -t --exclude primitives run build",
     "build:cleanup": "mv tsconfig.json tsconfig.production.json && mv tsconfig.tmp.json tsconfig.json",
-    "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude interop-ui npm publish --tolerate-republish --access public",
-    "clean": "yarn workspaces foreach -pv --exclude interop-ui run clean",
+    "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude primitives npm publish --tolerate-republish --access public",
+    "clean": "yarn workspaces foreach -pv --exclude primitives run clean",
     "reset": "yarn clean && rm -rf .yarn/cache node_modules",
     "bump": "yarn version apply --all",
     "bump:check": "yarn version check"
@@ -78,8 +78,8 @@
       "^.+\\.(ts|tsx)$": "ts-jest"
     },
     "moduleNameMapper": {
-      "@interop-ui/react-(.+)$": "<rootDir>/packages/react/$1/src",
-      "@interop-ui/(.+)$": "<rootDir>packages/core/$1/src"
+      "@radix-ui/react-(.+)$": "<rootDir>/packages/react/$1/src",
+      "@radix-ui/(.+)$": "<rootDir>packages/core/$1/src"
     },
     "watchPlugins": [
       "jest-watch-typeahead/filename",

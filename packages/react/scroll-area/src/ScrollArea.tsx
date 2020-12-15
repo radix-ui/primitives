@@ -17,8 +17,8 @@ import {
   useConstant,
   useLayoutEffect,
   usePrefersReducedMotion,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import {
   canUseDOM,
   clamp,
@@ -26,13 +26,13 @@ import {
   getResizeObserverEntryBorderBoxSize,
   isMainClick,
   namespaced,
-} from '@interop-ui/utils';
+} from '@radix-ui/utils';
 import * as React from 'react';
 import { bezier } from './bezier-easing';
 import { Queue } from './queue';
 import { useHover } from './useHover';
 
-import type { Axis, Size } from '@interop-ui/utils';
+import type { Axis, Size } from '@radix-ui/utils';
 
 const SCROLL_AREA_CSS_PROPS_LIST = [
   'positionWidth',

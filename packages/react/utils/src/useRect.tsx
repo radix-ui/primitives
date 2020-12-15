@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { observeElementRect } from '@interop-ui/utils';
+import { observeElementRect } from '@radix-ui/utils';
 import { useLayoutEffect } from './useLayoutEffect';
-import type { MeasurableElement } from '@interop-ui/utils';
+import type { MeasurableElement } from '@radix-ui/utils';
 
 /**
  * Use this custom hook to get access to an element's rect (getBoundingClientRect)

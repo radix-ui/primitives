@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow } from './Tooltip';
-import { Arrow } from '@interop-ui/react-arrow';
+import { Arrow } from '@radix-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
 
 export default { title: 'Components/Tooltip' };

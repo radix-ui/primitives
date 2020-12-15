@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { createContext } from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@interop-ui/utils';
+import { createContext } from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { getPartDataAttrObj } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Progress

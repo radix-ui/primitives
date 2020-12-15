@@ -12,7 +12,7 @@ import {
   ScrollAreaThumb,
   SCROLL_AREA_CSS_PROPS,
 } from './ScrollArea';
-import { Popover, PopoverContent, PopoverTrigger, PopoverArrow } from '@interop-ui/react-popover';
+import { Popover, PopoverContent, PopoverTrigger, PopoverArrow } from '@radix-ui/react-popover';
 
 export default {
   title: 'Components/ScrollArea',

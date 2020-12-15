@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-separator
+$ yarn add @radix-ui/react-separator
 # or
-$ npm install @interop-ui/react-separator
+$ npm install @radix-ui/react-separator
 ```
 
 ## Usage

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { extendComponent } from './extendComponent';
 
 import type { RenderResult } from '@testing-library/react';

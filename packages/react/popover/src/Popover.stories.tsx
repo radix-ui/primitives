@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Popover, PopoverTrigger, PopoverContent, PopoverClose, PopoverArrow } from './Popover';
-import { Arrow } from '@interop-ui/react-arrow';
+import { Arrow } from '@radix-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
 
 export default { title: 'Components/Popover' };

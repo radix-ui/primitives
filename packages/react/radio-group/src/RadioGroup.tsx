@@ -6,13 +6,13 @@ import {
   useControlledState,
   useComposedRefs,
   extendComponent,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Radio, RadioIndicator } from './Radio';
-import { useLabelContext } from '@interop-ui/react-label';
+import { useLabelContext } from '@radix-ui/react-label';
 
-import { getPartDataAttrObj } from '@interop-ui/utils';
-import { RovingFocusGroup, useRovingFocus } from '@interop-ui/react-roving-focus';
+import { getPartDataAttrObj } from '@radix-ui/utils';
+import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup

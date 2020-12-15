@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { getPlacementData } from '@interop-ui/popper';
-import { createContext, useRect, useSize, useComposedRefs } from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { Arrow as ArrowPrimitive } from '@interop-ui/react-arrow';
-import { getPartDataAttrObj } from '@interop-ui/utils';
+import { getPlacementData } from '@radix-ui/popper';
+import { createContext, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
+import { getPartDataAttrObj } from '@radix-ui/utils';
 
-import type { Side, Align, MeasurableElement } from '@interop-ui/utils';
+import type { Side, Align, MeasurableElement } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context

@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { composeEventHandlers, createContext, extendComponent } from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { getPartDataAttrObj, makeRect } from '@interop-ui/utils';
-import * as MenuPrimitive from '@interop-ui/react-menu';
+import { composeEventHandlers, createContext, extendComponent } from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { getPartDataAttrObj, makeRect } from '@radix-ui/utils';
+import * as MenuPrimitive from '@radix-ui/react-menu';
 
-import type { Point, MeasurableElement } from '@interop-ui/utils';
+import type { Point, MeasurableElement } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenu

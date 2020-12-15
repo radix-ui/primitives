@@ -4,10 +4,10 @@ import {
   composeEventHandlers,
   useControlledState,
   useComposedRefs,
-} from '@interop-ui/react-utils';
-import { forwardRefWithAs } from '@interop-ui/react-polymorphic';
-import { useLabelContext } from '@interop-ui/react-label';
-import { getPartDataAttrObj } from '@interop-ui/utils';
+} from '@radix-ui/react-utils';
+import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { useLabelContext } from '@radix-ui/react-label';
+import { getPartDataAttrObj } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch

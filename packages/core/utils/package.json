@@ -1,6 +1,6 @@
 {
-  "name": "@interop-ui/utils",
-  "version": "0.0.1-8",
+  "name": "@radix-ui/utils",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -19,5 +19,13 @@
   },
   "devDependencies": {
     "parcel": "^2.0.0-beta.1"
+  },
+  "homepage": "https://radix-ui.com/primitives",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radix-ui/primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/radix-ui/primitives/issues"
   }
 }

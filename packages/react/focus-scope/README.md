@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @interop-ui/react-focus-scope
+$ yarn add @radix-ui/react-focus-scope
 # or
-$ npm install @interop-ui/react-focus-scope
+$ npm install @radix-ui/react-focus-scope
 ```
 
 ## Usage
