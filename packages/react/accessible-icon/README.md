@@ -10,4 +10,4 @@ $ npm install @interop-ui/react-accessible-icon
 
 ## Usage
 
-View docs [here](https://radix-ui.com/primitives/docs/components/accessible-icon).
+View docs [here](https://radix-ui.com/primitives/docs/utilities/accessible-icon).

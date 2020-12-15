@@ -10,4 +10,4 @@ $ npm install @interop-ui/react-portal
 
 ## Usage
 
-View docs [here](https://radix-ui.com/primitives/docs/components/portal).
+View docs [here](https://radix-ui.com/primitives/docs/utilities/portal).

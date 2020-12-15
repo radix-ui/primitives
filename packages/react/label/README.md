@@ -10,4 +10,4 @@ $ npm install @interop-ui/react-label
 
 ## Usage
 
-View docs [here](https://radix-ui.com/primitives/docs/components/label).
+View docs [here](https://radix-ui.com/primitives/docs/utilities/label).
