@@ -15,7 +15,7 @@ export const Styled = () => (
     <Label>
       Label{' '}
       <Checkbox as={StyledRoot}>
-        <CheckboxIndicator as={Indicator} />
+        <CheckboxIndicator as={StyledIndicator} />
       </Checkbox>
     </Label>
   </>
@@ -37,7 +37,7 @@ export const Controlled = () => {
         onCheckedChange={(event) => setChecked(event.target.checked)}
         id="randBox"
       >
-        <CheckboxIndicator as={Indicator} />
+        <CheckboxIndicator as={StyledIndicator} />
       </Checkbox>
     </>
   );
@@ -54,7 +54,7 @@ export const Indeterminate = () => {
           checked={checked}
           onCheckedChange={(event) => setChecked(event.target.checked)}
         >
-          <CheckboxIndicator as={Indicator} indeterminate={checked === 'indeterminate'} />
+          <CheckboxIndicator as={StyledIndicator} />
         </Checkbox>
       </p>
 
@@ -85,7 +85,7 @@ export const WithinForm = () => {
       <p>checked: {String(checked)}</p>
 
       <Checkbox as={StyledRoot}>
-        <CheckboxIndicator as={Indicator} />
+        <CheckboxIndicator as={StyledIndicator} />
       </Checkbox>
     </form>
   );
@@ -122,15 +122,18 @@ const StyledRoot = styled('button', {
 });
 
 const StyledIndicator = styled('span', {
+  backgroundColor: '$red',
   display: 'block',
   width: 20,
-  height: 20,
-  backgroundColor: '$red',
-});
 
-const Indicator = ({ indeterminate, ...props }: any) => (
-  <StyledIndicator {...props} css={{ height: indeterminate ? 4 : undefined }} />
-);
+  '&[data-state="indeterminate"]': {
+    height: 4,
+  },
+
+  '&[data-state="checked"]': {
+    height: 20,
+  },
+});
 
 const fadeIn = css.keyframes({
   from: { opacity: 0 },
