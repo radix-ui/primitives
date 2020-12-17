@@ -13,6 +13,7 @@
     "test:ci": "jest --ci",
     "storybook": "start-storybook -p 9009 --ci",
     "dev": "yarn storybook",
+    "changes": "changeset",
     "build-storybook": "build-storybook",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
@@ -30,6 +31,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@changesets/changelog-github": "^0.2.7",
+    "@changesets/cli": "^2.12.0",
     "@stitches/react": "canary",
     "@storybook/addon-storysource": "6.1.0-beta.4",
     "@storybook/react": "6.1.0-beta.4",
