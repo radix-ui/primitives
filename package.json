@@ -14,6 +14,8 @@
     "storybook": "start-storybook -p 9009 --ci",
     "dev": "yarn storybook",
     "changes": "changeset",
+    "changes:bump": "yarn changeset version",
+    "changes:pub": "yarn changeset publish",
     "build-storybook": "build-storybook",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
