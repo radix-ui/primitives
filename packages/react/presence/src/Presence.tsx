@@ -38,6 +38,7 @@ type PresenceState = { value: 'mounted' | 'unmounted' | 'unmountSuspended'; cont
 function usePresence(present: boolean) {
   const [node, setNode] = React.useState<HTMLElement>();
   const [styles, setStyles] = React.useState<CSSStyleDeclaration>();
+  const prevPresentRef = React.useRef(present);
   const prevAnimationNameRef = React.useRef<string>();
   const { state, send } = useStateMachine<{}, PresenceEvent, PresenceState>({
     id: 'presence',
@@ -85,8 +86,10 @@ function usePresence(present: boolean) {
        * computed styles) because there is no `animationrun` event and `animationstart`
        * fires after `animation-delay` has expired which would be too late.
        */
+      const wasPresent = prevPresentRef.current;
       const isAnimating = prevAnimationName !== currentAnimationName;
-      if (isAnimating) {
+
+      if (wasPresent && isAnimating) {
         send('ANIMATION_OUT');
       } else {
         // wait in case a `transitionrun` event fires
@@ -94,6 +97,7 @@ function usePresence(present: boolean) {
       }
     }
 
+    prevPresentRef.current = present;
     return cancelWaitForAfterNextFrame;
   }, [present, styles, send]);
 
