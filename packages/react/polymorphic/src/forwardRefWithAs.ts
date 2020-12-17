@@ -49,6 +49,8 @@ interface ForwardRefExoticComponentWithAs<
   <As extends React.ElementType<any>>(
     props: MergeWithDOMProps<As, OwnProps & { as: As }>
   ): JSX.Element;
+
+  displayName: string;
 }
 
 /* -------------------------------------------------------------------------------------------------
