@@ -23,6 +23,18 @@ Please follow our [contributing guidelines](./CONTRIBUTING.md).
 - Benoit Grelard ([@benoitgrelard](https://twitter.com/benoitgrelard)) - [Modulz](https://modulz.app)
 - Jenna Smith ([@jjenzz](https://twitter.com/jjenzz)) - [Modulz](https://modulz.app)
 - Chance Strickland ([@chancethedev](https://twitter.com/chancethedev)) - [Modulz](https://modulz.app)
+- Pedro Duarte ([@peduarte](https://twitter.com/peduarte)) - [Modulz](https://modulz.app)
+
+---
+
+## Community
+
+- Pedro Duarte ([@peduarte](https://twitter.com/peduarte)) - [Modulz](https://modulz.app)
+- Colm Tuite ([@colmtuite](https://twitter.com/colmtuite)) - [Modulz](https://modulz.app)
+
+- [Discord](https://discord.com/invite/7Xb99uG) - To get involved with the Radix community, ask questions and share tips.
+- [Twitter](https://twitter.com/radix_ui) - To receive updates, announcements, blog posts, and general Radix tips.
+
 
 ---
 
