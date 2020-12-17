@@ -1,5 +1,5 @@
 import React from 'react';
-import { getPartDataAttrObj, removePartDataAttrObj } from '@radix-ui/utils';
+import { getPartDataAttrObj } from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -76,7 +76,7 @@ const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps
       <Collapsible
         {...accordionItemProps}
         {...getPartDataAttrObj(ITEM_NAME)}
-        {...removePartDataAttrObj(Collapsible.displayName)}
+        {...getPartDataAttrObj(Collapsible.displayName!, null)}
         ref={forwardedRef}
         data-state={open ? 'open' : 'closed'}
         data-disabled={disabled || undefined}
@@ -147,7 +147,7 @@ const AccordionButton = forwardRefWithAs<typeof CollapsibleButton>((props, forwa
     <CollapsibleButton
       {...buttonProps}
       {...getPartDataAttrObj(BUTTON_NAME)}
-      {...removePartDataAttrObj(CollapsibleButton.displayName)}
+      {...getPartDataAttrObj(CollapsibleButton.displayName!, null)}
       ref={composedRefs}
       aria-disabled={itemContext.open || undefined}
       id={itemContext.buttonId}
@@ -172,7 +172,7 @@ const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent>((props, forwa
     <CollapsibleContent
       {...props}
       {...getPartDataAttrObj(PANEL_NAME)}
-      {...removePartDataAttrObj(CollapsibleContent.displayName)}
+      {...getPartDataAttrObj(CollapsibleContent.displayName!, null)}
       ref={forwardedRef}
       role="region"
       aria-labelledby={itemContext.buttonId}

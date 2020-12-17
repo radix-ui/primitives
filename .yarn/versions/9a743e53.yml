@@ -1,6 +1,5 @@
 releases:
   "@radix-ui/react-accordion": patch
-  "@radix-ui/react-polymorphic": patch
   "@radix-ui/utils": patch
 
 declined:
