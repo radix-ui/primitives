@@ -2,8 +2,11 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v[0-9]*'
+    branches:
+      - changelogs
+      - 'releases/*'
+    # tags:
+    #   - 'v*'
 
 jobs:
   build:
