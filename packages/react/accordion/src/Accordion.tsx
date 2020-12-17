@@ -224,6 +224,8 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
       ...accordionProps
     } = props;
 
+    console.log('accordion');
+
     const buttonNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionButton>>>(new Set());
     const accordionRef = React.useRef<React.ElementRef<typeof Accordion>>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
