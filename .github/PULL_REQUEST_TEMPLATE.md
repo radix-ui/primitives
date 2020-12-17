@@ -5,6 +5,7 @@
 - [ ] Add or edit tests to reflect the change (run `yarn test`).
 - [ ] Add or edit Storybook examples to reflect the change (run `yarn start`).
 - [ ] Add documentation to support any new features.
+- [ ] Add a brief overview of the change in `RELEASE.md`.
 
 This pull request:
 

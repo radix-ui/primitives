@@ -2,11 +2,8 @@ name: Release
 
 on:
   push:
-    branches:
-      - changelogs
-      - 'releases/*'
-    # tags:
-    #   - 'v*'
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -23,6 +20,6 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body_path: ./current-release.md
+          body_path: ./RELEASE.md
           draft: false
           prerelease: false

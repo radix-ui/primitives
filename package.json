@@ -22,7 +22,8 @@
     "clean": "yarn workspaces foreach -pv --exclude primitives run clean",
     "reset": "yarn clean && rm -rf .yarn/cache node_modules",
     "bump": "yarn version apply --all",
-    "bump:check": "yarn version check"
+    "bump:check": "yarn version check",
+    "create-release-notes": "cp scripts/release-template.md RELEASE.md"
   },
   "dependencies": {
     "react": "^17.0.1",
