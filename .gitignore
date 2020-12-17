@@ -6,6 +6,7 @@ test-output.*
 .cache
 .parcel-cache
 storybook-static
+.env
 
 # Yarn 2 build artifacts
 # https://yarnpkg.com/advanced/qa#which-files-should-be-gitignored
