@@ -160,12 +160,12 @@ function AccordionTest(props: React.ComponentProps<typeof Accordion.Root>) {
   return (
     <Accordion.Root data-testid="container" {...props}>
       {ITEMS.map((val) => (
-        <Accordion.AccordionItem value={val} key={val} data-testid={`item-${val.toLowerCase()}`}>
+        <Accordion.Item value={val} key={val} data-testid={`item-${val.toLowerCase()}`}>
           <Accordion.Header data-testid={`header-${val.toLowerCase()}`}>
             <Accordion.Button>Button {val}</Accordion.Button>
           </Accordion.Header>
-          <Accordion.AccordionPanel>Panel {val}</Accordion.AccordionPanel>
-        </Accordion.AccordionItem>
+          <Accordion.Panel>Panel {val}</Accordion.Panel>
+        </Accordion.Item>
       ))}
     </Accordion.Root>
   );
