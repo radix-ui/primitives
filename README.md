@@ -16,7 +16,7 @@ For full documentation, visit [radix-ui.com/primitives](https://radix-ui.com/pri
 
 ## Contributing
 
-Please follow our [contributing guidelines](.github/CONTRIBUTING.md).
+Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 
 ## Authors
 
