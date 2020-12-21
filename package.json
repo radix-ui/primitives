@@ -138,7 +138,9 @@
   },
   "lint-staged": {
     "*.(js|ts|tsx)": [
-      "yarn lint --fix",
+      "yarn lint --fix"
+    ],
+    "*.(ts|tsx)": [
       "bash -c tsc --noEmit"
     ]
   },
