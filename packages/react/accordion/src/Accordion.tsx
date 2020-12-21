@@ -229,6 +229,7 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
 
     console.log('cooooool');
+    console.log('cooooool hello');
     let x;
 
     const [value, setValue] = useControlledState({
