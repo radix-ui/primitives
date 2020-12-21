@@ -53,10 +53,11 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "2.x",
-    "husky": "^4.2.5",
+    "husky": "^4.3.6",
     "jest": "^26.4.0",
     "jest-axe": "^3.5.0",
     "jest-watch-typeahead": "^0.6.0",
+    "lint-staged": "^10.5.3",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "react-test-renderer": "^17.0.1",
@@ -131,8 +132,11 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --pattern \"packages/*\" --staged && yarn lint --fix && tsc"
+      "pre-commit": "pretty-quick --pattern \"packages/*\" --staged && lint-staged && tsc"
     }
+  },
+  "lint-staged": {
+    "*.(js|ts|tsx)": "yarn lint --fix"
   },
   "resolutions": {
     "@types/styled-system__core": "npm:@peduarte/styled-system__core@*"
