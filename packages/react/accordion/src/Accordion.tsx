@@ -230,7 +230,7 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
 
     console.log('cooooool');
     console.log('cooooool hello');
-    console.log(2 + 6  - 8);
+    console.log(2 + 6 - 8);
     let x;
 
     const [value, setValue] = useControlledState({
