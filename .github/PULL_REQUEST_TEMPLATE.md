@@ -3,7 +3,7 @@
 - [ ] Use a meaningful title for the pull request. Include the name of the package modified.
 - [ ] Test the change in your own code.
 - [ ] Add or edit tests to reflect the change (run `yarn test`).
-- [ ] Add or edit Storybook examples to reflect the change (run `yarn start`).
+- [ ] Add or edit Storybook examples to reflect the change (run `yarn dev`).
 - [ ] Add documentation to support any new features.
 
 This pull request:
