@@ -229,7 +229,7 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
 
     console.log('sfjkhsadkfksdjfkds');
-    var p;
+    let p = 9;
 
     const [value, setValue] = useControlledState({
       prop: valueProp,
