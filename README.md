@@ -16,7 +16,7 @@ For full documentation, visit [radix-ui.com/primitives](https://radix-ui.com/pri
 
 ## Contributing
 
-Please follow our [contributing guidelines](./CONTRIBUTING.md).
+Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 
 ## Authors
 
@@ -42,4 +42,4 @@ Please follow our [contributing guidelines](./CONTRIBUTING.md).
 
 Licensed under the MIT License, Copyright © 2020-present [Modulz](https://modulz.app).
 
-See [LICENSE](./LICENSE.md) for more information.
+See [LICENSE](./LICENSE) for more information.
