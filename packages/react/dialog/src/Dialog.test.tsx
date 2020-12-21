@@ -12,12 +12,12 @@ const OVERLAY_TEST_ID = 'test-overlay';
 
 const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
   <Dialog.Root {...props}>
-    <Dialog.DialogTrigger>{OPEN_TEXT}</Dialog.DialogTrigger>
-    <Dialog.DialogOverlay data-testid={OVERLAY_TEST_ID} />
-    <Dialog.DialogContent>
+    <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+    <Dialog.Overlay data-testid={OVERLAY_TEST_ID} />
+    <Dialog.Content>
       <p>{INNER_TEXT}</p>
       <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
-    </Dialog.DialogContent>
+    </Dialog.Content>
   </Dialog.Root>
 );
 
