@@ -228,6 +228,9 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
     const accordionRef = React.useRef<React.ElementRef<typeof Accordion>>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
 
+    console.log('cooooool');
+    let x;
+
     const [value, setValue] = useControlledState({
       prop: valueProp,
       defaultProp: defaultValue,

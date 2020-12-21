@@ -139,7 +139,7 @@
   "lint-staged": {
     "*.(js|ts|tsx)": [
       "yarn lint --fix",
-      "tsc --noEmit"
+      "bash -c tsc --noEmit"
     ]
   },
   "resolutions": {
