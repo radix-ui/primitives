@@ -133,11 +133,14 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --pattern \"packages/*\" --staged && lint-staged && tsc"
+      "pre-commit": "pretty-quick --pattern \"packages/*\" --staged && lint-staged"
     }
   },
   "lint-staged": {
-    "*.(js|ts|tsx)": "yarn lint --fix"
+    "*.(js|ts|tsx)": [
+      "yarn lint --fix",
+      "tsc --noEmit"
+    ]
   },
   "resolutions": {
     "@types/styled-system__core": "npm:@peduarte/styled-system__core@*"
