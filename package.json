@@ -133,15 +133,12 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
+      "pre-commit": "pretty-quick --staged && lint-staged",
       "pre-push": "yarn types:check"
     }
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "prettier --write",
-      "eslint --quiet --fix --cache"
-    ]
+    "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
   },
   "resolutions": {
     "@types/styled-system__core": "npm:@peduarte/styled-system__core@*"
