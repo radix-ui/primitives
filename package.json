@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "lint": "eslint packages --ext .js,.ts,.tsx",
+    "types:check": "tsc --skipLibCheck --noEmit",
     "test": "jest",
     "test:ci": "jest --ci",
     "storybook": "start-storybook -p 9009 --ci",
@@ -132,8 +133,15 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged && lint-staged"
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn types:check"
     }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "prettier --write",
+      "eslint --quiet --fix --cache"
+    ]
   },
   "resolutions": {
     "@types/styled-system__core": "npm:@peduarte/styled-system__core@*"
