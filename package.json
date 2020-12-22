@@ -4,8 +4,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "workspaces": [
-    "packages/core/*",
-    "packages/react/*"
+    "packages/*/*"
   ],
   "scripts": {
     "lint": "eslint packages --ext .js,.ts,.tsx",
@@ -15,10 +14,8 @@
     "storybook": "start-storybook -p 9009 --ci",
     "dev": "yarn storybook",
     "build-storybook": "build-storybook",
-    "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
-    "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
+    "build": "make build",
     "build:packages": "parcel build packages/*/*",
-    "build:cleanup": "mv tsconfig.json tsconfig.production.json && mv tsconfig.tmp.json tsconfig.json",
     "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude primitives npm publish --tolerate-republish --access public",
     "clean": "yarn workspaces foreach -pv --exclude primitives run clean",
     "reset": "yarn clean && rm -rf .yarn/cache node_modules",
