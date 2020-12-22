@@ -21,9 +21,6 @@
     "@radix-ui/utils": "workspace:*",
     "csstype": "^3.0.4"
   },
-  "devDependencies": {
-    "parcel": "^2.0.0-beta.1"
-  },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
     "type": "git",
