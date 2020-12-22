@@ -24,7 +24,7 @@ type GetPlacementDataOptions = {
   alignOffset?: number;
   /** An option to turn on/off the collision handling (default: true) */
   shouldAvoidCollisions?: boolean;
-  /** The rect which represent the boundaries for collision checks */
+  /** The rect which represents the boundaries for collision checks */
   collisionBoundariesRect?: ClientRect;
   /** The tolerance used for collisions, ie. if we want them to trigger a bit earlier (default: 0) */
   collisionTolerance?: number;
@@ -107,7 +107,7 @@ export function getPlacementData({
   // create a new rect as if element had been moved to new placement
   const popperRect = makeRect(popperSize, popperPoint);
 
-  // create a bew rect representing the collision boundaries but taking into account any added tolerance
+  // create a new rect representing the collision boundaries but taking into account any added tolerance
   const collisionBoundariesRectWithTolerance = contractRect(
     collisionBoundariesRect,
     collisionTolerance

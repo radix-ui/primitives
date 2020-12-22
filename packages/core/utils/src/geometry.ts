@@ -63,7 +63,7 @@ function getOppositeSide(side: Side): Side {
 function getCollisions(
   /** The rect to test collisions against */
   rect: ClientRect,
-  /** The rect which represent the boundaries for collision checks */
+  /** The rect which represents the boundaries for collision checks */
   collisionBoundariesRect: ClientRect
 ) {
   return {

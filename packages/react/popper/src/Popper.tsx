@@ -168,15 +168,16 @@ function useWindowSize() {
   React.useEffect(() => {
     let debounceTimerId: number;
 
-    function handleResize() {
-      window.clearTimeout(debounceTimerId);
-      debounceTimerId = window.setTimeout(
-        () => setWindowSize({ width: window.innerWidth, height: window.innerHeight }),
-        WINDOW_RESIZE_DEBOUNCE_WAIT_IN_MS
-      );
+    function updateWindowSize() {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     }
 
-    handleResize();
+    function handleResize() {
+      window.clearTimeout(debounceTimerId);
+      debounceTimerId = window.setTimeout(updateWindowSize, WINDOW_RESIZE_DEBOUNCE_WAIT_IN_MS);
+    }
+
+    updateWindowSize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
