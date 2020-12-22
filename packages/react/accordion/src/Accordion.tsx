@@ -284,7 +284,7 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
       [disabled, value, setValue]
     );
 
-    console.log('I am a string');
+    console.log('I am a string', 'Me toooo');
 
     return (
       <Comp
