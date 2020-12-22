@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "license": "MIT",
   "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
+  "main": "dist/radix-ui-utils.cjs.js",
+  "module": "dist/radix-ui-utils.esm.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
@@ -12,13 +12,9 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
-  },
-  "devDependencies": {
-    "parcel": "^2.0.0-beta.1"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {

@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "license": "MIT",
   "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
+  "main": "dist/radix-ui-react-utils.cjs.js",
+  "module": "dist/radix-ui-react-utils.esm.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
@@ -12,7 +12,6 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
@@ -23,8 +22,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^10.4.8",
-    "@types/resize-observer-browser": "^0.1.4",
-    "parcel": "^2.0.0-beta.1"
+    "@types/resize-observer-browser": "^0.1.4"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

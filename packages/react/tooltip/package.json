@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "license": "MIT",
   "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
+  "main": "dist/radix-ui-react-tooltip.cjs.js",
+  "module": "dist/radix-ui-react-tooltip.esm.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
@@ -12,7 +12,6 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
     "version": "yarn version",
     "prepublish": "yarn clean && yarn build"
@@ -24,9 +23,6 @@
     "@radix-ui/react-utils": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*",
     "@radix-ui/utils": "workspace:*"
-  },
-  "devDependencies": {
-    "parcel": "^2.0.0-beta.1"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

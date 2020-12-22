@@ -17,7 +17,7 @@
     "build-storybook": "build-storybook",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
-    "build:packages": "yarn workspaces foreach -t --exclude primitives run build",
+    "build:packages": "preconstruct build",
     "build:cleanup": "mv tsconfig.json tsconfig.production.json && mv tsconfig.tmp.json tsconfig.json",
     "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude primitives npm publish --tolerate-republish --access public",
     "clean": "yarn workspaces foreach -pv --exclude primitives run clean",
@@ -31,7 +31,8 @@
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-typescript": "^7.12.7",
     "@preconstruct/cli": "^2.0.1",
     "@stitches/react": "canary",
     "@storybook/addon-storysource": "6.1.0-beta.4",
@@ -41,7 +42,6 @@
     "@types/eslint": "^7",
     "@types/jest": "^26.0.10",
     "@types/jest-axe": "^3.5.0",
-    "@types/parcel-bundler": "^1.12.1",
     "@types/react": "^16.9.55",
     "@types/react-dom": "^16.9.9",
     "@types/react-test-renderer": "^16.9.3",
