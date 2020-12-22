@@ -45,6 +45,11 @@ describe('given a default AccessibleIcon', () => {
     const svg = rendered.getByTestId('icon');
     expect(svg.getAttribute('aria-hidden')).toBe('true');
   });
+
+  it('should set focusable attribute on the child to false', () => {
+    const svg = rendered.getByTestId('icon');
+    expect(svg.getAttribute('focusable')).toBe('false');
+  });
 });
 
 describe('given an AccessibleIcon without children', () => {
