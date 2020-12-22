@@ -23,7 +23,8 @@
     "clean": "yarn workspaces foreach -pv --exclude primitives run clean",
     "reset": "yarn clean && rm -rf .yarn/cache node_modules",
     "bump": "yarn version apply --all",
-    "bump:check": "yarn version check"
+    "bump:check": "yarn version check",
+    "postinstall": "preconstruct dev"
   },
   "dependencies": {
     "react": "^17.0.1",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@preconstruct/cli": "^2.0.1",
     "@stitches/react": "canary",
     "@storybook/addon-storysource": "6.1.0-beta.4",
     "@storybook/react": "6.1.0-beta.4",
@@ -142,5 +144,11 @@
   },
   "resolutions": {
     "@types/styled-system__core": "npm:@peduarte/styled-system__core@*"
+  },
+  "preconstruct": {
+    "packages": [
+      "packages/core/*",
+      "packages/react/*"
+    ]
   }
 }
