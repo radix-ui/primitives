@@ -15271,6 +15271,7 @@ fsevents@^1.2.7:
     jest-axe: ^3.5.0
     jest-watch-typeahead: ^0.6.0
     lint-staged: ^10.5.3
+    parcel: ^2.0.0-beta.1
     prettier: ^2.0.5
     pretty-quick: ^2.0.1
     react: ^17.0.1
