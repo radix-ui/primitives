@@ -15,7 +15,6 @@
     "dev": "yarn storybook",
     "build-storybook": "build-storybook",
     "build": "make build",
-    "build:packages": "parcel build packages/*/*",
     "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude primitives npm publish --tolerate-republish --access public",
     "clean": "yarn workspaces foreach -pv --exclude primitives run clean",
     "reset": "yarn clean && rm -rf .yarn/cache node_modules",
