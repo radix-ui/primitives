@@ -5,7 +5,6 @@
   "source": "src/index.ts",
   "main": "dist/radix-ui-utils.cjs.js",
   "module": "dist/radix-ui-utils.esm.js",
-  "types": "dist/declarations/index.d.ts",
   "files": [
     "dist",
     "README.md"

@@ -5,7 +5,6 @@
   "source": "src/index.ts",
   "main": "dist/radix-ui-react-alert-dialog.cjs.js",
   "module": "dist/radix-ui-react-alert-dialog.esm.js",
-  "types": "dist/declarations/index.d.ts",
   "files": [
     "src",
     "dist"

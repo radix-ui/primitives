@@ -5,7 +5,6 @@
   "source": "src/index.ts",
   "main": "dist/radix-ui-react-avatar.cjs.js",
   "module": "dist/radix-ui-react-avatar.esm.js",
-  "types": "dist/declarations/index.d.ts",
   "files": [
     "dist",
     "README.md"

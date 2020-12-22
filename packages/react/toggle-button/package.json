@@ -5,7 +5,6 @@
   "source": "src/index.ts",
   "main": "dist/radix-ui-react-toggle-button.cjs.js",
   "module": "dist/radix-ui-react-toggle-button.esm.js",
-  "types": "dist/declarations/index.d.ts",
   "files": [
     "dist",
     "README.md"
