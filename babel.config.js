@@ -1,5 +1,4 @@
 module.exports = {
-  babelVersion: 7,
   presets: [
     '@babel/preset-typescript',
     '@babel/preset-react',

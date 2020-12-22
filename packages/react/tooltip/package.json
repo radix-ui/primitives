@@ -5,7 +5,7 @@
   "source": "src/index.ts",
   "main": "dist/radix-ui-react-tooltip.cjs.js",
   "module": "dist/radix-ui-react-tooltip.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/declarations/index.d.ts",
   "files": [
     "dist",
     "README.md"
