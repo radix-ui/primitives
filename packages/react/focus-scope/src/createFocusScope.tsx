@@ -52,9 +52,7 @@ function createFocusScope(container: HTMLElement) {
     if (focusScope.paused) return;
 
     requestAnimationFrame(() => {
-      // Use document.activeElement instead of event.relatedTarget because it is more reliable if an
-      // iframe receives focus.
-      const elementReceivingFocus = document.activeElement;
+      const elementReceivingFocus = event.relatedTarget as Element | null;
       if (!container.contains(elementReceivingFocus)) {
         trapFocus(container, elementReceivingFocus);
       }
