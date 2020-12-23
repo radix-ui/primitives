@@ -27,26 +27,38 @@ function createFocusScope(container: HTMLElement) {
   }
 
   function addListeners() {
-    document.addEventListener('focusout', handleFocusInOrFocusOut, { capture: true });
-    document.addEventListener('focusin', handleFocusInOrFocusOut, { capture: true });
+    document.addEventListener('focusout', handleFocusOut, { capture: true });
+    document.addEventListener('focusin', handleFocusIn, { capture: true });
   }
 
   function removeListeners() {
-    document.removeEventListener('focusout', handleFocusInOrFocusOut, { capture: true });
-    document.removeEventListener('focusin', handleFocusInOrFocusOut, { capture: true });
+    document.removeEventListener('focusout', handleFocusOut, { capture: true });
+    document.removeEventListener('focusin', handleFocusIn, { capture: true });
   }
 
-  function handleFocusInOrFocusOut(event: FocusEvent) {
+  function handleFocusIn(event: FocusEvent) {
     if (focusScope.paused) return;
 
-    const isFocusOut = event.type === 'focusout';
-    const focusedTarget = (isFocusOut ? event.relatedTarget : event.target) as Element | null;
+    const focusedTarget = event.target as Element | null;
     if (!container.contains(focusedTarget)) {
       // we're intercepting the event and will re-focus in
       // so we also pretend that the event didn't happen by stopping propagation.
       event.stopImmediatePropagation();
       trapFocus(container, focusedTarget);
     }
+  }
+
+  function handleFocusOut(event: FocusEvent) {
+    if (focusScope.paused) return;
+
+    requestAnimationFrame(() => {
+      // Use document.activeElement instead of event.relatedTarget because it is more reliable if an
+      // iframe receives focus.
+      const elementReceivingFocus = document.activeElement;
+      if (!container.contains(elementReceivingFocus)) {
+        trapFocus(container, elementReceivingFocus);
+      }
+    });
   }
 
   // create focus scope instance

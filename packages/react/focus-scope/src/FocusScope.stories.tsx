@@ -1,13 +1,35 @@
 import React from 'react';
 import { FocusScope } from './FocusScope';
+import { composeEventHandlers } from '@radix-ui/react-utils';
 
 export default { title: 'Components/FocusScope' };
 
 export const Basic = () => {
   const [trapped, setTrapped] = React.useState(false);
+  const [highlightAction, setHighlightAction] = React.useState<'null' | 'blur' | 'focus'>('null');
+  const InputWrapper =
+    highlightAction === 'blur'
+      ? BlurAnnouncement
+      : highlightAction === 'focus'
+      ? FocusAnnouncement
+      : React.Fragment;
 
   return (
     <>
+      <RadioGroup
+        name="highlight"
+        checked={highlightAction}
+        onChange={(newValue) => {
+          setHighlightAction(newValue as any);
+        }}
+      >
+        <Legend>Highlight focus changes</Legend>
+        <Radio value="null">Never</Radio>
+        <Radio value="blur">On Blur</Radio>
+        <Radio value="focus">On Focus</Radio>
+      </RadioGroup>
+      <hr />
+
       <div>
         <button type="button" onClick={() => setTrapped(true)}>
           Trap
@@ -29,12 +51,20 @@ export const Basic = () => {
                 border: '2px solid',
               }}
             >
-              <input type="text" placeholder="First name" />
-              <input type="text" placeholder="Last name" />
-              <input type="number" placeholder="Age" />
-              <button type="button" onClick={() => setTrapped(false)}>
-                Close
-              </button>
+              <InputWrapper>
+                <input type="text" placeholder="First name" />
+              </InputWrapper>
+              <InputWrapper>
+                <input type="text" placeholder="Last name" />
+              </InputWrapper>
+              <InputWrapper>
+                <input type="number" placeholder="Age" />
+              </InputWrapper>
+              <InputWrapper>
+                <button type="button" onClick={() => setTrapped(false)}>
+                  Close
+                </button>
+              </InputWrapper>
             </form>
           )}
         </FocusScope>
@@ -264,3 +294,162 @@ export const WithOptions = () => {
     </div>
   );
 };
+
+function FocusAnnouncement({ children }: { children: React.ReactElement }) {
+  const [focused, setFocused] = useSelfDestructiveToggleState(false);
+  return (
+    <div style={{ position: 'relative' }}>
+      {React.cloneElement(children, {
+        onFocus: composeEventHandlers(
+          (children.props as any).onFocus,
+          (event: React.FocusEvent) => {
+            setFocused(true);
+          }
+        ),
+      })}
+      <AnnouncementTag color="green" on={focused}>
+        Focused
+      </AnnouncementTag>
+    </div>
+  );
+}
+
+function BlurAnnouncement({ children }: { children: React.ReactElement }) {
+  const [blurred, setBlurred] = useSelfDestructiveToggleState(false);
+  return (
+    <div style={{ position: 'relative' }}>
+      {React.cloneElement(children, {
+        onBlur: composeEventHandlers((children.props as any).onBlur, (event: React.FocusEvent) => {
+          setBlurred(true);
+        }),
+      })}
+      <AnnouncementTag color="crimson" on={blurred}>
+        Blurred
+      </AnnouncementTag>
+    </div>
+  );
+}
+
+function AnnouncementTag({
+  children,
+  on,
+  color,
+}: {
+  children: React.ReactNode;
+  on: boolean;
+  color: string;
+}) {
+  return (
+    <span
+      style={{
+        color: color,
+        position: 'absolute',
+        top: 'calc(100% + 0.25em)',
+        fontSize: '12px',
+        fontFamily: 'sans-serif',
+        left: 0,
+        opacity: on ? 1 : 0,
+        transition: on ? undefined : 'opacity  1s ease-in-out',
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function useSelfDestructiveToggleState(
+  initialState: boolean,
+  opts: { timeout?: number } = {}
+): [boolean, React.Dispatch<React.SetStateAction<boolean>>] {
+  const { timeout = 500 } = opts;
+  const [on, setOn] = React.useState(initialState);
+  const savedTimeoutValue = React.useRef(timeout);
+  React.useEffect(() => {
+    savedTimeoutValue.current = timeout;
+  });
+  React.useEffect(() => {
+    const timeout = savedTimeoutValue.current;
+    let mounted = true;
+    if (on) {
+      const timeoutId = window.setTimeout(() => {
+        if (mounted) {
+          setOn(false);
+        }
+      }, timeout);
+      return () => {
+        mounted = false;
+        window.clearTimeout(timeoutId);
+      };
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [on]);
+
+  return [on, setOn];
+}
+
+const RadioGroupContext = React.createContext<{
+  name?: string;
+  checked?: string;
+  getChangeHandler?(value: string): (event: React.ChangeEvent<HTMLInputElement>) => void;
+}>({});
+
+function RadioGroup({
+  children,
+  name,
+  checked,
+  onChange,
+  ...props
+}: Omit<React.ComponentProps<'fieldset'>, 'onChange'> & {
+  name: string;
+  checked: string;
+  onChange(value: string): void;
+}) {
+  function getChangeHandler(value: string) {
+    return function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+      if (event.target.checked) {
+        onChange(value);
+      }
+    };
+  }
+
+  return (
+    <Fieldset {...props}>
+      <RadioGroupContext.Provider value={{ name, checked, getChangeHandler }}>
+        {children}
+      </RadioGroupContext.Provider>
+    </Fieldset>
+  );
+}
+
+function Fieldset({ ...props }: React.ComponentProps<'fieldset'>) {
+  return <fieldset {...props} />;
+}
+
+function Legend({ ...props }: React.ComponentProps<'legend'>) {
+  return <legend {...props} />;
+}
+
+function Radio({ ...props }: Omit<React.ComponentProps<'input'>, 'type'> & { value: string }) {
+  const { name, checked, getChangeHandler } = React.useContext(RadioGroupContext);
+  const handleChange = props.onChange || getChangeHandler?.(props.value);
+  return (
+    <CheckedInput
+      name={name}
+      checked={checked != null ? checked === props.value : undefined}
+      onChange={handleChange}
+      {...props}
+      type="radio"
+    />
+  );
+}
+
+function CheckedInput({ children, ...props }: React.ComponentProps<'input'>) {
+  return (
+    <label style={{ display: 'flex', marginTop: '0.25em' }}>
+      <input {...props} />
+      <span style={{ display: 'inline-block', marginLeft: '0.25em' }}>{children}</span>
+    </label>
+  );
+}
