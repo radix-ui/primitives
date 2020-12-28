@@ -7,6 +7,7 @@ import * as Avatar from './Avatar';
 
 const ROOT_TEST_ID = 'avatar-root';
 const FALLBACK_TEXT = 'AB';
+const IMAGE_ALT_TEXT = 'Fake Avatar';
 const DELAY = 300;
 
 describe('given an Avatar with fallback and no image', () => {
@@ -41,8 +42,9 @@ describe('given an Avatar with fallback and no image', () => {
 
 describe('given an Avatar with fallback and a working image', () => {
   let rendered: RenderResult;
+  let image: HTMLElement | null = null;
+  const orignalGlobalImage = window.Image;
 
-  const orignalImage = window.Image;
   beforeAll(() => {
     jest.useFakeTimers();
     (window.Image as any) = class MockImage {
@@ -59,14 +61,14 @@ describe('given an Avatar with fallback and a working image', () => {
 
   afterAll(() => {
     jest.useRealTimers();
-    window.Image = orignalImage;
+    window.Image = orignalGlobalImage;
   });
 
   beforeEach(() => {
     rendered = render(
       <Avatar.Root data-testid={ROOT_TEST_ID}>
         <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
-        <Avatar.Image data-testid="tst-123">{FALLBACK_TEXT}</Avatar.Image>
+        <Avatar.Image src="/test.jpg" alt={IMAGE_ALT_TEXT} />
       </Avatar.Root>
     );
   });
@@ -77,24 +79,34 @@ describe('given an Avatar with fallback and a working image', () => {
   });
 
   it('should not render the image initially', () => {
-    const image = rendered.queryByRole('img');
+    image = rendered.queryByRole('img');
     expect(image).not.toBeInTheDocument();
   });
 
-  // TODO: MockImage isn't working as expected. Come back and figure out why.
-  // it('should render the image after it has loaded', async () => {
-  //   let image: HTMLElement | null = null;
-  //   await waitFor(() => {
-  //     jest.advanceTimersByTime(DELAY);
-  //   });
-  //   image = rendered.queryByTestId('tst-123');
-  //   expect(image).toBeInTheDocument();
-  // });
+  it('should render the image after it has loaded', async () => {
+    await waitFor(() => {
+      jest.advanceTimersByTime(DELAY);
+    });
+    image = rendered.queryByRole('img');
+    expect(image).toBeInTheDocument();
+  });
 
-  // it('should have a radix attribute on the image', () => {
-  //   const partDataAttr = getPartDataAttr('AvatarImage');
-  //   expect(root).toHaveAttribute(partDataAttr);
-  // });
+  it('should have a radix attribute on the image', async () => {
+    const partDataAttr = getPartDataAttr('AvatarImage');
+    await waitFor(() => {
+      jest.advanceTimersByTime(DELAY);
+    });
+    image = rendered.queryByRole('img');
+    expect(image).toHaveAttribute(partDataAttr);
+  });
+
+  it('should have alt text on the image', async () => {
+    await waitFor(() => {
+      jest.advanceTimersByTime(DELAY);
+    });
+    image = rendered.queryByAltText(IMAGE_ALT_TEXT);
+    expect(image).toBeInTheDocument();
+  });
 });
 
 describe('given an Avatar with fallback and delayed render', () => {
