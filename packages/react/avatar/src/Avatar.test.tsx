@@ -142,5 +142,3 @@ describe('given an Avatar with fallback and delayed render', () => {
     expect(fallback).toBeInTheDocument();
   });
 });
-
-export default EventTarget;
