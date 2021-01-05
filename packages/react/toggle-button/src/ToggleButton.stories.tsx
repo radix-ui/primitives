@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ToggleButton } from './ToggleButton';
+import { ToggleButton, ToggleButtonGroup } from './ToggleButton';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/ToggleButton' };
@@ -13,6 +13,40 @@ export const Controlled = () => {
     <ToggleButton as={StyledRoot} toggled={toggled} onToggledChange={setToggled}>
       {toggled ? 'On' : 'Off'}
     </ToggleButton>
+  );
+};
+
+export const Grouped = () => {
+  return (
+    <ToggleButtonGroup defaultValue={['1']}>
+      <ToggleButton value="1" as={StyledRoot}>
+        Option 1
+      </ToggleButton>
+      <ToggleButton value="2" as={StyledRoot}>
+        Option 2
+      </ToggleButton>
+      <ToggleButton value="3" as={StyledRoot}>
+        Option 3
+      </ToggleButton>
+    </ToggleButtonGroup>
+  );
+};
+
+export const GroupedControlled = () => {
+  const [value, setValue] = React.useState<string[]>(['1']);
+
+  return (
+    <ToggleButtonGroup value={value} onValueChange={setValue}>
+      <ToggleButton value="1" as={StyledRoot}>
+        Option 1
+      </ToggleButton>
+      <ToggleButton value="2" as={StyledRoot}>
+        Option 2
+      </ToggleButton>
+      <ToggleButton value="3" as={StyledRoot}>
+        Option 3
+      </ToggleButton>
+    </ToggleButtonGroup>
   );
 };
 
