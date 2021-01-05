@@ -23,7 +23,7 @@ function makeRect({ width, height }: Size, { x, y }: Point): ClientRect {
  * Creates a new rect (`ClientRect`) based on a given one but contracted by
  * a given amout on each side.
  */
-function contractRect(rect: ClientRect, amount: number) {
+function getContractedRect(rect: ClientRect, amount: number) {
   return makeRect(
     { width: rect.width - amount * 2, height: rect.height - amount * 2 },
     { x: rect.left + amount, y: rect.top + amount }
@@ -78,7 +78,7 @@ export {
   SIDE_OPTIONS,
   ALIGN_OPTIONS,
   makeRect,
-  contractRect,
+  getContractedRect,
   rectEquals,
   getOppositeSide,
   getCollisions,

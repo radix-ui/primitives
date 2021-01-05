@@ -1,5 +1,5 @@
 import * as CSS from 'csstype';
-import { makeRect, getOppositeSide, getCollisions, contractRect } from '@radix-ui/utils';
+import { makeRect, getOppositeSide, getCollisions, getContractedRect } from '@radix-ui/utils';
 
 import type { Axis, Side, Align, Point, Size } from '@radix-ui/utils';
 
@@ -108,7 +108,7 @@ export function getPlacementData({
   const popperRect = makeRect(popperSize, popperPoint);
 
   // create a new rect representing the collision boundaries but taking into account any added tolerance
-  const collisionBoundariesRectWithTolerance = contractRect(
+  const collisionBoundariesRectWithTolerance = getContractedRect(
     collisionBoundariesRect,
     collisionTolerance
   );
