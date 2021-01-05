@@ -3,9 +3,9 @@ import { getPlacementData } from '@radix-ui/popper';
 import { createContext, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getPartDataAttrObj, makeRect } from '@radix-ui/utils';
 
-import type { Side, Align, MeasurableElement } from '@radix-ui/utils';
+import type { Side, Align, Size, MeasurableElement } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -63,6 +63,9 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
 
     const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
 
+    const windowSize = useWindowSize();
+    const collisionBoundariesRect = windowSize ? makeRect(windowSize, { x: 0, y: 0 }) : undefined;
+
     const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
       anchorRect,
       popperSize,
@@ -74,8 +77,9 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
       sideOffset,
       align,
       alignOffset,
-      collisionTolerance,
       shouldAvoidCollisions: avoidCollisions,
+      collisionBoundariesRect,
+      collisionTolerance,
     });
     const isPlaced = placedSide !== undefined;
 
@@ -155,6 +159,31 @@ const PopperArrow = forwardRefWithAs<typeof ArrowPrimitive, PopperArrowOwnProps>
 PopperArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+const WINDOW_RESIZE_DEBOUNCE_WAIT_IN_MS = 100;
+
+function useWindowSize() {
+  const [windowSize, setWindowSize] = React.useState<Size | undefined>(undefined);
+
+  React.useEffect(() => {
+    let debounceTimerId: number;
+
+    function updateWindowSize() {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    }
+
+    function handleResize() {
+      window.clearTimeout(debounceTimerId);
+      debounceTimerId = window.setTimeout(updateWindowSize, WINDOW_RESIZE_DEBOUNCE_WAIT_IN_MS);
+    }
+
+    updateWindowSize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowSize;
+}
 
 const Root = Popper;
 const Arrow = PopperArrow;
