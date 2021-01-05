@@ -11,6 +11,7 @@ export function useSize(
   const [size, setSize] = React.useState<Size | undefined>(undefined);
 
   React.useEffect(() => {
+    console.log('test');
     if (refToObserve.current) {
       const elementToObserve = refToObserve.current;
       const resizeObserver = new ResizeObserver((entries) => {
