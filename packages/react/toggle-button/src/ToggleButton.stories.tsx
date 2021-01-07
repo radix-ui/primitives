@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ToggleButton, ToggleButtonGroup } from './ToggleButton';
+import { ToggleButton, ToggleButtonGroup, ToggleButtonGroupExclusive } from './ToggleButton';
 import { styled } from '../../../../stitches.config';
 
 export default { title: 'Components/ToggleButton' };
@@ -18,7 +18,7 @@ export const Controlled = () => {
 
 export const Grouped = () => {
   return (
-    <ToggleButtonGroup defaultValue={['1']}>
+    <ToggleButtonGroup aria-label="Options" defaultValue={['1']}>
       <ToggleButton value="1" as={StyledRoot}>
         Option 1
       </ToggleButton>
@@ -36,7 +36,11 @@ export const GroupedControlled = () => {
   const [value, setValue] = React.useState<string[]>(['1']);
 
   return (
-    <ToggleButtonGroup value={value} onValueChange={setValue}>
+    <ToggleButtonGroup
+      aria-label="Options"
+      value={value}
+      onValueChange={(val) => setValue(val as any)}
+    >
       <ToggleButton value="1" as={StyledRoot}>
         Option 1
       </ToggleButton>
@@ -47,6 +51,35 @@ export const GroupedControlled = () => {
         Option 3
       </ToggleButton>
     </ToggleButtonGroup>
+  );
+};
+
+export const GroupedControlledExclusive = () => {
+  const [value, setValue] = React.useState<string | null>(null);
+  function handleValueChange(newValue: string | null) {
+    if (newValue === value) {
+      setValue(null);
+    } else {
+      setValue(newValue);
+    }
+  }
+
+  return (
+    <ToggleButtonGroupExclusive
+      aria-label="Options"
+      value={value}
+      onValueChange={handleValueChange}
+    >
+      <ToggleButton value="1" as={StyledRoot}>
+        Option 1
+      </ToggleButton>
+      <ToggleButton value="2" as={StyledRoot}>
+        Option 2
+      </ToggleButton>
+      <ToggleButton value="3" as={StyledRoot}>
+        Option 3
+      </ToggleButton>
+    </ToggleButtonGroupExclusive>
   );
 };
 

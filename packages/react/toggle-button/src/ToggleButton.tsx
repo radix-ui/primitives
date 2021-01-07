@@ -1,35 +1,56 @@
 import * as React from 'react';
-import { useControlledState, composeEventHandlers, useId } from '@radix-ui/react-utils';
-import { getPartDataAttrObj, warning, makeId } from '@radix-ui/utils';
+import {
+  // useControlledState,
+  composeEventHandlers,
+  useId,
+  useCallbackRef,
+} from '@radix-ui/react-utils';
+import { getPartDataAttrObj, warning, makeId, isFunction } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+
+const __DEV__ = !!(process?.env?.NODE_ENV === 'development');
 
 /* -------------------------------------------------------------------------------------------------
  * ToggleButtonGroup
  * -----------------------------------------------------------------------------------------------*/
 
 const GROUP_NAME = 'ToggleButtonGroup';
+const GROUP_EXC_NAME = 'ToggleButtonGroupExclusive';
+const BUTTON_NAME = 'ToggleButton';
 const GROUP_DEFAULT_TAG = 'div';
+const INCORRECT_CONTEXT_ERROR = `A ${BUTTON_NAME} was used in both ${GROUP_EXC_NAME} and ${GROUP_NAME} components. ${BUTTON_NAME} can be used in either ${GROUP_EXC_NAME} or ${GROUP_NAME}, but not both.`;
 
-type SelectionMode = 'multiple' | 'exclusive';
-
-type ToggleButtonGroupContextValue = {
-  value: string[] | undefined;
-  setValue: React.Dispatch<React.SetStateAction<string[] | undefined>>;
-  selectionMode: SelectionMode;
+type ToggleButtonGroupExclusiveContextValue = {
+  value: string | null;
+  setValue:
+    | React.Dispatch<React.SetStateAction<string | null>>
+    | React.Dispatch<React.SetStateAction<string>>;
+  handleChange(value: string | null): void;
 };
 
-const ToggleButtonGroupContext = React.createContext<ToggleButtonGroupContextValue>(null as any);
-ToggleButtonGroupContext.displayName = GROUP_NAME + 'Context';
+type ToggleButtonGroupContextValue = {
+  value: string[];
+  setValue: React.Dispatch<React.SetStateAction<string[]>>;
+  handleChange(value: string): void;
+};
+
+const ToggleButtonGroupExclusiveContext = React.createContext<ToggleButtonGroupExclusiveContextValue | null>(
+  null
+);
+ToggleButtonGroupExclusiveContext.displayName = 'ToggleButtonGroupExclusiveContext';
+const ToggleButtonGroupContext = React.createContext<ToggleButtonGroupContextValue | null>(null);
+ToggleButtonGroupContext.displayName = 'ToggleButtonGroupContext';
+
+type ToggleButtonGroupExclusiveOwnProps = {
+  /** The controlled value of the toggled button */
+  value?: string | null;
+  /** The uncontrolled value of the toggled button */
+  defaultValue?: string;
+  /** A function called when the value of the toggled buttons changes */
+  onValueChange?(value: string | null): void;
+};
 
 type ToggleButtonGroupOwnProps = {
-  /**
-   * Controls how buttons within a group are selected. If set to `"multiple"`, any number of buttons
-   * in a group may be toggled at a time (similar to a checkbox). If `"exclusive"`, only a single
-   * button within a group can be toggled at a time (similar to a radio group).
-   *
-   * (default: `"multiple"`)
-   * */
-  selectionMode?: SelectionMode;
   /** The controlled value of the toggled button */
   value?: string[];
   /** The uncontrolled value of the toggled button */
@@ -37,6 +58,42 @@ type ToggleButtonGroupOwnProps = {
   /** A function called when the value of the toggled buttons changes */
   onValueChange?(value: string[]): void;
 };
+
+const ToggleButtonGroupExclusive = forwardRefWithAs<
+  typeof GROUP_DEFAULT_TAG,
+  ToggleButtonGroupExclusiveOwnProps
+>((props, forwardedRef) => {
+  const {
+    as: Comp = GROUP_DEFAULT_TAG,
+    value: valueProp,
+    defaultValue,
+    onValueChange,
+    children,
+    ...groupProps
+  } = props;
+
+  const [value, setValue] = useControlledState<string | null>({
+    prop: valueProp,
+    defaultProp: defaultValue || null,
+    onChange: onValueChange,
+  });
+
+  const context: ToggleButtonGroupExclusiveContextValue = {
+    setValue,
+    value,
+    handleChange: setValue,
+  };
+
+  return (
+    <Comp {...getPartDataAttrObj(GROUP_EXC_NAME)} role="group" ref={forwardedRef} {...groupProps}>
+      <ToggleButtonGroupExclusiveContext.Provider value={context}>
+        {children}
+      </ToggleButtonGroupExclusiveContext.Provider>
+    </Comp>
+  ) as any;
+});
+
+ToggleButtonGroupExclusive.displayName = GROUP_EXC_NAME;
 
 const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButtonGroupOwnProps>(
   (props, forwardedRef) => {
@@ -46,26 +103,28 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
       defaultValue,
       onValueChange,
       children,
-      selectionMode = 'multiple',
       ...groupProps
     } = props;
 
     const [value, setValue] = useControlledState<string[]>({
       prop: valueProp,
-      defaultProp: defaultValue,
+      defaultProp: defaultValue || [],
       onChange: onValueChange,
+      isEqual: stringArraysAreEqual,
     });
 
-    const context: ToggleButtonGroupContextValue = React.useMemo(
-      () => ({
-        selectionMode,
-        setValue,
-        value,
-      }),
-      [selectionMode, setValue, value]
-    );
+    function handleChange(buttonValue: string) {
+      if (!value || value.length < 1) {
+        return setValue([buttonValue]);
+      }
+      setValue(
+        value.includes(buttonValue)
+          ? value.filter((v) => v !== buttonValue)
+          : value.concat(buttonValue).sort()
+      );
+    }
 
-    useGroupSelectionModeWarning({ selectionMode, valueProp, defaultValue });
+    const context: ToggleButtonGroupContextValue = { setValue, value, handleChange };
 
     return (
       <Comp {...getPartDataAttrObj(GROUP_NAME)} role="group" ref={forwardedRef} {...groupProps}>
@@ -83,7 +142,6 @@ ToggleButtonGroup.displayName = GROUP_NAME;
  * ToggleButton
  * -----------------------------------------------------------------------------------------------*/
 
-const BUTTON_NAME = 'ToggleButton';
 const BUTTON_DEFAULT_TAG = 'button';
 
 type ToggleButtonOwnProps = {
@@ -108,7 +166,7 @@ const ToggleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, ToggleButtonOwn
     const {
       as: Comp = BUTTON_DEFAULT_TAG,
       toggled: toggledProp,
-      defaultToggled = false,
+      defaultToggled,
       onClick,
       onToggledChange,
       children,
@@ -118,27 +176,48 @@ const ToggleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, ToggleButtonOwn
 
     const [_toggled = false, _setToggled] = useControlledState<boolean>({
       prop: toggledProp,
-      onChange: onToggledChange,
-      defaultProp: defaultToggled,
+      onChange: () => {},
+      defaultProp: defaultToggled || false,
     });
 
     const generatedValue = makeId(`toggle-button`, useId());
     const value = valueProp || generatedValue;
 
-    const groupContext = React.useContext(ToggleButtonGroupContext);
-    const toggled = groupContext ? groupContext.value?.includes(value) : _toggled;
-    const setToggled = groupContext
-      ? (toggled: boolean) =>
-          groupContext.setValue((prevValues) =>
-            toggled
-              ? (prevValues || []).filter((val) => val !== value)
-              : groupContext.selectionMode === 'exclusive'
-              ? [value]
-              : (prevValues || []).concat(value)
-          )
-      : _setToggled;
+    const singleGroupContext = React.useContext(ToggleButtonGroupExclusiveContext);
+    const multipleGroupContext = React.useContext(ToggleButtonGroupContext);
+    if (singleGroupContext && multipleGroupContext) {
+      throw Error(INCORRECT_CONTEXT_ERROR);
+    }
 
-    useButtonStateInGroupWarning({ toggledProp, defaultToggled, groupContext });
+    useButtonStateInGroupWarning({
+      toggledProp,
+      defaultToggled,
+      groupContext: singleGroupContext,
+      groupName: 'TODO:',
+    });
+
+    const toggled = !!(singleGroupContext
+      ? singleGroupContext.value === value
+      : multipleGroupContext
+      ? multipleGroupContext.value?.includes(value)
+      : _toggled);
+
+    function setToggled(state: boolean) {
+      if (singleGroupContext || multipleGroupContext) {
+        return (singleGroupContext || multipleGroupContext)!.handleChange(value);
+      }
+      _setToggled(state);
+    }
+
+    const initialRender = React.useRef(true);
+    const stableOnToggleChange = useCallbackRef(onToggledChange);
+    React.useEffect(() => {
+      if (initialRender.current) {
+        initialRender.current = false;
+        return;
+      }
+      stableOnToggleChange(toggled);
+    }, [stableOnToggleChange, toggled]);
 
     return (
       <Comp
@@ -165,51 +244,119 @@ ToggleButton.displayName = BUTTON_NAME;
 
 const Root = ToggleButton;
 const Group = ToggleButtonGroup;
+const GroupExclusive = ToggleButtonGroupExclusive;
 
-export { ToggleButton, ToggleButtonGroup, Group, Root };
-
-function useGroupSelectionModeWarning({
-  valueProp,
-  defaultValue,
-  selectionMode,
-}: {
-  valueProp: string[] | undefined;
-  defaultValue: string[] | undefined;
-  selectionMode: SelectionMode;
-}) {
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    React.useEffect(() => {
-      const isControlled = valueProp !== undefined;
-      const propName = isControlled ? '`value`' : '`defaultValue`';
-      const value = isControlled ? valueProp : defaultValue;
-      warning(
-        !(selectionMode === 'exclusive' && value?.length && value.length > 1),
-        `When \`selectionMode\` is set to \`'exclusive'\`, only a single value can be passed to the ${propName} prop in ${GROUP_NAME}. Check to make sure multiple values are not included in the ${propName} array, or change \`selectionMode\` to \`'inclusive'\` to allow multiple toggled buttons in a ${GROUP_NAME}.`
-      );
-    }, [defaultValue, selectionMode, valueProp]);
-  }
-}
+export { ToggleButton, ToggleButtonGroup, ToggleButtonGroupExclusive, Root, Group, GroupExclusive };
 
 function useButtonStateInGroupWarning({
   toggledProp,
   defaultToggled,
   groupContext,
+  groupName,
 }: {
   toggledProp: boolean | undefined;
   defaultToggled: boolean | undefined;
-  groupContext: ToggleButtonGroupContextValue | null;
+  groupContext: ToggleButtonGroupExclusiveContextValue | null;
+  groupName: string;
 }) {
-  if (process.env.NODE_ENV === 'development') {
+  const isControlled = useIsControlled(toggledProp);
+  if (__DEV__) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     React.useEffect(() => {
-      const isControlled = toggledProp !== undefined;
       const propName = isControlled ? '`toggled`' : '`defaultToggled`';
       const toggled = isControlled ? toggledProp : defaultToggled;
       warning(
         !(groupContext && toggled !== undefined),
-        `A ${BUTTON_NAME} with an explicit ${propName} prop was used inside of a ${GROUP_NAME}. When ${BUTTON_NAME} is used inside of a ${GROUP_NAME}, the ${GROUP_NAME} component is responsible for managing the toggled state of its nested ${BUTTON_NAME} components. Either remove the ${propName} from ${BUTTON_NAME} or remove the ${GROUP_NAME} component if the ${BUTTON_NAME} is unrelated to other surrounding buttons.`
+        `A ${BUTTON_NAME} with an explicit ${propName} prop was used inside of a ${groupName}. When ${BUTTON_NAME} is used inside of a ${groupName}, the ${groupName} component is responsible for managing the toggled state of its nested ${BUTTON_NAME} components. Either remove the ${propName} from ${BUTTON_NAME} or remove the ${groupName} component if the ${BUTTON_NAME} is unrelated to other surrounding buttons.`
       );
-    }, [groupContext, toggledProp, defaultToggled]);
+    }, [groupContext, toggledProp, defaultToggled, groupName, isControlled]);
   }
+}
+
+type UseControlledStateParams<T> = {
+  prop?: T | undefined;
+  defaultProp?: T | undefined;
+  onChange?: (state: T) => void;
+};
+
+type ValueOf<T> = T[keyof T];
+
+function stringArraysAreEqual(arr1: string[] | undefined, arr2: string[] | undefined) {
+  if (arr1 === undefined && arr2 === undefined) return true;
+  if (arr1 === undefined) return false;
+  if (arr2 === undefined) return false;
+  return JSON.stringify(arr1.sort()) === JSON.stringify(arr2.sort());
+}
+
+function useControlledState<T>({
+  prop,
+  defaultProp,
+  onChange,
+  isEqual = defaultIsEqual,
+}: {
+  prop?: T;
+  defaultProp: T;
+  onChange?: (value: T) => void;
+  isEqual?: (prevState: any, nextState: any) => boolean;
+}): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const stableOnChange = useCallbackRef(onChange);
+  const stableIsEqual = useCallbackRef(isEqual);
+  const [state, setState] = React.useState(prop || defaultProp);
+  const stateRef = React.useRef(state);
+  const isControlled = useIsControlled(prop);
+
+  const setValue: React.Dispatch<React.SetStateAction<T>> = React.useCallback(
+    (value) => {
+      function handleChange(value: T) {
+        if (!stableIsEqual(stateRef.current, value)) {
+          stableOnChange(value);
+        }
+        if (!isControlled) {
+          stateRef.current = value;
+        }
+      }
+
+      if (isFunction(value)) {
+        setState((oldValue) => {
+          const newValue = value((isControlled ? stateRef.current : oldValue) as any);
+          handleChange(newValue);
+          return isControlled ? oldValue : newValue;
+        });
+      } else {
+        if (!isControlled) {
+          setState(value);
+        }
+        handleChange(value);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [stableIsEqual, stableOnChange]
+  );
+
+  const value = isControlled ? prop! : state;
+  if (isControlled) {
+    stateRef.current = prop!;
+  }
+
+  return [value, setValue];
+}
+
+function useIsControlled(controlledProp: any): boolean {
+  const controlledTrackingRef = React.useRef(controlledProp !== undefined);
+  const wasControlled = controlledTrackingRef.current;
+  const isControlled = controlledProp !== undefined;
+  if (__DEV__) {
+    warning(
+      wasControlled === isControlled,
+      `A component is changing from ${wasControlled ? 'controlled' : 'uncontrolled'} to ${
+        isControlled ? 'controlled' : 'uncontrolled'
+      }. Components should not switch from controlled to uncontrolled (or vice versa) during its lifetime.`
+    );
+  }
+  controlledTrackingRef.current = isControlled;
+  return isControlled;
+}
+
+function defaultIsEqual(a: any, b: any): boolean {
+  return a === b;
 }
