@@ -20,16 +20,14 @@ function makeRect({ width, height }: Size, { x, y }: Point): ClientRect {
 }
 
 /**
- * Gets the opposite side of a given side (ie. top => bottom, left => right, …)
+ * Creates a new rect (`ClientRect`) based on a given one but contracted by
+ * a given amout on each side.
  */
-function getOppositeSide(side: Side): Side {
-  const oppositeSides: Record<Side, Side> = {
-    top: 'bottom',
-    right: 'left',
-    bottom: 'top',
-    left: 'right',
-  };
-  return oppositeSides[side];
+function getContractedRect(rect: ClientRect, amount: number) {
+  return makeRect(
+    { width: rect.width - amount * 2, height: rect.height - amount * 2 },
+    { x: rect.left + amount, y: rect.top + amount }
+  );
 }
 
 /**
@@ -46,16 +44,17 @@ function rectEquals(rect1: ClientRect, rect2: ClientRect) {
   );
 }
 
-function isInsideRect(rect: ClientRect, point: Point, { inclusive = true } = {}) {
-  if (inclusive) {
-    return (
-      point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom
-    );
-  } else {
-    return (
-      point.x > rect.left && point.x < rect.right && point.y > rect.top && point.y < rect.bottom
-    );
-  }
+/**
+ * Gets the opposite side of a given side (ie. top => bottom, left => right, …)
+ */
+function getOppositeSide(side: Side): Side {
+  const oppositeSides: Record<Side, Side> = {
+    top: 'bottom',
+    right: 'left',
+    bottom: 'top',
+    left: 'right',
+  };
+  return oppositeSides[side];
 }
 
 /**
@@ -64,14 +63,14 @@ function isInsideRect(rect: ClientRect, point: Point, { inclusive = true } = {})
 function getCollisions(
   /** The rect to test collisions against */
   rect: ClientRect,
-  /** An optional tolerance if you want the collisions to trigger a bit before/after */
-  tolerance = 0
+  /** The rect which represents the boundaries for collision checks */
+  collisionBoundariesRect: ClientRect
 ) {
   return {
-    top: rect.top < tolerance,
-    right: rect.right > window.innerWidth - tolerance,
-    bottom: rect.bottom > window.innerHeight - tolerance,
-    left: rect.left < tolerance,
+    top: rect.top < collisionBoundariesRect.top,
+    right: rect.right > collisionBoundariesRect.right,
+    bottom: rect.bottom > collisionBoundariesRect.bottom,
+    left: rect.left < collisionBoundariesRect.left,
   };
 }
 
@@ -79,9 +78,9 @@ export {
   SIDE_OPTIONS,
   ALIGN_OPTIONS,
   makeRect,
-  getOppositeSide,
+  getContractedRect,
   rectEquals,
-  isInsideRect,
+  getOppositeSide,
   getCollisions,
 };
 export type { Axis, Side, Align, Point, Size };
