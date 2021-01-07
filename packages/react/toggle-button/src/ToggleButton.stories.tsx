@@ -25,7 +25,14 @@ export const Grouped = () => {
       <ToggleButton value="2" as={StyledRoot}>
         Option 2
       </ToggleButton>
-      <ToggleButton value="3" as={StyledRoot}>
+      <ToggleButton
+        value="3"
+        as={StyledRoot}
+        onToggledChange={() => {
+          // Make sure onToggledChange fires even in grouped buttons
+          console.log('Button 3 has changed!');
+        }}
+      >
         Option 3
       </ToggleButton>
     </ToggleButtonGroup>
@@ -55,31 +62,56 @@ export const GroupedControlled = () => {
 };
 
 export const GroupedControlledExclusive = () => {
+  const [ensureSelection, setEnsureSelection] = React.useState(false);
   const [value, setValue] = React.useState<string | null>(null);
   function handleValueChange(newValue: string | null) {
-    if (newValue === value) {
-      setValue(null);
-    } else {
-      setValue(newValue);
-    }
+    setValue((prevValue) => {
+      return ensureSelection
+        ? newValue || prevValue || '1'
+        : newValue === prevValue
+        ? null
+        : newValue;
+    });
   }
 
   return (
-    <ToggleButtonGroupExclusive
-      aria-label="Options"
-      value={value}
-      onValueChange={handleValueChange}
-    >
-      <ToggleButton value="1" as={StyledRoot}>
-        Option 1
-      </ToggleButton>
-      <ToggleButton value="2" as={StyledRoot}>
-        Option 2
-      </ToggleButton>
-      <ToggleButton value="3" as={StyledRoot}>
-        Option 3
-      </ToggleButton>
-    </ToggleButtonGroupExclusive>
+    <div>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={ensureSelection}
+            onChange={(e) => setEnsureSelection(e.target.checked)}
+          />
+          <span>Ensure selection</span>
+        </label>
+      </div>
+      <hr />
+      <div>
+        <ToggleButtonGroupExclusive
+          aria-label="Options"
+          value={ensureSelection && value == null ? '1' : value}
+          onValueChange={handleValueChange}
+        >
+          <ToggleButton value="1" as={StyledRoot}>
+            Option 1
+          </ToggleButton>
+          <ToggleButton value="2" as={StyledRoot}>
+            Option 2
+          </ToggleButton>
+          <ToggleButton
+            value="3"
+            as={StyledRoot}
+            onToggledChange={() => {
+              // Make sure onToggledChange fires even in grouped buttons
+              console.log('Button 3 has changed!');
+            }}
+          >
+            Option 3
+          </ToggleButton>
+        </ToggleButtonGroupExclusive>
+      </div>
+    </div>
   );
 };
 
