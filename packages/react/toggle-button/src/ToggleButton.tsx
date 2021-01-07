@@ -8,7 +8,7 @@ import {
 import { getPartDataAttrObj, warning, makeId, isFunction } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
-const __DEV__ = !!(process?.env?.NODE_ENV === 'development');
+const __DEV__ = isDev();
 
 /* -------------------------------------------------------------------------------------------------
  * ToggleButtonGroup
@@ -17,16 +17,8 @@ const __DEV__ = !!(process?.env?.NODE_ENV === 'development');
 const GROUP_NAME = 'ToggleButtonGroup';
 const GROUP_EXC_NAME = 'ToggleButtonGroupExclusive';
 const BUTTON_NAME = 'ToggleButton';
-const GROUP_DEFAULT_TAG = 'div';
 const INCORRECT_CONTEXT_ERROR = `A ${BUTTON_NAME} was used in both ${GROUP_EXC_NAME} and ${GROUP_NAME} components. ${BUTTON_NAME} can be used in either ${GROUP_EXC_NAME} or ${GROUP_NAME}, but not both.`;
-
-type ToggleButtonGroupExclusiveContextValue = {
-  value: string | null;
-  setValue:
-    | React.Dispatch<React.SetStateAction<string | null>>
-    | React.Dispatch<React.SetStateAction<string>>;
-  handleChange(value: string | null): void;
-};
+const GROUP_DEFAULT_TAG = 'div';
 
 type ToggleButtonGroupContextValue = {
   value: string[];
@@ -34,21 +26,8 @@ type ToggleButtonGroupContextValue = {
   handleChange(value: string): void;
 };
 
-const ToggleButtonGroupExclusiveContext = React.createContext<ToggleButtonGroupExclusiveContextValue | null>(
-  null
-);
-ToggleButtonGroupExclusiveContext.displayName = 'ToggleButtonGroupExclusiveContext';
 const ToggleButtonGroupContext = React.createContext<ToggleButtonGroupContextValue | null>(null);
 ToggleButtonGroupContext.displayName = 'ToggleButtonGroupContext';
-
-type ToggleButtonGroupExclusiveOwnProps = {
-  /** The controlled value of the toggled button */
-  value?: string | null;
-  /** The uncontrolled value of the toggled button */
-  defaultValue?: string;
-  /** A function called when the value of the toggled buttons changes */
-  onValueChange?(value: string | null): void;
-};
 
 type ToggleButtonGroupOwnProps = {
   /** The controlled value of the toggled button */
@@ -58,42 +37,6 @@ type ToggleButtonGroupOwnProps = {
   /** A function called when the value of the toggled buttons changes */
   onValueChange?(value: string[]): void;
 };
-
-const ToggleButtonGroupExclusive = forwardRefWithAs<
-  typeof GROUP_DEFAULT_TAG,
-  ToggleButtonGroupExclusiveOwnProps
->((props, forwardedRef) => {
-  const {
-    as: Comp = GROUP_DEFAULT_TAG,
-    value: valueProp,
-    defaultValue,
-    onValueChange,
-    children,
-    ...groupProps
-  } = props;
-
-  const [value, setValue] = useControlledState<string | null>({
-    prop: valueProp,
-    defaultProp: defaultValue || null,
-    onChange: onValueChange,
-  });
-
-  const context: ToggleButtonGroupExclusiveContextValue = {
-    setValue,
-    value,
-    handleChange: setValue,
-  };
-
-  return (
-    <Comp {...getPartDataAttrObj(GROUP_EXC_NAME)} role="group" ref={forwardedRef} {...groupProps}>
-      <ToggleButtonGroupExclusiveContext.Provider value={context}>
-        {children}
-      </ToggleButtonGroupExclusiveContext.Provider>
-    </Comp>
-  ) as any;
-});
-
-ToggleButtonGroupExclusive.displayName = GROUP_EXC_NAME;
 
 const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButtonGroupOwnProps>(
   (props, forwardedRef) => {
@@ -137,6 +80,67 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
 );
 
 ToggleButtonGroup.displayName = GROUP_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ToggleButtonExclusive
+ * -----------------------------------------------------------------------------------------------*/
+
+type ToggleButtonGroupExclusiveOwnProps = {
+  /** The controlled value of the toggled button */
+  value?: string | null;
+  /** The uncontrolled value of the toggled button */
+  defaultValue?: string;
+  /** A function called when the value of the toggled buttons changes */
+  onValueChange?(value: string | null): void;
+};
+
+type ToggleButtonGroupExclusiveContextValue = {
+  value: string | null;
+  setValue:
+    | React.Dispatch<React.SetStateAction<string | null>>
+    | React.Dispatch<React.SetStateAction<string>>;
+  handleChange(value: string | null): void;
+};
+const ToggleButtonGroupExclusiveContext = React.createContext<ToggleButtonGroupExclusiveContextValue | null>(
+  null
+);
+ToggleButtonGroupExclusiveContext.displayName = 'ToggleButtonGroupExclusiveContext';
+
+const ToggleButtonGroupExclusive = forwardRefWithAs<
+  typeof GROUP_DEFAULT_TAG,
+  ToggleButtonGroupExclusiveOwnProps
+>((props, forwardedRef) => {
+  const {
+    as: Comp = GROUP_DEFAULT_TAG,
+    value: valueProp,
+    defaultValue,
+    onValueChange,
+    children,
+    ...groupProps
+  } = props;
+
+  const [value, setValue] = useControlledState<string | null>({
+    prop: valueProp,
+    defaultProp: defaultValue || null,
+    onChange: onValueChange,
+  });
+
+  const context: ToggleButtonGroupExclusiveContextValue = {
+    setValue,
+    value,
+    handleChange: setValue,
+  };
+
+  return (
+    <Comp {...getPartDataAttrObj(GROUP_EXC_NAME)} role="group" ref={forwardedRef} {...groupProps}>
+      <ToggleButtonGroupExclusiveContext.Provider value={context}>
+        {children}
+      </ToggleButtonGroupExclusiveContext.Provider>
+    </Comp>
+  ) as any;
+});
+
+ToggleButtonGroupExclusive.displayName = GROUP_EXC_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ToggleButton
@@ -273,14 +277,6 @@ function useButtonStateInGroupWarning({
   }
 }
 
-type UseControlledStateParams<T> = {
-  prop?: T | undefined;
-  defaultProp?: T | undefined;
-  onChange?: (state: T) => void;
-};
-
-type ValueOf<T> = T[keyof T];
-
 function stringArraysAreEqual(arr1: string[] | undefined, arr2: string[] | undefined) {
   if (arr1 === undefined && arr2 === undefined) return true;
   if (arr1 === undefined) return false;
@@ -288,6 +284,12 @@ function stringArraysAreEqual(arr1: string[] | undefined, arr2: string[] | undef
   return JSON.stringify(arr1.sort()) === JSON.stringify(arr2.sort());
 }
 
+// NOTE: I changed this implementation a tiny bit to improve typing somewhat. I think it's a little
+// nicer not to include `undefined` in the typing here and always provide a defaultProp value
+// whether or not its passed by the consumer. If undefined is an acceptable type it should be added
+// explicitly IMO. Also added an option to override the equality check so we can handle arrays,
+// objects, etc. If we're ok with these changes I can update it in the utils package as a separate
+// PR.
 function useControlledState<T>({
   prop,
   defaultProp,
@@ -359,4 +361,10 @@ function useIsControlled(controlledProp: any): boolean {
 
 function defaultIsEqual(a: any, b: any): boolean {
   return a === b;
+}
+
+function isDev() {
+  return process && process.env && process.env.NODE_ENV
+    ? process.env.NODE_ENV === 'development'
+    : true;
 }
