@@ -50,6 +50,14 @@ const SCROLL_AREA_CSS_PROPS_LIST = [
   'cornerHeight',
 ] as const;
 const SCROLL_AREA_CSS_PROPS = SCROLL_AREA_CSS_PROPS_LIST.reduce(reduceToCssProperties, {} as any);
+const AUTO = 'auto';
+const HOVER = 'hover';
+const ALWAYS = 'always';
+const SCROLL = 'scroll';
+const NONE = 'none';
+const RELATIVE = 'relative';
+const LTR = 'ltr';
+const RTL = 'rtl';
 
 enum ScrollAreaState {
   Idle = 'Idle',
@@ -77,6 +85,16 @@ enum ScrollAreaEvents {
 
 const ROOT_DEFAULT_TAG = 'div';
 const ROOT_NAME = 'ScrollArea';
+const ROOT_DEFAULT_PROPS = {
+  as: ROOT_DEFAULT_TAG,
+  overflowX: AUTO,
+  overflowY: AUTO,
+  scrollbarVisibility: HOVER,
+  scrollbarVisibilityRestTimeout: 600,
+  dir: LTR,
+  trackClickBehavior: RELATIVE,
+  unstable_prefersReducedMotion: false,
+} as const;
 
 interface ScrollAreaRefs {
   buttonLeftRef: React.RefObject<HTMLDivElement>;
@@ -101,7 +119,7 @@ const [ScrollAreaRefsContext, useScrollAreaRefs] = createContext<ScrollAreaRefs>
 );
 
 interface ScrollAreaContextValue {
-  dir?: 'rtl' | 'ltr';
+  dir?: TextDirection;
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
   prefersReducedMotion: boolean;
@@ -186,24 +204,15 @@ type ScrollAreaOwnProps = {
    */
   unstable_forceNative?: boolean;
   unstable_prefersReducedMotion?: boolean;
-  dir?: 'rtl' | 'ltr';
+  dir?: TextDirection;
 };
 
 const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaOwnProps>(
   function ScrollArea(props, forwardedRef) {
-    const {
-      as = ROOT_DEFAULT_TAG,
-      children,
-      overflowX = 'auto',
-      overflowY = 'auto',
-      scrollbarVisibility = 'hover',
-      scrollbarVisibilityRestTimeout = 600,
-      dir = 'ltr',
-      trackClickBehavior = 'relative',
-      unstable_forceNative: forceNative = false,
-      unstable_prefersReducedMotion = false,
-      ...domProps
-    } = props;
+    const { unstable_forceNative: forceNative = false, children, ...restProps } = {
+      ...ROOT_DEFAULT_PROPS,
+      ...props,
+    };
     const [usesNative, setUsesNative] = React.useState(true);
     // Check to make sure the user's browser supports our custom scrollbar features. We use a layout
     // effect here to avoid a visible flash when the custom scroll area replaces the native version.
@@ -220,18 +229,10 @@ const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaOwnProps>
 
     return (
       <ScrollAreaCustomOrNative
-        {...getPartDataAttrObj(ROOT_NAME)}
-        {...domProps}
-        as={as}
-        overflowX={overflowX}
-        overflowY={overflowY}
-        scrollbarVisibility={scrollbarVisibility}
-        scrollbarVisibilityRestTimeout={scrollbarVisibilityRestTimeout}
-        dir={dir}
         positionRef={positionRef}
         scrollAreaRef={scrollAreaRef}
-        trackClickBehavior={trackClickBehavior}
-        unstable_prefersReducedMotion={unstable_prefersReducedMotion}
+        {...getPartDataAttrObj(ROOT_NAME)}
+        {...restProps}
         ref={forwardedRef}
       >
         <NativeScrollContext.Provider value={usesNative}>{children}</NativeScrollContext.Provider>
@@ -239,6 +240,26 @@ const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaOwnProps>
     );
   }
 );
+
+const ScrollAreaNoNativeFallback = forwardRefWithAs<
+  typeof ROOT_DEFAULT_TAG,
+  Omit<ScrollAreaOwnProps, 'unstable_forceNative'>
+>(function ScrollArea(props, forwardedRef) {
+  const { children, ...restProps } = { ...ROOT_DEFAULT_PROPS, ...props };
+  const positionRef = React.useRef<HTMLDivElement>(null);
+  const scrollAreaRef = React.useRef<HTMLDivElement>(null);
+  return (
+    <ScrollAreaImpl
+      positionRef={positionRef}
+      scrollAreaRef={scrollAreaRef}
+      {...getPartDataAttrObj(ROOT_NAME)}
+      {...restProps}
+      ref={forwardedRef}
+    >
+      <NativeScrollContext.Provider value={false}>{children}</NativeScrollContext.Provider>
+    </ScrollAreaImpl>
+  );
+});
 
 type ScrollAreaInternalProps = {
   positionRef: React.RefObject<HTMLDivElement>;
@@ -254,7 +275,7 @@ type ScrollAreaNativeProps = ScrollAreaInternalProps &
 const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNativeProps>(
   function ScrollAreaNative(props, forwardedRef) {
     const {
-      as: Comp = ROOT_DEFAULT_TAG,
+      as: Comp,
       overflowX,
       overflowY,
       scrollbarVisibility,
@@ -264,7 +285,7 @@ const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNat
       scrollAreaRef,
       positionRef,
       ...domProps
-    } = props;
+    } = { ...ROOT_DEFAULT_PROPS, ...props };
 
     const ref = useComposedRefs(scrollAreaRef, forwardedRef);
 
@@ -280,7 +301,7 @@ const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNat
 
           // Set this inline since we don't currently support resizable scroll areas. This feature
           // will come later.
-          resize: 'none',
+          resize: NONE,
         }}
       />
     );
@@ -312,7 +333,7 @@ const initialState: ScrollAreaReducerState = {
 const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
   function ScrollAreaImpl(props, forwardedRef) {
     const {
-      as: Comp = ROOT_DEFAULT_TAG,
+      as: Comp,
       children,
       onScroll,
       overflowX,
@@ -324,7 +345,7 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
       positionRef,
       scrollAreaRef,
       ...domProps
-    } = props;
+    } = { ...ROOT_DEFAULT_PROPS, ...props };
 
     // That we call `onScroll` in the viewport component is an implementation detail that the
     // consumer probably shouldn't need to think about. Passing it down from the top means that the
@@ -366,8 +387,8 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
 
     const [reducerState, dispatch] = React.useReducer(scrollAreaStateReducer, {
       ...initialState,
-      scrollbarIsVisibleX: scrollbarVisibility === 'always',
-      scrollbarIsVisibleY: scrollbarVisibility === 'always',
+      scrollbarIsVisibleX: scrollbarVisibility === ALWAYS,
+      scrollbarIsVisibleY: scrollbarVisibility === ALWAYS,
     });
 
     const {
@@ -377,7 +398,7 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
 
     const context: ScrollAreaContextValue = React.useMemo(() => {
       return {
-        dir: props.dir || 'ltr',
+        dir: props.dir,
         isHovered,
         onScroll: handleScroll,
         overflowX,
@@ -427,25 +448,25 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
     //  - overflow is `auto` and scrollbar autohide is `never`
     //  - overflow is `hidden` or `visible` (scrollbars are hidden no matter what in either case)
     const shouldOffsetX =
-      scrollbarVisibility === 'always' &&
-      (overflowX === 'scroll' || (overflowX === 'auto' && reducerState.contentIsOverflowingX));
+      scrollbarVisibility === ALWAYS &&
+      (overflowX === SCROLL || (overflowX === AUTO && reducerState.contentIsOverflowingX));
     const shouldOffsetY =
-      scrollbarVisibility === 'always' &&
-      (overflowY === 'scroll' || (overflowY === 'auto' && reducerState.contentIsOverflowingY));
+      scrollbarVisibility === ALWAYS &&
+      (overflowY === SCROLL || (overflowY === AUTO && reducerState.contentIsOverflowingY));
 
     const { domSizes } = reducerState;
 
     const style: any = {
       [SCROLL_AREA_CSS_PROPS.scrollbarXOffset]:
-        shouldOffsetX && domSizes.scrollbarX.height ? domSizes.scrollbarX.height + 'px' : 0,
+        shouldOffsetX && domSizes.scrollbarX.height ? toPixelString(domSizes.scrollbarX.height) : 0,
       [SCROLL_AREA_CSS_PROPS.scrollbarYOffset]:
-        shouldOffsetY && domSizes.scrollbarY.width ? domSizes.scrollbarY.width + 'px' : 0,
+        shouldOffsetY && domSizes.scrollbarY.width ? toPixelString(domSizes.scrollbarY.width) : 0,
       [SCROLL_AREA_CSS_PROPS.positionWidth]: domSizes.position.width
-        ? domSizes.position.width + 'px'
-        : 'auto',
+        ? toPixelString(domSizes.position.width)
+        : AUTO,
       [SCROLL_AREA_CSS_PROPS.positionHeight]: domSizes.position.height
-        ? domSizes.position.height + 'px'
-        : 'auto',
+        ? toPixelString(domSizes.position.height)
+        : AUTO,
     };
 
     return (
@@ -612,12 +633,12 @@ const ScrollAreaViewportImpl = forwardRefWithAs<typeof VIEWPORT_DEFAULT_TAG>(
         onScroll={handleScroll}
         style={{
           zIndex: 1,
-          width: `var(${SCROLL_AREA_CSS_PROPS.positionWidth})`,
-          height: `var(${SCROLL_AREA_CSS_PROPS.positionHeight})`,
-          scrollbarWidth: 'none',
+          width: toCssCustomProp(SCROLL_AREA_CSS_PROPS.positionWidth),
+          height: toCssCustomProp(SCROLL_AREA_CSS_PROPS.positionHeight),
+          scrollbarWidth: NONE,
           // @ts-ignore
           overflowScrolling: 'touch',
-          resize: 'none',
+          resize: NONE,
           overflowX,
           overflowY,
         }}
@@ -631,8 +652,8 @@ const ScrollAreaViewportImpl = forwardRefWithAs<typeof VIEWPORT_DEFAULT_TAG>(
             // https://blog.alexandergottlieb.com/overflow-scroll-and-the-right-padding-problem-a-css-only-solution-6d442915b3f4
             display: 'table',
             width: '100%',
-            paddingBottom: `var(${SCROLL_AREA_CSS_PROPS.scrollbarXOffset})`,
-            paddingRight: `var(${SCROLL_AREA_CSS_PROPS.scrollbarYOffset})`,
+            paddingBottom: toCssCustomProp(SCROLL_AREA_CSS_PROPS.scrollbarXOffset),
+            paddingRight: toCssCustomProp(SCROLL_AREA_CSS_PROPS.scrollbarYOffset),
           }}
         >
           <Comp {...getPartDataAttrObj(VIEWPORT_NAME)} ref={ref} {...domProps} />
@@ -780,24 +801,24 @@ const ScrollAreaScrollbarImpl = forwardRefWithAs<
   const opacity = (function () {
     const defaultVisible = domProps.style?.opacity || 1;
     switch (scrollbarVisibility) {
-      case 'always':
+      case ALWAYS:
         return domProps.style?.opacity;
-      case 'scroll':
+      case SCROLL:
         return scrollbarIsVisible ? defaultVisible : 0;
-      case 'hover':
+      case HOVER:
         return isHovered ? defaultVisible : scrollbarIsVisible ? defaultVisible : 0;
     }
   })();
 
   const pointerEvents = (function () {
-    const defaultVisible = domProps.style?.pointerEvents || 'auto';
+    const defaultVisible = domProps.style?.pointerEvents || AUTO;
     switch (scrollbarVisibility) {
-      case 'always':
+      case ALWAYS:
         return domProps.style?.pointerEvents;
-      case 'scroll':
-        return scrollbarIsVisible ? defaultVisible : 'none';
-      case 'hover':
-        return isHovered ? defaultVisible : scrollbarIsVisible ? defaultVisible : 'none';
+      case SCROLL:
+        return scrollbarIsVisible ? defaultVisible : NONE;
+      case HOVER:
+        return isHovered ? defaultVisible : scrollbarIsVisible ? defaultVisible : NONE;
     }
   })();
 
@@ -815,7 +836,7 @@ const ScrollAreaScrollbarImpl = forwardRefWithAs<
         {...domProps}
         style={{
           ...domProps.style,
-          display: !contentIsOverflowing ? 'none' : domProps.style?.display,
+          display: !contentIsOverflowing ? NONE : domProps.style?.display,
           opacity,
           pointerEvents,
         }}
@@ -842,7 +863,7 @@ const ScrollAreaScrollbarX = forwardRefWithAs<typeof SCROLLBAR_DEFAULT_TAG>(
           ...props.style,
           // @ts-ignore
           [SCROLL_AREA_CSS_PROPS.scrollbarXSize]: domSizes.scrollbarX.height
-            ? domSizes.scrollbarX.height + 'px'
+            ? toPixelString(domSizes.scrollbarX.height)
             : 0,
         }}
       />
@@ -865,7 +886,7 @@ const ScrollAreaScrollbarY = forwardRefWithAs<typeof SCROLLBAR_DEFAULT_TAG>(
           ...props.style,
           // @ts-ignore
           [SCROLL_AREA_CSS_PROPS.scrollbarYSize]: domSizes.scrollbarY.width
-            ? domSizes.scrollbarY.width + 'px'
+            ? toPixelString(domSizes.scrollbarY.width)
             : 0,
         }}
       />
@@ -1269,11 +1290,11 @@ const ScrollAreaThumb = forwardRefWithAs<typeof THUMB_DEFAULT_TAG>(function Scro
           ? {
               [SCROLL_AREA_CSS_PROPS.scrollbarThumbWillChange]: 'left',
               [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: '100%',
-              [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: 'auto',
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: AUTO,
             }
           : {
               [SCROLL_AREA_CSS_PROPS.scrollbarThumbWillChange]: 'top',
-              [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: 'auto',
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: AUTO,
               [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: '100%',
             }),
       }}
@@ -1499,7 +1520,7 @@ const ScrollAreaCornerImpl = forwardRefWithAs<typeof CORNER_DEFAULT_TAG>(
     const dispatch = useDispatchContext(CORNER_NAME);
     const { dir } = useScrollAreaContext(CORNER_NAME);
     const { domSizes } = useScrollAreaStateContext();
-    const isRTL = dir === 'rtl';
+    const isRTL = dir === RTL;
 
     const style: any = {
       // The resize handle is placed, by default, in the bottom right corner of the scroll area. In
@@ -1509,14 +1530,14 @@ const ScrollAreaCornerImpl = forwardRefWithAs<typeof CORNER_DEFAULT_TAG>(
       [SCROLL_AREA_CSS_PROPS.cornerRight]: isRTL ? 'unset' : 0,
 
       [SCROLL_AREA_CSS_PROPS.cornerHeight]: domSizes.scrollbarX.height
-        ? domSizes.scrollbarX.height + 'px'
+        ? toPixelString(domSizes.scrollbarX.height)
         : domSizes.scrollbarY.width
-        ? domSizes.scrollbarY.width + 'px'
+        ? toPixelString(domSizes.scrollbarY.width)
         : '16px',
       [SCROLL_AREA_CSS_PROPS.cornerWidth]: domSizes.scrollbarY.width
-        ? domSizes.scrollbarY.width + 'px'
+        ? toPixelString(domSizes.scrollbarY.width)
         : domSizes.scrollbarX.height
-        ? domSizes.scrollbarX.height + 'px'
+        ? toPixelString(domSizes.scrollbarX.height)
         : '16px',
 
       position: 'absolute',
@@ -1585,6 +1606,7 @@ export {
   ScrollAreaTrack,
   ScrollAreaThumb,
   ScrollAreaCorner,
+  ScrollAreaNoNativeFallback as unstable_ScrollAreaNoNativeFallback,
   //
   Root,
   Viewport,
@@ -1655,7 +1677,7 @@ function scrollAreaStateReducer(
       };
     }
     case ScrollAreaEvents.SetScrollbarIsVisible: {
-      if (event.scrollbarVisibility === 'always') {
+      if (event.scrollbarVisibility === ALWAYS) {
         return {
           ...context,
           scrollbarIsVisibleX: true,
@@ -1800,11 +1822,11 @@ function useExtendedScrollAreaRef(
       },
       addScrollListener(...args: any[]) {
         // @ts-ignore
-        elementToHandle.addEventListener('scroll', ...args);
+        elementToHandle.addEventListener(SCROLL, ...args);
       },
       removeScrollListener(...args: any[]) {
         // @ts-ignore
-        elementToHandle.removeEventListener('scroll', ...args);
+        elementToHandle.removeEventListener(SCROLL, ...args);
       },
     };
 
@@ -2109,7 +2131,7 @@ function getThumbSize(args: {
   if (!shouldOverflow(positionElement, { axis })) {
     // We're at 100% visible area, no need to show the scroll thumb:
     return {
-      display: 'none',
+      display: NONE,
       width: 0,
       height: 0,
     };
@@ -2308,6 +2330,14 @@ function updateThumbPosition(args: {
   }
 }
 
+function toPixelString(value: number) {
+  return value + 'px';
+}
+
+function toCssCustomProp(value: number | string) {
+  return `var(${value})`;
+}
+
 /* -------------------------------------------------------------------------------------------------
    Types
    ---------------------------------------------------------------------------------------------- */
@@ -2358,3 +2388,5 @@ interface AnimationOptions {
   done?(): any;
   rafIdRef: React.MutableRefObject<number | undefined>;
 }
+
+type TextDirection = 'ltr' | 'rtl';
