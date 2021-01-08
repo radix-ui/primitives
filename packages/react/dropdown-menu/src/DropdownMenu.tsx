@@ -82,7 +82,7 @@ const DropdownMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props,
         }
       })}
       onKeyDown={composeEventHandlers(triggerProps.onKeyDown, (event: React.KeyboardEvent) => {
-        if (event.key === ' ' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        if ([' ', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
           event.preventDefault();
           context.setOpen(true);
         }
