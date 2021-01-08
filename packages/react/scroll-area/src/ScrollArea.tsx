@@ -1587,6 +1587,7 @@ const ButtonEnd = ScrollAreaButtonEnd;
 const Track = ScrollAreaTrack;
 const Thumb = ScrollAreaThumb;
 const Corner = ScrollAreaCorner;
+const unstable_ScrollAreaNoNativeFallback = ScrollAreaNoNativeFallback;
 
 export {
   ScrollArea,
@@ -1598,7 +1599,7 @@ export {
   ScrollAreaTrack,
   ScrollAreaThumb,
   ScrollAreaCorner,
-  ScrollAreaNoNativeFallback as unstable_ScrollAreaNoNativeFallback,
+  unstable_ScrollAreaNoNativeFallback,
   //
   Root,
   Viewport,
