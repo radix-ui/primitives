@@ -50,14 +50,6 @@ const SCROLL_AREA_CSS_PROPS_LIST = [
   'cornerHeight',
 ] as const;
 const SCROLL_AREA_CSS_PROPS = SCROLL_AREA_CSS_PROPS_LIST.reduce(reduceToCssProperties, {} as any);
-const AUTO = 'auto';
-const HOVER = 'hover';
-const ALWAYS = 'always';
-const SCROLL = 'scroll';
-const NONE = 'none';
-const RELATIVE = 'relative';
-const LTR = 'ltr';
-const RTL = 'rtl';
 
 enum ScrollAreaState {
   Idle = 'Idle',
@@ -87,12 +79,12 @@ const ROOT_DEFAULT_TAG = 'div';
 const ROOT_NAME = 'ScrollArea';
 const ROOT_DEFAULT_PROPS = {
   as: ROOT_DEFAULT_TAG,
-  overflowX: AUTO,
-  overflowY: AUTO,
-  scrollbarVisibility: HOVER,
+  overflowX: 'auto',
+  overflowY: 'auto',
+  scrollbarVisibility: 'hover',
   scrollbarVisibilityRestTimeout: 600,
-  dir: LTR,
-  trackClickBehavior: RELATIVE,
+  dir: 'ltr',
+  trackClickBehavior: 'relative',
   unstable_prefersReducedMotion: false,
 } as const;
 
@@ -301,7 +293,7 @@ const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNat
 
           // Set this inline since we don't currently support resizable scroll areas. This feature
           // will come later.
-          resize: NONE,
+          resize: 'none',
         }}
       />
     );
@@ -387,8 +379,8 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
 
     const [reducerState, dispatch] = React.useReducer(scrollAreaStateReducer, {
       ...initialState,
-      scrollbarIsVisibleX: scrollbarVisibility === ALWAYS,
-      scrollbarIsVisibleY: scrollbarVisibility === ALWAYS,
+      scrollbarIsVisibleX: scrollbarVisibility === 'always',
+      scrollbarIsVisibleY: scrollbarVisibility === 'always',
     });
 
     const {
@@ -448,25 +440,25 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
     //  - overflow is `auto` and scrollbar autohide is `never`
     //  - overflow is `hidden` or `visible` (scrollbars are hidden no matter what in either case)
     const shouldOffsetX =
-      scrollbarVisibility === ALWAYS &&
-      (overflowX === SCROLL || (overflowX === AUTO && reducerState.contentIsOverflowingX));
+      scrollbarVisibility === 'always' &&
+      (overflowX === 'scroll' || (overflowX === 'auto' && reducerState.contentIsOverflowingX));
     const shouldOffsetY =
-      scrollbarVisibility === ALWAYS &&
-      (overflowY === SCROLL || (overflowY === AUTO && reducerState.contentIsOverflowingY));
+      scrollbarVisibility === 'always' &&
+      (overflowY === 'scroll' || (overflowY === 'auto' && reducerState.contentIsOverflowingY));
 
     const { domSizes } = reducerState;
 
     const style: any = {
       [SCROLL_AREA_CSS_PROPS.scrollbarXOffset]:
-        shouldOffsetX && domSizes.scrollbarX.height ? toPixelString(domSizes.scrollbarX.height) : 0,
+        shouldOffsetX && domSizes.scrollbarX.height ? domSizes.scrollbarX.height + 'px' : 0,
       [SCROLL_AREA_CSS_PROPS.scrollbarYOffset]:
-        shouldOffsetY && domSizes.scrollbarY.width ? toPixelString(domSizes.scrollbarY.width) : 0,
+        shouldOffsetY && domSizes.scrollbarY.width ? domSizes.scrollbarY.width + 'px' : 0,
       [SCROLL_AREA_CSS_PROPS.positionWidth]: domSizes.position.width
-        ? toPixelString(domSizes.position.width)
-        : AUTO,
+        ? domSizes.position.width + 'px'
+        : 'auto',
       [SCROLL_AREA_CSS_PROPS.positionHeight]: domSizes.position.height
-        ? toPixelString(domSizes.position.height)
-        : AUTO,
+        ? domSizes.position.height + 'px'
+        : 'auto',
     };
 
     return (
@@ -633,12 +625,12 @@ const ScrollAreaViewportImpl = forwardRefWithAs<typeof VIEWPORT_DEFAULT_TAG>(
         onScroll={handleScroll}
         style={{
           zIndex: 1,
-          width: toCssCustomProp(SCROLL_AREA_CSS_PROPS.positionWidth),
-          height: toCssCustomProp(SCROLL_AREA_CSS_PROPS.positionHeight),
-          scrollbarWidth: NONE,
+          width: `var(${SCROLL_AREA_CSS_PROPS.positionWidth})`,
+          height: `var(${SCROLL_AREA_CSS_PROPS.positionHeight})`,
+          scrollbarWidth: 'none',
           // @ts-ignore
           overflowScrolling: 'touch',
-          resize: NONE,
+          resize: 'none',
           overflowX,
           overflowY,
         }}
@@ -652,8 +644,8 @@ const ScrollAreaViewportImpl = forwardRefWithAs<typeof VIEWPORT_DEFAULT_TAG>(
             // https://blog.alexandergottlieb.com/overflow-scroll-and-the-right-padding-problem-a-css-only-solution-6d442915b3f4
             display: 'table',
             width: '100%',
-            paddingBottom: toCssCustomProp(SCROLL_AREA_CSS_PROPS.scrollbarXOffset),
-            paddingRight: toCssCustomProp(SCROLL_AREA_CSS_PROPS.scrollbarYOffset),
+            paddingBottom: `var(${SCROLL_AREA_CSS_PROPS.scrollbarXOffset})`,
+            paddingRight: `var(${SCROLL_AREA_CSS_PROPS.scrollbarYOffset})`,
           }}
         >
           <Comp {...getPartDataAttrObj(VIEWPORT_NAME)} ref={ref} {...domProps} />
@@ -801,24 +793,24 @@ const ScrollAreaScrollbarImpl = forwardRefWithAs<
   const opacity = (function () {
     const defaultVisible = domProps.style?.opacity || 1;
     switch (scrollbarVisibility) {
-      case ALWAYS:
+      case 'always':
         return domProps.style?.opacity;
-      case SCROLL:
+      case 'scroll':
         return scrollbarIsVisible ? defaultVisible : 0;
-      case HOVER:
+      case 'hover':
         return isHovered ? defaultVisible : scrollbarIsVisible ? defaultVisible : 0;
     }
   })();
 
   const pointerEvents = (function () {
-    const defaultVisible = domProps.style?.pointerEvents || AUTO;
+    const defaultVisible = domProps.style?.pointerEvents || 'auto';
     switch (scrollbarVisibility) {
-      case ALWAYS:
+      case 'always':
         return domProps.style?.pointerEvents;
-      case SCROLL:
-        return scrollbarIsVisible ? defaultVisible : NONE;
-      case HOVER:
-        return isHovered ? defaultVisible : scrollbarIsVisible ? defaultVisible : NONE;
+      case 'scroll':
+        return scrollbarIsVisible ? defaultVisible : 'none';
+      case 'hover':
+        return isHovered ? defaultVisible : scrollbarIsVisible ? defaultVisible : 'none';
     }
   })();
 
@@ -836,7 +828,7 @@ const ScrollAreaScrollbarImpl = forwardRefWithAs<
         {...domProps}
         style={{
           ...domProps.style,
-          display: !contentIsOverflowing ? NONE : domProps.style?.display,
+          display: !contentIsOverflowing ? 'none' : domProps.style?.display,
           opacity,
           pointerEvents,
         }}
@@ -863,7 +855,7 @@ const ScrollAreaScrollbarX = forwardRefWithAs<typeof SCROLLBAR_DEFAULT_TAG>(
           ...props.style,
           // @ts-ignore
           [SCROLL_AREA_CSS_PROPS.scrollbarXSize]: domSizes.scrollbarX.height
-            ? toPixelString(domSizes.scrollbarX.height)
+            ? domSizes.scrollbarX.height + 'px'
             : 0,
         }}
       />
@@ -886,7 +878,7 @@ const ScrollAreaScrollbarY = forwardRefWithAs<typeof SCROLLBAR_DEFAULT_TAG>(
           ...props.style,
           // @ts-ignore
           [SCROLL_AREA_CSS_PROPS.scrollbarYSize]: domSizes.scrollbarY.width
-            ? toPixelString(domSizes.scrollbarY.width)
+            ? domSizes.scrollbarY.width + 'px'
             : 0,
         }}
       />
@@ -1290,11 +1282,11 @@ const ScrollAreaThumb = forwardRefWithAs<typeof THUMB_DEFAULT_TAG>(function Scro
           ? {
               [SCROLL_AREA_CSS_PROPS.scrollbarThumbWillChange]: 'left',
               [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: '100%',
-              [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: AUTO,
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: 'auto',
             }
           : {
               [SCROLL_AREA_CSS_PROPS.scrollbarThumbWillChange]: 'top',
-              [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: AUTO,
+              [SCROLL_AREA_CSS_PROPS.scrollbarThumbHeight]: 'auto',
               [SCROLL_AREA_CSS_PROPS.scrollbarThumbWidth]: '100%',
             }),
       }}
@@ -1520,7 +1512,7 @@ const ScrollAreaCornerImpl = forwardRefWithAs<typeof CORNER_DEFAULT_TAG>(
     const dispatch = useDispatchContext(CORNER_NAME);
     const { dir } = useScrollAreaContext(CORNER_NAME);
     const { domSizes } = useScrollAreaStateContext();
-    const isRTL = dir === RTL;
+    const isRTL = dir === 'rtl';
 
     const style: any = {
       // The resize handle is placed, by default, in the bottom right corner of the scroll area. In
@@ -1530,14 +1522,14 @@ const ScrollAreaCornerImpl = forwardRefWithAs<typeof CORNER_DEFAULT_TAG>(
       [SCROLL_AREA_CSS_PROPS.cornerRight]: isRTL ? 'unset' : 0,
 
       [SCROLL_AREA_CSS_PROPS.cornerHeight]: domSizes.scrollbarX.height
-        ? toPixelString(domSizes.scrollbarX.height)
+        ? domSizes.scrollbarX.height + 'px'
         : domSizes.scrollbarY.width
-        ? toPixelString(domSizes.scrollbarY.width)
+        ? domSizes.scrollbarY.width + 'px'
         : '16px',
       [SCROLL_AREA_CSS_PROPS.cornerWidth]: domSizes.scrollbarY.width
-        ? toPixelString(domSizes.scrollbarY.width)
+        ? domSizes.scrollbarY.width + 'px'
         : domSizes.scrollbarX.height
-        ? toPixelString(domSizes.scrollbarX.height)
+        ? domSizes.scrollbarX.height + 'px'
         : '16px',
 
       position: 'absolute',
@@ -1677,7 +1669,7 @@ function scrollAreaStateReducer(
       };
     }
     case ScrollAreaEvents.SetScrollbarIsVisible: {
-      if (event.scrollbarVisibility === ALWAYS) {
+      if (event.scrollbarVisibility === 'always') {
         return {
           ...context,
           scrollbarIsVisibleX: true,
@@ -1822,11 +1814,11 @@ function useExtendedScrollAreaRef(
       },
       addScrollListener(...args: any[]) {
         // @ts-ignore
-        elementToHandle.addEventListener(SCROLL, ...args);
+        elementToHandle.addEventListener('scroll', ...args);
       },
       removeScrollListener(...args: any[]) {
         // @ts-ignore
-        elementToHandle.removeEventListener(SCROLL, ...args);
+        elementToHandle.removeEventListener('scroll', ...args);
       },
     };
 
@@ -2131,7 +2123,7 @@ function getThumbSize(args: {
   if (!shouldOverflow(positionElement, { axis })) {
     // We're at 100% visible area, no need to show the scroll thumb:
     return {
-      display: NONE,
+      display: 'none',
       width: 0,
       height: 0,
     };
@@ -2328,14 +2320,6 @@ function updateThumbPosition(args: {
   } else if (axis === 'y') {
     thumbElement.style.top = `${thumbPos * 100}%`;
   }
-}
-
-function toPixelString(value: number) {
-  return value + 'px';
-}
-
-function toCssCustomProp(value: number | string) {
-  return `var(${value})`;
 }
 
 /* -------------------------------------------------------------------------------------------------
