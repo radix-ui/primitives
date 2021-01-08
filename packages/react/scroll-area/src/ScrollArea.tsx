@@ -301,7 +301,7 @@ const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNat
 );
 
 type ScrollAreaImplProps = ScrollAreaInternalProps &
-  Required<Omit<ScrollAreaOwnProps, 'unstable_forceNative'>>;
+  Omit<ScrollAreaOwnProps, 'unstable_forceNative'>;
 
 const initialSize = { width: 0, height: 0 };
 const initialState: ScrollAreaReducerState = {
