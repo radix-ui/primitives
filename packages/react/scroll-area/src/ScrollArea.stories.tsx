@@ -10,6 +10,7 @@ import {
   ScrollAreaCorner,
   ScrollAreaTrack,
   ScrollAreaThumb,
+  unstable_ScrollAreaNoNativeFallback as ScrollAreaNoNativeFallback,
   SCROLL_AREA_CSS_PROPS,
 } from './ScrollArea';
 import { Popover, PopoverContent, PopoverTrigger, PopoverArrow } from '@radix-ui/react-popover';
@@ -202,6 +203,88 @@ export function InsidePopover() {
           <PopoverArrow width={50} height={20} />
         </PopoverContent>
       </Popover>
+    </React.Fragment>
+  );
+}
+
+// We'll likely remove this eventually
+// See https://github.com/radix-ui/primitives/issues/351
+export function WithoutNativeFallback() {
+  const { unstable_forceNative, ...scrollAreaControlProps } = useScrollAreaControlProps();
+  const divRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const div = divRef.current;
+    function handleMouseEnter() {
+      console.log('Hello, you have entered the div zone!');
+    }
+    div?.addEventListener('mouseenter', handleMouseEnter);
+    return () => {
+      div?.removeEventListener('mouseenter', handleMouseEnter);
+    };
+  }, []);
+  return (
+    <React.Fragment>
+      <ScrollPropControls disableForceNative />
+      <hr />
+      <Resizable>
+        <ScrollAreaNoNativeFallback
+          as={Win98StyledRoot}
+          overflowX="scroll"
+          {...scrollAreaControlProps}
+          css={{ width: '400px', height: '400px' }}
+        >
+          <ScrollAreaScrollbarY as={Win98StyledScrollbarY}>
+            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+              <Arrow direction="up" />
+            </ScrollAreaButtonStart>
+
+            <ScrollAreaTrack as={Win98StyledScrollTrack}>
+              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            </ScrollAreaTrack>
+            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+              <Arrow direction="down" />
+            </ScrollAreaButtonEnd>
+          </ScrollAreaScrollbarY>
+
+          <ScrollAreaScrollbarX as={Win98StyledScrollbarX}>
+            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+              <Arrow direction="left" />
+            </ScrollAreaButtonStart>
+
+            <ScrollAreaTrack as={Win98StyledScrollTrack}>
+              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            </ScrollAreaTrack>
+            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+              <Arrow direction="right" />
+            </ScrollAreaButtonEnd>
+          </ScrollAreaScrollbarX>
+
+          <ScrollAreaCorner as={Win98StyledCorner} />
+
+          <ScrollAreaViewport
+            as={BaseStyledViewport}
+            css={{
+              width: '1000px',
+              padding: 20,
+
+              '& > :first-child': {
+                marginTop: 0,
+              },
+
+              '& > :last-child': {
+                marginBottom: 0,
+              },
+            }}
+          >
+            <div ref={divRef} style={{ padding: '10px', border: '1px solid crimson' }}>
+              Mouse over me and check your logs!
+            </div>
+            <LongContent />
+            <LongContent />
+            <LongContent />
+          </ScrollAreaViewport>
+        </ScrollAreaNoNativeFallback>
+      </Resizable>
     </React.Fragment>
   );
 }
@@ -595,7 +678,7 @@ function useScrollAreaControlProps() {
   };
 }
 
-function ScrollPropControls() {
+function ScrollPropControls({ disableForceNative }: { disableForceNative?: boolean }) {
   const {
     forceNative,
     setForceNative,
@@ -621,13 +704,15 @@ function ScrollPropControls() {
       <Box>
         <Fieldset>
           <Legend>Simulation options:</Legend>
-          <Checkbox
-            name="forceNative"
-            checked={forceNative}
-            onChange={(e) => setForceNative(e.target.checked)}
-          >
-            Force native scrollbars
-          </Checkbox>
+          {!disableForceNative ? (
+            <Checkbox
+              name="forceNative"
+              checked={forceNative}
+              onChange={(e) => setForceNative(e.target.checked)}
+            >
+              Force native scrollbars
+            </Checkbox>
+          ) : null}
           <Checkbox
             name="prefersReducedMotion"
             checked={prefersReducedMotion}
