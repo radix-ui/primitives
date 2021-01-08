@@ -1,6 +1,6 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, act } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { FocusScope } from './FocusScope';
 import type { RenderResult } from '@testing-library/react';
 
@@ -39,19 +39,19 @@ describe('FocusScope', () => {
     });
 
     it('should focus the next element in the scope on tab', () => {
-      focus(tabbableFirst);
+      tabbableFirst.focus();
       userEvent.tab();
       expect(tabbableSecond).toHaveFocus();
     });
 
     it('should focus the last element in the scope on shift+tab from the first element in scope', () => {
-      focus(tabbableFirst);
+      tabbableFirst.focus();
       userEvent.tab({ shift: true });
       expect(tabbableLast).toHaveFocus();
     });
 
     it('should focus the first element in scope on tab from the last element in scope', async () => {
-      focus(tabbableLast);
+      tabbableLast.focus();
       userEvent.tab();
       expect(tabbableFirst).toHaveFocus();
     });
@@ -85,24 +85,18 @@ describe('FocusScope', () => {
     });
 
     it('should skip the element with a negative tabindex on tab', () => {
-      focus(tabbableLast);
+      tabbableLast.focus();
       userEvent.tab();
       expect(tabbableSecond).toHaveFocus();
     });
 
     it('should skip the element with a negative tabindex on shift+tab', () => {
-      focus(tabbableSecond);
+      tabbableSecond.focus();
       userEvent.tab({ shift: true });
       expect(tabbableLast).toHaveFocus();
     });
   });
 });
-
-function focus(element: HTMLElement) {
-  act(() => {
-    element.focus();
-  });
-}
 
 function TestField({ label, ...props }: { label: string } & React.ComponentProps<'input'>) {
   return (
