@@ -14,6 +14,7 @@
     "storybook": "start-storybook -p 9009 --ci",
     "dev": "yarn storybook",
     "build-storybook": "build-storybook",
+    "// build": "For context on tsconfig replacements in build scripts, see https://github.com/radix-ui/primitives/pull/361#discussion_r555004944",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
     "build:packages": "parcel build 'packages/*/*/'",
