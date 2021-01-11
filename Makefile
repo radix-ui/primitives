@@ -1,2 +1,0 @@
-build:
-	parcel build packages/*/*/
