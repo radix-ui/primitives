@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ToggleButton, ToggleButtonGroup, ToggleButtonGroupExclusive } from './ToggleButton';
 import { styled } from '../../../../stitches.config';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 export default { title: 'Components/ToggleButton' };
 
@@ -36,6 +37,39 @@ export const Grouped = () => {
         Option 3
       </ToggleButton>
     </ToggleButtonGroup>
+  );
+};
+
+export const GroupedWithRovingFocus = () => {
+  return (
+    <div>
+      <VisuallyHidden id="desc">
+        To navigate the buttons within the group, use the arrow keys
+      </VisuallyHidden>
+      <ToggleButtonGroup
+        aria-label="Options"
+        aria-describedby="desc"
+        defaultValue={['1']}
+        rovingFocus
+      >
+        <ToggleButton value="1" as={StyledRoot}>
+          Option 1
+        </ToggleButton>
+        <ToggleButton value="2" as={StyledRoot}>
+          Option 2
+        </ToggleButton>
+        <ToggleButton
+          value="3"
+          as={StyledRoot}
+          onToggledChange={() => {
+            // Make sure onToggledChange fires even in grouped buttons
+            console.log('Button 3 has changed!');
+          }}
+        >
+          Option 3
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </div>
   );
 };
 
