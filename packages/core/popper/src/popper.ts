@@ -1,5 +1,5 @@
 import * as CSS from 'csstype';
-import { makeRect, getOppositeSide, getCollisions } from '@radix-ui/utils';
+import { makeRect, getOppositeSide, getCollisions, getContractedRect } from '@radix-ui/utils';
 
 import type { Axis, Side, Align, Point, Size } from '@radix-ui/utils';
 
@@ -24,6 +24,8 @@ type GetPlacementDataOptions = {
   alignOffset?: number;
   /** An option to turn on/off the collision handling (default: true) */
   shouldAvoidCollisions?: boolean;
+  /** The rect which represents the boundaries for collision checks */
+  collisionBoundariesRect?: ClientRect;
   /** The tolerance used for collisions, ie. if we want them to trigger a bit earlier (default: 0) */
   collisionTolerance?: number;
 };
@@ -56,11 +58,12 @@ export function getPlacementData({
   align,
   alignOffset = 0,
   shouldAvoidCollisions = true,
+  collisionBoundariesRect,
   collisionTolerance = 0,
 }: GetPlacementDataOptions): PlacementData {
   // if we're not ready to do all the measurements yet,
   // we return some good default styles
-  if (!anchorRect || !popperSize) {
+  if (!anchorRect || !popperSize || !collisionBoundariesRect) {
     return {
       popperStyles: UNMEASURED_POPPER_STYLES,
       arrowStyles: UNMEASURED_ARROW_STYLES,
@@ -104,8 +107,14 @@ export function getPlacementData({
   // create a new rect as if element had been moved to new placement
   const popperRect = makeRect(popperSize, popperPoint);
 
+  // create a new rect representing the collision boundaries but taking into account any added tolerance
+  const collisionBoundariesRectWithTolerance = getContractedRect(
+    collisionBoundariesRect,
+    collisionTolerance
+  );
+
   // check for any collisions in new placement
-  const popperCollisions = getCollisions(popperRect, collisionTolerance);
+  const popperCollisions = getCollisions(popperRect, collisionBoundariesRectWithTolerance);
 
   // do all the same calculations for the opposite side
   // this is because we need to check for potential collisions if we were to swap side
@@ -114,7 +123,7 @@ export function getPlacementData({
   const updatedOppositeSidePopperPoint = makeRect(popperSize, oppositeSidePopperPoint);
   const oppositeSidePopperCollisions = getCollisions(
     updatedOppositeSidePopperPoint,
-    collisionTolerance
+    collisionBoundariesRectWithTolerance
   );
 
   // adjust side accounting for collisions / opposite side collisions

@@ -77,6 +77,16 @@ enum ScrollAreaEvents {
 
 const ROOT_DEFAULT_TAG = 'div';
 const ROOT_NAME = 'ScrollArea';
+const ROOT_DEFAULT_PROPS = {
+  as: ROOT_DEFAULT_TAG,
+  overflowX: 'auto',
+  overflowY: 'auto',
+  scrollbarVisibility: 'hover',
+  scrollbarVisibilityRestTimeout: 600,
+  dir: 'ltr',
+  trackClickBehavior: 'relative',
+  unstable_prefersReducedMotion: false,
+} as const;
 
 interface ScrollAreaRefs {
   buttonLeftRef: React.RefObject<HTMLDivElement>;
@@ -101,7 +111,7 @@ const [ScrollAreaRefsContext, useScrollAreaRefs] = createContext<ScrollAreaRefs>
 );
 
 interface ScrollAreaContextValue {
-  dir?: 'rtl' | 'ltr';
+  dir?: TextDirection;
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
   prefersReducedMotion: boolean;
@@ -186,24 +196,15 @@ type ScrollAreaOwnProps = {
    */
   unstable_forceNative?: boolean;
   unstable_prefersReducedMotion?: boolean;
-  dir?: 'rtl' | 'ltr';
+  dir?: TextDirection;
 };
 
 const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaOwnProps>(
   function ScrollArea(props, forwardedRef) {
-    const {
-      as = ROOT_DEFAULT_TAG,
-      children,
-      overflowX = 'auto',
-      overflowY = 'auto',
-      scrollbarVisibility = 'hover',
-      scrollbarVisibilityRestTimeout = 600,
-      dir = 'ltr',
-      trackClickBehavior = 'relative',
-      unstable_forceNative: forceNative = false,
-      unstable_prefersReducedMotion = false,
-      ...domProps
-    } = props;
+    const { unstable_forceNative: forceNative = false, children, ...restProps } = {
+      ...ROOT_DEFAULT_PROPS,
+      ...props,
+    };
     const [usesNative, setUsesNative] = React.useState(true);
     // Check to make sure the user's browser supports our custom scrollbar features. We use a layout
     // effect here to avoid a visible flash when the custom scroll area replaces the native version.
@@ -220,18 +221,10 @@ const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaOwnProps>
 
     return (
       <ScrollAreaCustomOrNative
-        {...getPartDataAttrObj(ROOT_NAME)}
-        {...domProps}
-        as={as}
-        overflowX={overflowX}
-        overflowY={overflowY}
-        scrollbarVisibility={scrollbarVisibility}
-        scrollbarVisibilityRestTimeout={scrollbarVisibilityRestTimeout}
-        dir={dir}
         positionRef={positionRef}
         scrollAreaRef={scrollAreaRef}
-        trackClickBehavior={trackClickBehavior}
-        unstable_prefersReducedMotion={unstable_prefersReducedMotion}
+        {...getPartDataAttrObj(ROOT_NAME)}
+        {...restProps}
         ref={forwardedRef}
       >
         <NativeScrollContext.Provider value={usesNative}>{children}</NativeScrollContext.Provider>
@@ -239,6 +232,26 @@ const ScrollArea = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaOwnProps>
     );
   }
 );
+
+const ScrollAreaNoNativeFallback = forwardRefWithAs<
+  typeof ROOT_DEFAULT_TAG,
+  Omit<ScrollAreaOwnProps, 'unstable_forceNative'>
+>(function ScrollArea(props, forwardedRef) {
+  const { children, ...restProps } = { ...ROOT_DEFAULT_PROPS, ...props };
+  const positionRef = React.useRef<HTMLDivElement>(null);
+  const scrollAreaRef = React.useRef<HTMLDivElement>(null);
+  return (
+    <ScrollAreaImpl
+      positionRef={positionRef}
+      scrollAreaRef={scrollAreaRef}
+      {...getPartDataAttrObj(ROOT_NAME)}
+      {...restProps}
+      ref={forwardedRef}
+    >
+      <NativeScrollContext.Provider value={false}>{children}</NativeScrollContext.Provider>
+    </ScrollAreaImpl>
+  );
+});
 
 type ScrollAreaInternalProps = {
   positionRef: React.RefObject<HTMLDivElement>;
@@ -254,7 +267,7 @@ type ScrollAreaNativeProps = ScrollAreaInternalProps &
 const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNativeProps>(
   function ScrollAreaNative(props, forwardedRef) {
     const {
-      as: Comp = ROOT_DEFAULT_TAG,
+      as: Comp,
       overflowX,
       overflowY,
       scrollbarVisibility,
@@ -264,7 +277,7 @@ const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNat
       scrollAreaRef,
       positionRef,
       ...domProps
-    } = props;
+    } = { ...ROOT_DEFAULT_PROPS, ...props };
 
     const ref = useComposedRefs(scrollAreaRef, forwardedRef);
 
@@ -288,7 +301,7 @@ const ScrollAreaNative = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaNat
 );
 
 type ScrollAreaImplProps = ScrollAreaInternalProps &
-  Required<Omit<ScrollAreaOwnProps, 'unstable_forceNative'>>;
+  Omit<ScrollAreaOwnProps, 'unstable_forceNative'>;
 
 const initialSize = { width: 0, height: 0 };
 const initialState: ScrollAreaReducerState = {
@@ -312,7 +325,7 @@ const initialState: ScrollAreaReducerState = {
 const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplProps>(
   function ScrollAreaImpl(props, forwardedRef) {
     const {
-      as: Comp = ROOT_DEFAULT_TAG,
+      as: Comp,
       children,
       onScroll,
       overflowX,
@@ -324,7 +337,7 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
       positionRef,
       scrollAreaRef,
       ...domProps
-    } = props;
+    } = { ...ROOT_DEFAULT_PROPS, ...props };
 
     // That we call `onScroll` in the viewport component is an implementation detail that the
     // consumer probably shouldn't need to think about. Passing it down from the top means that the
@@ -377,7 +390,7 @@ const ScrollAreaImpl = forwardRefWithAs<typeof ROOT_DEFAULT_TAG, ScrollAreaImplP
 
     const context: ScrollAreaContextValue = React.useMemo(() => {
       return {
-        dir: props.dir || 'ltr',
+        dir: props.dir,
         isHovered,
         onScroll: handleScroll,
         overflowX,
@@ -1574,6 +1587,7 @@ const ButtonEnd = ScrollAreaButtonEnd;
 const Track = ScrollAreaTrack;
 const Thumb = ScrollAreaThumb;
 const Corner = ScrollAreaCorner;
+const unstable_ScrollAreaNoNativeFallback = ScrollAreaNoNativeFallback;
 
 export {
   ScrollArea,
@@ -1585,6 +1599,7 @@ export {
   ScrollAreaTrack,
   ScrollAreaThumb,
   ScrollAreaCorner,
+  unstable_ScrollAreaNoNativeFallback,
   //
   Root,
   Viewport,
@@ -2358,3 +2373,5 @@ interface AnimationOptions {
   done?(): any;
   rafIdRef: React.MutableRefObject<number | undefined>;
 }
+
+type TextDirection = 'ltr' | 'rtl';
