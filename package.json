@@ -140,8 +140,5 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
-  },
-  "resolutions": {
-    "@types/styled-system__core": "npm:@peduarte/styled-system__core@*"
   }
 }
