@@ -28,6 +28,8 @@ type ToggleButtonGroupOwnProps = {
   defaultValue?: string[];
   /** A function called when the value of the toggled buttons changes */
   onValueChange?(value: string[]): void;
+  /** Whether or not a selection in the group is required after initial selection */
+  selectionIsRequired?: boolean;
 };
 
 const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButtonGroupOwnProps>(
@@ -38,6 +40,7 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
       defaultValue,
       onValueChange,
       children,
+      selectionIsRequired = false,
       ...groupProps
     } = props;
 
@@ -52,6 +55,11 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
       if (!value || value.length < 1) {
         return setValue([buttonValue]);
       }
+
+      if (selectionIsRequired && value.length === 1 && value.includes(buttonValue)) {
+        return;
+      }
+
       setValue(
         value.includes(buttonValue)
           ? value.filter((v) => v !== buttonValue)
@@ -59,7 +67,11 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
       );
     }
 
-    const context: ToggleButtonGroupContextValue = { setValue, value, handleChange };
+    const context: ToggleButtonGroupContextValue = {
+      setValue,
+      value,
+      handleChange,
+    };
 
     return (
       <Comp {...getPartDataAttrObj(GROUP_NAME)} role="group" ref={forwardedRef} {...groupProps}>
@@ -86,6 +98,8 @@ type ToggleButtonGroupExclusiveOwnProps = {
   defaultValue?: string;
   /** A function called when the value of the toggled buttons changes */
   onValueChange?(value: string | null): void;
+  /** Whether or not a selection in the group is required after initial selection */
+  selectionIsRequired?: boolean;
 };
 
 type ToggleButtonGroupExclusiveContextValue = {
@@ -110,6 +124,7 @@ const ToggleButtonGroupExclusive = forwardRefWithAs<
     defaultValue,
     onValueChange,
     children,
+    selectionIsRequired = false,
     ...groupProps
   } = props;
 
@@ -119,10 +134,22 @@ const ToggleButtonGroupExclusive = forwardRefWithAs<
     onChange: onValueChange,
   });
 
+  function handleChange(buttonValue: string) {
+    if (!value) {
+      return setValue(buttonValue);
+    }
+
+    if (selectionIsRequired && value === buttonValue) {
+      return;
+    }
+
+    setValue(value === buttonValue ? null : buttonValue);
+  }
+
   const context: ToggleButtonGroupExclusiveContextValue = {
     setValue,
     value,
-    handleChange: setValue,
+    handleChange,
   };
 
   return (
@@ -200,8 +227,9 @@ const ToggleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, ToggleButtonOwn
       : _toggled);
 
     function setToggled(state: boolean) {
-      if (exclusiveGroupContext || standardGroupContext) {
-        (exclusiveGroupContext || standardGroupContext)!.handleChange(value);
+      const context = exclusiveGroupContext || standardGroupContext;
+      if (context) {
+        context.handleChange(value);
       } else {
         _setToggled(state);
       }

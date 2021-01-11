@@ -40,39 +40,8 @@ export const Grouped = () => {
 };
 
 export const GroupedControlled = () => {
+  const [selectionIsRequired, setSelectionIsRequired] = React.useState(false);
   const [value, setValue] = React.useState<string[]>(['1']);
-
-  return (
-    <ToggleButtonGroup
-      aria-label="Options"
-      value={value}
-      onValueChange={(val) => setValue(val as any)}
-    >
-      <ToggleButton value="1" as={StyledRoot}>
-        Option 1
-      </ToggleButton>
-      <ToggleButton value="2" as={StyledRoot}>
-        Option 2
-      </ToggleButton>
-      <ToggleButton value="3" as={StyledRoot}>
-        Option 3
-      </ToggleButton>
-    </ToggleButtonGroup>
-  );
-};
-
-export const GroupedControlledExclusive = () => {
-  const [ensureSelection, setEnsureSelection] = React.useState(false);
-  const [value, setValue] = React.useState<string | null>(null);
-  function handleValueChange(newValue: string | null) {
-    setValue((prevValue) => {
-      return ensureSelection
-        ? newValue || prevValue || '1'
-        : newValue === prevValue
-        ? null
-        : newValue;
-    });
-  }
 
   return (
     <div>
@@ -80,8 +49,54 @@ export const GroupedControlledExclusive = () => {
         <label>
           <input
             type="checkbox"
-            checked={ensureSelection}
-            onChange={(e) => setEnsureSelection(e.target.checked)}
+            checked={selectionIsRequired}
+            onChange={(e) => setSelectionIsRequired(e.target.checked)}
+          />
+          <span>Ensure selection</span>
+        </label>
+      </div>
+      <hr />
+      <div>
+        <ToggleButtonGroup
+          aria-label="Options"
+          value={selectionIsRequired && (value == null || value.length < 1) ? ['1'] : value}
+          onValueChange={setValue}
+          selectionIsRequired={selectionIsRequired}
+        >
+          <ToggleButton value="1" as={StyledRoot}>
+            Option 1
+          </ToggleButton>
+          <ToggleButton value="2" as={StyledRoot}>
+            Option 2
+          </ToggleButton>
+          <ToggleButton
+            value="3"
+            as={StyledRoot}
+            onToggledChange={() => {
+              // Make sure onToggledChange fires even in grouped buttons
+              console.log('Button 3 has changed!');
+            }}
+          >
+            Option 3
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+    </div>
+  );
+};
+
+export const GroupedControlledExclusive = () => {
+  const [selectionIsRequired, setSelectionIsRequired] = React.useState(false);
+  const [value, setValue] = React.useState<string | null>(null);
+
+  return (
+    <div>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={selectionIsRequired}
+            onChange={(e) => setSelectionIsRequired(e.target.checked)}
           />
           <span>Ensure selection</span>
         </label>
@@ -90,8 +105,9 @@ export const GroupedControlledExclusive = () => {
       <div>
         <ToggleButtonGroupExclusive
           aria-label="Options"
-          value={ensureSelection && value == null ? '1' : value}
-          onValueChange={handleValueChange}
+          value={selectionIsRequired && value == null ? '1' : value}
+          onValueChange={setValue}
+          selectionIsRequired={selectionIsRequired}
         >
           <ToggleButton value="1" as={StyledRoot}>
             Option 1
