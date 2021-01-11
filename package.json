@@ -4,8 +4,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "workspaces": [
-    "packages/core/*",
-    "packages/react/*"
+    "packages/*/*"
   ],
   "scripts": {
     "lint": "eslint packages --ext .js,.ts,.tsx",
@@ -15,9 +14,10 @@
     "storybook": "start-storybook -p 9009 --ci",
     "dev": "yarn storybook",
     "build-storybook": "build-storybook",
+    "// build": "For context on tsconfig replacements in build scripts, see https://github.com/radix-ui/primitives/pull/361#discussion_r555004944",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
-    "build:packages": "yarn workspaces foreach -t --exclude primitives run build",
+    "build:packages": "parcel build 'packages/*/*/'",
     "build:cleanup": "mv tsconfig.json tsconfig.production.json && mv tsconfig.tmp.json tsconfig.json",
     "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude primitives npm publish --tolerate-republish --access public",
     "clean": "yarn workspaces foreach -pv --exclude primitives run clean",
@@ -60,6 +60,7 @@
     "jest-axe": "^3.5.0",
     "jest-watch-typeahead": "^0.6.0",
     "lint-staged": "^10.5.3",
+    "parcel": "2.0.0-nightly.442",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "react-test-renderer": "^17.0.1",

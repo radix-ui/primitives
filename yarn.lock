@@ -996,21 +996,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-modules-commonjs@npm:^7.0.0, @babel/plugin-transform-modules-commonjs@npm:^7.10.4":
-  version: 7.10.4
-  resolution: "@babel/plugin-transform-modules-commonjs@npm:7.10.4"
-  dependencies:
-    "@babel/helper-module-transforms": ^7.10.4
-    "@babel/helper-plugin-utils": ^7.10.4
-    "@babel/helper-simple-access": ^7.10.4
-    babel-plugin-dynamic-import-node: ^2.3.3
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 42176865089a2800e888c41beaf3688e00b9b71b5bc65ca238342c83e9d38ec141eaa405182688a8294b344cd8a7ed36ab2da2662c38a40e2c736fed48ae7178
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-transform-modules-commonjs@npm:^7.12.1":
+"@babel/plugin-transform-modules-commonjs@npm:^7.0.0, @babel/plugin-transform-modules-commonjs@npm:^7.12.1":
   version: 7.12.1
   resolution: "@babel/plugin-transform-modules-commonjs@npm:7.12.1"
   dependencies:
@@ -1021,6 +1007,20 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 7201ad5f82f51f992e855909a99adc9dbade07146d86bd3b219fb6bc4111169adca4b082365365657f03ae025b5ce18d749125251a1aca111d06c2c647cfbfbe
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-transform-modules-commonjs@npm:^7.10.4":
+  version: 7.10.4
+  resolution: "@babel/plugin-transform-modules-commonjs@npm:7.10.4"
+  dependencies:
+    "@babel/helper-module-transforms": ^7.10.4
+    "@babel/helper-plugin-utils": ^7.10.4
+    "@babel/helper-simple-access": ^7.10.4
+    babel-plugin-dynamic-import-node: ^2.3.3
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 42176865089a2800e888c41beaf3688e00b9b71b5bc65ca238342c83e9d38ec141eaa405182688a8294b344cd8a7ed36ab2da2662c38a40e2c736fed48ae7178
   languageName: node
   linkType: hard
 
@@ -3032,7 +3032,6 @@ __metadata:
   dependencies:
     "@radix-ui/utils": "workspace:*"
     csstype: ^3.0.4
-    parcel: ^2.0.0-beta.1
   languageName: unknown
   linkType: soft
 
@@ -3041,7 +3040,6 @@ __metadata:
   resolution: "@radix-ui/react-accessible-icon@workspace:packages/react/accessible-icon"
   dependencies:
     "@radix-ui/react-visually-hidden": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3055,7 +3053,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3069,7 +3066,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16.8"
   languageName: unknown
@@ -3082,7 +3078,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
     react-dom: ^16.8 || ^17.0
@@ -3095,7 +3090,6 @@ __metadata:
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3107,7 +3101,6 @@ __metadata:
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3120,7 +3113,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3135,7 +3127,6 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3149,7 +3140,6 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3160,7 +3150,6 @@ __metadata:
   resolution: "@radix-ui/react-collection@workspace:packages/react/collection"
   dependencies:
     "@radix-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3174,7 +3163,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3193,7 +3181,6 @@ __metadata:
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
     aria-hidden: ^1.1.1
-    parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3205,7 +3192,6 @@ __metadata:
   resolution: "@radix-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
   dependencies:
     "@radix-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3220,7 +3206,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3229,8 +3214,6 @@ __metadata:
 "@radix-ui/react-focus-guards@workspace:*, @radix-ui/react-focus-guards@workspace:packages/react/focus-guards":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-focus-guards@workspace:packages/react/focus-guards"
-  dependencies:
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3242,7 +3225,6 @@ __metadata:
   dependencies:
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3255,7 +3237,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3276,7 +3257,6 @@ __metadata:
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
     aria-hidden: ^1.1.1
-    parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3288,7 +3268,6 @@ __metadata:
   resolution: "@radix-ui/react-polymorphic@workspace:packages/react/polymorphic"
   dependencies:
     "@testing-library/react": ^10.4.8
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3308,7 +3287,6 @@ __metadata:
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
     aria-hidden: ^1.1.1
-    parcel: ^2.0.0-beta.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3324,7 +3302,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3335,7 +3312,6 @@ __metadata:
   resolution: "@radix-ui/react-portal@workspace:packages/react/portal"
   dependencies:
     "@radix-ui/react-utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
     react-dom: ^16.8 || ^17.0
@@ -3348,7 +3324,6 @@ __metadata:
   dependencies:
     "@radix-ui/react-utils": "workspace:*"
     "@xstate/fsm": ^1.5.1
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ">=16.8"
   languageName: unknown
@@ -3361,7 +3336,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3377,7 +3351,6 @@ __metadata:
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3389,7 +3362,6 @@ __metadata:
   dependencies:
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3403,7 +3375,6 @@ __metadata:
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
     "@stitches/react": canary
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3415,7 +3386,6 @@ __metadata:
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3429,7 +3399,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3443,7 +3412,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3457,7 +3425,6 @@ __metadata:
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3470,7 +3437,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3486,7 +3452,6 @@ __metadata:
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3500,7 +3465,6 @@ __metadata:
     "@radix-ui/utils": "workspace:*"
     "@testing-library/react": ^10.4.8
     "@types/resize-observer-browser": ^0.1.4
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3512,7 +3476,6 @@ __metadata:
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3521,8 +3484,6 @@ __metadata:
 "@radix-ui/utils@workspace:*, @radix-ui/utils@workspace:packages/core/utils":
   version: 0.0.0-use.local
   resolution: "@radix-ui/utils@workspace:packages/core/utils"
-  dependencies:
-    parcel: ^2.0.0-beta.1
   languageName: unknown
   linkType: soft
 
@@ -12581,16 +12542,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"line-column@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "line-column@npm:1.0.2"
-  dependencies:
-    isarray: ^1.0.0
-    isobject: ^2.0.0
-  checksum: e6fa785b0c75c4485d0f181beaeb2f0b482ebf16921b64d5b61e75e86a61504b42053655d481b1c8de5c4d8b551473c034eb48780c65d76be377e643d395f6e5
-  languageName: node
-  linkType: hard
-
 "lines-and-columns@npm:^1.1.6":
   version: 1.1.6
   resolution: "lines-and-columns@npm:1.1.6"
@@ -12598,32 +12549,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^10.0.8":
-  version: 10.5.1
-  resolution: "lint-staged@npm:10.5.1"
-  dependencies:
-    chalk: ^4.1.0
-    cli-truncate: ^2.1.0
-    commander: ^6.2.0
-    cosmiconfig: ^7.0.0
-    debug: ^4.2.0
-    dedent: ^0.7.0
-    enquirer: ^2.3.6
-    execa: ^4.1.0
-    listr2: ^3.2.2
-    log-symbols: ^4.0.0
-    micromatch: ^4.0.2
-    normalize-path: ^3.0.0
-    please-upgrade-node: ^3.2.0
-    string-argv: 0.3.1
-    stringify-object: ^3.3.0
-  bin:
-    lint-staged: bin/lint-staged.js
-  checksum: d22748dde5117c1d63e6829a73cf5755b4b99b5c93adaf53d1842941bf8b415d18577fe58291c4e44d40446e05400fe7cafe88727bcd61ef2837840406b89496
-  languageName: node
-  linkType: hard
-
-"lint-staged@npm:^10.5.3":
+"lint-staged@npm:^10.0.8, lint-staged@npm:^10.5.3":
   version: 10.5.3
   resolution: "lint-staged@npm:10.5.3"
   dependencies:
@@ -13449,12 +13375,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.12":
-  version: 3.1.16
-  resolution: "nanoid@npm:3.1.16"
+"nanoid@npm:^3.1.20":
+  version: 3.1.20
+  resolution: "nanoid@npm:3.1.20"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: 1903aa0a7602e881ef7015d4c8ccf8a2a92b45b1bd6c4bb9c1dd2119f41ebe08a44c9195ecf4c1fbaef147bd4d050e41adbcb747ec96d7d14c1f662e3ac52790
+  checksum: 4788d36edcfec7bb32ddf33ed8f1f46df2867f70e9b1993bb131f7677e04ead2b621e5d614d2736308be18db1d54208d8ab207b4586bd5b052f71fb9d4c0ebea
   languageName: node
   linkType: hard
 
@@ -13555,11 +13481,11 @@ fsevents@^1.2.7:
   linkType: hard
 
 "node-addon-api@npm:^3.0.0":
-  version: 3.0.2
-  resolution: "node-addon-api@npm:3.0.2"
+  version: 3.1.0
+  resolution: "node-addon-api@npm:3.1.0"
   dependencies:
     node-gyp: latest
-  checksum: 7f401e4ad9ed75cea9ba8590da8048b37e99531e8d8b46b941e6c951ca1cf8e0db29f31ddf25d3e87c13cb6653c06e0db72c05ef50eff9db3529cd929ae69747
+  checksum: 9b5c1f5f24acb9255fd47914b0f0b80c76d735b7b91611366cd30217f8ead5fafcd1cfeb65e467612b40420b6ad3faf1e7fa3666bd4e15a2bdf1762748f3fa8a
   languageName: node
   linkType: hard
 
@@ -14234,7 +14160,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"parcel@npm:^2.0.0-beta.1":
+"parcel@npm:2.0.0-nightly.442":
   version: 2.0.0-nightly.442
   resolution: "parcel@npm:2.0.0-nightly.442"
   dependencies:
@@ -15121,14 +15047,13 @@ fsevents@^1.2.7:
   linkType: hard
 
 "postcss@npm:^8.0.5":
-  version: 8.1.1
-  resolution: "postcss@npm:8.1.1"
+  version: 8.2.1
+  resolution: "postcss@npm:8.2.1"
   dependencies:
     colorette: ^1.2.1
-    line-column: ^1.0.2
-    nanoid: ^3.1.12
+    nanoid: ^3.1.20
     source-map: ^0.6.1
-  checksum: 9bdc9e51369ee35831589f0cfffcb996ed2b50aa23e54e3cf849c74361c17e7f7c1df3e0b993392818ede40f0731c458be134901ce9438bd38223e38781f52f5
+  checksum: aa7ba3d80a4d8e25bc1a3f61461d7f6b60d361fb1301465d0eb973c5f38b347ad0842b02b8cc8801ede46559391d7c640c7313301a829ef9ca77e34be7230854
   languageName: node
   linkType: hard
 
@@ -15283,6 +15208,7 @@ fsevents@^1.2.7:
     jest-axe: ^3.5.0
     jest-watch-typeahead: ^0.6.0
     lint-staged: ^10.5.3
+    parcel: 2.0.0-nightly.442
     prettier: ^2.0.5
     pretty-quick: ^2.0.1
     react: ^17.0.1
@@ -17713,15 +17639,15 @@ fsevents@^1.2.7:
   linkType: hard
 
 "terser@npm:^5.2.0":
-  version: 5.3.8
-  resolution: "terser@npm:5.3.8"
+  version: 5.5.1
+  resolution: "terser@npm:5.5.1"
   dependencies:
     commander: ^2.20.0
     source-map: ~0.7.2
     source-map-support: ~0.5.19
   bin:
     terser: bin/terser
-  checksum: 3fc070378ba9981d8088a4012060f16428a97dc8f98d5a731b2ab51b8c9bc8cb651ca068aef499faad863584ae4d4883872c4f51db053bc2575c2e0bc11ab411
+  checksum: f96abd0fb4595a1cbc875df661eceb7ae97cf05996f5327e38f16b5bf0c685296ab81d00a34059f6ca292bbba5eeed31ed7e51d2bf5d7cf6534a1a31aff0db86
   languageName: node
   linkType: hard
 
