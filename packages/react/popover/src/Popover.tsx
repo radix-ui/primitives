@@ -224,7 +224,7 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
       <PortalWrapper>
         <ScrollLockWrapper>
           <FocusScope
-            trapped={trapFocus}
+            trapped={skipCloseAutoFocus ? false : trapFocus}
             onMountAutoFocus={onOpenAutoFocus}
             onUnmountAutoFocus={(event) => {
               if (skipCloseAutoFocus) {
@@ -238,7 +238,7 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
               <DismissableLayer
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onEscapeKeyDown={onEscapeKeyDown}
-                onPointerDownOutside={(event) => {
+                onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
                   const wasTrigger = context.triggerRef.current?.contains(
                     event.target as HTMLElement
                   );
@@ -250,15 +250,13 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
                   // as it's already setup to close, otherwise it would close and immediately open.
                   if (wasTrigger) {
                     event.preventDefault();
-                  } else {
-                    onInteractOutside?.(event);
                   }
 
                   if (event.defaultPrevented) {
                     // reset this because the event was prevented
                     setSkipCloseAutoFocus(false);
                   }
-                }}
+                })}
                 onFocusOutside={composeEventHandlers(
                   onFocusOutside,
                   (event) => {

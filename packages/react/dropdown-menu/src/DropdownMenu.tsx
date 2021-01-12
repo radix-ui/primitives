@@ -136,7 +136,7 @@ const DropdownMenuContent = forwardRefWithAs<
       open={context.open}
       onOpenChange={context.setOpen}
       anchorRef={anchorRef || context.triggerRef}
-      trapFocus
+      trapFocus={skipCloseAutoFocus ? false : true}
       onCloseAutoFocus={(event) => {
         if (skipCloseAutoFocus) {
           event.preventDefault();
@@ -145,7 +145,7 @@ const DropdownMenuContent = forwardRefWithAs<
         }
       }}
       disableOutsidePointerEvents={disableOutsidePointerEvents}
-      onPointerDownOutside={(event) => {
+      onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
         const wasTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
 
         // skip autofocus on close if clicking outside is allowed and it happened
@@ -155,15 +155,13 @@ const DropdownMenuContent = forwardRefWithAs<
         // as it's already setup to close, otherwise it would close and immediately open.
         if (wasTrigger) {
           event.preventDefault();
-        } else {
-          onInteractOutside?.(event);
         }
 
         if (event.defaultPrevented) {
           // reset this because the event was prevented
           setSkipCloseAutoFocus(false);
         }
-      }}
+      })}
       onInteractOutside={onInteractOutside}
       disableOutsideScroll={disableOutsideScroll}
       portalled={portalled}
