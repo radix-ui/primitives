@@ -93,20 +93,12 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
     return (
       <Comp {...getPartDataAttrObj(GROUP_NAME)} role="group" ref={forwardedRef} {...groupProps}>
         <ToggleButtonGroupContext.Provider value={context}>
-          <ToggleButtonGroupInner rovingFocus={rovingFocus}>{children}</ToggleButtonGroupInner>
+          {rovingFocus ? <RovingFocusGroup loop>{children}</RovingFocusGroup> : children}
         </ToggleButtonGroupContext.Provider>
       </Comp>
     );
   }
 );
-
-function ToggleButtonGroupInner(props: { rovingFocus: boolean; children: React.ReactNode }) {
-  return props.rovingFocus ? (
-    <RovingFocusGroup loop>{props.children}</RovingFocusGroup>
-  ) : (
-    <React.Fragment>{props.children}</React.Fragment>
-  );
-}
 
 /* -------------------------------------------------------------------------------------------------
  * ToggleButtonExclusive
@@ -182,7 +174,7 @@ const ToggleButtonGroupExclusive = forwardRefWithAs<
   return (
     <Comp {...getPartDataAttrObj(GROUP_EXC_NAME)} role="group" ref={forwardedRef} {...groupProps}>
       <ToggleButtonGroupExclusiveContext.Provider value={context}>
-        <ToggleButtonGroupInner rovingFocus={rovingFocus}>{children}</ToggleButtonGroupInner>
+        {rovingFocus ? <RovingFocusGroup loop>{children}</RovingFocusGroup> : children}
       </ToggleButtonGroupExclusiveContext.Provider>
     </Comp>
   ) as any;
