@@ -75,7 +75,7 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
         return;
       }
 
-      setValue(
+      setValue((value) =>
         value.includes(buttonValue)
           ? value.filter((v) => v !== buttonValue)
           : value.concat(buttonValue).sort()
