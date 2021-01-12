@@ -32,7 +32,7 @@ ToggleButtonGroupContext.displayName = GROUP_CONTEXT_NAME;
 
 type ToggleButtonGroupSharedProps = {
   /** Whether or not a selection in the group is required after initial selection */
-  selectionIsRequired?: boolean;
+  required?: boolean;
   /** Whether or not the group should maintain roving focus of its buttons */
   rovingFocus?: boolean;
 };
@@ -54,7 +54,7 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
       defaultValue,
       onValueChange,
       children,
-      selectionIsRequired = false,
+      required = false,
       rovingFocus = false,
       ...groupProps
     } = props;
@@ -71,7 +71,7 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
         return setValue([buttonValue]);
       }
 
-      if (selectionIsRequired && value.length === 1 && value.includes(buttonValue)) {
+      if (required && value.length === 1 && value.includes(buttonValue)) {
         return;
       }
 
@@ -140,7 +140,7 @@ const ToggleButtonGroupExclusive = forwardRefWithAs<
     defaultValue,
     onValueChange,
     children,
-    selectionIsRequired = false,
+    required = false,
     rovingFocus = false,
     ...groupProps
   } = props;
@@ -156,7 +156,7 @@ const ToggleButtonGroupExclusive = forwardRefWithAs<
       return setValue(buttonValue);
     }
 
-    if (selectionIsRequired && value === buttonValue) {
+    if (required && value === buttonValue) {
       return;
     }
 

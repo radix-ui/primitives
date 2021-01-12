@@ -74,7 +74,7 @@ export const GroupedWithRovingFocus = () => {
 };
 
 export const GroupedControlled = () => {
-  const [selectionIsRequired, setSelectionIsRequired] = React.useState(false);
+  const [required, setRequired] = React.useState(false);
   const [value, setValue] = React.useState<string[]>(['1']);
 
   return (
@@ -83,19 +83,19 @@ export const GroupedControlled = () => {
         <label>
           <input
             type="checkbox"
-            checked={selectionIsRequired}
-            onChange={(e) => setSelectionIsRequired(e.target.checked)}
+            checked={required}
+            onChange={(e) => setRequired(e.target.checked)}
           />
-          <span>Ensure selection</span>
+          <span>Require selection</span>
         </label>
       </div>
       <hr />
       <div>
         <ToggleButtonGroup
           aria-label="Options"
-          value={selectionIsRequired && (value == null || value.length < 1) ? ['1'] : value}
+          value={required && (value == null || value.length < 1) ? ['1'] : value}
           onValueChange={setValue}
-          selectionIsRequired={selectionIsRequired}
+          required={required}
         >
           <ToggleButton value="1" as={StyledRoot}>
             Option 1
@@ -120,7 +120,7 @@ export const GroupedControlled = () => {
 };
 
 export const GroupedControlledExclusive = () => {
-  const [selectionIsRequired, setSelectionIsRequired] = React.useState(false);
+  const [required, setRequired] = React.useState(false);
   const [value, setValue] = React.useState<string | null>(null);
 
   return (
@@ -129,19 +129,19 @@ export const GroupedControlledExclusive = () => {
         <label>
           <input
             type="checkbox"
-            checked={selectionIsRequired}
-            onChange={(e) => setSelectionIsRequired(e.target.checked)}
+            checked={required}
+            onChange={(e) => setRequired(e.target.checked)}
           />
-          <span>Ensure selection</span>
+          <span>Require selection</span>
         </label>
       </div>
       <hr />
       <div>
         <ToggleButtonGroupExclusive
           aria-label="Options"
-          value={selectionIsRequired && value == null ? '1' : value}
+          value={required && value == null ? '1' : value}
           onValueChange={setValue}
-          selectionIsRequired={selectionIsRequired}
+          required={required}
         >
           <ToggleButton value="1" as={StyledRoot}>
             Option 1
