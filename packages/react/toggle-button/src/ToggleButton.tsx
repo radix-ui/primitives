@@ -118,9 +118,7 @@ type ToggleButtonGroupExclusiveOwnProps = ToggleButtonGroupSharedProps & {
 
 type ToggleButtonGroupExclusiveContextValue = {
   value: string | null;
-  setValue:
-    | React.Dispatch<React.SetStateAction<string | null>>
-    | React.Dispatch<React.SetStateAction<string>>;
+  setValue: React.Dispatch<React.SetStateAction<string | null>>;
   handleChange(value: string | null): void;
   name: typeof GROUP_EXC_CONTEXT_NAME;
   rovingFocus: boolean;
