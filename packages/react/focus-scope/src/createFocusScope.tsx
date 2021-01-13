@@ -38,13 +38,9 @@ function createFocusScope(container: HTMLElement) {
 
   function handleFocusInOrFocusOut(event: FocusEvent) {
     if (focusScope.paused) return;
-
     const isFocusOut = event.type === 'focusout';
     const focusedTarget = (isFocusOut ? event.relatedTarget : event.target) as Element | null;
     if (!container.contains(focusedTarget)) {
-      // we're intercepting the event and will re-focus in
-      // so we also pretend that the event didn't happen by stopping propagation.
-      event.stopImmediatePropagation();
       trapFocus(container, focusedTarget);
     }
   }

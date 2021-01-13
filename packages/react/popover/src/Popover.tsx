@@ -259,7 +259,15 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
                     setSkipCloseAutoFocus(false);
                   }
                 }}
-                onFocusOutside={onFocusOutside}
+                onFocusOutside={composeEventHandlers(
+                  onFocusOutside,
+                  (event) => {
+                    // When focus is trapped, a focusout event may still happen.
+                    // We make sure we don't trigger our `onDismiss` in such case.
+                    if (trapFocus) event.preventDefault();
+                  },
+                  { checkForDefaultPrevented: false }
+                )}
                 onInteractOutside={onInteractOutside}
                 onDismiss={() => context.setOpen(false)}
               >
