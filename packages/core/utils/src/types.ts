@@ -4,3 +4,5 @@
  */
 export type ElementTagNameMap = HTMLElementTagNameMap &
   Pick<SVGElementTagNameMap, Exclude<keyof SVGElementTagNameMap, keyof HTMLElementTagNameMap>>;
+
+export type Merge<P1 = {}, P2 = {}> = Omit<P1, keyof P2> & P2;

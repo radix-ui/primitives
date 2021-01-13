@@ -18,6 +18,7 @@
     "prepublish": "yarn clean && yarn build"
   },
   "devDependencies": {
+    "@radix-ui/react-primitive": "workspace:*",
     "@testing-library/react": "^10.4.8"
   },
   "peerDependencies": {

@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
 import { Primitive } from '@radix-ui/react-primitive';
-import { forwardRefWithAs } from './forwardRefWithAs';
 
-import type { MergeOwnProps } from './forwardRefWithAs';
+import type * as Polymorphic from './forwardRefWithAs';
 import type { RenderResult } from '@testing-library/react';
 
 /* -------------------------------------------------------------------------------------------------
@@ -15,12 +14,13 @@ type ButtonProps = {
   another?: number;
 };
 
-const Button = forwardRefWithAs<'button', MergeOwnProps<typeof Primitive, ButtonProps>>(
-  (props, forwardedRef) => {
-    const { isDisabled, ...buttonProps } = props;
-    return <Primitive as="button" {...buttonProps} ref={forwardedRef} />;
-  }
-);
+const Button = React.forwardRef((props, forwardedRef) => {
+  const { isDisabled, ...buttonProps } = props;
+  return <Primitive as="button" {...buttonProps} ref={forwardedRef} />;
+}) as Polymorphic.ForwardRefComponent<
+  'button',
+  Polymorphic.OwnProps<typeof Primitive> & ButtonProps
+>;
 
 /* -------------------------------------------------------------------------------------------------
  * Extended Button using react utilities without polymorphism
@@ -49,15 +49,20 @@ export function ExtendedButtonUsingReactUtilsWithInternalInlineAs(
 
 type ExtendedButtonProps = {
   isExtended?: boolean;
-  another: never;
 };
 
-const ExtendedButton = forwardRefWithAs<typeof Button, ExtendedButtonProps>(
-  (props, forwardedRef) => {
-    const { isExtended, ...extendedButtonProps } = props;
-    return <Button {...extendedButtonProps} ref={forwardedRef} />;
-  }
-);
+type ExtendedButtonButtonOwnProps = Omit<
+  Polymorphic.OwnProps<typeof Button>,
+  keyof ExtendedButtonProps | 'another'
+>;
+
+const ExtendedButton = React.forwardRef((props, forwardedRef) => {
+  const { isExtended, ...extendedButtonProps } = props;
+  return <Button {...extendedButtonProps} ref={forwardedRef} />;
+}) as Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Button>,
+  ExtendedButtonProps & ExtendedButtonButtonOwnProps
+>;
 
 /* -------------------------------------------------------------------------------------------------
  * Normal Link
@@ -85,11 +90,11 @@ type BoldProps = {
   requiredProp: boolean;
 };
 
-const Bold = forwardRefWithAs<'a', BoldProps>((props, forwardedRef) => {
+const Bold = React.forwardRef((props, forwardedRef) => {
   const { as: Comp = 'a', requiredProp, ...boldProps } = props;
   /* Does not expect requiredProp */
   return <Comp {...boldProps} ref={forwardedRef} />;
-});
+}) as Polymorphic.ForwardRefComponent<'a', BoldProps>;
 
 /* -----------------------------------------------------------------------------------------------*/
 

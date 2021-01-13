@@ -3,28 +3,40 @@ import * as React from 'react';
 /* -------------------------------------------------------------------------------------------------
  * Utility types
  * -----------------------------------------------------------------------------------------------*/
-type NeverKeys<T> = { [P in keyof T]: T[P] extends never ? P : never }[keyof T];
-type MergeProps<P1 = {}, P2 = {}> = Omit<P1, keyof P2> &
-  (NeverKeys<P2> extends never ? P2 : Omit<P2, NeverKeys<P2>>);
+type Merge<P1 = {}, P2 = {}> = Omit<P1, keyof P2> & P2;
 
-type MergeWithDOMProps<E extends React.ElementType, P = {}> = MergeProps<
-  React.ComponentPropsWithRef<E>,
-  P
->;
+type MergeProps<E, P = {}> = P &
+  Merge<E extends React.ElementType ? React.ComponentPropsWithRef<E> : never, P>;
+
+/**
+ * Infers the OwnProps if E is a ForwardRefExoticComponentWithAs
+ */
+type OwnProps<E> = E extends ForwardRefComponent<any, infer P> ? P : {};
+
+/**
+ * Infers the JSX.IntrinsicElement if E is a ForwardRefExoticComponentWithAs
+ */
+type IntrinsicElement<E> = E extends ForwardRefComponent<infer I, any> ? I : never;
+
+/**
+ * Gets the HTML element type from an intrinsic element
+ * @example ElementRef<'div'> // HTMLDivElement
+ */
+type ElementRef<E> = E extends keyof JSX.IntrinsicElements ? React.ElementRef<E> : never;
 
 /* -------------------------------------------------------------------------------------------------
- * ForwardRefExoticComponentWithAs
+ * ForwardRefComponent
  * -----------------------------------------------------------------------------------------------*/
 
-interface ForwardRefExoticComponentWithAs<
-  DefaultElement extends keyof JSX.IntrinsicElements,
-  OwnProps
+interface ForwardRefComponent<
+  IntrinsicElementString,
+  OwnProps = {}
   /**
    * Extends original type to ensure built in React types play nice
    * with polymorphic components still e.g. `React.ElementRef` etc.
    */
 > extends React.ForwardRefExoticComponent<
-    MergeWithDOMProps<DefaultElement, OwnProps & { as?: DefaultElement }>
+    MergeProps<IntrinsicElementString, OwnProps & { as?: IntrinsicElementString }>
   > {
   /**
    * When passing an `as` prop as a string, use this overload.
@@ -35,7 +47,7 @@ interface ForwardRefExoticComponentWithAs<
    * events are typed for consumers.
    */
   <As extends keyof JSX.IntrinsicElements>(
-    props: MergeWithDOMProps<As, OwnProps & { as: As }>
+    props: MergeProps<As, OwnProps & { as: As }>
   ): JSX.Element;
 
   /**
@@ -46,56 +58,15 @@ interface ForwardRefExoticComponentWithAs<
    * We don't use `React.ComponentType` here as we get type errors
    * when consumers try to do inline `as` components.
    */
-  <As extends React.ElementType<any>>(
-    props: MergeWithDOMProps<As, OwnProps & { as: As }>
-  ): JSX.Element;
+  <As extends React.ElementType>(props: MergeProps<As, OwnProps & { as: As }>): JSX.Element;
+
+  /**
+   * ForwardRefRenderFunction
+   */
+  (
+    props: MergeProps<IntrinsicElementString, OwnProps & { as?: IntrinsicElementString }>,
+    ref: React.ForwardedRef<ElementRef<IntrinsicElementString>>
+  ): React.ReactElement | null;
 }
 
-/* -------------------------------------------------------------------------------------------------
- * forwardRefWithAs
- * -----------------------------------------------------------------------------------------------*/
-
-/**
- * Infers the JSX.IntrinsicElement if E is a ForwardRefExoticComponentWithAs
- */
-type IntrinsicElement<E> = E extends ForwardRefExoticComponentWithAs<infer T, any> ? T : E;
-
-/**
- * Infers the OwnProps if E is a ForwardRefExoticComponentWithAs
- */
-type OwnProps<E> = E extends ForwardRefExoticComponentWithAs<any, infer P> ? P : never;
-
-/**
- * If E is a ForwardRefExoticComponentWithAs then we know we are trying to forward to
- * a polymorphic component. When this happens we merge the new polymorphic's OwnProps
- * with the original polymorphic's OwnProps, ensuring the new props take precedence.
- */
-type MergeOwnProps<E, P> = OwnProps<E> extends never ? P : MergeProps<OwnProps<E>, P>;
-
-/**
- * @example when creating a new polymorphic component
- * const Box = forwardRefWithAs<'div', { variant?: Variant }>()
- *
- * @example when extending an existing polymorphic component
- * const Flex = forwardRefWithAs<typeof Box, { direction?: FlexDirection }>()
- */
-function forwardRefWithAs<
-  E extends keyof JSX.IntrinsicElements | ForwardRefExoticComponentWithAs<any, any>,
-  OwnProps = {}
->(
-  component: React.ForwardRefRenderFunction<
-    React.ElementRef<IntrinsicElement<E>>,
-    MergeProps<
-      React.ComponentPropsWithoutRef<IntrinsicElement<E>>,
-      MergeOwnProps<E, OwnProps> & { as?: IntrinsicElement<E> }
-    >
-  >
-) {
-  return React.forwardRef(component) as ForwardRefExoticComponentWithAs<
-    IntrinsicElement<E>,
-    MergeOwnProps<E, OwnProps>
-  >;
-}
-
-export { forwardRefWithAs };
-export type { ForwardRefExoticComponentWithAs, OwnProps, MergeOwnProps };
+export type { ForwardRefComponent, OwnProps, IntrinsicElement };
