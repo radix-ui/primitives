@@ -198,7 +198,15 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onEscapeKeyDown={onEscapeKeyDown}
                 onPointerDownOutside={onPointerDownOutside}
-                onFocusOutside={onFocusOutside}
+                onFocusOutside={composeEventHandlers(
+                  onFocusOutside,
+                  (event) => {
+                    // When focus is trapped, a focusout event may still happen.
+                    // We make sure we don't trigger our `onDismiss` in such case.
+                    if (trapFocus) event.preventDefault();
+                  },
+                  { checkForDefaultPrevented: false }
+                )}
                 onInteractOutside={onInteractOutside}
                 onDismiss={onDismiss}
               >

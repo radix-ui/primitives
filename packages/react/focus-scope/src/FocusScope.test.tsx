@@ -96,6 +96,37 @@ describe('FocusScope', () => {
       expect(tabbableLast).toHaveFocus();
     });
   });
+
+  describe('given a FocusScope with internal focus handlers', () => {
+    const handleLastFocusableElementBlur = jest.fn();
+    let rendered: RenderResult;
+    let tabbableFirst: HTMLInputElement;
+    beforeEach(() => {
+      rendered = render(
+        <div>
+          <FocusScope trapped>
+            {(props) => (
+              <div {...props}>
+                <form>
+                  <TestField label={INNER_NAME_INPUT_LABEL} />
+                  <button onBlur={handleLastFocusableElementBlur}>{INNER_SUBMIT_LABEL}</button>
+                </form>
+              </div>
+            )}
+          </FocusScope>
+        </div>
+      );
+      tabbableFirst = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
+    });
+
+    it('should properly blur the last element in the scope before cycling back', async () => {
+      // Tab back and then tab forward to cycle through the scope
+      tabbableFirst.focus();
+      userEvent.tab({ shift: true });
+      userEvent.tab();
+      expect(handleLastFocusableElementBlur).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 function TestField({ label, ...props }: { label: string } & React.ComponentProps<'input'>) {
