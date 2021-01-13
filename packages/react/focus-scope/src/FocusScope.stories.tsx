@@ -32,11 +32,7 @@ export const Basic = () => {
               <input type="text" placeholder="First name" />
               <input type="text" placeholder="Last name" />
               <input type="number" placeholder="Age" />
-              <button
-                type="button"
-                onClick={() => setTrapped(false)}
-                onBlur={() => console.log('last focusable element was blurred')}
-              >
+              <button type="button" onClick={() => setTrapped(false)}>
                 Close
               </button>
             </form>
