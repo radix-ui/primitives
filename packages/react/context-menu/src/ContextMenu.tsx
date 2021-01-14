@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers, createContext, extendComponent } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { getPartDataAttrObj, makeRect } from '@radix-ui/utils';
+import { getPartDataAttrObj, makeRect, namespaced } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
 import type { Point, MeasurableElement } from '@radix-ui/utils';
@@ -89,6 +89,7 @@ const ContextMenuContent = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMe
       disableOutsidePointerEvents = true,
       side = 'bottom',
       align = 'start',
+      wrapperSelector = namespaced(CONTENT_NAME + 'Wrapper'),
       ...contentProps
     } = props;
     const context = useContextMenuContext(CONTENT_NAME);
@@ -98,7 +99,7 @@ const ContextMenuContent = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMe
         ref={forwardedRef}
         {...contentProps}
         {...getPartDataAttrObj(CONTENT_NAME)}
-        wrapperPartName={CONTENT_NAME + 'Wrapper'}
+        wrapperSelector={wrapperSelector}
         open={context.open}
         onOpenChange={context.setOpen}
         style={{

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getPartDataAttrObj, namespaced } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -224,6 +224,7 @@ const TooltipContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Tooltip
       'aria-label': ariaLabel,
       anchorRef,
       portalled = true,
+      wrapperSelector = namespaced(CONTENT_NAME + 'Wrapper'),
       ...contentProps
     } = props;
     const context = useTooltipContext(CONTENT_NAME);
@@ -234,7 +235,7 @@ const TooltipContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Tooltip
         <CheckTriggerMoved />
         <PopperPrimitive.Root
           {...getPartDataAttrObj(CONTENT_NAME)}
-          wrapperPartName={CONTENT_NAME + 'Wrapper'}
+          wrapperSelector={wrapperSelector}
           {...contentProps}
           data-state={context.stateAttribute}
           ref={forwardedRef}

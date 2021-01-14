@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getPartDataAttrObj, namespaced } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -201,6 +201,7 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
       onInteractOutside,
       disableOutsideScroll = false,
       portalled = true,
+      wrapperSelector = namespaced(CONTENT_NAME + 'Wrapper'),
       ...contentProps
     } = props;
     const context = usePopoverContext(CONTENT_NAME);
@@ -274,7 +275,7 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
                 {(dismissableLayerProps) => (
                   <PopperPrimitive.Root
                     {...getPartDataAttrObj(CONTENT_NAME)}
-                    wrapperPartName={CONTENT_NAME + 'Wrapper'}
+                    wrapperSelector={wrapperSelector}
                     role="dialog"
                     aria-modal
                     {...contentProps}

@@ -3,7 +3,7 @@ import { getPlacementData } from '@radix-ui/popper';
 import { createContext, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
-import { getPartDataAttrObj, makeRect } from '@radix-ui/utils';
+import { namespaced, getPartDataAttrObj, getSelectorObj, makeRect } from '@radix-ui/utils';
 
 import type { Side, Align, Size, MeasurableElement } from '@radix-ui/utils';
 
@@ -37,7 +37,7 @@ type PopperOwnProps = {
   alignOffset?: number;
   collisionTolerance?: number;
   avoidCollisions?: boolean;
-  wrapperPartName?: string;
+  wrapperSelector?: string | null;
 };
 
 const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
@@ -52,7 +52,7 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
       alignOffset,
       collisionTolerance,
       avoidCollisions = true,
-      wrapperPartName = POPPER_NAME + 'Wrapper',
+      wrapperSelector = namespaced(POPPER_NAME + 'Wrapper'),
       ...popperProps
     } = props;
 
@@ -88,7 +88,7 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
     const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
 
     return (
-      <div style={popperStyles} {...getPartDataAttrObj(wrapperPartName)}>
+      <div style={popperStyles} {...getSelectorObj(wrapperSelector)}>
         <Comp
           {...getPartDataAttrObj(POPPER_NAME)}
           {...popperProps}

@@ -7,7 +7,7 @@ import {
   useCallbackRef,
   useComposedRefs,
 } from '@radix-ui/react-utils';
-import { getPartDataAttr, getPartDataAttrObj } from '@radix-ui/utils';
+import { getPartDataAttr, getPartDataAttrObj, namespaced } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Presence } from '@radix-ui/react-presence';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
@@ -154,6 +154,7 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
       onDismiss,
       disableOutsideScroll,
       portalled,
+      wrapperSelector = namespaced(MENU_NAME + 'Wrapper'),
       ...menuProps
     } = props;
 
@@ -214,7 +215,7 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
                   <PopperPrimitive.Root
                     role="menu"
                     {...getPartDataAttrObj(MENU_NAME)}
-                    wrapperPartName={MENU_NAME + 'Wrapper'}
+                    wrapperSelector={wrapperSelector}
                     {...menuProps}
                     ref={composeRefs(
                       forwardedRef,

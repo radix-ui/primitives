@@ -8,7 +8,7 @@ import {
   useId,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getPartDataAttrObj, namespaced } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
 /* -------------------------------------------------------------------------------------------------
@@ -118,6 +118,7 @@ const DropdownMenuContent = forwardRefWithAs<
     onInteractOutside,
     disableOutsideScroll = true,
     portalled = true,
+    wrapperSelector = namespaced(CONTENT_NAME + 'Wrapper'),
     ...contentProps
   } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
@@ -127,7 +128,7 @@ const DropdownMenuContent = forwardRefWithAs<
       ref={forwardedRef}
       {...contentProps}
       {...getPartDataAttrObj(CONTENT_NAME)}
-      wrapperPartName={CONTENT_NAME + 'Wrapper'}
+      wrapperSelector={wrapperSelector}
       id={context.id}
       style={{
         ...contentProps.style,
