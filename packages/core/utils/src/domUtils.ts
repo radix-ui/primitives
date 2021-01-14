@@ -18,8 +18,8 @@ function getPartDataAttrObj(componentPart: string) {
   return { [getPartDataAttr(componentPart)]: '' };
 }
 
-function getSelectorObj(selector: string) {
-  return { [`data-${selector}`]: '' };
+function getSelectorObj(selector: string | null) {
+  return selector ? { [`data-${selector}`]: '' } : undefined;
 }
 
 function canUseDOM() {

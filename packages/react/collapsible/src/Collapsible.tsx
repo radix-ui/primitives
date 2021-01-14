@@ -21,11 +21,12 @@ type CollapsibleOwnProps = {
   open?: boolean;
   disabled?: boolean;
   /**
-   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
    *
    * @defaultValue radix-collapsible
    */
-  selector?: string;
+  selector?: string | null;
   onOpenChange?(open?: boolean): void;
 };
 
@@ -97,11 +98,12 @@ const BUTTON_DEFAULT_TAG = 'button';
 
 type CollapsibleButtonProps = {
   /**
-   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
    *
    * @defaultValue radix-collapsible-button
    */
-  selector?: string;
+  selector?: string | null;
 };
 
 const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, CollapsibleButtonProps>(
@@ -140,11 +142,12 @@ const CONTENT_DEFAULT_TAG = 'div';
 
 type CollapsibleContentOwnProps = {
   /**
-   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
    *
    * @defaultValue radix-collapsible-content
    */
-  selector?: string;
+  selector?: string | null;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.

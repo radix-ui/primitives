@@ -44,11 +44,12 @@ type AccordionItemOwnProps = {
    */
   value: string;
   /**
-   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
    *
    * @defaultValue radix-accordion-item
    */
-  selector?: string;
+  selector?: string | null;
   open: never;
   defaultOpen: never;
   onOpenChange: never;
@@ -107,11 +108,12 @@ const HEADER_DEFAULT_TAG = 'h3';
 
 type AccordionHeaderOwnProps = {
   /**
-   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
    *
    * @defaultValue radix-accordion-header
    */
-  selector?: string;
+  selector?: string | null;
 };
 
 /**
@@ -139,11 +141,12 @@ const BUTTON_NAME = 'AccordionButton';
 
 type AccordionButtonOwnProps = {
   /**
-   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
    *
    * @defaultValue radix-accordion-button
    */
-  selector?: string;
+  selector?: string | null;
 };
 
 /**
@@ -194,11 +197,12 @@ const PANEL_NAME = 'AccordionPanel';
 
 type AccordionPanelOwnProps = {
   /**
-   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
    *
    * @defaultValue radix-accordion-panel
    */
-  selector?: string;
+  selector?: string | null;
 };
 
 /**
@@ -247,11 +251,12 @@ type AccordionOwnProps = {
    */
   disabled?: boolean;
   /**
-   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
    *
    * @defaultValue radix-accordion
    */
-  selector?: string;
+  selector?: string | null;
   /**
    * The callback that fires when the state of the accordion changes.
    */
