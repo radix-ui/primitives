@@ -31,9 +31,6 @@
     "aria-hidden": "^1.1.1",
     "react-remove-scroll": "^2.4.0"
   },
-  "devDependencies": {
-    "parcel": "^2.0.0-beta.1"
-  },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"
   },
