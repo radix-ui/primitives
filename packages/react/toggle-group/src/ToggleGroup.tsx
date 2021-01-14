@@ -1,52 +1,44 @@
 import * as React from 'react';
 import { composeEventHandlers, useId, useCallbackRef } from '@radix-ui/react-utils';
-import { getPartDataAttrObj, warning, makeId, isFunction } from '@radix-ui/utils';
+import { getPartDataAttrObj, makeId, isFunction } from '@radix-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
+import { ToggleButton } from '@radix-ui/react-toggle-button';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
-const __DEV__ = isDev();
-
-// Config 1: Multiple selection, at least one required
-// Config 2: Multiple selection, none required
-// Config 3: Single selection,  at least one required
-// Config 4: Single selection, none required
+// const __DEV__ = isDev();
 
 /* -------------------------------------------------------------------------------------------------
- * ToggleButtonGroup
+ * ToggleButton
  * -----------------------------------------------------------------------------------------------*/
 
-const GROUP_NAME = 'ToggleButtonGroup';
+const GROUP_NAME = 'ToggleGroup';
+const GROUP_CONTEXT_NAME = GROUP_NAME + 'Context';
 const GROUP_DEFAULT_TAG = 'div';
-const GROUP_CONTEXT_NAME = 'ToggleButtonGroupContext';
 
-type ToggleButtonGroupContextValue = {
-  value: string[];
-  setValue: React.Dispatch<React.SetStateAction<string[]>>;
-  handleChange(value: string): void;
-  name: typeof GROUP_CONTEXT_NAME;
-  rovingFocus: boolean;
-};
-
-const ToggleButtonGroupContext = React.createContext<ToggleButtonGroupContextValue | null>(null);
-ToggleButtonGroupContext.displayName = GROUP_CONTEXT_NAME;
-
-type ToggleButtonGroupSharedProps = {
+type ToggleGroupOwnProps = {
+  /** The controlled value of the toggled button */
+  value?: string | null;
+  /** The uncontrolled value of the toggled button */
+  defaultValue?: string;
+  /** A function called when the value of the toggled buttons changes */
+  onValueChange?: ((value: string | null) => void) | ((value: string) => void);
   /** Whether or not a selection in the group is required after initial selection */
   required?: boolean;
   /** Whether or not the group should maintain roving focus of its buttons */
   rovingFocus?: boolean;
 };
 
-type ToggleButtonGroupOwnProps = ToggleButtonGroupSharedProps & {
-  /** The controlled value of the toggled button */
-  value?: string[];
-  /** The uncontrolled value of the toggled button */
-  defaultValue?: string[];
-  /** A function called when the value of the toggled buttons changes */
-  onValueChange?(value: string[]): void;
+type ToggleGroupContextValue = {
+  value: string | null;
+  setValue: React.Dispatch<React.SetStateAction<string | null>>;
+  handleChange(value: string | null): void;
+  name: typeof GROUP_CONTEXT_NAME;
+  rovingFocus: boolean;
 };
+const ToggleGroupContext = React.createContext<ToggleGroupContextValue | null>(null);
+ToggleGroupContext.displayName = GROUP_CONTEXT_NAME;
 
-const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButtonGroupOwnProps>(
+const ToggleGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleGroupOwnProps>(
   (props, forwardedRef) => {
     const {
       as: Comp = GROUP_DEFAULT_TAG,
@@ -59,41 +51,30 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
       ...groupProps
     } = props;
 
-    const [value = [], setValue] = useControlledState<string[]>({
+    const [value, setValue] = useControlledState<string | null>({
       prop: valueProp,
-      defaultProp: defaultValue || [],
-      onChange: onValueChange,
+      defaultProp: defaultValue || null,
+      onChange: onValueChange as (state: string | null) => void,
     });
 
-    const requiredRef = React.useRef(required);
-    React.useEffect(() => {
-      requiredRef.current = required;
-    });
+    const stable_isRequired = useCallbackRef(() => required);
 
     const handleChange = React.useCallback(
       function handleChange(buttonValue: string) {
         setValue((previousValue) => {
-          if (!previousValue || previousValue.length < 1) {
-            return [buttonValue];
+          if (!previousValue) {
+            return buttonValue;
           }
-
-          if (
-            requiredRef.current &&
-            previousValue.length === 1 &&
-            previousValue.includes(buttonValue)
-          ) {
+          if (stable_isRequired() && previousValue === buttonValue) {
             return previousValue;
           }
-
-          return previousValue.includes(buttonValue)
-            ? previousValue.filter((v) => v !== buttonValue)
-            : previousValue.concat(buttonValue).sort();
+          return previousValue === buttonValue ? null : buttonValue;
         });
       },
-      [setValue]
+      [setValue, stable_isRequired]
     );
 
-    const context: ToggleButtonGroupContextValue = React.useMemo(() => {
+    const context: ToggleGroupContextValue = React.useMemo(() => {
       return {
         setValue,
         value,
@@ -105,45 +86,107 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
 
     return (
       <Comp {...getPartDataAttrObj(GROUP_NAME)} role="group" ref={forwardedRef} {...groupProps}>
-        <ToggleButtonGroupContext.Provider value={context}>
+        <ToggleGroupContext.Provider value={context}>
           {rovingFocus ? <RovingFocusGroup loop>{children}</RovingFocusGroup> : children}
-        </ToggleButtonGroupContext.Provider>
+        </ToggleGroupContext.Provider>
       </Comp>
+    ) as any;
+  }
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * ToggleGroupItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const ITEM_NAME = 'ToggleGroupItem';
+
+type ToggleGroupItemOwnProps = {
+  /** A function called when the button is toggled */
+  onToggledChange?(toggled: boolean): void;
+};
+
+const ToggleGroupItemImpl = forwardRefWithAs<typeof ToggleButton, ToggleGroupItemOwnProps>(
+  (props, forwardedRef) => {
+    const { children } = props;
+    const {
+      props: { button: buttonProps },
+    } = useToggleGroupItem(props, ToggleGroupContext);
+    return (
+      <ToggleButton {...getPartDataAttrObj(ITEM_NAME)} ref={forwardedRef} {...buttonProps}>
+        {children}
+      </ToggleButton>
+    );
+  }
+);
+
+const ToggleGroupRovingItem = forwardRefWithAs<typeof ToggleButton, ToggleGroupItemOwnProps>(
+  (props, forwardedRef) => {
+    const { children } = props;
+    const {
+      props: { button: buttonProps },
+      state,
+    } = useToggleGroupItem(props, ToggleGroupContext);
+    const rovingFocusProps = useRovingFocus({
+      disabled: props.disabled,
+      active: state.value === 'on',
+    });
+    const allProps = mergeProps(buttonProps, rovingFocusProps);
+    return (
+      <ToggleButton {...getPartDataAttrObj(ITEM_NAME)} ref={forwardedRef} {...allProps}>
+        {children}
+      </ToggleButton>
+    );
+  }
+);
+
+const ToggleGroupItem = forwardRefWithAs<typeof ToggleButton, ToggleGroupItemOwnProps>(
+  (props, forwardedRef) => {
+    const context = React.useContext(ToggleGroupContext);
+
+    return context?.rovingFocus ? (
+      <ToggleGroupRovingItem ref={forwardedRef} {...props} />
+    ) : (
+      <ToggleGroupItemImpl ref={forwardedRef} {...props} />
     );
   }
 );
 
 /* -------------------------------------------------------------------------------------------------
- * ToggleButtonExclusive
+ * MultiSelectToggleGroup
  * -----------------------------------------------------------------------------------------------*/
 
-const GROUP_EXC_NAME = 'ToggleButtonGroupExclusive';
-const GROUP_EXC_CONTEXT_NAME = 'ToggleButtonGroupExclusiveContext';
+const MULTI_GROUP_NAME = 'MultiSelectToggleGroup';
+const MULTI_GROUP_CONTEXT_NAME = MULTI_GROUP_NAME + 'Context';
 
-type ToggleButtonGroupExclusiveOwnProps = ToggleButtonGroupSharedProps & {
-  /** The controlled value of the toggled button */
-  value?: string | null;
-  /** The uncontrolled value of the toggled button */
-  defaultValue?: string;
-  /** A function called when the value of the toggled buttons changes */
-  onValueChange?(value: string | null): void;
-};
-
-type ToggleButtonGroupExclusiveContextValue = {
-  value: string | null;
-  setValue: React.Dispatch<React.SetStateAction<string | null>>;
-  handleChange(value: string | null): void;
-  name: typeof GROUP_EXC_CONTEXT_NAME;
+type MultiSelectToggleGroupContextValue = {
+  value: string[];
+  setValue: React.Dispatch<React.SetStateAction<string[]>>;
+  handleChange(value: string): void;
+  name: typeof MULTI_GROUP_CONTEXT_NAME;
   rovingFocus: boolean;
 };
-const ToggleButtonGroupExclusiveContext = React.createContext<ToggleButtonGroupExclusiveContextValue | null>(
+
+const MultiSelectToggleGroupContext = React.createContext<MultiSelectToggleGroupContextValue | null>(
   null
 );
-ToggleButtonGroupExclusiveContext.displayName = GROUP_EXC_CONTEXT_NAME;
+MultiSelectToggleGroupContext.displayName = MULTI_GROUP_CONTEXT_NAME;
 
-const ToggleButtonGroupExclusive = forwardRefWithAs<
+type MultiSelectToggleGroupOwnProps = {
+  /** The controlled value of the toggled button */
+  value?: string[];
+  /** The uncontrolled value of the toggled button */
+  defaultValue?: string[];
+  /** A function called when the value of the toggled buttons changes */
+  onValueChange?(value: string[]): void;
+  /** Whether or not a selection in the group is required after initial selection */
+  required?: boolean;
+  /** Whether or not the group should maintain roving focus of its buttons */
+  rovingFocus?: boolean;
+};
+
+const MultiSelectToggleGroup = forwardRefWithAs<
   typeof GROUP_DEFAULT_TAG,
-  ToggleButtonGroupExclusiveOwnProps
+  MultiSelectToggleGroupOwnProps
 >((props, forwardedRef) => {
   const {
     as: Comp = GROUP_DEFAULT_TAG,
@@ -156,135 +199,152 @@ const ToggleButtonGroupExclusive = forwardRefWithAs<
     ...groupProps
   } = props;
 
-  const [value, setValue] = useControlledState<string | null>({
+  const [value = [], setValue] = useControlledState<string[]>({
     prop: valueProp,
-    defaultProp: defaultValue || null,
+    defaultProp: defaultValue || [],
     onChange: onValueChange,
   });
 
-  function handleChange(buttonValue: string) {
-    if (!value) {
-      return setValue(buttonValue);
-    }
+  const stable_isRequired = useCallbackRef(() => required);
 
-    if (required && value === buttonValue) {
-      return;
-    }
+  const handleChange = React.useCallback(
+    function handleChange(buttonValue: string) {
+      setValue((previousValue) => {
+        if (!previousValue || previousValue.length < 1) {
+          return [buttonValue];
+        }
 
-    setValue(value === buttonValue ? null : buttonValue);
-  }
+        if (
+          stable_isRequired() &&
+          previousValue.length === 1 &&
+          previousValue.includes(buttonValue)
+        ) {
+          return previousValue;
+        }
 
-  const context: ToggleButtonGroupExclusiveContextValue = {
-    setValue,
-    value,
-    handleChange,
-    rovingFocus,
-    name: GROUP_EXC_CONTEXT_NAME,
-  };
+        return previousValue.includes(buttonValue)
+          ? previousValue.filter((v) => v !== buttonValue)
+          : previousValue.concat(buttonValue).sort();
+      });
+    },
+    [setValue, stable_isRequired]
+  );
+
+  const context: MultiSelectToggleGroupContextValue = React.useMemo(() => {
+    return {
+      setValue,
+      value,
+      handleChange,
+      rovingFocus,
+      name: MULTI_GROUP_CONTEXT_NAME,
+    };
+  }, [handleChange, rovingFocus, setValue, value]);
 
   return (
-    <Comp {...getPartDataAttrObj(GROUP_EXC_NAME)} role="group" ref={forwardedRef} {...groupProps}>
-      <ToggleButtonGroupExclusiveContext.Provider value={context}>
+    <Comp {...getPartDataAttrObj(MULTI_GROUP_NAME)} role="group" ref={forwardedRef} {...groupProps}>
+      <MultiSelectToggleGroupContext.Provider value={context}>
         {rovingFocus ? <RovingFocusGroup loop>{children}</RovingFocusGroup> : children}
-      </ToggleButtonGroupExclusiveContext.Provider>
+      </MultiSelectToggleGroupContext.Provider>
     </Comp>
-  ) as any;
+  );
 });
 
 /* -------------------------------------------------------------------------------------------------
- * ToggleButton
+ * MultiSelectToggleGroupItem
  * -----------------------------------------------------------------------------------------------*/
 
-const BUTTON_NAME = 'ToggleButton';
-const BUTTON_DEFAULT_TAG = 'button';
+const MULTI_ITEM_NAME = 'MultiSelectToggleGroupItem';
 
-type ToggleButtonOwnProps = {
-  /** Whether the button is toggled or not, if controlled */
-  toggled?: boolean;
-  /**
-   * Whether the button is toggled by default, if uncontrolled
-   * (default: false)
-   */
-  defaultToggled?: boolean;
+type MultiSelectToggleGroupItemOwnProps = {
   /** A function called when the button is toggled */
   onToggledChange?(toggled: boolean): void;
-  /**
-   * A string value for the toggle button. Optional unless the button is inside of a
-   * `ToggleButtonGroup`. All items within a `ToggleButtonGroup` should use a unique value.
-   */
-  value?: string;
 };
 
-const ToggleButtonImpl = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, ToggleButtonOwnProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = BUTTON_DEFAULT_TAG, children } = props;
-    const {
-      props: { button: buttonProps },
-    } = useToggleButton<typeof BUTTON_DEFAULT_TAG>(props);
-    return (
-      <Comp {...getPartDataAttrObj(BUTTON_NAME)} ref={forwardedRef} {...buttonProps}>
-        {children}
-      </Comp>
-    );
-  }
-);
+const MultiSelectToggleGroupItemImpl = forwardRefWithAs<
+  typeof ToggleButton,
+  MultiSelectToggleGroupItemOwnProps
+>((props, forwardedRef) => {
+  const { children } = props;
+  const {
+    props: { button: buttonProps },
+  } = useToggleGroupItem(props, MultiSelectToggleGroupContext);
+  return (
+    <ToggleButton {...getPartDataAttrObj(MULTI_ITEM_NAME)} ref={forwardedRef} {...buttonProps}>
+      {children}
+    </ToggleButton>
+  );
+});
 
-const RovingToggleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, ToggleButtonOwnProps>(
-  (props, forwardedRef) => {
-    const { as: Comp = BUTTON_DEFAULT_TAG, children } = props;
-    const {
-      props: { button: buttonProps },
-      state,
-    } = useToggleButton<typeof BUTTON_DEFAULT_TAG>(props);
-    const rovingFocusProps = useRovingFocus({
-      disabled: props.disabled,
-      active: state.value === 'on',
-    });
-    const allProps = mergeProps<typeof props>(buttonProps, rovingFocusProps);
-    return (
-      <Comp {...getPartDataAttrObj(BUTTON_NAME)} ref={forwardedRef} {...allProps}>
-        {children}
-      </Comp>
-    );
-  }
-);
+const MultiSelectToggleGroupRovingItem = forwardRefWithAs<
+  typeof ToggleButton,
+  ToggleGroupItemOwnProps
+>((props, forwardedRef) => {
+  const { children } = props;
+  const {
+    props: { button: buttonProps },
+    state,
+  } = useToggleGroupItem(props, MultiSelectToggleGroupContext);
+  const rovingFocusProps = useRovingFocus({
+    disabled: props.disabled,
+    active: state.value === 'on',
+  });
+  const allProps = mergeProps(buttonProps, rovingFocusProps);
+  return (
+    <ToggleButton {...getPartDataAttrObj(MULTI_ITEM_NAME)} ref={forwardedRef} {...allProps}>
+      {children}
+    </ToggleButton>
+  );
+});
 
-const ToggleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, ToggleButtonOwnProps>(
+const MultiSelectToggleGroupItem = forwardRefWithAs<typeof ToggleButton, ToggleGroupItemOwnProps>(
   (props, forwardedRef) => {
-    const context = useInternalToggleButtonGroupContext({
-      toggledProp: props.toggled,
-      defaultToggled: props.defaultToggled,
-    });
-
+    const context = React.useContext(MultiSelectToggleGroupContext);
     return context?.rovingFocus ? (
-      <RovingToggleButton ref={forwardedRef} {...props} />
+      <MultiSelectToggleGroupRovingItem ref={forwardedRef} {...props} />
     ) : (
-      <ToggleButtonImpl ref={forwardedRef} {...props} />
+      <MultiSelectToggleGroupItemImpl ref={forwardedRef} {...props} />
     );
   }
 );
 
-ToggleButton.displayName = BUTTON_NAME;
-ToggleButtonGroup.displayName = GROUP_NAME;
-ToggleButtonGroupExclusive.displayName = GROUP_EXC_NAME;
+/* ----------------------------------------------------------------------------------------------*/
 
-const Root = ToggleButton;
-const Group = ToggleButtonGroup;
-const GroupExclusive = ToggleButtonGroupExclusive;
+MultiSelectToggleGroup.displayName = MULTI_GROUP_NAME;
+MultiSelectToggleGroupItem.displayName = MULTI_ITEM_NAME;
 
-export { ToggleButton, ToggleButtonGroup, ToggleButtonGroupExclusive, Root, Group, GroupExclusive };
+ToggleGroupItem.displayName = ITEM_NAME;
+ToggleGroup.displayName = GROUP_NAME;
+
+const Root = ToggleGroup;
+const Item = ToggleGroupItem;
+const MultiSelectRoot = MultiSelectToggleGroup;
+const MultiSelectItem = MultiSelectToggleGroupItem;
+
+export {
+  ToggleGroup,
+  ToggleGroupItem,
+  MultiSelectToggleGroup,
+  MultiSelectToggleGroupItem,
+  //
+  Root,
+  Item,
+  MultiSelectRoot,
+  MultiSelectItem,
+};
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function useToggleButton<
+function useToggleGroupItem<
+  ContextType extends ToggleGroupContextValue | MultiSelectToggleGroupContextValue,
   ElementType extends keyof JSX.IntrinsicElements | React.ComponentType<any>
->(props: ToggleButtonOwnProps & React.ComponentProps<ElementType>) {
+>(
+  props: ToggleGroupItemOwnProps & React.ComponentProps<ElementType>,
+  Ctx: React.Context<ContextType | null>
+): UseToggleGroupReturn<ElementType> {
   const {
     toggled: toggledProp,
     defaultToggled,
-    onClick,
     onToggledChange,
-    children,
     value: valueProp,
     ...otherButtonProps
   } = props;
@@ -297,16 +357,19 @@ function useToggleButton<
 
   const generatedValue = makeId(`toggle-button`, useId());
   const value = valueProp || generatedValue;
-  const context = useInternalToggleButtonGroupContext({ toggledProp, defaultToggled });
+  const context = React.useContext(Ctx);
   const toggled = useInternalToggleButtonState({ context, ownToggledState: _toggled, value });
 
-  function setToggled(state: boolean) {
-    if (context) {
-      context.handleChange(value);
-    } else {
-      _setToggled(state);
-    }
-  }
+  const setToggled = React.useCallback(
+    function setToggled(state: boolean) {
+      if (context) {
+        context.handleChange(value);
+      } else {
+        _setToggled(state);
+      }
+    },
+    [_setToggled, context, value]
+  );
 
   // If the toggle button is in a group, onToggleChange will never fire because we bypass the
   // setter returned from useControlledState since the group is managing its children states. We
@@ -326,54 +389,24 @@ function useToggleButton<
   }, [stable_isGrouped, stable_onToggleChange, toggled]);
 
   const isGrouped = !!context;
-  const state = {
-    value: toggled ? 'on' : 'off',
-    context: {
-      isGrouped,
-      valueInGroup: isGrouped ? value : null,
-    },
-  } as const;
   const buttonProps = {
-    type: 'button',
-    'aria-pressed': toggled,
-    'data-state': toggled ? 'on' : 'off',
-    'data-disabled': props.disabled ? '' : undefined,
-    onClick: composeEventHandlers(onClick as (event: React.MouseEvent) => void, () => {
-      if (!props.disabled) {
-        setToggled(!toggled);
-      }
-    }),
-  } as const;
+    toggled,
+    onToggledChange: setToggled,
+    value: valueProp,
+  };
 
   return {
-    state,
-    props: {
-      button: {
-        ...buttonProps,
-        ...otherButtonProps,
+    state: {
+      value: toggled ? 'on' : 'off',
+      context: {
+        isGrouped,
+        valueInGroup: isGrouped ? value : null,
       },
     },
+    props: {
+      button: mergeProps(otherButtonProps, buttonProps),
+    },
   };
-}
-
-function useInternalToggleButtonGroupContext({
-  toggledProp,
-  defaultToggled,
-}: {
-  defaultToggled: boolean | undefined;
-  toggledProp: boolean | undefined;
-}): ToggleButtonGroupContextValue | ToggleButtonGroupExclusiveContextValue | null {
-  const standardGroupContext = React.useContext(ToggleButtonGroupContext);
-  const exclusiveGroupContext = React.useContext(ToggleButtonGroupExclusiveContext);
-
-  useConflictingContextError(standardGroupContext, exclusiveGroupContext);
-  useButtonStateInGroupWarning({
-    toggledProp,
-    defaultToggled,
-    groupContext: exclusiveGroupContext || standardGroupContext,
-    groupName: standardGroupContext ? GROUP_NAME : exclusiveGroupContext ? GROUP_EXC_NAME : null,
-  });
-  return standardGroupContext || exclusiveGroupContext || null;
 }
 
 function useInternalToggleButtonState({
@@ -383,50 +416,14 @@ function useInternalToggleButtonState({
 }: {
   value: string;
   ownToggledState: boolean;
-  context: ToggleButtonGroupContextValue | ToggleButtonGroupExclusiveContextValue | null;
+  context: MultiSelectToggleGroupContextValue | ToggleGroupContextValue | null;
 }) {
-  const toggled = !!(context?.name === GROUP_EXC_CONTEXT_NAME
+  const toggled = !!(context?.name === GROUP_CONTEXT_NAME
     ? context.value === value
-    : context?.name === GROUP_CONTEXT_NAME
+    : context?.name === MULTI_GROUP_CONTEXT_NAME
     ? context.value?.includes(value)
     : ownToggledState);
   return toggled;
-}
-
-function useConflictingContextError(
-  standardGroupContext: ToggleButtonGroupContextValue | null,
-  exclusiveGroupContext: ToggleButtonGroupExclusiveContextValue | null
-) {
-  if (exclusiveGroupContext && standardGroupContext) {
-    throw Error(
-      `A ${BUTTON_NAME} was used in both ${GROUP_EXC_NAME} and ${GROUP_NAME} components. ${BUTTON_NAME} can be used in either ${GROUP_EXC_NAME} or ${GROUP_NAME}, but not both.`
-    );
-  }
-}
-
-function useButtonStateInGroupWarning({
-  toggledProp,
-  defaultToggled,
-  groupContext,
-  groupName,
-}: {
-  toggledProp: boolean | undefined;
-  defaultToggled: boolean | undefined;
-  groupContext: ToggleButtonGroupContextValue | ToggleButtonGroupExclusiveContextValue | null;
-  groupName: string | null;
-}) {
-  const isControlled = useIsControlled(toggledProp);
-  if (__DEV__) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    React.useEffect(() => {
-      const propName = isControlled ? '`toggled`' : '`defaultToggled`';
-      const toggled = isControlled ? toggledProp : defaultToggled;
-      warning(
-        !(groupContext && toggled !== undefined),
-        `A ${BUTTON_NAME} with an explicit ${propName} prop was used inside of a ${groupName}. When ${BUTTON_NAME} is used inside of a ${groupName}, the ${groupName} component is responsible for managing the toggled state of its nested ${BUTTON_NAME} components. Either remove the ${propName} from ${BUTTON_NAME} or remove the ${groupName} component if the ${BUTTON_NAME} is unrelated to other surrounding buttons.`
-      );
-    }, [groupContext, toggledProp, defaultToggled, groupName, isControlled]);
-  }
 }
 
 // NOTE: I changed this implementation a tiny bit to improve typing somewhat. I think it's a little
@@ -485,47 +482,10 @@ function useUncontrolledState<T>({
   return uncontrolledState;
 }
 
-type SetStateFn<T> = (prevState?: T) => T;
-
-function useIsControlled(controlledProp: any): boolean {
-  const controlledTrackingRef = React.useRef(controlledProp !== undefined);
-  const wasControlled = controlledTrackingRef.current;
-  const isControlled = controlledProp !== undefined;
-  if (__DEV__) {
-    warning(
-      wasControlled === isControlled,
-      `A component is changing from ${wasControlled ? 'controlled' : 'uncontrolled'} to ${
-        isControlled ? 'controlled' : 'uncontrolled'
-      }. Components should not switch from controlled to uncontrolled (or vice versa) during its lifetime.`
-    );
-  }
-  controlledTrackingRef.current = isControlled;
-  return isControlled;
-}
-
-function defaultIsEqual(a: any, b: any): boolean {
-  return a === b;
-}
-
-function isDev() {
-  return process && process.env && process.env.NODE_ENV
-    ? process.env.NODE_ENV === 'development'
-    : true;
-}
-
-// mergeProps composes any event handlers by default
-// Consider moving to utils
-interface Props {
-  [key: string]: any;
-}
-
-type TupleTypes<T> = { [P in keyof T]: T[P] } extends { [key: number]: infer V } ? V : never;
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
-  ? I
-  : never;
-
-export function mergeProps<T extends Props>(...args: T[]): UnionToIntersection<TupleTypes<T>> {
-  const result: Props = {};
+// TODO: Typing here is probably needed if we are OK with this as a generic utility, but I couldn't
+// get it working without lots of casting when composing props from multiple hooks
+export function mergeProps(...args: any[]): any {
+  const result: any = {};
   for (const props of args) {
     for (const key in result) {
       if (/^on[A-Z]/.test(key) && isFunction(result[key]) && isFunction(props[key])) {
@@ -542,5 +502,40 @@ export function mergeProps<T extends Props>(...args: T[]): UnionToIntersection<T
     }
   }
 
-  return result as UnionToIntersection<TupleTypes<T>>;
+  return result;
 }
+
+type UseRovingToggleGroupReturn<
+  ElementType extends keyof JSX.IntrinsicElements | React.ComponentType<any>
+> = UseToggleGroupReturn<ElementType> & {
+  props: {
+    button: UseToggleGroupReturn<ElementType>['props']['button'] & {
+      tabIndex: number;
+      onMouseDown: (event: React.MouseEvent) => void;
+      onFocus: undefined | ((event: React.FocusEvent) => void);
+      onKeyDown?: undefined | ((event: React.KeyboardEvent) => void);
+    };
+  };
+};
+
+type UseToggleGroupReturn<
+  ElementType extends keyof JSX.IntrinsicElements | React.ComponentType<any>
+> = {
+  state: {
+    value: 'on' | 'off';
+    context: {
+      isGrouped: boolean;
+      valueInGroup: any;
+    };
+  };
+  props: {
+    button: ToggleGroupItemOwnProps &
+      React.ComponentProps<ElementType> & {
+        toggled: boolean;
+        onToggledChange: (state: boolean) => void;
+        value: string | undefined;
+      };
+  };
+};
+
+type SetStateFn<T> = (prevState?: T) => T;

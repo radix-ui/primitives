@@ -1,171 +1,114 @@
 import * as React from 'react';
-import { ToggleButton, ToggleButtonGroup, ToggleButtonGroupExclusive } from './ToggleGroup';
+import { ToggleGroupItem, MultiSelectToggleGroup, ToggleGroup } from './ToggleGroup';
 import { styled } from '../../../../stitches.config';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
-export default { title: 'Components/ToggleButton' };
+export default { title: 'Components/ToggleGroup' };
 
-export const Styled = () => <ToggleButton as={StyledRoot}>Toggle</ToggleButton>;
-
-export const Controlled = () => {
-  const [toggled, setToggled] = React.useState(true);
-
+export const Styled = () => {
   return (
-    <ToggleButton as={StyledRoot} toggled={toggled} onToggledChange={setToggled}>
-      {toggled ? 'On' : 'Off'}
-    </ToggleButton>
-  );
-};
-
-export const Grouped = () => {
-  return (
-    <ToggleButtonGroup aria-label="Options" defaultValue={['1']}>
-      <ToggleButton value="1" as={StyledRoot}>
+    <ToggleGroup aria-label="Options" defaultValue="1">
+      <ToggleGroupItem value="1" as={StyledItem}>
         Option 1
-      </ToggleButton>
-      <ToggleButton value="2" as={StyledRoot}>
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" as={StyledItem}>
         Option 2
-      </ToggleButton>
-      <ToggleButton
+      </ToggleGroupItem>
+      <ToggleGroupItem
         value="3"
-        as={StyledRoot}
+        as={StyledItem}
         onToggledChange={() => {
           // Make sure onToggledChange fires even in grouped buttons
           console.log('Button 3 has changed!');
         }}
       >
         Option 3
-      </ToggleButton>
-    </ToggleButtonGroup>
+      </ToggleGroupItem>
+    </ToggleGroup>
   );
 };
 
-export const GroupedWithRovingFocus = () => {
+export const Controlled = () => {
+  const [value, setValue] = React.useState('1');
+
+  return (
+    <ToggleGroup aria-label="Options" value={value} onValueChange={setValue}>
+      <ToggleGroupItem value="1" as={StyledItem}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" as={StyledItem}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem
+        value="3"
+        as={StyledItem}
+        onToggledChange={() => {
+          // Make sure onToggledChange fires even in grouped buttons
+          console.log('Button 3 has changed!');
+        }}
+      >
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+  );
+};
+
+export const WithRovingFocus = () => {
   return (
     <div>
       <VisuallyHidden id="desc">
         To navigate the buttons within the group, use the arrow keys
       </VisuallyHidden>
-      <ToggleButtonGroup
-        aria-label="Options"
-        aria-describedby="desc"
-        defaultValue={['1']}
-        rovingFocus
-      >
-        <ToggleButton value="1" as={StyledRoot}>
+      <ToggleGroup aria-label="Options" aria-describedby="desc" defaultValue="1" rovingFocus>
+        <ToggleGroupItem value="1" as={StyledItem}>
           Option 1
-        </ToggleButton>
-        <ToggleButton value="2" as={StyledRoot}>
+        </ToggleGroupItem>
+        <ToggleGroupItem value="2" as={StyledItem}>
           Option 2
-        </ToggleButton>
-        <ToggleButton
+        </ToggleGroupItem>
+        <ToggleGroupItem
           value="3"
-          as={StyledRoot}
+          as={StyledItem}
           onToggledChange={() => {
             // Make sure onToggledChange fires even in grouped buttons
             console.log('Button 3 has changed!');
           }}
         >
           Option 3
-        </ToggleButton>
-      </ToggleButtonGroup>
+        </ToggleGroupItem>
+      </ToggleGroup>
     </div>
   );
 };
 
-export const GroupedControlled = () => {
-  const [required, setRequired] = React.useState(false);
-  const [value, setValue] = React.useState<string[]>(['1']);
+export const ControlledMultiSelect = () => {
+  const [value, setValue] = React.useState<string[]>([]);
 
   return (
     <div>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={required}
-            onChange={(e) => setRequired(e.target.checked)}
-          />
-          <span>Require selection</span>
-        </label>
-      </div>
-      <hr />
-      <div>
-        <ToggleButtonGroup
-          aria-label="Options"
-          value={required && (value == null || value.length < 1) ? ['1'] : value}
-          onValueChange={setValue}
-          required={required}
+      <MultiSelectToggleGroup aria-label="Options" value={value} onValueChange={setValue}>
+        <ToggleGroupItem value="1" as={StyledItem}>
+          Option 1
+        </ToggleGroupItem>
+        <ToggleGroupItem value="2" as={StyledItem}>
+          Option 2
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="3"
+          as={StyledItem}
+          onToggledChange={() => {
+            // Make sure onToggledChange fires even in grouped buttons
+            console.log('Button 3 has changed!');
+          }}
         >
-          <ToggleButton value="1" as={StyledRoot}>
-            Option 1
-          </ToggleButton>
-          <ToggleButton value="2" as={StyledRoot}>
-            Option 2
-          </ToggleButton>
-          <ToggleButton
-            value="3"
-            as={StyledRoot}
-            onToggledChange={() => {
-              // Make sure onToggledChange fires even in grouped buttons
-              console.log('Button 3 has changed!');
-            }}
-          >
-            Option 3
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </div>
+          Option 3
+        </ToggleGroupItem>
+      </MultiSelectToggleGroup>
     </div>
   );
 };
 
-export const GroupedControlledExclusive = () => {
-  const [required, setRequired] = React.useState(false);
-  const [value, setValue] = React.useState<string | null>(null);
-
-  return (
-    <div>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={required}
-            onChange={(e) => setRequired(e.target.checked)}
-          />
-          <span>Require selection</span>
-        </label>
-      </div>
-      <hr />
-      <div>
-        <ToggleButtonGroupExclusive
-          aria-label="Options"
-          value={required && value == null ? '1' : value}
-          onValueChange={setValue}
-          required={required}
-        >
-          <ToggleButton value="1" as={StyledRoot}>
-            Option 1
-          </ToggleButton>
-          <ToggleButton value="2" as={StyledRoot}>
-            Option 2
-          </ToggleButton>
-          <ToggleButton
-            value="3"
-            as={StyledRoot}
-            onToggledChange={() => {
-              // Make sure onToggledChange fires even in grouped buttons
-              console.log('Button 3 has changed!');
-            }}
-          >
-            Option 3
-          </ToggleButton>
-        </ToggleButtonGroupExclusive>
-      </div>
-    </div>
-  );
-};
-
-const StyledRoot = styled('button', {
+const StyledItem = styled('button', {
   padding: 6,
   lineHeight: 1,
   border: 'none',
