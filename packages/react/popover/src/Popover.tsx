@@ -204,7 +204,10 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
       ...contentProps
     } = props;
     const context = usePopoverContext(CONTENT_NAME);
-    const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
+    const [
+      isPermittedPointerDownOutsideEvent,
+      setIsPermittedPointerDownOutsideEvent,
+    ] = React.useState(false);
 
     const PortalWrapper = portalled ? Portal : React.Fragment;
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -224,10 +227,13 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
       <PortalWrapper>
         <ScrollLockWrapper>
           <FocusScope
-            trapped={trapFocus}
+            // clicking outside may raise a focusout event, which may get trapped.
+            // in cases where outside pointer events are permitted, we stop trapping.
+            trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus}
             onMountAutoFocus={onOpenAutoFocus}
             onUnmountAutoFocus={(event) => {
-              if (skipCloseAutoFocus) {
+              // skip autofocus on close if clicking outside is permitted and it happened
+              if (isPermittedPointerDownOutsideEvent) {
                 event.preventDefault();
               } else {
                 onCloseAutoFocus?.(event);
@@ -238,27 +244,31 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
               <DismissableLayer
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onEscapeKeyDown={onEscapeKeyDown}
-                onPointerDownOutside={(event) => {
-                  const wasTrigger = context.triggerRef.current?.contains(
-                    event.target as HTMLElement
-                  );
+                onPointerDownOutside={composeEventHandlers(
+                  onPointerDownOutside,
+                  (event) => {
+                    const wasTrigger = context.triggerRef.current?.contains(
+                      event.target as HTMLElement
+                    );
 
-                  // skip autofocus on close if clicking outside is allowed and it happened
-                  setSkipCloseAutoFocus(!disableOutsidePointerEvents);
+                    const isLeftClick =
+                      (event as MouseEvent).button === 0 && event.ctrlKey === false;
+                    const isPermitted = !disableOutsidePointerEvents && isLeftClick;
+                    setIsPermittedPointerDownOutsideEvent(isPermitted);
 
-                  // prevent dismissing when clicking the trigger
-                  // as it's already setup to close, otherwise it would close and immediately open.
-                  if (wasTrigger) {
-                    event.preventDefault();
-                  } else {
-                    onInteractOutside?.(event);
-                  }
+                    // prevent dismissing when clicking the trigger
+                    // as it's already setup to close, otherwise it would close and immediately open.
+                    if (wasTrigger) {
+                      event.preventDefault();
+                    }
 
-                  if (event.defaultPrevented) {
-                    // reset this because the event was prevented
-                    setSkipCloseAutoFocus(false);
-                  }
-                }}
+                    if (event.defaultPrevented) {
+                      // reset this because the event was prevented
+                      setIsPermittedPointerDownOutsideEvent(false);
+                    }
+                  },
+                  { checkForDefaultPrevented: false }
+                )}
                 onFocusOutside={composeEventHandlers(
                   onFocusOutside,
                   (event) => {

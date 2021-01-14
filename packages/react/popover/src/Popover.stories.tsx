@@ -17,6 +17,7 @@ export const Styled = () => {
           <PopoverArrow as={StyledArrow} width={20} height={10} />
         </PopoverContent>
       </Popover>
+      <input />
     </div>
   );
 };

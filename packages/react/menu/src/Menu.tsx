@@ -172,6 +172,11 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
       setMenuTabIndex(itemsReachable ? -1 : 0);
     }, [itemsReachable]);
 
+    const [
+      isPermittedPointerDownOutsideEvent,
+      setIsPermittedPointerDownOutsideEvent,
+    ] = React.useState(false);
+
     const PortalWrapper = portalled ? Portal : React.Fragment;
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
 
@@ -189,15 +194,38 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
       <PortalWrapper>
         <ScrollLockWrapper>
           <FocusScope
-            trapped={trapFocus}
+            // clicking outside may raise a focusout event, which may get trapped.
+            // in cases where outside pointer events are permitted, we stop trapping.
+            trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus}
             onMountAutoFocus={onOpenAutoFocus}
-            onUnmountAutoFocus={onCloseAutoFocus}
+            onUnmountAutoFocus={(event) => {
+              // skip autofocus on unmount if clicking outside is permitted and it happened
+              if (isPermittedPointerDownOutsideEvent) {
+                event.preventDefault();
+              } else {
+                onCloseAutoFocus?.(event);
+              }
+            }}
           >
             {(focusScopeProps) => (
               <DismissableLayer
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onEscapeKeyDown={onEscapeKeyDown}
-                onPointerDownOutside={onPointerDownOutside}
+                onPointerDownOutside={composeEventHandlers(
+                  onPointerDownOutside,
+                  (event) => {
+                    const isLeftClick =
+                      (event as MouseEvent).button === 0 && event.ctrlKey === false;
+                    const isPermitted = !disableOutsidePointerEvents && isLeftClick;
+                    setIsPermittedPointerDownOutsideEvent(isPermitted);
+
+                    if (event.defaultPrevented) {
+                      // reset this because the event was prevented
+                      setIsPermittedPointerDownOutsideEvent(false);
+                    }
+                  },
+                  { checkForDefaultPrevented: false }
+                )}
                 onFocusOutside={composeEventHandlers(
                   onFocusOutside,
                   (event) => {

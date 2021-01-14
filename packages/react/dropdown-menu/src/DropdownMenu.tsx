@@ -121,7 +121,6 @@ const DropdownMenuContent = forwardRefWithAs<
     ...contentProps
   } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
-  const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
   return (
     <MenuPrimitive.Root
       ref={forwardedRef}
@@ -138,32 +137,23 @@ const DropdownMenuContent = forwardRefWithAs<
       anchorRef={anchorRef || context.triggerRef}
       trapFocus
       onCloseAutoFocus={(event) => {
-        if (skipCloseAutoFocus) {
-          event.preventDefault();
-        } else {
-          context.triggerRef.current?.focus();
-        }
+        event.preventDefault();
+        context.triggerRef.current?.focus();
       }}
       disableOutsidePointerEvents={disableOutsidePointerEvents}
-      onPointerDownOutside={(event) => {
-        const wasTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
+      onPointerDownOutside={composeEventHandlers(
+        onPointerDownOutside,
+        (event) => {
+          const wasTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
 
-        // skip autofocus on close if clicking outside is allowed and it happened
-        setSkipCloseAutoFocus(!disableOutsidePointerEvents);
-
-        // prevent dismissing when clicking the trigger
-        // as it's already setup to close, otherwise it would close and immediately open.
-        if (wasTrigger) {
-          event.preventDefault();
-        } else {
-          onInteractOutside?.(event);
-        }
-
-        if (event.defaultPrevented) {
-          // reset this because the event was prevented
-          setSkipCloseAutoFocus(false);
-        }
-      }}
+          // prevent dismissing when clicking the trigger
+          // as it's already setup to close, otherwise it would close and immediately open.
+          if (wasTrigger) {
+            event.preventDefault();
+          }
+        },
+        { checkForDefaultPrevented: false }
+      )}
       onInteractOutside={onInteractOutside}
       disableOutsideScroll={disableOutsideScroll}
       portalled={portalled}
