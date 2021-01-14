@@ -65,7 +65,7 @@ const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps
     const generatedButtonId = `accordion-button-${useId()}`;
     const buttonId = props.id || generatedButtonId;
     const open = (value && value === accordionContext.value) || false;
-    const disabled = accordionContext.disabled ?? props.disabled;
+    const disabled = accordionContext.disabled || props.disabled;
 
     const itemContext: AccordionItemContextValue = React.useMemo(() => ({ open, buttonId }), [
       open,
