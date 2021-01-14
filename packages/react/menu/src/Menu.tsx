@@ -214,10 +214,9 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
                 onPointerDownOutside={composeEventHandlers(
                   onPointerDownOutside,
                   (event) => {
-                    const isNotRightClick =
+                    const isLeftClick =
                       (event as MouseEvent).button === 0 && event.ctrlKey === false;
-
-                    const isPermitted = !disableOutsidePointerEvents && isNotRightClick;
+                    const isPermitted = !disableOutsidePointerEvents && isLeftClick;
                     setIsPermittedPointerDownOutsideEvent(isPermitted);
 
                     if (event.defaultPrevented) {

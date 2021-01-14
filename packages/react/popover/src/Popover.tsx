@@ -251,7 +251,9 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
                       event.target as HTMLElement
                     );
 
-                    const isPermitted = !disableOutsidePointerEvents;
+                    const isLeftClick =
+                      (event as MouseEvent).button === 0 && event.ctrlKey === false;
+                    const isPermitted = !disableOutsidePointerEvents && isLeftClick;
                     setIsPermittedPointerDownOutsideEvent(isPermitted);
 
                     // prevent dismissing when clicking the trigger
