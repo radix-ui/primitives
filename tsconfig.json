@@ -36,6 +36,7 @@
       "@radix-ui/react-switch": ["./packages/react/switch/src"],
       "@radix-ui/react-tabs": ["./packages/react/tabs/src"],
       "@radix-ui/react-toggle-button": ["./packages/react/toggle-button/src"],
+      "@radix-ui/react-toggle-group": ["./packages/react/toggle-group/src"],
       "@radix-ui/react-tooltip": ["./packages/react/tooltip/src"],
       "@radix-ui/react-utils": ["./packages/react/utils/src"],
       "@radix-ui/react-visually-hidden": ["./packages/react/visually-hidden/src"]

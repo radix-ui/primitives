@@ -1,5 +1,5 @@
 releases:
-  "@radix-ui/react-toggle-button": prerelease
+  "@radix-ui/react-toggle-group": prerelease
 
 declined:
   - primitives
