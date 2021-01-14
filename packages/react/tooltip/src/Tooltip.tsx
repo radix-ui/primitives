@@ -234,6 +234,7 @@ const TooltipContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Tooltip
         <CheckTriggerMoved />
         <PopperPrimitive.Root
           {...getPartDataAttrObj(CONTENT_NAME)}
+          wrapperPartName={CONTENT_NAME + 'Wrapper'}
           {...contentProps}
           data-state={context.stateAttribute}
           ref={forwardedRef}

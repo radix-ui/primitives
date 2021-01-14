@@ -98,6 +98,7 @@ const ContextMenuContent = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMe
         ref={forwardedRef}
         {...contentProps}
         {...getPartDataAttrObj(CONTENT_NAME)}
+        wrapperPartName={CONTENT_NAME + 'Wrapper'}
         open={context.open}
         onOpenChange={context.setOpen}
         style={{

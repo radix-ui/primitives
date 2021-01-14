@@ -127,6 +127,7 @@ const DropdownMenuContent = forwardRefWithAs<
       ref={forwardedRef}
       {...contentProps}
       {...getPartDataAttrObj(CONTENT_NAME)}
+      wrapperPartName={CONTENT_NAME + 'Wrapper'}
       id={context.id}
       style={{
         ...contentProps.style,

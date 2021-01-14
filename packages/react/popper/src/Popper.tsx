@@ -37,6 +37,7 @@ type PopperOwnProps = {
   alignOffset?: number;
   collisionTolerance?: number;
   avoidCollisions?: boolean;
+  wrapperPartName?: string;
 };
 
 const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
@@ -51,6 +52,7 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
       alignOffset,
       collisionTolerance,
       avoidCollisions = true,
+      wrapperPartName = POPPER_NAME + 'Wrapper',
       ...popperProps
     } = props;
 
@@ -86,7 +88,7 @@ const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
     const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
 
     return (
-      <div style={popperStyles}>
+      <div style={popperStyles} {...getPartDataAttrObj(wrapperPartName)}>
         <Comp
           {...getPartDataAttrObj(POPPER_NAME)}
           {...popperProps}

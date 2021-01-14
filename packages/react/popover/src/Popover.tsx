@@ -274,6 +274,7 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
                 {(dismissableLayerProps) => (
                   <PopperPrimitive.Root
                     {...getPartDataAttrObj(CONTENT_NAME)}
+                    wrapperPartName={CONTENT_NAME + 'Wrapper'}
                     role="dialog"
                     aria-modal
                     {...contentProps}

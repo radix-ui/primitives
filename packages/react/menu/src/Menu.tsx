@@ -214,6 +214,7 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
                   <PopperPrimitive.Root
                     role="menu"
                     {...getPartDataAttrObj(MENU_NAME)}
+                    wrapperPartName={MENU_NAME + 'Wrapper'}
                     {...menuProps}
                     ref={composeRefs(
                       forwardedRef,
