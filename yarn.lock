@@ -3450,7 +3450,6 @@ __metadata:
     "@radix-ui/react-toggle-button": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
-    parcel: ^2.0.0-beta.1
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown

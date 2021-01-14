@@ -59,36 +59,49 @@ const ToggleButtonGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleButto
       ...groupProps
     } = props;
 
-    const [value, setValue] = useControlledState<string[]>({
+    const [value = [], setValue] = useControlledState<string[]>({
       prop: valueProp,
       defaultProp: defaultValue || [],
       onChange: onValueChange,
-      isEqual: stringArraysAreEqual,
     });
 
-    function handleChange(buttonValue: string) {
-      if (!value || value.length < 1) {
-        return setValue([buttonValue]);
-      }
+    const requiredRef = React.useRef(required);
+    React.useEffect(() => {
+      requiredRef.current = required;
+    });
 
-      if (required && value.length === 1 && value.includes(buttonValue)) {
-        return;
-      }
+    const handleChange = React.useCallback(
+      function handleChange(buttonValue: string) {
+        setValue((previousValue) => {
+          if (!previousValue || previousValue.length < 1) {
+            return [buttonValue];
+          }
 
-      setValue((value) =>
-        value.includes(buttonValue)
-          ? value.filter((v) => v !== buttonValue)
-          : value.concat(buttonValue).sort()
-      );
-    }
+          if (
+            requiredRef.current &&
+            previousValue.length === 1 &&
+            previousValue.includes(buttonValue)
+          ) {
+            return previousValue;
+          }
 
-    const context: ToggleButtonGroupContextValue = {
-      setValue,
-      value,
-      handleChange,
-      rovingFocus,
-      name: GROUP_CONTEXT_NAME,
-    };
+          return previousValue.includes(buttonValue)
+            ? previousValue.filter((v) => v !== buttonValue)
+            : previousValue.concat(buttonValue).sort();
+        });
+      },
+      [setValue]
+    );
+
+    const context: ToggleButtonGroupContextValue = React.useMemo(() => {
+      return {
+        setValue,
+        value,
+        handleChange,
+        rovingFocus,
+        name: GROUP_CONTEXT_NAME,
+      };
+    }, [handleChange, rovingFocus, setValue, value]);
 
     return (
       <Comp {...getPartDataAttrObj(GROUP_NAME)} role="group" ref={forwardedRef} {...groupProps}>
@@ -416,71 +429,63 @@ function useButtonStateInGroupWarning({
   }
 }
 
-function stringArraysAreEqual(arr1: string[] | undefined, arr2: string[] | undefined) {
-  if (arr1 === undefined && arr2 === undefined) return true;
-  if (arr1 === undefined) return false;
-  if (arr2 === undefined) return false;
-  return JSON.stringify(arr1.sort()) === JSON.stringify(arr2.sort());
-}
-
 // NOTE: I changed this implementation a tiny bit to improve typing somewhat. I think it's a little
 // nicer not to include `undefined` in the typing here and always provide a defaultProp value
 // whether or not its passed by the consumer. If undefined is an acceptable type it should be added
-// explicitly IMO. Also added an option to override the equality check so we can handle arrays,
-// objects, etc. If we're ok with these changes I can update it in the utils package as a separate
-// PR.
+// explicitly IMO.
 function useControlledState<T>({
   prop,
   defaultProp,
-  onChange,
-  isEqual = defaultIsEqual,
+  onChange = () => {},
 }: {
   prop?: T;
   defaultProp: T;
-  onChange?: (value: T) => void;
-  isEqual?: (prevState: any, nextState: any) => boolean;
-}): [T, React.Dispatch<React.SetStateAction<T>>] {
-  const stable_onChange = useCallbackRef(onChange);
-  const stable_isEqual = useCallbackRef(isEqual);
-  const [state, setState] = React.useState(prop || defaultProp);
-  const stateRef = React.useRef(state);
-  const isControlled = useIsControlled(prop);
+  onChange?: (state: T) => void;
+}) {
+  const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({ defaultProp, onChange });
+  const isControlled = prop !== undefined;
+  const value = isControlled ? (prop as T) : uncontrolledProp;
+  const handleChange = useCallbackRef(onChange);
 
   const setValue: React.Dispatch<React.SetStateAction<T>> = React.useCallback(
-    (value) => {
-      function handleChange(value: T) {
-        if (!stable_isEqual(stateRef.current, value)) {
-          stable_onChange(value);
-        }
-        if (!isControlled) {
-          stateRef.current = value;
-        }
-      }
-
-      if (isFunction(value)) {
-        setState((oldValue) => {
-          const newValue = value((isControlled ? stateRef.current : oldValue) as any);
-          handleChange(newValue);
-          return isControlled ? oldValue : newValue;
-        });
+    (nextValue) => {
+      if (isControlled) {
+        const setter = nextValue as SetStateFn<T>;
+        const value = typeof nextValue === 'function' ? setter(prop) : nextValue;
+        if (value !== prop) handleChange(value as T);
       } else {
-        if (!isControlled) {
-          setState(value);
-        }
-        handleChange(value);
+        setUncontrolledProp(nextValue);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [stable_isEqual, stable_onChange]
+    [isControlled, prop, setUncontrolledProp, handleChange]
   );
 
-  const value = isControlled ? prop! : state;
-  if (isControlled) {
-    stateRef.current = prop!;
-  }
-
-  return [value, setValue];
+  return [value, setValue] as const;
 }
+
+function useUncontrolledState<T>({
+  defaultProp,
+  onChange,
+}: {
+  defaultProp: T;
+  onChange?: (state: T) => void;
+}) {
+  const uncontrolledState = React.useState<T>(defaultProp);
+  const [value] = uncontrolledState;
+  const prevValueRef = React.useRef(value);
+  const handleChange = useCallbackRef(onChange);
+
+  React.useEffect(() => {
+    if (prevValueRef.current !== value) {
+      handleChange(value as T);
+      prevValueRef.current = value;
+    }
+  }, [value, prevValueRef, handleChange]);
+
+  return uncontrolledState;
+}
+
+type SetStateFn<T> = (prevState?: T) => T;
 
 function useIsControlled(controlledProp: any): boolean {
   const controlledTrackingRef = React.useRef(controlledProp !== undefined);
