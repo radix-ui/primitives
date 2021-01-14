@@ -5,7 +5,7 @@ import {
   composeEventHandlers,
   useControlledState,
 } from '@radix-ui/react-utils';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { namespaced, getSelectorObj } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Presence } from '@radix-ui/react-presence';
 
@@ -20,6 +20,12 @@ type CollapsibleOwnProps = {
   defaultOpen?: boolean;
   open?: boolean;
   disabled?: boolean;
+  /**
+   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   *
+   * @defaultValue radix-collapsible
+   */
+  selector?: string;
   onOpenChange?(open?: boolean): void;
 };
 
@@ -40,6 +46,7 @@ const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, Collapsible
   (props, forwardedRef) => {
     const {
       as: Comp = COLLAPSIBLE_DEFAULT_TAG,
+      selector = namespaced(COLLAPSIBLE_NAME),
       id: idProp,
       children,
       open: openProp,
@@ -68,8 +75,8 @@ const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, Collapsible
 
     return (
       <Comp
-        {...getPartDataAttrObj(COLLAPSIBLE_NAME)}
         {...collapsibleProps}
+        {...getSelectorObj(selector)}
         data-state={getState(context.open)}
         ref={forwardedRef}
       >
@@ -88,23 +95,39 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 const BUTTON_NAME = 'CollapsibleButton';
 const BUTTON_DEFAULT_TAG = 'button';
 
-const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
-  const context = useCollapsibleContext(BUTTON_NAME);
+type CollapsibleButtonProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   *
+   * @defaultValue radix-collapsible-button
+   */
+  selector?: string;
+};
 
-  return (
-    <Comp
-      {...getPartDataAttrObj(BUTTON_NAME)}
-      ref={forwardedRef}
-      aria-controls={context.contentId}
-      aria-expanded={context.open || false}
-      data-state={getState(context.open)}
-      {...buttonProps}
-      onClick={composeEventHandlers(onClick, context.toggle)}
-      disabled={context.disabled}
-    />
-  );
-});
+const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, CollapsibleButtonProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = BUTTON_DEFAULT_TAG,
+      selector = namespaced(COLLAPSIBLE_NAME),
+      onClick,
+      ...buttonProps
+    } = props;
+    const context = useCollapsibleContext(BUTTON_NAME);
+
+    return (
+      <Comp
+        aria-controls={context.contentId}
+        aria-expanded={context.open || false}
+        data-state={getState(context.open)}
+        {...buttonProps}
+        {...getSelectorObj(selector)}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(onClick, context.toggle)}
+        disabled={context.disabled}
+      />
+    );
+  }
+);
 
 CollapsibleButton.displayName = BUTTON_NAME;
 
@@ -117,6 +140,12 @@ const CONTENT_DEFAULT_TAG = 'div';
 
 type CollapsibleContentOwnProps = {
   /**
+   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   *
+   * @defaultValue radix-collapsible-content
+   */
+  selector?: string;
+  /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
@@ -127,6 +156,7 @@ const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, Collapsi
   (props, forwardedRef) => {
     const {
       as: Comp = CONTENT_DEFAULT_TAG,
+      selector = namespaced(CONTENT_NAME),
       id: idProp,
       forceMount,
       children,
@@ -145,7 +175,7 @@ const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, Collapsi
         {({ present }) => (
           <Comp
             {...contentProps}
-            {...getPartDataAttrObj(CONTENT_NAME)}
+            {...getSelectorObj(selector)}
             ref={forwardedRef}
             id={id}
             hidden={!present}

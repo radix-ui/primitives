@@ -14,8 +14,12 @@ function getPartDataAttr(componentPart: string) {
   return `data-${namespaced(componentPart)}`;
 }
 
-function getPartDataAttrObj(componentPart: string, value: string | null = '') {
-  return { [getPartDataAttr(componentPart)]: value };
+function getPartDataAttrObj(componentPart: string) {
+  return { [getPartDataAttr(componentPart)]: '' };
+}
+
+function getSelectorObj(selector: string) {
+  return { [`data-${selector}`]: '' };
 }
 
 function canUseDOM() {
@@ -47,6 +51,7 @@ function getResizeObserverEntryBorderBoxSize(entry: ResizeObserverEntry): Resize
 export {
   getPartDataAttr,
   getPartDataAttrObj,
+  getSelectorObj,
   canUseDOM,
   makeId,
   namespaced,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { namespaced, getSelectorObj } from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -43,7 +43,12 @@ type AccordionItemOwnProps = {
    * A string value for the accordion item. All items within an accordion should use a unique value.
    */
   value: string;
-
+  /**
+   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   *
+   * @defaultValue radix-accordion-item
+   */
+  selector?: string;
   open: never;
   defaultOpen: never;
   onOpenChange: never;
@@ -60,7 +65,7 @@ const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionI
  */
 const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps>(
   (props, forwardedRef) => {
-    const { value, children, ...accordionItemProps } = props;
+    const { value, children, selector = namespaced(ITEM_NAME), ...accordionItemProps } = props;
     const accordionContext = useAccordionContext(ITEM_NAME);
     const generatedButtonId = `accordion-button-${useId()}`;
     const buttonId = props.id || generatedButtonId;
@@ -75,8 +80,7 @@ const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps
     return (
       <Collapsible
         {...accordionItemProps}
-        {...getPartDataAttrObj(ITEM_NAME)}
-        {...getPartDataAttrObj(Collapsible.displayName!, null)}
+        selector={selector}
         ref={forwardedRef}
         data-state={open ? 'open' : 'closed'}
         data-disabled={disabled || undefined}
@@ -101,14 +105,29 @@ AccordionItem.displayName = ITEM_NAME;
 const HEADER_NAME = 'AccordionHeader';
 const HEADER_DEFAULT_TAG = 'h3';
 
+type AccordionHeaderOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   *
+   * @defaultValue radix-accordion-header
+   */
+  selector?: string;
+};
+
 /**
  * `AccordionHeader` contains the content for the parts of an `AccordionItem` that will be visible
  * whether or not its content is collapsed.
  */
-const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
-  return <Comp ref={forwardedRef} {...headerProps} {...getPartDataAttrObj(HEADER_NAME)} />;
-});
+const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG, AccordionHeaderOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = HEADER_DEFAULT_TAG,
+      selector = namespaced(HEADER_NAME),
+      ...headerProps
+    } = props;
+    return <Comp {...headerProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
+  }
+);
 
 AccordionHeader.displayName = HEADER_NAME;
 
@@ -118,42 +137,52 @@ AccordionHeader.displayName = HEADER_NAME;
 
 const BUTTON_NAME = 'AccordionButton';
 
+type AccordionButtonOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   *
+   * @defaultValue radix-accordion-button
+   */
+  selector?: string;
+};
+
 /**
  * `AccordionButton` is the trigger that toggles the collapsed state of an `AccordionItem`. It
  * should always be nested inside of an `AccordionHeader`.
  */
-const AccordionButton = forwardRefWithAs<typeof CollapsibleButton>((props, forwardedRef) => {
-  const { ...buttonProps } = props;
-  const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
-  const itemContext = useAccordionItemContext(BUTTON_NAME);
+const AccordionButton = forwardRefWithAs<typeof CollapsibleButton, AccordionButtonOwnProps>(
+  (props, forwardedRef) => {
+    const { selector = namespaced(BUTTON_NAME), ...buttonProps } = props;
+    const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
+    const itemContext = useAccordionItemContext(BUTTON_NAME);
 
-  const ref = React.useRef<React.ElementRef<typeof CollapsibleButton>>(null);
-  const composedRefs = useComposedRefs(ref, forwardedRef);
+    const ref = React.useRef<React.ElementRef<typeof CollapsibleButton>>(null);
+    const composedRefs = useComposedRefs(ref, forwardedRef);
 
-  React.useEffect(() => {
-    const buttonNodes = buttonNodesRef.current;
-    const buttonNode = ref.current;
+    React.useEffect(() => {
+      const buttonNodes = buttonNodesRef.current;
+      const buttonNode = ref.current;
 
-    if (buttonNode) {
-      buttonNodes.add(buttonNode);
-      return () => {
-        buttonNodes.delete(buttonNode);
-      };
-    }
-    return;
-  }, [buttonNodesRef]);
+      if (buttonNode) {
+        buttonNodes.add(buttonNode);
+        return () => {
+          buttonNodes.delete(buttonNode);
+        };
+      }
+      return;
+    }, [buttonNodesRef]);
 
-  return (
-    <CollapsibleButton
-      {...buttonProps}
-      {...getPartDataAttrObj(BUTTON_NAME)}
-      {...getPartDataAttrObj(CollapsibleButton.displayName!, null)}
-      ref={composedRefs}
-      aria-disabled={itemContext.open || undefined}
-      id={itemContext.buttonId}
-    />
-  );
-});
+    return (
+      <CollapsibleButton
+        {...buttonProps}
+        selector={selector}
+        ref={composedRefs}
+        aria-disabled={itemContext.open || undefined}
+        id={itemContext.buttonId}
+      />
+    );
+  }
+);
 
 AccordionButton.displayName = BUTTON_NAME;
 
@@ -163,22 +192,33 @@ AccordionButton.displayName = BUTTON_NAME;
 
 const PANEL_NAME = 'AccordionPanel';
 
+type AccordionPanelOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   *
+   * @defaultValue radix-accordion-panel
+   */
+  selector?: string;
+};
+
 /**
  * `AccordionPanel` contains the collapsible content for an `AccordionItem`.
  */
-const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent>((props, forwardedRef) => {
-  const itemContext = useAccordionItemContext(PANEL_NAME);
-  return (
-    <CollapsibleContent
-      {...props}
-      {...getPartDataAttrObj(PANEL_NAME)}
-      {...getPartDataAttrObj(CollapsibleContent.displayName!, null)}
-      ref={forwardedRef}
-      role="region"
-      aria-labelledby={itemContext.buttonId}
-    />
-  );
-});
+const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent, AccordionPanelOwnProps>(
+  (props, forwardedRef) => {
+    const { selector = namespaced(PANEL_NAME), ...contentProps } = props;
+    const itemContext = useAccordionItemContext(PANEL_NAME);
+    return (
+      <CollapsibleContent
+        {...contentProps}
+        selector={selector}
+        ref={forwardedRef}
+        role="region"
+        aria-labelledby={itemContext.buttonId}
+      />
+    );
+  }
+);
 
 AccordionPanel.displayName = PANEL_NAME;
 
@@ -207,6 +247,12 @@ type AccordionOwnProps = {
    */
   disabled?: boolean;
   /**
+   * A string to use as the component selector for CSS purposes. This will be added as a data attribute.
+   *
+   * @defaultValue radix-accordion
+   */
+  selector?: string;
+  /**
    * The callback that fires when the state of the accordion changes.
    */
   onValueChange?(value: string): void;
@@ -219,6 +265,7 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
   (props, forwardedRef) => {
     const {
       as: Comp = ACCORDION_DEFAULT_TAG,
+      selector = namespaced(ACCORDION_NAME),
       value: valueProp,
       defaultValue,
       children,
@@ -290,7 +337,7 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
     return (
       <Comp
         {...accordionProps}
-        {...getPartDataAttrObj(ACCORDION_NAME)}
+        {...getSelectorObj(selector)}
         ref={composedRefs}
         onKeyDown={disabled ? undefined : handleKeyDown}
       >
