@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import { createContext, useCallbackRef, useLayoutEffect } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
@@ -21,15 +21,32 @@ const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
   AVATAR_NAME
 );
 
-const Avatar = forwardRefWithAs<typeof AVATAR_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = AVATAR_DEFAULT_TAG, children, ...avatarProps } = props;
-  const context = React.useState<ImageLoadingStatus>('idle');
-  return (
-    <Comp {...getPartDataAttrObj(AVATAR_NAME)} {...avatarProps} ref={forwardedRef}>
-      <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
-    </Comp>
-  );
-});
+type AvatarOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-avatar
+   */
+  selector?: string | null;
+};
+
+const Avatar = forwardRefWithAs<typeof AVATAR_DEFAULT_TAG, AvatarOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = AVATAR_DEFAULT_TAG,
+      selector = getSelector(AVATAR_NAME),
+      children,
+      ...avatarProps
+    } = props;
+    const context = React.useState<ImageLoadingStatus>('idle');
+    return (
+      <Comp {...avatarProps} {...getSelectorObj(selector)} ref={forwardedRef}>
+        <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
+      </Comp>
+    );
+  }
+);
 
 Avatar.displayName = AVATAR_NAME;
 
@@ -40,12 +57,22 @@ Avatar.displayName = AVATAR_NAME;
 const IMAGE_NAME = 'AvatarImage';
 const IMAGE_DEFAULT_TAG = 'img';
 
-type AvatarImageOwnProps = { onLoadingStatusChange?: (status: ImageLoadingStatus) => void };
+type AvatarImageOwnProps = {
+  onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-avatar-image
+   */
+  selector?: string | null;
+};
 
 const AvatarImage = forwardRefWithAs<typeof IMAGE_DEFAULT_TAG, AvatarImageOwnProps>(
   (props, forwardedRef) => {
     const {
       as: Comp = IMAGE_DEFAULT_TAG,
+      selector = getSelector(IMAGE_NAME),
       src,
       onLoadingStatusChange: onLoadingStatusChangeProp = () => {},
       ...imageProps
@@ -62,7 +89,7 @@ const AvatarImage = forwardRefWithAs<typeof IMAGE_DEFAULT_TAG, AvatarImageOwnPro
     }, [imageLoadingStatus, setImageLoadingStatus, onLoadingStatusChange]);
 
     return imageLoadingStatus === 'loaded' ? (
-      <Comp {...imageProps} {...getPartDataAttrObj(IMAGE_NAME)} src={src} ref={forwardedRef} />
+      <Comp {...imageProps} {...getSelectorObj(selector)} src={src} ref={forwardedRef} />
     ) : null;
   }
 );
@@ -76,11 +103,25 @@ AvatarImage.displayName = IMAGE_NAME;
 const FALLBACK_NAME = 'AvatarFallback';
 const FALLBACK_DEFAULT_TAG = 'span';
 
-type AvatarFallbackOwnProps = { delayMs?: number };
+type AvatarFallbackOwnProps = {
+  delayMs?: number;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-avatar-fallback
+   */
+  selector?: string | null;
+};
 
 const AvatarFallback = forwardRefWithAs<typeof FALLBACK_DEFAULT_TAG, AvatarFallbackOwnProps>(
   (props, forwardedRef) => {
-    const { as: Comp = FALLBACK_DEFAULT_TAG, delayMs, ...fallbackProps } = props;
+    const {
+      as: Comp = FALLBACK_DEFAULT_TAG,
+      selector = getSelector(FALLBACK_NAME),
+      delayMs,
+      ...fallbackProps
+    } = props;
     const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
     const [canRender, setCanRender] = React.useState(delayMs === undefined);
 
@@ -92,7 +133,7 @@ const AvatarFallback = forwardRefWithAs<typeof FALLBACK_DEFAULT_TAG, AvatarFallb
     }, [delayMs]);
 
     return canRender && imageLoadingStatus !== 'loaded' ? (
-      <Comp {...fallbackProps} {...getPartDataAttrObj(FALLBACK_NAME)} ref={forwardedRef} />
+      <Comp {...fallbackProps} {...getSelectorObj(selector)} ref={forwardedRef} />
     ) : null;
   }
 );
