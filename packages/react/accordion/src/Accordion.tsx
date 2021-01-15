@@ -1,5 +1,5 @@
 import React from 'react';
-import { namespaced, getSelectorObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -66,7 +66,7 @@ const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionI
  */
 const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps>(
   (props, forwardedRef) => {
-    const { value, children, selector = namespaced(ITEM_NAME), ...accordionItemProps } = props;
+    const { value, children, selector = getSelector(ITEM_NAME), ...accordionItemProps } = props;
     const accordionContext = useAccordionContext(ITEM_NAME);
     const generatedButtonId = `accordion-button-${useId()}`;
     const buttonId = props.id || generatedButtonId;
@@ -124,7 +124,7 @@ const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG, AccordionHea
   (props, forwardedRef) => {
     const {
       as: Comp = HEADER_DEFAULT_TAG,
-      selector = namespaced(HEADER_NAME),
+      selector = getSelector(HEADER_NAME),
       ...headerProps
     } = props;
     return <Comp {...headerProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
@@ -155,7 +155,7 @@ type AccordionButtonOwnProps = {
  */
 const AccordionButton = forwardRefWithAs<typeof CollapsibleButton, AccordionButtonOwnProps>(
   (props, forwardedRef) => {
-    const { selector = namespaced(BUTTON_NAME), ...buttonProps } = props;
+    const { selector = getSelector(BUTTON_NAME), ...buttonProps } = props;
     const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
     const itemContext = useAccordionItemContext(BUTTON_NAME);
 
@@ -210,7 +210,7 @@ type AccordionPanelOwnProps = {
  */
 const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent, AccordionPanelOwnProps>(
   (props, forwardedRef) => {
-    const { selector = namespaced(PANEL_NAME), ...contentProps } = props;
+    const { selector = getSelector(PANEL_NAME), ...contentProps } = props;
     const itemContext = useAccordionItemContext(PANEL_NAME);
     return (
       <CollapsibleContent
@@ -270,7 +270,7 @@ const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnPro
   (props, forwardedRef) => {
     const {
       as: Comp = ACCORDION_DEFAULT_TAG,
-      selector = namespaced(ACCORDION_NAME),
+      selector = getSelector(ACCORDION_NAME),
       value: valueProp,
       defaultValue,
       children,

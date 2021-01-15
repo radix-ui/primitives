@@ -5,7 +5,7 @@ import {
   composeEventHandlers,
   useControlledState,
 } from '@radix-ui/react-utils';
-import { namespaced, getSelectorObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Presence } from '@radix-ui/react-presence';
 
@@ -47,7 +47,7 @@ const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, Collapsible
   (props, forwardedRef) => {
     const {
       as: Comp = COLLAPSIBLE_DEFAULT_TAG,
-      selector = namespaced(COLLAPSIBLE_NAME),
+      selector = getSelector(COLLAPSIBLE_NAME),
       id: idProp,
       children,
       open: openProp,
@@ -110,7 +110,7 @@ const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, Collapsibl
   (props, forwardedRef) => {
     const {
       as: Comp = BUTTON_DEFAULT_TAG,
-      selector = namespaced(COLLAPSIBLE_NAME),
+      selector = getSelector(COLLAPSIBLE_NAME),
       onClick,
       ...buttonProps
     } = props;
@@ -159,7 +159,7 @@ const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, Collapsi
   (props, forwardedRef) => {
     const {
       as: Comp = CONTENT_DEFAULT_TAG,
-      selector = namespaced(CONTENT_NAME),
+      selector = getSelector(CONTENT_NAME),
       id: idProp,
       forceMount,
       children,
