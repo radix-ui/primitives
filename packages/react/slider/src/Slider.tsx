@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { clamp, getPartDataAttr, getPartDataAttrObj } from '@radix-ui/utils';
+import { clamp, getSelector, getSelectorObj } from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -48,6 +48,13 @@ const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
 );
 
 type SliderOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-slider
+   */
+  selector?: string | null;
   name?: string;
   disabled?: boolean;
   orientation?: React.AriaAttributes['aria-orientation'];
@@ -64,6 +71,7 @@ type SliderOwnProps = {
 const Slider = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>(
   (props, forwardedRef) => {
     const {
+      selector = getSelector(SLIDER_NAME),
       children,
       name,
       min = 0,
@@ -141,7 +149,7 @@ const Slider = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>(
     return (
       <SliderOrientation
         {...sliderProps}
-        {...getPartDataAttrObj(SLIDER_NAME)}
+        {...getSelectorObj(selector)}
         ref={composedRefs}
         min={min}
         max={max}
@@ -495,20 +503,37 @@ const SliderPart = forwardRefWithAs<typeof SLIDER_DEFAULT_TAG, SliderPartOwnProp
 const TRACK_NAME = 'SliderTrack';
 const TRACK_DEFAULT_TAG = 'span';
 
-const SliderTrack = forwardRefWithAs<typeof TRACK_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = TRACK_DEFAULT_TAG, children, ...trackProps } = props;
-  const context = useSliderContext(TRACK_NAME);
-  return (
-    <Comp
-      {...getPartDataAttrObj(TRACK_NAME)}
-      {...trackProps}
-      ref={forwardedRef}
-      data-orientation={context.orientation}
-    >
-      {children}
-    </Comp>
-  );
-});
+type SliderTrackOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-slider-track
+   */
+  selector?: string | null;
+};
+
+const SliderTrack = forwardRefWithAs<typeof TRACK_DEFAULT_TAG, SliderTrackOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = TRACK_DEFAULT_TAG,
+      selector = getSelector(TRACK_NAME),
+      children,
+      ...trackProps
+    } = props;
+    const context = useSliderContext(TRACK_NAME);
+    return (
+      <Comp
+        {...trackProps}
+        {...getSelectorObj(selector)}
+        ref={forwardedRef}
+        data-orientation={context.orientation}
+      >
+        {children}
+      </Comp>
+    );
+  }
+);
 
 SliderTrack.displayName = TRACK_NAME;
 
@@ -520,12 +545,24 @@ const RANGE_NAME = 'SliderRange';
 const RANGE_DEFAULT_TAG = 'span';
 
 type SliderRangeOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-slider-range
+   */
+  selector?: string | null;
   children: never;
 };
 
 const SliderRange = forwardRefWithAs<typeof RANGE_DEFAULT_TAG, SliderRangeOwnProps>(
   (props, forwardedRef) => {
-    const { as: Comp = RANGE_DEFAULT_TAG, style, ...rangeProps } = props;
+    const {
+      as: Comp = RANGE_DEFAULT_TAG,
+      selector = getSelector(RANGE_NAME),
+      style,
+      ...rangeProps
+    } = props;
     const context = useSliderContext(RANGE_NAME);
     const orientation = React.useContext(SliderOrientationContext);
     const ref = React.useRef<HTMLSpanElement>(null);
@@ -539,8 +576,8 @@ const SliderRange = forwardRefWithAs<typeof RANGE_DEFAULT_TAG, SliderRangeOwnPro
 
     return (
       <Comp
-        {...getPartDataAttrObj(RANGE_NAME)}
         {...rangeProps}
+        {...getSelectorObj(selector)}
         ref={composedRefs}
         style={{
           ...style,
@@ -576,11 +613,27 @@ const SliderThumb = forwardRefWithAs<typeof SliderThumbImpl, SliderThumbOwnProps
   }
 );
 
-type SliderThumbImplOwnProps = { value: number; index: number };
+type SliderThumbImplOwnProps = {
+  value: number;
+  index: number;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-slider-thumb
+   */
+  selector?: string | null;
+};
 
 const SliderThumbImpl = forwardRefWithAs<typeof THUMB_DEFAULT_TAG, SliderThumbImplOwnProps>(
   (props, forwardedRef) => {
-    const { as: Comp = THUMB_DEFAULT_TAG, index, value, ...thumbProps } = props;
+    const {
+      as: Comp = THUMB_DEFAULT_TAG,
+      selector = getSelector(THUMB_NAME),
+      index,
+      value,
+      ...thumbProps
+    } = props;
     const context = useSliderContext(THUMB_NAME);
     const orientation = React.useContext(SliderOrientationContext);
     const thumbRef = React.useRef<HTMLSpanElement>(null);
@@ -613,7 +666,7 @@ const SliderThumbImpl = forwardRefWithAs<typeof THUMB_DEFAULT_TAG, SliderThumbIm
       >
         <Comp
           {...thumbProps}
-          {...getPartDataAttrObj(THUMB_NAME)}
+          {...getSelectorObj(selector)}
           ref={ref}
           aria-label={props['aria-label'] || label}
           aria-valuemin={context.min}
@@ -706,7 +759,7 @@ function getNextSortedValues(prevValues: number[] = [], nextValue: number, atInd
 }
 
 function isThumb(node: any): node is HTMLElement {
-  const thumbAttributeName = getPartDataAttr(THUMB_NAME);
+  const thumbAttributeName = `data-${getSelector(THUMB_NAME)}`;
   const thumbAttribute = node.getAttribute(thumbAttributeName);
   // `getAttribute` returns the attribute value and since we add the
   // attribute without a value, we must check it is an empty string
