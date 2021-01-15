@@ -1,17 +1,18 @@
 import * as React from 'react';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import type { ForwardRefExoticComponentWithAs } from '@radix-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 
-function extendComponent<As extends ForwardRefExoticComponentWithAs<any, any>>(
+function extendComponent<As extends ForwardRefExoticComponentWithAs<any, any>, OwnProps = {}>(
   Comp: As extends ForwardRefExoticComponentWithAs<infer I, infer P>
     ? ForwardRefExoticComponentWithAs<I, P>
     : As,
   displayName: string
 ) {
-  const Extended = forwardRefWithAs<typeof Comp>((props, forwardedRef) => {
+  const Extended = forwardRefWithAs<typeof Comp, OwnProps>((props, forwardedRef) => {
+    const { selector = getSelector(displayName), ...restProps } = props as any;
     const As = Comp as any;
-    return <As {...getPartDataAttrObj(displayName)} {...props} ref={forwardedRef} />;
+    return <As {...restProps} selector={selector} ref={forwardedRef} />;
   });
   Extended.displayName = displayName;
   return Extended;
