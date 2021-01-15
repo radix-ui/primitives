@@ -18,8 +18,8 @@ function getPartDataAttrObj(componentPart: string) {
   return { [getPartDataAttr(componentPart)]: '' };
 }
 
-function getSelector(selector: string) {
-  return namespaced(selector);
+function getSelector(componentPart: string) {
+  return namespaced(componentPart);
 }
 
 function getSelectorObj(selector: string | null) {
