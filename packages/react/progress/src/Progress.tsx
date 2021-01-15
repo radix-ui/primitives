@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createContext } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Progress
@@ -19,6 +19,13 @@ const [ProgressContext, useProgressContext] = createContext<ProgressContextValue
 );
 
 type ProgressOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-progress
+   */
+  selector?: string | null;
   value?: number | null | undefined;
   max?: number;
   getValueLabel?(value: number, max: number): string;
@@ -28,6 +35,7 @@ const Progress = forwardRefWithAs<typeof PROGRESS_DEFAULT_TAG, ProgressOwnProps>
   (props, forwardedRef) => {
     const {
       as: Comp = PROGRESS_DEFAULT_TAG,
+      selector = getSelector(PROGRESS_NAME),
       children,
       value: valueProp,
       max: maxProp,
@@ -48,7 +56,7 @@ const Progress = forwardRefWithAs<typeof PROGRESS_DEFAULT_TAG, ProgressOwnProps>
         aria-valuetext={valueLabel}
         role="progressbar"
         {...progressProps}
-        {...getPartDataAttrObj(PROGRESS_NAME)}
+        {...getSelectorObj(selector)}
         data-state={getProgressState(value, max)}
         data-value={value ?? undefined}
         data-max={max}
@@ -89,20 +97,36 @@ Progress.propTypes = {
 const INDICATOR_NAME = 'ProgressIndicator';
 const INDICATOR_DEFAULT_TAG = 'div';
 
-const ProgressIndicator = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>((props, forwardedRef) => {
-  const { value, max } = useProgressContext(INDICATOR_NAME);
-  const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-  return (
-    <Comp
-      {...indicatorProps}
-      {...getPartDataAttrObj(INDICATOR_NAME)}
-      data-state={getProgressState(value, max)}
-      data-value={value || undefined}
-      data-max={max}
-      ref={forwardedRef}
-    />
-  );
-});
+type ProgressIndicatorOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-progress-indicator
+   */
+  selector?: string | null;
+};
+
+const ProgressIndicator = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG, ProgressIndicatorOwnProps>(
+  (props, forwardedRef) => {
+    const { value, max } = useProgressContext(INDICATOR_NAME);
+    const {
+      as: Comp = INDICATOR_DEFAULT_TAG,
+      selector = getSelector(INDICATOR_NAME),
+      ...indicatorProps
+    } = props;
+    return (
+      <Comp
+        {...indicatorProps}
+        {...getSelectorObj(selector)}
+        data-state={getProgressState(value, max)}
+        data-value={value || undefined}
+        data-max={max}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
 
 ProgressIndicator.displayName = INDICATOR_NAME;
 
