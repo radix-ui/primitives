@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
@@ -9,11 +9,27 @@ import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 const NAME = 'AspectRatio';
 const DEFAULT_TAG = 'div';
 
-type AspectRatioOwnProps = { ratio?: number };
+type AspectRatioOwnProps = {
+  ratio?: number;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-aspect-ratio
+   */
+  selector?: string | null;
+};
 
 const AspectRatio = forwardRefWithAs<typeof DEFAULT_TAG, AspectRatioOwnProps>(
   (props, forwardedRef) => {
-    const { as: Comp = DEFAULT_TAG, ratio = 1 / 1, style, children, ...aspectRatioProps } = props;
+    const {
+      as: Comp = DEFAULT_TAG,
+      selector = getSelector(NAME),
+      ratio = 1 / 1,
+      style,
+      children,
+      ...aspectRatioProps
+    } = props;
 
     return (
       <div
@@ -27,7 +43,7 @@ const AspectRatio = forwardRefWithAs<typeof DEFAULT_TAG, AspectRatioOwnProps>(
       >
         <Comp
           {...aspectRatioProps}
-          {...getPartDataAttrObj(NAME)}
+          {...getSelectorObj(selector)}
           ref={forwardedRef}
           style={{
             ...style,
