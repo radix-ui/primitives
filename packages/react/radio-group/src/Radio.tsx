@@ -8,7 +8,7 @@ import {
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Presence } from '@radix-ui/react-presence';
 import { useLabelContext } from '@radix-ui/react-label';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Radio
@@ -19,6 +19,13 @@ const RADIO_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
 type RadioOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-radio
+   */
+  selector?: string | null;
   checked?: boolean;
   defaultChecked?: boolean;
   required?: InputDOMProps['required'];
@@ -32,6 +39,7 @@ const [RadioContext, useRadioContext] = createContext<boolean>(RADIO_NAME + 'Con
 const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = RADIO_DEFAULT_TAG,
+    selector = getSelector(RADIO_NAME),
     'aria-labelledby': ariaLabelledby,
     children,
     name,
@@ -78,7 +86,7 @@ const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, 
       <Comp
         type="button"
         {...radioProps}
-        {...getPartDataAttrObj(RADIO_NAME)}
+        {...getSelectorObj(selector)}
         ref={ref}
         role="radio"
         aria-checked={checked}
@@ -130,12 +138,27 @@ const RadioIndicator = forwardRefWithAs<typeof RadioIndicatorImpl, RadioIndicato
   }
 );
 
-const RadioIndicatorImpl = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
-  function RadioIndicatorImpl(props, forwardedRef) {
-    const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-    return <Comp {...indicatorProps} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
-  }
-);
+type RadioIndicatorImplOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-radio-indicator
+   */
+  selector?: string | null;
+};
+
+const RadioIndicatorImpl = forwardRefWithAs<
+  typeof INDICATOR_DEFAULT_TAG,
+  RadioIndicatorImplOwnProps
+>(function RadioIndicatorImpl(props, forwardedRef) {
+  const {
+    as: Comp = INDICATOR_DEFAULT_TAG,
+    selector = getSelector(INDICATOR_NAME),
+    ...indicatorProps
+  } = props;
+  return <Comp {...indicatorProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
+});
 
 RadioIndicator.displayName = INDICATOR_NAME;
 
