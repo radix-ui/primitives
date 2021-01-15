@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 
 const NAME = 'Separator';
 const DEFAULT_TAG = 'div';
@@ -18,11 +18,19 @@ type SeparatorOwnProps = {
    * are updated so that that the rendered element is removed from the accessibility tree.
    */
   decorative?: boolean;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-separator
+   */
+  selector?: string | null;
 };
 
 const Separator = forwardRefWithAs<typeof DEFAULT_TAG, SeparatorOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = DEFAULT_TAG,
+    selector = getSelector(NAME),
     decorative,
     orientation: orientationProp = DEFAULT_ORIENTATION,
     ...domProps
@@ -39,9 +47,9 @@ const Separator = forwardRefWithAs<typeof DEFAULT_TAG, SeparatorOwnProps>((props
     <Comp
       {...semanticProps}
       data-orientation={orientation}
-      ref={forwardedRef}
-      {...getPartDataAttrObj(NAME)}
       {...domProps}
+      {...getSelectorObj(selector)}
+      ref={forwardedRef}
     />
   );
 });
