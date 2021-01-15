@@ -7,7 +7,7 @@ import {
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { useLabelContext } from '@radix-ui/react-label';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
@@ -18,6 +18,13 @@ const SWITCH_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
 type SwitchOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-switch
+   */
+  selector?: string | null;
   checked?: boolean;
   defaultChecked?: boolean;
   required?: InputDOMProps['required'];
@@ -35,6 +42,7 @@ const Switch = forwardRefWithAs<typeof SWITCH_DEFAULT_TAG, SwitchOwnProps>(
   (props, forwardedRef) => {
     const {
       as: Comp = SWITCH_DEFAULT_TAG,
+      selector = getSelector(SWITCH_NAME),
       'aria-labelledby': ariaLabelledby,
       children,
       name,
@@ -81,7 +89,7 @@ const Switch = forwardRefWithAs<typeof SWITCH_DEFAULT_TAG, SwitchOwnProps>(
         <Comp
           type="button"
           {...switchProps}
-          {...getPartDataAttrObj(SWITCH_NAME)}
+          {...getSelectorObj(selector)}
           ref={ref}
           role="switch"
           aria-checked={checked}
@@ -115,18 +123,34 @@ Switch.displayName = SWITCH_NAME;
 const THUMB_NAME = 'SwitchThumb';
 const THUMB_DEFAULT_TAG = 'span';
 
-const SwitchThumb = forwardRefWithAs<typeof THUMB_DEFAULT_TAG>((props, forwardedRef) => {
-  const checked = useSwitchContext(THUMB_NAME);
-  const { as: Comp = THUMB_DEFAULT_TAG, ...thumbProps } = props;
-  return (
-    <Comp
-      {...thumbProps}
-      {...getPartDataAttrObj(THUMB_NAME)}
-      data-state={getState(checked)}
-      ref={forwardedRef}
-    />
-  );
-});
+type SwitchThumbOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-switch-thumb
+   */
+  selector?: string | null;
+};
+
+const SwitchThumb = forwardRefWithAs<typeof THUMB_DEFAULT_TAG, SwitchThumbOwnProps>(
+  (props, forwardedRef) => {
+    const checked = useSwitchContext(THUMB_NAME);
+    const {
+      as: Comp = THUMB_DEFAULT_TAG,
+      selector = getSelector(THUMB_NAME),
+      ...thumbProps
+    } = props;
+    return (
+      <Comp
+        {...thumbProps}
+        {...getSelectorObj(selector)}
+        data-state={getState(checked)}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
 
 SwitchThumb.displayName = THUMB_NAME;
 
