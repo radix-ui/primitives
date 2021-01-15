@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import { useId, useComposedRefs } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
@@ -10,13 +10,29 @@ import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 const NAME = 'Label';
 const DEFAULT_TAG = 'span';
 
-type LabelOwnProps = { htmlFor?: string };
+type LabelOwnProps = {
+  htmlFor?: string;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-label
+   */
+  selector?: string | null;
+};
 
 type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
 const Label = forwardRefWithAs<typeof DEFAULT_TAG, LabelOwnProps>((props, forwardedRef) => {
-  const { htmlFor, as: Comp = DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
+  const {
+    htmlFor,
+    as: Comp = DEFAULT_TAG,
+    selector = getSelector(NAME),
+    id: idProp,
+    children,
+    ...labelProps
+  } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
   const generatedId = `label-${useId()}`;
@@ -65,7 +81,7 @@ const Label = forwardRefWithAs<typeof DEFAULT_TAG, LabelOwnProps>((props, forwar
   }, [id, htmlFor]);
 
   return (
-    <Comp {...labelProps} {...getPartDataAttrObj(NAME)} id={id} ref={ref} role="label">
+    <Comp {...labelProps} {...getSelectorObj(selector)} id={id} ref={ref} role="label">
       <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
         {children}
       </LabelContext.Provider>
