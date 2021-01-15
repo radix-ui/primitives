@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import {
   createContext,
   composeEventHandlers,
@@ -24,6 +24,13 @@ type CheckboxOwnProps = {
   defaultChecked?: CheckedState;
   required?: InputDOMProps['required'];
   readOnly?: InputDOMProps['readOnly'];
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-checkbox
+   */
+  selector?: string | null;
   onCheckedChange?: InputDOMProps['onChange'];
   onChange: never;
 };
@@ -37,6 +44,7 @@ const Checkbox = forwardRefWithAs<typeof CHECKBOX_DEFAULT_TAG, CheckboxOwnProps>
   (props, forwardedRef) => {
     const {
       as: Comp = CHECKBOX_DEFAULT_TAG,
+      selector = getSelector(CHECKBOX_NAME),
       'aria-labelledby': ariaLabelledby,
       children,
       name,
@@ -88,7 +96,7 @@ const Checkbox = forwardRefWithAs<typeof CHECKBOX_DEFAULT_TAG, CheckboxOwnProps>
         <Comp
           type="button"
           {...checkboxProps}
-          {...getPartDataAttrObj(CHECKBOX_NAME)}
+          {...getSelectorObj(selector)}
           ref={ref}
           role="checkbox"
           aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
@@ -146,12 +154,27 @@ const CheckboxIndicator = forwardRefWithAs<typeof CheckboxIndicatorImpl, Checkbo
   }
 );
 
-const CheckboxIndicatorImpl = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
-  function CheckboxIndicatorImpl(props, forwardedRef) {
-    const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-    return <Comp {...indicatorProps} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
-  }
-);
+type CheckboxIndicatorImplOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-checkbox-indicator
+   */
+  selector?: string | null;
+};
+
+const CheckboxIndicatorImpl = forwardRefWithAs<
+  typeof INDICATOR_DEFAULT_TAG,
+  CheckboxIndicatorImplOwnProps
+>(function CheckboxIndicatorImpl(props, forwardedRef) {
+  const {
+    as: Comp = INDICATOR_DEFAULT_TAG,
+    selector = getSelector(INDICATOR_NAME),
+    ...indicatorProps
+  } = props;
+  return <Comp {...indicatorProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
+});
 
 CheckboxIndicator.displayName = INDICATOR_NAME;
 
