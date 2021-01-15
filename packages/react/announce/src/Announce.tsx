@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { getPartDataAttr, getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import { useComposedRefs, useLayoutEffect } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
@@ -80,6 +80,13 @@ type AnnounceOwnProps = {
    * @see MDN https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions
    */
   type?: RegionType;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-announce
+   */
+  selector?: string | null;
 };
 
 type AnnounceDOMElement = HTMLElementTagNameMap[typeof DEFAULT_TAG];
@@ -87,6 +94,7 @@ type AnnounceDOMElement = HTMLElementTagNameMap[typeof DEFAULT_TAG];
 const Announce = forwardRefWithAs<typeof DEFAULT_TAG, AnnounceOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = DEFAULT_TAG,
+    selector = getSelector(NAME),
     'aria-relevant': ariaRelevant,
     children,
     type = 'polite',
@@ -169,7 +177,7 @@ const Announce = forwardRefWithAs<typeof DEFAULT_TAG, AnnounceOwnProps>((props, 
 
   return (
     <React.Fragment>
-      <Comp {...regionProps} {...getPartDataAttrObj(NAME)} ref={ref}>
+      <Comp {...regionProps} {...getSelectorObj(selector)} ref={ref}>
         {children}
       </Comp>
 
@@ -224,7 +232,7 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
 }
 
 function getLiveRegionPartDataAttr(id?: string) {
-  return getPartDataAttr(NAME + 'Region') + (id ? `-${id}` : '');
+  return `data-` + getSelector(NAME + 'Region') + (id ? `-${id}` : '');
 }
 
 const Root = Announce;
