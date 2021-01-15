@@ -8,7 +8,7 @@ import {
   useId,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
 /* -------------------------------------------------------------------------------------------------
@@ -60,20 +60,38 @@ DropdownMenu.displayName = DROPDOWN_MENU_NAME;
 const TRIGGER_NAME = 'DropdownMenuTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-const DropdownMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
+type DropdownMenuTriggerOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-trigger
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuTrigger = forwardRefWithAs<
+  typeof TRIGGER_DEFAULT_TAG,
+  DropdownMenuTriggerOwnProps
+>((props, forwardedRef) => {
+  const {
+    as: Comp = TRIGGER_DEFAULT_TAG,
+    selector = getSelector(TRIGGER_NAME),
+    onClick,
+    ...triggerProps
+  } = props;
   const context = useDropdownMenuContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
   return (
     <Comp
-      {...getPartDataAttrObj(TRIGGER_NAME)}
-      ref={composedTriggerRef}
       type="button"
       aria-haspopup="menu"
       aria-expanded={context.open ? true : undefined}
       aria-controls={context.open ? context.id : undefined}
       {...triggerProps}
+      {...getSelectorObj(selector)}
+      ref={composedTriggerRef}
       onMouseDown={composeEventHandlers(triggerProps.onMouseDown, (event) => {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)
@@ -101,6 +119,13 @@ const CONTENT_NAME = 'DropdownMenuContent';
 
 type DropdownMenuContentOwnProps = {
   anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-content
+   */
+  selector?: string | null;
   trapFocus: never;
   onCloseAutoFocus: never;
   onOpenAutoFocus: never;
@@ -112,6 +137,7 @@ const DropdownMenuContent = forwardRefWithAs<
   DropdownMenuContentOwnProps
 >((props, forwardedRef) => {
   const {
+    selector = getSelector(CONTENT_NAME),
     anchorRef,
     disableOutsidePointerEvents = true,
     onPointerDownOutside,
@@ -123,9 +149,9 @@ const DropdownMenuContent = forwardRefWithAs<
   const context = useDropdownMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
-      ref={forwardedRef}
       {...contentProps}
-      {...getPartDataAttrObj(CONTENT_NAME)}
+      selector={selector}
+      ref={forwardedRef}
       id={context.id}
       style={{
         ...contentProps.style,
@@ -164,23 +190,194 @@ const DropdownMenuContent = forwardRefWithAs<
 
 DropdownMenuContent.displayName = CONTENT_NAME;
 
-/* -----------------------------------------------------------------------------------------------*/
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuGroup
+ * -----------------------------------------------------------------------------------------------*/
 
-const DropdownMenuGroup = extendComponent(MenuPrimitive.Group, 'DropdownMenuGroup');
-const DropdownMenuLabel = extendComponent(MenuPrimitive.Label, 'DropdownMenuLabel');
-const DropdownMenuItem = extendComponent(MenuPrimitive.Item, 'DropdownMenuItem');
-const DropdownMenuCheckboxItem = extendComponent(
-  MenuPrimitive.CheckboxItem,
-  'DropdownMenuCheckboxItem'
+const GROUP_NAME = 'DropdownMenuGroup';
+
+type DropdownMenuGroupOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-group
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuGroup = extendComponent<typeof MenuPrimitive.Group, DropdownMenuGroupOwnProps>(
+  MenuPrimitive.Group,
+  GROUP_NAME
 );
-const DropdownMenuRadioGroup = extendComponent(MenuPrimitive.RadioGroup, 'DropdownMenuRadioGroup');
-const DropdownMenuRadioItem = extendComponent(MenuPrimitive.RadioItem, 'DropdownMenuRadioItem');
-const DropdownMenuItemIndicator = extendComponent(
-  MenuPrimitive.ItemIndicator,
-  'DropdownMenuItemIndicator'
+
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuLabel
+ * -----------------------------------------------------------------------------------------------*/
+
+const LABEL_NAME = 'DropdownMenuLabel';
+
+type DropdownMenuLabelOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-label
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuLabel = extendComponent<typeof MenuPrimitive.Label, DropdownMenuLabelOwnProps>(
+  MenuPrimitive.Label,
+  LABEL_NAME
 );
-const DropdownMenuSeparator = extendComponent(MenuPrimitive.Separator, 'DropdownMenuSeparator');
-const DropdownMenuArrow = extendComponent(MenuPrimitive.Arrow, 'DropdownMenuArrow');
+
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const ITEM_NAME = 'DropdownMenuItem';
+
+type DropdownMenuItemOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-item
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuItem = extendComponent<typeof MenuPrimitive.Item, DropdownMenuItemOwnProps>(
+  MenuPrimitive.Item,
+  ITEM_NAME
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuCheckboxItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const CHECKBOX_ITEM_NAME = 'DropdownMenuCheckboxItem';
+
+type DropdownMenuCheckboxItemOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-checkbox-item
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuCheckboxItem = extendComponent<
+  typeof MenuPrimitive.CheckboxItem,
+  DropdownMenuCheckboxItemOwnProps
+>(MenuPrimitive.CheckboxItem, CHECKBOX_ITEM_NAME);
+
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuRadioGroup
+ * -----------------------------------------------------------------------------------------------*/
+
+const RADIO_GROUP_NAME = 'DropdownMenuRadioGroup';
+
+type DropdownMenuRadioGroupOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-radio-group
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuRadioGroup = extendComponent<
+  typeof MenuPrimitive.RadioGroup,
+  DropdownMenuRadioGroupOwnProps
+>(MenuPrimitive.RadioGroup, RADIO_GROUP_NAME);
+
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuRadioItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const RADIO_ITEM_NAME = 'DropdownMenuRadioItem';
+
+type DropdownMenuRadioItemOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-radio-item
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuRadioItem = extendComponent<
+  typeof MenuPrimitive.RadioItem,
+  DropdownMenuRadioItemOwnProps
+>(MenuPrimitive.RadioItem, RADIO_ITEM_NAME);
+
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuItemIndicator
+ * -----------------------------------------------------------------------------------------------*/
+
+const ITEM_INDICATOR_NAME = 'DropdownMenuItemIndicator';
+
+type DropdownMenuItemIndicatorOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-item-indicator
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuItemIndicator = extendComponent<
+  typeof MenuPrimitive.ItemIndicator,
+  DropdownMenuItemIndicatorOwnProps
+>(MenuPrimitive.ItemIndicator, ITEM_INDICATOR_NAME);
+
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuSeparator
+ * -----------------------------------------------------------------------------------------------*/
+
+const SEPARATOR_NAME = 'DropdownMenuSeparator';
+
+type DropdownMenuSeparatorOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-separator
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuSeparator = extendComponent<
+  typeof MenuPrimitive.Separator,
+  DropdownMenuSeparatorOwnProps
+>(MenuPrimitive.Separator, SEPARATOR_NAME);
+
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuArrow
+ * -----------------------------------------------------------------------------------------------*/
+
+const ARROW_NAME = 'DropdownMenuArrow';
+
+type DropdownMenuArrowOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-separator
+   */
+  selector?: string | null;
+};
+
+const DropdownMenuArrow = extendComponent<typeof MenuPrimitive.Arrow, DropdownMenuArrowOwnProps>(
+  MenuPrimitive.Arrow,
+  ARROW_NAME
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 
