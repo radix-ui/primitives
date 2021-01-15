@@ -7,7 +7,7 @@ import {
   useCallbackRef,
   useComposedRefs,
 } from '@radix-ui/react-utils';
-import { getPartDataAttr, getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Presence } from '@radix-ui/react-presence';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
@@ -134,11 +134,20 @@ type MenuImplOwnProps = {
    * (default: `true`)
    */
   portalled?: boolean;
+
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-menu
+   */
+  selector?: string | null;
 };
 
 const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>(
   (props, forwardedRef) => {
     const {
+      selector = getSelector(MENU_NAME),
       children,
       onOpenChange,
       anchorRef,
@@ -241,8 +250,8 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
                 {(dismissableLayerProps) => (
                   <PopperPrimitive.Root
                     role="menu"
-                    {...getPartDataAttrObj(MENU_NAME)}
                     {...menuProps}
+                    selector={selector}
                     ref={composeRefs(
                       forwardedRef,
                       menuRef,
@@ -323,12 +332,26 @@ Menu.displayName = MENU_NAME;
 const GROUP_NAME = 'MenuGroup';
 const GROUP_DEFAULT_TAG = 'div';
 
-const MenuGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = GROUP_DEFAULT_TAG, ...groupProps } = props;
-  return (
-    <Comp role="group" {...groupProps} {...getPartDataAttrObj(GROUP_NAME)} ref={forwardedRef} />
-  );
-});
+type MenuGroupOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-menu-group
+   */
+  selector?: string | null;
+};
+
+const MenuGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, MenuGroupOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = GROUP_DEFAULT_TAG,
+      selector = getSelector(GROUP_NAME),
+      ...groupProps
+    } = props;
+    return <Comp role="group" {...groupProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
+  }
+);
 
 MenuGroup.displayName = GROUP_NAME;
 
@@ -339,10 +362,26 @@ MenuGroup.displayName = GROUP_NAME;
 const LABEL_NAME = 'MenuLabel';
 const LABEL_DEFAULT_TAG = 'div';
 
-const MenuLabel = forwardRefWithAs<typeof LABEL_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = LABEL_DEFAULT_TAG, ...labelProps } = props;
-  return <Comp {...labelProps} {...getPartDataAttrObj(LABEL_NAME)} ref={forwardedRef} />;
-});
+type MenuLabelOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-menu-label
+   */
+  selector?: string | null;
+};
+
+const MenuLabel = forwardRefWithAs<typeof LABEL_DEFAULT_TAG, MenuLabelOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = LABEL_DEFAULT_TAG,
+      selector = getSelector(LABEL_NAME),
+      ...labelProps
+    } = props;
+    return <Comp {...labelProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
+  }
+);
 
 MenuLabel.displayName = LABEL_NAME;
 
@@ -352,19 +391,33 @@ MenuLabel.displayName = LABEL_NAME;
 
 const ITEM_NAME = 'MenuItem';
 const ITEM_DEFAULT_TAG = 'div';
-const ENABLED_ITEM_SELECTOR = `[${getPartDataAttr(ITEM_NAME)}]:not([data-disabled])`;
+const ENABLED_ITEM_SELECTOR = `[data-${getSelector(ITEM_NAME)}]:not([data-disabled])`;
 const ITEM_SELECT = 'menu.itemSelect';
 
 type MenuItemOwnProps = {
   disabled?: boolean;
   textValue?: string;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-menu-item
+   */
+  selector?: string | null;
   onSelect?: (event: Event) => void;
   onSelectCapture: never;
 };
 
 const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
   (props, forwardedRef) => {
-    const { as: Comp = ITEM_DEFAULT_TAG, disabled, textValue, onSelect, ...itemProps } = props;
+    const {
+      as: Comp = ITEM_DEFAULT_TAG,
+      selector = getSelector(ITEM_NAME),
+      disabled,
+      textValue,
+      onSelect,
+      ...itemProps
+    } = props;
     const menuItemRef = React.useRef<HTMLDivElement>(null);
     const composedRef = useComposedRefs(forwardedRef, menuItemRef);
     const context = useMenuContext(ITEM_NAME);
@@ -408,7 +461,7 @@ const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
         role="menuitem"
         aria-disabled={disabled || undefined}
         {...itemProps}
-        {...getPartDataAttrObj(ITEM_NAME)}
+        {...getSelectorObj(selector)}
         {...rovingFocusProps}
         {...menuTypeaheadItemProps}
         ref={composedRef}
@@ -467,18 +520,31 @@ const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
 type MenuCheckboxItemOwnProps = {
   checked?: boolean;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-menu-checkbox-item
+   */
+  selector?: string | null;
   onCheckedChange?: (checked: boolean) => void;
 };
 
 const MenuCheckboxItem = forwardRefWithAs<typeof MenuItem, MenuCheckboxItemOwnProps>(
   (props, forwardedRef) => {
-    const { checked = false, onCheckedChange, children, ...checkboxItemProps } = props;
+    const {
+      selector = getSelector(CHECKBOX_ITEM_NAME),
+      checked = false,
+      onCheckedChange,
+      children,
+      ...checkboxItemProps
+    } = props;
     return (
       <MenuItem
         role="menuitemcheckbox"
         aria-checked={checked}
         {...checkboxItemProps}
-        {...getPartDataAttrObj(CHECKBOX_ITEM_NAME)}
+        selector={selector}
         data-state={getCheckedState(checked)}
         ref={forwardedRef}
         onSelect={composeEventHandlers(
@@ -504,20 +570,33 @@ const RADIO_GROUP_NAME = 'MenuRadioGroup';
 const RadioGroupContext = React.createContext<MenuRadioGroupOwnProps>({} as any);
 
 type MenuRadioGroupOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-menu-radio-group
+   */
+  selector?: string | null;
   value?: string;
   onValueChange?: (value: string) => void;
 };
 
 const MenuRadioGroup = forwardRefWithAs<typeof MenuGroup, MenuRadioGroupOwnProps>(
   (props, forwardedRef) => {
-    const { children, value, onValueChange, ...groupProps } = props;
+    const {
+      selector = getSelector(RADIO_GROUP_NAME),
+      children,
+      value,
+      onValueChange,
+      ...groupProps
+    } = props;
     const handleValueChange = useCallbackRef(onValueChange);
     const context = React.useMemo(() => ({ value, onValueChange: handleValueChange }), [
       value,
       handleValueChange,
     ]);
     return (
-      <MenuGroup ref={forwardedRef} {...groupProps} {...getPartDataAttrObj(RADIO_GROUP_NAME)}>
+      <MenuGroup {...groupProps} selector={selector} ref={forwardedRef}>
         <RadioGroupContext.Provider value={context}>{children}</RadioGroupContext.Provider>
       </MenuGroup>
     );
@@ -532,11 +611,20 @@ MenuRadioGroup.displayName = RADIO_GROUP_NAME;
 
 const RADIO_ITEM_NAME = 'MenuRadioItem';
 
-type MenuRadioItemOwnProps = { value: string };
+type MenuRadioItemOwnProps = {
+  value: string;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-menu-radio-item
+   */
+  selector?: string | null;
+};
 
 const MenuRadioItem = forwardRefWithAs<typeof MenuItem, MenuRadioItemOwnProps>(
   (props, forwardedRef) => {
-    const { value, children, ...radioItemProps } = props;
+    const { selector = getSelector(RADIO_ITEM_NAME), value, children, ...radioItemProps } = props;
     const context = React.useContext(RadioGroupContext);
     const checked = value === context.value;
     return (
@@ -544,7 +632,7 @@ const MenuRadioItem = forwardRefWithAs<typeof MenuItem, MenuRadioItemOwnProps>(
         role="menuitemradio"
         aria-checked={checked}
         {...radioItemProps}
-        {...getPartDataAttrObj(RADIO_ITEM_NAME)}
+        selector={selector}
         data-state={getCheckedState(checked)}
         ref={forwardedRef}
         onSelect={composeEventHandlers(
@@ -572,6 +660,13 @@ const ItemIndicatorContext = React.createContext(false);
 
 type MenuItemIndicatorOwnProps = {
   /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-menu-item-indicator
+   */
+  selector?: string | null;
+  /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
@@ -582,13 +677,18 @@ const MenuItemIndicator = forwardRefWithAs<
   typeof ITEM_INDICATOR_DEFAULT_TAG,
   MenuItemIndicatorOwnProps
 >((props, forwardedRef) => {
-  const { as: Comp = ITEM_INDICATOR_DEFAULT_TAG, forceMount, ...indicatorProps } = props;
+  const {
+    as: Comp = ITEM_INDICATOR_DEFAULT_TAG,
+    selector = getSelector(ITEM_INDICATOR_NAME),
+    forceMount,
+    ...indicatorProps
+  } = props;
   const checked = React.useContext(ItemIndicatorContext);
   return (
     <Presence present={forceMount || checked}>
       <Comp
         {...indicatorProps}
-        {...getPartDataAttrObj(ITEM_INDICATOR_NAME)}
+        {...getSelectorObj(selector)}
         data-state={getCheckedState(checked)}
         ref={forwardedRef}
       />
@@ -605,18 +705,34 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 const SEPARATOR_NAME = 'MenuSeparator';
 const SEPARATOR_DEFAULT_TAG = 'div';
 
-const MenuSeparator = forwardRefWithAs<typeof SEPARATOR_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = SEPARATOR_DEFAULT_TAG, ...separatorProps } = props;
-  return (
-    <Comp
-      role="separator"
-      aria-orientation="horizontal"
-      {...separatorProps}
-      {...getPartDataAttrObj(SEPARATOR_NAME)}
-      ref={forwardedRef}
-    />
-  );
-});
+type MenuSeparatorOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-menu-separator
+   */
+  selector?: string | null;
+};
+
+const MenuSeparator = forwardRefWithAs<typeof SEPARATOR_DEFAULT_TAG, MenuSeparatorOwnProps>(
+  (props, forwardedRef) => {
+    const {
+      as: Comp = SEPARATOR_DEFAULT_TAG,
+      selector = getSelector(SEPARATOR_NAME),
+      ...separatorProps
+    } = props;
+    return (
+      <Comp
+        role="separator"
+        aria-orientation="horizontal"
+        {...separatorProps}
+        {...getSelectorObj(selector)}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
 
 MenuSeparator.displayName = SEPARATOR_NAME;
 
@@ -624,7 +740,22 @@ MenuSeparator.displayName = SEPARATOR_NAME;
  * MenuArrow
  * -----------------------------------------------------------------------------------------------*/
 
-const MenuArrow = extendComponent(PopperPrimitive.Arrow, 'MenuArrow');
+const ARROW_NAME = 'MenuArrow';
+
+type MenuArrowOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-dropdown-menu-arrow
+   */
+  selector?: string | null;
+};
+
+const MenuArrow = extendComponent<typeof PopperPrimitive.Arrow, MenuArrowOwnProps>(
+  PopperPrimitive.Arrow,
+  ARROW_NAME
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 
