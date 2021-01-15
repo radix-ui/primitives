@@ -6,7 +6,7 @@ import {
   useId,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { getPartDataAttrObj, makeId } from '@radix-ui/utils';
+import { getSelector, getSelectorObj, makeId } from '@radix-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 
 /* -------------------------------------------------------------------------------------------------
@@ -31,6 +31,13 @@ const TABS_NAME = 'Tabs';
 const TABS_DEFAULT_TAG = 'div';
 
 type TabsOwnProps = {
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-tabs
+   */
+  selector?: string | null;
   /** The value for the selected tab, if controlled */
   value?: string;
   /** The value of the tab to select by default, if uncontrolled */
@@ -50,6 +57,7 @@ type TabsOwnProps = {
 const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, forwardedRef) => {
   const {
     as: Comp = TABS_DEFAULT_TAG,
+    selector = getSelector(TABS_NAME),
     children,
     id,
     value: valueProp,
@@ -77,11 +85,11 @@ const Tabs = forwardRefWithAs<typeof TABS_DEFAULT_TAG, TabsOwnProps>((props, for
   return (
     <TabsContext.Provider value={ctx}>
       <Comp
-        {...getPartDataAttrObj(TABS_NAME)}
-        ref={forwardedRef}
         id={tabsId}
         data-orientation={orientation}
         {...tabsProps}
+        {...getSelectorObj(selector)}
+        ref={forwardedRef}
       >
         {children}
       </Comp>
@@ -104,21 +112,34 @@ type TabsListOwnProps = {
    * @defaultValue true
    */
   loop?: boolean;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-tabs-list
+   */
+  selector?: string | null;
 };
 
 const TabsList = forwardRefWithAs<typeof TAB_LIST_DEFAULT_TAG, TabsListOwnProps>(
   (props, forwardedRef) => {
     const { orientation } = useTabsContext(TAB_LIST_NAME);
-    const { as: Comp = TAB_LIST_DEFAULT_TAG, loop = true, children, ...otherProps } = props;
+    const {
+      as: Comp = TAB_LIST_DEFAULT_TAG,
+      selector = getSelector(TAB_LIST_NAME),
+      loop = true,
+      children,
+      ...otherProps
+    } = props;
 
     return (
       <Comp
-        {...getPartDataAttrObj(TAB_LIST_NAME)}
         data-orientation={orientation}
         role="tablist"
         aria-orientation={orientation}
-        ref={forwardedRef}
         {...otherProps}
+        {...getSelectorObj(selector)}
+        ref={forwardedRef}
       >
         <RovingFocusGroup orientation={orientation} loop={loop}>
           {children}
@@ -140,10 +161,23 @@ const TAB_DEFAULT_TAG = 'div';
 type TabsTabOwnProps = {
   value: string;
   disabled?: boolean;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-tabs-tab
+   */
+  selector?: string | null;
 };
 
 const TabsTab = forwardRefWithAs<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>((props, forwardedRef) => {
-  const { as: Comp = TAB_DEFAULT_TAG, value, disabled, ...tabProps } = props;
+  const {
+    as: Comp = TAB_DEFAULT_TAG,
+    selector = getSelector(TAB_NAME),
+    value,
+    disabled,
+    ...tabProps
+  } = props;
   const context = useTabsContext(TAB_NAME);
   const tabId = makeTabId(context.tabsId, value);
   const tabPanelId = makeTabsPanelId(context.tabsId, value);
@@ -185,12 +219,12 @@ const TabsTab = forwardRefWithAs<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>((props
 
   return (
     <Comp
-      {...getPartDataAttrObj(TAB_NAME)}
       role="tab"
       aria-selected={isSelected}
       aria-controls={tabPanelId}
       aria-disabled={disabled || undefined}
       {...tabProps}
+      {...getSelectorObj(selector)}
       {...rovingFocusProps}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
@@ -213,11 +247,25 @@ TabsTab.displayName = TAB_NAME;
 const TAB_PANEL_NAME = 'TabsPanel';
 const TAB_PANEL_DEFAULT_TAG = 'div';
 
-type TabsPanelPropsOwnProps = { value: string };
+type TabsPanelPropsOwnProps = {
+  value: string;
+  /**
+   * A string to use as the component selector for CSS purposes. It will be added as
+   * a data attribute. Pass `null` to remove selector.
+   *
+   * @defaultValue radix-tabs-panel
+   */
+  selector?: string | null;
+};
 
 const TabsPanel = forwardRefWithAs<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelPropsOwnProps>(
   (props, forwardedRef) => {
-    const { as: Comp = TAB_PANEL_DEFAULT_TAG, value, ...tabPanelProps } = props;
+    const {
+      as: Comp = TAB_PANEL_DEFAULT_TAG,
+      selector = getSelector(TAB_PANEL_NAME),
+      value,
+      ...tabPanelProps
+    } = props;
     const context = useTabsContext(TAB_PANEL_NAME);
     const tabId = makeTabId(context.tabsId, value);
     const tabPanelId = makeTabsPanelId(context.tabsId, value);
@@ -225,7 +273,6 @@ const TabsPanel = forwardRefWithAs<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelPropsO
 
     return (
       <Comp
-        {...getPartDataAttrObj(TAB_PANEL_NAME)}
         data-state={isSelected ? 'active' : 'inactive'}
         data-orientation={context.orientation}
         id={tabPanelId}
@@ -233,9 +280,9 @@ const TabsPanel = forwardRefWithAs<typeof TAB_PANEL_DEFAULT_TAG, TabsPanelPropsO
         aria-labelledby={tabId}
         tabIndex={0}
         hidden={!isSelected}
-        // other props
-        ref={forwardedRef}
         {...tabPanelProps}
+        {...getSelectorObj(selector)}
+        ref={forwardedRef}
       />
     );
   }
