@@ -9,6 +9,7 @@ import {
   extendComponent,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import {
   Dialog,
   DialogOverlay,
@@ -16,6 +17,8 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@radix-ui/react-dialog';
+
+import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context

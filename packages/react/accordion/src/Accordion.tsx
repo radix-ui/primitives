@@ -1,5 +1,5 @@
 import React from 'react';
-import { getSelector, getSelectorObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -8,7 +8,10 @@ import {
   useId,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from '@radix-ui/react-collapsible';
+
+import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -43,13 +46,6 @@ type AccordionItemOwnProps = {
    * A string value for the accordion item. All items within an accordion should use a unique value.
    */
   value: string;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-accordion-item
-   */
-  selector?: string | null;
   open: never;
   defaultOpen: never;
   onOpenChange: never;
@@ -66,7 +62,7 @@ const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionI
  */
 const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps>(
   (props, forwardedRef) => {
-    const { value, children, selector = getSelector(ITEM_NAME), ...accordionItemProps } = props;
+    const { value, children, ...accordionItemProps } = props;
     const accordionContext = useAccordionContext(ITEM_NAME);
     const generatedButtonId = `accordion-button-${useId()}`;
     const buttonId = props.id || generatedButtonId;
@@ -80,8 +76,8 @@ const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps
 
     return (
       <Collapsible
+        selector={getSelector(ITEM_NAME)}
         {...accordionItemProps}
-        selector={selector}
         ref={forwardedRef}
         data-state={open ? 'open' : 'closed'}
         data-disabled={disabled || undefined}
@@ -106,30 +102,21 @@ AccordionItem.displayName = ITEM_NAME;
 const HEADER_NAME = 'AccordionHeader';
 const HEADER_DEFAULT_TAG = 'h3';
 
-type AccordionHeaderOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-accordion-header
-   */
-  selector?: string | null;
-};
-
 /**
  * `AccordionHeader` contains the content for the parts of an `AccordionItem` that will be visible
  * whether or not its content is collapsed.
  */
-const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG, AccordionHeaderOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = HEADER_DEFAULT_TAG,
-      selector = getSelector(HEADER_NAME),
-      ...headerProps
-    } = props;
-    return <Comp {...headerProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
-  }
-);
+const AccordionHeader = forwardRefWithAs<
+  typeof HEADER_DEFAULT_TAG,
+  MergeOwnProps<typeof Primitive, {}>
+>((props, forwardedRef) => (
+  <Primitive
+    as={HEADER_DEFAULT_TAG}
+    selector={getSelector(HEADER_NAME)}
+    {...props}
+    ref={forwardedRef}
+  />
+));
 
 AccordionHeader.displayName = HEADER_NAME;
 
@@ -139,53 +126,40 @@ AccordionHeader.displayName = HEADER_NAME;
 
 const BUTTON_NAME = 'AccordionButton';
 
-type AccordionButtonOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-accordion-button
-   */
-  selector?: string | null;
-};
-
 /**
  * `AccordionButton` is the trigger that toggles the collapsed state of an `AccordionItem`. It
  * should always be nested inside of an `AccordionHeader`.
  */
-const AccordionButton = forwardRefWithAs<typeof CollapsibleButton, AccordionButtonOwnProps>(
-  (props, forwardedRef) => {
-    const { selector = getSelector(BUTTON_NAME), ...buttonProps } = props;
-    const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
-    const itemContext = useAccordionItemContext(BUTTON_NAME);
+const AccordionButton = forwardRefWithAs<typeof CollapsibleButton>((props, forwardedRef) => {
+  const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
+  const itemContext = useAccordionItemContext(BUTTON_NAME);
 
-    const ref = React.useRef<React.ElementRef<typeof CollapsibleButton>>(null);
-    const composedRefs = useComposedRefs(ref, forwardedRef);
+  const ref = React.useRef<React.ElementRef<typeof CollapsibleButton>>(null);
+  const composedRefs = useComposedRefs(ref, forwardedRef);
 
-    React.useEffect(() => {
-      const buttonNodes = buttonNodesRef.current;
-      const buttonNode = ref.current;
+  React.useEffect(() => {
+    const buttonNodes = buttonNodesRef.current;
+    const buttonNode = ref.current;
 
-      if (buttonNode) {
-        buttonNodes.add(buttonNode);
-        return () => {
-          buttonNodes.delete(buttonNode);
-        };
-      }
-      return;
-    }, [buttonNodesRef]);
+    if (buttonNode) {
+      buttonNodes.add(buttonNode);
+      return () => {
+        buttonNodes.delete(buttonNode);
+      };
+    }
+    return;
+  }, [buttonNodesRef]);
 
-    return (
-      <CollapsibleButton
-        {...buttonProps}
-        selector={selector}
-        ref={composedRefs}
-        aria-disabled={itemContext.open || undefined}
-        id={itemContext.buttonId}
-      />
-    );
-  }
-);
+  return (
+    <CollapsibleButton
+      selector={getSelector(BUTTON_NAME)}
+      {...props}
+      ref={composedRefs}
+      aria-disabled={itemContext.open || undefined}
+      id={itemContext.buttonId}
+    />
+  );
+});
 
 AccordionButton.displayName = BUTTON_NAME;
 
@@ -195,34 +169,21 @@ AccordionButton.displayName = BUTTON_NAME;
 
 const PANEL_NAME = 'AccordionPanel';
 
-type AccordionPanelOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-accordion-panel
-   */
-  selector?: string | null;
-};
-
 /**
  * `AccordionPanel` contains the collapsible content for an `AccordionItem`.
  */
-const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent, AccordionPanelOwnProps>(
-  (props, forwardedRef) => {
-    const { selector = getSelector(PANEL_NAME), ...contentProps } = props;
-    const itemContext = useAccordionItemContext(PANEL_NAME);
-    return (
-      <CollapsibleContent
-        {...contentProps}
-        selector={selector}
-        ref={forwardedRef}
-        role="region"
-        aria-labelledby={itemContext.buttonId}
-      />
-    );
-  }
-);
+const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent>((props, forwardedRef) => {
+  const itemContext = useAccordionItemContext(PANEL_NAME);
+  return (
+    <CollapsibleContent
+      selector={getSelector(PANEL_NAME)}
+      {...props}
+      ref={forwardedRef}
+      role="region"
+      aria-labelledby={itemContext.buttonId}
+    />
+  );
+});
 
 AccordionPanel.displayName = PANEL_NAME;
 
@@ -231,7 +192,6 @@ AccordionPanel.displayName = PANEL_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const ACCORDION_NAME = 'Accordion';
-const ACCORDION_DEFAULT_TAG = 'div';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
 
 type AccordionOwnProps = {
@@ -251,13 +211,6 @@ type AccordionOwnProps = {
    */
   disabled?: boolean;
   /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-accordion
-   */
-  selector?: string | null;
-  /**
    * The callback that fires when the state of the accordion changes.
    */
   onValueChange?(value: string): void;
@@ -266,91 +219,87 @@ type AccordionOwnProps = {
 /**
  * `Accordion` is the root component.
  */
-const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = ACCORDION_DEFAULT_TAG,
-      selector = getSelector(ACCORDION_NAME),
-      value: valueProp,
-      defaultValue,
-      children,
-      disabled,
-      onValueChange = () => {},
-      ...accordionProps
-    } = props;
+const Accordion = forwardRefWithAs<typeof Primitive, AccordionOwnProps>((props, forwardedRef) => {
+  const {
+    value: valueProp,
+    defaultValue,
+    children,
+    disabled,
+    onValueChange = () => {},
+    ...accordionProps
+  } = props;
 
-    const buttonNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionButton>>>(new Set());
-    const accordionRef = React.useRef<React.ElementRef<typeof Accordion>>(null);
-    const composedRefs = useComposedRefs(accordionRef, forwardedRef);
+  const buttonNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionButton>>>(new Set());
+  const accordionRef = React.useRef<React.ElementRef<typeof Accordion>>(null);
+  const composedRefs = useComposedRefs(accordionRef, forwardedRef);
 
-    const [value, setValue] = useControlledState({
-      prop: valueProp,
-      defaultProp: defaultValue,
-      onChange: (value) => value && onValueChange(value),
-    });
+  const [value, setValue] = useControlledState({
+    prop: valueProp,
+    defaultProp: defaultValue,
+    onChange: (value) => value && onValueChange(value),
+  });
 
-    const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
-      const target = event.target as HTMLElement;
-      const isAccordionKey = ACCORDION_KEYS.includes(event.key);
+  const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
+    const target = event.target as HTMLElement;
+    const isAccordionKey = ACCORDION_KEYS.includes(event.key);
 
-      if (!isAccordionKey || !isButton(target)) {
-        return;
-      }
+    if (!isAccordionKey || !isButton(target)) {
+      return;
+    }
 
-      const buttonNodes = [...buttonNodesRef.current].filter((node) => !(node && node.disabled));
-      const buttonCount = buttonNodes.length;
-      const buttonIndex = buttonNodes.indexOf(target);
+    const buttonNodes = [...buttonNodesRef.current].filter((node) => !(node && node.disabled));
+    const buttonCount = buttonNodes.length;
+    const buttonIndex = buttonNodes.indexOf(target);
 
-      if (buttonIndex === -1) return;
+    if (buttonIndex === -1) return;
 
-      // Prevents page scroll while user is navigating
-      event.preventDefault();
+    // Prevents page scroll while user is navigating
+    event.preventDefault();
 
-      let nextIndex = buttonIndex;
-      switch (event.key) {
-        case 'Home':
-          nextIndex = 0;
-          break;
-        case 'End':
+    let nextIndex = buttonIndex;
+    switch (event.key) {
+      case 'Home':
+        nextIndex = 0;
+        break;
+      case 'End':
+        nextIndex = buttonCount - 1;
+        break;
+      case 'ArrowDown':
+        nextIndex = buttonIndex + 1;
+        break;
+      case 'ArrowUp':
+        nextIndex = buttonIndex - 1;
+        if (nextIndex < 0) {
           nextIndex = buttonCount - 1;
-          break;
-        case 'ArrowDown':
-          nextIndex = buttonIndex + 1;
-          break;
-        case 'ArrowUp':
-          nextIndex = buttonIndex - 1;
-          if (nextIndex < 0) {
-            nextIndex = buttonCount - 1;
-          }
-          break;
-      }
+        }
+        break;
+    }
 
-      const clampedIndex = nextIndex % buttonCount;
-      buttonNodes[clampedIndex]?.focus();
-    });
+    const clampedIndex = nextIndex % buttonCount;
+    buttonNodes[clampedIndex]?.focus();
+  });
 
-    const context: AccordionContextValue = React.useMemo(
-      () => ({
-        disabled,
-        buttonNodesRef,
-        value,
-        setValue,
-      }),
-      [disabled, value, setValue]
-    );
+  const context: AccordionContextValue = React.useMemo(
+    () => ({
+      disabled,
+      buttonNodesRef,
+      value,
+      setValue,
+    }),
+    [disabled, value, setValue]
+  );
 
-    return (
-      <Comp
-        {...accordionProps}
-        {...getSelectorObj(selector)}
-        ref={composedRefs}
-        onKeyDown={disabled ? undefined : handleKeyDown}
-      >
-        <AccordionContext.Provider value={context}>{children}</AccordionContext.Provider>
-      </Comp>
-    );
-  }
-);
+  return (
+    <Primitive
+      selector={getSelector(ACCORDION_NAME)}
+      {...accordionProps}
+      ref={composedRefs}
+      onKeyDown={disabled ? undefined : handleKeyDown}
+    >
+      <AccordionContext.Provider value={context}>{children}</AccordionContext.Provider>
+    </Primitive>
+  );
+});
 
 Accordion.displayName = ACCORDION_NAME;
 

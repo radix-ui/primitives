@@ -65,7 +65,7 @@ type IntrinsicElement<E> = E extends ForwardRefExoticComponentWithAs<infer T, an
  * a polymorphic component. When this happens we merge the new polymorphic's OwnProps
  * with the original polymorphic's OwnProps, ensuring the new props take precedence.
  */
-type ExtendedProps<E, OwnProps> = E extends ForwardRefExoticComponentWithAs<any, infer P>
+type MergeOwnProps<E, OwnProps> = E extends ForwardRefExoticComponentWithAs<any, infer P>
   ? MergeProps<P, OwnProps>
   : OwnProps;
 
@@ -84,15 +84,15 @@ function forwardRefWithAs<
     React.ElementRef<IntrinsicElement<E>>,
     MergeProps<
       React.ComponentPropsWithoutRef<IntrinsicElement<E>>,
-      ExtendedProps<E, OwnProps> & { as?: IntrinsicElement<E> }
+      MergeOwnProps<E, OwnProps> & { as?: IntrinsicElement<E> }
     >
   >
 ) {
   return React.forwardRef(component) as ForwardRefExoticComponentWithAs<
     IntrinsicElement<E>,
-    ExtendedProps<E, OwnProps>
+    MergeOwnProps<E, OwnProps>
   >;
 }
 
 export { forwardRefWithAs };
-export type { ForwardRefExoticComponentWithAs };
+export type { ForwardRefExoticComponentWithAs, MergeOwnProps };

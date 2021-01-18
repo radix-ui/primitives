@@ -5,28 +5,23 @@ import {
   composeEventHandlers,
   useControlledState,
 } from '@radix-ui/react-utils';
-import { getSelector, getSelectorObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
+
+import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Collapsible
  * -----------------------------------------------------------------------------------------------*/
 
 const COLLAPSIBLE_NAME = 'Collapsible';
-const COLLAPSIBLE_DEFAULT_TAG = 'div';
 
 type CollapsibleOwnProps = {
   defaultOpen?: boolean;
   open?: boolean;
   disabled?: boolean;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-collapsible
-   */
-  selector?: string | null;
   onOpenChange?(open?: boolean): void;
 };
 
@@ -43,11 +38,9 @@ const [CollapsibleContext, useCollapsibleContext] = createContext<CollapsibleCon
   COLLAPSIBLE_NAME
 );
 
-const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, CollapsibleOwnProps>(
+const Collapsible = forwardRefWithAs<typeof Primitive, CollapsibleOwnProps>(
   (props, forwardedRef) => {
     const {
-      as: Comp = COLLAPSIBLE_DEFAULT_TAG,
-      selector = getSelector(COLLAPSIBLE_NAME),
       id: idProp,
       children,
       open: openProp,
@@ -75,14 +68,14 @@ const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, Collapsible
     );
 
     return (
-      <Comp
+      <Primitive
+        selector={getSelector(COLLAPSIBLE_NAME)}
         {...collapsibleProps}
-        {...getSelectorObj(selector)}
         data-state={getState(context.open)}
         ref={forwardedRef}
       >
         <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
-      </Comp>
+      </Primitive>
     );
   }
 );
@@ -96,40 +89,27 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 const BUTTON_NAME = 'CollapsibleButton';
 const BUTTON_DEFAULT_TAG = 'button';
 
-type CollapsibleButtonProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-collapsible-button
-   */
-  selector?: string | null;
-};
+const CollapsibleButton = forwardRefWithAs<
+  typeof BUTTON_DEFAULT_TAG,
+  MergeOwnProps<typeof Primitive, {}>
+>((props, forwardedRef) => {
+  const { onClick, ...buttonProps } = props;
+  const context = useCollapsibleContext(BUTTON_NAME);
 
-const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, CollapsibleButtonProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = BUTTON_DEFAULT_TAG,
-      selector = getSelector(COLLAPSIBLE_NAME),
-      onClick,
-      ...buttonProps
-    } = props;
-    const context = useCollapsibleContext(BUTTON_NAME);
-
-    return (
-      <Comp
-        aria-controls={context.contentId}
-        aria-expanded={context.open || false}
-        data-state={getState(context.open)}
-        {...buttonProps}
-        {...getSelectorObj(selector)}
-        ref={forwardedRef}
-        onClick={composeEventHandlers(onClick, context.toggle)}
-        disabled={context.disabled}
-      />
-    );
-  }
-);
+  return (
+    <Primitive
+      as={BUTTON_DEFAULT_TAG}
+      selector={getSelector(BUTTON_NAME)}
+      aria-controls={context.contentId}
+      aria-expanded={context.open || false}
+      data-state={getState(context.open)}
+      {...buttonProps}
+      ref={forwardedRef}
+      onClick={composeEventHandlers(onClick, context.toggle)}
+      disabled={context.disabled}
+    />
+  );
+});
 
 CollapsibleButton.displayName = BUTTON_NAME;
 
@@ -138,16 +118,8 @@ CollapsibleButton.displayName = BUTTON_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const CONTENT_NAME = 'CollapsibleContent';
-const CONTENT_DEFAULT_TAG = 'div';
 
 type CollapsibleContentOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-collapsible-content
-   */
-  selector?: string | null;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -155,16 +127,9 @@ type CollapsibleContentOwnProps = {
   forceMount?: true;
 };
 
-const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, CollapsibleContentOwnProps>(
+const CollapsibleContent = forwardRefWithAs<typeof Primitive, CollapsibleContentOwnProps>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = CONTENT_DEFAULT_TAG,
-      selector = getSelector(CONTENT_NAME),
-      id: idProp,
-      forceMount,
-      children,
-      ...contentProps
-    } = props;
+    const { id: idProp, forceMount, children, ...contentProps } = props;
     const { setContentId, open } = useCollapsibleContext(CONTENT_NAME);
     const generatedId = `collapsible-${useId()}`;
     const id = idProp || generatedId;
@@ -176,16 +141,16 @@ const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, Collapsi
     return (
       <Presence present={forceMount || open}>
         {({ present }) => (
-          <Comp
+          <Primitive
+            selector={getSelector(CONTENT_NAME)}
             {...contentProps}
-            {...getSelectorObj(selector)}
             ref={forwardedRef}
             id={id}
             hidden={!present}
             data-state={getState(open)}
           >
             {present && children}
-          </Comp>
+          </Primitive>
         )}
       </Presence>
     );

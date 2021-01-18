@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
+import { Primitive } from '@radix-ui/react-primitive';
 import { forwardRefWithAs } from './forwardRefWithAs';
 
+import type { MergeOwnProps } from './forwardRefWithAs';
 import type { RenderResult } from '@testing-library/react';
 
 /* -------------------------------------------------------------------------------------------------
@@ -13,10 +15,12 @@ type ButtonProps = {
   another?: number;
 };
 
-const Button = forwardRefWithAs<'button', ButtonProps>((props, forwardedRef) => {
-  const { as: Comp = 'button', isDisabled, ...buttonProps } = props;
-  return <Comp {...buttonProps} ref={forwardedRef} />;
-});
+const Button = forwardRefWithAs<'button', MergeOwnProps<typeof Primitive, ButtonProps>>(
+  (props, forwardedRef) => {
+    const { isDisabled, ...buttonProps } = props;
+    return <Primitive as="button" {...buttonProps} ref={forwardedRef} />;
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * Extended Button using react utilities without polymorphism
@@ -104,6 +108,9 @@ export function Test() {
 
       {/* Button accepts form prop */}
       <Button form="form" />
+
+      {/* Button accepts selector prop */}
+      <Button selector="test" />
 
       {/* Button accepts isDisabled prop */}
       <Button isDisabled />
