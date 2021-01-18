@@ -3116,6 +3116,7 @@ __metadata:
   resolution: "@radix-ui/react-avatar@workspace:packages/react/avatar"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
