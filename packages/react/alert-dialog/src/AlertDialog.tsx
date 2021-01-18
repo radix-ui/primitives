@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getSelector, getSelectorObj, makeId, warning } from '@radix-ui/utils';
+import { getSelector, makeId, warning } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -18,7 +18,7 @@ import {
   DialogClose,
 } from '@radix-ui/react-dialog';
 
-import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -75,24 +75,11 @@ AlertDialog.displayName = ROOT_NAME;
 
 const CANCEL_NAME = 'AlertDialogCancel';
 
-type AlertDialogCancelOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-alert-dialog-cancel
-   */
-  selector?: string | null;
-};
-
-const AlertDialogCancel = forwardRefWithAs<typeof DialogClose, AlertDialogCancelOwnProps>(
-  (props, forwardedRef) => {
-    const { selector = getSelector(CANCEL_NAME), ...cancelProps } = props;
-    const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
-    const ref = useComposedRefs(forwardedRef, cancelRef);
-    return <DialogClose {...cancelProps} ref={ref} selector={selector} />;
-  }
-);
+const AlertDialogCancel = forwardRefWithAs<typeof DialogClose>((props, forwardedRef) => {
+  const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
+  const ref = useComposedRefs(forwardedRef, cancelRef);
+  return <DialogClose selector={getSelector(CANCEL_NAME)} {...props} ref={ref} />;
+});
 
 AlertDialogCancel.displayName = CANCEL_NAME;
 
@@ -105,13 +92,6 @@ const CONTENT_NAME = 'AlertDialogContent';
 type AlertDialogContentOwnProps = {
   refToFocusOnOpen: never;
   id: never;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-alert-dialog-content
-   */
-  selector?: string | null;
 };
 
 const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogContentOwnProps>(
@@ -120,7 +100,6 @@ const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogCon
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       'aria-describedby': ariaDescribedBy,
-      selector = getSelector(CONTENT_NAME),
       children,
       ...dialogContentProps
     } = props;
@@ -132,6 +111,7 @@ const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogCon
 
     return (
       <DialogContent
+        selector={getSelector(CONTENT_NAME)}
         role="alertdialog"
         aria-describedby={ariaDescribedBy || descriptionId}
         // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
@@ -141,7 +121,6 @@ const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogCon
         aria-label={ariaLabel || undefined}
         {...dialogContentProps}
         ref={ref}
-        selector={selector}
         onOpenAutoFocus={composeEventHandlers(dialogContentProps.onOpenAutoFocus, (event) => {
           event.preventDefault();
           cancelRef.current?.focus({ preventScroll: true });
@@ -177,25 +156,18 @@ AlertDialogContent.displayName = CONTENT_NAME;
 const TITLE_NAME = 'AlertDialogTitle';
 const TITLE_DEFAULT_TAG = 'h2';
 
-type AlertDialogTitleOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-alert-dialog-title
-   */
-  selector?: string | null;
-};
-
-const AlertDialogTitle = forwardRefWithAs<typeof TITLE_DEFAULT_TAG, AlertDialogTitleOwnProps>(
+const AlertDialogTitle = forwardRefWithAs<typeof TITLE_DEFAULT_TAG, OwnProps<typeof Primitive>>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = TITLE_DEFAULT_TAG,
-      selector = getSelector(TITLE_NAME),
-      ...titleProps
-    } = props;
     const { titleId } = useAlertDialogContext(TITLE_NAME);
-    return <Comp id={titleId} {...titleProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
+    return (
+      <Primitive
+        as={TITLE_DEFAULT_TAG}
+        selector={getSelector(TITLE_NAME)}
+        id={titleId}
+        {...props}
+        ref={forwardedRef}
+      />
+    );
   }
 );
 
@@ -208,31 +180,17 @@ AlertDialogTitle.displayName = TITLE_NAME;
 const DESCRIPTION_NAME = 'AlertDialogDescription';
 const DESCRIPTION_DEFAULT_TAG = 'p';
 
-type AlertDialogDescriptionOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-alert-dialog-description
-   */
-  selector?: string | null;
-};
-
 const AlertDialogDescription = forwardRefWithAs<
   typeof DESCRIPTION_DEFAULT_TAG,
-  AlertDialogDescriptionOwnProps
+  OwnProps<typeof Primitive>
 >((props, forwardedRef) => {
-  const {
-    as: Comp = DESCRIPTION_DEFAULT_TAG,
-    selector = getSelector(DESCRIPTION_NAME),
-    ...descriptionProps
-  } = props;
   const { descriptionId } = useAlertDialogContext(DESCRIPTION_NAME);
   return (
-    <Comp
+    <Primitive
+      as={DESCRIPTION_DEFAULT_TAG}
+      selector={getSelector(DESCRIPTION_NAME)}
       id={descriptionId}
-      {...descriptionProps}
-      {...getSelectorObj(selector)}
+      {...props}
       ref={forwardedRef}
     />
   );
@@ -240,68 +198,11 @@ const AlertDialogDescription = forwardRefWithAs<
 
 AlertDialogDescription.displayName = DESCRIPTION_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * AlertDialogTrigger
- * -----------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
-const TRIGGER_NAME = 'AlertDialogTrigger';
-
-type AlertDialogTriggerOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-alert-dialog-trigger
-   */
-  selector?: string | null;
-};
-
-const AlertDialogTrigger = extendComponent<typeof DialogTrigger, AlertDialogTriggerOwnProps>(
-  DialogTrigger,
-  TRIGGER_NAME
-);
-
-/* -------------------------------------------------------------------------------------------------
- * AlertDialogOverlay
- * -----------------------------------------------------------------------------------------------*/
-
-const OVERLAY_NAME = 'AlertDialogOverlay';
-
-type AlertDialogOverlayOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-alert-dialog-overlay
-   */
-  selector?: string | null;
-};
-
-const AlertDialogOverlay = extendComponent<typeof DialogOverlay, AlertDialogOverlayOwnProps>(
-  DialogOverlay,
-  OVERLAY_NAME
-);
-
-/* -------------------------------------------------------------------------------------------------
- * AlertDialogAction
- * -----------------------------------------------------------------------------------------------*/
-
-const ACTION_NAME = 'AlertDialogAction';
-
-type AlertDialogActionOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-alert-dialog-action
-   */
-  selector?: string | null;
-};
-
-const AlertDialogAction = extendComponent<typeof DialogClose, AlertDialogActionOwnProps>(
-  DialogClose,
-  ACTION_NAME
-);
+const AlertDialogTrigger = extendComponent(DialogTrigger, 'AlertDialogTrigger');
+const AlertDialogOverlay = extendComponent(DialogOverlay, 'AlertDialogOverlay');
+const AlertDialogAction = extendComponent(DialogClose, 'AlertDialogAction');
 
 /* ---------------------------------------------------------------------------------------------- */
 

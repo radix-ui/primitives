@@ -8,14 +8,17 @@ import {
   composeRefs,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { getSelector, getSelectorObj, makeId } from '@radix-ui/utils';
+import { getSelector, makeId } from '@radix-ui/utils';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
+
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
@@ -73,36 +76,20 @@ Dialog.displayName = DIALOG_NAME;
 const TRIGGER_NAME = 'DialogTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type DialogTriggerOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-dialog-trigger
-   */
-  selector?: string | null;
-};
-
-const DialogTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, DialogTriggerOwnProps>(
+const DialogTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, OwnProps<typeof Primitive>>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = TRIGGER_DEFAULT_TAG,
-      selector = getSelector(TRIGGER_NAME),
-      onClick,
-      ...triggerProps
-    } = props;
     const context = useDialogContext(TRIGGER_NAME);
     const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
-
     return (
-      <Comp
+      <Primitive
+        as={TRIGGER_DEFAULT_TAG}
+        selector={getSelector(TRIGGER_NAME)}
         type="button"
         aria-haspopup="dialog"
         aria-expanded={context.open}
         aria-controls={context.id}
-        onClick={composeEventHandlers(onClick, () => context.setOpen(true))}
-        {...triggerProps}
-        {...getSelectorObj(selector)}
+        {...props}
+        onClick={composeEventHandlers(props.onClick, () => context.setOpen(true))}
         ref={composedTriggerRef}
       />
     );
@@ -116,7 +103,6 @@ DialogTrigger.displayName = TRIGGER_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const OVERLAY_NAME = 'DialogOverlay';
-const OVERLAY_DEFAULT_TAG = 'div';
 
 type DialogOverlayOwnProps = {
   /**
@@ -142,30 +128,11 @@ const DialogOverlay = forwardRefWithAs<typeof DialogOverlayImpl, DialogOverlayOw
   }
 );
 
-type DialogOverlayImplOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-dialog-overlay
-   */
-  selector?: string | null;
-};
-
-const DialogOverlayImpl = forwardRefWithAs<typeof OVERLAY_DEFAULT_TAG, DialogOverlayImplOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = OVERLAY_DEFAULT_TAG,
-      selector = getSelector(OVERLAY_NAME),
-      ...overlayProps
-    } = props;
-    return (
-      <Portal>
-        <Comp {...overlayProps} {...getSelectorObj(selector)} ref={forwardedRef} />
-      </Portal>
-    );
-  }
-);
+const DialogOverlayImpl = forwardRefWithAs<typeof Primitive>((props, forwardedRef) => (
+  <Portal>
+    <Primitive selector={getSelector(OVERLAY_NAME)} {...props} ref={forwardedRef} />
+  </Portal>
+));
 
 DialogOverlay.displayName = OVERLAY_NAME;
 
@@ -174,7 +141,6 @@ DialogOverlay.displayName = OVERLAY_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const CONTENT_NAME = 'DialogContent';
-const CONTENT_DEFAULT_TAG = 'div';
 
 type DialogContentOwnProps = {
   /**
@@ -202,13 +168,6 @@ const DialogContent = forwardRefWithAs<typeof DialogContentImpl, DialogContentOw
 
 type DialogContentImplOwnProps = {
   /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-dialog-content
-   */
-  selector?: string | null;
-  /**
    * Event handler called when auto-focusing on open.
    * Can be prevented.
    */
@@ -233,11 +192,9 @@ type DialogContentImplOwnProps = {
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 };
 
-const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogContentImplOwnProps>(
+const DialogContentImpl = forwardRefWithAs<typeof Primitive, DialogContentImplOwnProps>(
   (props, forwardedRef) => {
     const {
-      as: Comp = CONTENT_DEFAULT_TAG,
-      selector = getSelector(CONTENT_NAME),
       onOpenAutoFocus,
       onCloseAutoFocus,
       onEscapeKeyDown,
@@ -273,11 +230,11 @@ const DialogContentImpl = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, DialogCon
                 onDismiss={() => context.setOpen(false)}
               >
                 {(dismissableLayerProps) => (
-                  <Comp
+                  <Primitive
+                    selector={getSelector(CONTENT_NAME)}
                     role="dialog"
                     aria-modal
                     {...contentProps}
-                    {...getSelectorObj(selector)}
                     ref={composeRefs(
                       forwardedRef,
                       contentRef,
@@ -329,33 +286,17 @@ DialogContent.displayName = CONTENT_NAME;
 const CLOSE_NAME = 'DialogClose';
 const CLOSE_DEFAULT_TAG = 'button';
 
-type DialogCloseOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-dialog-close
-   */
-  selector?: string | null;
-};
-
-const DialogClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG, DialogCloseOwnProps>(
+const DialogClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG, OwnProps<typeof Primitive>>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = CLOSE_DEFAULT_TAG,
-      selector = getSelector(CLOSE_NAME),
-      onClick,
-      ...closeProps
-    } = props;
     const context = useDialogContext(CLOSE_NAME);
-
     return (
-      <Comp
+      <Primitive
+        as={CLOSE_DEFAULT_TAG}
+        selector={getSelector(CLOSE_NAME)}
         type="button"
-        {...closeProps}
-        {...getSelectorObj(selector)}
+        {...props}
         ref={forwardedRef}
-        onClick={composeEventHandlers(onClick, () => context.setOpen(false))}
+        onClick={composeEventHandlers(props.onClick, () => context.setOpen(false))}
       />
     );
   }

@@ -11,7 +11,7 @@ import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from '@radix-ui/react-collapsible';
 
-import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -106,17 +106,16 @@ const HEADER_DEFAULT_TAG = 'h3';
  * `AccordionHeader` contains the content for the parts of an `AccordionItem` that will be visible
  * whether or not its content is collapsed.
  */
-const AccordionHeader = forwardRefWithAs<
-  typeof HEADER_DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, {}>
->((props, forwardedRef) => (
-  <Primitive
-    as={HEADER_DEFAULT_TAG}
-    selector={getSelector(HEADER_NAME)}
-    {...props}
-    ref={forwardedRef}
-  />
-));
+const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG, OwnProps<typeof Primitive>>(
+  (props, forwardedRef) => (
+    <Primitive
+      as={HEADER_DEFAULT_TAG}
+      selector={getSelector(HEADER_NAME)}
+      {...props}
+      ref={forwardedRef}
+    />
+  )
+);
 
 AccordionHeader.displayName = HEADER_NAME;
 

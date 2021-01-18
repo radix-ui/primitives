@@ -10,7 +10,7 @@ import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
 
-import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Collapsible
@@ -89,27 +89,26 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 const BUTTON_NAME = 'CollapsibleButton';
 const BUTTON_DEFAULT_TAG = 'button';
 
-const CollapsibleButton = forwardRefWithAs<
-  typeof BUTTON_DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, {}>
->((props, forwardedRef) => {
-  const { onClick, ...buttonProps } = props;
-  const context = useCollapsibleContext(BUTTON_NAME);
+const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, OwnProps<typeof Primitive>>(
+  (props, forwardedRef) => {
+    const { onClick, ...buttonProps } = props;
+    const context = useCollapsibleContext(BUTTON_NAME);
 
-  return (
-    <Primitive
-      as={BUTTON_DEFAULT_TAG}
-      selector={getSelector(BUTTON_NAME)}
-      aria-controls={context.contentId}
-      aria-expanded={context.open || false}
-      data-state={getState(context.open)}
-      {...buttonProps}
-      ref={forwardedRef}
-      onClick={composeEventHandlers(onClick, context.toggle)}
-      disabled={context.disabled}
-    />
-  );
-});
+    return (
+      <Primitive
+        as={BUTTON_DEFAULT_TAG}
+        selector={getSelector(BUTTON_NAME)}
+        aria-controls={context.contentId}
+        aria-expanded={context.open || false}
+        data-state={getState(context.open)}
+        {...buttonProps}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(onClick, context.toggle)}
+        disabled={context.disabled}
+      />
+    );
+  }
+);
 
 CollapsibleButton.displayName = BUTTON_NAME;
 
