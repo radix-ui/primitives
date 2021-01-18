@@ -3262,6 +3262,7 @@ __metadata:
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
@@ -3309,6 +3310,7 @@ __metadata:
     "@radix-ui/popper": "workspace:*"
     "@radix-ui/react-arrow": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:

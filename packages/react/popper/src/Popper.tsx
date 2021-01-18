@@ -2,8 +2,9 @@ import * as React from 'react';
 import { getPlacementData } from '@radix-ui/popper';
 import { createContext, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
-import { getSelector, getSelectorObj, makeRect } from '@radix-ui/utils';
+import { getSelector, makeRect } from '@radix-ui/utils';
 
 import type { Side, Align, Size, MeasurableElement } from '@radix-ui/utils';
 
@@ -27,7 +28,6 @@ const [PopperContext, usePopperContext] = createContext<PopperContextValue>(
  * -----------------------------------------------------------------------------------------------*/
 
 const POPPER_NAME = 'Popper';
-const POPPER_DEFAULT_TAG = 'div';
 
 type PopperOwnProps = {
   anchorRef: React.RefObject<MeasurableElement>;
@@ -37,83 +37,72 @@ type PopperOwnProps = {
   alignOffset?: number;
   collisionTolerance?: number;
   avoidCollisions?: boolean;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-popper
-   */
-  selector?: string | null;
 };
 
-const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = POPPER_DEFAULT_TAG,
-      selector = getSelector(POPPER_NAME),
-      children,
-      anchorRef,
-      side = 'bottom',
-      sideOffset,
-      align = 'center',
-      alignOffset,
-      collisionTolerance,
-      avoidCollisions = true,
-      ...popperProps
-    } = props;
+const Popper = forwardRefWithAs<typeof Primitive, PopperOwnProps>((props, forwardedRef) => {
+  const {
+    children,
+    anchorRef,
+    side = 'bottom',
+    sideOffset,
+    align = 'center',
+    alignOffset,
+    collisionTolerance,
+    avoidCollisions = true,
+    ...popperProps
+  } = props;
 
-    const [arrowOffset, setArrowOffset] = React.useState<number>();
-    const anchorRect = useRect(anchorRef);
-    const popperRef = React.useRef<HTMLDivElement>(null);
-    const popperSize = useSize(popperRef);
-    const arrowRef = React.useRef<HTMLSpanElement>(null);
-    const arrowSize = useSize(arrowRef);
+  const [arrowOffset, setArrowOffset] = React.useState<number>();
+  const anchorRect = useRect(anchorRef);
+  const popperRef = React.useRef<HTMLDivElement>(null);
+  const popperSize = useSize(popperRef);
+  const arrowRef = React.useRef<HTMLSpanElement>(null);
+  const arrowSize = useSize(arrowRef);
 
-    const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
+  const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
 
-    const windowSize = useWindowSize();
-    const collisionBoundariesRect = windowSize ? makeRect(windowSize, { x: 0, y: 0 }) : undefined;
+  const windowSize = useWindowSize();
+  const collisionBoundariesRect = windowSize ? makeRect(windowSize, { x: 0, y: 0 }) : undefined;
 
-    const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
-      anchorRect,
-      popperSize,
-      arrowSize,
+  const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
+    anchorRect,
+    popperSize,
+    arrowSize,
 
-      // config
-      arrowOffset,
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      shouldAvoidCollisions: avoidCollisions,
-      collisionBoundariesRect,
-      collisionTolerance,
-    });
-    const isPlaced = placedSide !== undefined;
+    // config
+    arrowOffset,
+    side,
+    sideOffset,
+    align,
+    alignOffset,
+    shouldAvoidCollisions: avoidCollisions,
+    collisionBoundariesRect,
+    collisionTolerance,
+  });
+  const isPlaced = placedSide !== undefined;
 
-    const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
+  const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
 
-    return (
-      <div style={popperStyles}>
-        <Comp
-          {...popperProps}
-          {...getSelectorObj(selector)}
-          style={{
-            ...popperProps.style,
-            // if the Popper hasn't been placed yet (not all measurements done)
-            // we prevent animations so that users's animation don't kick in too early referring wrong sides
-            animation: !isPlaced ? 'none' : undefined,
-          }}
-          ref={composedPopperRef}
-          data-side={placedSide}
-          data-align={placedAlign}
-        >
-          <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
-        </Comp>
-      </div>
-    );
-  }
-);
+  return (
+    <div style={popperStyles}>
+      <Primitive
+        selector={getSelector(POPPER_NAME)}
+        {...popperProps}
+        style={{
+          ...popperProps.style,
+          // if the Popper hasn't been placed yet (not all measurements done)
+          // we prevent animations so that users's animation don't kick in too early referring wrong sides
+          animation: !isPlaced ? 'none' : undefined,
+        }}
+        ref={composedPopperRef}
+        data-side={placedSide}
+        data-align={placedAlign}
+      >
+        <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
+      </Primitive>
+    </div>
+  );
+});
 
 Popper.displayName = POPPER_NAME;
 
@@ -125,18 +114,11 @@ const ARROW_NAME = 'PopperArrow';
 
 type PopperArrowOwnProps = {
   offset?: number;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-popper-arrow
-   */
-  selector?: string | null;
 };
 
 const PopperArrow = forwardRefWithAs<typeof ArrowPrimitive, PopperArrowOwnProps>(
   function PopperArrow(props, forwardedRef) {
-    const { selector = getSelector(ARROW_NAME), offset, ...arrowProps } = props;
+    const { offset, ...arrowProps } = props;
     const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
 
     // send the Arrow's offset up to Popper
@@ -156,8 +138,8 @@ const PopperArrow = forwardRefWithAs<typeof ArrowPrimitive, PopperArrowOwnProps>
           }}
         >
           <ArrowPrimitive
+            selector={getSelector(ARROW_NAME)}
             {...arrowProps}
-            selector={selector}
             ref={forwardedRef}
             style={{
               ...arrowProps.style,

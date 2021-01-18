@@ -7,9 +7,10 @@ import {
   useCallbackRef,
   useComposedRefs,
 } from '@radix-ui/react-utils';
-import { getSelector, getSelectorObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -19,6 +20,8 @@ import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
+
+import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
 
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
@@ -134,20 +137,11 @@ type MenuImplOwnProps = {
    * (default: `true`)
    */
   portalled?: boolean;
-
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-menu
-   */
-  selector?: string | null;
 };
 
 const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>(
   (props, forwardedRef) => {
     const {
-      selector = getSelector(MENU_NAME),
       children,
       onOpenChange,
       anchorRef,
@@ -250,8 +244,8 @@ const MenuImpl = forwardRefWithAs<typeof PopperPrimitive.Root, MenuImplOwnProps>
                 {(dismissableLayerProps) => (
                   <PopperPrimitive.Root
                     role="menu"
+                    selector={getSelector(MENU_NAME)}
                     {...menuProps}
-                    selector={selector}
                     ref={composeRefs(
                       forwardedRef,
                       menuRef,
@@ -330,28 +324,10 @@ Menu.displayName = MENU_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const GROUP_NAME = 'MenuGroup';
-const GROUP_DEFAULT_TAG = 'div';
 
-type MenuGroupOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-menu-group
-   */
-  selector?: string | null;
-};
-
-const MenuGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, MenuGroupOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = GROUP_DEFAULT_TAG,
-      selector = getSelector(GROUP_NAME),
-      ...groupProps
-    } = props;
-    return <Comp role="group" {...groupProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
-  }
-);
+const MenuGroup = forwardRefWithAs<typeof Primitive>((props, forwardedRef) => (
+  <Primitive role="group" selector={getSelector(GROUP_NAME)} {...props} ref={forwardedRef} />
+));
 
 MenuGroup.displayName = GROUP_NAME;
 
@@ -360,28 +336,10 @@ MenuGroup.displayName = GROUP_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const LABEL_NAME = 'MenuLabel';
-const LABEL_DEFAULT_TAG = 'div';
 
-type MenuLabelOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-menu-label
-   */
-  selector?: string | null;
-};
-
-const MenuLabel = forwardRefWithAs<typeof LABEL_DEFAULT_TAG, MenuLabelOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = LABEL_DEFAULT_TAG,
-      selector = getSelector(LABEL_NAME),
-      ...labelProps
-    } = props;
-    return <Comp {...labelProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
-  }
-);
+const MenuLabel = forwardRefWithAs<typeof Primitive>((props, forwardedRef) => (
+  <Primitive selector={getSelector(LABEL_NAME)} {...props} ref={forwardedRef} />
+));
 
 MenuLabel.displayName = LABEL_NAME;
 
@@ -390,7 +348,6 @@ MenuLabel.displayName = LABEL_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const ITEM_NAME = 'MenuItem';
-const ITEM_DEFAULT_TAG = 'div';
 const ENABLED_ITEM_SELECTOR = `[data-${getSelector(ITEM_NAME)}]:not([data-disabled])`;
 const ITEM_SELECT = 'menu.itemSelect';
 
@@ -408,107 +365,98 @@ type MenuItemOwnProps = {
   onSelectCapture: never;
 };
 
-const MenuItem = forwardRefWithAs<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = ITEM_DEFAULT_TAG,
-      selector = getSelector(ITEM_NAME),
-      disabled,
-      textValue,
-      onSelect,
-      ...itemProps
-    } = props;
-    const menuItemRef = React.useRef<HTMLDivElement>(null);
-    const composedRef = useComposedRefs(forwardedRef, menuItemRef);
-    const context = useMenuContext(ITEM_NAME);
-    const rovingFocusProps = useRovingFocus({ disabled });
+const MenuItem = forwardRefWithAs<typeof Primitive, MenuItemOwnProps>((props, forwardedRef) => {
+  const { disabled, textValue, onSelect, ...itemProps } = props;
+  const menuItemRef = React.useRef<HTMLDivElement>(null);
+  const composedRef = useComposedRefs(forwardedRef, menuItemRef);
+  const context = useMenuContext(ITEM_NAME);
+  const rovingFocusProps = useRovingFocus({ disabled });
 
-    // get the item's `.textContent` as default strategy for typeahead `textValue`
-    const [textContent, setTextContent] = React.useState('');
-    React.useEffect(() => {
-      const menuItem = menuItemRef.current;
-      if (menuItem) {
-        setTextContent((menuItem.textContent ?? '').trim());
-      }
-    }, [itemProps.children]);
+  // get the item's `.textContent` as default strategy for typeahead `textValue`
+  const [textContent, setTextContent] = React.useState('');
+  React.useEffect(() => {
+    const menuItem = menuItemRef.current;
+    if (menuItem) {
+      setTextContent((menuItem.textContent ?? '').trim());
+    }
+  }, [itemProps.children]);
 
-    const menuTypeaheadItemProps = useMenuTypeaheadItem({
-      textValue: textValue ?? textContent,
-      disabled,
-    });
+  const menuTypeaheadItemProps = useMenuTypeaheadItem({
+    textValue: textValue ?? textContent,
+    disabled,
+  });
 
-    const handleSelect = () => {
-      const menuItem = menuItemRef.current;
-      if (!disabled && menuItem) {
-        const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
-        menuItem.dispatchEvent(itemSelectEvent);
-        if (itemSelectEvent.defaultPrevented) return;
-        context.onOpenChange?.(false);
-      }
-    };
+  const handleSelect = () => {
+    const menuItem = menuItemRef.current;
+    if (!disabled && menuItem) {
+      const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
+      menuItem.dispatchEvent(itemSelectEvent);
+      if (itemSelectEvent.defaultPrevented) return;
+      context.onOpenChange?.(false);
+    }
+  };
 
-    React.useEffect(() => {
-      const menuItem = menuItemRef.current;
-      if (menuItem) {
-        const handleItemSelect = (event: Event) => onSelect?.(event);
-        menuItem.addEventListener(ITEM_SELECT, handleItemSelect);
-        return () => menuItem.removeEventListener(ITEM_SELECT, handleItemSelect);
-      }
-    }, [onSelect]);
+  React.useEffect(() => {
+    const menuItem = menuItemRef.current;
+    if (menuItem) {
+      const handleItemSelect = (event: Event) => onSelect?.(event);
+      menuItem.addEventListener(ITEM_SELECT, handleItemSelect);
+      return () => menuItem.removeEventListener(ITEM_SELECT, handleItemSelect);
+    }
+  }, [onSelect]);
 
-    return (
-      <Comp
-        role="menuitem"
-        aria-disabled={disabled || undefined}
-        {...itemProps}
-        {...getSelectorObj(selector)}
-        {...rovingFocusProps}
-        {...menuTypeaheadItemProps}
-        ref={composedRef}
-        data-disabled={disabled ? '' : undefined}
-        onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
-        onKeyDown={composeEventHandlers(
-          itemProps.onKeyDown,
-          composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
-            if (!disabled) {
-              if (event.key === 'Enter' || event.key === ' ') {
-                handleSelect();
-              }
-            }
-          })
-        )}
-        onMouseDown={composeEventHandlers(itemProps.onMouseDown, rovingFocusProps.onMouseDown)}
-        // we handle selection on `mouseUp` rather than `click` to match native menus implementation
-        onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
-        /**
-         * We focus items on `mouseMove` to achieve the following:
-         *
-         * - Mouse over an item (it focuses)
-         * - Leave mouse where it is and use keyboard to focus a different item
-         * - Wiggle mouse without it leaving previously focused item
-         * - Previously focused item should re-focus
-         *
-         * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
-         * wiggles. This is to match native menu implementation.
-         */
-        onMouseMove={composeEventHandlers(itemProps.onMouseMove, (event) => {
+  return (
+    <Primitive
+      role="menuitem"
+      selector={getSelector(ITEM_NAME)}
+      aria-disabled={disabled || undefined}
+      {...itemProps}
+      {...rovingFocusProps}
+      {...menuTypeaheadItemProps}
+      ref={composedRef}
+      data-disabled={disabled ? '' : undefined}
+      onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
+      onKeyDown={composeEventHandlers(
+        itemProps.onKeyDown,
+        composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
           if (!disabled) {
-            const item = event.currentTarget;
-            item.focus();
+            if (event.key === 'Enter' || event.key === ' ') {
+              handleSelect();
+            }
           }
-        })}
-        // make items unreachable when an item is blurred
-        onBlur={composeEventHandlers(itemProps.onBlur, (event) => {
-          context.setItemsReachable(false);
-        })}
-        // focus the menu if the mouse leaves an item
-        onMouseLeave={composeEventHandlers(itemProps.onMouseLeave, (event) => {
-          context.menuRef.current?.focus();
-        })}
-      />
-    );
-  }
-);
+        })
+      )}
+      onMouseDown={composeEventHandlers(itemProps.onMouseDown, rovingFocusProps.onMouseDown)}
+      // we handle selection on `mouseUp` rather than `click` to match native menus implementation
+      onMouseUp={composeEventHandlers(itemProps.onMouseUp, handleSelect)}
+      /**
+       * We focus items on `mouseMove` to achieve the following:
+       *
+       * - Mouse over an item (it focuses)
+       * - Leave mouse where it is and use keyboard to focus a different item
+       * - Wiggle mouse without it leaving previously focused item
+       * - Previously focused item should re-focus
+       *
+       * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
+       * wiggles. This is to match native menu implementation.
+       */
+      onMouseMove={composeEventHandlers(itemProps.onMouseMove, (event) => {
+        if (!disabled) {
+          const item = event.currentTarget;
+          item.focus();
+        }
+      })}
+      // make items unreachable when an item is blurred
+      onBlur={composeEventHandlers(itemProps.onBlur, (event) => {
+        context.setItemsReachable(false);
+      })}
+      // focus the menu if the mouse leaves an item
+      onMouseLeave={composeEventHandlers(itemProps.onMouseLeave, (event) => {
+        context.menuRef.current?.focus();
+      })}
+    />
+  );
+});
 
 MenuItem.displayName = ITEM_NAME;
 
@@ -520,31 +468,18 @@ const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
 type MenuCheckboxItemOwnProps = {
   checked?: boolean;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-menu-checkbox-item
-   */
-  selector?: string | null;
   onCheckedChange?: (checked: boolean) => void;
 };
 
 const MenuCheckboxItem = forwardRefWithAs<typeof MenuItem, MenuCheckboxItemOwnProps>(
   (props, forwardedRef) => {
-    const {
-      selector = getSelector(CHECKBOX_ITEM_NAME),
-      checked = false,
-      onCheckedChange,
-      children,
-      ...checkboxItemProps
-    } = props;
+    const { checked = false, onCheckedChange, children, ...checkboxItemProps } = props;
     return (
       <MenuItem
         role="menuitemcheckbox"
+        selector={getSelector(CHECKBOX_ITEM_NAME)}
         aria-checked={checked}
         {...checkboxItemProps}
-        selector={selector}
         data-state={getCheckedState(checked)}
         ref={forwardedRef}
         onSelect={composeEventHandlers(
@@ -570,33 +505,20 @@ const RADIO_GROUP_NAME = 'MenuRadioGroup';
 const RadioGroupContext = React.createContext<MenuRadioGroupOwnProps>({} as any);
 
 type MenuRadioGroupOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-menu-radio-group
-   */
-  selector?: string | null;
   value?: string;
   onValueChange?: (value: string) => void;
 };
 
 const MenuRadioGroup = forwardRefWithAs<typeof MenuGroup, MenuRadioGroupOwnProps>(
   (props, forwardedRef) => {
-    const {
-      selector = getSelector(RADIO_GROUP_NAME),
-      children,
-      value,
-      onValueChange,
-      ...groupProps
-    } = props;
+    const { children, value, onValueChange, ...groupProps } = props;
     const handleValueChange = useCallbackRef(onValueChange);
     const context = React.useMemo(() => ({ value, onValueChange: handleValueChange }), [
       value,
       handleValueChange,
     ]);
     return (
-      <MenuGroup {...groupProps} selector={selector} ref={forwardedRef}>
+      <MenuGroup selector={getSelector(RADIO_GROUP_NAME)} {...groupProps} ref={forwardedRef}>
         <RadioGroupContext.Provider value={context}>{children}</RadioGroupContext.Provider>
       </MenuGroup>
     );
@@ -613,26 +535,19 @@ const RADIO_ITEM_NAME = 'MenuRadioItem';
 
 type MenuRadioItemOwnProps = {
   value: string;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-menu-radio-item
-   */
-  selector?: string | null;
 };
 
 const MenuRadioItem = forwardRefWithAs<typeof MenuItem, MenuRadioItemOwnProps>(
   (props, forwardedRef) => {
-    const { selector = getSelector(RADIO_ITEM_NAME), value, children, ...radioItemProps } = props;
+    const { value, children, ...radioItemProps } = props;
     const context = React.useContext(RadioGroupContext);
     const checked = value === context.value;
     return (
       <MenuItem
         role="menuitemradio"
+        selector={getSelector(RADIO_ITEM_NAME)}
         aria-checked={checked}
         {...radioItemProps}
-        selector={selector}
         data-state={getCheckedState(checked)}
         ref={forwardedRef}
         onSelect={composeEventHandlers(
@@ -660,13 +575,6 @@ const ItemIndicatorContext = React.createContext(false);
 
 type MenuItemIndicatorOwnProps = {
   /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-menu-item-indicator
-   */
-  selector?: string | null;
-  /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
@@ -675,20 +583,16 @@ type MenuItemIndicatorOwnProps = {
 
 const MenuItemIndicator = forwardRefWithAs<
   typeof ITEM_INDICATOR_DEFAULT_TAG,
-  MenuItemIndicatorOwnProps
+  MergeOwnProps<typeof Primitive, MenuItemIndicatorOwnProps>
 >((props, forwardedRef) => {
-  const {
-    as: Comp = ITEM_INDICATOR_DEFAULT_TAG,
-    selector = getSelector(ITEM_INDICATOR_NAME),
-    forceMount,
-    ...indicatorProps
-  } = props;
+  const { forceMount, ...indicatorProps } = props;
   const checked = React.useContext(ItemIndicatorContext);
   return (
     <Presence present={forceMount || checked}>
-      <Comp
+      <Primitive
+        as={ITEM_INDICATOR_DEFAULT_TAG}
+        selector={getSelector(ITEM_INDICATOR_NAME)}
         {...indicatorProps}
-        {...getSelectorObj(selector)}
         data-state={getCheckedState(checked)}
         ref={forwardedRef}
       />
@@ -703,59 +607,22 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const SEPARATOR_NAME = 'MenuSeparator';
-const SEPARATOR_DEFAULT_TAG = 'div';
 
-type MenuSeparatorOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-menu-separator
-   */
-  selector?: string | null;
-};
-
-const MenuSeparator = forwardRefWithAs<typeof SEPARATOR_DEFAULT_TAG, MenuSeparatorOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = SEPARATOR_DEFAULT_TAG,
-      selector = getSelector(SEPARATOR_NAME),
-      ...separatorProps
-    } = props;
-    return (
-      <Comp
-        role="separator"
-        aria-orientation="horizontal"
-        {...separatorProps}
-        {...getSelectorObj(selector)}
-        ref={forwardedRef}
-      />
-    );
-  }
-);
+const MenuSeparator = forwardRefWithAs<typeof Primitive>((props, forwardedRef) => (
+  <Primitive
+    role="separator"
+    selector={getSelector(SEPARATOR_NAME)}
+    aria-orientation="horizontal"
+    {...props}
+    ref={forwardedRef}
+  />
+));
 
 MenuSeparator.displayName = SEPARATOR_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * MenuArrow
- * -----------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
-const ARROW_NAME = 'MenuArrow';
-
-type MenuArrowOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-dropdown-menu-arrow
-   */
-  selector?: string | null;
-};
-
-const MenuArrow = extendComponent<typeof PopperPrimitive.Arrow, MenuArrowOwnProps>(
-  PopperPrimitive.Arrow,
-  ARROW_NAME
-);
+const MenuArrow = extendComponent(PopperPrimitive.Arrow, 'MenuArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 
