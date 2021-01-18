@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { composeEventHandlers, createContext, extendComponent } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { makeRect, getSelector, getSelectorObj } from '@radix-ui/utils';
+import { Primitive } from '@radix-ui/react-primitive';
+import { makeRect, getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
 import type { Point, MeasurableElement } from '@radix-ui/utils';
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenu
@@ -45,31 +47,16 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
 const TRIGGER_NAME = 'ContextMenuTrigger';
 const TRIGGER_DEFAULT_TAG = 'span';
 
-type ContextMenuTriggerOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-trigger
-   */
-  selector?: string | null;
-};
-
-const ContextMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, ContextMenuTriggerOwnProps>(
+const ContextMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, OwnProps<typeof Primitive>>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = TRIGGER_DEFAULT_TAG,
-      selector = getSelector(TRIGGER_NAME),
-      ...triggerProps
-    } = props;
     const context = useContextMenuContext(TRIGGER_NAME);
-
     return (
-      <Comp
-        {...triggerProps}
-        {...getSelectorObj(selector)}
+      <Primitive
+        as={TRIGGER_DEFAULT_TAG}
+        selector={getSelector(TRIGGER_NAME)}
+        {...props}
         ref={forwardedRef}
-        onContextMenu={composeEventHandlers(triggerProps.onContextMenu, (event) => {
+        onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
           event.preventDefault();
           const point = { x: event.clientX, y: event.clientY };
           context.setOpen(true);
@@ -93,13 +80,6 @@ type ContextMenuContentOwnProps = {
   trapFocus: never;
   disableOutsideScroll: never;
   portalled: never;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-content
-   */
-  selector?: string | null;
   onCloseAutoFocus: never;
   onOpenAutoFocus: never;
   onDismiss: never;
@@ -107,20 +87,16 @@ type ContextMenuContentOwnProps = {
 
 const ContextMenuContent = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMenuContentOwnProps>(
   (props, forwardedRef) => {
-    const {
-      selector = getSelector(CONTENT_NAME),
-      anchorRef,
-      disableOutsidePointerEvents = true,
-      side = 'bottom',
-      align = 'start',
-      ...contentProps
-    } = props;
+    const { anchorRef, ...contentProps } = props;
     const context = useContextMenuContext(CONTENT_NAME);
 
     return (
       <MenuPrimitive.Root
+        selector={getSelector(CONTENT_NAME)}
+        disableOutsidePointerEvents={true}
+        side="bottom"
+        align="start"
         {...contentProps}
-        selector={selector}
         ref={forwardedRef}
         open={context.open}
         onOpenChange={context.setOpen}
@@ -129,11 +105,8 @@ const ContextMenuContent = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMe
           // re-namespace exposed content custom property
           ['--radix-context-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
         }}
-        side={side}
-        align={align}
         anchorRef={context.anchorRef}
         trapFocus
-        disableOutsidePointerEvents={disableOutsidePointerEvents}
         disableOutsideScroll
         portalled
         onDismiss={() => context.setOpen(false)}
@@ -144,173 +117,22 @@ const ContextMenuContent = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMe
 
 ContextMenuContent.displayName = CONTENT_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuGroup
- * -----------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
-const GROUP_NAME = 'ContextMenuGroup';
-
-type ContextMenuGroupOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-group
-   */
-  selector?: string | null;
-};
-
-const ContextMenuGroup = extendComponent<typeof MenuPrimitive.Group, ContextMenuGroupOwnProps>(
-  MenuPrimitive.Group,
-  GROUP_NAME
+const ContextMenuGroup = extendComponent(MenuPrimitive.Group, 'ContextMenuGroup');
+const ContextMenuLabel = extendComponent(MenuPrimitive.Label, 'ContextMenuLabel');
+const ContextMenuItem = extendComponent(MenuPrimitive.Item, 'ContextMenuItem');
+const ContextMenuCheckboxItem = extendComponent(
+  MenuPrimitive.CheckboxItem,
+  'ContextMenuCheckboxItem'
 );
-
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuLabel
- * -----------------------------------------------------------------------------------------------*/
-
-const LABEL_NAME = 'ContextMenuLabel';
-
-type ContextMenuLabelOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-label
-   */
-  selector?: string | null;
-};
-
-const ContextMenuLabel = extendComponent<typeof MenuPrimitive.Label, ContextMenuLabelOwnProps>(
-  MenuPrimitive.Label,
-  LABEL_NAME
+const ContextMenuRadioGroup = extendComponent(MenuPrimitive.RadioGroup, 'ContextMenuRadioGroup');
+const ContextMenuRadioItem = extendComponent(MenuPrimitive.RadioItem, 'ContextMenuRadioItem');
+const ContextMenuItemIndicator = extendComponent(
+  MenuPrimitive.ItemIndicator,
+  'ContextMenuItemIndicator'
 );
-
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuItem
- * -----------------------------------------------------------------------------------------------*/
-
-const ITEM_NAME = 'ContextMenuItem';
-
-type ContextMenuItemOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-item
-   */
-  selector?: string | null;
-};
-
-const ContextMenuItem = extendComponent<typeof MenuPrimitive.Item, ContextMenuItemOwnProps>(
-  MenuPrimitive.Item,
-  ITEM_NAME
-);
-
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuCheckboxItem
- * -----------------------------------------------------------------------------------------------*/
-
-const CHECKBOX_ITEM_NAME = 'ContextMenuCheckboxItem';
-
-type ContextMenuCheckboxItemOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-checkbox-item
-   */
-  selector?: string | null;
-};
-
-const ContextMenuCheckboxItem = extendComponent<
-  typeof MenuPrimitive.CheckboxItem,
-  ContextMenuCheckboxItemOwnProps
->(MenuPrimitive.CheckboxItem, CHECKBOX_ITEM_NAME);
-
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuRadioGroup
- * -----------------------------------------------------------------------------------------------*/
-
-const RADIO_GROUP_NAME = 'ContextMenuRadioGroup';
-
-type ContextMenuRadioGroupOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-radio-group
-   */
-  selector?: string | null;
-};
-
-const ContextMenuRadioGroup = extendComponent<
-  typeof MenuPrimitive.RadioGroup,
-  ContextMenuRadioGroupOwnProps
->(MenuPrimitive.RadioGroup, RADIO_GROUP_NAME);
-
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuRadioItem
- * -----------------------------------------------------------------------------------------------*/
-
-const RADIO_ITEM_NAME = 'ContextMenuRadioItem';
-
-type ContextMenuRadioItemOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-radio-item
-   */
-  selector?: string | null;
-};
-
-const ContextMenuRadioItem = extendComponent<
-  typeof MenuPrimitive.RadioItem,
-  ContextMenuRadioItemOwnProps
->(MenuPrimitive.RadioItem, RADIO_ITEM_NAME);
-
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuItemIndicator
- * -----------------------------------------------------------------------------------------------*/
-
-const ITEM_INDICATOR_NAME = 'ContextMenuItemIndicator';
-
-type ContextMenuItemIndicatorOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-item-indicator
-   */
-  selector?: string | null;
-};
-
-const ContextMenuItemIndicator = extendComponent<
-  typeof MenuPrimitive.ItemIndicator,
-  ContextMenuItemIndicatorOwnProps
->(MenuPrimitive.ItemIndicator, ITEM_INDICATOR_NAME);
-
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuSeparator
- * -----------------------------------------------------------------------------------------------*/
-
-const SEPARATOR_NAME = 'ContextMenuSeparator';
-
-type ContextMenuSeparatorOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-context-menu-separator
-   */
-  selector?: string | null;
-};
-
-const ContextMenuSeparator = extendComponent<
-  typeof MenuPrimitive.Separator,
-  ContextMenuSeparatorOwnProps
->(MenuPrimitive.Separator, SEPARATOR_NAME);
+const ContextMenuSeparator = extendComponent(MenuPrimitive.Separator, 'ContextMenuSeparator');
 
 /* -----------------------------------------------------------------------------------------------*/
 
