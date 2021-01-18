@@ -17,10 +17,12 @@ releases:
   "@radix-ui/react-focus-scope": patch
   "@radix-ui/react-label": patch
   "@radix-ui/react-menu": patch
+  "@radix-ui/react-polymorphic": patch
   "@radix-ui/react-popover": patch
   "@radix-ui/react-popper": patch
   "@radix-ui/react-portal": patch
   "@radix-ui/react-presence": patch
+  "@radix-ui/react-primitive": patch
   "@radix-ui/react-progress": patch
   "@radix-ui/react-radio-group": patch
   "@radix-ui/react-roving-focus": patch
