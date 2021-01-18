@@ -3509,6 +3509,7 @@ __metadata:
   resolution: "@radix-ui/react-visually-hidden@workspace:packages/react/visually-hidden"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
