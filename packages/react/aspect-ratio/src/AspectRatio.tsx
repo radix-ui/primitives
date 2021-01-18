@@ -1,36 +1,21 @@
 import * as React from 'react';
-import { getSelector, getSelectorObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * AspectRatio
  * -----------------------------------------------------------------------------------------------*/
 
 const NAME = 'AspectRatio';
-const DEFAULT_TAG = 'div';
 
 type AspectRatioOwnProps = {
   ratio?: number;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-aspect-ratio
-   */
-  selector?: string | null;
 };
 
-const AspectRatio = forwardRefWithAs<typeof DEFAULT_TAG, AspectRatioOwnProps>(
+const AspectRatio = forwardRefWithAs<typeof Primitive, AspectRatioOwnProps>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = DEFAULT_TAG,
-      selector = getSelector(NAME),
-      ratio = 1 / 1,
-      style,
-      children,
-      ...aspectRatioProps
-    } = props;
-
+    const { ratio = 1 / 1, style, children, ...aspectRatioProps } = props;
     return (
       <div
         style={{
@@ -41,9 +26,9 @@ const AspectRatio = forwardRefWithAs<typeof DEFAULT_TAG, AspectRatioOwnProps>(
           paddingBottom: `${100 / ratio}%`,
         }}
       >
-        <Comp
+        <Primitive
+          selector={getSelector(NAME)}
           {...aspectRatioProps}
-          {...getSelectorObj(selector)}
           ref={forwardedRef}
           style={{
             ...style,
@@ -56,7 +41,7 @@ const AspectRatio = forwardRefWithAs<typeof DEFAULT_TAG, AspectRatioOwnProps>(
           }}
         >
           {children}
-        </Comp>
+        </Primitive>
       </div>
     );
   }

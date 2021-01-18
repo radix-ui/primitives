@@ -3104,6 +3104,7 @@ __metadata:
   resolution: "@radix-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
