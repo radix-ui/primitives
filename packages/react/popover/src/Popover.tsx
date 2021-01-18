@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getSelector, getSelectorObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -16,8 +16,11 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
+
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
@@ -73,37 +76,23 @@ Popover.displayName = POPOVER_NAME;
 const TRIGGER_NAME = 'PopoverTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type PopoverTriggerOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-popover-trigger
-   */
-  selector?: string | null;
-};
-
-const PopoverTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, PopoverTriggerOwnProps>(
+const PopoverTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, OwnProps<typeof Primitive>>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = TRIGGER_DEFAULT_TAG,
-      selector = getSelector(TRIGGER_NAME),
-      onClick,
-      ...triggerProps
-    } = props;
     const context = usePopoverContext(TRIGGER_NAME);
     const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
-
     return (
-      <Comp
+      <Primitive
+        as={TRIGGER_DEFAULT_TAG}
+        selector={getSelector(TRIGGER_NAME)}
         type="button"
         aria-haspopup="dialog"
         aria-expanded={context.open}
         aria-controls={context.id}
-        onClick={composeEventHandlers(onClick, () => context.setOpen((prevOpen) => !prevOpen))}
-        {...triggerProps}
-        {...getSelectorObj(selector)}
+        {...props}
         ref={composedTriggerRef}
+        onClick={composeEventHandlers(props.onClick, () =>
+          context.setOpen((prevOpen) => !prevOpen)
+        )}
       />
     );
   }
@@ -187,14 +176,6 @@ type PopoverContentOwnProps = {
   forceMount?: true;
 
   anchorRef?: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
-
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-popover-content
-   */
-  selector?: string | null;
 };
 
 const PopoverContent = forwardRefWithAs<typeof PopoverContentImpl>((props, forwardedRef) => {
@@ -214,7 +195,6 @@ const PopoverContent = forwardRefWithAs<typeof PopoverContentImpl>((props, forwa
 const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, PopoverContentOwnProps>(
   (props, forwardedRef) => {
     const {
-      selector = getSelector(CONTENT_NAME),
       children,
       anchorRef,
       trapFocus = true,
@@ -310,9 +290,9 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
                 {(dismissableLayerProps) => (
                   <PopperPrimitive.Root
                     role="dialog"
+                    selector={getSelector(CONTENT_NAME)}
                     aria-modal
                     {...contentProps}
-                    selector={selector}
                     ref={composeRefs(
                       forwardedRef,
                       contentRef,
@@ -369,33 +349,17 @@ PopoverContent.displayName = CONTENT_NAME;
 const CLOSE_NAME = 'PopoverClose';
 const CLOSE_DEFAULT_TAG = 'button';
 
-type PopoverCloseOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-popover-close
-   */
-  selector?: string | null;
-};
-
-const PopoverClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG, PopoverCloseOwnProps>(
+const PopoverClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG, OwnProps<typeof Primitive>>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = CLOSE_DEFAULT_TAG,
-      selector = getSelector(CLOSE_NAME),
-      onClick,
-      ...closeProps
-    } = props;
     const context = usePopoverContext(CLOSE_NAME);
-
     return (
-      <Comp
-        {...getSelectorObj(selector)}
-        ref={forwardedRef}
+      <Primitive
+        as={CLOSE_DEFAULT_TAG}
+        selector={getSelector(CLOSE_NAME)}
         type="button"
-        {...closeProps}
-        onClick={composeEventHandlers(onClick, () => context.setOpen(false))}
+        {...props}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(props.onClick, () => context.setOpen(false))}
       />
     );
   }
@@ -403,26 +367,9 @@ const PopoverClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG, PopoverCloseOwnP
 
 PopoverClose.displayName = CLOSE_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * PopoverArrow
- * -----------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
-const ARROW_NAME = 'PopoverArrow';
-
-type PopoverArrowOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-popover-arrow
-   */
-  selector?: string | null;
-};
-
-const PopoverArrow = extendComponent<typeof PopperPrimitive.Arrow, PopoverArrowOwnProps>(
-  PopperPrimitive.Arrow,
-  ARROW_NAME
-);
+const PopoverArrow = extendComponent(PopperPrimitive.Arrow, 'PopoverArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 
