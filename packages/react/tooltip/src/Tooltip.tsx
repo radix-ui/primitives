@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getSelector, getSelectorObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -12,10 +12,13 @@ import {
   extendComponent,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
+
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -134,65 +137,44 @@ Tooltip.displayName = TOOLTIP_NAME;
 const TRIGGER_NAME = 'TooltipTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type TooltipTriggerOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-tooltip-trigger
-   */
-  selector?: string | null;
-};
-
-const TooltipTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, TooltipTriggerOwnProps>(
+const TooltipTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, OwnProps<typeof Primitive>>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = TRIGGER_DEFAULT_TAG,
-      selector = getSelector(TRIGGER_NAME),
-      onMouseEnter,
-      onMouseMove,
-      onMouseLeave,
-      onFocus,
-      onBlur,
-      onMouseDown,
-      onKeyDown,
-      ...triggerProps
-    } = props;
     const context = useTooltipContext(TRIGGER_NAME);
     const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
     return (
-      <Comp
+      <Primitive
+        as={TRIGGER_DEFAULT_TAG}
+        selector={getSelector(TRIGGER_NAME)}
         type="button"
         aria-describedby={context.open ? context.id : undefined}
-        {...triggerProps}
-        {...getSelectorObj(selector)}
+        {...props}
         ref={composedTriggerRef}
-        onMouseEnter={composeEventHandlers(onMouseEnter, () =>
+        onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
           stateMachine.transition('mouseEntered', { id: context.id })
         )}
-        onMouseMove={composeEventHandlers(onMouseMove, () =>
+        onMouseMove={composeEventHandlers(props.onMouseMove, () =>
           stateMachine.transition('mouseMoved', { id: context.id })
         )}
-        onMouseLeave={composeEventHandlers(onMouseLeave, () => {
+        onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
           const stateMachineContext = stateMachine.getContext();
           if (stateMachineContext.id === context.id) {
             stateMachine.transition('mouseLeft', { id: context.id });
           }
         })}
-        onFocus={composeEventHandlers(onFocus, () =>
+        onFocus={composeEventHandlers(props.onFocus, () =>
           stateMachine.transition('focused', { id: context.id })
         )}
-        onBlur={composeEventHandlers(onBlur, () => {
+        onBlur={composeEventHandlers(props.onBlur, () => {
           const stateMachineContext = stateMachine.getContext();
           if (stateMachineContext.id === context.id) {
             stateMachine.transition('blurred', { id: context.id });
           }
         })}
-        onMouseDown={composeEventHandlers(onMouseDown, () =>
+        onMouseDown={composeEventHandlers(props.onMouseDown, () =>
           stateMachine.transition('activated', { id: context.id })
         )}
-        onKeyDown={composeEventHandlers(onKeyDown, (event) => {
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
           if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
             stateMachine.transition('activated', { id: context.id });
           }
@@ -223,14 +205,6 @@ type TooltipContentOwnProps = {
    * (default: `true`)
    */
   portalled?: boolean;
-
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-tooltip-content
-   */
-  selector?: string | null;
 };
 
 const TooltipContent = forwardRefWithAs<typeof TooltipContentImpl>((props, forwardedRef) => {
@@ -241,7 +215,6 @@ const TooltipContent = forwardRefWithAs<typeof TooltipContentImpl>((props, forwa
 const TooltipContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, TooltipContentOwnProps>(
   (props, forwardedRef) => {
     const {
-      selector = getSelector(CONTENT_NAME),
       children,
       'aria-label': ariaLabel,
       anchorRef,
@@ -255,8 +228,8 @@ const TooltipContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Tooltip
       <PortalWrapper>
         <CheckTriggerMoved />
         <PopperPrimitive.Root
+          selector={getSelector(CONTENT_NAME)}
           {...contentProps}
-          selector={selector}
           data-state={context.stateAttribute}
           ref={forwardedRef}
           anchorRef={anchorRef || context.triggerRef}
@@ -278,26 +251,9 @@ const TooltipContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Tooltip
 
 TooltipContent.displayName = CONTENT_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * TooltipArrow
- * -----------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
-const ARROW_NAME = 'TooltipArrow';
-
-type TooltipArrowOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-tooltip-arrow
-   */
-  selector?: string | null;
-};
-
-const TooltipArrow = extendComponent<typeof PopperPrimitive.Arrow, TooltipArrowOwnProps>(
-  PopperPrimitive.Arrow,
-  ARROW_NAME
-);
+const TooltipArrow = extendComponent(PopperPrimitive.Arrow, 'TooltipArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 
