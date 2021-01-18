@@ -3400,6 +3400,7 @@ __metadata:
   resolution: "@radix-ui/react-scroll-area@workspace:packages/react/scroll-area"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
     "@stitches/react": canary
