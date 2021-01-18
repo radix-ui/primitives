@@ -7,8 +7,11 @@ import {
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
-import { getSelector, getSelectorObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
+
+import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Radio
@@ -19,13 +22,6 @@ const RADIO_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
 type RadioOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-radio
-   */
-  selector?: string | null;
   checked?: boolean;
   defaultChecked?: boolean;
   required?: InputDOMProps['required'];
@@ -36,10 +32,11 @@ type RadioOwnProps = {
 
 const [RadioContext, useRadioContext] = createContext<boolean>(RADIO_NAME + 'Context', RADIO_NAME);
 
-const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, forwardedRef) => {
+const Radio = forwardRefWithAs<
+  typeof RADIO_DEFAULT_TAG,
+  MergeOwnProps<typeof Primitive, RadioOwnProps>
+>((props, forwardedRef) => {
   const {
-    as: Comp = RADIO_DEFAULT_TAG,
-    selector = getSelector(RADIO_NAME),
     'aria-labelledby': ariaLabelledby,
     children,
     name,
@@ -83,10 +80,11 @@ const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, 
           setChecked(event.target.checked);
         })}
       />
-      <Comp
+      <Primitive
+        as={RADIO_DEFAULT_TAG}
+        selector={getSelector(RADIO_NAME)}
         type="button"
         {...radioProps}
-        {...getSelectorObj(selector)}
         ref={ref}
         role="radio"
         aria-checked={checked}
@@ -104,7 +102,7 @@ const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, 
         })}
       >
         <RadioContext.Provider value={checked}>{children}</RadioContext.Provider>
-      </Comp>
+      </Primitive>
     </>
   );
 });
@@ -126,38 +124,23 @@ type RadioIndicatorOwnProps = {
   forceMount?: true;
 };
 
-const RadioIndicator = forwardRefWithAs<typeof RadioIndicatorImpl, RadioIndicatorOwnProps>(
-  (props, forwardedRef) => {
-    const { forceMount, ...indicatorProps } = props;
-    const checked = useRadioContext(INDICATOR_NAME);
-    return (
-      <Presence present={forceMount || checked}>
-        <RadioIndicatorImpl {...indicatorProps} data-state={getState(checked)} ref={forwardedRef} />
-      </Presence>
-    );
-  }
-);
-
-type RadioIndicatorImplOwnProps = {
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-radio-indicator
-   */
-  selector?: string | null;
-};
-
-const RadioIndicatorImpl = forwardRefWithAs<
+const RadioIndicator = forwardRefWithAs<
   typeof INDICATOR_DEFAULT_TAG,
-  RadioIndicatorImplOwnProps
->(function RadioIndicatorImpl(props, forwardedRef) {
-  const {
-    as: Comp = INDICATOR_DEFAULT_TAG,
-    selector = getSelector(INDICATOR_NAME),
-    ...indicatorProps
-  } = props;
-  return <Comp {...indicatorProps} {...getSelectorObj(selector)} ref={forwardedRef} />;
+  MergeOwnProps<typeof Primitive, RadioIndicatorOwnProps>
+>((props, forwardedRef) => {
+  const { forceMount, ...indicatorProps } = props;
+  const checked = useRadioContext(INDICATOR_NAME);
+  return (
+    <Presence present={forceMount || checked}>
+      <Primitive
+        as={INDICATOR_DEFAULT_TAG}
+        selector={getSelector(INDICATOR_NAME)}
+        {...indicatorProps}
+        data-state={getState(checked)}
+        ref={forwardedRef}
+      />
+    </Presence>
+  );
 });
 
 RadioIndicator.displayName = INDICATOR_NAME;
