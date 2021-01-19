@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { useControlledState, composeEventHandlers } from '@radix-ui/react-utils';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
+
+import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
 
 const NAME = 'ToggleButton';
 const DEFAULT_TAG = 'button';
@@ -18,44 +21,45 @@ type ToggleButtonOwnProps = {
   onToggledChange?(toggled: boolean): void;
 };
 
-const ToggleButton = forwardRefWithAs<typeof DEFAULT_TAG, ToggleButtonOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = DEFAULT_TAG,
-      toggled: toggledProp,
-      defaultToggled = false,
-      onClick,
-      onToggledChange,
-      children,
-      ...buttonProps
-    } = props;
+const ToggleButton = forwardRefWithAs<
+  typeof DEFAULT_TAG,
+  MergeOwnProps<typeof Primitive, ToggleButtonOwnProps>
+>((props, forwardedRef) => {
+  const {
+    toggled: toggledProp,
+    defaultToggled = false,
+    onClick,
+    onToggledChange,
+    children,
+    ...buttonProps
+  } = props;
 
-    const [toggled = false, setToggled] = useControlledState({
-      prop: toggledProp,
-      onChange: onToggledChange,
-      defaultProp: defaultToggled,
-    });
+  const [toggled = false, setToggled] = useControlledState({
+    prop: toggledProp,
+    onChange: onToggledChange,
+    defaultProp: defaultToggled,
+  });
 
-    return (
-      <Comp
-        {...getPartDataAttrObj(NAME)}
-        type="button"
-        aria-pressed={toggled}
-        data-state={toggled ? 'on' : 'off'}
-        data-disabled={props.disabled ? '' : undefined}
-        ref={forwardedRef}
-        onClick={composeEventHandlers(onClick, () => {
-          if (!props.disabled) {
-            setToggled(!toggled);
-          }
-        })}
-        {...buttonProps}
-      >
-        {children}
-      </Comp>
-    );
-  }
-);
+  return (
+    <Primitive
+      as={DEFAULT_TAG}
+      selector={getSelector(NAME)}
+      type="button"
+      aria-pressed={toggled}
+      data-state={toggled ? 'on' : 'off'}
+      data-disabled={props.disabled ? '' : undefined}
+      {...buttonProps}
+      ref={forwardedRef}
+      onClick={composeEventHandlers(onClick, () => {
+        if (!props.disabled) {
+          setToggled(!toggled);
+        }
+      })}
+    >
+      {children}
+    </Primitive>
+  );
+});
 
 ToggleButton.displayName = NAME;
 

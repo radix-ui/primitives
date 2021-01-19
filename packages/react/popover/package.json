@@ -25,6 +25,7 @@
     "@radix-ui/react-popper": "workspace:*",
     "@radix-ui/react-portal": "workspace:*",
     "@radix-ui/react-presence": "workspace:*",
+    "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-utils": "workspace:*",
     "@radix-ui/utils": "workspace:*",
     "aria-hidden": "^1.1.1",

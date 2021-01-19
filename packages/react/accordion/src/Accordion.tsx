@@ -1,5 +1,5 @@
 import React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -8,7 +8,10 @@ import {
   useId,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from '@radix-ui/react-collapsible';
+
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -43,7 +46,6 @@ type AccordionItemOwnProps = {
    * A string value for the accordion item. All items within an accordion should use a unique value.
    */
   value: string;
-
   open: never;
   defaultOpen: never;
   onOpenChange: never;
@@ -74,8 +76,8 @@ const AccordionItem = forwardRefWithAs<typeof Collapsible, AccordionItemOwnProps
 
     return (
       <Collapsible
+        selector={getSelector(ITEM_NAME)}
         {...accordionItemProps}
-        {...getPartDataAttrObj(ITEM_NAME)}
         ref={forwardedRef}
         data-state={open ? 'open' : 'closed'}
         data-disabled={disabled || undefined}
@@ -104,10 +106,16 @@ const HEADER_DEFAULT_TAG = 'h3';
  * `AccordionHeader` contains the content for the parts of an `AccordionItem` that will be visible
  * whether or not its content is collapsed.
  */
-const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = HEADER_DEFAULT_TAG, ...headerProps } = props;
-  return <Comp ref={forwardedRef} {...headerProps} {...getPartDataAttrObj(HEADER_NAME)} />;
-});
+const AccordionHeader = forwardRefWithAs<typeof HEADER_DEFAULT_TAG, OwnProps<typeof Primitive>>(
+  (props, forwardedRef) => (
+    <Primitive
+      as={HEADER_DEFAULT_TAG}
+      selector={getSelector(HEADER_NAME)}
+      {...props}
+      ref={forwardedRef}
+    />
+  )
+);
 
 AccordionHeader.displayName = HEADER_NAME;
 
@@ -122,7 +130,6 @@ const BUTTON_NAME = 'AccordionButton';
  * should always be nested inside of an `AccordionHeader`.
  */
 const AccordionButton = forwardRefWithAs<typeof CollapsibleButton>((props, forwardedRef) => {
-  const { ...buttonProps } = props;
   const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
   const itemContext = useAccordionItemContext(BUTTON_NAME);
 
@@ -144,8 +151,8 @@ const AccordionButton = forwardRefWithAs<typeof CollapsibleButton>((props, forwa
 
   return (
     <CollapsibleButton
-      {...buttonProps}
-      {...getPartDataAttrObj(BUTTON_NAME)}
+      selector={getSelector(BUTTON_NAME)}
+      {...props}
       ref={composedRefs}
       aria-disabled={itemContext.open || undefined}
       id={itemContext.buttonId}
@@ -168,8 +175,8 @@ const AccordionPanel = forwardRefWithAs<typeof CollapsibleContent>((props, forwa
   const itemContext = useAccordionItemContext(PANEL_NAME);
   return (
     <CollapsibleContent
+      selector={getSelector(PANEL_NAME)}
       {...props}
-      {...getPartDataAttrObj(PANEL_NAME)}
       ref={forwardedRef}
       role="region"
       aria-labelledby={itemContext.buttonId}
@@ -184,7 +191,6 @@ AccordionPanel.displayName = PANEL_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const ACCORDION_NAME = 'Accordion';
-const ACCORDION_DEFAULT_TAG = 'div';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
 
 type AccordionOwnProps = {
@@ -212,90 +218,87 @@ type AccordionOwnProps = {
 /**
  * `Accordion` is the root component.
  */
-const Accordion = forwardRefWithAs<typeof ACCORDION_DEFAULT_TAG, AccordionOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = ACCORDION_DEFAULT_TAG,
-      value: valueProp,
-      defaultValue,
-      children,
-      disabled,
-      onValueChange = () => {},
-      ...accordionProps
-    } = props;
+const Accordion = forwardRefWithAs<typeof Primitive, AccordionOwnProps>((props, forwardedRef) => {
+  const {
+    value: valueProp,
+    defaultValue,
+    children,
+    disabled,
+    onValueChange = () => {},
+    ...accordionProps
+  } = props;
 
-    const buttonNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionButton>>>(new Set());
-    const accordionRef = React.useRef<React.ElementRef<typeof Accordion>>(null);
-    const composedRefs = useComposedRefs(accordionRef, forwardedRef);
+  const buttonNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionButton>>>(new Set());
+  const accordionRef = React.useRef<React.ElementRef<typeof Accordion>>(null);
+  const composedRefs = useComposedRefs(accordionRef, forwardedRef);
 
-    const [value, setValue] = useControlledState({
-      prop: valueProp,
-      defaultProp: defaultValue,
-      onChange: (value) => value && onValueChange(value),
-    });
+  const [value, setValue] = useControlledState({
+    prop: valueProp,
+    defaultProp: defaultValue,
+    onChange: (value) => value && onValueChange(value),
+  });
 
-    const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
-      const target = event.target as HTMLElement;
-      const isAccordionKey = ACCORDION_KEYS.includes(event.key);
+  const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
+    const target = event.target as HTMLElement;
+    const isAccordionKey = ACCORDION_KEYS.includes(event.key);
 
-      if (!isAccordionKey || !isButton(target)) {
-        return;
-      }
+    if (!isAccordionKey || !isButton(target)) {
+      return;
+    }
 
-      const buttonNodes = [...buttonNodesRef.current].filter((node) => !(node && node.disabled));
-      const buttonCount = buttonNodes.length;
-      const buttonIndex = buttonNodes.indexOf(target);
+    const buttonNodes = [...buttonNodesRef.current].filter((node) => !(node && node.disabled));
+    const buttonCount = buttonNodes.length;
+    const buttonIndex = buttonNodes.indexOf(target);
 
-      if (buttonIndex === -1) return;
+    if (buttonIndex === -1) return;
 
-      // Prevents page scroll while user is navigating
-      event.preventDefault();
+    // Prevents page scroll while user is navigating
+    event.preventDefault();
 
-      let nextIndex = buttonIndex;
-      switch (event.key) {
-        case 'Home':
-          nextIndex = 0;
-          break;
-        case 'End':
+    let nextIndex = buttonIndex;
+    switch (event.key) {
+      case 'Home':
+        nextIndex = 0;
+        break;
+      case 'End':
+        nextIndex = buttonCount - 1;
+        break;
+      case 'ArrowDown':
+        nextIndex = buttonIndex + 1;
+        break;
+      case 'ArrowUp':
+        nextIndex = buttonIndex - 1;
+        if (nextIndex < 0) {
           nextIndex = buttonCount - 1;
-          break;
-        case 'ArrowDown':
-          nextIndex = buttonIndex + 1;
-          break;
-        case 'ArrowUp':
-          nextIndex = buttonIndex - 1;
-          if (nextIndex < 0) {
-            nextIndex = buttonCount - 1;
-          }
-          break;
-      }
+        }
+        break;
+    }
 
-      const clampedIndex = nextIndex % buttonCount;
-      buttonNodes[clampedIndex]?.focus();
-    });
+    const clampedIndex = nextIndex % buttonCount;
+    buttonNodes[clampedIndex]?.focus();
+  });
 
-    const context: AccordionContextValue = React.useMemo(
-      () => ({
-        disabled,
-        buttonNodesRef,
-        value,
-        setValue,
-      }),
-      [disabled, value, setValue]
-    );
+  const context: AccordionContextValue = React.useMemo(
+    () => ({
+      disabled,
+      buttonNodesRef,
+      value,
+      setValue,
+    }),
+    [disabled, value, setValue]
+  );
 
-    return (
-      <Comp
-        {...accordionProps}
-        {...getPartDataAttrObj(ACCORDION_NAME)}
-        ref={composedRefs}
-        onKeyDown={disabled ? undefined : handleKeyDown}
-      >
-        <AccordionContext.Provider value={context}>{children}</AccordionContext.Provider>
-      </Comp>
-    );
-  }
-);
+  return (
+    <Primitive
+      selector={getSelector(ACCORDION_NAME)}
+      {...accordionProps}
+      ref={composedRefs}
+      onKeyDown={disabled ? undefined : handleKeyDown}
+    >
+      <AccordionContext.Provider value={context}>{children}</AccordionContext.Provider>
+    </Primitive>
+  );
+});
 
 Accordion.displayName = ACCORDION_NAME;
 

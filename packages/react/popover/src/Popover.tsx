@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -16,8 +16,11 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
+
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
@@ -73,24 +76,27 @@ Popover.displayName = POPOVER_NAME;
 const TRIGGER_NAME = 'PopoverTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-const PopoverTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
-  const context = usePopoverContext(TRIGGER_NAME);
-  const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
-
-  return (
-    <Comp
-      {...getPartDataAttrObj(TRIGGER_NAME)}
-      ref={composedTriggerRef}
-      type="button"
-      aria-haspopup="dialog"
-      aria-expanded={context.open}
-      aria-controls={context.id}
-      onClick={composeEventHandlers(onClick, () => context.setOpen((prevOpen) => !prevOpen))}
-      {...triggerProps}
-    />
-  );
-});
+const PopoverTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, OwnProps<typeof Primitive>>(
+  (props, forwardedRef) => {
+    const context = usePopoverContext(TRIGGER_NAME);
+    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
+    return (
+      <Primitive
+        as={TRIGGER_DEFAULT_TAG}
+        selector={getSelector(TRIGGER_NAME)}
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={context.open}
+        aria-controls={context.id}
+        {...props}
+        ref={composedTriggerRef}
+        onClick={composeEventHandlers(props.onClick, () =>
+          context.setOpen((prevOpen) => !prevOpen)
+        )}
+      />
+    );
+  }
+);
 
 PopoverTrigger.displayName = TRIGGER_NAME;
 
@@ -283,8 +289,8 @@ const PopoverContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Popover
               >
                 {(dismissableLayerProps) => (
                   <PopperPrimitive.Root
-                    {...getPartDataAttrObj(CONTENT_NAME)}
                     role="dialog"
+                    selector={getSelector(CONTENT_NAME)}
                     aria-modal
                     {...contentProps}
                     ref={composeRefs(
@@ -343,24 +349,25 @@ PopoverContent.displayName = CONTENT_NAME;
 const CLOSE_NAME = 'PopoverClose';
 const CLOSE_DEFAULT_TAG = 'button';
 
-const PopoverClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = CLOSE_DEFAULT_TAG, onClick, ...closeProps } = props;
-  const context = usePopoverContext(CLOSE_NAME);
-
-  return (
-    <Comp
-      {...getPartDataAttrObj(CLOSE_NAME)}
-      ref={forwardedRef}
-      type="button"
-      {...closeProps}
-      onClick={composeEventHandlers(onClick, () => context.setOpen(false))}
-    />
-  );
-});
+const PopoverClose = forwardRefWithAs<typeof CLOSE_DEFAULT_TAG, OwnProps<typeof Primitive>>(
+  (props, forwardedRef) => {
+    const context = usePopoverContext(CLOSE_NAME);
+    return (
+      <Primitive
+        as={CLOSE_DEFAULT_TAG}
+        selector={getSelector(CLOSE_NAME)}
+        type="button"
+        {...props}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(props.onClick, () => context.setOpen(false))}
+      />
+    );
+  }
+);
 
 PopoverClose.displayName = CLOSE_NAME;
 
-/* -----------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
 const PopoverArrow = extendComponent(PopperPrimitive.Arrow, 'PopoverArrow');
 

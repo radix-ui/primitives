@@ -271,7 +271,7 @@ const Menu = forwardRefWithAs<typeof MenuPrimitive, MenuOwnProps>((props, forwar
         open={open}
         onOpenChange={() => {}}
         anchorRef={ref}
-        portalled={true}
+        portalled
         trapFocus={false}
         onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}

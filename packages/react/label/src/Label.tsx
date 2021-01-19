@@ -1,7 +1,10 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { useId, useComposedRefs } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
+
+import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
@@ -10,68 +13,79 @@ import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 const NAME = 'Label';
 const DEFAULT_TAG = 'span';
 
-type LabelOwnProps = { htmlFor?: string };
+type LabelOwnProps = {
+  htmlFor?: string;
+};
 
 type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
-const Label = forwardRefWithAs<typeof DEFAULT_TAG, LabelOwnProps>((props, forwardedRef) => {
-  const { htmlFor, as: Comp = DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
-  const labelRef = React.useRef<HTMLSpanElement>(null);
-  const ref = useComposedRefs(forwardedRef, labelRef);
-  const generatedId = `label-${useId()}`;
-  const id = idProp || generatedId;
+const Label = forwardRefWithAs<typeof DEFAULT_TAG, MergeOwnProps<typeof Primitive, LabelOwnProps>>(
+  (props, forwardedRef) => {
+    const { htmlFor, id: idProp, children, ...labelProps } = props;
+    const labelRef = React.useRef<HTMLSpanElement>(null);
+    const ref = useComposedRefs(forwardedRef, labelRef);
+    const generatedId = `label-${useId()}`;
+    const id = idProp || generatedId;
 
-  React.useEffect(() => {
-    const label = labelRef.current;
-
-    if (label) {
-      const handleMouseDown = (event: MouseEvent) => {
-        if (event.detail > 1) event.preventDefault();
-      };
-
-      // prevent text selection when double clicking label
-      label.addEventListener('mousedown', handleMouseDown);
-      return () => label.removeEventListener('mousedown', handleMouseDown);
-    }
-  }, [labelRef]);
-
-  React.useEffect(() => {
-    if (htmlFor) {
-      const element = document.getElementById(htmlFor);
+    React.useEffect(() => {
       const label = labelRef.current;
 
-      if (label && element) {
-        const removeLabelClickEventListener = addLabelClickEventListener(label, element);
-        const getAriaLabel = () => element.getAttribute('aria-labelledby');
-        const ariaLabelledBy = [getAriaLabel(), id].filter(Boolean).join(' ');
-        element.setAttribute('aria-labelledby', ariaLabelledBy);
-
-        return () => {
-          removeLabelClickEventListener();
-          /**
-           * We get the latest attribute value because at the time that this cleanup fires,
-           * the values from the closure may have changed.
-           */
-          const ariaLabelledBy = getAriaLabel()?.replace(id, '');
-          if (ariaLabelledBy === '') {
-            element.removeAttribute('aria-labelledby');
-          } else if (ariaLabelledBy) {
-            element.setAttribute('aria-labelledby', ariaLabelledBy);
-          }
+      if (label) {
+        const handleMouseDown = (event: MouseEvent) => {
+          if (event.detail > 1) event.preventDefault();
         };
-      }
-    }
-  }, [id, htmlFor]);
 
-  return (
-    <Comp {...labelProps} {...getPartDataAttrObj(NAME)} id={id} ref={ref} role="label">
-      <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
-        {children}
-      </LabelContext.Provider>
-    </Comp>
-  );
-});
+        // prevent text selection when double clicking label
+        label.addEventListener('mousedown', handleMouseDown);
+        return () => label.removeEventListener('mousedown', handleMouseDown);
+      }
+    }, [labelRef]);
+
+    React.useEffect(() => {
+      if (htmlFor) {
+        const element = document.getElementById(htmlFor);
+        const label = labelRef.current;
+
+        if (label && element) {
+          const removeLabelClickEventListener = addLabelClickEventListener(label, element);
+          const getAriaLabel = () => element.getAttribute('aria-labelledby');
+          const ariaLabelledBy = [getAriaLabel(), id].filter(Boolean).join(' ');
+          element.setAttribute('aria-labelledby', ariaLabelledBy);
+
+          return () => {
+            removeLabelClickEventListener();
+            /**
+             * We get the latest attribute value because at the time that this cleanup fires,
+             * the values from the closure may have changed.
+             */
+            const ariaLabelledBy = getAriaLabel()?.replace(id, '');
+            if (ariaLabelledBy === '') {
+              element.removeAttribute('aria-labelledby');
+            } else if (ariaLabelledBy) {
+              element.setAttribute('aria-labelledby', ariaLabelledBy);
+            }
+          };
+        }
+      }
+    }, [id, htmlFor]);
+
+    return (
+      <Primitive
+        as={DEFAULT_TAG}
+        selector={getSelector(NAME)}
+        {...labelProps}
+        ref={ref}
+        id={id}
+        role="label"
+      >
+        <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
+          {children}
+        </LabelContext.Provider>
+      </Primitive>
+    );
+  }
+);
 
 Label.displayName = 'Label';
 

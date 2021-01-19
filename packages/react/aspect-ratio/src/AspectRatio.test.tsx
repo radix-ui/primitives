@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { getPartDataAttr } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { AspectRatio } from './AspectRatio';
 
 const RATIO = 1 / 2;
@@ -27,7 +27,7 @@ describe('given a default Arrow', () => {
   });
 
   it('should have a radix attribute', () => {
-    const partDataAttr = getPartDataAttr('AspectRatio');
+    const partDataAttr = `data-${getSelector('AspectRatio')}`;
     expect(container).toHaveAttribute(partDataAttr);
   });
 });

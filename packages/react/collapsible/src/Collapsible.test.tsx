@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
-import { getPartDataAttr } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
 
 const BUTTON_TEXT = 'Button';
@@ -33,7 +33,7 @@ describe('given a default Collapsible', () => {
   });
 
   it('should have a radix attribute on the container', () => {
-    const partDataAttr = getPartDataAttr('Collapsible');
+    const partDataAttr = `data-${getSelector('Collapsible')}`;
     expect(collapsible).toHaveAttribute(partDataAttr);
   });
 
@@ -50,7 +50,7 @@ describe('given a default Collapsible', () => {
   });
 
   it('should have a radix attribute on the button', () => {
-    const partDataAttr = getPartDataAttr('CollapsibleButton');
+    const partDataAttr = `data-${getSelector('CollapsibleButton')}`;
     expect(button).toHaveAttribute(partDataAttr);
   });
 
@@ -68,7 +68,7 @@ describe('given a default Collapsible', () => {
     });
 
     it('should have a radix attribute on the content', () => {
-      const partDataAttr = getPartDataAttr('CollapsibleContent');
+      const partDataAttr = `data-${getSelector('CollapsibleContent')}`;
       expect(content).toHaveAttribute(partDataAttr);
     });
 
@@ -116,7 +116,7 @@ describe('given an open uncontrolled Collapsible', () => {
   const onOpenChange = jest.fn();
 
   beforeEach(() => {
-    rendered = render(<CollapsibleTest defaultOpen={true} onOpenChange={onOpenChange} />);
+    rendered = render(<CollapsibleTest defaultOpen onOpenChange={onOpenChange} />);
     content = rendered.getByText(CONTENT_TEXT);
   });
 
@@ -143,7 +143,7 @@ describe('given an open controlled Collapsible', () => {
   const onOpenChange = jest.fn();
 
   beforeEach(() => {
-    rendered = render(<CollapsibleTest open={true} onOpenChange={onOpenChange} />);
+    rendered = render(<CollapsibleTest open onOpenChange={onOpenChange} />);
     content = rendered.getByText(CONTENT_TEXT);
   });
 
@@ -172,7 +172,7 @@ describe('given styled parts', () => {
 
   beforeEach(() => {
     rendered = render(
-      <Collapsible className="container-class" open={true}>
+      <Collapsible className="container-class" open>
         <CollapsibleButton className="button-class">{BUTTON_TEXT}</CollapsibleButton>
         <CollapsibleContent className="content-class">{CONTENT_TEXT}</CollapsibleContent>
       </Collapsible>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttr, wrap, clamp } from '@radix-ui/utils';
+import { getSelector, wrap, clamp } from '@radix-ui/utils';
 import { createContext, useControlledState, useId } from '@radix-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 
-const getItemDataAttr = (groupId: string) => `${getPartDataAttr(GROUP_NAME)}-${groupId}-item`;
+const getItemDataAttr = (groupId: string) => `data-${getSelector(GROUP_NAME)}-${groupId}-item`;
 
 function getRovingFocusItems(groupId: string): HTMLElement[] {
   return Array.from(document.querySelectorAll(`[${getItemDataAttr(groupId)}]`));

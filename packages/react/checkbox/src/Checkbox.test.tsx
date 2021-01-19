@@ -2,7 +2,7 @@ import * as React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
-import { getPartDataAttr } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { Checkbox, CheckboxIndicator } from './Checkbox';
 
 const CHECKBOX_ROLE = 'checkbox';
@@ -24,7 +24,7 @@ describe('given a default Checkbox', () => {
   });
 
   it('should have a radix attribute', () => {
-    const partDataAttr = getPartDataAttr('Checkbox');
+    const partDataAttr = `data-${getSelector('Checkbox')}`;
     expect(checkbox).toHaveAttribute(partDataAttr);
   });
 
@@ -49,7 +49,7 @@ describe('given a default Checkbox', () => {
     });
 
     it('should have a radix attribute on the indicator', () => {
-      const partDataAttr = getPartDataAttr('CheckboxIndicator');
+      const partDataAttr = `data-${getSelector('CheckboxIndicator')}`;
       expect(indicator).toHaveAttribute(partDataAttr);
     });
 

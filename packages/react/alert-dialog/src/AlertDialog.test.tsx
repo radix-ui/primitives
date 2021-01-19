@@ -3,7 +3,7 @@ import { axe } from 'jest-axe';
 import { RenderResult } from '@testing-library/react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import * as AlertDialog from './AlertDialog';
-import { getPartDataAttr } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 
 const OPEN_TEXT = 'Open';
 const CANCEL_TEXT = 'Cancel';
@@ -45,7 +45,7 @@ describe('given a default Dialog', () => {
   });
 
   it('should have a radix attribute on the trigger', () => {
-    const partDataAttr = getPartDataAttr('AlertDialogTrigger');
+    const partDataAttr = `data-${getSelector('AlertDialogTrigger')}`;
     expect(trigger).toHaveAttribute(partDataAttr);
   });
 
@@ -72,32 +72,32 @@ describe('given a default Dialog', () => {
     });
 
     it('should have a radix attribute on the overlay', () => {
-      const partDataAttr = getPartDataAttr('AlertDialogOverlay');
+      const partDataAttr = `data-${getSelector('AlertDialogOverlay')}`;
       expect(overlay).toHaveAttribute(partDataAttr);
     });
 
     it('should have a radix attribute on the content', () => {
-      const partDataAttr = getPartDataAttr('AlertDialogContent');
+      const partDataAttr = `data-${getSelector('AlertDialogContent')}`;
       expect(content).toHaveAttribute(partDataAttr);
     });
 
     it('should have a radix attribute on the title', () => {
-      const partDataAttr = getPartDataAttr('AlertDialogTitle');
+      const partDataAttr = `data-${getSelector('AlertDialogTitle')}`;
       expect(title).toHaveAttribute(partDataAttr);
     });
 
     it('should have a radix attribute on the description', () => {
-      const partDataAttr = getPartDataAttr('AlertDialogDescription');
+      const partDataAttr = `data-${getSelector('AlertDialogDescription')}`;
       expect(description).toHaveAttribute(partDataAttr);
     });
 
     it('should have a radix attribute on the cancel button', () => {
-      const partDataAttr = getPartDataAttr('AlertDialogCancel');
+      const partDataAttr = `data-${getSelector('AlertDialogCancel')}`;
       expect(cancelButton).toHaveAttribute(partDataAttr);
     });
 
     it('should have a radix attribute on the action button', () => {
-      const partDataAttr = getPartDataAttr('AlertDialogAction');
+      const partDataAttr = `data-${getSelector('AlertDialogAction')}`;
       expect(actionButton).toHaveAttribute(partDataAttr);
     });
   });

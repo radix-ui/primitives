@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import {
   createContext,
   composeEventHandlers,
@@ -9,6 +9,9 @@ import {
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { useLabelContext } from '@radix-ui/react-label';
 import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
+
+import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
@@ -33,85 +36,86 @@ const [CheckboxContext, useCheckboxContext] = createContext<CheckedState>(
   CHECKBOX_NAME
 );
 
-const Checkbox = forwardRefWithAs<typeof CHECKBOX_DEFAULT_TAG, CheckboxOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = CHECKBOX_DEFAULT_TAG,
-      'aria-labelledby': ariaLabelledby,
-      children,
-      name,
-      checked: checkedProp,
-      defaultChecked,
-      required,
-      disabled,
-      readOnly,
-      value = 'on',
-      onCheckedChange,
-      ...checkboxProps
-    } = props;
-    const inputRef = React.useRef<HTMLInputElement>(null);
-    const buttonRef = React.useRef<HTMLButtonElement>(null);
-    const ref = useComposedRefs(forwardedRef, buttonRef);
-    const labelId = useLabelContext(buttonRef);
-    const labelledBy = ariaLabelledby || labelId;
-    const [checked = false, setChecked] = useControlledState({
-      prop: checkedProp,
-      defaultProp: defaultChecked,
-    });
+const Checkbox = forwardRefWithAs<
+  typeof CHECKBOX_DEFAULT_TAG,
+  MergeOwnProps<typeof Primitive, CheckboxOwnProps>
+>((props, forwardedRef) => {
+  const {
+    'aria-labelledby': ariaLabelledby,
+    children,
+    name,
+    checked: checkedProp,
+    defaultChecked,
+    required,
+    disabled,
+    readOnly,
+    value = 'on',
+    onCheckedChange,
+    ...checkboxProps
+  } = props;
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const ref = useComposedRefs(forwardedRef, buttonRef);
+  const labelId = useLabelContext(buttonRef);
+  const labelledBy = ariaLabelledby || labelId;
+  const [checked = false, setChecked] = useControlledState({
+    prop: checkedProp,
+    defaultProp: defaultChecked,
+  });
 
-    React.useEffect(() => {
-      const isIndeterminate = checked === 'indeterminate';
-      inputRef.current && (inputRef.current.indeterminate = isIndeterminate);
-    });
+  React.useEffect(() => {
+    const isIndeterminate = checked === 'indeterminate';
+    inputRef.current && (inputRef.current.indeterminate = isIndeterminate);
+  });
 
-    return (
-      /**
-       * The `input` is hidden from non-SR and SR users as it only exists to
-       * ensure form events fire when the value changes and that the value
-       * updates when clicking an associated label.
-       */
-      <>
-        <input
-          ref={inputRef}
-          type="checkbox"
-          name={name}
-          checked={checked === 'indeterminate' ? false : checked}
-          required={required}
-          disabled={disabled}
-          readOnly={readOnly}
-          value={value}
-          hidden
-          onChange={composeEventHandlers(onCheckedChange, (event) => {
-            setChecked(event.target.checked);
-          })}
-        />
-        <Comp
-          type="button"
-          {...checkboxProps}
-          {...getPartDataAttrObj(CHECKBOX_NAME)}
-          ref={ref}
-          role="checkbox"
-          aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
-          aria-labelledby={labelledBy}
-          aria-required={required}
-          data-state={getState(checked)}
-          data-readonly={readOnly}
-          disabled={disabled}
-          value={value}
-          /**
-           * The `input` is hidden, so when the button is clicked we trigger
-           * the input manually
-           */
-          onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
-            checkForDefaultPrevented: false,
-          })}
-        >
-          <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
-        </Comp>
-      </>
-    );
-  }
-);
+  return (
+    /**
+     * The `input` is hidden from non-SR and SR users as it only exists to
+     * ensure form events fire when the value changes and that the value
+     * updates when clicking an associated label.
+     */
+    <>
+      <input
+        ref={inputRef}
+        type="checkbox"
+        name={name}
+        checked={checked === 'indeterminate' ? false : checked}
+        required={required}
+        disabled={disabled}
+        readOnly={readOnly}
+        value={value}
+        hidden
+        onChange={composeEventHandlers(onCheckedChange, (event) => {
+          setChecked(event.target.checked);
+        })}
+      />
+      <Primitive
+        as={CHECKBOX_DEFAULT_TAG}
+        selector={getSelector(CHECKBOX_NAME)}
+        type="button"
+        {...checkboxProps}
+        ref={ref}
+        role="checkbox"
+        aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
+        aria-labelledby={labelledBy}
+        aria-required={required}
+        data-state={getState(checked)}
+        data-readonly={readOnly}
+        disabled={disabled}
+        value={value}
+        /**
+         * The `input` is hidden, so when the button is clicked we trigger
+         * the input manually
+         */
+        onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
+          checkForDefaultPrevented: false,
+        })}
+      >
+        <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
+      </Primitive>
+    </>
+  );
+});
 
 Checkbox.displayName = CHECKBOX_NAME;
 
@@ -130,28 +134,24 @@ type CheckboxIndicatorOwnProps = {
   forceMount?: true;
 };
 
-const CheckboxIndicator = forwardRefWithAs<typeof CheckboxIndicatorImpl, CheckboxIndicatorOwnProps>(
-  (props, forwardedRef) => {
-    const { forceMount, ...indicatorProps } = props;
-    const checked = useCheckboxContext(INDICATOR_NAME);
-    return (
-      <Presence present={forceMount || checked === 'indeterminate' || checked === true}>
-        <CheckboxIndicatorImpl
-          {...indicatorProps}
-          data-state={getState(checked)}
-          ref={forwardedRef}
-        />
-      </Presence>
-    );
-  }
-);
-
-const CheckboxIndicatorImpl = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
-  function CheckboxIndicatorImpl(props, forwardedRef) {
-    const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-    return <Comp {...indicatorProps} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
-  }
-);
+const CheckboxIndicator = forwardRefWithAs<
+  typeof INDICATOR_DEFAULT_TAG,
+  MergeOwnProps<typeof Primitive, CheckboxIndicatorOwnProps>
+>((props, forwardedRef) => {
+  const { forceMount, ...indicatorProps } = props;
+  const checked = useCheckboxContext(INDICATOR_NAME);
+  return (
+    <Presence present={forceMount || checked === 'indeterminate' || checked === true}>
+      <Primitive
+        as={INDICATOR_DEFAULT_TAG}
+        selector={getSelector(INDICATOR_NAME)}
+        {...indicatorProps}
+        data-state={getState(checked)}
+        ref={forwardedRef}
+      />
+    </Presence>
+  );
+});
 
 CheckboxIndicator.displayName = INDICATOR_NAME;
 

@@ -1,18 +1,22 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
+
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 const NAME = 'VisuallyHidden';
 const DEFAULT_TAG = 'span';
 
-const VisuallyHidden = forwardRefWithAs<typeof DEFAULT_TAG>(
-  ({ as: Comp = DEFAULT_TAG, style, ...visuallyHiddenProps }, forwardedRef) => (
-    <Comp
-      {...visuallyHiddenProps}
-      {...getPartDataAttrObj(NAME)}
+const VisuallyHidden = forwardRefWithAs<typeof DEFAULT_TAG, OwnProps<typeof Primitive>>(
+  (props, forwardedRef) => (
+    <Primitive
+      as={DEFAULT_TAG}
+      selector={getSelector(NAME)}
+      {...props}
       ref={forwardedRef}
       style={{
-        ...style,
+        ...props.style,
         // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
         position: 'absolute',
         border: 0,

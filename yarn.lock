@@ -3051,6 +3051,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-collapsible": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3064,6 +3065,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-dialog": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3076,6 +3078,7 @@ __metadata:
   resolution: "@radix-ui/react-announce@workspace:packages/react/announce"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3089,6 +3092,7 @@ __metadata:
   resolution: "@radix-ui/react-arrow@workspace:packages/react/arrow"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3100,6 +3104,7 @@ __metadata:
   resolution: "@radix-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3111,6 +3116,7 @@ __metadata:
   resolution: "@radix-ui/react-avatar@workspace:packages/react/avatar"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3125,6 +3131,7 @@ __metadata:
     "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3138,6 +3145,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3161,6 +3169,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-menu": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3178,6 +3187,7 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
     aria-hidden: ^1.1.1
@@ -3204,6 +3214,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-menu": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3235,6 +3246,7 @@ __metadata:
   resolution: "@radix-ui/react-label@workspace:packages/react/label"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3253,6 +3265,7 @@ __metadata:
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
@@ -3284,6 +3297,7 @@ __metadata:
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
     aria-hidden: ^1.1.1
@@ -3300,6 +3314,7 @@ __metadata:
     "@radix-ui/popper": "workspace:*"
     "@radix-ui/react-arrow": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3329,11 +3344,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@radix-ui/react-primitive@workspace:*, @radix-ui/react-primitive@workspace:packages/react/primitive":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-primitive@workspace:packages/react/primitive"
+  dependencies:
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/utils": "workspace:*"
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@radix-ui/react-progress@workspace:packages/react/progress":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-progress@workspace:packages/react/progress"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3348,6 +3375,7 @@ __metadata:
     "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
@@ -3372,6 +3400,7 @@ __metadata:
   resolution: "@radix-ui/react-scroll-area@workspace:packages/react/scroll-area"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
     "@stitches/react": canary
@@ -3385,6 +3414,7 @@ __metadata:
   resolution: "@radix-ui/react-separator@workspace:packages/react/separator"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3397,6 +3427,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3410,6 +3441,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3422,6 +3454,7 @@ __metadata:
   resolution: "@radix-ui/react-tabs@workspace:packages/react/tabs"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
@@ -3435,6 +3468,7 @@ __metadata:
   resolution: "@radix-ui/react-toggle-button@workspace:packages/react/toggle-button"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
@@ -3449,6 +3483,7 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@radix-ui/utils": "workspace:*"
@@ -3475,6 +3510,7 @@ __metadata:
   resolution: "@radix-ui/react-visually-hidden@workspace:packages/react/visually-hidden"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0

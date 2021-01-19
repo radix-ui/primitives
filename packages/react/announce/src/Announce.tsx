@@ -1,8 +1,9 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { getPartDataAttr, getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { useComposedRefs, useLayoutEffect } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';
@@ -21,7 +22,6 @@ const listenerMap = new Map<Element, number>();
  * -----------------------------------------------------------------------------------------------*/
 
 const NAME = 'Announce';
-const DEFAULT_TAG = 'div';
 
 type AnnounceOwnProps = {
   /**
@@ -82,11 +82,8 @@ type AnnounceOwnProps = {
   type?: RegionType;
 };
 
-type AnnounceDOMElement = HTMLElementTagNameMap[typeof DEFAULT_TAG];
-
-const Announce = forwardRefWithAs<typeof DEFAULT_TAG, AnnounceOwnProps>((props, forwardedRef) => {
+const Announce = forwardRefWithAs<typeof Primitive, AnnounceOwnProps>((props, forwardedRef) => {
   const {
-    as: Comp = DEFAULT_TAG,
     'aria-relevant': ariaRelevant,
     children,
     type = 'polite',
@@ -101,12 +98,12 @@ const Announce = forwardRefWithAs<typeof DEFAULT_TAG, AnnounceOwnProps>((props, 
   // some contexts may be another node. After the Announce element ref is attached, we set the
   // ownerDocumentRef to make sure we have the right root node. We should only need to do this once.
   const ownerDocumentRef = React.useRef(document);
-  const setOwnerDocumentFromRef = React.useCallback((node: AnnounceDOMElement) => {
+  const setOwnerDocumentFromRef = React.useCallback((node: HTMLDivElement) => {
     if (node) {
       ownerDocumentRef.current = node.ownerDocument;
     }
   }, []);
-  const ownRef = React.useRef<AnnounceDOMElement | null>(null);
+  const ownRef = React.useRef<HTMLDivElement | null>(null);
   const ref = useComposedRefs(forwardedRef, ownRef, setOwnerDocumentFromRef);
 
   const [region, setRegion] = React.useState<HTMLElement>();
@@ -169,9 +166,9 @@ const Announce = forwardRefWithAs<typeof DEFAULT_TAG, AnnounceOwnProps>((props, 
 
   return (
     <React.Fragment>
-      <Comp {...regionProps} {...getPartDataAttrObj(NAME)} ref={ref}>
+      <Primitive selector={getSelector(NAME)} {...regionProps} ref={ref}>
         {children}
-      </Comp>
+      </Primitive>
 
       {/* portal into live region for screen reader announcements */}
       {region && ReactDOM.createPortal(<div>{children}</div>, region)}
@@ -224,7 +221,7 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
 }
 
 function getLiveRegionPartDataAttr(id?: string) {
-  return getPartDataAttr(NAME + 'Region') + (id ? `-${id}` : '');
+  return `data-` + getSelector(NAME + 'Region') + (id ? `-${id}` : '');
 }
 
 const Root = Announce;

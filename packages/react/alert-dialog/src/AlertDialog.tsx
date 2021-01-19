@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj, makeId, warning } from '@radix-ui/utils';
+import { getSelector, makeId, warning } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -9,6 +9,7 @@ import {
   extendComponent,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import {
   Dialog,
   DialogOverlay,
@@ -16,6 +17,8 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@radix-ui/react-dialog';
+
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -75,7 +78,7 @@ const CANCEL_NAME = 'AlertDialogCancel';
 const AlertDialogCancel = forwardRefWithAs<typeof DialogClose>((props, forwardedRef) => {
   const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
   const ref = useComposedRefs(forwardedRef, cancelRef);
-  return <DialogClose {...getPartDataAttrObj(CANCEL_NAME)} ref={ref} {...props} />;
+  return <DialogClose selector={getSelector(CANCEL_NAME)} {...props} ref={ref} />;
 });
 
 AlertDialogCancel.displayName = CANCEL_NAME;
@@ -108,8 +111,7 @@ const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogCon
 
     return (
       <DialogContent
-        {...getPartDataAttrObj(CONTENT_NAME)}
-        ref={ref}
+        selector={getSelector(CONTENT_NAME)}
         role="alertdialog"
         aria-describedby={ariaDescribedBy || descriptionId}
         // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
@@ -118,6 +120,7 @@ const AlertDialogContent = forwardRefWithAs<typeof DialogContent, AlertDialogCon
         aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
         aria-label={ariaLabel || undefined}
         {...dialogContentProps}
+        ref={ref}
         onOpenAutoFocus={composeEventHandlers(dialogContentProps.onOpenAutoFocus, (event) => {
           event.preventDefault();
           cancelRef.current?.focus({ preventScroll: true });
@@ -153,13 +156,20 @@ AlertDialogContent.displayName = CONTENT_NAME;
 const TITLE_NAME = 'AlertDialogTitle';
 const TITLE_DEFAULT_TAG = 'h2';
 
-const AlertDialogTitle = forwardRefWithAs<typeof TITLE_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = TITLE_DEFAULT_TAG, ...titleProps } = props;
-  const { titleId } = useAlertDialogContext(TITLE_NAME);
-  return (
-    <Comp {...getPartDataAttrObj(TITLE_NAME)} ref={forwardedRef} id={titleId} {...titleProps} />
-  );
-});
+const AlertDialogTitle = forwardRefWithAs<typeof TITLE_DEFAULT_TAG, OwnProps<typeof Primitive>>(
+  (props, forwardedRef) => {
+    const { titleId } = useAlertDialogContext(TITLE_NAME);
+    return (
+      <Primitive
+        as={TITLE_DEFAULT_TAG}
+        selector={getSelector(TITLE_NAME)}
+        id={titleId}
+        {...props}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
 
 AlertDialogTitle.displayName = TITLE_NAME;
 
@@ -170,20 +180,21 @@ AlertDialogTitle.displayName = TITLE_NAME;
 const DESCRIPTION_NAME = 'AlertDialogDescription';
 const DESCRIPTION_DEFAULT_TAG = 'p';
 
-const AlertDialogDescription = forwardRefWithAs<typeof DESCRIPTION_DEFAULT_TAG>(
-  (props, forwardedRef) => {
-    const { as: Comp = DESCRIPTION_DEFAULT_TAG, ...descriptionProps } = props;
-    const { descriptionId } = useAlertDialogContext(DESCRIPTION_NAME);
-    return (
-      <Comp
-        {...getPartDataAttrObj(DESCRIPTION_NAME)}
-        ref={forwardedRef}
-        id={descriptionId}
-        {...descriptionProps}
-      />
-    );
-  }
-);
+const AlertDialogDescription = forwardRefWithAs<
+  typeof DESCRIPTION_DEFAULT_TAG,
+  OwnProps<typeof Primitive>
+>((props, forwardedRef) => {
+  const { descriptionId } = useAlertDialogContext(DESCRIPTION_NAME);
+  return (
+    <Primitive
+      as={DESCRIPTION_DEFAULT_TAG}
+      selector={getSelector(DESCRIPTION_NAME)}
+      id={descriptionId}
+      {...props}
+      ref={forwardedRef}
+    />
+  );
+});
 
 AlertDialogDescription.displayName = DESCRIPTION_NAME;
 

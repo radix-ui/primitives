@@ -5,16 +5,18 @@ import {
   composeEventHandlers,
   useControlledState,
 } from '@radix-ui/react-utils';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
+
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Collapsible
  * -----------------------------------------------------------------------------------------------*/
 
 const COLLAPSIBLE_NAME = 'Collapsible';
-const COLLAPSIBLE_DEFAULT_TAG = 'div';
 
 type CollapsibleOwnProps = {
   defaultOpen?: boolean;
@@ -36,10 +38,9 @@ const [CollapsibleContext, useCollapsibleContext] = createContext<CollapsibleCon
   COLLAPSIBLE_NAME
 );
 
-const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, CollapsibleOwnProps>(
+const Collapsible = forwardRefWithAs<typeof Primitive, CollapsibleOwnProps>(
   (props, forwardedRef) => {
     const {
-      as: Comp = COLLAPSIBLE_DEFAULT_TAG,
       id: idProp,
       children,
       open: openProp,
@@ -67,14 +68,14 @@ const Collapsible = forwardRefWithAs<typeof COLLAPSIBLE_DEFAULT_TAG, Collapsible
     );
 
     return (
-      <Comp
-        {...getPartDataAttrObj(COLLAPSIBLE_NAME)}
+      <Primitive
+        selector={getSelector(COLLAPSIBLE_NAME)}
         {...collapsibleProps}
         data-state={getState(context.open)}
         ref={forwardedRef}
       >
         <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
-      </Comp>
+      </Primitive>
     );
   }
 );
@@ -88,23 +89,26 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 const BUTTON_NAME = 'CollapsibleButton';
 const BUTTON_DEFAULT_TAG = 'button';
 
-const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
-  const context = useCollapsibleContext(BUTTON_NAME);
+const CollapsibleButton = forwardRefWithAs<typeof BUTTON_DEFAULT_TAG, OwnProps<typeof Primitive>>(
+  (props, forwardedRef) => {
+    const { onClick, ...buttonProps } = props;
+    const context = useCollapsibleContext(BUTTON_NAME);
 
-  return (
-    <Comp
-      {...getPartDataAttrObj(BUTTON_NAME)}
-      ref={forwardedRef}
-      aria-controls={context.contentId}
-      aria-expanded={context.open || false}
-      data-state={getState(context.open)}
-      {...buttonProps}
-      onClick={composeEventHandlers(onClick, context.toggle)}
-      disabled={context.disabled}
-    />
-  );
-});
+    return (
+      <Primitive
+        as={BUTTON_DEFAULT_TAG}
+        selector={getSelector(BUTTON_NAME)}
+        aria-controls={context.contentId}
+        aria-expanded={context.open || false}
+        data-state={getState(context.open)}
+        {...buttonProps}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(onClick, context.toggle)}
+        disabled={context.disabled}
+      />
+    );
+  }
+);
 
 CollapsibleButton.displayName = BUTTON_NAME;
 
@@ -113,7 +117,6 @@ CollapsibleButton.displayName = BUTTON_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const CONTENT_NAME = 'CollapsibleContent';
-const CONTENT_DEFAULT_TAG = 'div';
 
 type CollapsibleContentOwnProps = {
   /**
@@ -123,15 +126,9 @@ type CollapsibleContentOwnProps = {
   forceMount?: true;
 };
 
-const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, CollapsibleContentOwnProps>(
+const CollapsibleContent = forwardRefWithAs<typeof Primitive, CollapsibleContentOwnProps>(
   (props, forwardedRef) => {
-    const {
-      as: Comp = CONTENT_DEFAULT_TAG,
-      id: idProp,
-      forceMount,
-      children,
-      ...contentProps
-    } = props;
+    const { id: idProp, forceMount, children, ...contentProps } = props;
     const { setContentId, open } = useCollapsibleContext(CONTENT_NAME);
     const generatedId = `collapsible-${useId()}`;
     const id = idProp || generatedId;
@@ -143,16 +140,16 @@ const CollapsibleContent = forwardRefWithAs<typeof CONTENT_DEFAULT_TAG, Collapsi
     return (
       <Presence present={forceMount || open}>
         {({ present }) => (
-          <Comp
+          <Primitive
+            selector={getSelector(CONTENT_NAME)}
             {...contentProps}
-            {...getPartDataAttrObj(CONTENT_NAME)}
             ref={forwardedRef}
             id={id}
             hidden={!present}
             data-state={getState(open)}
           >
             {present && children}
-          </Comp>
+          </Primitive>
         )}
       </Presence>
     );

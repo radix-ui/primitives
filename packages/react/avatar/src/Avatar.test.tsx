@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, waitFor } from '@testing-library/react';
-import { getPartDataAttr } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import * as Avatar from './Avatar';
 
 const ROOT_TEST_ID = 'avatar-root';
@@ -30,12 +30,12 @@ describe('given an Avatar with fallback and no image', () => {
   });
 
   it('should have a radix attribute on the root', () => {
-    const partDataAttr = getPartDataAttr('Avatar');
+    const partDataAttr = `data-${getSelector('Avatar')}`;
     expect(root).toHaveAttribute(partDataAttr);
   });
 
   it('should have a radix attribute on the fallback', () => {
-    const partDataAttr = getPartDataAttr('AvatarFallback');
+    const partDataAttr = `data-${getSelector('AvatarFallback')}`;
     expect(fallback).toHaveAttribute(partDataAttr);
   });
 });
@@ -92,7 +92,7 @@ describe('given an Avatar with fallback and a working image', () => {
   });
 
   it('should have a radix attribute on the image', async () => {
-    const partDataAttr = getPartDataAttr('AvatarImage');
+    const partDataAttr = `data-${getSelector('AvatarImage')}`;
     await waitFor(() => {
       jest.advanceTimersByTime(DELAY);
     });

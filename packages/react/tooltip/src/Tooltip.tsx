@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
@@ -12,10 +12,13 @@ import {
   extendComponent,
 } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
+
+import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Root level context
@@ -134,60 +137,52 @@ Tooltip.displayName = TOOLTIP_NAME;
 const TRIGGER_NAME = 'TooltipTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-const TooltipTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwardedRef) => {
-  const {
-    as: Comp = TRIGGER_DEFAULT_TAG,
-    onMouseEnter,
-    onMouseMove,
-    onMouseLeave,
-    onFocus,
-    onBlur,
-    onMouseDown,
-    onKeyDown,
-    ...triggerProps
-  } = props;
-  const context = useTooltipContext(TRIGGER_NAME);
-  const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
+const TooltipTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, OwnProps<typeof Primitive>>(
+  (props, forwardedRef) => {
+    const context = useTooltipContext(TRIGGER_NAME);
+    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
-  return (
-    <Comp
-      {...getPartDataAttrObj(TRIGGER_NAME)}
-      ref={composedTriggerRef}
-      type="button"
-      aria-describedby={context.open ? context.id : undefined}
-      onMouseEnter={composeEventHandlers(onMouseEnter, () =>
-        stateMachine.transition('mouseEntered', { id: context.id })
-      )}
-      onMouseMove={composeEventHandlers(onMouseMove, () =>
-        stateMachine.transition('mouseMoved', { id: context.id })
-      )}
-      onMouseLeave={composeEventHandlers(onMouseLeave, () => {
-        const stateMachineContext = stateMachine.getContext();
-        if (stateMachineContext.id === context.id) {
-          stateMachine.transition('mouseLeft', { id: context.id });
-        }
-      })}
-      onFocus={composeEventHandlers(onFocus, () =>
-        stateMachine.transition('focused', { id: context.id })
-      )}
-      onBlur={composeEventHandlers(onBlur, () => {
-        const stateMachineContext = stateMachine.getContext();
-        if (stateMachineContext.id === context.id) {
-          stateMachine.transition('blurred', { id: context.id });
-        }
-      })}
-      onMouseDown={composeEventHandlers(onMouseDown, () =>
-        stateMachine.transition('activated', { id: context.id })
-      )}
-      onKeyDown={composeEventHandlers(onKeyDown, (event) => {
-        if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-          stateMachine.transition('activated', { id: context.id });
-        }
-      })}
-      {...triggerProps}
-    />
-  );
-});
+    return (
+      <Primitive
+        as={TRIGGER_DEFAULT_TAG}
+        selector={getSelector(TRIGGER_NAME)}
+        type="button"
+        aria-describedby={context.open ? context.id : undefined}
+        {...props}
+        ref={composedTriggerRef}
+        onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
+          stateMachine.transition('mouseEntered', { id: context.id })
+        )}
+        onMouseMove={composeEventHandlers(props.onMouseMove, () =>
+          stateMachine.transition('mouseMoved', { id: context.id })
+        )}
+        onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
+          const stateMachineContext = stateMachine.getContext();
+          if (stateMachineContext.id === context.id) {
+            stateMachine.transition('mouseLeft', { id: context.id });
+          }
+        })}
+        onFocus={composeEventHandlers(props.onFocus, () =>
+          stateMachine.transition('focused', { id: context.id })
+        )}
+        onBlur={composeEventHandlers(props.onBlur, () => {
+          const stateMachineContext = stateMachine.getContext();
+          if (stateMachineContext.id === context.id) {
+            stateMachine.transition('blurred', { id: context.id });
+          }
+        })}
+        onMouseDown={composeEventHandlers(props.onMouseDown, () =>
+          stateMachine.transition('activated', { id: context.id })
+        )}
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+            stateMachine.transition('activated', { id: context.id });
+          }
+        })}
+      />
+    );
+  }
+);
 
 TooltipTrigger.displayName = TRIGGER_NAME;
 
@@ -233,7 +228,7 @@ const TooltipContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Tooltip
       <PortalWrapper>
         <CheckTriggerMoved />
         <PopperPrimitive.Root
-          {...getPartDataAttrObj(CONTENT_NAME)}
+          selector={getSelector(CONTENT_NAME)}
           {...contentProps}
           data-state={context.stateAttribute}
           ref={forwardedRef}
@@ -256,7 +251,7 @@ const TooltipContentImpl = forwardRefWithAs<typeof PopperPrimitive.Root, Tooltip
 
 TooltipContent.displayName = CONTENT_NAME;
 
-/* ------------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
 const TooltipArrow = extendComponent(PopperPrimitive.Arrow, 'TooltipArrow');
 

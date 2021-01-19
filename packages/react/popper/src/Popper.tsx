@@ -2,8 +2,9 @@ import * as React from 'react';
 import { getPlacementData } from '@radix-ui/popper';
 import { createContext, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
-import { getPartDataAttrObj, makeRect } from '@radix-ui/utils';
+import { getSelector, getSelectorObj, makeRect } from '@radix-ui/utils';
 
 import type { Side, Align, Size, MeasurableElement } from '@radix-ui/utils';
 
@@ -27,7 +28,6 @@ const [PopperContext, usePopperContext] = createContext<PopperContextValue>(
  * -----------------------------------------------------------------------------------------------*/
 
 const POPPER_NAME = 'Popper';
-const POPPER_DEFAULT_TAG = 'div';
 
 type PopperOwnProps = {
   anchorRef: React.RefObject<MeasurableElement>;
@@ -39,73 +39,71 @@ type PopperOwnProps = {
   avoidCollisions?: boolean;
 };
 
-const Popper = forwardRefWithAs<typeof POPPER_DEFAULT_TAG, PopperOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = POPPER_DEFAULT_TAG,
-      children,
-      anchorRef,
-      side = 'bottom',
-      sideOffset,
-      align = 'center',
-      alignOffset,
-      collisionTolerance,
-      avoidCollisions = true,
-      ...popperProps
-    } = props;
+const Popper = forwardRefWithAs<typeof Primitive, PopperOwnProps>((props, forwardedRef) => {
+  const {
+    selector = getSelector(POPPER_NAME),
+    children,
+    anchorRef,
+    side = 'bottom',
+    sideOffset,
+    align = 'center',
+    alignOffset,
+    collisionTolerance,
+    avoidCollisions = true,
+    ...popperProps
+  } = props;
 
-    const [arrowOffset, setArrowOffset] = React.useState<number>();
-    const anchorRect = useRect(anchorRef);
-    const popperRef = React.useRef<HTMLDivElement>(null);
-    const popperSize = useSize(popperRef);
-    const arrowRef = React.useRef<HTMLSpanElement>(null);
-    const arrowSize = useSize(arrowRef);
+  const [arrowOffset, setArrowOffset] = React.useState<number>();
+  const anchorRect = useRect(anchorRef);
+  const popperRef = React.useRef<HTMLDivElement>(null);
+  const popperSize = useSize(popperRef);
+  const arrowRef = React.useRef<HTMLSpanElement>(null);
+  const arrowSize = useSize(arrowRef);
 
-    const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
+  const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
 
-    const windowSize = useWindowSize();
-    const collisionBoundariesRect = windowSize ? makeRect(windowSize, { x: 0, y: 0 }) : undefined;
+  const windowSize = useWindowSize();
+  const collisionBoundariesRect = windowSize ? makeRect(windowSize, { x: 0, y: 0 }) : undefined;
 
-    const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
-      anchorRect,
-      popperSize,
-      arrowSize,
+  const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
+    anchorRect,
+    popperSize,
+    arrowSize,
 
-      // config
-      arrowOffset,
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      shouldAvoidCollisions: avoidCollisions,
-      collisionBoundariesRect,
-      collisionTolerance,
-    });
-    const isPlaced = placedSide !== undefined;
+    // config
+    arrowOffset,
+    side,
+    sideOffset,
+    align,
+    alignOffset,
+    shouldAvoidCollisions: avoidCollisions,
+    collisionBoundariesRect,
+    collisionTolerance,
+  });
+  const isPlaced = placedSide !== undefined;
 
-    const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
+  const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
 
-    return (
-      <div style={popperStyles}>
-        <Comp
-          {...getPartDataAttrObj(POPPER_NAME)}
-          {...popperProps}
-          style={{
-            ...popperProps.style,
-            // if the Popper hasn't been placed yet (not all measurements done)
-            // we prevent animations so that users's animation don't kick in too early referring wrong sides
-            animation: !isPlaced ? 'none' : undefined,
-          }}
-          ref={composedPopperRef}
-          data-side={placedSide}
-          data-align={placedAlign}
-        >
-          <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
-        </Comp>
-      </div>
-    );
-  }
-);
+  return (
+    <div style={popperStyles} {...(selector ? getSelectorObj(selector + '-wrapper') : undefined)}>
+      <Primitive
+        selector={selector}
+        {...popperProps}
+        style={{
+          ...popperProps.style,
+          // if the Popper hasn't been placed yet (not all measurements done)
+          // we prevent animations so that users's animation don't kick in too early referring wrong sides
+          animation: !isPlaced ? 'none' : undefined,
+        }}
+        ref={composedPopperRef}
+        data-side={placedSide}
+        data-align={placedAlign}
+      >
+        <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
+      </Primitive>
+    </div>
+  );
+});
 
 Popper.displayName = POPPER_NAME;
 
@@ -141,7 +139,7 @@ const PopperArrow = forwardRefWithAs<typeof ArrowPrimitive, PopperArrowOwnProps>
           }}
         >
           <ArrowPrimitive
-            {...getPartDataAttrObj(ARROW_NAME)}
+            selector={getSelector(ARROW_NAME)}
             {...arrowProps}
             ref={forwardedRef}
             style={{
