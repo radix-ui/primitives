@@ -18,12 +18,6 @@ type OwnProps<E> = E extends ForwardRefComponent<any, infer P> ? P : {};
  */
 type IntrinsicElement<E> = E extends ForwardRefComponent<infer I, any> ? I : never;
 
-/**
- * Gets the HTML element type from an intrinsic element
- * @example ElementRef<'div'> // HTMLDivElement
- */
-type ElementRef<E> = E extends keyof JSX.IntrinsicElements ? React.ElementRef<E> : never;
-
 /* -------------------------------------------------------------------------------------------------
  * ForwardRefComponent
  * -----------------------------------------------------------------------------------------------*/
@@ -48,7 +42,7 @@ interface ForwardRefComponent<
    */
   <As extends keyof JSX.IntrinsicElements>(
     props: MergeProps<As, OwnProps & { as: As }>
-  ): JSX.Element;
+  ): React.ReactElement | null;
 
   /**
    * When passing an `as` prop as a component, use this overload.
@@ -58,14 +52,13 @@ interface ForwardRefComponent<
    * We don't use `React.ComponentType` here as we get type errors
    * when consumers try to do inline `as` components.
    */
-  <As extends React.ElementType>(props: MergeProps<As, OwnProps & { as: As }>): JSX.Element;
-
-  /**
-   * ForwardRefRenderFunction
-   */
-  (
-    props: MergeProps<IntrinsicElementString, OwnProps & { as?: IntrinsicElementString }>,
-    ref: React.ForwardedRef<ElementRef<IntrinsicElementString>>
+  <
+    As extends React.ElementType<any>,
+    // Inferring with props so inline `as` components get implicit `any` errors
+    // e.g. `as={(props) => {}}` <-- `props` errors
+    _AsWithProps = As extends React.ElementType<infer P> ? React.ElementType<P> : never
+  >(
+    props: MergeProps<_AsWithProps, OwnProps & { as: _AsWithProps }>
   ): React.ReactElement | null;
 }
 

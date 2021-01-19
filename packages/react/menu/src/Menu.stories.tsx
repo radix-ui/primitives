@@ -12,7 +12,8 @@ import {
 } from './Menu';
 import { styled, css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 export default { title: 'Components/Menu', excludeStories: ['styledComponents'] };
 
@@ -247,18 +248,24 @@ export const Animated = () => {
   );
 };
 
-type MenuOwnProps = {
-  onOpenChange: never;
-  anchorRef: never;
-  portalled: never;
-  trapFocus: never;
-  onOpenAutoFocus: never;
-  onCloseAutoFocus: never;
-  disableOutsidePointerEvents: never;
-  disableOutsideScroll: never;
-};
+type MenuOwnProps = Omit<
+  Polymorphic.OwnProps<typeof MenuPrimitive>,
+  | 'onOpenChange'
+  | 'anchorRef'
+  | 'portalled'
+  | 'trapFocus'
+  | 'onOpenAutoFocus'
+  | 'onCloseAutoFocus'
+  | 'disableOutsidePointerEvents'
+  | 'disableOutsideScroll'
+>;
 
-const Menu = forwardRefWithAs<typeof MenuPrimitive, MenuOwnProps>((props, forwardedRef) => {
+type MenuPrimitiveType = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive>,
+  MenuOwnProps
+>;
+
+const Menu = React.forwardRef((props, forwardedRef) => {
   const { open = true } = props;
   const ref = React.useRef<HTMLDivElement>(null);
   return (
@@ -281,7 +288,7 @@ const Menu = forwardRefWithAs<typeof MenuPrimitive, MenuOwnProps>((props, forwar
       />
     </>
   );
-});
+}) as MenuPrimitiveType;
 
 const StyledRoot = styled('div', {
   display: 'inline-block',
