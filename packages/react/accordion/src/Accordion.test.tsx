@@ -156,6 +156,64 @@ describe('given an Accordion with a change callback', () => {
   });
 });
 
+describe('given an Accordion with a false `disabled` prop', () => {
+  describe('and a disabled item', () => {
+    let rendered: RenderResult;
+
+    beforeEach(() => {
+      rendered = render(
+        <DisabledAccordionTest>
+          <Accordion.Item value="disabled" data-testid="item-disabled" disabled={true}>
+            <Accordion.Header>
+              <Accordion.Button data-testid="button-disabled">Button disabled</Accordion.Button>
+            </Accordion.Header>
+            <Accordion.Panel>Panel disabled</Accordion.Panel>
+          </Accordion.Item>
+        </DisabledAccordionTest>
+      );
+    });
+
+    it('should disable the disabled item', () => {
+      const item = rendered.queryByTestId('item-disabled');
+      expect(item).toHaveAttribute('data-disabled');
+    });
+
+    it('should disable the disabled item button', () => {
+      const button = rendered.queryByTestId('button-disabled');
+      expect(button).toHaveAttribute('disabled');
+    });
+
+    it('should enable all other items', () => {
+      const items = rendered.queryAllByTestId('item');
+      const disabled = items.some((item) => item.getAttribute('data-disabled'));
+      expect(disabled).toBe(false);
+    });
+
+    it('should enable all other item buttons', () => {
+      const buttons = rendered.queryAllByTestId('button');
+      const disabled = buttons.some((button) => button.getAttribute('disabled'));
+      expect(disabled).toBe(false);
+    });
+  });
+});
+
+function DisabledAccordionTest(props: React.ComponentProps<typeof Accordion.Root>) {
+  const { children, ...rootProps } = props;
+  return (
+    <Accordion.Root {...rootProps} disabled={false}>
+      {ITEMS.map((val) => (
+        <Accordion.Item value={val} key={val} data-testid="item">
+          <Accordion.Header>
+            <Accordion.Button data-testid="button">Button</Accordion.Button>
+          </Accordion.Header>
+          <Accordion.Panel>Panel</Accordion.Panel>
+        </Accordion.Item>
+      ))}
+      {children}
+    </Accordion.Root>
+  );
+}
+
 function AccordionTest(props: React.ComponentProps<typeof Accordion.Root>) {
   return (
     <Accordion.Root data-testid="container" {...props}>
