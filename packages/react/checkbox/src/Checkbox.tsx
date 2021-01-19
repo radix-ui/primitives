@@ -6,12 +6,12 @@ import {
   useControlledState,
   useComposedRefs,
 } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { useLabelContext } from '@radix-ui/react-label';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
@@ -22,24 +22,28 @@ const CHECKBOX_DEFAULT_TAG = 'button';
 
 type CheckedState = boolean | 'indeterminate';
 type InputDOMProps = React.ComponentProps<'input'>;
-type CheckboxOwnProps = {
-  checked?: CheckedState;
-  defaultChecked?: CheckedState;
-  required?: InputDOMProps['required'];
-  readOnly?: InputDOMProps['readOnly'];
-  onCheckedChange?: InputDOMProps['onChange'];
-  onChange: never;
-};
+type CheckboxOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    checked?: CheckedState;
+    defaultChecked?: CheckedState;
+    required?: InputDOMProps['required'];
+    readOnly?: InputDOMProps['readOnly'];
+    onCheckedChange?: InputDOMProps['onChange'];
+  }
+>;
+
+type CheckboxPrimitive = Polymorphic.ForwardRefComponent<
+  typeof CHECKBOX_DEFAULT_TAG,
+  CheckboxOwnProps
+>;
 
 const [CheckboxContext, useCheckboxContext] = createContext<CheckedState>(
   CHECKBOX_NAME + 'Context',
   CHECKBOX_NAME
 );
 
-const Checkbox = forwardRefWithAs<
-  typeof CHECKBOX_DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, CheckboxOwnProps>
->((props, forwardedRef) => {
+const Checkbox = React.forwardRef((props, forwardedRef) => {
   const {
     'aria-labelledby': ariaLabelledby,
     children,
@@ -115,7 +119,7 @@ const Checkbox = forwardRefWithAs<
       </Primitive>
     </>
   );
-});
+}) as CheckboxPrimitive;
 
 Checkbox.displayName = CHECKBOX_NAME;
 
@@ -126,18 +130,23 @@ Checkbox.displayName = CHECKBOX_NAME;
 const INDICATOR_NAME = 'CheckboxIndicator';
 const INDICATOR_DEFAULT_TAG = 'span';
 
-type CheckboxIndicatorOwnProps = {
-  /**
-   * Used to force mounting when more control is needed. Useful when
-   * controlling animation with React animation libraries.
-   */
-  forceMount?: true;
-};
+type CheckboxIndicatorOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    /**
+     * Used to force mounting when more control is needed. Useful when
+     * controlling animation with React animation libraries.
+     */
+    forceMount?: true;
+  }
+>;
 
-const CheckboxIndicator = forwardRefWithAs<
+type CheckboxIndicatorPrimitive = Polymorphic.ForwardRefComponent<
   typeof INDICATOR_DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, CheckboxIndicatorOwnProps>
->((props, forwardedRef) => {
+  CheckboxIndicatorOwnProps
+>;
+
+const CheckboxIndicator = React.forwardRef((props, forwardedRef) => {
   const { forceMount, ...indicatorProps } = props;
   const checked = useCheckboxContext(INDICATOR_NAME);
   return (
@@ -151,7 +160,7 @@ const CheckboxIndicator = forwardRefWithAs<
       />
     </Presence>
   );
-});
+}) as CheckboxIndicatorPrimitive;
 
 CheckboxIndicator.displayName = INDICATOR_NAME;
 
