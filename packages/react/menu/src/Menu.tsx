@@ -354,13 +354,6 @@ const ITEM_SELECT = 'menu.itemSelect';
 type MenuItemOwnProps = {
   disabled?: boolean;
   textValue?: string;
-  /**
-   * A string to use as the component selector for CSS purposes. It will be added as
-   * a data attribute. Pass `null` to remove selector.
-   *
-   * @defaultValue radix-menu-item
-   */
-  selector?: string | null;
   onSelect?: (event: Event) => void;
   onSelectCapture: never;
 };

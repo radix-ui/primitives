@@ -89,8 +89,8 @@ const DialogTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, OwnProps<type
         aria-expanded={context.open}
         aria-controls={context.id}
         {...props}
-        onClick={composeEventHandlers(props.onClick, () => context.setOpen(true))}
         ref={composedTriggerRef}
+        onClick={composeEventHandlers(props.onClick, () => context.setOpen(true))}
       />
     );
   }

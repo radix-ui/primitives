@@ -4,7 +4,7 @@ import { createContext, useRect, useSize, useComposedRefs } from '@radix-ui/reac
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
-import { getSelector, makeRect } from '@radix-ui/utils';
+import { getSelector, getSelectorObj, makeRect } from '@radix-ui/utils';
 
 import type { Side, Align, Size, MeasurableElement } from '@radix-ui/utils';
 
@@ -41,6 +41,7 @@ type PopperOwnProps = {
 
 const Popper = forwardRefWithAs<typeof Primitive, PopperOwnProps>((props, forwardedRef) => {
   const {
+    selector = getSelector(POPPER_NAME),
     children,
     anchorRef,
     side = 'bottom',
@@ -84,9 +85,9 @@ const Popper = forwardRefWithAs<typeof Primitive, PopperOwnProps>((props, forwar
   const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
 
   return (
-    <div style={popperStyles}>
+    <div style={popperStyles} {...(selector ? getSelectorObj(selector + '-wrapper') : undefined)}>
       <Primitive
-        selector={getSelector(POPPER_NAME)}
+        selector={selector}
         {...popperProps}
         style={{
           ...popperProps.style,

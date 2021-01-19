@@ -116,7 +116,7 @@ describe('given an open uncontrolled Collapsible', () => {
   const onOpenChange = jest.fn();
 
   beforeEach(() => {
-    rendered = render(<CollapsibleTest defaultOpen={true} onOpenChange={onOpenChange} />);
+    rendered = render(<CollapsibleTest defaultOpen onOpenChange={onOpenChange} />);
     content = rendered.getByText(CONTENT_TEXT);
   });
 
@@ -143,7 +143,7 @@ describe('given an open controlled Collapsible', () => {
   const onOpenChange = jest.fn();
 
   beforeEach(() => {
-    rendered = render(<CollapsibleTest open={true} onOpenChange={onOpenChange} />);
+    rendered = render(<CollapsibleTest open onOpenChange={onOpenChange} />);
     content = rendered.getByText(CONTENT_TEXT);
   });
 
@@ -172,7 +172,7 @@ describe('given styled parts', () => {
 
   beforeEach(() => {
     rendered = render(
-      <Collapsible className="container-class" open={true}>
+      <Collapsible className="container-class" open>
         <CollapsibleButton className="button-class">{BUTTON_TEXT}</CollapsibleButton>
         <CollapsibleContent className="content-class">{CONTENT_TEXT}</CollapsibleContent>
       </Collapsible>

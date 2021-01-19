@@ -163,7 +163,7 @@ describe('given an Accordion with a false `disabled` prop', () => {
     beforeEach(() => {
       rendered = render(
         <DisabledAccordionTest>
-          <Accordion.Item value="disabled" data-testid="item-disabled" disabled={true}>
+          <Accordion.Item value="disabled" data-testid="item-disabled" disabled>
             <Accordion.Header>
               <Accordion.Button data-testid="button-disabled">Button disabled</Accordion.Button>
             </Accordion.Header>

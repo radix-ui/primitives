@@ -76,7 +76,7 @@ ContextMenuTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'ContextMenuContent';
 
 type ContextMenuContentOwnProps = {
-  anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
+  anchorRef: never;
   trapFocus: never;
   disableOutsideScroll: never;
   portalled: never;
@@ -87,21 +87,20 @@ type ContextMenuContentOwnProps = {
 
 const ContextMenuContent = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMenuContentOwnProps>(
   (props, forwardedRef) => {
-    const { anchorRef, ...contentProps } = props;
     const context = useContextMenuContext(CONTENT_NAME);
 
     return (
       <MenuPrimitive.Root
         selector={getSelector(CONTENT_NAME)}
-        disableOutsidePointerEvents={true}
+        disableOutsidePointerEvents
         side="bottom"
         align="start"
-        {...contentProps}
+        {...props}
         ref={forwardedRef}
         open={context.open}
         onOpenChange={context.setOpen}
         style={{
-          ...contentProps.style,
+          ...props.style,
           // re-namespace exposed content custom property
           ['--radix-context-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
         }}

@@ -75,8 +75,8 @@ const Label = forwardRefWithAs<typeof DEFAULT_TAG, MergeOwnProps<typeof Primitiv
         as={DEFAULT_TAG}
         selector={getSelector(NAME)}
         {...labelProps}
-        id={id}
         ref={ref}
+        id={id}
         role="label"
       >
         <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>

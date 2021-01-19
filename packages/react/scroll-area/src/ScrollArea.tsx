@@ -261,7 +261,7 @@ type ScrollAreaInternalProps = {
 };
 
 type ScrollAreaNativeProps = ScrollAreaInternalProps &
-  Omit<ScrollAreaOwnProps, 'unstable_forceNative' | 'selector'> & {
+  Omit<ScrollAreaOwnProps, 'unstable_forceNative'> & {
     overflowX: NonNullable<ScrollAreaOwnProps['overflowX']>;
     overflowY: NonNullable<ScrollAreaOwnProps['overflowY']>;
   };
@@ -285,8 +285,8 @@ const ScrollAreaNative = forwardRefWithAs<typeof Primitive, ScrollAreaNativeProp
     return (
       <Primitive
         selector={getSelector(ROOT_NAME)}
-        ref={ref}
         {...domProps}
+        ref={ref}
         style={{
           ...domProps.style,
           // For native fallback, the scroll area wrapper itself is scrollable
@@ -303,7 +303,7 @@ const ScrollAreaNative = forwardRefWithAs<typeof Primitive, ScrollAreaNativeProp
 );
 
 type ScrollAreaImplProps = ScrollAreaInternalProps &
-  Omit<ScrollAreaOwnProps, 'unstable_forceNative' | 'selector'>;
+  Omit<ScrollAreaOwnProps, 'unstable_forceNative'>;
 
 const initialSize = { width: 0, height: 0 };
 const initialState: ScrollAreaReducerState = {
@@ -651,7 +651,7 @@ const ScrollAreaViewportImpl = forwardRefWithAs<typeof Primitive>(function Scrol
           paddingRight: `var(${SCROLL_AREA_CSS_PROPS.scrollbarYOffset})`,
         }}
       >
-        <Primitive selector={selector} ref={ref} {...domProps} />
+        <Primitive selector={selector} {...domProps} ref={ref} />
       </div>
     </div>
   );
@@ -660,9 +660,9 @@ const ScrollAreaViewportImpl = forwardRefWithAs<typeof Primitive>(function Scrol
 const ScrollAreaViewport = forwardRefWithAs<typeof ScrollAreaViewportImpl>(
   function ScrollAreaViewport(props, forwardedRef) {
     return useNativeScrollArea() ? (
-      <Primitive selector={getSelector(VIEWPORT_NAME)} ref={forwardedRef} {...props} />
+      <Primitive selector={getSelector(VIEWPORT_NAME)} {...props} ref={forwardedRef} />
     ) : (
-      <ScrollAreaViewportImpl ref={forwardedRef} {...props} />
+      <ScrollAreaViewportImpl {...props} ref={forwardedRef} />
     );
   }
 );
@@ -1462,9 +1462,9 @@ const ScrollAreaButtonStart = forwardRefWithAs<
     <ScrollAreaButton
       selector={getSelector(BUTTON_START_NAME)}
       {...props}
+      ref={forwardedRef}
       name={BUTTON_START_NAME}
       direction="start"
-      ref={forwardedRef}
     />
   );
 });
@@ -1482,9 +1482,9 @@ const ScrollAreaButtonEnd = forwardRefWithAs<typeof ScrollAreaButton, ScrollArea
       <ScrollAreaButton
         selector={getSelector(BUTTON_END_NAME)}
         {...props}
+        ref={forwardedRef}
         name={BUTTON_END_NAME}
         direction="end"
-        ref={forwardedRef}
       />
     );
   }
@@ -1566,7 +1566,7 @@ const ScrollAreaCorner = forwardRefWithAs<typeof ScrollAreaCornerImpl>(function 
   props,
   forwardedRef
 ) {
-  return useNativeScrollArea() ? null : <ScrollAreaCornerImpl ref={forwardedRef} {...props} />;
+  return useNativeScrollArea() ? null : <ScrollAreaCornerImpl {...props} ref={forwardedRef} />;
 });
 ScrollAreaCorner.displayName = CORNER_NAME;
 

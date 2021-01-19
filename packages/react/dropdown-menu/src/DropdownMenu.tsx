@@ -121,9 +121,9 @@ const DropdownMenuContent = forwardRefWithAs<
   return (
     <MenuPrimitive.Root
       selector={getSelector(CONTENT_NAME)}
-      disableOutsidePointerEvents={true}
-      disableOutsideScroll={true}
-      portalled={true}
+      disableOutsidePointerEvents
+      disableOutsideScroll
+      portalled
       {...props}
       ref={forwardedRef}
       id={context.id}
