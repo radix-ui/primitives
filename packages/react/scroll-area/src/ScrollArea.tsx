@@ -468,7 +468,7 @@ const ScrollAreaImpl = forwardRefWithAs<typeof Primitive, ScrollAreaImplProps>(
           <ScrollAreaContext.Provider value={context}>
             <ScrollAreaStateContext.Provider value={reducerState}>
               <Primitive
-                selector={ROOT_NAME}
+                selector={getSelector(ROOT_NAME)}
                 {...domProps}
                 ref={ref}
                 style={{

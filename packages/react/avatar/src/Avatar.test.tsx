@@ -92,7 +92,7 @@ describe('given an Avatar with fallback and a working image', () => {
   });
 
   it('should have a radix attribute on the image', async () => {
-    const partDataAttr = getSelector('AvatarImage');
+    const partDataAttr = `data-${getSelector('AvatarImage')}`;
     await waitFor(() => {
       jest.advanceTimersByTime(DELAY);
     });

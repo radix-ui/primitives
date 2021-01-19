@@ -49,7 +49,7 @@ describe('given a default Checkbox', () => {
     });
 
     it('should have a radix attribute on the indicator', () => {
-      const partDataAttr = getSelector('CheckboxIndicator');
+      const partDataAttr = `data-${getSelector('CheckboxIndicator')}`;
       expect(indicator).toHaveAttribute(partDataAttr);
     });
 
