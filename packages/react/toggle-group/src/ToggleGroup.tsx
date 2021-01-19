@@ -5,8 +5,6 @@ import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { ToggleButton } from '@radix-ui/react-toggle-button';
 import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 
-// const __DEV__ = isDev();
-
 /* -------------------------------------------------------------------------------------------------
  * ToggleButton
  * -----------------------------------------------------------------------------------------------*/
@@ -16,14 +14,12 @@ const GROUP_CONTEXT_NAME = GROUP_NAME + 'Context';
 const GROUP_DEFAULT_TAG = 'div';
 
 type ToggleGroupOwnProps = {
-  /** The controlled value of the toggled button */
+  /** The controlled value of the toggled button in the group */
   value?: string | null;
-  /** The uncontrolled value of the toggled button */
+  /** The uncontrolled value of the toggled button in the group */
   defaultValue?: string;
-  /** A function called when the value of the toggled buttons changes */
+  /** A function called when the toggled button changes */
   onValueChange?: ((value: string | null) => void) | ((value: string) => void);
-  /** Whether or not a selection in the group is required after initial selection */
-  required?: boolean;
   /** Whether or not the group should maintain roving focus of its buttons */
   rovingFocus?: boolean;
 };
@@ -46,7 +42,6 @@ const ToggleGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleGroupOwnPro
       defaultValue,
       onValueChange,
       children,
-      required = false,
       rovingFocus = false,
       ...groupProps
     } = props;
@@ -57,21 +52,16 @@ const ToggleGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleGroupOwnPro
       onChange: onValueChange as (state: string | null) => void,
     });
 
-    const stable_isRequired = useCallbackRef(() => required);
-
     const handleChange = React.useCallback(
       function handleChange(buttonValue: string) {
         setValue((previousValue) => {
           if (!previousValue) {
             return buttonValue;
           }
-          if (stable_isRequired() && previousValue === buttonValue) {
-            return previousValue;
-          }
           return previousValue === buttonValue ? null : buttonValue;
         });
       },
-      [setValue, stable_isRequired]
+      [setValue]
     );
 
     const context: ToggleGroupContextValue = React.useMemo(() => {
@@ -172,14 +162,12 @@ const MultiSelectToggleGroupContext = React.createContext<MultiSelectToggleGroup
 MultiSelectToggleGroupContext.displayName = MULTI_GROUP_CONTEXT_NAME;
 
 type MultiSelectToggleGroupOwnProps = {
-  /** The controlled value of the toggled button */
+  /** The controlled value of the toggled buttons in the group */
   value?: string[];
-  /** The uncontrolled value of the toggled button */
+  /** The uncontrolled value of the toggled buttons in the group */
   defaultValue?: string[];
-  /** A function called when the value of the toggled buttons changes */
+  /** A function called when the any of the toggled buttons change */
   onValueChange?(value: string[]): void;
-  /** Whether or not a selection in the group is required after initial selection */
-  required?: boolean;
   /** Whether or not the group should maintain roving focus of its buttons */
   rovingFocus?: boolean;
 };
@@ -194,7 +182,6 @@ const MultiSelectToggleGroup = forwardRefWithAs<
     defaultValue,
     onValueChange,
     children,
-    required = false,
     rovingFocus = false,
     ...groupProps
   } = props;
@@ -205,8 +192,6 @@ const MultiSelectToggleGroup = forwardRefWithAs<
     onChange: onValueChange,
   });
 
-  const stable_isRequired = useCallbackRef(() => required);
-
   const handleChange = React.useCallback(
     function handleChange(buttonValue: string) {
       setValue((previousValue) => {
@@ -214,20 +199,12 @@ const MultiSelectToggleGroup = forwardRefWithAs<
           return [buttonValue];
         }
 
-        if (
-          stable_isRequired() &&
-          previousValue.length === 1 &&
-          previousValue.includes(buttonValue)
-        ) {
-          return previousValue;
-        }
-
         return previousValue.includes(buttonValue)
           ? previousValue.filter((v) => v !== buttonValue)
           : previousValue.concat(buttonValue).sort();
       });
     },
-    [setValue, stable_isRequired]
+    [setValue]
   );
 
   const context: MultiSelectToggleGroupContextValue = React.useMemo(() => {
@@ -426,10 +403,11 @@ function useInternalToggleButtonState({
   return toggled;
 }
 
-// NOTE: I changed this implementation a tiny bit to improve typing somewhat. I think it's a little
-// nicer not to include `undefined` in the typing here and always provide a defaultProp value
-// whether or not its passed by the consumer. If undefined is an acceptable type it should be added
-// explicitly IMO.
+// NOTE: I changed this this just a tiny bit to improve typing somewhat. I think it's a little nicer
+// not to include `undefined` in the typing here and always provide a defaultProp value whether or
+// not its passed by the consumer. If undefined is an acceptable type it should be added explicitly
+// IMO. Otherwise implementation is identical to what we have in utils. Would like to PR this
+// separately if we agree here.
 function useControlledState<T>({
   prop,
   defaultProp,
@@ -488,6 +466,7 @@ export function mergeProps(...args: any[]): any {
   const result: any = {};
   for (const props of args) {
     for (const key in result) {
+      // Compose event handlers
       if (/^on[A-Z]/.test(key) && isFunction(result[key]) && isFunction(props[key])) {
         result[key] = composeEventHandlers(result[key], props[key]);
       } else {
