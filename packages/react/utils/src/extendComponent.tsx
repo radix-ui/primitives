@@ -9,13 +9,14 @@ function extendComponent<As extends Polymorphic.ForwardRefComponent<any, any>>(
     : As,
   displayName: string
 ) {
-  const Extended = React.forwardRef((props, forwardedRef) => {
-    const As = Comp as any;
-    return <As selector={getSelector(displayName)} {...props} ref={forwardedRef} />;
-  }) as Polymorphic.ForwardRefComponent<
+  type ExtendedPrimitive = Polymorphic.ForwardRefComponent<
     Polymorphic.IntrinsicElement<typeof Comp>,
     Polymorphic.OwnProps<typeof Comp>
   >;
+  const Extended = React.forwardRef((props, forwardedRef) => {
+    const As = Comp as any;
+    return <As selector={getSelector(displayName)} {...props} ref={forwardedRef} />;
+  }) as ExtendedPrimitive;
   Extended.displayName = displayName;
   return Extended;
 }
