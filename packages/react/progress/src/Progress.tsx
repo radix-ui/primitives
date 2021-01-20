@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { createContext } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
+
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Progress
@@ -18,13 +20,21 @@ const [ProgressContext, useProgressContext] = createContext<ProgressContextValue
   PROGRESS_NAME
 );
 
-type ProgressOwnProps = {
-  value?: number | null | undefined;
-  max?: number;
-  getValueLabel?(value: number, max: number): string;
-};
+type ProgressOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    value?: number | null | undefined;
+    max?: number;
+    getValueLabel?(value: number, max: number): string;
+  }
+>;
 
-const Progress = forwardRefWithAs<typeof Primitive, ProgressOwnProps>((props, forwardedRef) => {
+type ProgressPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Primitive>,
+  ProgressOwnProps
+>;
+
+const Progress = React.forwardRef((props, forwardedRef) => {
   const {
     children,
     value: valueProp,
@@ -55,7 +65,7 @@ const Progress = forwardRefWithAs<typeof Primitive, ProgressOwnProps>((props, fo
       <ProgressContext.Provider value={ctx}>{children}</ProgressContext.Provider>
     </Primitive>
   );
-});
+}) as ProgressPrimitive;
 
 Progress.displayName = PROGRESS_NAME;
 
@@ -85,7 +95,13 @@ Progress.propTypes = {
 
 const INDICATOR_NAME = 'ProgressIndicator';
 
-const ProgressIndicator = forwardRefWithAs<typeof Primitive>((props, forwardedRef) => {
+type ProgressIndicatorOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type ProgressIndicatorPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Primitive>,
+  ProgressIndicatorOwnProps
+>;
+
+const ProgressIndicator = React.forwardRef((props, forwardedRef) => {
   const { value, max } = useProgressContext(INDICATOR_NAME);
   return (
     <Primitive
@@ -97,7 +113,7 @@ const ProgressIndicator = forwardRefWithAs<typeof Primitive>((props, forwardedRe
       ref={forwardedRef}
     />
   );
-});
+}) as ProgressIndicatorPrimitive;
 
 ProgressIndicator.displayName = INDICATOR_NAME;
 
