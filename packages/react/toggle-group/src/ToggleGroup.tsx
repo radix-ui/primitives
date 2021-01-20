@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers, useId, useCallbackRef } from '@radix-ui/react-utils';
+import { composeEventHandlers, createContext, useId, useCallbackRef } from '@radix-ui/react-utils';
 import { getPartDataAttrObj, makeId, isFunction } from '@radix-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { ToggleButton } from '@radix-ui/react-toggle-button';
@@ -31,8 +31,11 @@ type ToggleGroupContextValue = {
   name: typeof GROUP_CONTEXT_NAME;
   rovingFocus: boolean;
 };
-const ToggleGroupContext = React.createContext<ToggleGroupContextValue | null>(null);
-ToggleGroupContext.displayName = GROUP_CONTEXT_NAME;
+
+const [ToggleGroupContext, useToggleGroupContext] = createContext<ToggleGroupContextValue>(
+  GROUP_CONTEXT_NAME,
+  GROUP_NAME
+);
 
 const ToggleGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleGroupOwnProps>(
   (props, forwardedRef) => {
@@ -91,8 +94,11 @@ const ToggleGroup = forwardRefWithAs<typeof GROUP_DEFAULT_TAG, ToggleGroupOwnPro
 const ITEM_NAME = 'ToggleGroupItem';
 
 type ToggleGroupItemOwnProps = {
-  /** A function called when the button is toggled */
-  onToggledChange?(toggled: boolean): void;
+  /**
+   * A string value for the toggle group item. All items within a toggle group should use a unique
+   * value.
+   */
+  value: string;
 };
 
 const ToggleGroupItemImpl = forwardRefWithAs<typeof ToggleButton, ToggleGroupItemOwnProps>(
@@ -131,8 +137,7 @@ const ToggleGroupRovingItem = forwardRefWithAs<typeof ToggleButton, ToggleGroupI
 
 const ToggleGroupItem = forwardRefWithAs<typeof ToggleButton, ToggleGroupItemOwnProps>(
   (props, forwardedRef) => {
-    const context = React.useContext(ToggleGroupContext);
-
+    const context = useToggleGroupContext(ITEM_NAME);
     return context?.rovingFocus ? (
       <ToggleGroupRovingItem ref={forwardedRef} {...props} />
     ) : (
@@ -156,10 +161,9 @@ type MultiSelectToggleGroupContextValue = {
   rovingFocus: boolean;
 };
 
-const MultiSelectToggleGroupContext = React.createContext<MultiSelectToggleGroupContextValue | null>(
-  null
-);
-MultiSelectToggleGroupContext.displayName = MULTI_GROUP_CONTEXT_NAME;
+const [MultiSelectToggleGroupContext, useMultiSelectToggleGroupContext] = createContext<
+  MultiSelectToggleGroupContextValue
+>(MULTI_GROUP_CONTEXT_NAME, MULTI_GROUP_NAME);
 
 type MultiSelectToggleGroupOwnProps = {
   /** The controlled value of the toggled buttons in the group */
@@ -233,8 +237,11 @@ const MultiSelectToggleGroup = forwardRefWithAs<
 const MULTI_ITEM_NAME = 'MultiSelectToggleGroupItem';
 
 type MultiSelectToggleGroupItemOwnProps = {
-  /** A function called when the button is toggled */
-  onToggledChange?(toggled: boolean): void;
+  /**
+   * A string value for the toggle group item. All items within a toggle group should use a unique
+   * value.
+   */
+  value: string;
 };
 
 const MultiSelectToggleGroupItemImpl = forwardRefWithAs<
@@ -275,7 +282,7 @@ const MultiSelectToggleGroupRovingItem = forwardRefWithAs<
 
 const MultiSelectToggleGroupItem = forwardRefWithAs<typeof ToggleButton, ToggleGroupItemOwnProps>(
   (props, forwardedRef) => {
-    const context = React.useContext(MultiSelectToggleGroupContext);
+    const context = useMultiSelectToggleGroupContext(MULTI_ITEM_NAME);
     return context?.rovingFocus ? (
       <MultiSelectToggleGroupRovingItem ref={forwardedRef} {...props} />
     ) : (
@@ -316,54 +323,21 @@ function useToggleGroupItem<
   ElementType extends keyof JSX.IntrinsicElements | React.ComponentType<any>
 >(
   props: ToggleGroupItemOwnProps & React.ComponentProps<ElementType>,
-  Ctx: React.Context<ContextType | null>
+  Ctx: React.Context<ContextType>
 ): UseToggleGroupReturn<ElementType> {
   const {
+    value: valueProp,
+    // ignore these props
     toggled: toggledProp,
     defaultToggled,
     onToggledChange,
-    value: valueProp,
     ...otherButtonProps
   } = props;
-
-  const [_toggled = false, _setToggled] = useControlledState<boolean>({
-    prop: toggledProp,
-    onChange: onToggledChange,
-    defaultProp: defaultToggled || false,
-  });
 
   const generatedValue = makeId(`toggle-button`, useId());
   const value = valueProp || generatedValue;
   const context = React.useContext(Ctx);
-  const toggled = useInternalToggleButtonState({ context, ownToggledState: _toggled, value });
-
-  const setToggled = React.useCallback(
-    function setToggled(state: boolean) {
-      if (context) {
-        context.handleChange(value);
-      } else {
-        _setToggled(state);
-      }
-    },
-    [_setToggled, context, value]
-  );
-
-  // If the toggle button is in a group, onToggleChange will never fire because we bypass the
-  // setter returned from useControlledState since the group is managing its children states. We
-  // will explicitly call onToggleChange for grouped toggle buttons only when the toggled value
-  // changes.
-  const stable_onToggleChange = useCallbackRef(onToggledChange);
-  const stable_isGrouped = useCallbackRef(() => !!context);
-  const firstRun = React.useRef(true);
-  React.useEffect(() => {
-    if (firstRun.current) {
-      firstRun.current = false;
-      return;
-    }
-    if (stable_isGrouped()) {
-      stable_onToggleChange(toggled);
-    }
-  }, [stable_isGrouped, stable_onToggleChange, toggled]);
+  const [toggled, setToggled] = useInternalToggleButtonState(context, props);
 
   const isGrouped = !!context;
   const buttonProps = {
@@ -386,21 +360,22 @@ function useToggleGroupItem<
   };
 }
 
-function useInternalToggleButtonState({
-  context,
-  ownToggledState,
-  value,
-}: {
-  value: string;
-  ownToggledState: boolean;
-  context: MultiSelectToggleGroupContextValue | ToggleGroupContextValue | null;
-}) {
-  const toggled = !!(context?.name === GROUP_CONTEXT_NAME
+function useInternalToggleButtonState(
+  context: MultiSelectToggleGroupContextValue | ToggleGroupContextValue,
+  props: ToggleGroupItemOwnProps | MultiSelectToggleGroupItemOwnProps
+): [boolean, (toggled: boolean) => void] {
+  const { value } = props;
+  const toggled = !!(context.name === GROUP_CONTEXT_NAME
     ? context.value === value
-    : context?.name === MULTI_GROUP_CONTEXT_NAME
+    : context.name === MULTI_GROUP_CONTEXT_NAME
     ? context.value?.includes(value)
-    : ownToggledState);
-  return toggled;
+    : false);
+
+  const setToggled = useCallbackRef(function setToggled(state: boolean) {
+    context.handleChange(value);
+  });
+
+  return [toggled, setToggled];
 }
 
 // NOTE: I changed this this just a tiny bit to improve typing somewhat. I think it's a little nicer
