@@ -5,12 +5,12 @@ import {
   useControlledState,
   useComposedRefs,
 } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 import { getSelector } from '@radix-ui/utils';
 
-import type { MergeOwnProps, OwnProps } from '@radix-ui/react-polymorphic';
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
@@ -20,24 +20,25 @@ const SWITCH_NAME = 'Switch';
 const SWITCH_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
-type SwitchOwnProps = {
-  checked?: boolean;
-  defaultChecked?: boolean;
-  required?: InputDOMProps['required'];
-  readOnly?: InputDOMProps['readOnly'];
-  onCheckedChange?: InputDOMProps['onChange'];
-  onChange: never;
-};
+type SwitchOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    checked?: boolean;
+    defaultChecked?: boolean;
+    required?: InputDOMProps['required'];
+    readOnly?: InputDOMProps['readOnly'];
+    onCheckedChange?: InputDOMProps['onChange'];
+  }
+>;
+
+type SwitchPrimitive = Polymorphic.ForwardRefComponent<typeof SWITCH_DEFAULT_TAG, SwitchOwnProps>;
 
 const [SwitchContext, useSwitchContext] = createContext<boolean>(
   SWITCH_NAME + 'Context',
   SWITCH_NAME
 );
 
-const Switch = forwardRefWithAs<
-  typeof SWITCH_DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, SwitchOwnProps>
->((props, forwardedRef) => {
+const Switch = React.forwardRef((props, forwardedRef) => {
   const {
     'aria-labelledby': ariaLabelledby,
     children,
@@ -108,7 +109,7 @@ const Switch = forwardRefWithAs<
       </Primitive>
     </>
   );
-});
+}) as SwitchPrimitive;
 
 Switch.displayName = SWITCH_NAME;
 
@@ -119,20 +120,24 @@ Switch.displayName = SWITCH_NAME;
 const THUMB_NAME = 'SwitchThumb';
 const THUMB_DEFAULT_TAG = 'span';
 
-const SwitchThumb = forwardRefWithAs<typeof THUMB_DEFAULT_TAG, OwnProps<typeof Primitive>>(
-  (props, forwardedRef) => {
-    const checked = useSwitchContext(THUMB_NAME);
-    return (
-      <Primitive
-        as={THUMB_DEFAULT_TAG}
-        selector={getSelector(THUMB_NAME)}
-        {...props}
-        data-state={getState(checked)}
-        ref={forwardedRef}
-      />
-    );
-  }
-);
+type SwitchThumbOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type SwitchThumbPrimitive = Polymorphic.ForwardRefComponent<
+  typeof THUMB_DEFAULT_TAG,
+  SwitchThumbOwnProps
+>;
+
+const SwitchThumb = React.forwardRef((props, forwardedRef) => {
+  const checked = useSwitchContext(THUMB_NAME);
+  return (
+    <Primitive
+      as={THUMB_DEFAULT_TAG}
+      selector={getSelector(THUMB_NAME)}
+      {...props}
+      data-state={getState(checked)}
+      ref={forwardedRef}
+    />
+  );
+}) as SwitchThumbPrimitive;
 
 SwitchThumb.displayName = THUMB_NAME;
 
