@@ -1,26 +1,36 @@
 import * as React from 'react';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
+
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 const NAME = 'Separator';
 const DEFAULT_ORIENTATION = 'horizontal';
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 type Orientation = typeof ORIENTATIONS[number];
-type SeparatorOwnProps = {
-  /**
-   * Either `vertical` or `horizontal`. Defaults to `horizontal`.
-   */
-  orientation?: Orientation;
-  /**
-   * Whether or not the component is purely decorative. When true, accessibility-related attributes
-   * are updated so that that the rendered element is removed from the accessibility tree.
-   */
-  decorative?: boolean;
-};
+type SeparatorOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    /**
+     * Either `vertical` or `horizontal`. Defaults to `horizontal`.
+     */
+    orientation?: Orientation;
+    /**
+     * Whether or not the component is purely decorative. When true, accessibility-related attributes
+     * are updated so that that the rendered element is removed from the accessibility tree.
+     */
+    decorative?: boolean;
+  }
+>;
 
-const Separator = forwardRefWithAs<typeof Primitive, SeparatorOwnProps>((props, forwardedRef) => {
+type SeparatorPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Primitive>,
+  SeparatorOwnProps
+>;
+
+const Separator = React.forwardRef((props, forwardedRef) => {
   const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
   const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
   // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
@@ -38,7 +48,7 @@ const Separator = forwardRefWithAs<typeof Primitive, SeparatorOwnProps>((props, 
       ref={forwardedRef}
     />
   );
-});
+}) as SeparatorPrimitive;
 
 Separator.displayName = NAME;
 

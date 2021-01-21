@@ -1,22 +1,21 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { extendComponent } from './extendComponent';
 
 import type { RenderResult } from '@testing-library/react';
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Polymorphic Button
  * -----------------------------------------------------------------------------------------------*/
 
-type ButtonProps = {
-  isDisabled?: boolean;
-};
+type ButtonProps = { isDisabled?: boolean };
+type ButtonPrimitive = Polymorphic.ForwardRefComponent<'button', ButtonProps>;
 
-const Button = forwardRefWithAs<'button', ButtonProps>((props, forwardedRef) => {
+const Button = React.forwardRef((props, forwardedRef) => {
   const { as: Comp = 'button', isDisabled, ...buttonProps } = props;
   return <Comp {...buttonProps} ref={forwardedRef} />;
-});
+}) as ButtonPrimitive;
 
 /* -------------------------------------------------------------------------------------------------
  * Extended Polymorphic Button

@@ -1,22 +1,22 @@
 import * as React from 'react';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
 
-import type { OwnProps } from '@radix-ui/react-polymorphic';
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 const NAME = 'Arrow';
 const DEFAULT_TAG = 'svg';
+
+type ArrowOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type ArrowPrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, ArrowOwnProps>;
 
 /**
  * We pass `ArrowImpl` in the `as` prop so that the whole svg
  * is replaced when consumer passes an `as` prop
  */
-const Arrow = forwardRefWithAs<typeof DEFAULT_TAG, OwnProps<typeof Primitive>>(
-  (props, forwardedRef) => {
-    return <Primitive as={ArrowImpl} selector={getSelector(NAME)} {...props} ref={forwardedRef} />;
-  }
-);
+const Arrow = React.forwardRef((props, forwardedRef) => {
+  return <Primitive as={ArrowImpl} selector={getSelector(NAME)} {...props} ref={forwardedRef} />;
+}) as ArrowPrimitive;
 
 const ArrowImpl = React.forwardRef<SVGSVGElement, React.ComponentProps<typeof DEFAULT_TAG>>(
   (props, forwardedRef) => (

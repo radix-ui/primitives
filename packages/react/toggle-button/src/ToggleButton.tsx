@@ -1,30 +1,35 @@
 import * as React from 'react';
 import { useControlledState, composeEventHandlers } from '@radix-ui/react-utils';
 import { getSelector } from '@radix-ui/utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 const NAME = 'ToggleButton';
 const DEFAULT_TAG = 'button';
 
-type ToggleButtonOwnProps = {
-  /** Whether the button is toggled or not, if controlled */
-  toggled?: boolean;
-  /**
-   * Whether the button is toggled by default, if uncontrolled
-   * (default: false)
-   */
-  defaultToggled?: boolean;
-  /** A function called when the button is toggled */
-  onToggledChange?(toggled: boolean): void;
-};
+type ToggleButtonOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    /** Whether the button is toggled or not, if controlled */
+    toggled?: boolean;
+    /**
+     * Whether the button is toggled by default, if uncontrolled
+     * (default: false)
+     */
+    defaultToggled?: boolean;
+    /** A function called when the button is toggled */
+    onToggledChange?(toggled: boolean): void;
+  }
+>;
 
-const ToggleButton = forwardRefWithAs<
+type ToggleButtonPrimitive = Polymorphic.ForwardRefComponent<
   typeof DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, ToggleButtonOwnProps>
->((props, forwardedRef) => {
+  ToggleButtonOwnProps
+>;
+
+const ToggleButton = React.forwardRef((props, forwardedRef) => {
   const {
     toggled: toggledProp,
     defaultToggled = false,
@@ -59,7 +64,7 @@ const ToggleButton = forwardRefWithAs<
       {children}
     </Primitive>
   );
-});
+}) as ToggleButtonPrimitive;
 
 ToggleButton.displayName = NAME;
 

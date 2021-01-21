@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { composeEventHandlers, createContext, extendComponent } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 import { makeRect, getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Point, MeasurableElement } from '@radix-ui/utils';
-import type { OwnProps } from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenu
@@ -47,25 +46,29 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
 const TRIGGER_NAME = 'ContextMenuTrigger';
 const TRIGGER_DEFAULT_TAG = 'span';
 
-const ContextMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG, OwnProps<typeof Primitive>>(
-  (props, forwardedRef) => {
-    const context = useContextMenuContext(TRIGGER_NAME);
-    return (
-      <Primitive
-        as={TRIGGER_DEFAULT_TAG}
-        selector={getSelector(TRIGGER_NAME)}
-        {...props}
-        ref={forwardedRef}
-        onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
-          event.preventDefault();
-          const point = { x: event.clientX, y: event.clientY };
-          context.setOpen(true);
-          context.anchorPointRef.current = point;
-        })}
-      />
-    );
-  }
-);
+type ContextMenuTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type ContextMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
+  typeof TRIGGER_DEFAULT_TAG,
+  ContextMenuTriggerOwnProps
+>;
+
+const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
+  const context = useContextMenuContext(TRIGGER_NAME);
+  return (
+    <Primitive
+      as={TRIGGER_DEFAULT_TAG}
+      selector={getSelector(TRIGGER_NAME)}
+      {...props}
+      ref={forwardedRef}
+      onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
+        event.preventDefault();
+        const point = { x: event.clientX, y: event.clientY };
+        context.setOpen(true);
+        context.anchorPointRef.current = point;
+      })}
+    />
+  );
+}) as ContextMenuTriggerPrimitive;
 
 ContextMenuTrigger.displayName = TRIGGER_NAME;
 
@@ -75,44 +78,47 @@ ContextMenuTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'ContextMenuContent';
 
-type ContextMenuContentOwnProps = {
-  anchorRef: never;
-  trapFocus: never;
-  disableOutsideScroll: never;
-  portalled: never;
-  onCloseAutoFocus: never;
-  onOpenAutoFocus: never;
-  onDismiss: never;
-};
+type ContextMenuContentOwnProps = Omit<
+  Polymorphic.OwnProps<typeof MenuPrimitive.Root>,
+  | 'anchorRef'
+  | 'trapFocus'
+  | 'disableOutsideScroll'
+  | 'portalled'
+  | 'onCloseAutoFocus'
+  | 'onOpenAutoFocus'
+  | 'onDismiss'
+>;
 
-const ContextMenuContent = forwardRefWithAs<typeof MenuPrimitive.Root, ContextMenuContentOwnProps>(
-  (props, forwardedRef) => {
-    const context = useContextMenuContext(CONTENT_NAME);
+type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Root>,
+  ContextMenuContentOwnProps
+>;
 
-    return (
-      <MenuPrimitive.Root
-        selector={getSelector(CONTENT_NAME)}
-        disableOutsidePointerEvents
-        side="bottom"
-        align="start"
-        {...props}
-        ref={forwardedRef}
-        open={context.open}
-        onOpenChange={context.setOpen}
-        style={{
-          ...props.style,
-          // re-namespace exposed content custom property
-          ['--radix-context-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
-        }}
-        anchorRef={context.anchorRef}
-        trapFocus
-        disableOutsideScroll
-        portalled
-        onDismiss={() => context.setOpen(false)}
-      />
-    );
-  }
-);
+const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
+  const context = useContextMenuContext(CONTENT_NAME);
+  return (
+    <MenuPrimitive.Root
+      selector={getSelector(CONTENT_NAME)}
+      disableOutsidePointerEvents
+      side="bottom"
+      align="start"
+      {...props}
+      ref={forwardedRef}
+      open={context.open}
+      onOpenChange={context.setOpen}
+      style={{
+        ...props.style,
+        // re-namespace exposed content custom property
+        ['--radix-context-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
+      }}
+      anchorRef={context.anchorRef}
+      trapFocus
+      disableOutsideScroll
+      portalled
+      onDismiss={() => context.setOpen(false)}
+    />
+  );
+}) as ContextMenuContentPrimitive;
 
 ContextMenuContent.displayName = CONTENT_NAME;
 

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { getSelector } from '@radix-ui/utils';
 import { createContext, useCallbackRef, useLayoutEffect } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type { OwnProps, MergeOwnProps } from '@radix-ui/react-polymorphic';
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar
@@ -14,6 +14,8 @@ const AVATAR_NAME = 'Avatar';
 const AVATAR_DEFAULT_TAG = 'span';
 
 type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
+type AvatarOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type AvatarPrimitive = Polymorphic.ForwardRefComponent<typeof AVATAR_DEFAULT_TAG, AvatarOwnProps>;
 type AvatarContextValue = [
   ImageLoadingStatus,
   React.Dispatch<React.SetStateAction<ImageLoadingStatus>>
@@ -24,22 +26,20 @@ const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
   AVATAR_NAME
 );
 
-const Avatar = forwardRefWithAs<typeof AVATAR_DEFAULT_TAG, OwnProps<typeof Primitive>>(
-  (props, forwardedRef) => {
-    const { children, ...avatarProps } = props;
-    const context = React.useState<ImageLoadingStatus>('idle');
-    return (
-      <Primitive
-        as={AVATAR_DEFAULT_TAG}
-        selector={getSelector(AVATAR_NAME)}
-        {...avatarProps}
-        ref={forwardedRef}
-      >
-        <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
-      </Primitive>
-    );
-  }
-);
+const Avatar = React.forwardRef((props, forwardedRef) => {
+  const { children, ...avatarProps } = props;
+  const context = React.useState<ImageLoadingStatus>('idle');
+  return (
+    <Primitive
+      as={AVATAR_DEFAULT_TAG}
+      selector={getSelector(AVATAR_NAME)}
+      {...avatarProps}
+      ref={forwardedRef}
+    >
+      <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
+    </Primitive>
+  );
+}) as AvatarPrimitive;
 
 Avatar.displayName = AVATAR_NAME;
 
@@ -50,14 +50,17 @@ Avatar.displayName = AVATAR_NAME;
 const IMAGE_NAME = 'AvatarImage';
 const IMAGE_DEFAULT_TAG = 'img';
 
-type AvatarImageOwnProps = {
-  onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
-};
+type AvatarImageOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { onLoadingStatusChange?: (status: ImageLoadingStatus) => void }
+>;
 
-const AvatarImage = forwardRefWithAs<
+type AvatarImagePrimitive = Polymorphic.ForwardRefComponent<
   typeof IMAGE_DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, AvatarImageOwnProps>
->((props, forwardedRef) => {
+  AvatarImageOwnProps
+>;
+
+const AvatarImage = React.forwardRef((props, forwardedRef) => {
   const { src, onLoadingStatusChange: onLoadingStatusChangeProp = () => {}, ...imageProps } = props;
   const [, setImageLoadingStatus] = useAvatarContext(IMAGE_NAME);
   const imageLoadingStatus = useImageLoadingStatus(src);
@@ -79,7 +82,7 @@ const AvatarImage = forwardRefWithAs<
       ref={forwardedRef}
     />
   ) : null;
-});
+}) as AvatarImagePrimitive;
 
 AvatarImage.displayName = IMAGE_NAME;
 
@@ -90,14 +93,13 @@ AvatarImage.displayName = IMAGE_NAME;
 const FALLBACK_NAME = 'AvatarFallback';
 const FALLBACK_DEFAULT_TAG = 'span';
 
-type AvatarFallbackOwnProps = {
-  delayMs?: number;
-};
-
-const AvatarFallback = forwardRefWithAs<
+type AvatarFallbackOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { delayMs?: number }>;
+type AvatarFallbackPrimitive = Polymorphic.ForwardRefComponent<
   typeof FALLBACK_DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, AvatarFallbackOwnProps>
->((props, forwardedRef) => {
+  AvatarFallbackOwnProps
+>;
+
+const AvatarFallback = React.forwardRef((props, forwardedRef) => {
   const { delayMs, ...fallbackProps } = props;
   const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
   const [canRender, setCanRender] = React.useState(delayMs === undefined);
@@ -117,7 +119,7 @@ const AvatarFallback = forwardRefWithAs<
       ref={forwardedRef}
     />
   ) : null;
-});
+}) as AvatarFallbackPrimitive;
 
 AvatarFallback.displayName = FALLBACK_NAME;
 

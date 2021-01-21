@@ -1,18 +1,22 @@
 import * as React from 'react';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import type { ForwardRefExoticComponentWithAs } from '@radix-ui/react-polymorphic';
 import { getSelector } from '@radix-ui/utils';
 
-function extendComponent<As extends ForwardRefExoticComponentWithAs<any, any>>(
-  Comp: As extends ForwardRefExoticComponentWithAs<infer I, infer P>
-    ? ForwardRefExoticComponentWithAs<I, P>
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+
+function extendComponent<As extends Polymorphic.ForwardRefComponent<any, any>>(
+  Comp: As extends Polymorphic.ForwardRefComponent<infer I, infer P>
+    ? Polymorphic.ForwardRefComponent<I, P>
     : As,
   displayName: string
 ) {
-  const Extended = forwardRefWithAs<typeof Comp>((props, forwardedRef) => {
+  type ExtendedPrimitive = Polymorphic.ForwardRefComponent<
+    Polymorphic.IntrinsicElement<typeof Comp>,
+    Polymorphic.OwnProps<typeof Comp>
+  >;
+  const Extended = React.forwardRef((props, forwardedRef) => {
     const As = Comp as any;
     return <As selector={getSelector(displayName)} {...props} ref={forwardedRef} />;
-  });
+  }) as ExtendedPrimitive;
   Extended.displayName = displayName;
   return Extended;
 }

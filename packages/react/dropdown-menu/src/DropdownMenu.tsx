@@ -7,12 +7,12 @@ import {
   useControlledState,
   useId,
 } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
-import type { OwnProps } from '@radix-ui/react-polymorphic';
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * DropdownMenu
@@ -63,10 +63,13 @@ DropdownMenu.displayName = DROPDOWN_MENU_NAME;
 const TRIGGER_NAME = 'DropdownMenuTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-const DropdownMenuTrigger = forwardRefWithAs<
+type DropdownMenuTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type DropdownMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
   typeof TRIGGER_DEFAULT_TAG,
-  OwnProps<typeof Primitive>
->((props, forwardedRef) => {
+  DropdownMenuTriggerOwnProps
+>;
+
+const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useDropdownMenuContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
@@ -95,7 +98,7 @@ const DropdownMenuTrigger = forwardRefWithAs<
       })}
     />
   );
-});
+}) as DropdownMenuTriggerPrimitive;
 
 DropdownMenuTrigger.displayName = TRIGGER_NAME;
 
@@ -105,18 +108,18 @@ DropdownMenuTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'DropdownMenuContent';
 
-type DropdownMenuContentOwnProps = {
-  anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
-  trapFocus: never;
-  onCloseAutoFocus: never;
-  onOpenAutoFocus: never;
-  onDismiss: never;
-};
+type MenuPrimitiveOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Root>;
+type DropdownMenuContentOwnProps = Merge<
+  Omit<MenuPrimitiveOwnProps, 'trapFocus' | 'onCloseAutoFocus' | 'onOpenAutoFocus' | 'onDismiss'>,
+  { anchorRef?: MenuPrimitiveOwnProps['anchorRef'] }
+>;
 
-const DropdownMenuContent = forwardRefWithAs<
-  typeof MenuPrimitive.Root,
+type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Root>,
   DropdownMenuContentOwnProps
->((props, forwardedRef) => {
+>;
+
+const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
   const context = useDropdownMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
@@ -156,7 +159,7 @@ const DropdownMenuContent = forwardRefWithAs<
       onDismiss={() => context.setOpen(false)}
     />
   );
-});
+}) as DropdownMenuContentPrimitive;
 
 DropdownMenuContent.displayName = CONTENT_NAME;
 

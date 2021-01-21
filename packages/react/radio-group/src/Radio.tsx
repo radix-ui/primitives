@@ -5,13 +5,13 @@ import {
   useControlledState,
   useComposedRefs,
 } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 import { getSelector } from '@radix-ui/utils';
 
-import type { MergeOwnProps } from '@radix-ui/react-polymorphic';
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Radio
@@ -21,21 +21,22 @@ const RADIO_NAME = 'Radio';
 const RADIO_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
-type RadioOwnProps = {
-  checked?: boolean;
-  defaultChecked?: boolean;
-  required?: InputDOMProps['required'];
-  readOnly?: InputDOMProps['readOnly'];
-  onCheckedChange?: InputDOMProps['onChange'];
-  onChange: never;
-};
+type RadioOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    checked?: boolean;
+    defaultChecked?: boolean;
+    required?: InputDOMProps['required'];
+    readOnly?: InputDOMProps['readOnly'];
+    onCheckedChange?: InputDOMProps['onChange'];
+  }
+>;
+
+type RadioPrimitive = Polymorphic.ForwardRefComponent<typeof RADIO_DEFAULT_TAG, RadioOwnProps>;
 
 const [RadioContext, useRadioContext] = createContext<boolean>(RADIO_NAME + 'Context', RADIO_NAME);
 
-const Radio = forwardRefWithAs<
-  typeof RADIO_DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, RadioOwnProps>
->((props, forwardedRef) => {
+const Radio = React.forwardRef((props, forwardedRef) => {
   const {
     'aria-labelledby': ariaLabelledby,
     children,
@@ -105,7 +106,7 @@ const Radio = forwardRefWithAs<
       </Primitive>
     </>
   );
-});
+}) as RadioPrimitive;
 
 Radio.displayName = RADIO_NAME;
 
@@ -116,18 +117,23 @@ Radio.displayName = RADIO_NAME;
 const INDICATOR_NAME = 'RadioIndicator';
 const INDICATOR_DEFAULT_TAG = 'span';
 
-type RadioIndicatorOwnProps = {
-  /**
-   * Used to force mounting when more control is needed. Useful when
-   * controlling animation with React animation libraries.
-   */
-  forceMount?: true;
-};
+type RadioIndicatorOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    /**
+     * Used to force mounting when more control is needed. Useful when
+     * controlling animation with React animation libraries.
+     */
+    forceMount?: true;
+  }
+>;
 
-const RadioIndicator = forwardRefWithAs<
+type RadioIndicatorPrimitive = Polymorphic.ForwardRefComponent<
   typeof INDICATOR_DEFAULT_TAG,
-  MergeOwnProps<typeof Primitive, RadioIndicatorOwnProps>
->((props, forwardedRef) => {
+  RadioIndicatorOwnProps
+>;
+
+const RadioIndicator = React.forwardRef((props, forwardedRef) => {
   const { forceMount, ...indicatorProps } = props;
   const checked = useRadioContext(INDICATOR_NAME);
   return (
@@ -141,7 +147,7 @@ const RadioIndicator = forwardRefWithAs<
       />
     </Presence>
   );
-});
+}) as RadioIndicatorPrimitive;
 
 RadioIndicator.displayName = INDICATOR_NAME;
 

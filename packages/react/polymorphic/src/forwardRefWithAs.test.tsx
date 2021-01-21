@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
 import { Primitive } from '@radix-ui/react-primitive';
-import { forwardRefWithAs } from './forwardRefWithAs';
 
-import type { MergeOwnProps } from './forwardRefWithAs';
+import type * as Polymorphic from './forwardRefWithAs';
 import type { RenderResult } from '@testing-library/react';
 
 /* -------------------------------------------------------------------------------------------------
@@ -15,12 +14,13 @@ type ButtonProps = {
   another?: number;
 };
 
-const Button = forwardRefWithAs<'button', MergeOwnProps<typeof Primitive, ButtonProps>>(
-  (props, forwardedRef) => {
-    const { isDisabled, ...buttonProps } = props;
-    return <Primitive as="button" {...buttonProps} ref={forwardedRef} />;
-  }
-);
+const Button = React.forwardRef((props, forwardedRef) => {
+  const { isDisabled, ...buttonProps } = props;
+  return <Primitive as="button" {...buttonProps} ref={forwardedRef} />;
+}) as Polymorphic.ForwardRefComponent<
+  'button',
+  Polymorphic.OwnProps<typeof Primitive> & ButtonProps
+>;
 
 /* -------------------------------------------------------------------------------------------------
  * Extended Button using react utilities without polymorphism
@@ -39,8 +39,17 @@ const ExtendedButtonUsingReactUtils = React.forwardRef<
 export function ExtendedButtonUsingReactUtilsWithInternalInlineAs(
   props: React.ComponentProps<typeof Button>
 ) {
+  /* Should complain about implicit `any` for inline props */
+  /* @ts-expect-error */
+  const implicitAnyProps = <Button as={(props) => <button {...props} />} {...props} />;
   /* Should not error with inline `as` component */
-  return <Button as={(props) => <button {...props} />} {...props} />;
+  const explicitAnyProps = <Button as={(props: any) => <button {...props} />} {...props} />;
+  return (
+    <>
+      {implicitAnyProps}
+      {explicitAnyProps}
+    </>
+  );
 }
 
 /* -------------------------------------------------------------------------------------------------
@@ -49,15 +58,20 @@ export function ExtendedButtonUsingReactUtilsWithInternalInlineAs(
 
 type ExtendedButtonProps = {
   isExtended?: boolean;
-  another: never;
 };
 
-const ExtendedButton = forwardRefWithAs<typeof Button, ExtendedButtonProps>(
-  (props, forwardedRef) => {
-    const { isExtended, ...extendedButtonProps } = props;
-    return <Button {...extendedButtonProps} ref={forwardedRef} />;
-  }
-);
+type ExtendedButtonButtonOwnProps = Omit<
+  Polymorphic.OwnProps<typeof Button>,
+  keyof ExtendedButtonProps | 'another'
+>;
+
+const ExtendedButton = React.forwardRef((props, forwardedRef) => {
+  const { isExtended, ...extendedButtonProps } = props;
+  return <Button {...extendedButtonProps} ref={forwardedRef} />;
+}) as Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Button>,
+  ExtendedButtonProps & ExtendedButtonButtonOwnProps
+>;
 
 /* -------------------------------------------------------------------------------------------------
  * Normal Link
@@ -78,18 +92,18 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
 });
 
 /* -------------------------------------------------------------------------------------------------
- * Polymorphic Bold with required prop
+ * Polymorphic Anchor with required prop
  * -----------------------------------------------------------------------------------------------*/
 
-type BoldProps = {
+type AnchorProps = {
   requiredProp: boolean;
 };
 
-const Bold = forwardRefWithAs<'a', BoldProps>((props, forwardedRef) => {
-  const { as: Comp = 'a', requiredProp, ...boldProps } = props;
+const Anchor = React.forwardRef((props, forwardedRef) => {
+  const { as: Comp = 'a', requiredProp, ...anchorProps } = props;
   /* Does not expect requiredProp */
-  return <Comp {...boldProps} ref={forwardedRef} />;
-});
+  return <Comp {...anchorProps} ref={forwardedRef} />;
+}) as Polymorphic.ForwardRefComponent<'a', AnchorProps>;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -129,7 +143,7 @@ export function Test() {
       <Button as={Link} isPrimary />
 
       {/* Button as Link accepts isDisabled prop */}
-      <Button as={Link} isDisabled />
+      <Button as={Link} />
 
       {/* Button as Link does not accept form prop */}
       {/* @ts-expect-error */}
@@ -179,9 +193,16 @@ export function Test() {
       {/* @ts-expect-error */}
       <ExtendedButtonUsingReactUtils as="a" isDisabled />
 
-      {/* Bold expects requiredProp prop */}
+      {/* Anchor expects requiredProp prop */}
       {/* @ts-expect-error */}
-      <Bold />
+      <Anchor />
+
+      {/* Button as Anchor (Polymorphic.ForwardRefComponent) expects required prop */}
+      {/* @ts-expect-error */}
+      <Button as={Anchor} />
+
+      {/* Button as Anchor (Polymorphic.ForwardRefComponent) accepts requiredProp */}
+      <Button as={Anchor} requiredProp />
     </>
   );
 }
