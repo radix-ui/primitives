@@ -79,7 +79,6 @@ const Menu = React.forwardRef((props, forwardedRef) => {
 type MenuImplOwnProps = Merge<
   Polymorphic.OwnProps<typeof PopperPrimitive.Root>,
   {
-    anchorRef: React.ComponentProps<typeof PopperPrimitive.Root>['anchorRef'];
     onOpenChange?: (open: boolean) => void;
     loop?: boolean;
 

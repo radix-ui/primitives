@@ -108,7 +108,17 @@ PopoverTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'PopoverContent';
 
-type PopoverContentOwnProps = Polymorphic.OwnProps<typeof PopoverContentImpl>;
+type PopoverContentOwnProps = Merge<
+  Polymorphic.OwnProps<typeof PopoverContentImpl>,
+  {
+    /**
+     * Used to force mounting when more control is needed. Useful when
+     * controlling animation with React animation libraries.
+     */
+    forceMount?: true;
+  }
+>;
+
 type PopoverContentPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof PopoverContentImpl>,
   PopoverContentOwnProps
@@ -193,12 +203,6 @@ type PopoverContentImplOwnProps = Merge<
      * (default: `true`)
      */
     portalled?: boolean;
-
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
 
     anchorRef?: PopperPrimitiveOwnProps['anchorRef'];
   }
