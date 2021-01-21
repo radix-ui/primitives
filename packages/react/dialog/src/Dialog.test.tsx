@@ -3,7 +3,7 @@ import { axe } from 'jest-axe';
 import { RenderResult } from '@testing-library/react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import * as Dialog from './Dialog';
-import { getPartDataAttr } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 
 const OPEN_TEXT = 'Open';
 const CLOSE_TEXT = 'Close';
@@ -38,7 +38,7 @@ describe('given a default Dialog', () => {
   });
 
   it('should have a radix attribute on the trigger', () => {
-    const partDataAttr = getPartDataAttr('DialogTrigger');
+    const partDataAttr = `data-${getSelector('DialogTrigger')}`;
     expect(trigger).toHaveAttribute(partDataAttr);
   });
 
@@ -62,17 +62,17 @@ describe('given a default Dialog', () => {
     });
 
     it('should have a radix attribute on the overlay', () => {
-      const partDataAttr = getPartDataAttr('DialogOverlay');
+      const partDataAttr = `data-${getSelector('DialogOverlay')}`;
       expect(overlay).toHaveAttribute(partDataAttr);
     });
 
     it('should have a radix attribute on the content', () => {
-      const partDataAttr = getPartDataAttr('DialogContent');
+      const partDataAttr = `data-${getSelector('DialogContent')}`;
       expect(content).toHaveAttribute(partDataAttr);
     });
 
     it('should have a radix attribute on the close button', () => {
-      const partDataAttr = getPartDataAttr('DialogClose');
+      const partDataAttr = `data-${getSelector('DialogClose')}`;
       expect(closeButton).toHaveAttribute(partDataAttr);
     });
 

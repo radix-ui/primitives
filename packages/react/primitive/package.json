@@ -1,14 +1,14 @@
 {
-  "name": "@radix-ui/react-alert-dialog",
-  "version": "0.0.1",
+  "name": "@radix-ui/react-primitive",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "module": "dist/index.module.js",
   "types": "dist/index.d.ts",
   "files": [
-    "src",
-    "dist"
+    "dist",
+    "README.md"
   ],
   "sideEffects": false,
   "scripts": {
@@ -18,14 +18,11 @@
     "prepublish": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*",
     "@radix-ui/utils": "workspace:*"
   },
   "peerDependencies": {
-    "react": ">=16.8"
+    "react": "^16.8 || ^17.0"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {

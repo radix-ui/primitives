@@ -3,8 +3,8 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
-import { getPartDataAttr } from '@radix-ui/utils';
+import { render } from '@testing-library/react';
+import { getSelector } from '@radix-ui/utils';
 import {
   ScrollArea,
   ScrollAreaViewport,
@@ -93,7 +93,7 @@ describe('given a default ScrollArea', () => {
 
     // NOTE: This is the actual scrollable element but we don't currently expose it as a component.
     // May be a better way to query for this that doesn't rely on an implementation detail.
-    scrollable = rendered.container.querySelector(`[${getPartDataAttr('ScrollAreaPosition')}]`);
+    scrollable = rendered.container.querySelector(`[data-${getSelector('ScrollAreaPosition')}]`);
   });
 
   it('should have no accessibility violations', async () => {
@@ -101,7 +101,7 @@ describe('given a default ScrollArea', () => {
   });
 
   it('should have a radix attribute on the container', () => {
-    const partDataAttr = getPartDataAttr('ScrollArea');
+    const partDataAttr = `data-${getSelector('ScrollArea')}`;
     expect(scrollArea).toHaveAttribute(partDataAttr);
   });
 

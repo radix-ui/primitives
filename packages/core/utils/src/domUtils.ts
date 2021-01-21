@@ -10,12 +10,12 @@ function namespaced(componentPart: string) {
   return `${NAMESPACE}-${part}`;
 }
 
-function getPartDataAttr(componentPart: string) {
-  return `data-${namespaced(componentPart)}`;
+function getSelector(componentPart: string) {
+  return namespaced(componentPart);
 }
 
-function getPartDataAttrObj(componentPart: string) {
-  return { [getPartDataAttr(componentPart)]: '' };
+function getSelectorObj(selector: string | null) {
+  return selector ? { [`data-${selector}`]: '' } : undefined;
 }
 
 function canUseDOM() {
@@ -45,8 +45,8 @@ function getResizeObserverEntryBorderBoxSize(entry: ResizeObserverEntry): Resize
 }
 
 export {
-  getPartDataAttr,
-  getPartDataAttrObj,
+  getSelector,
+  getSelectorObj,
   canUseDOM,
   makeId,
   namespaced,

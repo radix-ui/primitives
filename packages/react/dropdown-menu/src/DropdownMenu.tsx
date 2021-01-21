@@ -7,9 +7,12 @@ import {
   useControlledState,
   useId,
 } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { Primitive } from '@radix-ui/react-primitive';
+import { getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
+
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * DropdownMenu
@@ -60,28 +63,34 @@ DropdownMenu.displayName = DROPDOWN_MENU_NAME;
 const TRIGGER_NAME = 'DropdownMenuTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-const DropdownMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props, forwardedRef) => {
-  const { as: Comp = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
+type DropdownMenuTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type DropdownMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
+  typeof TRIGGER_DEFAULT_TAG,
+  DropdownMenuTriggerOwnProps
+>;
+
+const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useDropdownMenuContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
   return (
-    <Comp
-      {...getPartDataAttrObj(TRIGGER_NAME)}
-      ref={composedTriggerRef}
+    <Primitive
+      as={TRIGGER_DEFAULT_TAG}
+      selector={getSelector(TRIGGER_NAME)}
       type="button"
       aria-haspopup="menu"
       aria-expanded={context.open ? true : undefined}
       aria-controls={context.open ? context.id : undefined}
-      {...triggerProps}
-      onMouseDown={composeEventHandlers(triggerProps.onMouseDown, (event) => {
+      {...props}
+      ref={composedTriggerRef}
+      onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)
         if (event.button === 0 && event.ctrlKey === false) {
           context.setOpen((prevOpen) => !prevOpen);
         }
       })}
-      onKeyDown={composeEventHandlers(triggerProps.onKeyDown, (event: React.KeyboardEvent) => {
+      onKeyDown={composeEventHandlers(props.onKeyDown, (event: React.KeyboardEvent) => {
         if ([' ', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
           event.preventDefault();
           context.setOpen(true);
@@ -89,7 +98,7 @@ const DropdownMenuTrigger = forwardRefWithAs<typeof TRIGGER_DEFAULT_TAG>((props,
       })}
     />
   );
-});
+}) as DropdownMenuTriggerPrimitive;
 
 DropdownMenuTrigger.displayName = TRIGGER_NAME;
 
@@ -99,50 +108,43 @@ DropdownMenuTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'DropdownMenuContent';
 
-type DropdownMenuContentOwnProps = {
-  anchorRef?: React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef'];
-  trapFocus: never;
-  onCloseAutoFocus: never;
-  onOpenAutoFocus: never;
-  onDismiss: never;
-};
+type MenuPrimitiveOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Root>;
+type DropdownMenuContentOwnProps = Merge<
+  Omit<MenuPrimitiveOwnProps, 'trapFocus' | 'onCloseAutoFocus' | 'onOpenAutoFocus' | 'onDismiss'>,
+  { anchorRef?: MenuPrimitiveOwnProps['anchorRef'] }
+>;
 
-const DropdownMenuContent = forwardRefWithAs<
-  typeof MenuPrimitive.Root,
+type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Root>,
   DropdownMenuContentOwnProps
->((props, forwardedRef) => {
-  const {
-    anchorRef,
-    disableOutsidePointerEvents = true,
-    onPointerDownOutside,
-    onInteractOutside,
-    disableOutsideScroll = true,
-    portalled = true,
-    ...contentProps
-  } = props;
+>;
+
+const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
   const context = useDropdownMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
+      selector={getSelector(CONTENT_NAME)}
+      disableOutsidePointerEvents
+      disableOutsideScroll
+      portalled
+      {...props}
       ref={forwardedRef}
-      {...contentProps}
-      {...getPartDataAttrObj(CONTENT_NAME)}
       id={context.id}
       style={{
-        ...contentProps.style,
+        ...props.style,
         // re-namespace exposed content custom property
         ['--radix-dropdown-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
       }}
       open={context.open}
       onOpenChange={context.setOpen}
-      anchorRef={anchorRef || context.triggerRef}
+      anchorRef={props.anchorRef || context.triggerRef}
       trapFocus
       onCloseAutoFocus={(event) => {
         event.preventDefault();
         context.triggerRef.current?.focus();
       }}
-      disableOutsidePointerEvents={disableOutsidePointerEvents}
       onPointerDownOutside={composeEventHandlers(
-        onPointerDownOutside,
+        props.onPointerDownOutside,
         (event) => {
           const wasTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
 
@@ -154,17 +156,14 @@ const DropdownMenuContent = forwardRefWithAs<
         },
         { checkForDefaultPrevented: false }
       )}
-      onInteractOutside={onInteractOutside}
-      disableOutsideScroll={disableOutsideScroll}
-      portalled={portalled}
       onDismiss={() => context.setOpen(false)}
     />
   );
-});
+}) as DropdownMenuContentPrimitive;
 
 DropdownMenuContent.displayName = CONTENT_NAME;
 
-/* -----------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
 const DropdownMenuGroup = extendComponent(MenuPrimitive.Group, 'DropdownMenuGroup');
 const DropdownMenuLabel = extendComponent(MenuPrimitive.Label, 'DropdownMenuLabel');

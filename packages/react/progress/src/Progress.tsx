@@ -1,14 +1,16 @@
 import * as React from 'react';
 import { createContext } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { Primitive } from '@radix-ui/react-primitive';
+import { getSelector } from '@radix-ui/utils';
+
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Progress
  * -----------------------------------------------------------------------------------------------*/
 
 const PROGRESS_NAME = 'Progress';
-const PROGRESS_DEFAULT_TAG = 'div';
 const DEFAULT_MAX = 100;
 
 type ProgressState = 'indeterminate' | 'complete' | 'loading';
@@ -18,47 +20,52 @@ const [ProgressContext, useProgressContext] = createContext<ProgressContextValue
   PROGRESS_NAME
 );
 
-type ProgressOwnProps = {
-  value?: number | null | undefined;
-  max?: number;
-  getValueLabel?(value: number, max: number): string;
-};
-
-const Progress = forwardRefWithAs<typeof PROGRESS_DEFAULT_TAG, ProgressOwnProps>(
-  (props, forwardedRef) => {
-    const {
-      as: Comp = PROGRESS_DEFAULT_TAG,
-      children,
-      value: valueProp,
-      max: maxProp,
-      getValueLabel = defaultGetValueLabel,
-      ...progressProps
-    } = props;
-
-    const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
-    const value = isValidValueNumber(valueProp, max) ? valueProp : null;
-    const ctx: ProgressContextValue = React.useMemo(() => ({ value, max }), [value, max]);
-    const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
-
-    return (
-      <Comp
-        aria-valuemax={max}
-        aria-valuemin={0}
-        aria-valuenow={isNumber(value) ? value : undefined}
-        aria-valuetext={valueLabel}
-        role="progressbar"
-        {...progressProps}
-        {...getPartDataAttrObj(PROGRESS_NAME)}
-        data-state={getProgressState(value, max)}
-        data-value={value ?? undefined}
-        data-max={max}
-        ref={forwardedRef}
-      >
-        <ProgressContext.Provider value={ctx}>{children}</ProgressContext.Provider>
-      </Comp>
-    );
+type ProgressOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    value?: number | null | undefined;
+    max?: number;
+    getValueLabel?(value: number, max: number): string;
   }
-);
+>;
+
+type ProgressPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Primitive>,
+  ProgressOwnProps
+>;
+
+const Progress = React.forwardRef((props, forwardedRef) => {
+  const {
+    children,
+    value: valueProp,
+    max: maxProp,
+    getValueLabel = defaultGetValueLabel,
+    ...progressProps
+  } = props;
+
+  const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+  const value = isValidValueNumber(valueProp, max) ? valueProp : null;
+  const ctx: ProgressContextValue = React.useMemo(() => ({ value, max }), [value, max]);
+  const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
+
+  return (
+    <Primitive
+      selector={getSelector(PROGRESS_NAME)}
+      aria-valuemax={max}
+      aria-valuemin={0}
+      aria-valuenow={isNumber(value) ? value : undefined}
+      aria-valuetext={valueLabel}
+      role="progressbar"
+      {...progressProps}
+      data-state={getProgressState(value, max)}
+      data-value={value ?? undefined}
+      data-max={max}
+      ref={forwardedRef}
+    >
+      <ProgressContext.Provider value={ctx}>{children}</ProgressContext.Provider>
+    </Primitive>
+  );
+}) as ProgressPrimitive;
 
 Progress.displayName = PROGRESS_NAME;
 
@@ -87,22 +94,26 @@ Progress.propTypes = {
  * -----------------------------------------------------------------------------------------------*/
 
 const INDICATOR_NAME = 'ProgressIndicator';
-const INDICATOR_DEFAULT_TAG = 'div';
 
-const ProgressIndicator = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>((props, forwardedRef) => {
+type ProgressIndicatorOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type ProgressIndicatorPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Primitive>,
+  ProgressIndicatorOwnProps
+>;
+
+const ProgressIndicator = React.forwardRef((props, forwardedRef) => {
   const { value, max } = useProgressContext(INDICATOR_NAME);
-  const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
   return (
-    <Comp
-      {...indicatorProps}
-      {...getPartDataAttrObj(INDICATOR_NAME)}
+    <Primitive
+      selector={getSelector(INDICATOR_NAME)}
+      {...props}
       data-state={getProgressState(value, max)}
       data-value={value || undefined}
       data-max={max}
       ref={forwardedRef}
     />
   );
-});
+}) as ProgressIndicatorPrimitive;
 
 ProgressIndicator.displayName = INDICATOR_NAME;
 

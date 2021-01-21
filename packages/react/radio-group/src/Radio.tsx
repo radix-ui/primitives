@@ -5,10 +5,13 @@ import {
   useControlledState,
   useComposedRefs,
 } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
+
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Radio
@@ -18,20 +21,23 @@ const RADIO_NAME = 'Radio';
 const RADIO_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
-type RadioOwnProps = {
-  checked?: boolean;
-  defaultChecked?: boolean;
-  required?: InputDOMProps['required'];
-  readOnly?: InputDOMProps['readOnly'];
-  onCheckedChange?: InputDOMProps['onChange'];
-  onChange: never;
-};
+type RadioOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    checked?: boolean;
+    defaultChecked?: boolean;
+    required?: InputDOMProps['required'];
+    readOnly?: InputDOMProps['readOnly'];
+    onCheckedChange?: InputDOMProps['onChange'];
+  }
+>;
+
+type RadioPrimitive = Polymorphic.ForwardRefComponent<typeof RADIO_DEFAULT_TAG, RadioOwnProps>;
 
 const [RadioContext, useRadioContext] = createContext<boolean>(RADIO_NAME + 'Context', RADIO_NAME);
 
-const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, forwardedRef) => {
+const Radio = React.forwardRef((props, forwardedRef) => {
   const {
-    as: Comp = RADIO_DEFAULT_TAG,
     'aria-labelledby': ariaLabelledby,
     children,
     name,
@@ -75,10 +81,11 @@ const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, 
           setChecked(event.target.checked);
         })}
       />
-      <Comp
+      <Primitive
+        as={RADIO_DEFAULT_TAG}
+        selector={getSelector(RADIO_NAME)}
         type="button"
         {...radioProps}
-        {...getPartDataAttrObj(RADIO_NAME)}
         ref={ref}
         role="radio"
         aria-checked={checked}
@@ -96,10 +103,10 @@ const Radio = forwardRefWithAs<typeof RADIO_DEFAULT_TAG, RadioOwnProps>((props, 
         })}
       >
         <RadioContext.Provider value={checked}>{children}</RadioContext.Provider>
-      </Comp>
+      </Primitive>
     </>
   );
-});
+}) as RadioPrimitive;
 
 Radio.displayName = RADIO_NAME;
 
@@ -110,32 +117,37 @@ Radio.displayName = RADIO_NAME;
 const INDICATOR_NAME = 'RadioIndicator';
 const INDICATOR_DEFAULT_TAG = 'span';
 
-type RadioIndicatorOwnProps = {
-  /**
-   * Used to force mounting when more control is needed. Useful when
-   * controlling animation with React animation libraries.
-   */
-  forceMount?: true;
-};
-
-const RadioIndicator = forwardRefWithAs<typeof RadioIndicatorImpl, RadioIndicatorOwnProps>(
-  (props, forwardedRef) => {
-    const { forceMount, ...indicatorProps } = props;
-    const checked = useRadioContext(INDICATOR_NAME);
-    return (
-      <Presence present={forceMount || checked}>
-        <RadioIndicatorImpl {...indicatorProps} data-state={getState(checked)} ref={forwardedRef} />
-      </Presence>
-    );
+type RadioIndicatorOwnProps = Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    /**
+     * Used to force mounting when more control is needed. Useful when
+     * controlling animation with React animation libraries.
+     */
+    forceMount?: true;
   }
-);
+>;
 
-const RadioIndicatorImpl = forwardRefWithAs<typeof INDICATOR_DEFAULT_TAG>(
-  function RadioIndicatorImpl(props, forwardedRef) {
-    const { as: Comp = INDICATOR_DEFAULT_TAG, ...indicatorProps } = props;
-    return <Comp {...indicatorProps} {...getPartDataAttrObj(INDICATOR_NAME)} ref={forwardedRef} />;
-  }
-);
+type RadioIndicatorPrimitive = Polymorphic.ForwardRefComponent<
+  typeof INDICATOR_DEFAULT_TAG,
+  RadioIndicatorOwnProps
+>;
+
+const RadioIndicator = React.forwardRef((props, forwardedRef) => {
+  const { forceMount, ...indicatorProps } = props;
+  const checked = useRadioContext(INDICATOR_NAME);
+  return (
+    <Presence present={forceMount || checked}>
+      <Primitive
+        as={INDICATOR_DEFAULT_TAG}
+        selector={getSelector(INDICATOR_NAME)}
+        {...indicatorProps}
+        data-state={getState(checked)}
+        ref={forwardedRef}
+      />
+    </Presence>
+  );
+}) as RadioIndicatorPrimitive;
 
 RadioIndicator.displayName = INDICATOR_NAME;
 

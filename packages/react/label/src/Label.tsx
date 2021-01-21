@@ -1,7 +1,10 @@
 import * as React from 'react';
-import { getPartDataAttrObj } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { useId, useComposedRefs } from '@radix-ui/react-utils';
-import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
+import { Primitive } from '@radix-ui/react-primitive';
+
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
@@ -10,13 +13,14 @@ import { forwardRefWithAs } from '@radix-ui/react-polymorphic';
 const NAME = 'Label';
 const DEFAULT_TAG = 'span';
 
-type LabelOwnProps = { htmlFor?: string };
+type LabelOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { htmlFor?: string }>;
+type LabelPrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, LabelOwnProps>;
 
 type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
-const Label = forwardRefWithAs<typeof DEFAULT_TAG, LabelOwnProps>((props, forwardedRef) => {
-  const { htmlFor, as: Comp = DEFAULT_TAG, id: idProp, children, ...labelProps } = props;
+const Label = React.forwardRef((props, forwardedRef) => {
+  const { htmlFor, id: idProp, children, ...labelProps } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
   const generatedId = `label-${useId()}`;
@@ -65,13 +69,20 @@ const Label = forwardRefWithAs<typeof DEFAULT_TAG, LabelOwnProps>((props, forwar
   }, [id, htmlFor]);
 
   return (
-    <Comp {...labelProps} {...getPartDataAttrObj(NAME)} id={id} ref={ref} role="label">
+    <Primitive
+      as={DEFAULT_TAG}
+      selector={getSelector(NAME)}
+      {...labelProps}
+      ref={ref}
+      id={id}
+      role="label"
+    >
       <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
         {children}
       </LabelContext.Provider>
-    </Comp>
+    </Primitive>
   );
-});
+}) as LabelPrimitive;
 
 Label.displayName = 'Label';
 

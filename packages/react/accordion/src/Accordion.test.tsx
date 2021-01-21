@@ -2,7 +2,7 @@ import * as React from 'react';
 import { axe } from 'jest-axe';
 import { render, fireEvent, RenderResult, waitFor } from '@testing-library/react';
 import * as Accordion from './Accordion';
-import { getPartDataAttr } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 
 const ITEMS = ['One', 'Two', 'Three'];
 
@@ -37,19 +37,19 @@ describe('given a basic Accordion', () => {
 
   it('should have a radix attribute on the item', () => {
     item = rendered.getByTestId('item-one');
-    const partDataAttr = getPartDataAttr('AccordionItem');
+    const partDataAttr = `data-${getSelector('AccordionItem')}`;
     expect(item).toHaveAttribute(partDataAttr);
   });
 
   it('should have a radix attribute on the header', () => {
     header = rendered.getByTestId('header-one');
-    const partDataAttr = getPartDataAttr('AccordionHeader');
+    const partDataAttr = `data-${getSelector('AccordionHeader')}`;
     expect(header).toHaveAttribute(partDataAttr);
   });
 
   it('should have a radix attribute on the button', () => {
     button = rendered.getByText('Button One');
-    const partDataAttr = getPartDataAttr('AccordionButton');
+    const partDataAttr = `data-${getSelector('AccordionButton')}`;
     expect(button).toHaveAttribute(partDataAttr);
   });
 
@@ -100,7 +100,7 @@ describe('given a basic Accordion', () => {
     });
 
     it('should have a radix attribute on the panel', () => {
-      const partDataAttr = getPartDataAttr('AccordionPanel');
+      const partDataAttr = `data-${getSelector('AccordionPanel')}`;
       expect(panel).toHaveAttribute(partDataAttr);
     });
 
@@ -163,7 +163,7 @@ describe('given an Accordion with a false `disabled` prop', () => {
     beforeEach(() => {
       rendered = render(
         <DisabledAccordionTest>
-          <Accordion.Item value="disabled" data-testid="item-disabled" disabled={true}>
+          <Accordion.Item value="disabled" data-testid="item-disabled" disabled>
             <Accordion.Header>
               <Accordion.Button data-testid="button-disabled">Button disabled</Accordion.Button>
             </Accordion.Header>

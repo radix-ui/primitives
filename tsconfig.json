@@ -27,6 +27,7 @@
       "@radix-ui/react-popper": ["./packages/react/popper/src"],
       "@radix-ui/react-portal": ["./packages/react/portal/src"],
       "@radix-ui/react-presence": ["./packages/react/presence/src"],
+      "@radix-ui/react-primitive": ["./packages/react/primitive/src"],
       "@radix-ui/react-progress": ["packages/react/progress/src"],
       "@radix-ui/react-radio-group": ["./packages/react/radio-group/src"],
       "@radix-ui/react-roving-focus": ["./packages/react/roving-focus/src"],
