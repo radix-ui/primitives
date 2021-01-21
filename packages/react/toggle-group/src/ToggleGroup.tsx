@@ -202,7 +202,7 @@ const MultiSelectToggleGroup = React.forwardRef((props, forwardedRef) => {
     ...groupProps
   } = props;
 
-  const [value = [], setValue] = useControlledState<string[]>({
+  const [value, setValue] = useControlledState<string[]>({
     prop: valueProp,
     defaultProp: defaultValue || [],
     onChange: onValueChange,
@@ -311,11 +311,11 @@ const MultiSelectToggleGroupItem = React.forwardRef((props, forwardedRef) => {
 
 /* ----------------------------------------------------------------------------------------------*/
 
+ToggleGroup.displayName = GROUP_NAME;
+ToggleGroupItem.displayName = ITEM_NAME;
+
 MultiSelectToggleGroup.displayName = MULTI_GROUP_NAME;
 MultiSelectToggleGroupItem.displayName = MULTI_ITEM_NAME;
-
-ToggleGroupItem.displayName = ITEM_NAME;
-ToggleGroup.displayName = GROUP_NAME;
 
 const Root = ToggleGroup;
 const Item = ToggleGroupItem;
