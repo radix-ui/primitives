@@ -370,6 +370,7 @@ MenuLabel.displayName = LABEL_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const ITEM_NAME = 'MenuItem';
+// HERE: 👇
 const ENABLED_ITEM_SELECTOR = `[data-${getSelector(ITEM_NAME)}]:not([data-disabled])`;
 const ITEM_SELECT = 'menu.itemSelect';
 
