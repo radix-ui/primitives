@@ -18,7 +18,13 @@ type AspectRatioPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const AspectRatio = React.forwardRef((props, forwardedRef) => {
-  const { ratio = 1 / 1, style, children, ...aspectRatioProps } = props;
+  const {
+    selector = getSelector(NAME),
+    ratio = 1 / 1,
+    style,
+    children,
+    ...aspectRatioProps
+  } = props;
   return (
     <div
       style={{
@@ -30,8 +36,8 @@ const AspectRatio = React.forwardRef((props, forwardedRef) => {
       }}
     >
       <Primitive
-        selector={getSelector(NAME)}
         {...aspectRatioProps}
+        selector={selector}
         ref={forwardedRef}
         style={{
           ...style,

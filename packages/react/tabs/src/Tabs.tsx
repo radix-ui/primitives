@@ -59,6 +59,7 @@ type TabsPrimitive = Polymorphic.ForwardRefComponent<
 
 const Tabs = React.forwardRef((props, forwardedRef) => {
   const {
+    selector = getSelector(TABS_NAME),
     children,
     id,
     value: valueProp,
@@ -87,9 +88,9 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
     <TabsContext.Provider value={ctx}>
       <Primitive
         id={tabsId}
-        selector={getSelector(TABS_NAME)}
         data-orientation={orientation}
         {...tabsProps}
+        selector={selector}
         ref={forwardedRef}
       >
         {children}
@@ -123,16 +124,16 @@ type TabsListPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const TabsList = React.forwardRef((props, forwardedRef) => {
+  const { selector = getSelector(TAB_LIST_NAME), loop = true, children, ...otherProps } = props;
   const { orientation } = useTabsContext(TAB_LIST_NAME);
-  const { loop = true, children, ...otherProps } = props;
 
   return (
     <Primitive
-      selector={getSelector(TAB_LIST_NAME)}
       data-orientation={orientation}
       role="tablist"
       aria-orientation={orientation}
       {...otherProps}
+      selector={selector}
       ref={forwardedRef}
     >
       <RovingFocusGroup orientation={orientation} loop={loop}>
@@ -164,7 +165,7 @@ type TabsTabPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const TabsTab = React.forwardRef((props, forwardedRef) => {
-  const { value, disabled, ...tabProps } = props;
+  const { selector = getSelector(TAB_NAME), value, disabled, ...tabProps } = props;
   const context = useTabsContext(TAB_NAME);
   const tabId = makeTabId(context.tabsId, value);
   const tabPanelId = makeTabsPanelId(context.tabsId, value);
@@ -207,17 +208,17 @@ const TabsTab = React.forwardRef((props, forwardedRef) => {
   return (
     <Primitive
       role="tab"
-      selector={getSelector(TAB_NAME)}
       aria-selected={isSelected}
       aria-controls={tabPanelId}
       aria-disabled={disabled || undefined}
       {...tabProps}
       {...rovingFocusProps}
+      selector={selector}
+      ref={forwardedRef}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
       data-orientation={context.orientation}
       id={tabId}
-      ref={forwardedRef}
       onKeyDown={handleKeyDown}
       onMouseDown={handleMouseDown}
       onFocus={handleFocus}
@@ -240,7 +241,7 @@ type TabsPanelPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const TabsPanel = React.forwardRef((props, forwardedRef) => {
-  const { value, ...tabPanelProps } = props;
+  const { selector = getSelector(TAB_PANEL_NAME), value, ...tabPanelProps } = props;
   const context = useTabsContext(TAB_PANEL_NAME);
   const tabId = makeTabId(context.tabsId, value);
   const tabPanelId = makeTabsPanelId(context.tabsId, value);
@@ -248,7 +249,6 @@ const TabsPanel = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Primitive
-      selector={getSelector(TAB_PANEL_NAME)}
       data-state={isSelected ? 'active' : 'inactive'}
       data-orientation={context.orientation}
       id={tabPanelId}
@@ -257,6 +257,7 @@ const TabsPanel = React.forwardRef((props, forwardedRef) => {
       tabIndex={0}
       hidden={!isSelected}
       {...tabPanelProps}
+      selector={selector}
       ref={forwardedRef}
     />
   );

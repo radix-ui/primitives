@@ -156,6 +156,7 @@ type MenuImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const MenuImpl = React.forwardRef((props, forwardedRef) => {
   const {
+    selector = getSelector(MENU_NAME),
     children,
     onOpenChange,
     anchorRef,
@@ -257,8 +258,8 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
               {(dismissableLayerProps) => (
                 <PopperPrimitive.Root
                   role="menu"
-                  selector={getSelector(MENU_NAME)}
                   {...menuProps}
+                  selector={selector}
                   ref={composeRefs(
                     forwardedRef,
                     menuRef,
@@ -337,9 +338,10 @@ type MenuGroupPrimitive = Polymorphic.ForwardRefComponent<
   MenuGroupOwnProps
 >;
 
-const MenuGroup = React.forwardRef((props, forwardedRef) => (
-  <Primitive role="group" selector={getSelector(GROUP_NAME)} {...props} ref={forwardedRef} />
-)) as MenuGroupPrimitive;
+const MenuGroup = React.forwardRef((props, forwardedRef) => {
+  const { selector = getSelector(GROUP_NAME), ...groupProps } = props;
+  return <Primitive role="group" {...groupProps} selector={selector} ref={forwardedRef} />;
+}) as MenuGroupPrimitive;
 
 MenuGroup.displayName = GROUP_NAME;
 
@@ -355,9 +357,10 @@ type MenuLabelPrimitive = Polymorphic.ForwardRefComponent<
   MenuLabelOwnProps
 >;
 
-const MenuLabel = React.forwardRef((props, forwardedRef) => (
-  <Primitive selector={getSelector(LABEL_NAME)} {...props} ref={forwardedRef} />
-)) as MenuLabelPrimitive;
+const MenuLabel = React.forwardRef((props, forwardedRef) => {
+  const { selector = getSelector(LABEL_NAME), ...labelProps } = props;
+  return <Primitive {...labelProps} selector={selector} ref={forwardedRef} />;
+}) as MenuLabelPrimitive;
 
 MenuLabel.displayName = LABEL_NAME;
 
@@ -385,7 +388,7 @@ type MenuItemPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const MenuItem = React.forwardRef((props, forwardedRef) => {
-  const { disabled, textValue, onSelect, ...itemProps } = props;
+  const { selector = getSelector(ITEM_NAME), disabled, textValue, onSelect, ...itemProps } = props;
   const menuItemRef = React.useRef<HTMLDivElement>(null);
   const composedRef = useComposedRefs(forwardedRef, menuItemRef);
   const context = useMenuContext(ITEM_NAME);
@@ -427,7 +430,6 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
   return (
     <Primitive
       role="menuitem"
-      selector={getSelector(ITEM_NAME)}
       aria-disabled={disabled || undefined}
       {...itemProps}
       {...rovingFocusProps}
@@ -438,6 +440,7 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
        * We make sure there's always a generic `data-radix-menu-item` available to query from here.
        */
       {...{ [ITEM_ATTR]: '' }}
+      selector={selector}
       ref={composedRef}
       data-disabled={disabled ? '' : undefined}
       onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
@@ -505,15 +508,21 @@ type MenyCheckboxItemPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const MenuCheckboxItem = React.forwardRef((props, forwardedRef) => {
-  const { checked = false, onCheckedChange, children, ...checkboxItemProps } = props;
+  const {
+    selector = getSelector(CHECKBOX_ITEM_NAME),
+    checked = false,
+    onCheckedChange,
+    children,
+    ...checkboxItemProps
+  } = props;
   return (
     <MenuItem
       role="menuitemcheckbox"
-      selector={getSelector(CHECKBOX_ITEM_NAME)}
       aria-checked={checked}
       {...checkboxItemProps}
-      data-state={getCheckedState(checked)}
+      selector={selector}
       ref={forwardedRef}
+      data-state={getCheckedState(checked)}
       onSelect={composeEventHandlers(
         checkboxItemProps.onSelect,
         () => onCheckedChange?.(!checked),
@@ -549,14 +558,20 @@ type MenuRadioGroupPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const MenuRadioGroup = React.forwardRef((props, forwardedRef) => {
-  const { children, value, onValueChange, ...groupProps } = props;
+  const {
+    selector = getSelector(RADIO_GROUP_NAME),
+    children,
+    value,
+    onValueChange,
+    ...groupProps
+  } = props;
   const handleValueChange = useCallbackRef(onValueChange);
   const context = React.useMemo(() => ({ value, onValueChange: handleValueChange }), [
     value,
     handleValueChange,
   ]);
   return (
-    <MenuGroup selector={getSelector(RADIO_GROUP_NAME)} {...groupProps} ref={forwardedRef}>
+    <MenuGroup {...groupProps} selector={selector} ref={forwardedRef}>
       <RadioGroupContext.Provider value={context}>{children}</RadioGroupContext.Provider>
     </MenuGroup>
   );
@@ -577,17 +592,17 @@ type MenuRadioItemPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const MenuRadioItem = React.forwardRef((props, forwardedRef) => {
-  const { value, children, ...radioItemProps } = props;
+  const { selector = getSelector(RADIO_ITEM_NAME), value, children, ...radioItemProps } = props;
   const context = React.useContext(RadioGroupContext);
   const checked = value === context.value;
   return (
     <MenuItem
       role="menuitemradio"
-      selector={getSelector(RADIO_ITEM_NAME)}
       aria-checked={checked}
       {...radioItemProps}
-      data-state={getCheckedState(checked)}
+      selector={selector}
       ref={forwardedRef}
+      data-state={getCheckedState(checked)}
       onSelect={composeEventHandlers(
         radioItemProps.onSelect,
         () => context.onValueChange?.(value),
@@ -627,16 +642,21 @@ type MenuItemIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const MenuItemIndicator = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, ...indicatorProps } = props;
+  const {
+    as = ITEM_INDICATOR_DEFAULT_TAG,
+    selector = getSelector(ITEM_INDICATOR_NAME),
+    forceMount,
+    ...indicatorProps
+  } = props;
   const checked = React.useContext(ItemIndicatorContext);
   return (
     <Presence present={forceMount || checked}>
       <Primitive
-        as={ITEM_INDICATOR_DEFAULT_TAG}
-        selector={getSelector(ITEM_INDICATOR_NAME)}
         {...indicatorProps}
-        data-state={getCheckedState(checked)}
+        as={as}
+        selector={selector}
         ref={forwardedRef}
+        data-state={getCheckedState(checked)}
       />
     </Presence>
   );
@@ -656,15 +676,18 @@ type MenuSeparatorPrimitive = Polymorphic.ForwardRefComponent<
   MenuSeparatorOwnProps
 >;
 
-const MenuSeparator = React.forwardRef((props, forwardedRef) => (
-  <Primitive
-    role="separator"
-    selector={getSelector(SEPARATOR_NAME)}
-    aria-orientation="horizontal"
-    {...props}
-    ref={forwardedRef}
-  />
-)) as MenuSeparatorPrimitive;
+const MenuSeparator = React.forwardRef((props, forwardedRef) => {
+  const { selector = getSelector(SEPARATOR_NAME), ...separatorProps } = props;
+  return (
+    <Primitive
+      role="separator"
+      aria-orientation="horizontal"
+      {...separatorProps}
+      selector={selector}
+      ref={forwardedRef}
+    />
+  );
+}) as MenuSeparatorPrimitive;
 
 MenuSeparator.displayName = SEPARATOR_NAME;
 
