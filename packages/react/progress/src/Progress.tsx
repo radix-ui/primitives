@@ -36,6 +36,7 @@ type ProgressPrimitive = Polymorphic.ForwardRefComponent<
 
 const Progress = React.forwardRef((props, forwardedRef) => {
   const {
+    selector = getSelector(PROGRESS_NAME),
     children,
     value: valueProp,
     max: maxProp,
@@ -50,17 +51,17 @@ const Progress = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Primitive
-      selector={getSelector(PROGRESS_NAME)}
       aria-valuemax={max}
       aria-valuemin={0}
       aria-valuenow={isNumber(value) ? value : undefined}
       aria-valuetext={valueLabel}
       role="progressbar"
       {...progressProps}
+      selector={selector}
+      ref={forwardedRef}
       data-state={getProgressState(value, max)}
       data-value={value ?? undefined}
       data-max={max}
-      ref={forwardedRef}
     >
       <ProgressContext.Provider value={ctx}>{children}</ProgressContext.Provider>
     </Primitive>
@@ -102,15 +103,16 @@ type ProgressIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ProgressIndicator = React.forwardRef((props, forwardedRef) => {
+  const { selector = getSelector(INDICATOR_NAME), ...indicatorProps } = props;
   const { value, max } = useProgressContext(INDICATOR_NAME);
   return (
     <Primitive
-      selector={getSelector(INDICATOR_NAME)}
-      {...props}
+      {...indicatorProps}
+      selector={selector}
+      ref={forwardedRef}
       data-state={getProgressState(value, max)}
       data-value={value || undefined}
       data-max={max}
-      ref={forwardedRef}
     />
   );
 }) as ProgressIndicatorPrimitive;

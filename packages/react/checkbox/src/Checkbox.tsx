@@ -45,6 +45,8 @@ const [CheckboxContext, useCheckboxContext] = createContext<CheckedState>(
 
 const Checkbox = React.forwardRef((props, forwardedRef) => {
   const {
+    as = CHECKBOX_DEFAULT_TAG,
+    selector = getSelector(CHECKBOX_NAME),
     'aria-labelledby': ariaLabelledby,
     children,
     name,
@@ -94,10 +96,10 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
         })}
       />
       <Primitive
-        as={CHECKBOX_DEFAULT_TAG}
-        selector={getSelector(CHECKBOX_NAME)}
         type="button"
         {...checkboxProps}
+        as={as}
+        selector={selector}
         ref={ref}
         role="checkbox"
         aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
@@ -147,16 +149,21 @@ type CheckboxIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const CheckboxIndicator = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, ...indicatorProps } = props;
+  const {
+    as = INDICATOR_DEFAULT_TAG,
+    selector = getSelector(INDICATOR_NAME),
+    forceMount,
+    ...indicatorProps
+  } = props;
   const checked = useCheckboxContext(INDICATOR_NAME);
   return (
     <Presence present={forceMount || checked === 'indeterminate' || checked === true}>
       <Primitive
-        as={INDICATOR_DEFAULT_TAG}
-        selector={getSelector(INDICATOR_NAME)}
         {...indicatorProps}
-        data-state={getState(checked)}
+        as={as}
+        selector={selector}
         ref={forwardedRef}
+        data-state={getState(checked)}
       />
     </Presence>
   );

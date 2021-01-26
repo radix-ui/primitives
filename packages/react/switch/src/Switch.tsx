@@ -40,6 +40,8 @@ const [SwitchContext, useSwitchContext] = createContext<boolean>(
 
 const Switch = React.forwardRef((props, forwardedRef) => {
   const {
+    as = SWITCH_DEFAULT_TAG,
+    selector = getSelector(SWITCH_NAME),
     'aria-labelledby': ariaLabelledby,
     children,
     name,
@@ -84,10 +86,10 @@ const Switch = React.forwardRef((props, forwardedRef) => {
         })}
       />
       <Primitive
-        as={SWITCH_DEFAULT_TAG}
-        selector={getSelector(SWITCH_NAME)}
         type="button"
         {...switchProps}
+        as={as}
+        selector={selector}
         ref={ref}
         role="switch"
         aria-checked={checked}
@@ -127,14 +129,15 @@ type SwitchThumbPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SwitchThumb = React.forwardRef((props, forwardedRef) => {
+  const { as = THUMB_DEFAULT_TAG, selector = getSelector(THUMB_NAME), ...thumbProps } = props;
   const checked = useSwitchContext(THUMB_NAME);
   return (
     <Primitive
-      as={THUMB_DEFAULT_TAG}
-      selector={getSelector(THUMB_NAME)}
-      {...props}
-      data-state={getState(checked)}
+      {...thumbProps}
+      as={as}
+      selector={selector}
       ref={forwardedRef}
+      data-state={getState(checked)}
     />
   );
 }) as SwitchThumbPrimitive;

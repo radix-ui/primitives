@@ -70,18 +70,19 @@ type DropdownMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
   const context = useDropdownMenuContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
   return (
     <Primitive
-      as={TRIGGER_DEFAULT_TAG}
-      selector={getSelector(TRIGGER_NAME)}
       type="button"
       aria-haspopup="menu"
       aria-expanded={context.open ? true : undefined}
       aria-controls={context.open ? context.id : undefined}
-      {...props}
+      {...triggerProps}
+      as={as}
+      selector={selector}
       ref={composedTriggerRef}
       onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
@@ -120,16 +121,23 @@ type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
+  const {
+    selector = getSelector(CONTENT_NAME),
+    disableOutsidePointerEvents = true,
+    disableOutsideScroll = true,
+    portalled = true,
+    ...contentProps
+  } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
-      selector={getSelector(CONTENT_NAME)}
-      disableOutsidePointerEvents
-      disableOutsideScroll
-      portalled
-      {...props}
+      {...contentProps}
+      selector={selector}
       ref={forwardedRef}
       id={context.id}
+      disableOutsidePointerEvents={disableOutsidePointerEvents}
+      disableOutsideScroll={disableOutsideScroll}
+      portalled={portalled}
       style={{
         ...props.style,
         // re-namespace exposed content custom property

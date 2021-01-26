@@ -419,6 +419,8 @@ type SliderPartPrimitive = Polymorphic.ForwardRefComponent<
 
 const SliderPart = React.forwardRef((props, forwardedRef) => {
   const {
+    as = SLIDER_DEFAULT_TAG,
+    selector = getSelector(SLIDER_NAME),
     onSlideMouseDown,
     onSlideMouseMove,
     onSlideMouseUp,
@@ -453,9 +455,9 @@ const SliderPart = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Primitive
-      as={SLIDER_DEFAULT_TAG}
-      selector={getSelector(SLIDER_NAME)}
       {...sliderProps}
+      as={as}
+      selector={selector}
       ref={forwardedRef}
       onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
         // Slide only if main mouse button was clicked
@@ -524,12 +526,13 @@ type SliderTrackPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SliderTrack = React.forwardRef((props, forwardedRef) => {
+  const { as = TRACK_DEFAULT_TAG, selector = getSelector(TRACK_NAME), ...trackProps } = props;
   const context = useSliderContext(TRACK_NAME);
   return (
     <Primitive
-      as={TRACK_DEFAULT_TAG}
-      selector={getSelector(TRACK_NAME)}
-      {...props}
+      {...trackProps}
+      as={as}
+      selector={selector}
       ref={forwardedRef}
       data-orientation={context.orientation}
     />
@@ -552,6 +555,7 @@ type SliderRangePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SliderRange = React.forwardRef((props, forwardedRef) => {
+  const { as = RANGE_DEFAULT_TAG, selector = getSelector(RANGE_NAME), ...rangeProps } = props;
   const context = useSliderContext(RANGE_NAME);
   const orientation = React.useContext(SliderOrientationContext);
   const ref = React.useRef<HTMLSpanElement>(null);
@@ -565,9 +569,9 @@ const SliderRange = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Primitive
-      as={RANGE_DEFAULT_TAG}
-      selector={getSelector(RANGE_NAME)}
-      {...props}
+      {...rangeProps}
+      as={as}
+      selector={selector}
       ref={composedRefs}
       style={{
         ...props.style,
@@ -618,7 +622,13 @@ type SliderThumbImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
-  const { index, value, ...thumbProps } = props;
+  const {
+    as = THUMB_DEFAULT_TAG,
+    selector = getSelector(THUMB_NAME),
+    index,
+    value,
+    ...thumbProps
+  } = props;
   const context = useSliderContext(THUMB_NAME);
   const orientation = React.useContext(SliderOrientationContext);
   const thumbRef = React.useRef<HTMLSpanElement>(null);
@@ -650,9 +660,9 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
       }}
     >
       <Primitive
-        as={THUMB_DEFAULT_TAG}
-        selector={getSelector(THUMB_NAME)}
         {...thumbProps}
+        as={as}
+        selector={selector}
         ref={ref}
         aria-label={props['aria-label'] || label}
         aria-valuemin={context.min}

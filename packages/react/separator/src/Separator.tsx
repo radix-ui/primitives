@@ -31,7 +31,12 @@ type SeparatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const Separator = React.forwardRef((props, forwardedRef) => {
-  const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
+  const {
+    selector = getSelector(NAME),
+    decorative,
+    orientation: orientationProp = DEFAULT_ORIENTATION,
+    ...domProps
+  } = props;
   const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
   // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
   const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
@@ -41,10 +46,10 @@ const Separator = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Primitive
-      selector={getSelector(NAME)}
       {...semanticProps}
       data-orientation={orientation}
       {...domProps}
+      selector={selector}
       ref={forwardedRef}
     />
   );

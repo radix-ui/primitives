@@ -83,17 +83,18 @@ type DialogTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DialogTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
   const context = useDialogContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
   return (
     <Primitive
-      as={TRIGGER_DEFAULT_TAG}
-      selector={getSelector(TRIGGER_NAME)}
       type="button"
       aria-haspopup="dialog"
       aria-expanded={context.open}
       aria-controls={context.id}
-      {...props}
+      {...triggerProps}
+      as={as}
+      selector={selector}
       ref={composedTriggerRef}
       onClick={composeEventHandlers(props.onClick, () => context.setOpen(true))}
     />
@@ -140,11 +141,14 @@ type DialogOverlayImplPrimitive = Polymorphic.ForwardRefComponent<
   DialogOverlayImplOwnProps
 >;
 
-const DialogOverlayImpl = React.forwardRef((props, forwardedRef) => (
-  <Portal>
-    <Primitive selector={getSelector(OVERLAY_NAME)} {...props} ref={forwardedRef} />
-  </Portal>
-)) as DialogOverlayImplPrimitive;
+const DialogOverlayImpl = React.forwardRef((props, forwardedRef) => {
+  const { selector = getSelector(OVERLAY_NAME), ...overlayProps } = props;
+  return (
+    <Portal>
+      <Primitive {...overlayProps} selector={selector} ref={forwardedRef} />
+    </Portal>
+  );
+}) as DialogOverlayImplPrimitive;
 
 DialogOverlay.displayName = OVERLAY_NAME;
 
@@ -216,6 +220,7 @@ type DialogContentImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
+    selector = getSelector(CONTENT_NAME),
     onOpenAutoFocus,
     onCloseAutoFocus,
     onEscapeKeyDown,
@@ -255,10 +260,10 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
             >
               {(dismissableLayerProps) => (
                 <Primitive
-                  selector={getSelector(CONTENT_NAME)}
                   role="dialog"
                   aria-modal
                   {...contentProps}
+                  selector={selector}
                   ref={composeRefs(
                     forwardedRef,
                     contentRef,
@@ -316,13 +321,14 @@ type DialogClosePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DialogClose = React.forwardRef((props, forwardedRef) => {
+  const { as = CLOSE_DEFAULT_TAG, selector = getSelector(CLOSE_NAME), ...closeProps } = props;
   const context = useDialogContext(CLOSE_NAME);
   return (
     <Primitive
-      as={CLOSE_DEFAULT_TAG}
-      selector={getSelector(CLOSE_NAME)}
       type="button"
-      {...props}
+      {...closeProps}
+      as={as}
+      selector={selector}
       ref={forwardedRef}
       onClick={composeEventHandlers(props.onClick, () => context.setOpen(false))}
     />

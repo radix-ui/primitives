@@ -38,6 +38,8 @@ const [RadioContext, useRadioContext] = createContext<boolean>(RADIO_NAME + 'Con
 
 const Radio = React.forwardRef((props, forwardedRef) => {
   const {
+    as = RADIO_DEFAULT_TAG,
+    selector = getSelector(RADIO_NAME),
     'aria-labelledby': ariaLabelledby,
     children,
     name,
@@ -82,10 +84,10 @@ const Radio = React.forwardRef((props, forwardedRef) => {
         })}
       />
       <Primitive
-        as={RADIO_DEFAULT_TAG}
-        selector={getSelector(RADIO_NAME)}
         type="button"
         {...radioProps}
+        as={as}
+        selector={selector}
         ref={ref}
         role="radio"
         aria-checked={checked}
@@ -134,16 +136,21 @@ type RadioIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const RadioIndicator = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, ...indicatorProps } = props;
+  const {
+    as = INDICATOR_DEFAULT_TAG,
+    selector = getSelector(INDICATOR_NAME),
+    forceMount,
+    ...indicatorProps
+  } = props;
   const checked = useRadioContext(INDICATOR_NAME);
   return (
     <Presence present={forceMount || checked}>
       <Primitive
-        as={INDICATOR_DEFAULT_TAG}
-        selector={getSelector(INDICATOR_NAME)}
         {...indicatorProps}
-        data-state={getState(checked)}
+        as={as}
+        selector={selector}
         ref={forwardedRef}
+        data-state={getState(checked)}
       />
     </Presence>
   );

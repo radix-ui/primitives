@@ -129,7 +129,7 @@ type PopperArrowPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const PopperArrow = React.forwardRef(function PopperArrow(props, forwardedRef) {
-  const { offset, ...arrowProps } = props;
+  const { selector = getSelector(ARROW_NAME), offset, ...arrowProps } = props;
   const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
 
   // send the Arrow's offset up to Popper
@@ -149,8 +149,8 @@ const PopperArrow = React.forwardRef(function PopperArrow(props, forwardedRef) {
         }}
       >
         <ArrowPrimitive
-          selector={getSelector(ARROW_NAME)}
           {...arrowProps}
+          selector={selector}
           ref={forwardedRef}
           style={{
             ...arrowProps.style,

@@ -31,6 +31,8 @@ type ToggleButtonPrimitive = Polymorphic.ForwardRefComponent<
 
 const ToggleButton = React.forwardRef((props, forwardedRef) => {
   const {
+    as = DEFAULT_TAG,
+    selector = getSelector(NAME),
     toggled: toggledProp,
     defaultToggled = false,
     onClick,
@@ -47,13 +49,13 @@ const ToggleButton = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Primitive
-      as={DEFAULT_TAG}
-      selector={getSelector(NAME)}
       type="button"
       aria-pressed={toggled}
       data-state={toggled ? 'on' : 'off'}
       data-disabled={props.disabled ? '' : undefined}
       {...buttonProps}
+      as={as}
+      selector={selector}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, () => {
         if (!props.disabled) {
