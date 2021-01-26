@@ -304,10 +304,6 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
                       }
                     }
                   })}
-                  // focus the menu if the mouse is moved over anything else than an item
-                  onMouseMove={composeEventHandlers(menuProps.onMouseMove, (event) => {
-                    if (!isItemOrInsideItem(event.target)) menuRef.current?.focus();
-                  })}
                 >
                   <RovingFocusGroup
                     reachable={itemsReachable}
@@ -370,7 +366,8 @@ MenuLabel.displayName = LABEL_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const ITEM_NAME = 'MenuItem';
-const ENABLED_ITEM_SELECTOR = `[data-${getSelector(ITEM_NAME)}]:not([data-disabled])`;
+const ITEM_ATTR = `data-${getSelector(ITEM_NAME)}`;
+const ENABLED_ITEM_SELECTOR = `[${ITEM_ATTR}]:not([data-disabled])`;
 const ITEM_SELECT = 'menu.itemSelect';
 
 type MenuItemOwnProps = Merge<
@@ -435,6 +432,12 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       {...itemProps}
       {...rovingFocusProps}
       {...menuTypeaheadItemProps}
+      /**
+       * Because `Menu` is not used directly but rather used through dependent implementations
+       * (like `DropdownMenu` and `ContextMenu`), we cannot rely on the usual `selector` at this level.
+       * We make sure there's always a generic `data-radix-menu-item` available to query from here.
+       */
+      {...{ [ITEM_ATTR]: '' }}
       ref={composedRef}
       data-disabled={disabled ? '' : undefined}
       onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
@@ -670,11 +673,6 @@ MenuSeparator.displayName = SEPARATOR_NAME;
 const MenuArrow = extendComponent(PopperPrimitive.Arrow, 'MenuArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
-
-function isItemOrInsideItem(target: EventTarget) {
-  const item = (target as HTMLElement).closest(ENABLED_ITEM_SELECTOR);
-  return item !== null;
-}
 
 function getOpenState(open: boolean) {
   return open ? 'open' : 'closed';

@@ -248,6 +248,9 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
               disableOutsidePointerEvents
               onEscapeKeyDown={onEscapeKeyDown}
               onPointerDownOutside={onPointerDownOutside}
+              // When focus is trapped, a focusout event may still happen.
+              // We make sure we don't trigger our `onDismiss` in such case.
+              onFocusOutside={(event) => event.preventDefault()}
               onDismiss={() => context.setOpen(false)}
             >
               {(dismissableLayerProps) => (
