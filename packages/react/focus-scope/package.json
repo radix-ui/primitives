@@ -12,10 +12,8 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
-    "version": "yarn version",
-    "prepublish": "yarn clean && yarn build"
+    "prepublish": "yarn clean"
   },
   "dependencies": {
     "@radix-ui/react-utils": "workspace:*",
