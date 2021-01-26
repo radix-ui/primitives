@@ -96,16 +96,22 @@ type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(CONTENT_NAME), ...contentProps } = props;
+  const {
+    selector = getSelector(CONTENT_NAME),
+    side = 'bottom',
+    align = 'start',
+    disableOutsidePointerEvents = true,
+    ...contentProps
+  } = props;
   const context = useContextMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
-      disableOutsidePointerEvents
-      side="bottom"
-      align="start"
       {...contentProps}
       selector={selector}
       ref={forwardedRef}
+      side={side}
+      align={align}
+      disableOutsidePointerEvents={disableOutsidePointerEvents}
       open={context.open}
       onOpenChange={context.setOpen}
       style={{

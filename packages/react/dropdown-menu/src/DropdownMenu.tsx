@@ -121,17 +121,23 @@ type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(CONTENT_NAME), ...contentProps } = props;
+  const {
+    selector = getSelector(CONTENT_NAME),
+    disableOutsidePointerEvents = true,
+    disableOutsideScroll = true,
+    portalled = true,
+    ...contentProps
+  } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
-      disableOutsidePointerEvents
-      disableOutsideScroll
-      portalled
       {...contentProps}
       selector={selector}
       ref={forwardedRef}
       id={context.id}
+      disableOutsidePointerEvents={disableOutsidePointerEvents}
+      disableOutsideScroll={disableOutsideScroll}
+      portalled={portalled}
       style={{
         ...props.style,
         // re-namespace exposed content custom property
