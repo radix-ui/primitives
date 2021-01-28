@@ -96,10 +96,10 @@ const Announce = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(NAME),
     'aria-relevant': ariaRelevant,
-    children,
     type = 'polite',
     role = ROLES[type],
     regionIdentifier,
+    children,
     ...regionProps
   } = props;
 

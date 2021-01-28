@@ -48,7 +48,6 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
     as = CHECKBOX_DEFAULT_TAG,
     selector = getSelector(CHECKBOX_NAME),
     'aria-labelledby': ariaLabelledby,
-    children,
     name,
     checked: checkedProp,
     defaultChecked,
@@ -95,30 +94,30 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <Primitive
-        type="button"
-        {...checkboxProps}
-        as={as}
-        selector={selector}
-        ref={ref}
-        role="checkbox"
-        aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
-        aria-labelledby={labelledBy}
-        aria-required={required}
-        data-state={getState(checked)}
-        data-readonly={readOnly}
-        disabled={disabled}
-        value={value}
-        /**
-         * The `input` is hidden, so when the button is clicked we trigger
-         * the input manually
-         */
-        onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
-          checkForDefaultPrevented: false,
-        })}
-      >
-        <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
-      </Primitive>
+      <CheckboxContext.Provider value={checked}>
+        <Primitive
+          type="button"
+          {...checkboxProps}
+          as={as}
+          selector={selector}
+          ref={ref}
+          role="checkbox"
+          aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
+          aria-labelledby={labelledBy}
+          aria-required={required}
+          data-state={getState(checked)}
+          data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
+          /**
+           * The `input` is hidden, so when the button is clicked we trigger
+           * the input manually
+           */
+          onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
+            checkForDefaultPrevented: false,
+          })}
+        />
+      </CheckboxContext.Provider>
     </>
   );
 }) as CheckboxPrimitive;

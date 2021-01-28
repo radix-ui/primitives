@@ -27,17 +27,12 @@ const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
 );
 
 const Avatar = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = AVATAR_DEFAULT_TAG,
-    selector = getSelector(AVATAR_NAME),
-    children,
-    ...avatarProps
-  } = props;
+  const { as = AVATAR_DEFAULT_TAG, selector = getSelector(AVATAR_NAME), ...avatarProps } = props;
   const context = React.useState<ImageLoadingStatus>('idle');
   return (
-    <Primitive {...avatarProps} as={as} selector={selector} ref={forwardedRef}>
-      <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
-    </Primitive>
+    <AvatarContext.Provider value={context}>
+      <Primitive {...avatarProps} as={as} selector={selector} ref={forwardedRef} />
+    </AvatarContext.Provider>
   );
 }) as AvatarPrimitive;
 

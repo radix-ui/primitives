@@ -50,7 +50,6 @@ const Collapsible = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(COLLAPSIBLE_NAME),
     id: idProp,
-    children,
     open: openProp,
     defaultOpen,
     disabled,
@@ -76,14 +75,14 @@ const Collapsible = React.forwardRef((props, forwardedRef) => {
   );
 
   return (
-    <Primitive
-      {...collapsibleProps}
-      selector={selector}
-      data-state={getState(context.open)}
-      ref={forwardedRef}
-    >
-      <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
-    </Primitive>
+    <CollapsibleContext.Provider value={context}>
+      <Primitive
+        {...collapsibleProps}
+        selector={selector}
+        data-state={getState(context.open)}
+        ref={forwardedRef}
+      />
+    </CollapsibleContext.Provider>
   );
 }) as CollapsiblePrimitive;
 

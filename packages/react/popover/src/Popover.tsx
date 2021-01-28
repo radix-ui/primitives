@@ -128,6 +128,7 @@ type PopoverContentPrimitive = Polymorphic.ForwardRefComponent<
 const PopoverContent = React.forwardRef((props, forwardedRef) => {
   const { forceMount, ...contentProps } = props;
   const context = usePopoverContext(CONTENT_NAME);
+
   return (
     <Presence present={forceMount || context.open}>
       <PopoverContentImpl
@@ -217,7 +218,6 @@ type PopoverContentImplPrimitive = Polymorphic.ForwardRefComponent<
 const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(CONTENT_NAME),
-    children,
     anchorRef,
     trapFocus = true,
     onOpenAutoFocus,
@@ -348,9 +348,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                     dismissableLayerProps.onTouchStartCapture,
                     { checkForDefaultPrevented: false }
                   )}
-                >
-                  {children}
-                </PopperPrimitive.Root>
+                />
               )}
             </DismissableLayer>
           )}

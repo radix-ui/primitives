@@ -37,7 +37,6 @@ const ToggleButton = React.forwardRef((props, forwardedRef) => {
     defaultToggled = false,
     onClick,
     onToggledChange,
-    children,
     ...buttonProps
   } = props;
 
@@ -62,9 +61,7 @@ const ToggleButton = React.forwardRef((props, forwardedRef) => {
           setToggled(!toggled);
         }
       })}
-    >
-      {children}
-    </Primitive>
+    />
   );
 }) as ToggleButtonPrimitive;
 

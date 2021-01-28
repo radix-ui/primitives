@@ -50,7 +50,6 @@ type PopperPrimitive = Polymorphic.ForwardRefComponent<
 const Popper = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(POPPER_NAME),
-    children,
     anchorRef,
     side = 'bottom',
     sideOffset,
@@ -94,21 +93,21 @@ const Popper = React.forwardRef((props, forwardedRef) => {
 
   return (
     <div style={popperStyles} {...(selector ? getSelectorObj(selector + '-wrapper') : undefined)}>
-      <Primitive
-        selector={selector}
-        {...popperProps}
-        style={{
-          ...popperProps.style,
-          // if the Popper hasn't been placed yet (not all measurements done)
-          // we prevent animations so that users's animation don't kick in too early referring wrong sides
-          animation: !isPlaced ? 'none' : undefined,
-        }}
-        ref={composedPopperRef}
-        data-side={placedSide}
-        data-align={placedAlign}
-      >
-        <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
-      </Primitive>
+      <PopperContext.Provider value={context}>
+        <Primitive
+          selector={selector}
+          {...popperProps}
+          style={{
+            ...popperProps.style,
+            // if the Popper hasn't been placed yet (not all measurements done)
+            // we prevent animations so that users's animation don't kick in too early referring wrong sides
+            animation: !isPlaced ? 'none' : undefined,
+          }}
+          ref={composedPopperRef}
+          data-side={placedSide}
+          data-align={placedAlign}
+        />
+      </PopperContext.Provider>
     </div>
   );
 }) as PopperPrimitive;

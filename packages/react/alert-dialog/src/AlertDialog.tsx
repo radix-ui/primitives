@@ -49,20 +49,18 @@ const [AlertDialogContentContext, useAlertDialogContentContext] = createContext<
  * -----------------------------------------------------------------------------------------------*/
 
 const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => {
-  const { children, id: idProp, ...dialogProps } = props;
+  const { id: idProp, ...dialogProps } = props;
   const generatedId = makeId('alert-dialog', useId());
   const alertDialogId = idProp || generatedId;
   const descriptionId = makeId(alertDialogId, 'description');
   const titleId = makeId(alertDialogId, 'title');
 
   return (
-    <Dialog {...dialogProps}>
-      <AlertDialogContext.Provider
-        value={React.useMemo(() => ({ descriptionId, titleId }), [descriptionId, titleId])}
-      >
-        {children}
-      </AlertDialogContext.Provider>
-    </Dialog>
+    <AlertDialogContext.Provider
+      value={React.useMemo(() => ({ descriptionId, titleId }), [descriptionId, titleId])}
+    >
+      <Dialog {...dialogProps} />
+    </AlertDialogContext.Provider>
   );
 };
 
@@ -111,7 +109,6 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     'aria-describedby': ariaDescribedBy,
-    children,
     ...dialogContentProps
   } = props;
   const { descriptionId, titleId } = useAlertDialogContext(CONTENT_NAME);
@@ -121,34 +118,32 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
   const ref = useComposedRefs(forwardedRef, ownRef);
 
   return (
-    <DialogContent
-      role="alertdialog"
-      aria-describedby={ariaDescribedBy || descriptionId}
-      // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
-      // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
-      // `AlertDialogTitle`
-      aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
-      aria-label={ariaLabel || undefined}
-      {...dialogContentProps}
-      selector={selector}
-      ref={ref}
-      onOpenAutoFocus={composeEventHandlers(dialogContentProps.onOpenAutoFocus, (event) => {
-        event.preventDefault();
-        cancelRef.current?.focus({ preventScroll: true });
-      })}
+    <AlertDialogContentContext.Provider
+      value={React.useMemo(() => {
+        return {
+          cancelRef,
+          ownerDocumentRef,
+        };
+      }, [cancelRef, ownerDocumentRef])}
     >
-      <AlertDialogContentContext.Provider
-        value={React.useMemo(() => {
-          return {
-            cancelRef,
-            ownerDocumentRef,
-          };
-        }, [cancelRef, ownerDocumentRef])}
-      >
-        {process.env.NODE_ENV === 'development' && <AccessibilityDevWarnings {...props} />}
-        {children}
-      </AlertDialogContentContext.Provider>
-    </DialogContent>
+      {process.env.NODE_ENV === 'development' && <AccessibilityDevWarnings {...props} />}
+      <DialogContent
+        role="alertdialog"
+        aria-describedby={ariaDescribedBy || descriptionId}
+        // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
+        // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
+        // `AlertDialogTitle`
+        aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
+        aria-label={ariaLabel || undefined}
+        {...dialogContentProps}
+        selector={selector}
+        ref={ref}
+        onOpenAutoFocus={composeEventHandlers(dialogContentProps.onOpenAutoFocus, (event) => {
+          event.preventDefault();
+          cancelRef.current?.focus({ preventScroll: true });
+        })}
+      />
+    </AlertDialogContentContext.Provider>
   );
 }) as AlertDialogContentPrimitive;
 

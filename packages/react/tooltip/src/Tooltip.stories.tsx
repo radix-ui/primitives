@@ -1,16 +1,15 @@
 import * as React from 'react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow } from './Tooltip';
 import { Arrow } from '@radix-ui/react-arrow';
+import { Slot } from '@radix-ui/react-slot';
 import { styled, css } from '../../../../stitches.config';
 
 export default { title: 'Components/Tooltip' };
 
 export const Styled = () => (
   <Tooltip>
-    <TooltipTrigger as={StyledTrigger} style={{ margin: 100 }}>
-      Hover or Focus me
-    </TooltipTrigger>
-    <TooltipContent as={StyledContent} sideOffset={5} aria-label="Even better done this way!">
+    <TooltipTrigger as={StyledTrigger}>Hover or Focus me</TooltipTrigger>
+    <TooltipContent as={StyledContent} sideOffset={5}>
       Nicely done!
       <TooltipArrow as={StyledArrow} offset={10} />
     </TooltipContent>
@@ -340,6 +339,18 @@ export const Animated = () => {
     </div>
   );
 };
+
+export const SlottableContent = () => (
+  <Tooltip>
+    <TooltipTrigger as={StyledTrigger}>Hover or Focus me</TooltipTrigger>
+    <TooltipContent as={Slot} sideOffset={5}>
+      <StyledContent>
+        Nicely done!
+        <TooltipArrow as={StyledArrow} offset={10} />
+      </StyledContent>
+    </TooltipContent>
+  </Tooltip>
+);
 
 function SimpleTooltip({
   children,

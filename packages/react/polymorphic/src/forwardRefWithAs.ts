@@ -33,18 +33,6 @@ interface ForwardRefComponent<
     MergeProps<IntrinsicElementString, OwnProps & { as?: IntrinsicElementString }>
   > {
   /**
-   * When passing an `as` prop as a string, use this overload.
-   * Merges orignal own props (without DOM props) and the inferred props
-   * from `as` element with the own props taking precendence.
-   *
-   * We explicitly define a `JSX.IntrinsicElements` overload so that
-   * events are typed for consumers.
-   */
-  <As extends keyof JSX.IntrinsicElements>(
-    props: MergeProps<As, OwnProps & { as: As }>
-  ): React.ReactElement | null;
-
-  /**
    * When passing an `as` prop as a component, use this overload.
    * Merges orignal own props (without DOM props) and the inferred props
    * from `as` element with the own props taking precendence.
@@ -59,6 +47,18 @@ interface ForwardRefComponent<
     _AsWithProps = As extends React.ElementType<infer P> ? React.ElementType<P> : never
   >(
     props: MergeProps<_AsWithProps, OwnProps & { as: _AsWithProps }>
+  ): React.ReactElement | null;
+
+  /**
+   * When passing an `as` prop as a string, use this overload.
+   * Merges orignal own props (without DOM props) and the inferred props
+   * from `as` element with the own props taking precendence.
+   *
+   * We explicitly define a `JSX.IntrinsicElements` overload so that
+   * events are typed for consumers.
+   */
+  <As extends keyof JSX.IntrinsicElements>(
+    props: MergeProps<As, OwnProps & { as: As }>
   ): React.ReactElement | null;
 }
 

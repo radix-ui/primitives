@@ -67,7 +67,7 @@ const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionI
  * `AccordionItem` contains all of the parts of a collapsible section inside of an `Accordion`.
  */
 const AccordionItem = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(ITEM_NAME), value, children, ...accordionItemProps } = props;
+  const { selector = getSelector(ITEM_NAME), value, ...accordionItemProps } = props;
   const accordionContext = useAccordionContext(ITEM_NAME);
   const generatedButtonId = `accordion-button-${useId()}`;
   const buttonId = props.id || generatedButtonId;
@@ -80,18 +80,18 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
   ]);
 
   return (
-    <Collapsible
-      {...accordionItemProps}
-      selector={selector}
-      ref={forwardedRef}
-      data-state={open ? 'open' : 'closed'}
-      data-disabled={disabled || undefined}
-      disabled={disabled}
-      open={open}
-      onOpenChange={() => accordionContext.setValue(value)}
-    >
-      <AccordionItemContext.Provider value={itemContext}>{children}</AccordionItemContext.Provider>
-    </Collapsible>
+    <AccordionItemContext.Provider value={itemContext}>
+      <Collapsible
+        {...accordionItemProps}
+        selector={selector}
+        ref={forwardedRef}
+        data-state={open ? 'open' : 'closed'}
+        data-disabled={disabled || undefined}
+        disabled={disabled}
+        open={open}
+        onOpenChange={() => accordionContext.setValue(value)}
+      />
+    </AccordionItemContext.Provider>
   );
 }) as AccordionItemPrimitive;
 
@@ -246,7 +246,6 @@ const Accordion = React.forwardRef((props, forwardedRef) => {
     selector = getSelector(ACCORDION_NAME),
     value: valueProp,
     defaultValue,
-    children,
     disabled,
     onValueChange = () => {},
     ...accordionProps
@@ -313,14 +312,14 @@ const Accordion = React.forwardRef((props, forwardedRef) => {
   );
 
   return (
-    <Primitive
-      {...accordionProps}
-      selector={selector}
-      ref={composedRefs}
-      onKeyDown={disabled ? undefined : handleKeyDown}
-    >
-      <AccordionContext.Provider value={context}>{children}</AccordionContext.Provider>
-    </Primitive>
+    <AccordionContext.Provider value={context}>
+      <Primitive
+        {...accordionProps}
+        selector={selector}
+        ref={composedRefs}
+        onKeyDown={disabled ? undefined : handleKeyDown}
+      />
+    </AccordionContext.Provider>
   );
 }) as AccordionPrimitive;
 

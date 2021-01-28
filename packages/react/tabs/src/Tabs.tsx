@@ -60,7 +60,6 @@ type TabsPrimitive = Polymorphic.ForwardRefComponent<
 const Tabs = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(TABS_NAME),
-    children,
     id,
     value: valueProp,
     onValueChange,
@@ -92,9 +91,7 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
         {...tabsProps}
         selector={selector}
         ref={forwardedRef}
-      >
-        {children}
-      </Primitive>
+      />
     </TabsContext.Provider>
   );
 }) as TabsPrimitive;
@@ -124,22 +121,20 @@ type TabsListPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const TabsList = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(TAB_LIST_NAME), loop = true, children, ...otherProps } = props;
+  const { selector = getSelector(TAB_LIST_NAME), loop = true, ...otherProps } = props;
   const { orientation } = useTabsContext(TAB_LIST_NAME);
 
   return (
-    <Primitive
-      data-orientation={orientation}
-      role="tablist"
-      aria-orientation={orientation}
-      {...otherProps}
-      selector={selector}
-      ref={forwardedRef}
-    >
-      <RovingFocusGroup orientation={orientation} loop={loop}>
-        {children}
-      </RovingFocusGroup>
-    </Primitive>
+    <RovingFocusGroup orientation={orientation} loop={loop}>
+      <Primitive
+        data-orientation={orientation}
+        role="tablist"
+        aria-orientation={orientation}
+        {...otherProps}
+        selector={selector}
+        ref={forwardedRef}
+      />
+    </RovingFocusGroup>
   );
 }) as TabsListPrimitive;
 
