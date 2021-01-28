@@ -249,7 +249,7 @@ type ScrollAreaNoNativeFallbackPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollAreaNoNativeFallback = React.forwardRef(function ScrollArea(props, forwardedRef) {
-  const { ...restProps } = {
+  const restProps = {
     ...ROOT_DEFAULT_PROPS,
     ...props,
   };
