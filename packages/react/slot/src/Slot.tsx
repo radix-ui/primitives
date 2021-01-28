@@ -22,15 +22,15 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   return (
     <>
       {React.Children.map(children, (child) => {
-        if (!React.isValidElement(child) || child.type !== Slottable) {
-          return child;
+        if (React.isValidElement(child) && child.type === Slottable) {
+          return (
+            <SlotClone {...slotProps} ref={forwardedRef}>
+              {child.props.children}
+            </SlotClone>
+          );
         }
 
-        return (
-          <SlotClone {...slotProps} ref={forwardedRef}>
-            {child.props.children}
-          </SlotClone>
-        );
+        return child;
       })}
     </>
   );
