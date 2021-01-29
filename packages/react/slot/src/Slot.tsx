@@ -68,7 +68,9 @@ const Slottable = ({ children }: { children: React.ReactNode }) => {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function mergeProps<P extends { [key: string]: any }>(baseProps: P, otherProps: P) {
+type AnyProps = Record<string, any>;
+
+function mergeProps(baseProps: AnyProps, otherProps: AnyProps) {
   // all other props should override
   const overrideProps = { ...otherProps };
 
@@ -82,7 +84,7 @@ function mergeProps<P extends { [key: string]: any }>(baseProps: P, otherProps: 
       // make sure we only override handlers which are actually passed in as functions
       overrideProps[propName] =
         typeof basePropValue === 'function' && typeof otherPropValue === 'function'
-          ? (composeEventHandlers(otherPropValue, basePropValue) as any)
+          ? composeEventHandlers(otherPropValue, basePropValue)
           : basePropValue;
     }
   }

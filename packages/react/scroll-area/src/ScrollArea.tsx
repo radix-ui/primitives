@@ -704,7 +704,7 @@ const ScrollAreaViewport = React.forwardRef(function ScrollAreaViewport(props, f
 
 ScrollAreaViewport.displayName = VIEWPORT_NAME;
 
-/* ---------------------------------------------------  ----------------------------------------------
+/* -------------------------------------------------------------------------------------------------
  * ScrollAreaScrollbarX / ScrollAreaScrollbarY
  * -----------------------------------------------------------------------------------------------*/
 
