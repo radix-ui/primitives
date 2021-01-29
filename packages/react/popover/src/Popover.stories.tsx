@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Popover, PopoverTrigger, PopoverContent, PopoverClose, PopoverArrow } from './Popover';
 import { Arrow } from '@radix-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
+import { Slot } from '@radix-ui/react-slot';
 
 export default { title: 'Components/Popover' };
 
@@ -180,6 +181,20 @@ export const NonModal = () => {
       </Popover>
       <input style={{ marginLeft: 10 }} />
     </>
+  );
+};
+
+export const WithSlottedTrigger = () => {
+  return (
+    <Popover>
+      <PopoverTrigger as={Slot}>
+        <StyledTrigger onClick={() => console.log('StyledTrigger click')}>open</StyledTrigger>
+      </PopoverTrigger>
+      <PopoverContent as={StyledContent} sideOffset={5}>
+        <PopoverClose as={StyledClose}>close</PopoverClose>
+        <PopoverArrow as={StyledArrow} width={20} height={10} offset={10} />
+      </PopoverContent>
+    </Popover>
   );
 };
 

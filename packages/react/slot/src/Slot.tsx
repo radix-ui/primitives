@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeRefs } from '@radix-ui/react-utils';
+import { composeRefs, composeEventHandlers } from '@radix-ui/react-utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Slot
@@ -45,13 +45,12 @@ Slot.displayName = 'Slot';
 type SlotCloneProps = { children: React.ReactNode };
 
 const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
-  const { children, ...cloneProps } = props;
+  const { children, ...slotProps } = props;
   const child = React.Children.only(children);
 
   return React.isValidElement(child)
     ? React.cloneElement(child, {
-        ...cloneProps,
-        ...child.props,
+        ...mergeProps(slotProps, child.props),
         ref: composeRefs(forwardedRef, (child as any).ref),
       })
     : null;
@@ -69,4 +68,33 @@ const Slottable = ({ children }: { children: React.ReactNode }) => {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-export { Slot, Slottable };
+function mergeProps<P extends { [key: string]: any }>(baseProps: P, otherProps: P) {
+  // all other props should override
+  const overrideProps = { ...otherProps };
+
+  // if it's a handler, modify the override by composing the base handler
+  for (const propName in otherProps) {
+    const basePropValue = baseProps[propName];
+    const otherPropValue = otherProps[propName];
+    const isHandler = /^on[A-Z]/.test(propName);
+
+    if (isHandler) {
+      // make sure we only override handlers which are actually passed in as functions
+      overrideProps[propName] =
+        typeof basePropValue === 'function' && typeof otherPropValue === 'function'
+          ? (composeEventHandlers(otherPropValue, basePropValue) as any)
+          : basePropValue;
+    }
+  }
+
+  return { ...baseProps, ...overrideProps };
+}
+
+const Root = Slot;
+
+export {
+  Slot,
+  Slottable,
+  //
+  Root,
+};
