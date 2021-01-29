@@ -41,7 +41,6 @@ const Radio = React.forwardRef((props, forwardedRef) => {
     as = RADIO_DEFAULT_TAG,
     selector = getSelector(RADIO_NAME),
     'aria-labelledby': ariaLabelledby,
-    children,
     name,
     checked: checkedProp,
     defaultChecked,
@@ -83,29 +82,29 @@ const Radio = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <Primitive
-        type="button"
-        {...radioProps}
-        as={as}
-        selector={selector}
-        ref={ref}
-        role="radio"
-        aria-checked={checked}
-        aria-labelledby={labelledBy}
-        data-state={getState(checked)}
-        data-readonly={readOnly}
-        disabled={disabled}
-        value={value}
-        /**
-         * The `input` is hidden, so when the button is clicked we trigger
-         * the input manually
-         */
-        onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
-          checkForDefaultPrevented: false,
-        })}
-      >
-        <RadioContext.Provider value={checked}>{children}</RadioContext.Provider>
-      </Primitive>
+      <RadioContext.Provider value={checked}>
+        <Primitive
+          type="button"
+          {...radioProps}
+          as={as}
+          selector={selector}
+          ref={ref}
+          role="radio"
+          aria-checked={checked}
+          aria-labelledby={labelledBy}
+          data-state={getState(checked)}
+          data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
+          /**
+           * The `input` is hidden, so when the button is clicked we trigger
+           * the input manually
+           */
+          onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
+            checkForDefaultPrevented: false,
+          })}
+        />
+      </RadioContext.Provider>
     </>
   );
 }) as RadioPrimitive;

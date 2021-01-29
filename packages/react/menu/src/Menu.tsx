@@ -65,13 +65,11 @@ type MenuPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const Menu = React.forwardRef((props, forwardedRef) => {
-  const { children, forceMount, open = false, ...menuProps } = props;
+  const { forceMount, open = false, ...menuProps } = props;
 
   return (
     <Presence present={forceMount || open}>
-      <MenuImpl ref={forwardedRef} {...menuProps} data-state={getOpenState(open)}>
-        {children}
-      </MenuImpl>
+      <MenuImpl ref={forwardedRef} {...menuProps} data-state={getOpenState(open)} />
     </Presence>
   );
 }) as MenuPrimitive;
@@ -157,7 +155,6 @@ type MenuImplPrimitive = Polymorphic.ForwardRefComponent<
 const MenuImpl = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(MENU_NAME),
-    children,
     onOpenChange,
     anchorRef,
     loop,
@@ -306,14 +303,14 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
                     }
                   })}
                 >
-                  <RovingFocusGroup
-                    reachable={itemsReachable}
-                    onReachableChange={setItemsReachable}
-                    orientation="vertical"
-                    loop={loop}
-                  >
-                    <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
-                  </RovingFocusGroup>
+                  <MenuContext.Provider value={context}>
+                    <RovingFocusGroup
+                      reachable={itemsReachable}
+                      onReachableChange={setItemsReachable}
+                      orientation="vertical"
+                      loop={loop}
+                    />
+                  </MenuContext.Provider>
                 </PopperPrimitive.Root>
               )}
             </DismissableLayer>
@@ -512,25 +509,24 @@ const MenuCheckboxItem = React.forwardRef((props, forwardedRef) => {
     selector = getSelector(CHECKBOX_ITEM_NAME),
     checked = false,
     onCheckedChange,
-    children,
     ...checkboxItemProps
   } = props;
   return (
-    <MenuItem
-      role="menuitemcheckbox"
-      aria-checked={checked}
-      {...checkboxItemProps}
-      selector={selector}
-      ref={forwardedRef}
-      data-state={getCheckedState(checked)}
-      onSelect={composeEventHandlers(
-        checkboxItemProps.onSelect,
-        () => onCheckedChange?.(!checked),
-        { checkForDefaultPrevented: false }
-      )}
-    >
-      <ItemIndicatorContext.Provider value={checked}>{children}</ItemIndicatorContext.Provider>
-    </MenuItem>
+    <ItemIndicatorContext.Provider value={checked}>
+      <MenuItem
+        role="menuitemcheckbox"
+        aria-checked={checked}
+        {...checkboxItemProps}
+        selector={selector}
+        ref={forwardedRef}
+        data-state={getCheckedState(checked)}
+        onSelect={composeEventHandlers(
+          checkboxItemProps.onSelect,
+          () => onCheckedChange?.(!checked),
+          { checkForDefaultPrevented: false }
+        )}
+      />
+    </ItemIndicatorContext.Provider>
   );
 }) as MenyCheckboxItemPrimitive;
 
@@ -558,22 +554,16 @@ type MenuRadioGroupPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const MenuRadioGroup = React.forwardRef((props, forwardedRef) => {
-  const {
-    selector = getSelector(RADIO_GROUP_NAME),
-    children,
-    value,
-    onValueChange,
-    ...groupProps
-  } = props;
+  const { selector = getSelector(RADIO_GROUP_NAME), value, onValueChange, ...groupProps } = props;
   const handleValueChange = useCallbackRef(onValueChange);
   const context = React.useMemo(() => ({ value, onValueChange: handleValueChange }), [
     value,
     handleValueChange,
   ]);
   return (
-    <MenuGroup {...groupProps} selector={selector} ref={forwardedRef}>
-      <RadioGroupContext.Provider value={context}>{children}</RadioGroupContext.Provider>
-    </MenuGroup>
+    <RadioGroupContext.Provider value={context}>
+      <MenuGroup {...groupProps} selector={selector} ref={forwardedRef} />
+    </RadioGroupContext.Provider>
   );
 }) as MenuRadioGroupPrimitive;
 
@@ -592,25 +582,25 @@ type MenuRadioItemPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const MenuRadioItem = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(RADIO_ITEM_NAME), value, children, ...radioItemProps } = props;
+  const { selector = getSelector(RADIO_ITEM_NAME), value, ...radioItemProps } = props;
   const context = React.useContext(RadioGroupContext);
   const checked = value === context.value;
   return (
-    <MenuItem
-      role="menuitemradio"
-      aria-checked={checked}
-      {...radioItemProps}
-      selector={selector}
-      ref={forwardedRef}
-      data-state={getCheckedState(checked)}
-      onSelect={composeEventHandlers(
-        radioItemProps.onSelect,
-        () => context.onValueChange?.(value),
-        { checkForDefaultPrevented: false }
-      )}
-    >
-      <ItemIndicatorContext.Provider value={checked}>{children}</ItemIndicatorContext.Provider>
-    </MenuItem>
+    <ItemIndicatorContext.Provider value={checked}>
+      <MenuItem
+        role="menuitemradio"
+        aria-checked={checked}
+        {...radioItemProps}
+        selector={selector}
+        ref={forwardedRef}
+        data-state={getCheckedState(checked)}
+        onSelect={composeEventHandlers(
+          radioItemProps.onSelect,
+          () => context.onValueChange?.(value),
+          { checkForDefaultPrevented: false }
+        )}
+      />
+    </ItemIndicatorContext.Provider>
   );
 }) as MenuRadioItemPrimitive;
 

@@ -43,7 +43,6 @@ const Switch = React.forwardRef((props, forwardedRef) => {
     as = SWITCH_DEFAULT_TAG,
     selector = getSelector(SWITCH_NAME),
     'aria-labelledby': ariaLabelledby,
-    children,
     name,
     checked: checkedProp,
     defaultChecked,
@@ -85,30 +84,30 @@ const Switch = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <Primitive
-        type="button"
-        {...switchProps}
-        as={as}
-        selector={selector}
-        ref={ref}
-        role="switch"
-        aria-checked={checked}
-        aria-labelledby={labelledBy}
-        aria-required={required}
-        data-state={getState(checked)}
-        data-readonly={readOnly}
-        disabled={disabled}
-        value={value}
-        /**
-         * The `input` is hidden, so when the button is clicked we trigger
-         * the input manually
-         */
-        onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
-          checkForDefaultPrevented: false,
-        })}
-      >
-        <SwitchContext.Provider value={checked}>{children}</SwitchContext.Provider>
-      </Primitive>
+      <SwitchContext.Provider value={checked}>
+        <Primitive
+          type="button"
+          {...switchProps}
+          as={as}
+          selector={selector}
+          ref={ref}
+          role="switch"
+          aria-checked={checked}
+          aria-labelledby={labelledBy}
+          aria-required={required}
+          data-state={getState(checked)}
+          data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
+          /**
+           * The `input` is hidden, so when the button is clicked we trigger
+           * the input manually
+           */
+          onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
+            checkForDefaultPrevented: false,
+          })}
+        />
+      </SwitchContext.Provider>
     </>
   );
 }) as SwitchPrimitive;

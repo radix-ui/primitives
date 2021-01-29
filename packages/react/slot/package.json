@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-tooltip",
-  "version": "0.0.3",
+  "name": "@radix-ui/react-slot",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -16,14 +16,7 @@
     "prepublish": "yarn clean"
   },
   "dependencies": {
-    "@radix-ui/react-polymorphic": "workspace:*",
-    "@radix-ui/react-popper": "workspace:*",
-    "@radix-ui/react-portal": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-slot": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*",
-    "@radix-ui/react-visually-hidden": "workspace:*",
-    "@radix-ui/utils": "workspace:*"
+    "@radix-ui/react-utils": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

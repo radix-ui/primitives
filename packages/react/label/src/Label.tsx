@@ -25,7 +25,6 @@ const Label = React.forwardRef((props, forwardedRef) => {
     selector = getSelector(NAME),
     htmlFor,
     id: idProp,
-    children,
     ...labelProps
   } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
@@ -76,11 +75,9 @@ const Label = React.forwardRef((props, forwardedRef) => {
   }, [id, htmlFor]);
 
   return (
-    <Primitive {...labelProps} as={as} selector={selector} ref={ref} id={id} role="label">
-      <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
-        {children}
-      </LabelContext.Provider>
-    </Primitive>
+    <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
+      <Primitive {...labelProps} as={as} selector={selector} ref={ref} id={id} role="label" />
+    </LabelContext.Provider>
   );
 }) as LabelPrimitive;
 

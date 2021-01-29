@@ -208,7 +208,7 @@ type ScrollAreaPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollArea = React.forwardRef(function ScrollArea(props, forwardedRef) {
-  const { unstable_forceNative: forceNative = false, children, ...restProps } = {
+  const { unstable_forceNative: forceNative = false, ...restProps } = {
     ...ROOT_DEFAULT_PROPS,
     ...props,
   };
@@ -227,14 +227,14 @@ const ScrollArea = React.forwardRef(function ScrollArea(props, forwardedRef) {
   useExtendedScrollAreaRef(forwardedRef as any, scrollAreaRef, positionRef);
 
   return (
-    <ScrollAreaCustomOrNative
-      positionRef={positionRef}
-      scrollAreaRef={scrollAreaRef}
-      {...restProps}
-      ref={forwardedRef}
-    >
-      <NativeScrollContext.Provider value={usesNative}>{children}</NativeScrollContext.Provider>
-    </ScrollAreaCustomOrNative>
+    <NativeScrollContext.Provider value={usesNative}>
+      <ScrollAreaCustomOrNative
+        positionRef={positionRef}
+        scrollAreaRef={scrollAreaRef}
+        {...restProps}
+        ref={forwardedRef}
+      />
+    </NativeScrollContext.Provider>
   );
 }) as ScrollAreaPrimitive;
 
@@ -249,21 +249,21 @@ type ScrollAreaNoNativeFallbackPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollAreaNoNativeFallback = React.forwardRef(function ScrollArea(props, forwardedRef) {
-  const { children, ...restProps } = {
+  const restProps = {
     ...ROOT_DEFAULT_PROPS,
     ...props,
   };
   const positionRef = React.useRef<HTMLDivElement>(null);
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
   return (
-    <ScrollAreaImpl
-      positionRef={positionRef}
-      scrollAreaRef={scrollAreaRef}
-      {...restProps}
-      ref={forwardedRef}
-    >
-      <NativeScrollContext.Provider value={false}>{children}</NativeScrollContext.Provider>
-    </ScrollAreaImpl>
+    <NativeScrollContext.Provider value={false}>
+      <ScrollAreaImpl
+        positionRef={positionRef}
+        scrollAreaRef={scrollAreaRef}
+        {...restProps}
+        ref={forwardedRef}
+      />
+    </NativeScrollContext.Provider>
   );
 }) as ScrollAreaNoNativeFallbackPrimitive;
 
@@ -352,7 +352,6 @@ const initialState: ScrollAreaReducerState = {
 const ScrollAreaImpl = React.forwardRef(function ScrollAreaImpl(props, forwardedRef) {
   const {
     selector = getSelector(ROOT_NAME),
-    children,
     onScroll,
     overflowX,
     overflowY,
@@ -502,9 +501,7 @@ const ScrollAreaImpl = React.forwardRef(function ScrollAreaImpl(props, forwarded
               }}
               onPointerEnter={composeEventHandlers(props.onPointerEnter, onPointerEnter)}
               onPointerLeave={composeEventHandlers(props.onPointerLeave, onPointerLeave)}
-            >
-              {children}
-            </Primitive>
+            />
           </ScrollAreaStateContext.Provider>
         </ScrollAreaContext.Provider>
       </ScrollAreaRefsContext.Provider>

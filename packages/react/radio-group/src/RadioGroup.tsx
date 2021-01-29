@@ -52,7 +52,6 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
     selector = getSelector(RADIO_GROUP_NAME),
     'aria-labelledby': ariaLabelledby,
     defaultValue,
-    children,
     value: valueProp,
     required,
     onValueChange,
@@ -78,17 +77,17 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
   );
 
   return (
-    <Primitive
-      {...groupProps}
-      selector={selector}
-      ref={forwardedRef}
-      role="radiogroup"
-      aria-labelledby={labelledBy}
-    >
-      <RadioGroupContext.Provider value={context}>
-        <RovingFocusGroup loop>{children}</RovingFocusGroup>
-      </RadioGroupContext.Provider>
-    </Primitive>
+    <RadioGroupContext.Provider value={context}>
+      <RovingFocusGroup loop>
+        <Primitive
+          {...groupProps}
+          selector={selector}
+          ref={forwardedRef}
+          role="radiogroup"
+          aria-labelledby={labelledBy}
+        />
+      </RovingFocusGroup>
+    </RadioGroupContext.Provider>
   );
 }) as RadioGroupPrimitive;
 
