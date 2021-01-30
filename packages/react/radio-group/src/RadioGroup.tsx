@@ -49,9 +49,9 @@ const [RadioGroupContext, useRadioGroupContext] = createContext<RadioGroupContex
 
 const RadioGroup = React.forwardRef((props, forwardedRef) => {
   const {
+    selector = getSelector(RADIO_GROUP_NAME),
     'aria-labelledby': ariaLabelledby,
     defaultValue,
-    children,
     value: valueProp,
     required,
     onValueChange,
@@ -77,17 +77,17 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
   );
 
   return (
-    <Primitive
-      selector={getSelector(RADIO_GROUP_NAME)}
-      {...groupProps}
-      ref={forwardedRef}
-      role="radiogroup"
-      aria-labelledby={labelledBy}
-    >
-      <RadioGroupContext.Provider value={context}>
-        <RovingFocusGroup loop>{children}</RovingFocusGroup>
-      </RadioGroupContext.Provider>
-    </Primitive>
+    <RadioGroupContext.Provider value={context}>
+      <RovingFocusGroup loop>
+        <Primitive
+          {...groupProps}
+          selector={selector}
+          ref={forwardedRef}
+          role="radiogroup"
+          aria-labelledby={labelledBy}
+        />
+      </RovingFocusGroup>
+    </RadioGroupContext.Provider>
   );
 }) as RadioGroupPrimitive;
 
@@ -106,7 +106,7 @@ type RadioGroupItemPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const RadioGroupItem = React.forwardRef((props, forwardedRef) => {
-  const { disabled, required, ...itemProps } = props;
+  const { selector = getSelector(ITEM_NAME), disabled, required, ...itemProps } = props;
   const context = useRadioGroupContext(ITEM_NAME);
   const radioRef = React.useRef<React.ElementRef<typeof Radio>>(null);
   const ref = useComposedRefs(forwardedRef, radioRef);
@@ -131,14 +131,14 @@ const RadioGroupItem = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Radio
-      selector={getSelector(ITEM_NAME)}
       {...itemProps}
       {...rovingFocusProps}
+      selector={selector}
+      ref={ref}
       disabled={disabled}
       data-disabled={disabled ? '' : undefined}
       required={required ?? context.required}
       checked={isChecked}
-      ref={ref}
       onCheckedChange={handleChange}
       onKeyDown={handleKeyDown}
       onMouseDown={handleMouseDown}

@@ -20,7 +20,13 @@ type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
 const Label = React.forwardRef((props, forwardedRef) => {
-  const { htmlFor, id: idProp, children, ...labelProps } = props;
+  const {
+    as = DEFAULT_TAG,
+    selector = getSelector(NAME),
+    htmlFor,
+    id: idProp,
+    ...labelProps
+  } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
   const generatedId = `label-${useId()}`;
@@ -69,18 +75,9 @@ const Label = React.forwardRef((props, forwardedRef) => {
   }, [id, htmlFor]);
 
   return (
-    <Primitive
-      as={DEFAULT_TAG}
-      selector={getSelector(NAME)}
-      {...labelProps}
-      ref={ref}
-      id={id}
-      role="label"
-    >
-      <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
-        {children}
-      </LabelContext.Provider>
-    </Primitive>
+    <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
+      <Primitive {...labelProps} as={as} selector={selector} ref={ref} id={id} role="label" />
+    </LabelContext.Provider>
   );
 }) as LabelPrimitive;
 

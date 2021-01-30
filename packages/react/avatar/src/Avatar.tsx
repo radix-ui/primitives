@@ -27,17 +27,12 @@ const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
 );
 
 const Avatar = React.forwardRef((props, forwardedRef) => {
-  const { children, ...avatarProps } = props;
+  const { as = AVATAR_DEFAULT_TAG, selector = getSelector(AVATAR_NAME), ...avatarProps } = props;
   const context = React.useState<ImageLoadingStatus>('idle');
   return (
-    <Primitive
-      as={AVATAR_DEFAULT_TAG}
-      selector={getSelector(AVATAR_NAME)}
-      {...avatarProps}
-      ref={forwardedRef}
-    >
-      <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
-    </Primitive>
+    <AvatarContext.Provider value={context}>
+      <Primitive {...avatarProps} as={as} selector={selector} ref={forwardedRef} />
+    </AvatarContext.Provider>
   );
 }) as AvatarPrimitive;
 
@@ -61,7 +56,13 @@ type AvatarImagePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const AvatarImage = React.forwardRef((props, forwardedRef) => {
-  const { src, onLoadingStatusChange: onLoadingStatusChangeProp = () => {}, ...imageProps } = props;
+  const {
+    as = IMAGE_DEFAULT_TAG,
+    selector = getSelector(IMAGE_NAME),
+    src,
+    onLoadingStatusChange: onLoadingStatusChangeProp = () => {},
+    ...imageProps
+  } = props;
   const [, setImageLoadingStatus] = useAvatarContext(IMAGE_NAME);
   const imageLoadingStatus = useImageLoadingStatus(src);
   const onLoadingStatusChange = useCallbackRef(onLoadingStatusChangeProp);
@@ -74,13 +75,7 @@ const AvatarImage = React.forwardRef((props, forwardedRef) => {
   }, [imageLoadingStatus, setImageLoadingStatus, onLoadingStatusChange]);
 
   return imageLoadingStatus === 'loaded' ? (
-    <Primitive
-      as={IMAGE_DEFAULT_TAG}
-      selector={getSelector(IMAGE_NAME)}
-      {...imageProps}
-      src={src}
-      ref={forwardedRef}
-    />
+    <Primitive {...imageProps} as={as} selector={selector} ref={forwardedRef} src={src} />
   ) : null;
 }) as AvatarImagePrimitive;
 
@@ -100,7 +95,12 @@ type AvatarFallbackPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const AvatarFallback = React.forwardRef((props, forwardedRef) => {
-  const { delayMs, ...fallbackProps } = props;
+  const {
+    as = FALLBACK_DEFAULT_TAG,
+    selector = getSelector(FALLBACK_NAME),
+    delayMs,
+    ...fallbackProps
+  } = props;
   const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
   const [canRender, setCanRender] = React.useState(delayMs === undefined);
 
@@ -112,12 +112,7 @@ const AvatarFallback = React.forwardRef((props, forwardedRef) => {
   }, [delayMs]);
 
   return canRender && imageLoadingStatus !== 'loaded' ? (
-    <Primitive
-      as={FALLBACK_DEFAULT_TAG}
-      selector={getSelector(FALLBACK_NAME)}
-      {...fallbackProps}
-      ref={forwardedRef}
-    />
+    <Primitive {...fallbackProps} as={as} selector={selector} ref={forwardedRef} />
   ) : null;
 }) as AvatarFallbackPrimitive;
 

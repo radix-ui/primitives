@@ -15,22 +15,26 @@ type ArrowPrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, ArrowO
  * is replaced when consumer passes an `as` prop
  */
 const Arrow = React.forwardRef((props, forwardedRef) => {
-  return <Primitive as={ArrowImpl} selector={getSelector(NAME)} {...props} ref={forwardedRef} />;
+  const { as = ArrowImpl, selector = getSelector(NAME), ...arrowProps } = props;
+  return <Primitive {...arrowProps} as={as} selector={selector} ref={forwardedRef} />;
 }) as ArrowPrimitive;
 
 const ArrowImpl = React.forwardRef<SVGSVGElement, React.ComponentProps<typeof DEFAULT_TAG>>(
-  (props, forwardedRef) => (
-    <svg
-      width={10}
-      height={5}
-      {...props}
-      ref={forwardedRef}
-      viewBox="0 0 30 10"
-      preserveAspectRatio="none"
-    >
-      <polygon points="0,0 30,0 15,10" />
-    </svg>
-  )
+  (props, forwardedRef) => {
+    const { width = 10, height = 5, ...arrowProps } = props;
+    return (
+      <svg
+        {...arrowProps}
+        ref={forwardedRef}
+        width={width}
+        height={height}
+        viewBox="0 0 30 10"
+        preserveAspectRatio="none"
+      >
+        <polygon points="0,0 30,0 15,10" />
+      </svg>
+    );
+  }
 );
 
 Arrow.displayName = NAME;

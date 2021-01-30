@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-popper",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -12,10 +12,8 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
-    "version": "yarn version",
-    "prepublish": "yarn clean && yarn build"
+    "prepublish": "yarn clean"
   },
   "dependencies": {
     "@radix-ui/popper": "workspace:*",

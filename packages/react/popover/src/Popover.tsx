@@ -83,17 +83,18 @@ type PopoverTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
   const context = usePopoverContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
   return (
     <Primitive
-      as={TRIGGER_DEFAULT_TAG}
-      selector={getSelector(TRIGGER_NAME)}
       type="button"
       aria-haspopup="dialog"
       aria-expanded={context.open}
       aria-controls={context.id}
-      {...props}
+      {...triggerProps}
+      as={as}
+      selector={selector}
       ref={composedTriggerRef}
       onClick={composeEventHandlers(props.onClick, () => context.setOpen((prevOpen) => !prevOpen))}
     />
@@ -127,6 +128,7 @@ type PopoverContentPrimitive = Polymorphic.ForwardRefComponent<
 const PopoverContent = React.forwardRef((props, forwardedRef) => {
   const { forceMount, ...contentProps } = props;
   const context = usePopoverContext(CONTENT_NAME);
+
   return (
     <Presence present={forceMount || context.open}>
       <PopoverContentImpl
@@ -215,7 +217,7 @@ type PopoverContentImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
-    children,
+    selector = getSelector(CONTENT_NAME),
     anchorRef,
     trapFocus = true,
     onOpenAutoFocus,
@@ -309,9 +311,9 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
               {(dismissableLayerProps) => (
                 <PopperPrimitive.Root
                   role="dialog"
-                  selector={getSelector(CONTENT_NAME)}
                   aria-modal
                   {...contentProps}
+                  selector={selector}
                   ref={composeRefs(
                     forwardedRef,
                     contentRef,
@@ -346,9 +348,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                     dismissableLayerProps.onTouchStartCapture,
                     { checkForDefaultPrevented: false }
                   )}
-                >
-                  {children}
-                </PopperPrimitive.Root>
+                />
               )}
             </DismissableLayer>
           )}
@@ -374,13 +374,14 @@ type PopoverClosePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const PopoverClose = React.forwardRef((props, forwardedRef) => {
+  const { as = CLOSE_DEFAULT_TAG, selector = getSelector(CLOSE_NAME), ...closeProps } = props;
   const context = usePopoverContext(CLOSE_NAME);
   return (
     <Primitive
-      as={CLOSE_DEFAULT_TAG}
-      selector={getSelector(CLOSE_NAME)}
       type="button"
-      {...props}
+      {...closeProps}
+      as={as}
+      selector={selector}
       ref={forwardedRef}
       onClick={composeEventHandlers(props.onClick, () => context.setOpen(false))}
     />

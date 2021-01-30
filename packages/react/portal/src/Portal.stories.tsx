@@ -19,7 +19,7 @@ export const Base = () => (
       necessitatibus eius pariatur.
     </p>
 
-    <Portal>
+    <Portal style={{ position: 'relative' }}>
       <h1>This content is rendered in a portal (another DOM tree)</h1>
       <p>
         Because of the portal, it can appear in a different DOM tree from the main one (by default a

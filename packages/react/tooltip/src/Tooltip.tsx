@@ -14,6 +14,7 @@ import {
 import { Primitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
+import { Slottable } from '@radix-ui/react-slot';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { createStateMachine, stateChart } from './machine';
 
@@ -144,16 +145,17 @@ type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
   const context = useTooltipContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
   return (
     <Primitive
-      as={TRIGGER_DEFAULT_TAG}
-      selector={getSelector(TRIGGER_NAME)}
       type="button"
       aria-describedby={context.open ? context.id : undefined}
-      {...props}
+      {...triggerProps}
+      as={as}
+      selector={selector}
       ref={composedTriggerRef}
       onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
         stateMachine.transition('mouseEntered', { id: context.id })
@@ -232,7 +234,14 @@ type TooltipContentImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
-  const { children, 'aria-label': ariaLabel, anchorRef, portalled = true, ...contentProps } = props;
+  const {
+    selector = getSelector(CONTENT_NAME),
+    children,
+    'aria-label': ariaLabel,
+    anchorRef,
+    portalled = true,
+    ...contentProps
+  } = props;
   const context = useTooltipContext(CONTENT_NAME);
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
@@ -240,10 +249,10 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
     <PortalWrapper>
       <CheckTriggerMoved />
       <PopperPrimitive.Root
-        selector={getSelector(CONTENT_NAME)}
         {...contentProps}
-        data-state={context.stateAttribute}
+        selector={selector}
         ref={forwardedRef}
+        data-state={context.stateAttribute}
         anchorRef={anchorRef || context.triggerRef}
         style={{
           ...contentProps.style,
@@ -251,7 +260,7 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
           ['--radix-tooltip-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
         }}
       >
-        {children}
+        <Slottable>{children}</Slottable>
         <VisuallyHidden id={context.id} role="tooltip">
           {ariaLabel || children}
         </VisuallyHidden>

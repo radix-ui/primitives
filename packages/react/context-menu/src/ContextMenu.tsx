@@ -53,12 +53,13 @@ type ContextMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
   const context = useContextMenuContext(TRIGGER_NAME);
   return (
     <Primitive
-      as={TRIGGER_DEFAULT_TAG}
-      selector={getSelector(TRIGGER_NAME)}
-      {...props}
+      {...triggerProps}
+      as={as}
+      selector={selector}
       ref={forwardedRef}
       onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
         event.preventDefault();
@@ -95,15 +96,22 @@ type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
+  const {
+    selector = getSelector(CONTENT_NAME),
+    side = 'bottom',
+    align = 'start',
+    disableOutsidePointerEvents = true,
+    ...contentProps
+  } = props;
   const context = useContextMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
-      selector={getSelector(CONTENT_NAME)}
-      disableOutsidePointerEvents
-      side="bottom"
-      align="start"
-      {...props}
+      {...contentProps}
+      selector={selector}
       ref={forwardedRef}
+      side={side}
+      align={align}
+      disableOutsidePointerEvents={disableOutsidePointerEvents}
       open={context.open}
       onOpenChange={context.setOpen}
       style={{

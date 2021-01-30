@@ -38,8 +38,9 @@ const [RadioContext, useRadioContext] = createContext<boolean>(RADIO_NAME + 'Con
 
 const Radio = React.forwardRef((props, forwardedRef) => {
   const {
+    as = RADIO_DEFAULT_TAG,
+    selector = getSelector(RADIO_NAME),
     'aria-labelledby': ariaLabelledby,
-    children,
     name,
     checked: checkedProp,
     defaultChecked,
@@ -81,29 +82,29 @@ const Radio = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <Primitive
-        as={RADIO_DEFAULT_TAG}
-        selector={getSelector(RADIO_NAME)}
-        type="button"
-        {...radioProps}
-        ref={ref}
-        role="radio"
-        aria-checked={checked}
-        aria-labelledby={labelledBy}
-        data-state={getState(checked)}
-        data-readonly={readOnly}
-        disabled={disabled}
-        value={value}
-        /**
-         * The `input` is hidden, so when the button is clicked we trigger
-         * the input manually
-         */
-        onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
-          checkForDefaultPrevented: false,
-        })}
-      >
-        <RadioContext.Provider value={checked}>{children}</RadioContext.Provider>
-      </Primitive>
+      <RadioContext.Provider value={checked}>
+        <Primitive
+          type="button"
+          {...radioProps}
+          as={as}
+          selector={selector}
+          ref={ref}
+          role="radio"
+          aria-checked={checked}
+          aria-labelledby={labelledBy}
+          data-state={getState(checked)}
+          data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
+          /**
+           * The `input` is hidden, so when the button is clicked we trigger
+           * the input manually
+           */
+          onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
+            checkForDefaultPrevented: false,
+          })}
+        />
+      </RadioContext.Provider>
     </>
   );
 }) as RadioPrimitive;
@@ -134,16 +135,21 @@ type RadioIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const RadioIndicator = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, ...indicatorProps } = props;
+  const {
+    as = INDICATOR_DEFAULT_TAG,
+    selector = getSelector(INDICATOR_NAME),
+    forceMount,
+    ...indicatorProps
+  } = props;
   const checked = useRadioContext(INDICATOR_NAME);
   return (
     <Presence present={forceMount || checked}>
       <Primitive
-        as={INDICATOR_DEFAULT_TAG}
-        selector={getSelector(INDICATOR_NAME)}
         {...indicatorProps}
-        data-state={getState(checked)}
+        as={as}
+        selector={selector}
         ref={forwardedRef}
+        data-state={getState(checked)}
       />
     </Presence>
   );

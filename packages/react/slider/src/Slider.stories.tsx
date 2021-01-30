@@ -13,6 +13,15 @@ export const Styled = () => (
   </Slider>
 );
 
+export const RightToLeft = () => (
+  <Slider as={StyledRoot} dir="rtl">
+    <SliderTrack as={StyledTrack}>
+      <SliderRange as={StyledRange} />
+    </SliderTrack>
+    <SliderThumb as={StyledThumb} />
+  </Slider>
+);
+
 export const Horizontal = () => (
   <>
     <Slider

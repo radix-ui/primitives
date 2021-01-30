@@ -8,9 +8,12 @@ describe('Portal', () => {
     expect(baseElement).toMatchInlineSnapshot(`
       <body>
         <div />
-        <radix-portal>
+        <div
+          data-radix-portal=""
+          style="position: absolute; top: 0px; left: 0px; z-index: 2147483647;"
+        >
           portal
-        </radix-portal>
+        </div>
       </body>
     `);
   });
@@ -25,12 +28,18 @@ describe('Portal', () => {
     expect(baseElement).toMatchInlineSnapshot(`
       <body>
         <div />
-        <radix-portal>
+        <div
+          data-radix-portal=""
+          style="position: absolute; top: 0px; left: 0px; z-index: 2147483647;"
+        >
           portal 1
-        </radix-portal>
-        <radix-portal>
+        </div>
+        <div
+          data-radix-portal=""
+          style="position: absolute; top: 0px; left: 0px; z-index: 2147483647;"
+        >
           portal 2
-        </radix-portal>
+        </div>
       </body>
     `);
   });
@@ -52,9 +61,11 @@ describe('Portal', () => {
           <section
             id="portal-container"
           >
-            <radix-portal>
+            <div
+              data-radix-portal=""
+            >
               portal inside custom container
-            </radix-portal>
+            </div>
           </section>
         </div>
       </body>

@@ -14,8 +14,9 @@ function extendComponent<As extends Polymorphic.ForwardRefComponent<any, any>>(
     Polymorphic.OwnProps<typeof Comp>
   >;
   const Extended = React.forwardRef((props, forwardedRef) => {
+    const { selector = getSelector(displayName), ...asProps } = props;
     const As = Comp as any;
-    return <As selector={getSelector(displayName)} {...props} ref={forwardedRef} />;
+    return <As {...asProps} selector={selector} ref={forwardedRef} />;
   }) as ExtendedPrimitive;
   Extended.displayName = displayName;
   return Extended;

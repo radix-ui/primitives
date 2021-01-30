@@ -94,6 +94,7 @@ type AnnouncePrimitive = Polymorphic.ForwardRefComponent<
 
 const Announce = React.forwardRef((props, forwardedRef) => {
   const {
+    selector = getSelector(NAME),
     'aria-relevant': ariaRelevant,
     children,
     type = 'polite',
@@ -176,7 +177,7 @@ const Announce = React.forwardRef((props, forwardedRef) => {
 
   return (
     <React.Fragment>
-      <Primitive selector={getSelector(NAME)} {...regionProps} ref={ref}>
+      <Primitive {...regionProps} selector={selector} ref={ref}>
         {children}
       </Primitive>
 

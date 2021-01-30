@@ -13,28 +13,31 @@ type VisuallyHiddenPrimitive = Polymorphic.ForwardRefComponent<
   VisuallyHiddenOwnProps
 >;
 
-const VisuallyHidden = React.forwardRef((props, forwardedRef) => (
-  <Primitive
-    as={DEFAULT_TAG}
-    selector={getSelector(NAME)}
-    {...props}
-    ref={forwardedRef}
-    style={{
-      ...props.style,
-      // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
-      position: 'absolute',
-      border: 0,
-      width: 1,
-      height: 1,
-      padding: 0,
-      margin: -1,
-      overflow: 'hidden',
-      clip: 'rect(0, 0, 0, 0)',
-      whiteSpace: 'nowrap',
-      wordWrap: 'normal',
-    }}
-  />
-)) as VisuallyHiddenPrimitive;
+const VisuallyHidden = React.forwardRef((props, forwardedRef) => {
+  const { as = DEFAULT_TAG, selector = getSelector(NAME), ...visuallyHiddenProps } = props;
+  return (
+    <Primitive
+      {...visuallyHiddenProps}
+      as={as}
+      selector={selector}
+      ref={forwardedRef}
+      style={{
+        ...props.style,
+        // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
+        position: 'absolute',
+        border: 0,
+        width: 1,
+        height: 1,
+        padding: 0,
+        margin: -1,
+        overflow: 'hidden',
+        clip: 'rect(0, 0, 0, 0)',
+        whiteSpace: 'nowrap',
+        wordWrap: 'normal',
+      }}
+    />
+  );
+}) as VisuallyHiddenPrimitive;
 
 VisuallyHidden.displayName = NAME;
 
