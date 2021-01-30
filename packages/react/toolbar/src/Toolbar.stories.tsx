@@ -1,139 +1,168 @@
 import * as React from 'react';
-import { Toolbar, ToolbarItem } from './Toolbar';
-import { styled } from '../../../../stitches.config';
+import { Toolbar, ToolbarGroup, ToolbarLabel, ToolbarSeparator, ToolbarItem } from './Toolbar';
+import { css } from '../../../../stitches.config';
 import { ToggleButton } from '@radix-ui/react-toggle-button';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuArrow,
+} from '@radix-ui/react-dropdown-menu';
+
+import { styledComponents } from '../../menu/src/Menu.stories';
+
+const {
+  StyledRoot: StyledDropDownMenu,
+  StyledItem: StyledDropdownItem,
+  StyledLabel,
+} = styledComponents;
 
 export default { title: 'Components/Toolbar' };
 
 export const Styled = () => {
-  const [bold, toggleBold] = React.useState(false);
-  const [italic, toggleItalic] = React.useState(false);
-  const [underline, toggleUnderline] = React.useState(false);
-
-  const [align, setAlign] = React.useState('left');
-
   return (
-    <StyledContainer>
-      <StyledToolbar label="format toolbar" loop={true}>
-        <ToolbarItem
-          as={ToggleButton}
-          toggled={bold}
-          onToggledChange={toggleBold}
-          aria-label="bold"
-        >
-          B
-        </ToolbarItem>
-        <ToolbarItem
-          as={ToggleButton}
-          toggled={italic}
-          onToggledChange={toggleItalic}
-          aria-label="italic"
-          style={{ fontFamily: 'serif', fontStyle: 'italic' }}
-        >
-          I
-        </ToolbarItem>
-        <ToolbarItem
-          as={ToggleButton}
-          toggled={underline}
-          onToggledChange={toggleUnderline}
-          aria-label="underline"
-          style={{ textDecoration: 'underline' }}
-        >
-          U
-        </ToolbarItem>
-        {['left', 'center', 'right'].map((option) => (
-          <ToolbarItem
-            as={ToggleButton}
-            toggled={align === option}
-            onToggledChange={() => setAlign(option)}
-            aria-label={`align ${option}`}
-          >
-            {option[0].toUpperCase()}
-          </ToolbarItem>
-        ))}
-      </StyledToolbar>
-      <textarea
-        id="textarea1"
-        rows={20}
-        style={{
-          fontWeight: bold ? 'bold' : 'normal',
-          fontStyle: italic ? 'italic' : 'normal',
-          textDecoration: underline ? 'underline' : 'normal',
-          textAlign: align,
-        }}
-        defaultValue={TEXT_AREA_CONTENT}
-      ></textarea>
-    </StyledContainer>
+    <>
+      <ToolbarExample title="Horizontal"></ToolbarExample>
+      <ToolbarExample title="Vertical" orientation="vertical"></ToolbarExample>
+    </>
   );
 };
 
-const TEXT_AREA_CONTENT = `An open-source UI component library for building high-quality, accessible design systems and web apps.
+const ToolbarExample = ({ title, orientation }: any) => {
+  return (
+    <>
+      <h1>{title}</h1>
+      <Toolbar
+        className={StyledToolbar}
+        orientation={orientation}
+        loop={true}
+        aria-label={`${title} toolbar`}
+      >
+        <ToolbarItem className={StyledToolbarItem} as={ToggleButton}>
+          Toggle
+        </ToolbarItem>
+        <ToolbarSeparator className={StyledToolbarSeparator}></ToolbarSeparator>
+        <ToolbarGroup className={StyledToolbarGroup}>
+          <ToolbarLabel as={StyledLabel}>A group</ToolbarLabel>
+          <label className={StyledToolbarItem} htmlFor="input">
+            <span>Input: </span>
+            <ToolbarItem id="input" as={'input'} style={{ maxWidth: 50 }}></ToolbarItem>
+          </label>
+          <ToolbarItem className={StyledToolbarItem} as={'button'}>
+            Submit
+          </ToolbarItem>
+        </ToolbarGroup>
+        <ToolbarSeparator className={StyledToolbarSeparator}></ToolbarSeparator>
+        <DropdownMenu>
+          <ToolbarItem className={StyledToolbarItem} as={DropdownMenuTrigger}>
+            Menu
+          </ToolbarItem>
+          <DropdownMenuContent as={StyledDropDownMenu} sideOffset={5}>
+            <DropdownMenuItem as={StyledDropdownItem} onSelect={() => console.log('undo')}>
+              Undo
+            </DropdownMenuItem>
+            <DropdownMenuItem as={StyledDropdownItem} onSelect={() => console.log('redo')}>
+              Redo
+            </DropdownMenuItem>
+            <DropdownMenuArrow />
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <ToolbarItem className={StyledToolbarItem} as={ToggleButton} disabled>
+          Disabled
+        </ToolbarItem>
+        <ToolbarItem
+          as={'a'}
+          className={StyledLink}
+          href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
+          target="_blank"
+        >
+          Examle
+        </ToolbarItem>
+      </Toolbar>
+    </>
+  );
+};
 
-Radix Primitives is a low-level UI component library with a focus on accessibility, customization and developer experience. You can use these components either as the base layer of your design system, or adopt them incrementally.
-
-Vision
-Most of us share similar definitions for common UI patterns like accordion, checkbox, combobox, dialog, dropdown, select, slider, and tooltip. These UI patterns are documented by WAI-ARIA and generally understood by the community.
-
-However, the implementations provided to us by the web platform are inadequate. They're either non-existent, lacking in functionality, or cannot be customized sufficiently.
-
-So, developers are forced to build custom components; an incredibly difficult task. As a result, most components on the web are inaccessible, non-performant, and lacking important features.
-
-Our goal is to create a well-funded, open-source component library that the community can use to build accessible design systems.`;
-
-const StyledContainer = styled('div', {
-  display: 'inline-flex',
-  flexDirection: 'column',
-  gap: '1em',
-  width: '600px',
-});
-
-const StyledToolbar = styled(Toolbar, {
-  backgroundColor: '#ececea',
-  padding: '6px',
-  height: '30px',
-  borderRadius: '5px',
-
-  borderWidth: '2px',
-  borderStyle: 'solid',
-  borderColor: 'transparent',
-
+const RECOMMENDED_CSS__TOOLBAR = {
+  // ensures things are layed out correctly by default
   display: 'flex',
-  gap: '8px',
+  '&[data-orientation="vertical"]': {
+    flexDirection: 'column',
+  },
+};
+
+const StyledToolbar = css({
+  ...RECOMMENDED_CSS__TOOLBAR,
+  display: 'inline-flex',
+  gap: 5,
+  boxSizing: 'border-box',
+  minWidth: 130,
+  backgroundColor: '$white',
+  border: '1px solid $gray100',
+  borderRadius: 6,
+  padding: 5,
+  boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.1)',
+  fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
+  fontSize: 13,
 
   '&:focus-within': {
-    borderColor: '#9c002f',
+    borderColor: '$black',
+  },
+});
+
+const StyledToolbarGroup = css({
+  ...RECOMMENDED_CSS__TOOLBAR,
+  gap: 5,
+  '[data-radix-toolbar-label]': {
+    padding: 0,
   },
 
-  '& button': {
+  '&[data-orientation="horizontal"]': {
+    '[data-radix-toolbar-label]': {
+      alignSelf: 'center',
+    },
+  },
+});
+
+const StyledToolbarSeparator = css({
+  width: 1,
+  margin: 5,
+  backgroundColor: '$gray100',
+
+  '&[data-orientation="vertical"]': {
+    height: 1,
+    width: 'auto',
+  },
+});
+
+const StyledToolbarItem = css({
+  border: '1px solid $black',
+  borderRadius: 6,
+  backgroundColor: 'transparent',
+  padding: '5px 10px',
+  fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
+  fontSize: 13,
+
+  '&:focus, &:focus-within': {
     outline: 'none',
-    border: 'none',
-    borderRadius: '5px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    lineHeight: '1em',
-
-    fontSize: '16px',
-
-    background: 'rgb(255, 255, 255)',
-    color: '#222428',
-    height: '30px',
-    width: '30px',
-    padding: '6px',
-
-    '&[aria-pressed=true]': {
-      boxShadow: '0 0 0 1px black',
-      fontWeight: '600',
-    },
-
-    '&:focus': {
-      boxShadow: '0 0 0 2px #005a9c',
-      background: 'rgb(226, 239, 255)',
-    },
-
-    '&:hover': {
-      boxShadow: '0 0 0 1px #005a9c',
-      background: 'rgb(226, 239, 255)',
-    },
+    boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.5)',
   },
+
+  '&[data-state="on"]': {
+    boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.7)',
+  },
+
+  '&[data-disabled]': {
+    opacity: 0.5,
+    pointerEvents: 'none',
+    userSelect: 'none',
+  },
+});
+
+const StyledLink = css(StyledToolbarItem, {
+  display: 'inline-flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  color: 'black',
 });
