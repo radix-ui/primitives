@@ -169,6 +169,7 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
     onDismiss,
     disableOutsideScroll,
     portalled,
+    children,
     ...menuProps
   } = props;
 
@@ -309,7 +310,9 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
                       onReachableChange={setItemsReachable}
                       orientation="vertical"
                       loop={loop}
-                    />
+                    >
+                      {children}
+                    </RovingFocusGroup>
                   </MenuContext.Provider>
                 </PopperPrimitive.Root>
               )}
