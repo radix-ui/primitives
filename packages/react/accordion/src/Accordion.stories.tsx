@@ -237,6 +237,10 @@ export const Chromatic = () => {
   );
 };
 
+Chromatic.parameters = {
+  chromatic: { disable: false },
+};
+
 const StyledRoot = styled('div', {
   maxWidth: '20em',
   fontFamily: 'sans-serif',
