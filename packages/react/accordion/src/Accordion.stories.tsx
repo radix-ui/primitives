@@ -134,6 +134,109 @@ export const OutsideViewport = () => (
   </>
 );
 
+export const Chromatic = () => {
+  const items = ['One', 'Two', 'Three', 'Four'];
+  return (
+    <>
+      <h1>Uncontrolled</h1>
+      <Accordion as={StyledRoot}>
+        {items.map((item) => (
+          <AccordionItem key={item} as={StyledItem} value={item}>
+            <AccordionHeader as={StyledHeader}>
+              <AccordionButton as={StyledButton}>{item}</AccordionButton>
+            </AccordionHeader>
+            <AccordionPanel as={StyledPanel}>
+              {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+              viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
+              suscipit habitant sed.
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      <h1>Uncontrolled with `defaultValue` prop</h1>
+      <Accordion as={StyledRoot} defaultValue="Two">
+        {items.map((item) => (
+          <AccordionItem key={item} as={StyledItem} value={item}>
+            <AccordionHeader as={StyledHeader}>
+              <AccordionButton as={StyledButton}>{item}</AccordionButton>
+            </AccordionHeader>
+            <AccordionPanel as={StyledPanel}>
+              {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+              viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
+              suscipit habitant sed.
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      <h1>Controlled with `value` prop</h1>
+      <Accordion as={StyledRoot} value="Three">
+        {items.map((item) => (
+          <AccordionItem key={item} as={StyledItem} value={item}>
+            <AccordionHeader as={StyledHeader}>
+              <AccordionButton as={StyledButton}>{item}</AccordionButton>
+            </AccordionHeader>
+            <AccordionPanel as={StyledPanel}>
+              {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+              viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
+              suscipit habitant sed.
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      <h1>With `disabled` prop</h1>
+      <Accordion as={StyledRoot} disabled>
+        {items.map((item) => (
+          <AccordionItem key={item} as={StyledItem} value={item}>
+            <AccordionHeader as={StyledHeader}>
+              <AccordionButton as={StyledButton}>{item}</AccordionButton>
+            </AccordionHeader>
+            <AccordionPanel as={StyledPanel}>
+              {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+              viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
+              suscipit habitant sed.
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      <h1>With `disabled` prop on `AccordionItem`</h1>
+      <Accordion as={StyledRoot}>
+        {items.map((item) => (
+          <AccordionItem key={item} as={StyledItem} value={item} disabled={item === 'Two'}>
+            <AccordionHeader as={StyledHeader}>
+              <AccordionButton as={StyledButton}>{item}</AccordionButton>
+            </AccordionHeader>
+            <AccordionPanel as={StyledPanel}>
+              {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+              viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
+              suscipit habitant sed.
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      <h1>With `forceMount` prop on `AccordionPanel`</h1>
+      <Accordion as={StyledRoot}>
+        {items.map((item) => (
+          <AccordionItem key={item} as={StyledItem} value={item}>
+            <AccordionHeader as={StyledHeader}>
+              <AccordionButton as={StyledButton}>{item}</AccordionButton>
+            </AccordionHeader>
+            <AccordionPanel as={StyledPanel} forceMount>
+              {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+              viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
+              suscipit habitant sed.
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </>
+  );
+};
+
 const StyledRoot = styled('div', {
   maxWidth: '20em',
   fontFamily: 'sans-serif',
