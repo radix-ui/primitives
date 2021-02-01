@@ -30,6 +30,9 @@ export const Styled = () => {
 };
 
 const ToolbarExample = ({ title, orientation }: any) => {
+  const anchorRef = React.useRef<HTMLAnchorElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
   return (
     <>
       <h1>{title}</h1>
@@ -47,9 +50,23 @@ const ToolbarExample = ({ title, orientation }: any) => {
           <ToolbarLabel as={StyledLabel}>A group</ToolbarLabel>
           <label className={StyledToolbarItem} htmlFor="input">
             <span>Input: </span>
-            <ToolbarItem id="input" as={'input'} style={{ maxWidth: 50 }}></ToolbarItem>
+            <ToolbarItem
+              ref={inputRef}
+              id="input"
+              value="42"
+              as={'input'}
+              style={{ maxWidth: 50 }}
+            ></ToolbarItem>
           </label>
-          <ToolbarItem className={StyledToolbarItem} as={'button'}>
+          <ToolbarItem
+            className={StyledToolbarItem}
+            as={'button'}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                window.alert('The answer is: ' + inputRef.current?.value);
+              }
+            }}
+          >
             Submit
           </ToolbarItem>
         </ToolbarGroup>
@@ -59,10 +76,10 @@ const ToolbarExample = ({ title, orientation }: any) => {
             Menu
           </ToolbarItem>
           <DropdownMenuContent as={StyledDropDownMenu} sideOffset={5}>
-            <DropdownMenuItem as={StyledDropdownItem} onSelect={() => console.log('undo')}>
+            <DropdownMenuItem as={StyledDropdownItem} onSelect={() => window.alert('undo')}>
               Undo
             </DropdownMenuItem>
-            <DropdownMenuItem as={StyledDropdownItem} onSelect={() => console.log('redo')}>
+            <DropdownMenuItem as={StyledDropdownItem} onSelect={() => window.alert('redo')}>
               Redo
             </DropdownMenuItem>
             <DropdownMenuArrow />
@@ -76,6 +93,14 @@ const ToolbarExample = ({ title, orientation }: any) => {
           className={StyledLink}
           href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
           target="_blank"
+          ref={anchorRef}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              if (!!anchorRef && !!anchorRef.current) {
+                anchorRef.current?.click();
+              }
+            }
+          }}
         >
           Examle
         </ToolbarItem>

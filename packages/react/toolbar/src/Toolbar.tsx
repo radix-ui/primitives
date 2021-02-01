@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
-import { createContext } from '@radix-ui/react-utils';
+import { createContext, composeEventHandlers } from '@radix-ui/react-utils';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
 
@@ -215,7 +215,10 @@ const ToolbarItem = React.forwardRef((props, forwardedRef) => {
       aria-disabled={disabled}
       data-disabled={disabled}
       onClick={handleClick}
-      // disabled={disabled}
+      // RovingFocus eventHandlers should not block item eventHandlers
+      onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
+      onKeyDown={composeEventHandlers(itemProps.onKeyDown, rovingFocusProps.onKeyDown)}
+      onMouseDown={composeEventHandlers(itemProps.onMouseDown, rovingFocusProps.onMouseDown)}
     />
   );
 }) as ToolbarItemPrimitive;

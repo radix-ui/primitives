@@ -1,5 +1,5 @@
 releases:
-  primitives: prerelease
+  "@radix-ui/react-toolbar": prerelease
 
 declined:
-  - "@radix-ui/react-toolbar"
+  - primitives
