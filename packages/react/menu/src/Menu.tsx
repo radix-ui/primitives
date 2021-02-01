@@ -208,114 +208,121 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
   return (
     <PortalWrapper>
       <ScrollLockWrapper>
-        <FocusScope
-          // clicking outside may raise a focusout event, which may get trapped.
-          // in cases where outside pointer events are permitted, we stop trapping.
-          trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus}
-          onMountAutoFocus={onOpenAutoFocus}
-          onUnmountAutoFocus={(event) => {
-            // skip autofocus on unmount if clicking outside is permitted and it happened
-            if (isPermittedPointerDownOutsideEvent) {
-              event.preventDefault();
-            } else {
-              onCloseAutoFocus?.(event);
-            }
-          }}
-        >
-          {(focusScopeProps) => (
-            <DismissableLayer
-              disableOutsidePointerEvents={disableOutsidePointerEvents}
-              onEscapeKeyDown={onEscapeKeyDown}
-              onPointerDownOutside={composeEventHandlers(
-                onPointerDownOutside,
-                (event) => {
-                  const isLeftClick = (event as MouseEvent).button === 0 && event.ctrlKey === false;
-                  const isPermitted = !disableOutsidePointerEvents && isLeftClick;
-                  setIsPermittedPointerDownOutsideEvent(isPermitted);
-
-                  if (event.defaultPrevented) {
-                    // reset this because the event was prevented
-                    setIsPermittedPointerDownOutsideEvent(false);
-                  }
-                },
-                { checkForDefaultPrevented: false }
-              )}
-              onFocusOutside={composeEventHandlers(
-                onFocusOutside,
-                (event) => {
-                  // When focus is trapped, a focusout event may still happen.
-                  // We make sure we don't trigger our `onDismiss` in such case.
-                  if (trapFocus) event.preventDefault();
-                },
-                { checkForDefaultPrevented: false }
-              )}
-              onInteractOutside={onInteractOutside}
-              onDismiss={onDismiss}
+        <MenuContext.Provider value={context}>
+          <RovingFocusGroup
+            reachable={itemsReachable}
+            onReachableChange={setItemsReachable}
+            orientation="vertical"
+            loop={loop}
+          >
+            <FocusScope
+              // clicking outside may raise a focusout event, which may get trapped.
+              // in cases where outside pointer events are permitted, we stop trapping.
+              trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus}
+              onMountAutoFocus={onOpenAutoFocus}
+              onUnmountAutoFocus={(event) => {
+                // skip autofocus on unmount if clicking outside is permitted and it happened
+                if (isPermittedPointerDownOutsideEvent) {
+                  event.preventDefault();
+                } else {
+                  onCloseAutoFocus?.(event);
+                }
+              }}
             >
-              {(dismissableLayerProps) => (
-                <PopperPrimitive.Root
-                  role="menu"
-                  {...menuProps}
-                  selector={selector}
-                  ref={composeRefs(
-                    forwardedRef,
-                    menuRef,
-                    focusScopeProps.ref,
-                    dismissableLayerProps.ref
-                  )}
-                  anchorRef={anchorRef}
-                  tabIndex={menuTabIndex}
-                  style={{ ...dismissableLayerProps.style, outline: 'none', ...menuProps.style }}
-                  onBlurCapture={composeEventHandlers(
-                    menuProps.onBlurCapture,
-                    dismissableLayerProps.onBlurCapture,
-                    { checkForDefaultPrevented: false }
-                  )}
-                  onFocusCapture={composeEventHandlers(
-                    menuProps.onFocusCapture,
-                    dismissableLayerProps.onFocusCapture,
-                    { checkForDefaultPrevented: false }
-                  )}
-                  onMouseDownCapture={composeEventHandlers(
-                    menuProps.onMouseDownCapture,
-                    dismissableLayerProps.onMouseDownCapture,
-                    { checkForDefaultPrevented: false }
-                  )}
-                  onTouchStartCapture={composeEventHandlers(
-                    menuProps.onTouchStartCapture,
-                    dismissableLayerProps.onTouchStartCapture,
-                    { checkForDefaultPrevented: false }
-                  )}
-                  onKeyDownCapture={composeEventHandlers(
-                    menuProps.onKeyDownCapture,
-                    menuTypeaheadProps.onKeyDownCapture
-                  )}
-                  // focus first/last item based on key pressed
-                  onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
-                    const menu = menuRef.current;
-                    if (event.target === menu) {
-                      if (ALL_KEYS.includes(event.key)) {
-                        event.preventDefault();
-                        const items = Array.from(menu.querySelectorAll(ENABLED_ITEM_SELECTOR));
-                        const item = FIRST_KEYS.includes(event.key) ? items[0] : items.reverse()[0];
-                        (item as HTMLElement | undefined)?.focus();
+              {(focusScopeProps) => (
+                <DismissableLayer
+                  disableOutsidePointerEvents={disableOutsidePointerEvents}
+                  onEscapeKeyDown={onEscapeKeyDown}
+                  onPointerDownOutside={composeEventHandlers(
+                    onPointerDownOutside,
+                    (event) => {
+                      const isLeftClick =
+                        (event as MouseEvent).button === 0 && event.ctrlKey === false;
+                      const isPermitted = !disableOutsidePointerEvents && isLeftClick;
+                      setIsPermittedPointerDownOutsideEvent(isPermitted);
+
+                      if (event.defaultPrevented) {
+                        // reset this because the event was prevented
+                        setIsPermittedPointerDownOutsideEvent(false);
                       }
-                    }
-                  })}
+                    },
+                    { checkForDefaultPrevented: false }
+                  )}
+                  onFocusOutside={composeEventHandlers(
+                    onFocusOutside,
+                    (event) => {
+                      // When focus is trapped, a focusout event may still happen.
+                      // We make sure we don't trigger our `onDismiss` in such case.
+                      if (trapFocus) event.preventDefault();
+                    },
+                    { checkForDefaultPrevented: false }
+                  )}
+                  onInteractOutside={onInteractOutside}
+                  onDismiss={onDismiss}
                 >
-                  <MenuContext.Provider value={context}>
-                    <RovingFocusGroup
-                      reachable={itemsReachable}
-                      onReachableChange={setItemsReachable}
-                      orientation="vertical"
-                      loop={loop}
+                  {(dismissableLayerProps) => (
+                    <PopperPrimitive.Root
+                      role="menu"
+                      {...menuProps}
+                      selector={selector}
+                      ref={composeRefs(
+                        forwardedRef,
+                        menuRef,
+                        focusScopeProps.ref,
+                        dismissableLayerProps.ref
+                      )}
+                      anchorRef={anchorRef}
+                      tabIndex={menuTabIndex}
+                      style={{
+                        ...dismissableLayerProps.style,
+                        outline: 'none',
+                        ...menuProps.style,
+                      }}
+                      onBlurCapture={composeEventHandlers(
+                        menuProps.onBlurCapture,
+                        dismissableLayerProps.onBlurCapture,
+                        { checkForDefaultPrevented: false }
+                      )}
+                      onFocusCapture={composeEventHandlers(
+                        menuProps.onFocusCapture,
+                        dismissableLayerProps.onFocusCapture,
+                        { checkForDefaultPrevented: false }
+                      )}
+                      onMouseDownCapture={composeEventHandlers(
+                        menuProps.onMouseDownCapture,
+                        dismissableLayerProps.onMouseDownCapture,
+                        { checkForDefaultPrevented: false }
+                      )}
+                      onTouchStartCapture={composeEventHandlers(
+                        menuProps.onTouchStartCapture,
+                        dismissableLayerProps.onTouchStartCapture,
+                        { checkForDefaultPrevented: false }
+                      )}
+                      onKeyDownCapture={composeEventHandlers(
+                        menuProps.onKeyDownCapture,
+                        menuTypeaheadProps.onKeyDownCapture
+                      )}
+                      // focus first/last item based on key pressed
+                      onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
+                        const menu = menuRef.current;
+                        if (event.target === menu) {
+                          if (ALL_KEYS.includes(event.key)) {
+                            event.preventDefault();
+                            const items = Array.from(menu.querySelectorAll(ENABLED_ITEM_SELECTOR));
+                            const item = FIRST_KEYS.includes(event.key)
+                              ? items[0]
+                              : items.reverse()[0];
+                            (item as HTMLElement | undefined)?.focus();
+                          }
+                        }
+                      })}
                     />
-                  </MenuContext.Provider>
-                </PopperPrimitive.Root>
+                  )}
+                </DismissableLayer>
               )}
-            </DismissableLayer>
-          )}
-        </FocusScope>
+            </FocusScope>
+          </RovingFocusGroup>
+        </MenuContext.Provider>
       </ScrollLockWrapper>
     </PortalWrapper>
   );
