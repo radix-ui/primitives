@@ -301,6 +301,7 @@ function getPlacementStylesForPoint(point: Point): CSS.Properties {
     position: 'absolute',
     top: 0,
     left: 0,
+    minWidth: 'max-content',
     willChange: 'transform',
     transform: `translate3d(${x}px, ${y}px, 0)`,
   };
