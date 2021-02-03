@@ -24,6 +24,7 @@ const RADIO_GROUP_NAME = 'RadioGroup';
 type RadioGroupOwnProps = Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
+    name?: string;
     value?: string;
     defaultValue?: string;
     required?: React.ComponentProps<typeof Radio>['required'];
@@ -37,6 +38,7 @@ type RadioGroupPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 type RadioGroupContextValue = {
+  name: RadioGroupOwnProps['name'];
   value: RadioGroupOwnProps['value'];
   required?: RadioGroupOwnProps['required'];
   onValueChange: Required<RadioGroupOwnProps>['onValueChange'];
@@ -49,6 +51,7 @@ const [RadioGroupContext, useRadioGroupContext] = createContext<RadioGroupContex
 
 const RadioGroup = React.forwardRef((props, forwardedRef) => {
   const {
+    name,
     selector = getSelector(RADIO_GROUP_NAME),
     'aria-labelledby': ariaLabelledby,
     defaultValue,
@@ -67,13 +70,14 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
 
   const context = React.useMemo(
     () => ({
+      name,
       value,
       required,
       onValueChange: composeEventHandlers(handleValueChange, (event) => {
         setValue(event.target.value);
       }),
     }),
-    [value, required, handleValueChange, setValue]
+    [name, value, required, handleValueChange, setValue]
   );
 
   return (
@@ -99,7 +103,10 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 
 const ITEM_NAME = 'RadioGroupItem';
 
-type RadioGroupItemOwnProps = Merge<Polymorphic.OwnProps<typeof Radio>, { value: string }>;
+type RadioGroupItemOwnProps = Merge<
+  Omit<Polymorphic.OwnProps<typeof Radio>, 'name'>,
+  { value: string }
+>;
 type RadioGroupItemPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof Radio>,
   RadioGroupItemOwnProps
@@ -133,6 +140,7 @@ const RadioGroupItem = React.forwardRef((props, forwardedRef) => {
     <Radio
       {...itemProps}
       {...rovingFocusProps}
+      name={context.name}
       selector={selector}
       ref={ref}
       disabled={disabled}
