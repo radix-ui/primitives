@@ -244,7 +244,8 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
     <Portal>
       <RemoveScroll>
         <FocusScope
-          // we make sure we're not trapping once it's been closed.
+          // we make sure we're not trapping once it's been closed
+          // (closed !== unmounted when animating out)
           trapped={context.open}
           onMountAutoFocus={onOpenAutoFocus}
           onUnmountAutoFocus={onCloseAutoFocus}

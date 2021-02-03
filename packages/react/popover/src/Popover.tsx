@@ -257,7 +257,8 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
         <FocusScope
           // clicking outside may raise a focusout event, which may get trapped.
           // in cases where outside pointer events are permitted, we stop trapping.
-          // we also make sure we're not trapping once it's been closed.
+          // we also make sure we're not trapping once it's been closed
+          // (closed !== unmounted when animating out)
           trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus && context.open}
           onMountAutoFocus={onOpenAutoFocus}
           onUnmountAutoFocus={(event) => {
