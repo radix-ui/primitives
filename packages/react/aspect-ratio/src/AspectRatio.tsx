@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -28,6 +28,7 @@ const AspectRatio = React.forwardRef((props, forwardedRef) => {
         width: '100%',
         paddingBottom: `${100 / ratio}%`,
       }}
+      {...(selector ? getSelectorObj(selector + '-wrapper') : undefined)}
     >
       <Primitive
         {...aspectRatioProps}
