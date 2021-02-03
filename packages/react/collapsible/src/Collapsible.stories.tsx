@@ -53,11 +53,13 @@ export const Chromatic = () => (
     </Collapsible>
 
     <h1>Data attribute selectors</h1>
-    <h2>Default</h2>
+    <h2>Closed</h2>
     <Collapsible className={rootAttr}>
       <CollapsibleButton className={buttonAttr}>Button</CollapsibleButton>
       <CollapsibleContent className={contentAttr}>Content 1</CollapsibleContent>
     </Collapsible>
+
+    <h2>Open</h2>
     <Collapsible className={rootAttr} defaultOpen>
       <CollapsibleButton className={buttonAttr}>Button</CollapsibleButton>
       <CollapsibleContent className={contentAttr}>Content 1</CollapsibleContent>
@@ -149,8 +151,8 @@ const styles = {
 
   '&[data-state="closed"]': { borderColor: 'red' },
   '&[data-state="open"]': { borderColor: 'green' },
+  '&[data-disabled]': { borderStyle: 'dashed' },
   '&:disabled': { opacity: 0.5 },
-  '&[data-disabled]': { fontSize: '1.5em' },
 };
 const rootAttr = css({ '&[data-radix-collapsible]': styles });
 const buttonAttr = css({ '&[data-radix-collapsible-button]': styles });
