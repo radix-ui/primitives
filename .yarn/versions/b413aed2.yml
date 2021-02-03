@@ -1,0 +1,5 @@
+releases:
+  "@radix-ui/react-aspect-ratio": patch
+
+declined:
+  - primitives
