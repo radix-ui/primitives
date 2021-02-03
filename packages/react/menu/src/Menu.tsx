@@ -69,7 +69,7 @@ const Menu = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Presence present={forceMount || open}>
-      <MenuImpl ref={forwardedRef} {...menuProps} data-state={getOpenState(open)} />
+      <MenuImpl ref={forwardedRef} {...menuProps} open={open} data-state={getOpenState(open)} />
     </Presence>
   );
 }) as MenuPrimitive;
@@ -77,6 +77,7 @@ const Menu = React.forwardRef((props, forwardedRef) => {
 type MenuImplOwnProps = Merge<
   Polymorphic.OwnProps<typeof PopperPrimitive.Root>,
   {
+    open: boolean;
     onOpenChange?: (open: boolean) => void;
     loop?: boolean;
 
@@ -155,6 +156,7 @@ type MenuImplPrimitive = Polymorphic.ForwardRefComponent<
 const MenuImpl = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(MENU_NAME),
+    open,
     onOpenChange,
     anchorRef,
     loop,
@@ -218,7 +220,9 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
             <FocusScope
               // clicking outside may raise a focusout event, which may get trapped.
               // in cases where outside pointer events are permitted, we stop trapping.
-              trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus}
+              // we also make sure we're not trapping once it's been closed
+              // (closed !== unmounted when animating out)
+              trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus && open}
               onMountAutoFocus={onOpenAutoFocus}
               onUnmountAutoFocus={(event) => {
                 // skip autofocus on unmount if clicking outside is permitted and it happened
