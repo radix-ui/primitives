@@ -77,10 +77,10 @@ const Collapsible = React.forwardRef((props, forwardedRef) => {
   return (
     <CollapsibleContext.Provider value={context}>
       <Primitive
-        {...collapsibleProps}
-        selector={selector}
         data-state={getState(context.open)}
         data-disabled={disabled ? '' : undefined}
+        {...collapsibleProps}
+        selector={selector}
         ref={forwardedRef}
       />
     </CollapsibleContext.Provider>
