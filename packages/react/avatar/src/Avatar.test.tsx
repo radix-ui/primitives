@@ -2,7 +2,6 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, waitFor } from '@testing-library/react';
-import { getSelector } from '@radix-ui/utils';
 import * as Avatar from './Avatar';
 
 const ROOT_TEST_ID = 'avatar-root';
