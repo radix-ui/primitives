@@ -56,7 +56,7 @@ type AccordionItemPrimitive = Polymorphic.ForwardRefComponent<
   AccordionItemOwnProps
 >;
 
-type AccordionItemContextValue = { open?: boolean; buttonId: string };
+type AccordionItemContextValue = { open?: boolean; disabled?: boolean; buttonId: string };
 
 const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionItemContextValue>(
   'AccordionItemContext',
@@ -74,10 +74,10 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
   const open = (value && value === accordionContext.value) || false;
   const disabled = accordionContext.disabled || props.disabled;
 
-  const itemContext: AccordionItemContextValue = React.useMemo(() => ({ open, buttonId }), [
-    open,
-    buttonId,
-  ]);
+  const itemContext: AccordionItemContextValue = React.useMemo(
+    () => ({ open, disabled, buttonId }),
+    [open, disabled, buttonId]
+  );
 
   return (
     <AccordionItemContext.Provider value={itemContext}>
@@ -86,7 +86,6 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
         selector={selector}
         ref={forwardedRef}
         data-state={open ? 'open' : 'closed'}
-        data-disabled={disabled || undefined}
         disabled={disabled}
         open={open}
         onOpenChange={() => accordionContext.setValue(value)}
@@ -116,7 +115,17 @@ type AccordionHeaderPrimitive = Polymorphic.ForwardRefComponent<
  */
 const AccordionHeader = React.forwardRef((props, forwardedRef) => {
   const { as = HEADER_DEFAULT_TAG, selector = getSelector(HEADER_NAME), ...headerProps } = props;
-  return <Primitive {...headerProps} as={as} selector={selector} ref={forwardedRef} />;
+  const itemContext = useAccordionItemContext(BUTTON_NAME);
+  return (
+    <Primitive
+      data-state={getState(itemContext.open)}
+      data-disabled={itemContext.disabled ? '' : undefined}
+      {...headerProps}
+      as={as}
+      selector={selector}
+      ref={forwardedRef}
+    />
+  );
 }) as AccordionHeaderPrimitive;
 
 AccordionHeader.displayName = HEADER_NAME;
@@ -326,6 +335,10 @@ const Accordion = React.forwardRef((props, forwardedRef) => {
 Accordion.displayName = ACCORDION_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function getState(open?: boolean) {
+  return open ? 'open' : 'closed';
+}
 
 function isButton(element: HTMLElement): element is HTMLButtonElement {
   return element instanceof HTMLButtonElement;
