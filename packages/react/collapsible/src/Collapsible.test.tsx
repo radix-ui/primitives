@@ -55,19 +55,6 @@ describe('given a default Collapsible', () => {
   });
 });
 
-describe('given a disabled Collapsible', () => {
-  let rendered: RenderResult;
-
-  beforeEach(() => {
-    rendered = render(<CollapsibleTest disabled />);
-  });
-
-  it('should render a disabled button', () => {
-    const button = rendered.getByText(BUTTON_TEXT);
-    expect(button).toBeDisabled();
-  });
-});
-
 describe('given an open uncontrolled Collapsible', () => {
   let rendered: RenderResult;
   const onOpenChange = jest.fn();
