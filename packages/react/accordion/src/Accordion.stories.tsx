@@ -12,40 +12,40 @@ import {
 export default { title: 'Components/Accordion' };
 
 export const Styled = () => (
-  <Accordion className={root}>
-    <AccordionItem className={item} value="one">
-      <AccordionHeader className={header}>
-        <AccordionButton className={button}>One</AccordionButton>
+  <Accordion className={rootClass}>
+    <AccordionItem className={itemClass} value="one">
+      <AccordionHeader className={headerClass}>
+        <AccordionButton className={buttonClass}>One</AccordionButton>
       </AccordionHeader>
-      <AccordionPanel className={panel}>
+      <AccordionPanel className={panelClass}>
         Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
         integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
         habitant sed.
       </AccordionPanel>
     </AccordionItem>
-    <AccordionItem className={item} value="two">
-      <AccordionHeader className={header}>
-        <AccordionButton className={button}>Two</AccordionButton>
+    <AccordionItem className={itemClass} value="two">
+      <AccordionHeader className={headerClass}>
+        <AccordionButton className={buttonClass}>Two</AccordionButton>
       </AccordionHeader>
-      <AccordionPanel className={panel}>
+      <AccordionPanel className={panelClass}>
         Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
         porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
       </AccordionPanel>
     </AccordionItem>
-    <AccordionItem className={item} value="three" disabled>
-      <AccordionHeader className={header}>
-        <AccordionButton className={button}>Three (disabled)</AccordionButton>
+    <AccordionItem className={itemClass} value="three" disabled>
+      <AccordionHeader className={headerClass}>
+        <AccordionButton className={buttonClass}>Three (disabled)</AccordionButton>
       </AccordionHeader>
-      <AccordionPanel className={panel}>
+      <AccordionPanel className={panelClass}>
         Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
         euismod magna, nec tempor pulvinar eu etiam mattis.
       </AccordionPanel>
     </AccordionItem>
-    <AccordionItem className={item} value="four">
-      <AccordionHeader className={header}>
-        <AccordionButton className={button}>Four</AccordionButton>
+    <AccordionItem className={itemClass} value="four">
+      <AccordionHeader className={headerClass}>
+        <AccordionButton className={buttonClass}>Four</AccordionButton>
       </AccordionHeader>
-      <AccordionPanel className={panel}>
+      <AccordionPanel className={panelClass}>
         Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus dignissim
         vitae, enim vulputate nullam semper potenti etiam volutpat libero.
         <button>Cool</button>
@@ -58,22 +58,22 @@ export const Controlled = () => {
   const [value, setValue] = React.useState('one');
 
   return (
-    <Accordion className={root} value={value} onValueChange={(value) => setValue(value)}>
-      <AccordionItem className={item} value="one">
-        <AccordionHeader className={header}>
-          <AccordionButton className={button}>One</AccordionButton>
+    <Accordion className={rootClass} value={value} onValueChange={(value) => setValue(value)}>
+      <AccordionItem className={itemClass} value="one">
+        <AccordionHeader className={headerClass}>
+          <AccordionButton className={buttonClass}>One</AccordionButton>
         </AccordionHeader>
-        <AccordionPanel className={panel}>
+        <AccordionPanel className={panelClass}>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
           integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
           habitant sed.
         </AccordionPanel>
       </AccordionItem>
-      <AccordionItem className={item} value="two">
-        <AccordionHeader className={header}>
-          <AccordionButton className={button}>Two</AccordionButton>
+      <AccordionItem className={itemClass} value="two">
+        <AccordionHeader className={headerClass}>
+          <AccordionButton className={buttonClass}>Two</AccordionButton>
         </AccordionHeader>
-        <AccordionPanel className={panel}>
+        <AccordionPanel className={panelClass}>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
           porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
         </AccordionPanel>
@@ -90,40 +90,40 @@ export const OutsideViewport = () => (
       When accordion buttons are focused and the user is navigating via keyboard, the page should
       not scroll unless the next tab is entering the viewport.
     </p>
-    <Accordion className={root}>
-      <AccordionItem className={item} value="one">
-        <AccordionHeader className={header}>
-          <AccordionButton className={button}>One</AccordionButton>
+    <Accordion className={rootClass}>
+      <AccordionItem className={itemClass} value="one">
+        <AccordionHeader className={headerClass}>
+          <AccordionButton className={buttonClass}>One</AccordionButton>
         </AccordionHeader>
-        <AccordionPanel className={panel}>
+        <AccordionPanel className={panelClass}>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
           integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
           habitant sed.
         </AccordionPanel>
       </AccordionItem>
-      <AccordionItem className={item} value="two">
-        <AccordionHeader className={header}>
-          <AccordionButton className={button}>Two</AccordionButton>
+      <AccordionItem className={itemClass} value="two">
+        <AccordionHeader className={headerClass}>
+          <AccordionButton className={buttonClass}>Two</AccordionButton>
         </AccordionHeader>
-        <AccordionPanel className={panel}>
+        <AccordionPanel className={panelClass}>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
           porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
         </AccordionPanel>
       </AccordionItem>
-      <AccordionItem className={item} value="three" disabled>
-        <AccordionHeader className={header}>
-          <AccordionButton className={button}>Three (disabled)</AccordionButton>
+      <AccordionItem className={itemClass} value="three" disabled>
+        <AccordionHeader className={headerClass}>
+          <AccordionButton className={buttonClass}>Three (disabled)</AccordionButton>
         </AccordionHeader>
-        <AccordionPanel className={panel}>
+        <AccordionPanel className={panelClass}>
           Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
           euismod magna, nec tempor pulvinar eu etiam mattis.
         </AccordionPanel>
       </AccordionItem>
-      <AccordionItem className={item} value="four">
-        <AccordionHeader className={header}>
-          <AccordionButton className={button}>Four</AccordionButton>
+      <AccordionItem className={itemClass} value="four">
+        <AccordionHeader className={headerClass}>
+          <AccordionButton className={buttonClass}>Four</AccordionButton>
         </AccordionHeader>
-        <AccordionPanel className={panel}>
+        <AccordionPanel className={panelClass}>
           Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
           dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
           <button>Cool</button>
@@ -140,13 +140,13 @@ export const Chromatic = () => {
     <>
       <h1>Uncontrolled</h1>
       <h2>Closed</h2>
-      <Accordion className={root}>
+      <Accordion className={rootClass}>
         {items.map((item) => (
-          <AccordionItem key={item} className={item} value={item}>
-            <AccordionHeader className={header}>
-              <AccordionButton className={button}>{item}</AccordionButton>
+          <AccordionItem key={item} className={itemClass} value={item}>
+            <AccordionHeader className={headerClass}>
+              <AccordionButton className={buttonClass}>{item}</AccordionButton>
             </AccordionHeader>
-            <AccordionPanel className={panel}>
+            <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -156,13 +156,13 @@ export const Chromatic = () => {
       </Accordion>
 
       <h2>Open</h2>
-      <Accordion className={root} defaultValue="Two">
+      <Accordion className={rootClass} defaultValue="Two">
         {items.map((item) => (
-          <AccordionItem key={item} className={item} value={item}>
-            <AccordionHeader className={header}>
-              <AccordionButton className={button}>{item}</AccordionButton>
+          <AccordionItem key={item} className={itemClass} value={item}>
+            <AccordionHeader className={headerClass}>
+              <AccordionButton className={buttonClass}>{item}</AccordionButton>
             </AccordionHeader>
-            <AccordionPanel className={panel}>
+            <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -173,13 +173,13 @@ export const Chromatic = () => {
 
       <h1>Controlled</h1>
       <h2>Open</h2>
-      <Accordion className={root} value="Three">
+      <Accordion className={rootClass} value="Three">
         {items.map((item) => (
-          <AccordionItem key={item} className={item} value={item}>
-            <AccordionHeader className={header}>
-              <AccordionButton className={button}>{item}</AccordionButton>
+          <AccordionItem key={item} className={itemClass} value={item}>
+            <AccordionHeader className={headerClass}>
+              <AccordionButton className={buttonClass}>{item}</AccordionButton>
             </AccordionHeader>
-            <AccordionPanel className={panel}>
+            <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -189,13 +189,13 @@ export const Chromatic = () => {
       </Accordion>
 
       <h1>Disabled (whole)</h1>
-      <Accordion className={root} disabled>
+      <Accordion className={rootClass} disabled>
         {items.map((item) => (
-          <AccordionItem key={item} className={item} value={item}>
-            <AccordionHeader className={header}>
-              <AccordionButton className={button}>{item}</AccordionButton>
+          <AccordionItem key={item} className={itemClass} value={item}>
+            <AccordionHeader className={headerClass}>
+              <AccordionButton className={buttonClass}>{item}</AccordionButton>
             </AccordionHeader>
-            <AccordionPanel className={panel}>
+            <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -206,13 +206,13 @@ export const Chromatic = () => {
 
       <h1>Disabled (item)</h1>
       <h2>Just item</h2>
-      <Accordion className={root}>
+      <Accordion className={rootClass}>
         {items.map((item) => (
-          <AccordionItem key={item} className={item} value={item} disabled={item === 'Two'}>
-            <AccordionHeader className={header}>
-              <AccordionButton className={button}>{item}</AccordionButton>
+          <AccordionItem key={item} className={itemClass} value={item} disabled={item === 'Two'}>
+            <AccordionHeader className={headerClass}>
+              <AccordionButton className={buttonClass}>{item}</AccordionButton>
             </AccordionHeader>
-            <AccordionPanel className={panel}>
+            <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -222,13 +222,13 @@ export const Chromatic = () => {
       </Accordion>
 
       <h2>with `disabled=false` on top-level</h2>
-      <Accordion className={root} disabled={false}>
+      <Accordion className={rootClass} disabled={false}>
         {items.map((item) => (
-          <AccordionItem key={item} className={item} value={item} disabled={item === 'Two'}>
-            <AccordionHeader className={header}>
-              <AccordionButton className={button}>{item}</AccordionButton>
+          <AccordionItem key={item} className={itemClass} value={item} disabled={item === 'Two'}>
+            <AccordionHeader className={headerClass}>
+              <AccordionButton className={buttonClass}>{item}</AccordionButton>
             </AccordionHeader>
-            <AccordionPanel className={panel}>
+            <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -238,13 +238,13 @@ export const Chromatic = () => {
       </Accordion>
 
       <h1>Force mounted panels</h1>
-      <Accordion className={root}>
+      <Accordion className={rootClass}>
         {items.map((item) => (
-          <AccordionItem key={item} className={item} value={item}>
-            <AccordionHeader className={header}>
-              <AccordionButton className={button}>{item}</AccordionButton>
+          <AccordionItem key={item} className={itemClass} value={item}>
+            <AccordionHeader className={headerClass}>
+              <AccordionButton className={buttonClass}>{item}</AccordionButton>
             </AccordionHeader>
-            <AccordionPanel className={panel} forceMount>
+            <AccordionPanel className={panelClass} forceMount>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -254,13 +254,18 @@ export const Chromatic = () => {
       </Accordion>
 
       <h1>Data attribute selectors</h1>
-      <Accordion className={rootAttr} defaultValue="Two">
+      <Accordion className={rootAttrClass} defaultValue="Two">
         {items.map((item) => (
-          <AccordionItem key={item} className={itemAttr} value={item} disabled={item === 'Four'}>
-            <AccordionHeader className={headerAttr}>
-              <AccordionButton className={buttonAttr}>{item}</AccordionButton>
+          <AccordionItem
+            key={item}
+            className={itemAttrClass}
+            value={item}
+            disabled={item === 'Four'}
+          >
+            <AccordionHeader className={headerAttrClass}>
+              <AccordionButton className={buttonAttrClass}>{item}</AccordionButton>
             </AccordionHeader>
-            <AccordionPanel className={panelAttr}>
+            <AccordionPanel className={panelAttrClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -273,16 +278,16 @@ export const Chromatic = () => {
 };
 Chromatic.parameters = { chromatic: { disable: false } };
 
-const root = css({
+const rootClass = css({
   maxWidth: '20em',
   fontFamily: 'sans-serif',
 });
 
-const item = css({
+const itemClass = css({
   borderBottom: '1px solid white',
 });
 
-const header = css({
+const headerClass = css({
   margin: 0,
 });
 
@@ -293,7 +298,7 @@ const RECOMMENDED_CSS__ACCORDION__BUTTON: any = {
   textAlign: 'inherit',
 };
 
-const button = css({
+const buttonClass = css({
   ...RECOMMENDED_CSS__ACCORDION__BUTTON,
   boxSizing: 'border-box',
   appearance: 'none',
@@ -327,7 +332,7 @@ const button = css({
   },
 });
 
-const panel = css({
+const panelClass = css({
   padding: 10,
   lineHeight: 1.5,
 });
@@ -342,8 +347,8 @@ const styles = {
   '&[data-disabled]': { borderStyle: 'dashed' },
   '&:disabled': { opacity: 0.5 },
 };
-const rootAttr = css({ '&[data-radix-accordion]': styles });
-const itemAttr = css({ '&[data-radix-accordion-item]': styles });
-const headerAttr = css({ '&[data-radix-accordion-header]': styles });
-const buttonAttr = css({ '&[data-radix-accordion-button]': styles });
-const panelAttr = css({ '&[data-radix-accordion-panel]': styles });
+const rootAttrClass = css({ '&[data-radix-accordion]': styles });
+const itemAttrClass = css({ '&[data-radix-accordion-item]': styles });
+const headerAttrClass = css({ '&[data-radix-accordion-header]': styles });
+const buttonAttrClass = css({ '&[data-radix-accordion-button]': styles });
+const panelAttrClass = css({ '&[data-radix-accordion-panel]': styles });
