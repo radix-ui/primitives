@@ -106,7 +106,6 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           aria-labelledby={labelledBy}
           aria-required={required}
           data-state={getState(checked)}
-          data-disabled={disabled ? '' : undefined}
           data-readonly={readOnly}
           disabled={disabled}
           value={value}
