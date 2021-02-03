@@ -2,7 +2,6 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, waitFor } from '@testing-library/react';
-import { getSelector } from '@radix-ui/utils';
 import * as Avatar from './Avatar';
 
 const ROOT_TEST_ID = 'avatar-root';
@@ -12,8 +11,6 @@ const DELAY = 300;
 
 describe('given an Avatar with fallback and no image', () => {
   let rendered: RenderResult;
-  let root: HTMLElement;
-  let fallback: HTMLElement;
 
   beforeEach(() => {
     rendered = render(
@@ -21,22 +18,10 @@ describe('given an Avatar with fallback and no image', () => {
         <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
       </Avatar.Root>
     );
-    root = rendered.getByTestId(ROOT_TEST_ID);
-    fallback = rendered.getByText(FALLBACK_TEXT);
   });
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
-  });
-
-  it('should have a radix attribute on the root', () => {
-    const partDataAttr = `data-${getSelector('Avatar')}`;
-    expect(root).toHaveAttribute(partDataAttr);
-  });
-
-  it('should have a radix attribute on the fallback', () => {
-    const partDataAttr = `data-${getSelector('AvatarFallback')}`;
-    expect(fallback).toHaveAttribute(partDataAttr);
   });
 });
 
@@ -89,15 +74,6 @@ describe('given an Avatar with fallback and a working image', () => {
     });
     image = rendered.queryByRole('img');
     expect(image).toBeInTheDocument();
-  });
-
-  it('should have a radix attribute on the image', async () => {
-    const partDataAttr = `data-${getSelector('AvatarImage')}`;
-    await waitFor(() => {
-      jest.advanceTimersByTime(DELAY);
-    });
-    image = rendered.queryByRole('img');
-    expect(image).toHaveAttribute(partDataAttr);
   });
 
   it('should have alt text on the image', async () => {
