@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Progress, ProgressIndicator } from './Progress';
-import { styled } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 
 export default {
   title: 'Components/Progress',
@@ -12,9 +12,9 @@ export const Styled = () => {
   const toggleIndeterminate = useIndeterminateToggle(value, setValue);
   return (
     <div>
-      <Progress as={StyledRoot} value={value} max={max}>
+      <Progress className={rootClass} value={value} max={max}>
         <ProgressIndicator
-          as={StyledIndicator}
+          className={indicatorClass}
           style={{ width: percentage != null ? `${percentage}%` : undefined }}
         />
       </Progress>
@@ -24,6 +24,47 @@ export const Styled = () => {
     </div>
   );
 };
+
+export const Chromatic = () => (
+  <>
+    <h1>Loading (not started)</h1>
+    <Progress className={rootClass} value={0}>
+      <ProgressIndicator className={chromaticIndicatorClass}>/</ProgressIndicator>
+    </Progress>
+
+    <h1>Loading (started)</h1>
+    <Progress className={rootClass} value={30}>
+      <ProgressIndicator className={chromaticIndicatorClass}>/</ProgressIndicator>
+    </Progress>
+
+    <h1>Indeterminate</h1>
+    <Progress className={rootClass} value={null}>
+      <ProgressIndicator className={chromaticIndicatorClass}>/</ProgressIndicator>
+    </Progress>
+
+    <h1>Complete</h1>
+    <Progress className={rootClass} value={100}>
+      <ProgressIndicator className={chromaticIndicatorClass}>/</ProgressIndicator>
+    </Progress>
+
+    <h1>Data attribute selectors</h1>
+    <h2>Loading (started)</h2>
+    <Progress className={rootAttrClass} value={30}>
+      <ProgressIndicator className={indicatorAttrClass}>/</ProgressIndicator>
+    </Progress>
+
+    <h2>Indeterminate</h2>
+    <Progress className={rootAttrClass} value={null}>
+      <ProgressIndicator className={indicatorAttrClass}>/</ProgressIndicator>
+    </Progress>
+
+    <h2>Complete</h2>
+    <Progress className={rootAttrClass} value={100}>
+      <ProgressIndicator className={indicatorAttrClass}>/</ProgressIndicator>
+    </Progress>
+  </>
+);
+Chromatic.parameters = { chromatic: { disable: false } };
 
 function ProgressRange({ value, setValue, max = 100 }: any) {
   const previousValueRef = usePreviousValueRef(value);
@@ -44,7 +85,7 @@ function ProgressRange({ value, setValue, max = 100 }: any) {
   );
 }
 
-const StyledRoot = styled('div', {
+const rootClass = css({
   width: 400,
   height: 20,
   maxWidth: '100%',
@@ -52,8 +93,8 @@ const StyledRoot = styled('div', {
   backgroundColor: '$gray200',
 });
 
-const StyledIndicator = styled('div', {
-  width: '100%',
+const indicatorClass = css({
+  width: 0,
   height: '100%',
   backgroundColor: '$red',
   transition: 'background 150ms ease-out',
@@ -63,6 +104,31 @@ const StyledIndicator = styled('div', {
   '&[data-state="complete"]': {
     backgroundColor: '$green',
   },
+});
+
+const indicatorPseudos = css({
+  '&::before': {
+    content: 'attr(data-value)',
+  },
+  '&::after': {
+    content: 'attr(data-max)',
+  },
+});
+
+const chromaticIndicatorClass = css(indicatorClass, indicatorPseudos);
+
+const styles = {
+  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+  border: '2px solid blue',
+  padding: 10,
+
+  '&[data-state="loading"]': { borderColor: 'red' },
+  '&[data-state="indeterminate"]': { borderColor: 'purple' },
+  '&[data-state="complete"]': { borderColor: 'green' },
+};
+const rootAttrClass = css({ '&[data-radix-progress]': styles });
+const indicatorAttrClass = css(indicatorPseudos, {
+  '&[data-radix-progress-indicator]': styles,
 });
 
 type ProgressValue = number | null;
