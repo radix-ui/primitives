@@ -33,7 +33,9 @@ type SwitchOwnProps = Merge<
 
 type SwitchPrimitive = Polymorphic.ForwardRefComponent<typeof SWITCH_DEFAULT_TAG, SwitchOwnProps>;
 
-const [SwitchContext, useSwitchContext] = createContext<boolean>(
+type SwitchContextValue = { checked: boolean; disabled?: boolean };
+
+const [SwitchContext, useSwitchContext] = createContext<SwitchContextValue>(
   SWITCH_NAME + 'Context',
   SWITCH_NAME
 );
@@ -63,6 +65,8 @@ const Switch = React.forwardRef((props, forwardedRef) => {
     defaultProp: defaultChecked,
   });
 
+  const context = React.useMemo(() => ({ checked, disabled }), [checked, disabled]);
+
   return (
     /**
      * The `input` is hidden from non-SR and SR users as it only exists to
@@ -84,19 +88,20 @@ const Switch = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <SwitchContext.Provider value={checked}>
+      <SwitchContext.Provider value={context}>
         <Primitive
           type="button"
-          {...switchProps}
-          as={as}
-          selector={selector}
-          ref={ref}
           role="switch"
           aria-checked={checked}
           aria-labelledby={labelledBy}
           aria-required={required}
           data-state={getState(checked)}
+          data-disabled={disabled ? '' : undefined}
           data-readonly={readOnly}
+          {...switchProps}
+          as={as}
+          selector={selector}
+          ref={ref}
           disabled={disabled}
           value={value}
           /**
@@ -129,14 +134,15 @@ type SwitchThumbPrimitive = Polymorphic.ForwardRefComponent<
 
 const SwitchThumb = React.forwardRef((props, forwardedRef) => {
   const { as = THUMB_DEFAULT_TAG, selector = getSelector(THUMB_NAME), ...thumbProps } = props;
-  const checked = useSwitchContext(THUMB_NAME);
+  const context = useSwitchContext(THUMB_NAME);
   return (
     <Primitive
+      data-state={getState(context.checked)}
+      data-disabled={context.disabled ? '' : undefined}
       {...thumbProps}
       as={as}
       selector={selector}
       ref={forwardedRef}
-      data-state={getState(checked)}
     />
   );
 }) as SwitchThumbPrimitive;
