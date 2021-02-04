@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from './Avatar';
-import { styled } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Avatar' };
 
@@ -10,32 +10,75 @@ const srcBroken = 'https://broken.link.com/broken-pic.jpg';
 export const Styled = () => (
   <>
     <h1>Without image & with fallback</h1>
-    <Avatar as={StyledRoot}>
-      <AvatarFallback as={StyledFallback}>JS</AvatarFallback>
+    <Avatar className={rootClass}>
+      <AvatarFallback className={fallbackClass}>JS</AvatarFallback>
     </Avatar>
 
     <h1>With image & with fallback</h1>
-    <Avatar as={StyledRoot}>
-      <AvatarImage as={StyledImage} alt="John Smith" src={src} />
-      <AvatarFallback delayMs={300} as={StyledFallback}>
+    <Avatar className={rootClass}>
+      <AvatarImage className={imageClass} alt="John Smith" src={src} />
+      <AvatarFallback delayMs={300} className={fallbackClass}>
         JS
       </AvatarFallback>
     </Avatar>
 
     <h1>With image & with fallback (but broken src)</h1>
-    <Avatar as={StyledRoot}>
+    <Avatar className={rootClass}>
       <AvatarImage
-        as={StyledImage}
+        className={imageClass}
         alt="John Smith"
         src={srcBroken}
         onLoadingStatusChange={console.log}
       />
-      <AvatarFallback as={StyledFallback}>
+      <AvatarFallback className={fallbackClass}>
         <AvatarIcon />
       </AvatarFallback>
     </Avatar>
   </>
 );
+
+export const Chromatic = () => (
+  <>
+    <h1>Without image & with fallback</h1>
+    <Avatar className={rootClass}>
+      <AvatarFallback className={fallbackClass}>JS</AvatarFallback>
+    </Avatar>
+
+    <h1>With image & with fallback</h1>
+    <Avatar className={rootClass}>
+      <AvatarImage className={imageClass} alt="John Smith" src={src} />
+      <AvatarFallback delayMs={300} className={fallbackClass}>
+        JS
+      </AvatarFallback>
+    </Avatar>
+
+    <h1>With image & with fallback (but broken src)</h1>
+    <Avatar className={rootClass}>
+      <AvatarImage className={imageClass} alt="John Smith" src={srcBroken} />
+      <AvatarFallback className={fallbackClass}>
+        <AvatarIcon />
+      </AvatarFallback>
+    </Avatar>
+
+    <h1>Data attribute selectors</h1>
+    <h2>With image & with fallback</h2>
+    <Avatar className={rootAttrClass}>
+      <AvatarImage className={imageAttrClass} alt="John Smith" src={src} />
+      <AvatarFallback delayMs={300} className={fallbackAttrClass}>
+        JS
+      </AvatarFallback>
+    </Avatar>
+
+    <h2>With image & with fallback (but broken src)</h2>
+    <Avatar className={rootAttrClass}>
+      <AvatarImage className={imageAttrClass} alt="John Smith" src={srcBroken} />
+      <AvatarFallback className={fallbackAttrClass}>
+        <AvatarIcon />
+      </AvatarFallback>
+    </Avatar>
+  </>
+);
+Chromatic.parameters = { chromatic: { disable: false } };
 
 const RECOMMENDED_CSS__AVATAR__ROOT: any = {
   // ensures image/fallback is centered
@@ -49,7 +92,7 @@ const RECOMMENDED_CSS__AVATAR__ROOT: any = {
   userSelect: 'none',
 };
 
-const StyledRoot = styled('span', {
+const rootClass = css({
   ...RECOMMENDED_CSS__AVATAR__ROOT,
   borderRadius: 9999,
   width: 48,
@@ -63,7 +106,7 @@ const RECOMMENDED_CSS__AVATAR__IMAGE: any = {
   objectFit: 'cover',
 };
 
-const StyledImage = styled('img', RECOMMENDED_CSS__AVATAR__IMAGE);
+const imageClass = css(RECOMMENDED_CSS__AVATAR__IMAGE);
 
 const RECOMMENDED_CSS__AVATAR__FALLBACK: any = {
   // ensures content inside the fallback is centered
@@ -74,10 +117,21 @@ const RECOMMENDED_CSS__AVATAR__FALLBACK: any = {
   justifyContent: 'center',
 };
 
-const StyledFallback = styled('span', {
+const fallbackClass = css({
   ...RECOMMENDED_CSS__AVATAR__FALLBACK,
   backgroundColor: '$black',
   color: '$white',
+});
+
+const styles = { backgroundColor: 'rgba(0, 0, 255, 0.3)', border: '2px solid blue', padding: 10 };
+const rootAttrClass = css({ ...RECOMMENDED_CSS__AVATAR__ROOT, '&[data-radix-avatar]': styles });
+const imageAttrClass = css({
+  ...RECOMMENDED_CSS__AVATAR__IMAGE,
+  '&[data-radix-avatar-image]': styles,
+});
+const fallbackAttrClass = css({
+  ...RECOMMENDED_CSS__AVATAR__FALLBACK,
+  '&[data-radix-avatar-fallback]': styles,
 });
 
 const AvatarIcon = () => (

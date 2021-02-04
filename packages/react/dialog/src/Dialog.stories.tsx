@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogClose } from './Dialog';
-import { styled, css } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Dialog' };
 
 export const Styled = () => (
   <Dialog>
-    <DialogTrigger as={StyledTrigger}>open</DialogTrigger>
-    <DialogOverlay as={StyledOverlay} />
-    <DialogContent as={StyledContent}>
-      <DialogClose as={StyledClose}>close</DialogClose>
+    <DialogTrigger className={triggerClass}>open</DialogTrigger>
+    <DialogOverlay className={overlayClass} />
+    <DialogContent className={contentClass}>
+      <DialogClose className={closeClass}>close</DialogClose>
     </DialogContent>
   </Dialog>
 );
@@ -19,8 +19,8 @@ export const Controlled = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>{open ? 'close' : 'open'}</DialogTrigger>
-      <DialogOverlay as={StyledOverlay} />
-      <DialogContent as={StyledContent}>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent className={contentClass}>
         <DialogClose>close</DialogClose>
       </DialogContent>
     </Dialog>
@@ -31,8 +31,8 @@ export const FocusTrap = () => (
   <>
     <Dialog>
       <DialogTrigger>open</DialogTrigger>
-      <DialogOverlay as={StyledOverlay} />
-      <DialogContent as={StyledContent}>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent className={contentClass}>
         <DialogClose>close</DialogClose>
         <div>
           <label htmlFor="firstName">First Name</label>
@@ -59,9 +59,9 @@ export const CustomFocus = () => {
     <>
       <Dialog>
         <DialogTrigger>open</DialogTrigger>
-        <DialogOverlay as={StyledOverlay} />
+        <DialogOverlay className={overlayClass} />
         <DialogContent
-          as={StyledContent}
+          className={contentClass}
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             firstNameRef.current?.focus();
@@ -97,8 +97,8 @@ export const CustomFocus = () => {
 export const NoEscapeDismiss = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogOverlay as={StyledOverlay} />
-    <DialogContent as={StyledContent} onEscapeKeyDown={(event) => event.preventDefault()}>
+    <DialogOverlay className={overlayClass} />
+    <DialogContent className={contentClass} onEscapeKeyDown={(event) => event.preventDefault()}>
       <DialogClose>close</DialogClose>
     </DialogContent>
   </Dialog>
@@ -107,8 +107,11 @@ export const NoEscapeDismiss = () => (
 export const NoInteractOutsideDismiss = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogOverlay as={StyledOverlay} />
-    <DialogContent as={StyledContent} onPointerDownOutside={(event) => event.preventDefault()}>
+    <DialogOverlay className={overlayClass} />
+    <DialogContent
+      className={contentClass}
+      onPointerDownOutside={(event) => event.preventDefault()}
+    >
       <DialogClose>close</DialogClose>
     </DialogContent>
   </Dialog>
@@ -117,8 +120,8 @@ export const NoInteractOutsideDismiss = () => (
 export const Animated = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogOverlay as={AnimatedOverlay} />
-    <DialogContent as={AnimatedContent}>
+    <DialogOverlay className={animatedOverlayClass} />
+    <DialogContent className={animatedContentClass}>
       <DialogClose>close</DialogClose>
     </DialogContent>
   </Dialog>
@@ -127,14 +130,89 @@ export const Animated = () => (
 export const ForcedMount = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogOverlay as={StyledOverlay} forceMount />
-    <DialogContent as={StyledContent} forceMount>
+    <DialogOverlay className={overlayClass} forceMount />
+    <DialogContent className={contentClass} forceMount>
       <DialogClose>close</DialogClose>
     </DialogContent>
   </Dialog>
 );
 
-const StyledTrigger = styled('button', {});
+export const Chromatic = () => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gridTemplateRows: 'repeat(2, 1fr)',
+      height: '100vh',
+    }}
+  >
+    <div>
+      <h1>Uncontrolled</h1>
+      <h2>Closed</h2>
+      <Dialog>
+        <DialogTrigger className={triggerClass}>open</DialogTrigger>
+        <DialogOverlay className={overlayClass} />
+        <DialogContent className={chromaticContentClass}>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+      </Dialog>
+
+      <h2>Open</h2>
+      <Dialog defaultOpen>
+        <DialogTrigger className={triggerClass}>open</DialogTrigger>
+        <DialogOverlay className={overlayClass} style={{ right: '50%', bottom: '50%' }} />
+        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '25%' }}>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+      </Dialog>
+    </div>
+
+    <div>
+      <h1>Controlled</h1>
+      <h2>Closed</h2>
+      <Dialog open={false}>
+        <DialogTrigger className={triggerClass}>open</DialogTrigger>
+        <DialogOverlay className={overlayClass} />
+        <DialogContent className={chromaticContentClass}>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+      </Dialog>
+
+      <h2>Open</h2>
+      <Dialog open>
+        <DialogTrigger className={triggerClass}>open</DialogTrigger>
+        <DialogOverlay className={overlayClass} style={{ left: '50%', bottom: '50%' }} />
+        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '75%' }}>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+      </Dialog>
+    </div>
+
+    <div>
+      <h1>Data attribute selectors</h1>
+      <h2>Closed</h2>
+      <Dialog>
+        <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
+        <DialogOverlay className={overlayAttrClass} />
+        <DialogContent className={contentAttrClass}>
+          <DialogClose className={closeAttrClass}>close</DialogClose>
+        </DialogContent>
+      </Dialog>
+
+      <h2>Open</h2>
+      <Dialog defaultOpen>
+        <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
+        <DialogOverlay className={overlayAttrClass} style={{ top: '50%' }} />
+        <DialogContent className={contentAttrClass} style={{ top: '75%' }}>
+          <DialogClose className={closeAttrClass}>close</DialogClose>
+        </DialogContent>
+      </Dialog>
+    </div>
+  </div>
+);
+Chromatic.parameters = { chromatic: { disable: false } };
+
+const triggerClass = css({});
 
 const RECOMMENDED_CSS__DIALOG__OVERLAY: any = {
   // ensures overlay is positionned correctly
@@ -145,7 +223,7 @@ const RECOMMENDED_CSS__DIALOG__OVERLAY: any = {
   left: 0,
 };
 
-const StyledOverlay = styled('div', {
+const overlayClass = css({
   ...RECOMMENDED_CSS__DIALOG__OVERLAY,
   backgroundColor: 'rgba(0,0,0,0.2)',
 });
@@ -157,7 +235,7 @@ const RECOMMENDED_CSS__DIALOG__CONTENT: any = {
   left: 0,
 };
 
-const StyledContent = styled('div', {
+const contentClass = css({
   ...RECOMMENDED_CSS__DIALOG__CONTENT,
   top: '50%',
   left: '50%',
@@ -171,7 +249,7 @@ const StyledContent = styled('div', {
   boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
 });
 
-const StyledClose = styled('button', {});
+const closeClass = css({});
 
 const fadeIn = css.keyframes({
   from: { opacity: 0 },
@@ -183,7 +261,7 @@ const fadeOut = css.keyframes({
   to: { opacity: 0 },
 });
 
-const AnimatedOverlay = styled(StyledOverlay, {
+const animatedOverlayClass = css(overlayClass, {
   '&[data-state="open"]': {
     animation: `${fadeIn} 300ms ease-out`,
   },
@@ -192,7 +270,7 @@ const AnimatedOverlay = styled(StyledOverlay, {
   },
 });
 
-const AnimatedContent = styled(StyledContent, {
+const animatedContentClass = css(contentClass, {
   '&[data-state="open"]': {
     animation: `${fadeIn} 300ms ease-out`,
   },
@@ -200,3 +278,22 @@ const AnimatedContent = styled(StyledContent, {
     animation: `${fadeOut} 300ms ease-in`,
   },
 });
+
+const chromaticContentClass = css(contentClass, {
+  padding: 10,
+  minWidth: 'auto',
+  minHeight: 'auto',
+});
+
+const styles = {
+  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+  border: '2px solid blue',
+  padding: 10,
+
+  '&[data-state="closed"]': { borderColor: 'red' },
+  '&[data-state="open"]': { borderColor: 'green' },
+};
+const triggerAttrClass = css({ '&[data-radix-dialog-trigger]': styles });
+const overlayAttrClass = css(overlayClass, { '&[data-radix-dialog-overlay]': styles });
+const contentAttrClass = css(chromaticContentClass, { '&[data-radix-dialog-content]': styles });
+const closeAttrClass = css({ '&[data-radix-dialog-close]': styles });

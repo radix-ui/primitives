@@ -39,17 +39,8 @@ const ExtendedButtonUsingReactUtils = React.forwardRef<
 export function ExtendedButtonUsingReactUtilsWithInternalInlineAs(
   props: React.ComponentProps<typeof Button>
 ) {
-  /* Should complain about implicit `any` for inline props */
-  /* @ts-expect-error */
-  const implicitAnyProps = <Button as={(props) => <button {...props} />} {...props} />;
   /* Should not error with inline `as` component */
-  const explicitAnyProps = <Button as={(props: any) => <button {...props} />} {...props} />;
-  return (
-    <>
-      {implicitAnyProps}
-      {explicitAnyProps}
-    </>
-  );
+  return <Button as={(props) => <button {...props} />} {...props} />;
 }
 
 /* -------------------------------------------------------------------------------------------------

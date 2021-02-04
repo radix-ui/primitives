@@ -77,9 +77,10 @@ const Collapsible = React.forwardRef((props, forwardedRef) => {
   return (
     <CollapsibleContext.Provider value={context}>
       <Primitive
+        data-state={getState(context.open)}
+        data-disabled={disabled ? '' : undefined}
         {...collapsibleProps}
         selector={selector}
-        data-state={getState(context.open)}
         ref={forwardedRef}
       />
     </CollapsibleContext.Provider>
@@ -115,6 +116,7 @@ const CollapsibleButton = React.forwardRef((props, forwardedRef) => {
       aria-controls={context.contentId}
       aria-expanded={context.open || false}
       data-state={getState(context.open)}
+      data-disabled={context.disabled ? '' : undefined}
       {...buttonProps}
       as={as}
       selector={selector}
@@ -157,7 +159,7 @@ const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
     children,
     ...contentProps
   } = props;
-  const { setContentId, open } = useCollapsibleContext(CONTENT_NAME);
+  const { setContentId, open, disabled } = useCollapsibleContext(CONTENT_NAME);
   const generatedId = `collapsible-${useId()}`;
   const id = idProp || generatedId;
 
@@ -169,12 +171,13 @@ const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
     <Presence present={forceMount || open}>
       {({ present }) => (
         <Primitive
+          data-state={getState(open)}
+          data-disabled={disabled ? '' : undefined}
           {...contentProps}
           selector={selector}
           ref={forwardedRef}
           id={id}
           hidden={!present}
-          data-state={getState(open)}
         >
           {present && children}
         </Primitive>

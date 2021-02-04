@@ -3,7 +3,6 @@ import { axe } from 'jest-axe';
 import { RenderResult } from '@testing-library/react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import * as Dialog from './Dialog';
-import { getSelector } from '@radix-ui/utils';
 
 const OPEN_TEXT = 'Open';
 const CLOSE_TEXT = 'Close';
@@ -23,7 +22,6 @@ const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
 
 describe('given a default Dialog', () => {
   let rendered: RenderResult;
-  let overlay: HTMLElement;
   let content: HTMLElement;
   let trigger: HTMLButtonElement;
   let closeButton: HTMLButtonElement;
@@ -37,16 +35,10 @@ describe('given a default Dialog', () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
-  it('should have a radix attribute on the trigger', () => {
-    const partDataAttr = `data-${getSelector('DialogTrigger')}`;
-    expect(trigger).toHaveAttribute(partDataAttr);
-  });
-
   describe('after clicking the trigger', () => {
     beforeEach(async () => {
       fireEvent.click(trigger);
       await waitFor(() => {
-        overlay = rendered.getByTestId(OVERLAY_TEST_ID);
         content = rendered.getByText(INNER_TEXT).parentElement!;
         closeButton = rendered.getByText(CLOSE_TEXT) as HTMLButtonElement;
         expect(content).toBeVisible();
@@ -59,21 +51,6 @@ describe('given a default Dialog', () => {
 
     it('should focus the close button', () => {
       expect(closeButton).toHaveFocus();
-    });
-
-    it('should have a radix attribute on the overlay', () => {
-      const partDataAttr = `data-${getSelector('DialogOverlay')}`;
-      expect(overlay).toHaveAttribute(partDataAttr);
-    });
-
-    it('should have a radix attribute on the content', () => {
-      const partDataAttr = `data-${getSelector('DialogContent')}`;
-      expect(content).toHaveAttribute(partDataAttr);
-    });
-
-    it('should have a radix attribute on the close button', () => {
-      const partDataAttr = `data-${getSelector('DialogClose')}`;
-      expect(closeButton).toHaveAttribute(partDataAttr);
     });
 
     describe('after pressing escape', () => {
