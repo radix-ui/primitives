@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Toolbar, ToolbarGroup, ToolbarLabel, ToolbarSeparator, ToolbarItem } from './Toolbar';
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarItem } from './Toolbar';
 import { css } from '../../../../stitches.config';
 import { ToggleButton } from '@radix-ui/react-toggle-button';
 import {
@@ -12,11 +12,7 @@ import {
 
 import { styledComponents } from '../../menu/src/Menu.stories';
 
-const {
-  StyledRoot: StyledDropDownMenu,
-  StyledItem: StyledDropdownItem,
-  StyledLabel,
-} = styledComponents;
+const { StyledRoot: StyledDropDownMenu, StyledItem: StyledDropdownItem } = styledComponents;
 
 export default { title: 'Components/Toolbar' };
 
@@ -32,47 +28,44 @@ export const Styled = () => {
 const ToolbarExample = ({ title, orientation }: any) => {
   const anchorRef = React.useRef<HTMLAnchorElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const uniqueInputID = 'input-' + (Math.random() * 10).toFixed(0);
 
   return (
     <>
       <h1>{title}</h1>
       <Toolbar
-        className={StyledToolbar}
+        className={toolbarClass}
         orientation={orientation}
         loop={true}
         aria-label={`${title} toolbar`}
       >
-        <ToolbarItem className={StyledToolbarItem} as={ToggleButton}>
+        <ToolbarItem className={toolbarItemClass} as={ToggleButton}>
           Toggle
         </ToolbarItem>
-        <ToolbarSeparator className={StyledToolbarSeparator}></ToolbarSeparator>
-        <ToolbarGroup className={StyledToolbarGroup}>
-          <ToolbarLabel as={StyledLabel}>A group</ToolbarLabel>
-          <label className={StyledToolbarItem} htmlFor="input">
+        <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
+        <ToolbarGroup className={toolbarGroupClass}>
+          <div className="toolbar-label">A group</div>
+          <label className={toolbarItemClass} htmlFor={uniqueInputID}>
             <span>Input: </span>
             <ToolbarItem
               ref={inputRef}
-              id="input"
-              value="42"
+              id={uniqueInputID}
+              defaultValue="42"
               as={'input'}
               style={{ maxWidth: 50 }}
             ></ToolbarItem>
           </label>
           <ToolbarItem
-            className={StyledToolbarItem}
+            className={toolbarItemClass}
             as={'button'}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                window.alert('The answer is: ' + inputRef.current?.value);
-              }
-            }}
+            onClick={(event) => window.alert('The answer is: ' + inputRef.current?.value)}
           >
             Submit
           </ToolbarItem>
         </ToolbarGroup>
-        <ToolbarSeparator className={StyledToolbarSeparator}></ToolbarSeparator>
+        <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
         <DropdownMenu>
-          <ToolbarItem className={StyledToolbarItem} as={DropdownMenuTrigger}>
+          <ToolbarItem className={toolbarItemClass} as={DropdownMenuTrigger}>
             Menu
           </ToolbarItem>
           <DropdownMenuContent as={StyledDropDownMenu} sideOffset={5}>
@@ -85,20 +78,23 @@ const ToolbarExample = ({ title, orientation }: any) => {
             <DropdownMenuArrow />
           </DropdownMenuContent>
         </DropdownMenu>
-        <ToolbarItem className={StyledToolbarItem} as={ToggleButton} disabled>
+        <ToolbarItem
+          className={toolbarItemClass}
+          as={'div'}
+          onClick={() => window.alert('Oh oh! How did this happen?')}
+          disabled
+        >
           Disabled
         </ToolbarItem>
         <ToolbarItem
           as={'a'}
-          className={StyledLink}
+          className={linkClass}
           href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
           target="_blank"
           ref={anchorRef}
           onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              if (!!anchorRef && !!anchorRef.current) {
-                anchorRef.current?.click();
-              }
+            if (event.key === ' ') {
+              anchorRef.current?.click();
             }
           }}
         >
@@ -117,7 +113,7 @@ const RECOMMENDED_CSS__TOOLBAR = {
   },
 };
 
-const StyledToolbar = css({
+const toolbarClass = css({
   ...RECOMMENDED_CSS__TOOLBAR,
   display: 'inline-flex',
   gap: 5,
@@ -136,21 +132,23 @@ const StyledToolbar = css({
   },
 });
 
-const StyledToolbarGroup = css({
+const toolbarGroupClass = css({
   ...RECOMMENDED_CSS__TOOLBAR,
   gap: 5,
-  '[data-radix-toolbar-label]': {
+  '.toolbar-label': {
     padding: 0,
+    color: '$gray100',
+    textAlign: 'center',
   },
 
   '&[data-orientation="horizontal"]': {
-    '[data-radix-toolbar-label]': {
+    '.toolbar-label': {
       alignSelf: 'center',
     },
   },
 });
 
-const StyledToolbarSeparator = css({
+const toolbarSeparatorClass = css({
   width: 1,
   margin: 5,
   backgroundColor: '$gray100',
@@ -161,13 +159,16 @@ const StyledToolbarSeparator = css({
   },
 });
 
-const StyledToolbarItem = css({
+const toolbarItemClass = css({
   border: '1px solid $black',
   borderRadius: 6,
   backgroundColor: 'transparent',
   padding: '5px 10px',
   fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
   fontSize: 13,
+
+  display: 'flex',
+  alignItems: 'center',
 
   '&:focus, &:focus-within': {
     outline: 'none',
@@ -180,12 +181,11 @@ const StyledToolbarItem = css({
 
   '&[data-disabled]': {
     opacity: 0.5,
-    pointerEvents: 'none',
     userSelect: 'none',
   },
 });
 
-const StyledLink = css(StyledToolbarItem, {
+const linkClass = css(toolbarItemClass, {
   display: 'inline-flex',
   justifyContent: 'center',
   alignItems: 'center',
