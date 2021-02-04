@@ -9,21 +9,21 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from './AlertDialog';
-import { styled } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/AlertDialog' };
 
 export const Styled = () => (
   <AlertDialog>
-    <AlertDialogTrigger as={StyledTrigger}>delete everything</AlertDialogTrigger>
-    <AlertDialogOverlay as={StyledOverlay} />
-    <AlertDialogContent as={StyledContent}>
-      <AlertDialogTitle as={StyledTitle}>Are you sure?</AlertDialogTitle>
-      <AlertDialogDescription as={StyledDescription}>
+    <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
+    <AlertDialogOverlay className={overlayClass} />
+    <AlertDialogContent className={contentClass}>
+      <AlertDialogTitle className={titleClass}>Are you sure?</AlertDialogTitle>
+      <AlertDialogDescription className={descriptionClass}>
         This will do a very dangerous thing. Thar be dragons!
       </AlertDialogDescription>
-      <AlertDialogAction as={StyledAction}>yolo, do it</AlertDialogAction>
-      <AlertDialogCancel as={StyledCancel}>maybe not</AlertDialogCancel>
+      <AlertDialogAction className={actionClass}>yolo, do it</AlertDialogAction>
+      <AlertDialogCancel className={cancelClass}>maybe not</AlertDialogCancel>
     </AlertDialogContent>
   </AlertDialog>
 );
@@ -48,24 +48,121 @@ export const Controlled = () => {
         >
           {housePurchased ? 'You bought the house! Sell it!' : 'Buy this house'}
         </AlertDialogTrigger>
-        <AlertDialogOverlay as={StyledOverlay} />
-        <AlertDialogContent as={StyledContent}>
+        <AlertDialogOverlay className={overlayClass} />
+        <AlertDialogContent className={contentClass}>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
             Houses are very expensive and it looks like you only have €20 in the bank. Maybe consult
             with a financial advisor?
           </AlertDialogDescription>
-          <AlertDialogAction as={StyledAction} onClick={() => setHousePurchased(true)}>
+          <AlertDialogAction className={actionClass} onClick={() => setHousePurchased(true)}>
             buy it anyway
           </AlertDialogAction>
-          <AlertDialogCancel as={StyledCancel}>good point, I'll reconsider</AlertDialogCancel>
+          <AlertDialogCancel className={cancelClass}>good point, I'll reconsider</AlertDialogCancel>
         </AlertDialogContent>
       </AlertDialog>
     </div>
   );
 };
 
-const StyledTrigger = styled('button', {});
+export const Chromatic = () => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gridTemplateRows: 'repeat(2, 1fr)',
+      height: '100vh',
+    }}
+  >
+    <div>
+      <h1>Uncontrolled</h1>
+      <h2>Closed</h2>
+      <AlertDialog>
+        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
+        <AlertDialogOverlay className={overlayClass} />
+        <AlertDialogContent className={chromaticContentClass}>
+          <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
+          <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <h2>Open</h2>
+      <AlertDialog defaultOpen>
+        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
+        <AlertDialogOverlay className={overlayClass} style={{ right: '50%', bottom: '50%' }} />
+        <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '25%' }}>
+          <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
+          <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+
+    <div>
+      <h1>Controlled</h1>
+      <h2>Closed</h2>
+      <AlertDialog open={false}>
+        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
+        <AlertDialogOverlay className={overlayClass} />
+        <AlertDialogContent className={chromaticContentClass}>
+          <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
+          <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <h2>Open</h2>
+      <AlertDialog open>
+        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
+        <AlertDialogOverlay className={overlayClass} style={{ left: '50%', bottom: '50%' }} />
+        <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '75%' }}>
+          <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
+          <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+
+    <div>
+      <h1>Data attribute selectors</h1>
+      <h2>Closed</h2>
+      <AlertDialog>
+        <AlertDialogTrigger className={triggerAttrClass}>delete everything</AlertDialogTrigger>
+        <AlertDialogOverlay className={overlayAttrClass} />
+        <AlertDialogContent className={contentAttrClass}>
+          <AlertDialogTitle className={titleAttrClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionAttrClass}>
+            Description
+          </AlertDialogDescription>
+          <AlertDialogAction className={actionAttrClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelAttrClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <h2>Open</h2>
+      <AlertDialog defaultOpen>
+        <AlertDialogTrigger className={triggerAttrClass}>delete everything</AlertDialogTrigger>
+        <AlertDialogOverlay className={overlayAttrClass} style={{ top: '50%' }} />
+        <AlertDialogContent className={contentAttrClass} style={{ top: '75%' }}>
+          <AlertDialogTitle className={titleAttrClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionAttrClass}>
+            Description
+          </AlertDialogDescription>
+          <AlertDialogAction className={actionAttrClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelAttrClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  </div>
+);
+Chromatic.parameters = { chromatic: { disable: false } };
+
+const triggerClass = css({});
 
 const RECOMMENDED_CSS__ALERT_DIALOG__OVERLAY: any = {
   // ensures overlay is positionned correctly
@@ -76,7 +173,7 @@ const RECOMMENDED_CSS__ALERT_DIALOG__OVERLAY: any = {
   left: 0,
 };
 
-const StyledOverlay = styled('div', {
+const overlayClass = css({
   ...RECOMMENDED_CSS__ALERT_DIALOG__OVERLAY,
   backgroundColor: 'black',
   opacity: 0.2,
@@ -89,7 +186,7 @@ const RECOMMENDED_CSS__ALERT_DIALOG__CONTENT: any = {
   left: 0,
 };
 
-const StyledContent = styled('div', {
+const contentClass = css({
   ...RECOMMENDED_CSS__ALERT_DIALOG__CONTENT,
   top: '50%',
   left: '50%',
@@ -103,14 +200,14 @@ const StyledContent = styled('div', {
   boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
 });
 
-const StyledCancel = styled('button', {
+const cancelClass = css({
   appearance: 'none',
   padding: 10,
   border: 'none',
   background: '$grey100',
 });
 
-const StyledAction = styled('button', {
+const actionClass = css({
   appearance: 'none',
   padding: 10,
   border: 'none',
@@ -118,6 +215,30 @@ const StyledAction = styled('button', {
   color: '$white',
 });
 
-const StyledTitle = styled('h2', {});
+const titleClass = css({});
 
-const StyledDescription = styled('p', {});
+const descriptionClass = css({});
+
+const chromaticContentClass = css(contentClass, {
+  padding: 10,
+  minWidth: 'auto',
+  minHeight: 'auto',
+});
+
+const styles = {
+  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+  border: '2px solid blue',
+  padding: 10,
+
+  '&[data-state="closed"]': { borderColor: 'red' },
+  '&[data-state="open"]': { borderColor: 'green' },
+};
+const triggerAttrClass = css({ '&[data-radix-alert-dialog-trigger]': styles });
+const overlayAttrClass = css(overlayClass, { '&[data-radix-alert-dialog-overlay]': styles });
+const contentAttrClass = css(chromaticContentClass, {
+  '&[data-radix-alert-dialog-content]': styles,
+});
+const cancelAttrClass = css({ '&[data-radix-alert-dialog-cancel]': styles });
+const actionAttrClass = css({ '&[data-radix-alert-dialog-action]': styles });
+const titleAttrClass = css({ '&[data-radix-alert-dialog-title]': styles });
+const descriptionAttrClass = css({ '&[data-radix-alert-dialog-description]': styles });
