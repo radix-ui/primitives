@@ -33,6 +33,20 @@ describe('given a default Checkbox', () => {
     it('should render a visible indicator', () => {
       expect(indicator).toBeVisible();
     });
+
+    describe('and clicking the checkbox again', () => {
+      beforeEach(async () => {
+        fireEvent.click(checkbox);
+        await waitForElementToBeRemoved(() => {
+          indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
+          return indicator;
+        });
+      });
+
+      it('should remove the indicator', () => {
+        expect(indicator).not.toBeInTheDocument();
+      });
+    });
   });
 });
 
