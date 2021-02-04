@@ -92,6 +92,7 @@ const DialogTrigger = React.forwardRef((props, forwardedRef) => {
       aria-haspopup="dialog"
       aria-expanded={context.open}
       aria-controls={context.id}
+      data-state={getState(context.open)}
       {...triggerProps}
       as={as}
       selector={selector}
@@ -130,7 +131,7 @@ const DialogOverlay = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(OVERLAY_NAME);
   return (
     <Presence present={forceMount || context.open}>
-      <DialogOverlayImpl {...overlayProps} data-state={getState(context.open)} ref={forwardedRef} />
+      <DialogOverlayImpl data-state={getState(context.open)} {...overlayProps} ref={forwardedRef} />
     </Presence>
   );
 }) as DialogOverlayPrimitive;
@@ -179,7 +180,7 @@ const DialogContent = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
   return (
     <Presence present={forceMount || context.open}>
-      <DialogContentImpl {...contentProps} data-state={getState(context.open)} ref={forwardedRef} />
+      <DialogContentImpl data-state={getState(context.open)} {...contentProps} ref={forwardedRef} />
     </Presence>
   );
 }) as DialogContentPrimitive;
