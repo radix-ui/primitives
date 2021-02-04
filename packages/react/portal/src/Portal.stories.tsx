@@ -60,12 +60,12 @@ export const Chromatic = () => {
   const portalContainerRef2 = React.useRef<HTMLDivElement>(null);
 
   return (
-    <div style={{ padding: 100, paddingBottom: 0 }}>
+    <div style={{ padding: 150 }}>
       <h1>Default (append to body)</h1>
       <div style={{ padding: 10, margin: 10, border: '1px solid blue' }}>
         <p>Container A</p>
 
-        <Portal style={{ position: 'relative' }}>
+        <Portal>
           <div style={{ padding: 10, margin: 10, border: '1px solid blue' }}>
             <p>This content is rendered in a portal (another DOM tree)</p>
             <p>
