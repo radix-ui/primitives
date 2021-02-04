@@ -38,7 +38,12 @@ type CheckboxPrimitive = Polymorphic.ForwardRefComponent<
   CheckboxOwnProps
 >;
 
-const [CheckboxContext, useCheckboxContext] = createContext<CheckedState>(
+type CheckboxContextValue = {
+  state: CheckedState;
+  disabled?: boolean;
+};
+
+const [CheckboxContext, useCheckboxContext] = createContext<CheckboxContextValue>(
   CHECKBOX_NAME + 'Context',
   CHECKBOX_NAME
 );
@@ -73,6 +78,8 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
     inputRef.current && (inputRef.current.indeterminate = isIndeterminate);
   });
 
+  const context = React.useMemo(() => ({ state: checked, disabled }), [checked, disabled]);
+
   return (
     /**
      * The `input` is hidden from non-SR and SR users as it only exists to
@@ -94,19 +101,20 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <CheckboxContext.Provider value={checked}>
+      <CheckboxContext.Provider value={context}>
         <Primitive
           type="button"
+          aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
+          aria-labelledby={labelledBy}
+          aria-required={required}
+          data-state={getState(checked)}
+          data-disabled={disabled ? '' : undefined}
+          data-readonly={readOnly}
           {...checkboxProps}
           as={as}
           selector={selector}
           ref={ref}
           role="checkbox"
-          aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
-          aria-labelledby={labelledBy}
-          aria-required={required}
-          data-state={getState(checked)}
-          data-readonly={readOnly}
           disabled={disabled}
           value={value}
           /**
@@ -154,15 +162,16 @@ const CheckboxIndicator = React.forwardRef((props, forwardedRef) => {
     forceMount,
     ...indicatorProps
   } = props;
-  const checked = useCheckboxContext(INDICATOR_NAME);
+  const context = useCheckboxContext(INDICATOR_NAME);
   return (
-    <Presence present={forceMount || checked === 'indeterminate' || checked === true}>
+    <Presence present={forceMount || context.state === 'indeterminate' || context.state === true}>
       <Primitive
+        data-state={getState(context.state)}
+        data-disabled={context.disabled ? '' : undefined}
         {...indicatorProps}
         as={as}
         selector={selector}
         ref={forwardedRef}
-        data-state={getState(checked)}
       />
     </Presence>
   );
