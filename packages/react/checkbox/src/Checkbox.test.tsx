@@ -27,6 +27,7 @@ describe('given a default Checkbox', () => {
       fireEvent.click(checkbox);
       await waitFor(() => {
         indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
+        expect(indicator).toBeInTheDocument();
       });
     });
 
