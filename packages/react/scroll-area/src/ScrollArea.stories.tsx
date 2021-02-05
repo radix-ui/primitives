@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { styled } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 import {
   ScrollArea,
   ScrollAreaViewport,
@@ -33,53 +33,42 @@ export function Basic() {
       <hr />
       <Resizable>
         <ScrollArea
-          as={Win98StyledRoot}
+          className={win98RootClass}
           overflowX="scroll"
           {...useScrollAreaControlProps()}
-          css={{ width: '400px', height: '400px' }}
+          style={{ width: '400px', height: '400px' }}
         >
-          <ScrollAreaScrollbarY as={Win98StyledScrollbarY}>
-            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+          <ScrollAreaScrollbarY className={win98ScrollbarYClass}>
+            <ScrollAreaButtonStart className={win98ScrollButtonClass}>
               <Arrow direction="up" />
             </ScrollAreaButtonStart>
 
-            <ScrollAreaTrack as={Win98StyledScrollTrack}>
-              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            <ScrollAreaTrack className={win98ScrollTrackClass}>
+              <ScrollAreaThumb className={win98ScrollThumbClass} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+            <ScrollAreaButtonEnd className={win98ScrollButtonClass}>
               <Arrow direction="down" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarY>
 
-          <ScrollAreaScrollbarX as={Win98StyledScrollbarX}>
-            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+          <ScrollAreaScrollbarX className={win98ScrollbarXClass}>
+            <ScrollAreaButtonStart className={win98ScrollButtonClass}>
               <Arrow direction="left" />
             </ScrollAreaButtonStart>
 
-            <ScrollAreaTrack as={Win98StyledScrollTrack}>
-              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            <ScrollAreaTrack className={win98ScrollTrackClass}>
+              <ScrollAreaThumb className={win98ScrollThumbClass} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+            <ScrollAreaButtonEnd className={win98ScrollButtonClass}>
               <Arrow direction="right" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarX>
 
-          <ScrollAreaCorner as={Win98StyledCorner} />
+          <ScrollAreaCorner className={win98CornerClass} />
 
           <ScrollAreaViewport
-            as={BaseStyledViewport}
-            css={{
-              width: '2000px',
-              padding: 20,
-
-              '& > :first-child': {
-                marginTop: 0,
-              },
-
-              '& > :last-child': {
-                marginBottom: 0,
-              },
-            }}
+            className={baseViewportClass}
+            style={{ width: '2000px', padding: 20 }}
           >
             <LongContent />
             <LongContent />
@@ -90,7 +79,9 @@ export function Basic() {
             <LongContent />
           </ScrollAreaViewport>
         </ScrollArea>
-        <TestButton onClick={() => alert('whoa')}>Test for pointer events</TestButton>
+        <button className={testButtonClass} onClick={() => alert('whoa')}>
+          Test for pointer events
+        </button>
       </Resizable>
     </React.Fragment>
   );
@@ -103,37 +94,37 @@ export function FillWidth() {
       <hr />
       <Resizable>
         <ScrollArea
-          as={Win98StyledRoot}
+          className={win98RootClass}
           {...useScrollAreaControlProps()}
-          css={{ width: '400px', height: '400px' }}
+          style={{ width: '400px', height: '400px' }}
         >
-          <ScrollAreaScrollbarY as={Win98StyledScrollbarY}>
-            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+          <ScrollAreaScrollbarY className={win98ScrollbarYClass}>
+            <ScrollAreaButtonStart className={win98ScrollButtonClass}>
               <Arrow direction="up" />
             </ScrollAreaButtonStart>
 
-            <ScrollAreaTrack as={Win98StyledScrollTrack}>
-              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            <ScrollAreaTrack className={win98ScrollTrackClass}>
+              <ScrollAreaThumb className={win98ScrollThumbClass} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+            <ScrollAreaButtonEnd className={win98ScrollButtonClass}>
               <Arrow direction="down" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarY>
 
-          <ScrollAreaScrollbarX as={Win98StyledScrollbarX}>
-            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+          <ScrollAreaScrollbarX className={win98ScrollbarXClass}>
+            <ScrollAreaButtonStart className={win98ScrollButtonClass}>
               <Arrow direction="left" />
             </ScrollAreaButtonStart>
 
-            <ScrollAreaTrack as={Win98StyledScrollTrack}>
-              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            <ScrollAreaTrack className={win98ScrollTrackClass}>
+              <ScrollAreaThumb className={win98ScrollThumbClass} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+            <ScrollAreaButtonEnd className={win98ScrollButtonClass}>
               <Arrow direction="right" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarX>
-          <ScrollAreaCorner as={Win98StyledCorner} />
-          <ScrollAreaViewport as={BaseStyledViewport}>
+          <ScrollAreaCorner className={win98CornerClass} />
+          <ScrollAreaViewport className={baseViewportClass}>
             <div
               style={{
                 height: 1000,
@@ -165,27 +156,16 @@ export function InsidePopover() {
             height: 150,
           }}
         >
-          <ScrollArea overflowX="scroll" {...useScrollAreaControlProps()} as={BaseStyledRoot}>
-            <ScrollAreaScrollbarY as={MacOsStyledScrollbarY} style={{ bottom: 0 }}>
-              <ScrollAreaTrack as={MacOsStyledScrollTrack}>
-                <ScrollAreaThumb as={MacOsStyledScrollThumbY}>
-                  <MacOsStyledScrollThumbInner />
+          <ScrollArea overflowX="scroll" {...useScrollAreaControlProps()} className={baseRootClass}>
+            <ScrollAreaScrollbarY className={macOsScrollbarYClass} style={{ bottom: 0 }}>
+              <ScrollAreaTrack className={macOsScrollTrackClass}>
+                <ScrollAreaThumb className={macOsScrollThumbYClass}>
+                  <div className={macOsScrollThumbInnerClass} />
                 </ScrollAreaThumb>
               </ScrollAreaTrack>
             </ScrollAreaScrollbarY>
 
-            <ScrollAreaViewport
-              as={BaseStyledViewport}
-              css={{
-                padding: 10,
-                '& > :first-child': {
-                  marginTop: 0,
-                },
-                '& > :last-child': {
-                  marginBottom: 0,
-                },
-              }}
-            >
+            <ScrollAreaViewport className={baseViewportClass} style={{ padding: 10 }}>
               <p>
                 Lacinia hendrerit auctor nam quisque augue suscipit feugiat, sit at imperdiet vitae
                 lacus. Dolor sit dui posuere faucibus non pharetra laoreet conubia, augue rhoncus
@@ -228,53 +208,42 @@ export function WithoutNativeFallback() {
       <hr />
       <Resizable>
         <ScrollAreaNoNativeFallback
-          as={Win98StyledRoot}
+          className={win98RootClass}
           overflowX="scroll"
           {...scrollAreaControlProps}
-          css={{ width: '400px', height: '400px' }}
+          style={{ width: '400px', height: '400px' }}
         >
-          <ScrollAreaScrollbarY as={Win98StyledScrollbarY}>
-            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+          <ScrollAreaScrollbarY className={win98ScrollbarYClass}>
+            <ScrollAreaButtonStart className={win98ScrollButtonClass}>
               <Arrow direction="up" />
             </ScrollAreaButtonStart>
 
-            <ScrollAreaTrack as={Win98StyledScrollTrack}>
-              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            <ScrollAreaTrack className={win98ScrollTrackClass}>
+              <ScrollAreaThumb className={win98ScrollThumbClass} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+            <ScrollAreaButtonEnd className={win98ScrollButtonClass}>
               <Arrow direction="down" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarY>
 
-          <ScrollAreaScrollbarX as={Win98StyledScrollbarX}>
-            <ScrollAreaButtonStart as={Win98StyledScrollButton}>
+          <ScrollAreaScrollbarX className={win98ScrollbarXClass}>
+            <ScrollAreaButtonStart className={win98ScrollButtonClass}>
               <Arrow direction="left" />
             </ScrollAreaButtonStart>
 
-            <ScrollAreaTrack as={Win98StyledScrollTrack}>
-              <ScrollAreaThumb as={Win98StyledScrollThumb} />
+            <ScrollAreaTrack className={win98ScrollTrackClass}>
+              <ScrollAreaThumb className={win98ScrollThumbClass} />
             </ScrollAreaTrack>
-            <ScrollAreaButtonEnd as={Win98StyledScrollButton}>
+            <ScrollAreaButtonEnd className={win98ScrollButtonClass}>
               <Arrow direction="right" />
             </ScrollAreaButtonEnd>
           </ScrollAreaScrollbarX>
 
-          <ScrollAreaCorner as={Win98StyledCorner} />
+          <ScrollAreaCorner className={win98CornerClass} />
 
           <ScrollAreaViewport
-            as={BaseStyledViewport}
-            css={{
-              width: '1000px',
-              padding: 20,
-
-              '& > :first-child': {
-                marginTop: 0,
-              },
-
-              '& > :last-child': {
-                marginBottom: 0,
-              },
-            }}
+            className={baseViewportClass}
+            style={{ width: '1000px', padding: 20 }}
           >
             <div ref={divRef} style={{ padding: '10px', border: '1px solid crimson' }}>
               Mouse over me and check your logs!
@@ -288,6 +257,57 @@ export function WithoutNativeFallback() {
     </React.Fragment>
   );
 }
+
+export const Chromatic = () => (
+  <>
+    <h1>Data attribute selectors </h1>
+    <Resizable>
+      <ScrollArea
+        className={rootAttrClass}
+        overflowX="scroll"
+        scrollbarVisibility="always"
+        style={{ width: '400px', height: '400px' }}
+      >
+        <ScrollAreaScrollbarY className={scrollbarYAttrClass}>
+          <ScrollAreaButtonStart className={buttonStartAttrClass}>
+            <Arrow direction="up" />
+          </ScrollAreaButtonStart>
+          <ScrollAreaTrack className={trackAttrClass}>
+            <ScrollAreaThumb className={thumbAttrClass} />
+          </ScrollAreaTrack>
+          <ScrollAreaButtonEnd className={buttonEndAttrClass}>
+            <Arrow direction="down" />
+          </ScrollAreaButtonEnd>
+        </ScrollAreaScrollbarY>
+
+        <ScrollAreaScrollbarX className={scrollbarXAttrClass}>
+          <ScrollAreaButtonStart className={buttonStartAttrClass}>
+            <Arrow direction="left" />
+          </ScrollAreaButtonStart>
+          <ScrollAreaTrack className={trackAttrClass}>
+            <ScrollAreaThumb className={thumbAttrClass} />
+          </ScrollAreaTrack>
+          <ScrollAreaButtonEnd className={buttonEndAttrClass}>
+            <Arrow direction="right" />
+          </ScrollAreaButtonEnd>
+        </ScrollAreaScrollbarX>
+
+        <ScrollAreaCorner className={cornerAttrClass} />
+
+        <ScrollAreaViewport className={viewportAttrClass} style={{ width: '2000px', padding: 20 }}>
+          <LongContent />
+          <LongContent />
+          <LongContent />
+          <LongContent />
+          <LongContent />
+          <LongContent />
+          <LongContent />
+        </ScrollAreaViewport>
+      </ScrollArea>
+    </Resizable>
+  </>
+);
+Chromatic.parameters = { chromatic: { disable: false } };
 
 /* -------------------------------------------------------------------------------------------------
  * Reset components
@@ -385,7 +405,7 @@ const RECOMMENDED_CSS__SCROLL_AREA__CORNER: any = {
   height: `var(${SCROLL_AREA_CSS_PROPS.cornerHeight})`,
 };
 
-const TestButton = styled('button', {
+const testButtonClass = css({
   appearance: 'none',
   display: 'block',
   marginTop: '10px',
@@ -395,41 +415,41 @@ const TestButton = styled('button', {
   },
 });
 
-const BaseStyledRoot = styled('div', {
+const baseRootClass = css({
   ...RECOMMENDED_CSS__SCROLL_AREA__ROOT,
   fontFamily: 'sans-serif',
 });
 
-const BaseStyledScrollbar = styled('div', {
+const baseViewportClass = css({
+  ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
+});
+
+const baseScrollbarClass = css({
   ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR,
   transition: '300ms opacity ease',
 });
 
-const BaseStyledScrollbarY = styled(BaseStyledScrollbar, {
+const baseScrollbarYClass = css(baseScrollbarClass, {
   ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_Y,
 });
 
-const BaseStyledScrollbarX = styled(BaseStyledScrollbar, {
+const baseScrollbarXClass = css(baseScrollbarClass, {
   ...RECOMMENDED_CSS__SCROLL_AREA__SCROLLBAR_X,
 });
 
-const BaseStyledScrollButton = styled('div', {
+const baseScrollButtonClass = css({
   ...RECOMMENDED_CSS__SCROLL_AREA__BUTTON,
 });
 
-const BaseStyledScrollThumb = styled('div', {
+const baseScrollThumbClass = css({
   ...RECOMMENDED_CSS__SCROLL_AREA__THUMB,
 });
 
-const BaseStyledScrollTrack = styled('div', {
+const baseScrollTrackClass = css({
   ...RECOMMENDED_CSS__SCROLL_AREA__TRACK,
 });
 
-const BaseStyledViewport = styled('div', {
-  ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
-});
-
-const Win98StyledRoot = styled(BaseStyledRoot, {
+const win98RootClass = css(baseRootClass, {
   ...RECOMMENDED_CSS__SCROLL_AREA__ROOT,
   border: '2px solid #FFF',
   borderTopColor: '#858585',
@@ -438,19 +458,19 @@ const Win98StyledRoot = styled(BaseStyledRoot, {
   borderBottomColor: '#C0C0C0',
 });
 
-const Win98StyledScrollbarY = styled(BaseStyledScrollbarY, {
+const win98ScrollbarYClass = css(baseScrollbarYClass, {
   width: `16px`,
 });
 
-const Win98StyledScrollbarX = styled(BaseStyledScrollbarX, {
+const win98ScrollbarXClass = css(baseScrollbarXClass, {
   height: `16px`,
 });
 
-const MacOsStyledScrollbarY = styled(BaseStyledScrollbarY, {
+const macOsScrollbarYClass = css(baseScrollbarYClass, {
   width: `14px`,
 });
 
-const Win98StyledScrollButton = styled(BaseStyledScrollButton, {
+const win98ScrollButtonClass = css(baseScrollButtonClass, {
   position: 'relative',
   backgroundColor: '#C0C0C0',
   border: '2px solid #FFF',
@@ -463,7 +483,7 @@ const Win98StyledScrollButton = styled(BaseStyledScrollButton, {
   padding: '3px',
 });
 
-const Win98StyledScrollThumb = styled(BaseStyledScrollThumb, {
+const win98ScrollThumbClass = css(baseScrollThumbClass, {
   backgroundColor: '#C0C0C0',
   border: '2px solid #FFF',
   borderTopColor: '#FFF',
@@ -472,29 +492,62 @@ const Win98StyledScrollThumb = styled(BaseStyledScrollThumb, {
   borderBottomColor: '#858585',
 });
 
-const MacOsStyledScrollThumbY = styled(BaseStyledScrollThumb, {
+const macOsScrollThumbYClass = css(baseScrollThumbClass, {
   backgroundColor: 'transparent',
   padding: '2px 3px',
 });
 
-const MacOsStyledScrollThumbInner = styled('div', {
+const macOsScrollThumbInnerClass = css({
   width: '100%',
   height: '100%',
   backgroundColor: 'rgba(0, 0, 0, 0.5)',
   borderRadius: '999px',
 });
 
-const Win98StyledScrollTrack = styled(BaseStyledScrollTrack, {
+const win98ScrollTrackClass = css(baseScrollTrackClass, {
   background: '#DEDEDE',
 });
 
-const MacOsStyledScrollTrack = styled(BaseStyledScrollTrack, {
+const macOsScrollTrackClass = css(baseScrollTrackClass, {
   background: 'transparent',
 });
 
-const Win98StyledCorner = styled('div', {
+const win98CornerClass = css({
   ...RECOMMENDED_CSS__SCROLL_AREA__CORNER,
   backgroundColor: '#C0C0C0',
+});
+
+const styles = {
+  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+  border: '2px solid blue',
+  padding: 10,
+};
+const rootAttrClass = css(baseRootClass, { '&[data-radix-scroll-area]': styles });
+const scrollbarYAttrClass = css(baseScrollbarYClass, {
+  '&[data-radix-scroll-area-scrollbar-y]': styles,
+});
+const scrollbarXAttrClass = css(baseScrollbarXClass, {
+  '&[data-radix-scroll-area-scrollbar-x]': styles,
+});
+const buttonStartAttrClass = css(baseScrollButtonClass, {
+  '&[data-radix-scroll-area-button-start]': styles,
+});
+const buttonEndAttrClass = css(baseScrollButtonClass, {
+  '&[data-radix-scroll-area-button-end]': styles,
+});
+const trackAttrClass = css(baseScrollTrackClass, {
+  '&[data-radix-scroll-area-track]': styles,
+});
+const thumbAttrClass = css(baseScrollThumbClass, {
+  '&[data-radix-scroll-area-thumb]': styles,
+});
+const cornerAttrClass = css({
+  ...RECOMMENDED_CSS__SCROLL_AREA__CORNER,
+  '&[data-radix-scroll-area-corner]': styles,
+});
+const viewportAttrClass = css({
+  ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
+  '&[data-radix-scroll-area-viewport]': styles,
 });
 
 const Arrow = React.forwardRef<SVGSVGElement, any>(function Arrow(
