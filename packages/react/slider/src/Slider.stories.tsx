@@ -189,6 +189,15 @@ export const Chromatic = () => (
       <SliderThumb className={thumbClass} />
     </Slider>
 
+    <h2>Extremes</h2>
+    <Slider className={rootClass} defaultValue={[0, 100]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
     <h2>Multiple ranges</h2>
     <Slider className={rootClass} value={[10, 15, 20, 80]}>
       <SliderTrack className={trackClass}>
