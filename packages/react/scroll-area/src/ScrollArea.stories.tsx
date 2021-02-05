@@ -79,7 +79,7 @@ export function Basic() {
             <LongContent />
           </ScrollAreaViewport>
         </ScrollArea>
-        <button className={TestButton} onClick={() => alert('whoa')}>
+        <button className={testButtonClass} onClick={() => alert('whoa')}>
           Test for pointer events
         </button>
       </Resizable>
@@ -405,7 +405,7 @@ const RECOMMENDED_CSS__SCROLL_AREA__CORNER: any = {
   height: `var(${SCROLL_AREA_CSS_PROPS.cornerHeight})`,
 };
 
-const TestButton = css({
+const testButtonClass = css({
   appearance: 'none',
   display: 'block',
   marginTop: '10px',
