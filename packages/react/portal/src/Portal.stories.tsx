@@ -82,7 +82,7 @@ export const Chromatic = () => {
         <Portal containerRef={portalContainerRef}>
           <div style={{ padding: 10, margin: 10, border: '1px solid green' }}>
             <p>
-              This content is rendered in a portal inside Container B but appears inside Container B
+              This content is rendered in a portal inside Container B but appears inside Container C
               because we have used Container C as a container element for the Portal.
             </p>
           </div>
