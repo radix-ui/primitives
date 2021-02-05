@@ -34,7 +34,12 @@ type RadioOwnProps = Merge<
 
 type RadioPrimitive = Polymorphic.ForwardRefComponent<typeof RADIO_DEFAULT_TAG, RadioOwnProps>;
 
-const [RadioContext, useRadioContext] = createContext<boolean>(RADIO_NAME + 'Context', RADIO_NAME);
+type RadioContextValue = { checked: boolean; disabled?: boolean };
+
+const [RadioContext, useRadioContext] = createContext<RadioContextValue>(
+  RADIO_NAME + 'Context',
+  RADIO_NAME
+);
 
 const Radio = React.forwardRef((props, forwardedRef) => {
   const {
@@ -61,6 +66,8 @@ const Radio = React.forwardRef((props, forwardedRef) => {
     defaultProp: defaultChecked,
   });
 
+  const context = React.useMemo(() => ({ checked, disabled }), [checked, disabled]);
+
   return (
     /**
      * The `input` is hidden from non-SR and SR users as it only exists to
@@ -82,18 +89,19 @@ const Radio = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <RadioContext.Provider value={checked}>
+      <RadioContext.Provider value={context}>
         <Primitive
           type="button"
-          {...radioProps}
-          as={as}
-          selector={selector}
-          ref={ref}
           role="radio"
           aria-checked={checked}
           aria-labelledby={labelledBy}
           data-state={getState(checked)}
           data-readonly={readOnly}
+          data-disabled={disabled ? '' : undefined}
+          {...radioProps}
+          as={as}
+          selector={selector}
+          ref={ref}
           disabled={disabled}
           value={value}
           /**
@@ -141,15 +149,16 @@ const RadioIndicator = React.forwardRef((props, forwardedRef) => {
     forceMount,
     ...indicatorProps
   } = props;
-  const checked = useRadioContext(INDICATOR_NAME);
+  const context = useRadioContext(INDICATOR_NAME);
   return (
-    <Presence present={forceMount || checked}>
+    <Presence present={forceMount || context.checked}>
       <Primitive
+        data-state={getState(context.checked)}
+        data-disabled={context.disabled ? '' : undefined}
         {...indicatorProps}
         as={as}
         selector={selector}
         ref={forwardedRef}
-        data-state={getState(checked)}
       />
     </Presence>
   );
