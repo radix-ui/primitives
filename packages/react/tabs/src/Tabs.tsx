@@ -206,13 +206,13 @@ const TabsTab = React.forwardRef((props, forwardedRef) => {
       aria-selected={isSelected}
       aria-controls={tabPanelId}
       aria-disabled={disabled || undefined}
+      data-state={isSelected ? 'active' : 'inactive'}
+      data-disabled={disabled ? '' : undefined}
+      data-orientation={context.orientation}
       {...tabProps}
       {...rovingFocusProps}
       selector={selector}
       ref={forwardedRef}
-      data-state={isSelected ? 'active' : 'inactive'}
-      data-disabled={disabled ? '' : undefined}
-      data-orientation={context.orientation}
       id={tabId}
       onKeyDown={handleKeyDown}
       onMouseDown={handleMouseDown}
@@ -246,14 +246,14 @@ const TabsPanel = React.forwardRef((props, forwardedRef) => {
     <Primitive
       data-state={isSelected ? 'active' : 'inactive'}
       data-orientation={context.orientation}
-      id={tabPanelId}
       role="tabpanel"
       aria-labelledby={tabId}
-      tabIndex={0}
       hidden={!isSelected}
       {...tabPanelProps}
       selector={selector}
       ref={forwardedRef}
+      id={tabPanelId}
+      tabIndex={0}
     />
   );
 }) as TabsPanelPrimitive;
