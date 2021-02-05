@@ -250,17 +250,17 @@ export const Chromatic = () => (
     </Popover>
 
     <h1 style={{ marginTop: 100 }}>Positioning</h1>
-    <h2>Side & Align</h2>
+    <h2>No collisions</h2>
     <div className={gridClass}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
-          <Popover key={`${side}-${align}`} defaultOpen>
+          <Popover key={`${side}-${align}`} open>
             <PopoverTrigger className={chromaticTriggerClass} />
             <PopoverContent
               className={chromaticContentClass}
               side={side}
-              sideOffset={5}
               align={align}
+              avoidCollisions={false}
             >
               <p style={{ textAlign: 'center' }}>
                 {side}
