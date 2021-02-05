@@ -266,7 +266,7 @@ const styles = {
   '&[data-state="active"]': { borderColor: 'green' },
 };
 const rootAttrClass = css({ '&[data-radix-tabs]': styles });
-const listAttrClass = css(listClass, { '&[data-radix-tabs-list]': styles });
+const listAttrClass = css({ '&[data-radix-tabs-list]': styles });
 const tabAttrClass = css({ '&[data-radix-tabs-tab]': styles });
 const panelAttrClass = css({
   '&[data-radix-tabs-panel]': {
