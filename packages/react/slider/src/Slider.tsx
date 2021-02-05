@@ -37,6 +37,7 @@ const SLIDER_NAME = 'Slider';
 const SLIDER_DEFAULT_TAG = 'span';
 
 type SliderContextValue = {
+  disabled?: boolean;
   min: number;
   max: number;
   values: number[];
@@ -148,6 +149,7 @@ const Slider = React.forwardRef((props, forwardedRef) => {
     <SliderContext.Provider
       value={React.useMemo(
         () => ({
+          disabled,
           min,
           max,
           valueIndexToChangeRef,
@@ -155,17 +157,17 @@ const Slider = React.forwardRef((props, forwardedRef) => {
           values,
           orientation,
         }),
-        [min, max, values, orientation]
+        [disabled, min, max, values, orientation]
       )}
     >
       <SliderCollectionProvider>
         <SliderOrientation
+          aria-disabled={disabled}
+          data-disabled={disabled ? '' : undefined}
           {...sliderProps}
           ref={composedRefs}
           min={min}
           max={max}
-          aria-disabled={disabled}
-          data-disabled={disabled}
           onSlideStart={disabled ? undefined : handleSlideStart}
           onSlideMove={disabled ? undefined : handleSlideMove}
           onHomeKeyDown={() => !disabled && updateValues(min, 0)}
@@ -273,13 +275,13 @@ const SliderHorizontal = React.forwardRef((props, forwardedRef) => {
       )}
     >
       <SliderPart
+        data-orientation="horizontal"
         {...sliderProps}
         ref={ref}
         style={{
           ...sliderProps.style,
           ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
         }}
-        data-orientation="horizontal"
         onSlideMouseDown={(event) => {
           const value = getValueFromPointer(event.clientX);
           onSlideStart?.(value);
@@ -343,13 +345,13 @@ const SliderVertical = React.forwardRef((props, forwardedRef) => {
       )}
     >
       <SliderPart
+        data-orientation="vertical"
         {...sliderProps}
         ref={ref}
         style={{
           ...sliderProps.style,
           ['--radix-slider-thumb-transform' as any]: 'translateY(50%)',
         }}
-        data-orientation="vertical"
         onSlideMouseDown={(event) => {
           const value = getValueFromPointer(event.clientY);
           onSlideStart?.(value);
@@ -515,11 +517,12 @@ const SliderTrack = React.forwardRef((props, forwardedRef) => {
   const context = useSliderContext(TRACK_NAME);
   return (
     <Primitive
+      data-disabled={context.disabled ? '' : undefined}
+      data-orientation={context.orientation}
       {...trackProps}
       as={as}
       selector={selector}
       ref={forwardedRef}
-      data-orientation={context.orientation}
     />
   );
 }) as SliderTrackPrimitive;
@@ -554,6 +557,8 @@ const SliderRange = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Primitive
+      data-orientation={context.orientation}
+      data-disabled={context.disabled ? '' : undefined}
       {...rangeProps}
       as={as}
       selector={selector}
@@ -563,7 +568,6 @@ const SliderRange = React.forwardRef((props, forwardedRef) => {
         [orientation.startEdge]: offsetStart + '%',
         [orientation.endEdge]: offsetEnd + '%',
       }}
-      data-orientation={context.orientation}
     />
   );
 }) as SliderRangePrimitive;
@@ -645,17 +649,18 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
       }}
     >
       <Primitive
-        {...thumbProps}
-        as={as}
-        selector={selector}
-        ref={ref}
         aria-label={props['aria-label'] || label}
         aria-valuemin={context.min}
         aria-valuenow={value}
         aria-valuemax={context.max}
         aria-orientation={context.orientation}
         data-orientation={context.orientation}
+        data-disabled={context.disabled ? '' : undefined}
         role="slider"
+        {...thumbProps}
+        as={as}
+        selector={selector}
+        ref={ref}
         tabIndex={0}
         onFocus={composeEventHandlers(props.onFocus, () => {
           context.valueIndexToChangeRef.current = index;

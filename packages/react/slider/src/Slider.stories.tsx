@@ -1,81 +1,81 @@
 import * as React from 'react';
 import { Slider, SliderTrack, SliderRange, SliderThumb } from './Slider';
-import { styled } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Slider' };
 
 export const Styled = () => (
-  <Slider as={StyledRoot}>
-    <SliderTrack as={StyledTrack}>
-      <SliderRange as={StyledRange} />
+  <Slider className={rootClass}>
+    <SliderTrack className={trackClass}>
+      <SliderRange className={rangeClass} />
     </SliderTrack>
-    <SliderThumb as={StyledThumb} />
+    <SliderThumb className={thumbClass} />
   </Slider>
 );
 
 export const RightToLeft = () => (
-  <Slider as={StyledRoot} dir="rtl">
-    <SliderTrack as={StyledTrack}>
-      <SliderRange as={StyledRange} />
+  <Slider className={rootClass} dir="rtl">
+    <SliderTrack className={trackClass}>
+      <SliderRange className={rangeClass} />
     </SliderTrack>
-    <SliderThumb as={StyledThumb} />
+    <SliderThumb className={thumbClass} />
   </Slider>
 );
 
 export const Horizontal = () => (
   <>
     <Slider
-      as={StyledRoot}
+      className={rootClass}
       defaultValue={[10, 30]}
       minStepsBetweenThumbs={1}
       onValueChange={(value) => console.log(value)}
     >
-      <SliderTrack as={StyledTrack}>
-        <SliderRange as={StyledRange} />
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
       </SliderTrack>
-      <SliderThumb as={StyledThumb} />
-      <SliderThumb as={StyledThumb} />
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
     </Slider>
 
     <br />
 
-    <Slider as={StyledRoot} defaultValue={[10]}>
-      <SliderTrack as={StyledTrack}>
-        <SliderRange as={StyledRange} />
+    <Slider className={rootClass} defaultValue={[10]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
       </SliderTrack>
-      <SliderThumb as={StyledThumb} />
+      <SliderThumb className={thumbClass} />
     </Slider>
   </>
 );
 
 export const Vertical = () => (
   <>
-    <Slider as={StyledRoot} defaultValue={[10, 30]} orientation="vertical">
-      <SliderTrack as={StyledTrack}>
-        <SliderRange as={StyledRange} />
+    <Slider className={rootClass} defaultValue={[10, 30]} orientation="vertical">
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
       </SliderTrack>
-      <SliderThumb as={StyledThumb} />
-      <SliderThumb as={StyledThumb} />
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
     </Slider>
 
     <br />
 
-    <Slider as={StyledRoot} defaultValue={[10]} orientation="vertical">
-      <SliderTrack as={StyledTrack}>
-        <SliderRange as={StyledRange} />
+    <Slider className={rootClass} defaultValue={[10]} orientation="vertical">
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
       </SliderTrack>
-      <SliderThumb as={StyledThumb} />
+      <SliderThumb className={thumbClass} />
     </Slider>
   </>
 );
 
 export const WithMinimumStepsBetweenThumbs = () => (
-  <Slider as={StyledRoot} defaultValue={[10, 30]} minStepsBetweenThumbs={3}>
-    <SliderTrack as={StyledTrack}>
-      <SliderRange as={StyledRange} />
+  <Slider className={rootClass} defaultValue={[10, 30]} minStepsBetweenThumbs={3}>
+    <SliderTrack className={trackClass}>
+      <SliderRange className={rangeClass} />
     </SliderTrack>
-    <SliderThumb as={StyledThumb} />
-    <SliderThumb as={StyledThumb} />
+    <SliderThumb className={thumbClass} />
+    <SliderThumb className={thumbClass} />
   </Slider>
 );
 
@@ -98,21 +98,161 @@ export const WithMultipleRanges = () => {
       <br />
 
       <Slider
-        as={StyledRoot}
+        className={rootClass}
         defaultValue={[10, 15, 20, 80]}
         minStepsBetweenThumbs={minStepsBetweenThumbs}
       >
-        <SliderTrack as={StyledTrack}>
-          <SliderRange as={StyledRange} />
+        <SliderTrack className={trackClass}>
+          <SliderRange className={rangeClass} />
         </SliderTrack>
-        <SliderThumb as={StyledThumb} />
-        <SliderThumb as={StyledThumb} />
-        <SliderThumb as={StyledThumb} />
-        <SliderThumb as={StyledThumb} />
+        <SliderThumb className={thumbClass} />
+        <SliderThumb className={thumbClass} />
+        <SliderThumb className={thumbClass} />
+        <SliderThumb className={thumbClass} />
       </Slider>
     </>
   );
 };
+
+export const Chromatic = () => (
+  <>
+    <h1>Uncontrolled</h1>
+    <h2>LTR</h2>
+    <Slider className={rootClass} defaultValue={[20]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+    </Slider>
+    <Slider className={rootClass} defaultValue={[10, 30]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
+    <h2>RTL</h2>
+    <Slider className={rootClass} defaultValue={[20]} dir="rtl">
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+    </Slider>
+    <Slider className={rootClass} defaultValue={[10, 30]} dir="rtl">
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
+    <h2>Multiple ranges</h2>
+    <Slider className={rootClass} defaultValue={[10, 15, 20, 80]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
+    <h1>Controlled</h1>
+    <h2>LTR</h2>
+    <Slider className={rootClass} value={[20]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+    </Slider>
+    <Slider className={rootClass} value={[10, 30]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
+    <h2>RTL</h2>
+    <Slider className={rootClass} value={[20]} dir="rtl">
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+    </Slider>
+    <Slider className={rootClass} value={[10, 30]} dir="rtl">
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
+    <h2>Extremes</h2>
+    <Slider className={rootClass} defaultValue={[0, 100]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
+    <h2>Multiple ranges</h2>
+    <Slider className={rootClass} value={[10, 15, 20, 80]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
+    <h2>Vertical</h2>
+    <div style={{ display: 'flex' }}>
+      <Slider className={rootClass} defaultValue={[10, 30]} orientation="vertical">
+        <SliderTrack className={trackClass}>
+          <SliderRange className={rangeClass} />
+        </SliderTrack>
+        <SliderThumb className={thumbClass} />
+        <SliderThumb className={thumbClass} />
+      </Slider>
+      <Slider className={rootClass} defaultValue={[20]} orientation="vertical">
+        <SliderTrack className={trackClass}>
+          <SliderRange className={rangeClass} />
+        </SliderTrack>
+        <SliderThumb className={thumbClass} />
+      </Slider>
+    </div>
+
+    <h1>Disabled</h1>
+    <Slider className={rootClass} defaultValue={[20]} disabled>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
+    <h1>Data attribute selectors</h1>
+    <h2>Default</h2>
+    <Slider className={rootAttrClass} defaultValue={[20]}>
+      <SliderTrack className={trackAttrClass}>
+        <SliderRange className={rangeAttrClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbAttrClass} />
+    </Slider>
+
+    <h2>Disabled</h2>
+    <Slider className={rootAttrClass} defaultValue={[20]} disabled>
+      <SliderTrack className={trackAttrClass}>
+        <SliderRange className={rangeAttrClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbAttrClass} />
+    </Slider>
+  </>
+);
+Chromatic.parameters = { chromatic: { disable: false } };
 
 const RECOMMENDED_CSS__SLIDER__ROOT: any = {
   position: 'relative',
@@ -125,7 +265,7 @@ const RECOMMENDED_CSS__SLIDER__ROOT: any = {
   touchAction: 'none',
 };
 
-const StyledRoot = styled('span', {
+const rootClass = css({
   ...RECOMMENDED_CSS__SLIDER__ROOT,
   '&[data-orientation="horizontal"]': {
     height: 15,
@@ -134,6 +274,7 @@ const StyledRoot = styled('span', {
     flexDirection: 'column',
     width: 15,
   },
+  '&[data-disabled]': { opacity: 0.5 },
 });
 
 const RECOMMENDED_CSS__SLIDER__TRACK: any = {
@@ -142,7 +283,7 @@ const RECOMMENDED_CSS__SLIDER__TRACK: any = {
   flexGrow: 1,
 };
 
-const StyledTrack = styled('span', {
+const trackClass = css({
   ...RECOMMENDED_CSS__SLIDER__TRACK,
   background: 'gainsboro',
   borderRadius: 4,
@@ -166,7 +307,7 @@ const RECOMMENDED_CSS__SLIDER__RANGE: any = {
   },
 };
 
-const StyledRange = styled('span', {
+const rangeClass = css({
   ...RECOMMENDED_CSS__SLIDER__RANGE,
   background: '$black',
   borderRadius: 'inherit',
@@ -189,7 +330,7 @@ const RECOMMENDED_CSS__SLIDER__THUMB = {
   },
 };
 
-const StyledThumb = styled('span', {
+const thumbClass = css({
   ...RECOMMENDED_CSS__SLIDER__THUMB,
   borderRadius: 15,
   width: 15,
@@ -199,4 +340,25 @@ const StyledThumb = styled('span', {
     outline: 'none',
     boxShadow: '0 0 0 2px $red',
   },
+});
+
+const styles = {
+  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+  border: '2px solid blue',
+  padding: 10,
+
+  '&[data-disabled]': { borderStyle: 'dashed' },
+};
+const rootAttrClass = css({ ...RECOMMENDED_CSS__SLIDER__ROOT, '&[data-radix-slider]': styles });
+const trackAttrClass = css({
+  ...RECOMMENDED_CSS__SLIDER__TRACK,
+  '&[data-radix-slider-track]': styles,
+});
+const rangeAttrClass = css({
+  ...RECOMMENDED_CSS__SLIDER__RANGE,
+  '&[data-radix-slider-range]': styles,
+});
+const thumbAttrClass = css({
+  ...RECOMMENDED_CSS__SLIDER__THUMB,
+  '&[data-radix-slider-thumb]': styles,
 });
