@@ -249,8 +249,43 @@ export const Chromatic = () => (
       </PopoverContent>
     </Popover>
 
+    <h1 style={{ marginTop: 100 }}>Force mounted content</h1>
+    <Popover>
+      <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+      <PopoverContent className={contentClass} sideOffset={5} forceMount>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} />
+      </PopoverContent>
+    </Popover>
+
     <h1 style={{ marginTop: 100 }}>Positioning</h1>
     <h2>No collisions</h2>
+    <h3>Side & Align</h3>
+    <div className={gridClass}>
+      {SIDES.map((side) =>
+        ALIGN_OPTIONS.map((align) => (
+          <Popover key={`${side}-${align}`} open>
+            <PopoverTrigger className={chromaticTriggerClass} />
+            <PopoverContent
+              className={chromaticContentClass}
+              side={side}
+              align={align}
+              avoidCollisions={false}
+            >
+              <p style={{ textAlign: 'center' }}>
+                {side}
+                <br />
+                {align}
+              </p>
+              <PopoverArrow className={chromaticArrowClass} width={20} height={10} />
+            </PopoverContent>
+          </Popover>
+        ))
+      )}
+    </div>
+
+    <h3>Arrow offset</h3>
+    <h4>Positive</h4>
     <div className={gridClass}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
@@ -268,6 +303,129 @@ export const Chromatic = () => (
                 {align}
               </p>
               <PopoverArrow className={chromaticArrowClass} width={20} height={10} offset={5} />
+            </PopoverContent>
+          </Popover>
+        ))
+      )}
+    </div>
+    <h4>Negative</h4>
+    <div className={gridClass}>
+      {SIDES.map((side) =>
+        ALIGN_OPTIONS.map((align) => (
+          <Popover key={`${side}-${align}`} open>
+            <PopoverTrigger className={chromaticTriggerClass} />
+            <PopoverContent
+              className={chromaticContentClass}
+              side={side}
+              align={align}
+              avoidCollisions={false}
+            >
+              <p style={{ textAlign: 'center' }}>
+                {side}
+                <br />
+                {align}
+              </p>
+              <PopoverArrow className={chromaticArrowClass} width={20} height={10} offset={-10} />
+            </PopoverContent>
+          </Popover>
+        ))
+      )}
+    </div>
+
+    <h3>Side offset</h3>
+    <h4>Positive</h4>
+    <div className={gridClass}>
+      {SIDES.map((side) =>
+        ALIGN_OPTIONS.map((align) => (
+          <Popover key={`${side}-${align}`} open>
+            <PopoverTrigger className={chromaticTriggerClass} />
+            <PopoverContent
+              className={chromaticContentClass}
+              side={side}
+              sideOffset={5}
+              align={align}
+              avoidCollisions={false}
+            >
+              <p style={{ textAlign: 'center' }}>
+                {side}
+                <br />
+                {align}
+              </p>
+              <PopoverArrow className={chromaticArrowClass} width={20} height={10} />
+            </PopoverContent>
+          </Popover>
+        ))
+      )}
+    </div>
+    <h4>Negative</h4>
+    <div className={gridClass}>
+      {SIDES.map((side) =>
+        ALIGN_OPTIONS.map((align) => (
+          <Popover key={`${side}-${align}`} open>
+            <PopoverTrigger className={chromaticTriggerClass} />
+            <PopoverContent
+              className={chromaticContentClass}
+              side={side}
+              sideOffset={-10}
+              align={align}
+              avoidCollisions={false}
+            >
+              <p style={{ textAlign: 'center' }}>
+                {side}
+                <br />
+                {align}
+              </p>
+              <PopoverArrow className={chromaticArrowClass} width={20} height={10} />
+            </PopoverContent>
+          </Popover>
+        ))
+      )}
+    </div>
+
+    <h3>Align offset</h3>
+    <h4>Positive</h4>
+    <div className={gridClass}>
+      {SIDES.map((side) =>
+        ALIGN_OPTIONS.map((align) => (
+          <Popover key={`${side}-${align}`} open>
+            <PopoverTrigger className={chromaticTriggerClass} />
+            <PopoverContent
+              className={chromaticContentClass}
+              side={side}
+              align={align}
+              alignOffset={20}
+              avoidCollisions={false}
+            >
+              <p style={{ textAlign: 'center' }}>
+                {side}
+                <br />
+                {align}
+              </p>
+              <PopoverArrow className={chromaticArrowClass} width={20} height={10} />
+            </PopoverContent>
+          </Popover>
+        ))
+      )}
+    </div>
+    <h4>Negative</h4>
+    <div className={gridClass}>
+      {SIDES.map((side) =>
+        ALIGN_OPTIONS.map((align) => (
+          <Popover key={`${side}-${align}`} open>
+            <PopoverTrigger className={chromaticTriggerClass} />
+            <PopoverContent
+              className={chromaticContentClass}
+              side={side}
+              align={align}
+              alignOffset={-10}
+              avoidCollisions={false}
+            >
+              <p style={{ textAlign: 'center' }}>
+                {side}
+                <br />
+                {align}
+              </p>
+              <PopoverArrow className={chromaticArrowClass} width={20} height={10} />
             </PopoverContent>
           </Popover>
         ))
@@ -316,11 +474,12 @@ const animatedContentClass = css(contentClass, {
 });
 
 const gridClass = css({
-  display: 'grid',
+  display: 'inline-grid',
   gridTemplateColumns: 'repeat(3, 50px)',
   columnGap: 150,
   rowGap: 100,
   padding: 100,
+  border: '1px solid black',
 });
 
 const chromaticTriggerClass = css({
