@@ -138,7 +138,7 @@ export const Chromatic = () => {
   const items = ['One', 'Two', 'Three', 'Four'];
   return (
     <>
-      <h1>Uncontrolled Test</h1>
+      <h1>Uncontrolled</h1>
       <h2>Closed</h2>
       <Accordion className={rootClass}>
         {items.map((item) => (
