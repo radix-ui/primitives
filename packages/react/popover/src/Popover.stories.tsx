@@ -431,6 +431,36 @@ export const Chromatic = () => (
         ))
       )}
     </div>
+
+    <h2>Collisions</h2>
+    <div className={gridClass}>
+      {SIDES.map((side) =>
+        ALIGN_OPTIONS.map((align) => (
+          <Popover key={`${side}-${align}`} open>
+            <PopoverTrigger
+              className={chromaticTriggerClass}
+              style={{
+                position: 'absolute',
+                [side]: 10,
+                ...(align === 'start'
+                  ? { left: 10 }
+                  : align === 'center'
+                  ? { left: '50%' }
+                  : { right: 10 }),
+              }}
+            />
+            <PopoverContent className={chromaticContentClass} side={side} align={align}>
+              <p style={{ textAlign: 'center' }}>
+                {side}
+                <br />
+                {align}
+              </p>
+              <PopoverArrow className={chromaticArrowClass} width={20} height={10} />
+            </PopoverContent>
+          </Popover>
+        ))
+      )}
+    </div>
   </div>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
