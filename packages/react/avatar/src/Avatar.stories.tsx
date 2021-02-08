@@ -78,7 +78,7 @@ export const Chromatic = () => (
     </Avatar>
   </>
 );
-Chromatic.parameters = { chromatic: { disable: false } };
+Chromatic.parameters = { chromatic: { disable: false, delay: 1000 } };
 
 const RECOMMENDED_CSS__AVATAR__ROOT: any = {
   // ensures image/fallback is centered
