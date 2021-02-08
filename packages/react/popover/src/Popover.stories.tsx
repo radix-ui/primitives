@@ -4,8 +4,6 @@ import { Slot } from '@radix-ui/react-slot';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/utils';
 import { css } from '../../../../stitches.config';
 
-import type { Side, Align } from '@radix-ui/utils';
-
 export default { title: 'Components/Popover' };
 
 export const Styled = () => {
