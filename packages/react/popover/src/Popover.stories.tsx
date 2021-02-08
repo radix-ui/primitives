@@ -210,7 +210,7 @@ export const WithSlottedTrigger = () => {
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
 
 export const Chromatic = () => (
-  <div style={{ padding: 100 }}>
+  <div style={{ padding: 200 }}>
     <h1>Uncontrolled</h1>
     <h2>Closed</h2>
     <Popover>
@@ -433,34 +433,70 @@ export const Chromatic = () => (
     </div>
 
     <h2>Collisions</h2>
-    <div className={gridClass}>
-      {SIDES.map((side) =>
-        ALIGN_OPTIONS.map((align) => (
-          <Popover key={`${side}-${align}`} open>
-            <PopoverTrigger
-              className={chromaticTriggerClass}
-              style={{
-                position: 'absolute',
-                [side]: 10,
-                ...(align === 'start'
-                  ? { left: 10 }
+    <p>See instances on the periphery of the page.</p>
+    {SIDES.map((side) =>
+      ALIGN_OPTIONS.map((align) => (
+        <Popover key={`${side}-${align}`} open>
+          <PopoverTrigger
+            className={chromaticTriggerClass}
+            style={{
+              position: 'absolute',
+              [side]: 10,
+              ...((side === 'right' || side === 'left') &&
+                (align === 'start'
+                  ? { bottom: 10 }
                   : align === 'center'
-                  ? { left: '50%' }
-                  : { right: 10 }),
-              }}
-            />
-            <PopoverContent className={chromaticContentClass} side={side} align={align}>
-              <p style={{ textAlign: 'center' }}>
-                {side}
-                <br />
-                {align}
-              </p>
-              <PopoverArrow className={chromaticArrowClass} width={20} height={10} />
-            </PopoverContent>
-          </Popover>
-        ))
-      )}
-    </div>
+                  ? { top: 'calc(50% - 15px)' }
+                  : { top: 10 })),
+              ...((side === 'top' || side === 'bottom') &&
+                (align === 'start'
+                  ? { right: 10 }
+                  : align === 'center'
+                  ? { left: 'calc(50% - 15px)' }
+                  : { left: 10 })),
+            }}
+          />
+          <PopoverContent className={chromaticContentClass} side={side} align={align}>
+            <p style={{ textAlign: 'center' }}>
+              {side}
+              <br />
+              {align}
+            </p>
+            <PopoverArrow className={chromaticArrowClass} width={20} height={10} />
+          </PopoverContent>
+        </Popover>
+      ))
+    )}
+
+    <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
+    <Popover open>
+      <PopoverTrigger as={Slot}>
+        <button className={triggerClass}>open</button>
+      </PopoverTrigger>
+      <PopoverContent className={contentClass} sideOffset={5}>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
+      </PopoverContent>
+    </Popover>
+
+    <h1 style={{ marginTop: 100 }}>Data attribute selectors</h1>
+    <h2>Closed</h2>
+    <Popover open={false}>
+      <PopoverTrigger className={triggerAttrClass}>open</PopoverTrigger>
+      <PopoverContent className={contentAttrClass} sideOffset={5}>
+        <PopoverClose className={closeAttrClass}>close</PopoverClose>
+        <PopoverArrow className={arrowAttrClass} width={20} height={10} />
+      </PopoverContent>
+    </Popover>
+
+    <h2>Open</h2>
+    <Popover open>
+      <PopoverTrigger className={triggerAttrClass}>open</PopoverTrigger>
+      <PopoverContent className={contentAttrClass} side="right" sideOffset={5}>
+        <PopoverClose className={closeAttrClass}>close</PopoverClose>
+        <PopoverArrow className={arrowAttrClass} width={20} height={10} />
+      </PopoverContent>
+    </Popover>
   </div>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -513,20 +549,36 @@ const gridClass = css({
 });
 
 const chromaticTriggerClass = css({
+  boxSizing: 'border-box',
   width: 30,
   height: 30,
   backgroundColor: 'tomato',
-  border: 'none',
+  border: '1px solid rgba(0, 0, 0, 0.3)',
 });
 const chromaticContentClass = css({
+  boxSizing: 'border-box',
   display: 'grid',
   placeContent: 'center',
-  width: 80,
-  height: 80,
+  width: 60,
+  height: 60,
   backgroundColor: 'royalblue',
   color: 'white',
   fontSize: 10,
+  border: '1px solid rgba(0, 0, 0, 0.3)',
 });
 const chromaticArrowClass = css({
   fill: 'black',
 });
+
+const styles = {
+  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+  border: '2px solid blue',
+  padding: 10,
+
+  '&[data-state="closed"]': { borderColor: 'red' },
+  '&[data-state="open"]': { borderColor: 'green' },
+};
+const triggerAttrClass = css({ '&[data-radix-popover-trigger]': styles });
+const contentAttrClass = css(chromaticContentClass, { '&[data-radix-popover-content]': styles });
+const arrowAttrClass = css({ '&[data-radix-popover-arrow]': styles });
+const closeAttrClass = css({ '&[data-radix-popover-close]': styles });
