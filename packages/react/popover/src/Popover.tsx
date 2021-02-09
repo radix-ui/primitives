@@ -92,6 +92,7 @@ const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
       aria-haspopup="dialog"
       aria-expanded={context.open}
       aria-controls={context.id}
+      data-state={context.open ? 'open' : 'closed'}
       {...triggerProps}
       as={as}
       selector={selector}
@@ -132,9 +133,9 @@ const PopoverContent = React.forwardRef((props, forwardedRef) => {
   return (
     <Presence present={forceMount || context.open}>
       <PopoverContentImpl
+        data-state={context.open ? 'open' : 'closed'}
         {...contentProps}
         ref={forwardedRef}
-        data-state={context.open ? 'open' : 'closed'}
       />
     </Presence>
   );
