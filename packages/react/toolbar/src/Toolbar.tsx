@@ -5,7 +5,7 @@ import { getSelector } from '@radix-ui/utils';
 import { createContext, composeEventHandlers } from '@radix-ui/react-utils';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
-import { Separator as SeparatorImpl } from '@radix-ui/react-separator';
+import { Separator as SeparatorPrimitive } from '@radix-ui/react-separator';
 
 /* -------------------------------------------------------------------------------------------------
  * Toolbar
@@ -136,13 +136,13 @@ const ToolbarSeparator = React.forwardRef((props, forwardedRef) => {
   const { orientation } = useToolbarContext(GROUP_NAME);
 
   return (
-    <SeparatorImpl
+    <SeparatorPrimitive
       aria-orientation={orientation}
       data-orientation={orientation}
       {...props}
       selector={getSelector(SEPARATOR_NAME)}
       ref={forwardedRef}
-    ></SeparatorImpl>
+    ></SeparatorPrimitive>
   );
 }) as ToolbarSeparatorPrimitive;
 
@@ -181,8 +181,6 @@ const ToolbarItem = React.forwardRef((props, forwardedRef) => {
       onFocus={composeEventHandlers(itemProps.onFocus, rovingFocusProps.onFocus)}
       onKeyDown={composeEventHandlers(itemProps.onKeyDown, rovingFocusProps.onKeyDown)}
       onMouseDown={composeEventHandlers(itemProps.onMouseDown, rovingFocusProps.onMouseDown)}
-      // PreventDefault and the passed handler for disabled items
-      onClick={(event) => (disabled ? event.preventDefault() : itemProps.onClick?.(event))}
     />
   );
 }) as ToolbarItemPrimitive;

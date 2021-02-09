@@ -68,7 +68,7 @@ const ToolbarExample = ({ title, orientation }: any) => {
           <ToolbarItem className={toolbarItemClass} as={DropdownMenuTrigger}>
             Menu
           </ToolbarItem>
-          <DropdownMenuContent as={StyledDropDownMenu} sideOffset={5}>
+          <DropdownMenuContent as={StyledDropDownMenu}>
             <DropdownMenuItem as={StyledDropdownItem} onSelect={() => window.alert('undo')}>
               Undo
             </DropdownMenuItem>
@@ -78,12 +78,7 @@ const ToolbarExample = ({ title, orientation }: any) => {
             <DropdownMenuArrow />
           </DropdownMenuContent>
         </DropdownMenu>
-        <ToolbarItem
-          className={toolbarItemClass}
-          as={'div'}
-          onClick={() => window.alert('Oh oh! How did this happen?')}
-          disabled
-        >
+        <ToolbarItem className={toolbarItemClass} as={'button'} disabled>
           Disabled
         </ToolbarItem>
         <ToolbarItem
