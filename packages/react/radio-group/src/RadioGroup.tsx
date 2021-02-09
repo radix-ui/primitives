@@ -144,7 +144,6 @@ const RadioGroupItem = React.forwardRef((props, forwardedRef) => {
       selector={selector}
       ref={ref}
       disabled={disabled}
-      data-disabled={disabled ? '' : undefined}
       required={required ?? context.required}
       checked={isChecked}
       onCheckedChange={handleChange}

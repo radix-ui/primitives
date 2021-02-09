@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Switch, SwitchThumb } from './Switch';
 import { Label as LabelPrimitive } from '@radix-ui/react-label';
-import { styled } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 
 export default { title: 'Components/Switch' };
@@ -11,8 +11,8 @@ export const Styled = () => (
     <p>This switch is nested inside a label. The state is uncontrolled.</p>
     <Label>
       This is the label{' '}
-      <Switch as={StyledRoot}>
-        <SwitchThumb as={StyledThumb} />
+      <Switch className={rootClass}>
+        <SwitchThumb className={thumbClass} />
       </Switch>
     </Label>
   </>
@@ -26,12 +26,12 @@ export const Controlled = () => {
       <p>This switch is placed adjacent to its label. The state is controlled.</p>
       <Label htmlFor="randBox">This is the label</Label>{' '}
       <Switch
-        as={StyledRoot}
+        className={rootClass}
         checked={checked}
         onCheckedChange={(event: any) => setChecked(event.target.checked)}
         id="randBox"
       >
-        <SwitchThumb as={StyledThumb} />
+        <SwitchThumb className={thumbClass} />
       </Switch>
     </>
   );
@@ -49,12 +49,60 @@ export const WithinForm = () => {
     >
       <p>checked: {String(checked)}</p>
 
-      <Switch as={StyledRoot}>
-        <SwitchThumb as={StyledThumb} />
+      <Switch className={rootClass}>
+        <SwitchThumb className={thumbClass} />
       </Switch>
     </form>
   );
 };
+
+export const Chromatic = () => (
+  <>
+    <h1>Uncontrolled</h1>
+    <h2>Off</h2>
+    <Switch className={rootClass}>
+      <SwitchThumb className={thumbClass} />
+    </Switch>
+
+    <h2>On</h2>
+    <Switch className={rootClass} defaultChecked>
+      <SwitchThumb className={thumbClass} />
+    </Switch>
+
+    <h1>Controlled</h1>
+    <h2>Off</h2>
+    <Switch className={rootClass} checked={false}>
+      <SwitchThumb className={thumbClass} />
+    </Switch>
+
+    <h2>On</h2>
+    <Switch className={rootClass} checked>
+      <SwitchThumb className={thumbClass} />
+    </Switch>
+
+    <h1>Disabled</h1>
+    <Switch className={rootClass} disabled>
+      <SwitchThumb className={thumbClass} />
+    </Switch>
+
+    <h1>Data attribute selectors</h1>
+    <h2>Unchecked</h2>
+    <Switch className={rootAttrClass}>
+      <SwitchThumb className={thumbAttrClass} />
+    </Switch>
+
+    <h2>Checked</h2>
+    <Switch className={rootAttrClass} defaultChecked>
+      <SwitchThumb className={thumbAttrClass} />
+    </Switch>
+
+    <h2>Disabled</h2>
+    <Switch className={rootAttrClass} defaultChecked disabled>
+      <SwitchThumb className={thumbAttrClass} />
+    </Switch>
+  </>
+);
+Chromatic.parameters = { chromatic: { disable: false } };
 
 const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL__ROOT} />;
 
@@ -69,7 +117,7 @@ const RECOMMENDED_CSS__SWITCH__ROOT: any = {
   textAlign: 'left',
 };
 
-const StyledRoot = styled('button', {
+const rootClass = css({
   ...RECOMMENDED_CSS__SWITCH__ROOT,
   outline: 'none',
   border: 'none',
@@ -88,6 +136,8 @@ const StyledRoot = styled('button', {
     backgroundColor: '$red',
     borderColor: '$red',
   },
+
+  '&[data-disabled]': { opacity: 0.5 },
 });
 
 const RECOMMENDED_CSS__SWITCH__THUMB = {
@@ -97,7 +147,7 @@ const RECOMMENDED_CSS__SWITCH__THUMB = {
   verticalAlign: 'middle',
 };
 
-const StyledThumb = styled('span', {
+const thumbClass = css({
   ...RECOMMENDED_CSS__SWITCH__THUMB,
   width: THUMB_WIDTH,
   height: THUMB_WIDTH,
@@ -108,3 +158,17 @@ const StyledThumb = styled('span', {
     transform: `translateX(${WIDTH - GAP * 2 - THUMB_WIDTH}px)`,
   },
 });
+
+const styles = {
+  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+  border: '2px solid blue',
+  padding: 10,
+
+  '&[data-state="unchecked"]': { borderColor: 'red' },
+  '&[data-state="checked"]': { borderColor: 'green' },
+  '&[data-state="indeterminate"]': { borderColor: 'purple' },
+  '&[data-disabled]': { borderStyle: 'dashed' },
+  '&:disabled': { opacity: 0.5 },
+};
+const rootAttrClass = css({ '&[data-radix-switch]': styles });
+const thumbAttrClass = css({ '&[data-radix-switch-thumb]': styles });

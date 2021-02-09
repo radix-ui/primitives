@@ -56,12 +56,12 @@ const Progress = React.forwardRef((props, forwardedRef) => {
         aria-valuenow={isNumber(value) ? value : undefined}
         aria-valuetext={valueLabel}
         role="progressbar"
-        {...progressProps}
-        selector={selector}
-        ref={forwardedRef}
         data-state={getProgressState(value, max)}
         data-value={value ?? undefined}
         data-max={max}
+        {...progressProps}
+        selector={selector}
+        ref={forwardedRef}
       />
     </ProgressContext.Provider>
   );
@@ -106,12 +106,12 @@ const ProgressIndicator = React.forwardRef((props, forwardedRef) => {
   const { value, max } = useProgressContext(INDICATOR_NAME);
   return (
     <Primitive
+      data-state={getProgressState(value, max)}
+      data-value={value ?? undefined}
+      data-max={max}
       {...indicatorProps}
       selector={selector}
       ref={forwardedRef}
-      data-state={getProgressState(value, max)}
-      data-value={value || undefined}
-      data-max={max}
     />
   );
 }) as ProgressIndicatorPrimitive;
