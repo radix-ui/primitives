@@ -13,7 +13,6 @@ import { Separator as SeparatorImpl } from '@radix-ui/react-separator';
 
 const TOOLBAR_NAME = 'Toolbar';
 const TOOLBAR_CONTEXT_NAME = TOOLBAR_NAME + 'Context';
-const TOOLBAR_DEFAULT_TAG = 'div';
 
 type Orientation = React.AriaAttributes['aria-orientation'];
 
@@ -42,7 +41,7 @@ type ToolbarOwnProps = Merge<
 >;
 
 type ToolbarPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TOOLBAR_DEFAULT_TAG,
+  Polymorphic.IntrinsicElement<typeof Primitive>,
   ToolbarOwnProps
 >;
 
