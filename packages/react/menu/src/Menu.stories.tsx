@@ -10,29 +10,29 @@ import {
   MenuItemIndicator,
   MenuSeparator,
 } from './Menu';
-import { styled, css } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
-export default { title: 'Components/Menu', excludeStories: ['styledComponents'] };
+export default { title: 'Components/Menu', excludeStories: ['TickIcon', 'styledComponents'] };
 
 export const Styled = () => (
   <Menu>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('undo')}>
+    <MenuItem className={itemClass} onSelect={() => window.alert('undo')}>
       Undo
     </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('redo')}>
+    <MenuItem className={itemClass} onSelect={() => window.alert('redo')}>
       Redo
     </MenuItem>
-    <MenuSeparator as={StyledSeparator} />
-    <MenuItem as={StyledItem} disabled onSelect={() => window.alert('cut')}>
+    <MenuSeparator className={separatorClass} />
+    <MenuItem className={itemClass} disabled onSelect={() => window.alert('cut')}>
       Cut
     </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('copy')}>
+    <MenuItem className={itemClass} onSelect={() => window.alert('copy')}>
       Copy
     </MenuItem>
-    <MenuItem as={StyledItem} onSelect={() => window.alert('paste')}>
+    <MenuItem className={itemClass} onSelect={() => window.alert('paste')}>
       Paste
     </MenuItem>
   </Menu>
@@ -43,21 +43,21 @@ export const WithLabels = () => (
     {foodGroups.map((foodGroup, index) => (
       <MenuGroup key={index}>
         {foodGroup.label && (
-          <MenuLabel as={StyledLabel} key={foodGroup.label}>
+          <MenuLabel className={labelClass} key={foodGroup.label}>
             {foodGroup.label}
           </MenuLabel>
         )}
         {foodGroup.foods.map((food) => (
           <MenuItem
             key={food.value}
-            as={StyledItem}
+            className={itemClass}
             disabled={food.disabled}
             onSelect={() => window.alert(food.label)}
           >
             {food.label}
           </MenuItem>
         ))}
-        {index < foodGroups.length - 1 && <MenuSeparator as={StyledSeparator} />}
+        {index < foodGroups.length - 1 && <MenuSeparator className={separatorClass} />}
       </MenuGroup>
     ))}
   </Menu>
@@ -103,7 +103,7 @@ export const Typeahead = () => (
         <p>(relying on `.textContent` — default)</p>
         <Menu>
           {suits.map((suit) => (
-            <MenuItem key={suit.emoji} as={StyledItem}>
+            <MenuItem key={suit.emoji} className={itemClass}>
               {suit.label}
               <span role="img" aria-label={suit.label}>
                 {suit.emoji}
@@ -118,7 +118,7 @@ export const Typeahead = () => (
         <p>(with explicit `textValue` prop)</p>
         <Menu>
           {suits.map((suit) => (
-            <MenuItem key={suit.emoji} as={StyledItem} textValue={suit.label}>
+            <MenuItem key={suit.emoji} className={itemClass} textValue={suit.label}>
               <span role="img" aria-label={suit.label}>
                 {suit.emoji}
               </span>
@@ -141,20 +141,20 @@ export const CheckboxItems = () => {
 
   return (
     <Menu>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('show')}>
+      <MenuItem className={itemClass} onSelect={() => window.alert('show')}>
         Show fonts
       </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('bigger')}>
+      <MenuItem className={itemClass} onSelect={() => window.alert('bigger')}>
         Bigger
       </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+      <MenuItem className={itemClass} onSelect={() => window.alert('smaller')}>
         Smaller
       </MenuItem>
-      <MenuSeparator as={StyledSeparator} />
+      <MenuSeparator className={separatorClass} />
       {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
         <MenuCheckboxItem
           key={label}
-          as={StyledItem}
+          className={itemClass}
           checked={checked}
           onCheckedChange={setChecked}
           disabled={disabled}
@@ -175,19 +175,19 @@ export const RadioItems = () => {
 
   return (
     <Menu>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('minimize')}>
+      <MenuItem className={itemClass} onSelect={() => window.alert('minimize')}>
         Minimize window
       </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('zoom')}>
+      <MenuItem className={itemClass} onSelect={() => window.alert('zoom')}>
         Zoom
       </MenuItem>
-      <MenuItem as={StyledItem} onSelect={() => window.alert('smaller')}>
+      <MenuItem className={itemClass} onSelect={() => window.alert('smaller')}>
         Smaller
       </MenuItem>
-      <MenuSeparator as={StyledSeparator} />
+      <MenuSeparator className={separatorClass} />
       <MenuRadioGroup value={file} onValueChange={setFile}>
         {files.map((file) => (
-          <MenuRadioItem key={file} as={StyledItem} value={file}>
+          <MenuRadioItem key={file} className={itemClass} value={file}>
             {file}
             <MenuItemIndicator>
               <TickIcon />
@@ -218,32 +218,32 @@ export const Animated = () => {
       </label>
       <br />
       <br />
-      <AnimatedMenu open={open}>
+      <Menu className={animatedRootClass} open={open}>
         {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
           <MenuCheckboxItem
             key={label}
-            as={StyledItem}
+            className={itemClass}
             checked={checked}
             onCheckedChange={setChecked}
             disabled={disabled}
           >
             {label}
-            <AnimatedMenuItemIndicator>
+            <MenuItemIndicator className={animatedItemIndicatorClass}>
               <TickIcon />
-            </AnimatedMenuItemIndicator>
+            </MenuItemIndicator>
           </MenuCheckboxItem>
         ))}
         <MenuRadioGroup value={file} onValueChange={setFile}>
           {files.map((file) => (
-            <MenuRadioItem key={file} as={StyledItem} value={file}>
+            <MenuRadioItem key={file} className={itemClass} value={file}>
               {file}
-              <AnimatedMenuItemIndicator>
+              <MenuItemIndicator className={animatedItemIndicatorClass}>
                 <TickIcon />
-              </AnimatedMenuItemIndicator>
+              </MenuItemIndicator>
             </MenuRadioItem>
           ))}
         </MenuRadioGroup>
-      </AnimatedMenu>
+      </Menu>
     </>
   );
 };
@@ -272,8 +272,7 @@ const Menu = React.forwardRef((props, forwardedRef) => {
     <>
       <div ref={ref} />
       <MenuPrimitive
-        {...props}
-        as={StyledRoot}
+        className={rootClass}
         ref={forwardedRef}
         open={open}
         onOpenChange={() => {}}
@@ -285,12 +284,13 @@ const Menu = React.forwardRef((props, forwardedRef) => {
         disableOutsidePointerEvents={false}
         disableOutsideScroll={false}
         align="start"
+        {...props}
       />
     </>
   );
 }) as MenuPrimitiveType;
 
-const StyledRoot = styled('div', {
+const rootClass = css({
   display: 'inline-block',
   boxSizing: 'border-box',
   minWidth: 130,
@@ -306,7 +306,7 @@ const StyledRoot = styled('div', {
   },
 });
 
-const itemCss: any = {
+const itemStyles: any = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -320,13 +320,13 @@ const itemCss: any = {
   borderRadius: 3,
 };
 
-const StyledLabel = styled('div', {
-  ...itemCss,
+const labelClass = css({
+  ...itemStyles,
   color: '$gray100',
 });
 
-const StyledItem = styled('div', {
-  ...itemCss,
+const itemClass = css({
+  ...itemStyles,
 
   '&:focus': {
     outline: 'none',
@@ -339,7 +339,7 @@ const StyledItem = styled('div', {
   },
 });
 
-const StyledSeparator = styled('div', {
+const separatorClass = css({
   height: 1,
   margin: '5px 10px',
   backgroundColor: '$gray100',
@@ -355,7 +355,7 @@ const fadeOut = css.keyframes({
   to: { opacity: 0 },
 });
 
-const AnimatedMenu = styled(Menu, {
+const animatedRootClass = css(rootClass, {
   '&[data-state="open"]': {
     animation: `${fadeIn} 300ms ease-out`,
   },
@@ -364,7 +364,7 @@ const AnimatedMenu = styled(Menu, {
   },
 });
 
-const AnimatedMenuItemIndicator = styled(MenuItemIndicator, {
+const animatedItemIndicatorClass = css({
   '&[data-state="checked"]': {
     animation: `${fadeIn} 300ms ease-out`,
   },
@@ -373,7 +373,7 @@ const AnimatedMenuItemIndicator = styled(MenuItemIndicator, {
   },
 });
 
-const TickIcon = () => (
+export const TickIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 32 32"
@@ -389,10 +389,9 @@ const TickIcon = () => (
   </svg>
 );
 
-export const styledComponents = {
-  StyledRoot,
-  StyledLabel,
-  StyledItem,
-  StyledSeparator,
-  TickIcon,
+export const classes = {
+  rootClass,
+  labelClass,
+  itemClass,
+  separatorClass,
 };

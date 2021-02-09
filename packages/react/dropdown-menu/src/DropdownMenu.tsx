@@ -80,6 +80,7 @@ const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
       aria-haspopup="menu"
       aria-expanded={context.open ? true : undefined}
       aria-controls={context.open ? context.id : undefined}
+      data-state={context.open ? 'open' : 'closed'}
       {...triggerProps}
       as={as}
       selector={selector}

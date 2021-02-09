@@ -12,11 +12,11 @@ import {
   ContextMenuItemIndicator,
   ContextMenuSeparator,
 } from './ContextMenu';
-import { styled, css } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
-import { styledComponents } from '../../menu/src/Menu.stories';
+import { classes, TickIcon } from '../../menu/src/Menu.stories';
 
-const { StyledRoot, StyledItem, StyledLabel, StyledSeparator, TickIcon } = styledComponents;
+const { rootClass, itemClass, labelClass, separatorClass } = classes;
 
 export default { title: 'Components/ContextMenu' };
 
@@ -32,23 +32,23 @@ export const Styled = () => (
     }}
   >
     <ContextMenu>
-      <ContextMenuTrigger as={StyledTrigger} />
-      <ContextMenuTrigger as={StyledTrigger} />
-      <ContextMenuContent as={StyledRoot} sideOffset={-5}>
-        <ContextMenuItem as={StyledItem} onSelect={() => console.log('undo')}>
+      <ContextMenuTrigger className={triggerClass} />
+      <ContextMenuTrigger className={triggerClass} />
+      <ContextMenuContent className={rootClass} sideOffset={-5}>
+        <ContextMenuItem className={itemClass} onSelect={() => console.log('undo')}>
           Undo
         </ContextMenuItem>
-        <ContextMenuItem as={StyledItem} onSelect={() => console.log('redo')}>
+        <ContextMenuItem className={itemClass} onSelect={() => console.log('redo')}>
           Redo
         </ContextMenuItem>
-        <ContextMenuSeparator as={StyledSeparator} />
-        <ContextMenuItem as={StyledItem} disabled onSelect={() => console.log('cut')}>
+        <ContextMenuSeparator className={separatorClass} />
+        <ContextMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
           Cut
         </ContextMenuItem>
-        <ContextMenuItem as={StyledItem} onSelect={() => console.log('copy')}>
+        <ContextMenuItem className={itemClass} onSelect={() => console.log('copy')}>
           Copy
         </ContextMenuItem>
-        <ContextMenuItem as={StyledItem} onSelect={() => console.log('paste')}>
+        <ContextMenuItem className={itemClass} onSelect={() => console.log('paste')}>
           Paste
         </ContextMenuItem>
       </ContextMenuContent>
@@ -57,28 +57,28 @@ export const Styled = () => (
 );
 
 export const WithLabels = () => (
-  <div style={{ textAlign: 'center', margin: 50 }}>
+  <div style={{ textAlign: 'center', padding: 50 }}>
     <ContextMenu>
-      <ContextMenuTrigger as={StyledTrigger} />
-      <ContextMenuContent as={StyledRoot} sideOffset={-5}>
+      <ContextMenuTrigger className={triggerClass} />
+      <ContextMenuContent className={rootClass} sideOffset={-5}>
         {foodGroups.map((foodGroup, index) => (
           <ContextMenuGroup key={index}>
             {foodGroup.label && (
-              <ContextMenuLabel as={StyledLabel} key={foodGroup.label}>
+              <ContextMenuLabel className={labelClass} key={foodGroup.label}>
                 {foodGroup.label}
               </ContextMenuLabel>
             )}
             {foodGroup.foods.map((food) => (
               <ContextMenuItem
                 key={food.value}
-                as={StyledItem}
+                className={itemClass}
                 disabled={food.disabled}
                 onSelect={() => console.log(food.label)}
               >
                 {food.label}
               </ContextMenuItem>
             ))}
-            {index < foodGroups.length - 1 && <ContextMenuSeparator as={StyledSeparator} />}
+            {index < foodGroups.length - 1 && <ContextMenuSeparator className={separatorClass} />}
           </ContextMenuGroup>
         ))}
       </ContextMenuContent>
@@ -95,24 +95,24 @@ export const CheckboxItems = () => {
   ];
 
   return (
-    <div style={{ textAlign: 'center', margin: 50 }}>
+    <div style={{ textAlign: 'center', padding: 50 }}>
       <ContextMenu>
-        <ContextMenuTrigger as={StyledTrigger} />
-        <ContextMenuContent as={StyledRoot} sideOffset={-5}>
-          <ContextMenuItem as={StyledItem} onSelect={() => console.log('show')}>
+        <ContextMenuTrigger className={triggerClass} />
+        <ContextMenuContent className={rootClass} sideOffset={-5}>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('show')}>
             Show fonts
           </ContextMenuItem>
-          <ContextMenuItem as={StyledItem} onSelect={() => console.log('bigger')}>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('bigger')}>
             Bigger
           </ContextMenuItem>
-          <ContextMenuItem as={StyledItem} onSelect={() => console.log('smaller')}>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('smaller')}>
             Smaller
           </ContextMenuItem>
-          <ContextMenuSeparator as={StyledSeparator} />
+          <ContextMenuSeparator className={separatorClass} />
           {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
             <ContextMenuCheckboxItem
               key={label}
-              as={StyledItem}
+              className={itemClass}
               checked={checked}
               onCheckedChange={setChecked}
               disabled={disabled}
@@ -134,23 +134,23 @@ export const RadioItems = () => {
   const [file, setFile] = React.useState(files[1]);
 
   return (
-    <div style={{ textAlign: 'center', margin: 50 }}>
+    <div style={{ textAlign: 'center', padding: 50 }}>
       <ContextMenu>
-        <ContextMenuTrigger as={StyledTrigger} />
-        <ContextMenuContent as={StyledRoot} sideOffset={-5}>
-          <ContextMenuItem as={StyledItem} onSelect={() => console.log('minimize')}>
+        <ContextMenuTrigger className={triggerClass} />
+        <ContextMenuContent className={rootClass} sideOffset={-5}>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('minimize')}>
             Minimize window
           </ContextMenuItem>
-          <ContextMenuItem as={StyledItem} onSelect={() => console.log('zoom')}>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('zoom')}>
             Zoom
           </ContextMenuItem>
-          <ContextMenuItem as={StyledItem} onSelect={() => console.log('smaller')}>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('smaller')}>
             Smaller
           </ContextMenuItem>
-          <ContextMenuSeparator as={StyledSeparator} />
+          <ContextMenuSeparator className={separatorClass} />
           <ContextMenuRadioGroup value={file} onValueChange={setFile}>
             {files.map((file) => (
-              <ContextMenuRadioItem key={file} as={StyledItem} value={file}>
+              <ContextMenuRadioItem key={file} className={itemClass} value={file}>
                 {file}
                 <ContextMenuItemIndicator>
                   <TickIcon />
@@ -166,15 +166,15 @@ export const RadioItems = () => {
 };
 
 export const PreventClosing = () => (
-  <div style={{ textAlign: 'center', margin: 50 }}>
+  <div style={{ textAlign: 'center', padding: 50 }}>
     <ContextMenu>
-      <ContextMenuTrigger as={StyledTrigger} />
-      <ContextMenuContent as={StyledRoot} sideOffset={-5}>
-        <ContextMenuItem as={StyledItem} onSelect={() => window.alert('action 1')}>
+      <ContextMenuTrigger className={triggerClass} />
+      <ContextMenuContent className={rootClass} sideOffset={-5}>
+        <ContextMenuItem className={itemClass} onSelect={() => window.alert('action 1')}>
           I will close
         </ContextMenuItem>
         <ContextMenuItem
-          as={StyledItem}
+          className={itemClass}
           onSelect={(event) => {
             event.preventDefault();
             window.alert('action 1');
@@ -199,28 +199,28 @@ export const Multiple = () => {
         const customColor = customColors[i];
         return (
           <ContextMenu key={i}>
-            <ContextMenuContent as={AnimatedContent}>
-              <ContextMenuLabel as={StyledLabel}>Color</ContextMenuLabel>
+            <ContextMenuContent className={animatedContentClass}>
+              <ContextMenuLabel className={labelClass}>Color</ContextMenuLabel>
               <ContextMenuRadioGroup
                 value={customColor}
                 onValueChange={(color) => setCustomColors((colors) => ({ ...colors, [i]: color }))}
               >
-                <ContextMenuRadioItem as={StyledItem} value="royalblue">
+                <ContextMenuRadioItem className={itemClass} value="royalblue">
                   Blue
                   <ContextMenuItemIndicator>
                     <TickIcon />
                   </ContextMenuItemIndicator>
                 </ContextMenuRadioItem>
-                <ContextMenuRadioItem as={StyledItem} value="tomato">
+                <ContextMenuRadioItem className={itemClass} value="tomato">
                   Red
                   <ContextMenuItemIndicator>
                     <TickIcon />
                   </ContextMenuItemIndicator>
                 </ContextMenuRadioItem>
               </ContextMenuRadioGroup>
-              <ContextMenuSeparator as={StyledSeparator} />
+              <ContextMenuSeparator className={separatorClass} />
               <ContextMenuCheckboxItem
-                as={StyledItem}
+                className={itemClass}
                 checked={fadedIndexes.includes(i)}
                 onCheckedChange={(faded) =>
                   setFadedIndexes((indexes) =>
@@ -265,28 +265,31 @@ export const Multiple = () => {
 export const Nested = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
     <ContextMenu>
-      <ContextMenuTrigger as={StyledTrigger} style={{ padding: 100, backgroundColor: 'royalblue' }}>
+      <ContextMenuTrigger
+        className={triggerClass}
+        style={{ padding: 100, backgroundColor: 'royalblue' }}
+      >
         <ContextMenu>
-          <ContextMenuTrigger as={StyledTrigger} style={{ backgroundColor: 'tomato' }} />{' '}
-          <ContextMenuContent as={StyledRoot} sideOffset={-5}>
-            <ContextMenuLabel as={StyledLabel}>Red box menu</ContextMenuLabel>
-            <ContextMenuSeparator as={StyledSeparator} />
-            <ContextMenuItem as={StyledItem} onSelect={() => console.log('red action1')}>
+          <ContextMenuTrigger className={triggerClass} style={{ backgroundColor: 'tomato' }} />{' '}
+          <ContextMenuContent className={rootClass} sideOffset={-5}>
+            <ContextMenuLabel className={labelClass}>Red box menu</ContextMenuLabel>
+            <ContextMenuSeparator className={separatorClass} />
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('red action1')}>
               Red action 1
             </ContextMenuItem>
-            <ContextMenuItem as={StyledItem} onSelect={() => console.log('red action2')}>
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('red action2')}>
               Red action 2
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
       </ContextMenuTrigger>
-      <ContextMenuContent as={StyledRoot} sideOffset={-5}>
-        <ContextMenuLabel as={StyledLabel}>Blue box menu</ContextMenuLabel>
-        <ContextMenuSeparator as={StyledSeparator} />
-        <ContextMenuItem as={StyledItem} onSelect={() => console.log('blue action1')}>
+      <ContextMenuContent className={rootClass} sideOffset={-5}>
+        <ContextMenuLabel className={labelClass}>Blue box menu</ContextMenuLabel>
+        <ContextMenuSeparator className={separatorClass} />
+        <ContextMenuItem className={itemClass} onSelect={() => console.log('blue action1')}>
           Blue action 1
         </ContextMenuItem>
-        <ContextMenuItem as={StyledItem} onSelect={() => console.log('blue action2')}>
+        <ContextMenuItem className={itemClass} onSelect={() => console.log('blue action2')}>
           Blue action 2
         </ContextMenuItem>
       </ContextMenuContent>
@@ -294,7 +297,8 @@ export const Nested = () => (
   </div>
 );
 
-const StyledTrigger = styled('div', {
+const triggerClass = css({
+  display: 'block',
   width: 100,
   height: 100,
   border: '1px solid $black',
@@ -313,7 +317,7 @@ const scaleIn = css.keyframes({
   '100%': { transform: 'scale(1)' },
 });
 
-const AnimatedContent = styled(StyledRoot, {
+const animatedContentClass = css(rootClass, {
   transformOrigin: 'var(--radix-context-menu-content-transform-origin)',
   animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
 });
