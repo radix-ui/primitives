@@ -364,7 +364,7 @@ export const SlottableContent = () => (
   </Tooltip>
 );
 
-// change order slightly for more plasing visual
+// change order slightly for more pleasing visual
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
 
 export const Chromatic = () => (
