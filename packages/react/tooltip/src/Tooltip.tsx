@@ -153,6 +153,7 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
     <Primitive
       type="button"
       aria-describedby={context.open ? context.id : undefined}
+      data-state={context.stateAttribute}
       {...triggerProps}
       as={as}
       selector={selector}
@@ -249,10 +250,10 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
     <PortalWrapper>
       <CheckTriggerMoved />
       <PopperPrimitive.Root
+        data-state={context.stateAttribute}
         {...contentProps}
         selector={selector}
         ref={forwardedRef}
-        data-state={context.stateAttribute}
         anchorRef={anchorRef || context.triggerRef}
         style={{
           ...contentProps.style,
