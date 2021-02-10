@@ -128,7 +128,7 @@ const SEPARATOR_NAME = 'ToolbarSeparator';
 
 type ToolbarSeparatorOwnProps = Polymorphic.OwnProps<typeof Primitive>;
 type ToolbarSeparatorPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
+  Polymorphic.IntrinsicElement<typeof SeparatorPrimitive>,
   ToolbarSeparatorOwnProps
 >;
 
