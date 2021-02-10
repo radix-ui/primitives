@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarItem } from './Toolbar';
+import {
+  Toolbar,
+  ToolbarSeparator,
+  ToolbarButton,
+  ToolbarLink,
+  ToolbarRadioGroup,
+  ToolbarRadioItem,
+} from './Toolbar';
 import { css } from '../../../../stitches.config';
 import { ToggleButton } from '@radix-ui/react-toggle-button';
 import {
@@ -10,95 +17,70 @@ import {
   DropdownMenuArrow,
 } from '@radix-ui/react-dropdown-menu';
 
-import { styledComponents } from '../../menu/src/Menu.stories';
-
-const { StyledRoot: StyledDropDownMenu, StyledItem: StyledDropdownItem } = styledComponents;
+import { classes } from '../../menu/src/Menu.stories';
+const { rootClass: dropdownMenuRootClass, itemClass: dropdownMenuItemClass } = classes;
 
 export default { title: 'Components/Toolbar' };
 
-export const Styled = () => {
-  return (
-    <>
-      <ToolbarExample title="Horizontal"></ToolbarExample>
-      <ToolbarExample title="Vertical" orientation="vertical"></ToolbarExample>
-    </>
-  );
-};
+export const Styled = () => (
+  <>
+    <ToolbarExample title="Horizontal"></ToolbarExample>
+    <ToolbarExample title="Vertical" orientation="vertical"></ToolbarExample>
+  </>
+);
 
-const ToolbarExample = ({ title, orientation }: any) => {
-  const anchorRef = React.useRef<HTMLAnchorElement>(null);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const uniqueInputID = 'input-' + (Math.random() * 10).toFixed(0);
-
-  return (
-    <>
-      <h1>{title}</h1>
-      <Toolbar
-        className={toolbarClass}
-        orientation={orientation}
-        loop={true}
-        aria-label={`${title} toolbar`}
+const ToolbarExample = ({ title, orientation }: any) => (
+  <div style={{ padding: 1, margin: -1 }}>
+    <h1>{title}</h1>
+    <Toolbar
+      className={toolbarClass}
+      orientation={orientation}
+      loop={true}
+      aria-label={`${title} toolbar`}
+    >
+      <ToolbarButton className={toolbarItemClass} as={ToggleButton}>
+        Toggle
+      </ToolbarButton>
+      <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
+      <ToolbarRadioGroup className={toolbarRadioGroupClass}>
+        <ToolbarRadioItem value="left" className={toolbarRadioItemClass}>
+          Left
+        </ToolbarRadioItem>
+        <ToolbarRadioItem value="center" className={toolbarRadioItemClass}>
+          Center
+        </ToolbarRadioItem>
+        <ToolbarRadioItem value="right" className={toolbarRadioItemClass}>
+          Right
+        </ToolbarRadioItem>
+      </ToolbarRadioGroup>
+      <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
+      <DropdownMenu>
+        <ToolbarButton className={toolbarItemClass} as={DropdownMenuTrigger}>
+          Menu
+        </ToolbarButton>
+        <DropdownMenuContent className={dropdownMenuRootClass}>
+          <DropdownMenuItem className={dropdownMenuItemClass} onSelect={() => window.alert('undo')}>
+            Undo
+          </DropdownMenuItem>
+          <DropdownMenuItem className={dropdownMenuItemClass} onSelect={() => window.alert('redo')}>
+            Redo
+          </DropdownMenuItem>
+          <DropdownMenuArrow />
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ToolbarButton className={toolbarItemClass} disabled>
+        Disabled
+      </ToolbarButton>
+      <ToolbarLink
+        className={linkClass}
+        href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
+        target="_blank"
       >
-        <ToolbarItem className={toolbarItemClass} as={ToggleButton}>
-          Toggle
-        </ToolbarItem>
-        <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-        <ToolbarGroup className={toolbarGroupClass}>
-          <div className="toolbar-label">A group</div>
-          <label className={toolbarItemClass} htmlFor={uniqueInputID}>
-            <span>Input: </span>
-            <ToolbarItem
-              ref={inputRef}
-              id={uniqueInputID}
-              defaultValue="42"
-              as={'input'}
-              style={{ maxWidth: 50 }}
-            ></ToolbarItem>
-          </label>
-          <ToolbarItem
-            className={toolbarItemClass}
-            as={'button'}
-            onClick={(event) => window.alert('The answer is: ' + inputRef.current?.value)}
-          >
-            Submit
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-        <DropdownMenu>
-          <ToolbarItem className={toolbarItemClass} as={DropdownMenuTrigger}>
-            Menu
-          </ToolbarItem>
-          <DropdownMenuContent as={StyledDropDownMenu}>
-            <DropdownMenuItem as={StyledDropdownItem} onSelect={() => window.alert('undo')}>
-              Undo
-            </DropdownMenuItem>
-            <DropdownMenuItem as={StyledDropdownItem} onSelect={() => window.alert('redo')}>
-              Redo
-            </DropdownMenuItem>
-            <DropdownMenuArrow />
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <ToolbarItem className={toolbarItemClass} as={'button'} disabled>
-          Disabled
-        </ToolbarItem>
-        <ToolbarItem
-          as={'a'}
-          className={linkClass}
-          href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
-          target="_blank"
-          ref={anchorRef}
-          onKeyDown={(event) => {
-            if (event.key === ' ') {
-              anchorRef.current?.click();
-            }
-          }}
-        >
-          Examle
-        </ToolbarItem>
-      </Toolbar>
-    </>
-  );
-};
+        Examle
+      </ToolbarLink>
+    </Toolbar>
+  </div>
+);
 
 const RECOMMENDED_CSS__TOOLBAR = {
   // ensures things are layed out correctly by default
@@ -124,22 +106,6 @@ const toolbarClass = css({
 
   '&:focus-within': {
     borderColor: '$black',
-  },
-});
-
-const toolbarGroupClass = css({
-  ...RECOMMENDED_CSS__TOOLBAR,
-  gap: 5,
-  '.toolbar-label': {
-    padding: 0,
-    color: '$gray100',
-    textAlign: 'center',
-  },
-
-  '&[data-orientation="horizontal"]': {
-    '.toolbar-label': {
-      alignSelf: 'center',
-    },
   },
 });
 
@@ -185,4 +151,19 @@ const linkClass = css(toolbarItemClass, {
   justifyContent: 'center',
   alignItems: 'center',
   color: 'black',
+});
+
+const toolbarRadioGroupClass = css({
+  ...RECOMMENDED_CSS__TOOLBAR,
+  gap: 5,
+  '&[data-orientation="vertical"]': {
+    flexDirection: 'column',
+  },
+});
+
+const toolbarRadioItemClass = css(toolbarItemClass, {
+  '&[data-state="checked"]': {
+    background: 'black',
+    color: 'white',
+  },
 });
