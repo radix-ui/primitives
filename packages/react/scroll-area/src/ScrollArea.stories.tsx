@@ -328,7 +328,7 @@ const RECOMMENDED_CSS__SCROLL_AREA__ROOT: any = {
   zIndex: 0,
   maxWidth: '100%',
   maxHeight: '100%',
-  '& [data-radix-scroll-area-position]::-webkit-scrollbar': {
+  '& [data-radix-scroll-area-viewport-position]::-webkit-scrollbar': {
     display: 'none',
   },
 };
@@ -522,7 +522,11 @@ const styles = {
   border: '2px solid blue',
   padding: 10,
 };
-const rootAttrClass = css(baseRootClass, { '&[data-radix-scroll-area]': styles });
+const rootAttrClass = css(baseRootClass, {
+  '&[data-radix-scroll-area]': styles,
+  '[data-radix-scroll-area-viewport-position]': { padding: 10, border: '2px solid blue' },
+  '[data-radix-scroll-area-viewport-position-inner]': { padding: 10, border: '2px solid blue' },
+});
 const scrollbarYAttrClass = css(baseScrollbarYClass, {
   '&[data-radix-scroll-area-scrollbar-y]': styles,
 });
