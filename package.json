@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "workspaces": [
+    "ssr-testing",
     "packages/*/*"
   ],
   "scripts": {
@@ -19,8 +20,8 @@
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
     "build:packages": "parcel build 'packages/*/*/' --no-cache",
     "build:cleanup": "mv tsconfig.json tsconfig.production.json && mv tsconfig.tmp.json tsconfig.json",
-    "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude primitives npm publish --tolerate-republish --access public",
-    "clean": "yarn workspaces foreach -pv --exclude primitives run clean",
+    "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude primitives --exclude ssr-testing npm publish --tolerate-republish --access public",
+    "clean": "yarn workspaces foreach -pv --exclude primitives --exclude ssr-testing run clean",
     "reset": "yarn clean && rm -rf node_modules .yarn/cache .parcel-cache",
     "bump": "yarn version apply --all",
     "bump:check": "yarn version check"
