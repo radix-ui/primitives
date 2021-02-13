@@ -112,7 +112,7 @@ const CONTENT_NAME = 'DropdownMenuContent';
 
 type MenuPrimitiveOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Root>;
 type DropdownMenuContentOwnProps = Merge<
-  Omit<MenuPrimitiveOwnProps, 'trapFocus' | 'onCloseAutoFocus' | 'onOpenAutoFocus' | 'onDismiss'>,
+  Omit<MenuPrimitiveOwnProps, 'trapFocus' | 'onOpenAutoFocus' | 'onDismiss'>,
   { anchorRef?: MenuPrimitiveOwnProps['anchorRef'] }
 >;
 
@@ -124,6 +124,7 @@ type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(CONTENT_NAME),
+    onCloseAutoFocus,
     disableOutsidePointerEvents = true,
     disableOutsideScroll = true,
     portalled = true,
@@ -148,10 +149,10 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
       onOpenChange={context.setOpen}
       anchorRef={props.anchorRef || context.triggerRef}
       trapFocus
-      onCloseAutoFocus={(event) => {
+      onCloseAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
         event.preventDefault();
         context.triggerRef.current?.focus();
-      }}
+      })}
       onPointerDownOutside={composeEventHandlers(
         props.onPointerDownOutside,
         (event) => {
