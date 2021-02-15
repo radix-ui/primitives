@@ -82,34 +82,6 @@ const Toolbar = React.forwardRef((props, forwardedRef) => {
 }) as ToolbarPrimitive;
 
 /* -------------------------------------------------------------------------------------------------
- * ToolbarGroup
- * -----------------------------------------------------------------------------------------------*/
-
-const GROUP_NAME = 'ToolbarGroup';
-
-type ToolbarGroupOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type ToolbarGroupPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  ToolbarGroupOwnProps
->;
-
-const ToolbarGroup = React.forwardRef((props, forwardedRef) => {
-  const { orientation } = useToolbarContext(GROUP_NAME);
-
-  return (
-    <Primitive
-      role="group"
-      data-orientation={orientation}
-      {...props}
-      selector={getSelector(GROUP_NAME)}
-      ref={forwardedRef}
-    />
-  );
-}) as ToolbarGroupPrimitive;
-
-ToolbarGroup.displayName = GROUP_NAME;
-
-/* -------------------------------------------------------------------------------------------------
  * ToolbarSeparator
  * -----------------------------------------------------------------------------------------------*/
 
@@ -122,7 +94,7 @@ type ToolbarSeparatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ToolbarSeparator = React.forwardRef((props, forwardedRef) => {
-  const { orientation } = useToolbarContext(GROUP_NAME);
+  const { orientation } = useToolbarContext(SEPARATOR_NAME);
 
   return (
     <SeparatorPrimitive

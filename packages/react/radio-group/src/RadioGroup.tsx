@@ -124,6 +124,8 @@ const RadioGroupItem = React.forwardRef((props, forwardedRef) => {
   );
 }) as RadioGroupItemPrimitive;
 
+RadioGroupItem.displayName = ITEM_NAME;
+
 type RadioGroupRovingFocusItemOwnProps = Polymorphic.OwnProps<typeof RadioGroupItemImpl>;
 type RadioGroupRovingFocusItemPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof RadioGroupItemImpl>,
@@ -190,8 +192,6 @@ const RadioGroupItemImpl = React.forwardRef((props, forwardedRef) => {
     />
   );
 }) as RadioGroupItemImplPrimitive;
-
-RadioGroupItemImpl.displayName = ITEM_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
