@@ -123,7 +123,12 @@ type ToolbarButtonPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ToolbarButton = React.forwardRef((props, forwardedRef) => {
-  const { as = BUTTON_DEFAULT_TAG, disabled, ...buttonProps } = props;
+  const {
+    as = BUTTON_DEFAULT_TAG,
+    selector = getSelector(BUTTON_NAME),
+    disabled,
+    ...buttonProps
+  } = props;
 
   const rovingFocusProps = useRovingFocus({
     disabled,
@@ -133,11 +138,11 @@ const ToolbarButton = React.forwardRef((props, forwardedRef) => {
   return (
     <Primitive
       role="toolbaritem"
-      disabled={disabled}
       {...buttonProps}
       as={as}
-      selector={getSelector(BUTTON_NAME)}
+      selector={selector}
       ref={forwardedRef}
+      disabled={disabled}
       {...rovingFocusProps}
       onFocus={composeEventHandlers(buttonProps.onFocus, rovingFocusProps.onFocus)}
       onKeyDown={composeEventHandlers(buttonProps.onKeyDown, rovingFocusProps.onKeyDown)}

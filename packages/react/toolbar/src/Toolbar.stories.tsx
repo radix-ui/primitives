@@ -29,6 +29,58 @@ export const Styled = () => (
   </>
 );
 
+export const Chromatic = () => (
+  <div style={{ padding: 50 }}>
+    <h1>Example</h1>
+    <ToolbarExample />
+    <ToolbarExample orientation="vertical" />
+
+    <h1>Data attribute selectors</h1>
+    <Toolbar className={rootAttrClass}>
+      <ToolbarButton className={buttonAttrClass}>Button</ToolbarButton>
+      <ToolbarButton className={buttonAttrClass} disabled>
+        Button (disabled)
+      </ToolbarButton>
+      <ToolbarSeparator className={separatorAttrClass}></ToolbarSeparator>
+      <ToolbarLink
+        className={linkAttrClass}
+        href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
+        target="_blank"
+      >
+        Link
+      </ToolbarLink>
+      <ToolbarSeparator className={separatorAttrClass}></ToolbarSeparator>
+      <ToolbarButton className={buttonAttrClass} as={ToggleButton}>
+        Toggle
+      </ToolbarButton>
+      <ToolbarSeparator className={separatorAttrClass}></ToolbarSeparator>
+      <ToolbarRadioGroup className={radioGroupAttrClass}>
+        <ToolbarRadioItem value="left" className={radioItemAttrClass}>
+          Left
+        </ToolbarRadioItem>
+        <ToolbarRadioItem value="center" className={radioItemAttrClass}>
+          Center
+        </ToolbarRadioItem>
+        <ToolbarRadioItem value="right" className={radioItemAttrClass}>
+          Right
+        </ToolbarRadioItem>
+      </ToolbarRadioGroup>
+      <ToolbarSeparator className={separatorAttrClass}></ToolbarSeparator>
+      <DropdownMenu>
+        <ToolbarButton className={buttonAttrClass} as={DropdownMenuTrigger}>
+          Menu
+        </ToolbarButton>
+        <DropdownMenuContent sideOffset={5}>
+          <DropdownMenuItem>Undo</DropdownMenuItem>
+          <DropdownMenuItem>Redo</DropdownMenuItem>
+          <DropdownMenuArrow />
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </Toolbar>
+  </div>
+);
+Chromatic.parameters = { chromatic: { disable: false } };
+
 const ToolbarExample = ({ title, orientation }: any) => (
   <div style={{ padding: 1, margin: -1 }}>
     <h1>{title}</h1>
@@ -38,6 +90,19 @@ const ToolbarExample = ({ title, orientation }: any) => (
       loop={true}
       aria-label={`${title} toolbar`}
     >
+      <ToolbarButton className={toolbarItemClass}>Button</ToolbarButton>
+      <ToolbarButton className={toolbarItemClass} disabled>
+        Button (disabled)
+      </ToolbarButton>
+      <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
+      <ToolbarLink
+        className={linkClass}
+        href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
+        target="_blank"
+      >
+        Link
+      </ToolbarLink>
+      <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
       <ToolbarButton className={toolbarItemClass} as={ToggleButton}>
         Toggle
       </ToolbarButton>
@@ -58,26 +123,12 @@ const ToolbarExample = ({ title, orientation }: any) => (
         <ToolbarButton className={toolbarItemClass} as={DropdownMenuTrigger}>
           Menu
         </ToolbarButton>
-        <DropdownMenuContent className={dropdownMenuRootClass}>
-          <DropdownMenuItem className={dropdownMenuItemClass} onSelect={() => window.alert('undo')}>
-            Undo
-          </DropdownMenuItem>
-          <DropdownMenuItem className={dropdownMenuItemClass} onSelect={() => window.alert('redo')}>
-            Redo
-          </DropdownMenuItem>
+        <DropdownMenuContent className={dropdownMenuRootClass} sideOffset={5}>
+          <DropdownMenuItem className={dropdownMenuItemClass}>Undo</DropdownMenuItem>
+          <DropdownMenuItem className={dropdownMenuItemClass}>Redo</DropdownMenuItem>
           <DropdownMenuArrow />
         </DropdownMenuContent>
       </DropdownMenu>
-      <ToolbarButton className={toolbarItemClass} disabled>
-        Disabled
-      </ToolbarButton>
-      <ToolbarLink
-        className={linkClass}
-        href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
-        target="_blank"
-      >
-        Examle
-      </ToolbarLink>
     </Toolbar>
   </div>
 );
@@ -110,13 +161,13 @@ const toolbarClass = css({
 });
 
 const toolbarSeparatorClass = css({
-  width: 1,
+  height: 1,
   margin: 5,
   backgroundColor: '$gray100',
 
   '&[data-orientation="vertical"]': {
-    height: 1,
-    width: 'auto',
+    width: 1,
+    height: 'auto',
   },
 });
 
@@ -167,3 +218,15 @@ const toolbarRadioItemClass = css(toolbarItemClass, {
     color: 'white',
   },
 });
+
+const styles = {
+  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+  border: '2px solid blue',
+  padding: 10,
+};
+const rootAttrClass = css({ display: 'flex', '&[data-radix-toolbar]': styles });
+const separatorAttrClass = css({ '&[data-radix-toolbar-separator]': styles });
+const buttonAttrClass = css({ '&[data-radix-toolbar-button]': styles });
+const linkAttrClass = css({ '&[data-radix-toolbar-link]': styles });
+const radioGroupAttrClass = css({ '&[data-radix-toolbar-radio-group]': styles });
+const radioItemAttrClass = css({ '&[data-radix-toolbar-radio-item]': styles });
