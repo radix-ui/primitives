@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
+import { Slot } from '@radix-ui/react-slot';
 import { getSelector } from '@radix-ui/utils';
-import { createContext, composeEventHandlers, extendComponent } from '@radix-ui/react-utils';
+import { createContext, composeEventHandlers } from '@radix-ui/react-utils';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
 import { Separator as SeparatorPrimitive } from '@radix-ui/react-separator';
@@ -222,12 +223,13 @@ type ToolbarRadioPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ToolbarRadioItem = React.forwardRef((props, forwardedRef) => (
-  <ToolbarButton
-    {...props}
-    as={(radioItemProps) => <RadioGroupPrimitive.Item {...radioItemProps} as={props.as} />}
-    selector={getSelector(RADIO_GROUP_ITEM_NAME)}
-    ref={forwardedRef}
-  />
+  <ToolbarButton as={Slot}>
+    <RadioGroupPrimitive.Item
+      {...props}
+      selector={getSelector(RADIO_GROUP_ITEM_NAME)}
+      ref={forwardedRef}
+    />
+  </ToolbarButton>
 )) as ToolbarRadioPrimitive;
 
 ToolbarRadioItem.displayName = RADIO_GROUP_ITEM_NAME;
