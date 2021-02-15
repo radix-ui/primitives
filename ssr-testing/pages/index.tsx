@@ -14,7 +14,7 @@ export default function Home() {
         <h1>Components</h1>
         <ul>
           <li>
-            <Link href="./radio-group">RadioGroup</Link>
+            <Link href="/radio-group">RadioGroup</Link>
           </li>
         </ul>
       </main>
