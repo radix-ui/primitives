@@ -1,6 +1,12 @@
 name: 'Chromatic'
 
-on: pull_request
+on:
+  push:
+    branches:
+      - main
+  # "You must append a colon (:) to all events, including events without configuration."
+  # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-using-multiple-events-with-activity-types-or-configuration
+  pull_request:
 
 jobs:
   chromatic-deployment:
