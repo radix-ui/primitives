@@ -81,13 +81,7 @@ const CONTENT_NAME = 'ContextMenuContent';
 
 type ContextMenuContentOwnProps = Omit<
   Polymorphic.OwnProps<typeof MenuPrimitive.Root>,
-  | 'anchorRef'
-  | 'trapFocus'
-  | 'disableOutsideScroll'
-  | 'portalled'
-  | 'onCloseAutoFocus'
-  | 'onOpenAutoFocus'
-  | 'onDismiss'
+  'anchorRef' | 'trapFocus' | 'disableOutsideScroll' | 'portalled' | 'onOpenAutoFocus' | 'onDismiss'
 >;
 
 type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
