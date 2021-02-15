@@ -3496,6 +3496,7 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:
