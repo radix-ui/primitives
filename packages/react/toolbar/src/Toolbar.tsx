@@ -213,18 +213,18 @@ ToolbarRadioGroup.displayName = RADIO_GROUP_NAME;
 const RADIO_GROUP_ITEM_NAME = 'ToolbarRadioItem';
 
 type ToolbarRadioOwnProps = Merge<
-  Polymorphic.OwnProps<typeof RadioGroupPrimitive.Item>,
-  Polymorphic.OwnProps<typeof ToolbarButton>
+  Polymorphic.OwnProps<typeof ToolbarButton>,
+  Polymorphic.OwnProps<typeof RadioGroupPrimitive.Item>
 >;
 type ToolbarRadioPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ToolbarButton>,
+  Polymorphic.IntrinsicElement<typeof RadioGroupPrimitive.Item>,
   ToolbarRadioOwnProps
 >;
 
 const ToolbarRadioItem = React.forwardRef((props, forwardedRef) => (
-  <RadioGroupPrimitive.Item
+  <ToolbarButton
     {...props}
-    as={ToolbarButton}
+    as={(radioItemProps) => <RadioGroupPrimitive.Item {...radioItemProps} as={props.as} />}
     selector={getSelector(RADIO_GROUP_ITEM_NAME)}
     ref={forwardedRef}
   />
