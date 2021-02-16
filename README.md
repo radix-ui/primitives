@@ -25,6 +25,10 @@ Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 - Chance Strickland ([@chancethedev](https://twitter.com/chancethedev)) - [Modulz](https://modulz.app)
 - Pedro Duarte ([@peduarte](https://twitter.com/peduarte)) - [Modulz](https://modulz.app)
 
+## Contributors
+
+- Ar Nazeh ([@Nazeh](https://twitter.com/arnazeh))
+
 ---
 
 ## Community
