@@ -96,14 +96,14 @@ const ToolbarExample = ({ title, orientation }: any) => (
       </ToolbarButton>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
       <ToolbarLink
-        className={linkClass}
+        className={toolbarLinkClass}
         href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
         target="_blank"
       >
         Link
       </ToolbarLink>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-      <ToolbarButton className={toolbarItemClass} as={ToggleButton}>
+      <ToolbarButton className={toolbarToggleButtonClass} as={ToggleButton}>
         Toggle
       </ToolbarButton>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
@@ -187,21 +187,24 @@ const toolbarItemClass = css({
     boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.5)',
   },
 
-  '&[data-state="on"]': {
-    boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.7)',
-  },
-
   '&[data-disabled]': {
     opacity: 0.5,
     userSelect: 'none',
   },
 });
 
-const linkClass = css(toolbarItemClass, {
+const toolbarLinkClass = css(toolbarItemClass, {
   display: 'inline-flex',
   justifyContent: 'center',
   alignItems: 'center',
   color: 'black',
+});
+
+const toolbarToggleButtonClass = css(toolbarItemClass, {
+  '&[data-state="on"]': {
+    background: 'black',
+    color: 'white',
+  },
 });
 
 const toolbarRadioGroupClass = css({
