@@ -980,53 +980,102 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
     const positionElement = getPositionElementFromRef(positionRef);
     const { ownerDocument } = getOwnerGlobals(positionRef);
 
-    const handlePointerDown = composeEventHandlers(onPointerDown as any, function handlePointerDown(
-      event: PointerEvent
-    ) {
-      if (
-        !isMainClick(event) ||
-        // We don't want to stop propogation because we need the scrollbar itself to fire pointer
-        // events, but we don't want pointer events on the thumb to trigger events on the track.
-        event.target === thumbElement ||
-        thumbElement.contains(event.target as HTMLElement)
-      ) {
-        return;
-      }
-
-      const direction = determineScrollDirectionFromTrackClick({
-        event,
-        axis,
-        thumbElement,
-      });
-      clearTimeout(trackPointerUpTimeoutId);
-
-      if (trackClickBehavior === 'page') {
-        dispatch({ type: ScrollAreaEvents.StartTracking });
-        ownerDocument.addEventListener('pointermove', handlePointerMove);
-        ownerDocument.addEventListener('pointerup', handlePointerUp);
-        trackElement.setPointerCapture(event.pointerId);
-
-        // Handle immediate scroll event.
-        if (prefersReducedMotion) {
-          // Scroll immediately
-          const distance = getPagedScrollDistance({ direction, positionElement, axis });
-          const value = getNewScrollPosition(positionElement, { direction, distance, axis });
-          setScrollPosition(positionElement, { axis, value });
-        } else {
-          // Queue scroll animation
-          scrollAnimationQueue.enqueue(() => {
-            return animate({
-              duration: 200,
-              timing: bezier(0.16, 0, 0.73, 1),
-              draw: getPagedDraw({ positionElement, direction, axis }),
-              rafIdRef,
-            });
-          });
+    const handlePointerDown = composeEventHandlers(
+      onPointerDown as any,
+      function handlePointerDown(event: PointerEvent) {
+        if (
+          !isMainClick(event) ||
+          // We don't want to stop propogation because we need the scrollbar itself to fire pointer
+          // events, but we don't want pointer events on the thumb to trigger events on the track.
+          event.target === thumbElement ||
+          thumbElement.contains(event.target as HTMLElement)
+        ) {
+          return;
         }
 
-        // After some time 400ms, if the user still has the pointer down we'll start to scroll
-        // further to some relative distance near the pointer in relation to the track.
-        trackPointerDownTimeoutId = setTimeout(() => {
+        const direction = determineScrollDirectionFromTrackClick({
+          event,
+          axis,
+          thumbElement,
+        });
+        clearTimeout(trackPointerUpTimeoutId);
+
+        if (trackClickBehavior === 'page') {
+          dispatch({ type: ScrollAreaEvents.StartTracking });
+          ownerDocument.addEventListener('pointermove', handlePointerMove);
+          ownerDocument.addEventListener('pointerup', handlePointerUp);
+          trackElement.setPointerCapture(event.pointerId);
+
+          // Handle immediate scroll event.
+          if (prefersReducedMotion) {
+            // Scroll immediately
+            const distance = getPagedScrollDistance({ direction, positionElement, axis });
+            const value = getNewScrollPosition(positionElement, { direction, distance, axis });
+            setScrollPosition(positionElement, { axis, value });
+          } else {
+            // Queue scroll animation
+            scrollAnimationQueue.enqueue(() => {
+              return animate({
+                duration: 200,
+                timing: bezier(0.16, 0, 0.73, 1),
+                draw: getPagedDraw({ positionElement, direction, axis }),
+                rafIdRef,
+              });
+            });
+          }
+
+          // After some time 400ms, if the user still has the pointer down we'll start to scroll
+          // further to some relative distance near the pointer in relation to the track.
+          trackPointerDownTimeoutId = setTimeout(() => {
+            const pointerPosition = getPointerPosition(event);
+            const totalScrollDistance = getLongPagedScrollDistance({
+              axis,
+              direction,
+              pointerPosition,
+              positionElement,
+              trackElement,
+            });
+
+            // If the initial scroll event already moved us past the point where we need to go
+            if (
+              (direction === 'start' && totalScrollDistance > 0) ||
+              (direction === 'end' && totalScrollDistance < 0)
+            ) {
+              return;
+            }
+
+            if (prefersReducedMotion) {
+              const newPosition = getNewScrollPosition(positionElement, {
+                direction,
+                distance: totalScrollDistance,
+                axis,
+              });
+              setScrollPosition(positionElement, { axis, value: newPosition });
+            } else {
+              const durationBasis = Math.round(Math.abs(totalScrollDistance));
+              const duration = clamp(durationBasis, [100, 500]);
+              scrollAnimationQueue.enqueue(() =>
+                animate({
+                  duration,
+                  timing: (n) => n,
+                  draw: getLongPagedDraw({
+                    axis,
+                    direction,
+                    pointerPosition,
+                    positionElement,
+                    trackElement,
+                  }),
+                  rafIdRef,
+                })
+              );
+            }
+            clearTimeout(trackPointerDownTimeoutId!);
+          }, 400);
+
+          return function () {
+            clearTimeout(trackPointerDownTimeoutId!);
+          };
+        } else {
           const pointerPosition = getPointerPosition(event);
           const totalScrollDistance = getLongPagedScrollDistance({
             axis,
@@ -1035,70 +1084,22 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
             positionElement,
             trackElement,
           });
+          const newPosition = getNewScrollPosition(positionElement, {
+            direction,
+            distance: totalScrollDistance,
+            axis,
+          });
+          setScrollPosition(positionElement, { axis, value: newPosition });
+          const thumbPointerDown = new PointerEvent('pointerdown', event);
 
-          // If the initial scroll event already moved us past the point where we need to go
-          if (
-            (direction === 'start' && totalScrollDistance > 0) ||
-            (direction === 'end' && totalScrollDistance < 0)
-          ) {
-            return;
-          }
-
-          if (prefersReducedMotion) {
-            const newPosition = getNewScrollPosition(positionElement, {
-              direction,
-              distance: totalScrollDistance,
-              axis,
-            });
-            setScrollPosition(positionElement, { axis, value: newPosition });
-          } else {
-            const durationBasis = Math.round(Math.abs(totalScrollDistance));
-            const duration = clamp(durationBasis, [100, 500]);
-            scrollAnimationQueue.enqueue(() =>
-              animate({
-                duration,
-                timing: (n) => n,
-                draw: getLongPagedDraw({
-                  axis,
-                  direction,
-                  pointerPosition,
-                  positionElement,
-                  trackElement,
-                }),
-                rafIdRef,
-              })
-            );
-          }
-          clearTimeout(trackPointerDownTimeoutId!);
-        }, 400);
-
-        return function () {
-          clearTimeout(trackPointerDownTimeoutId!);
-        };
-      } else {
-        const pointerPosition = getPointerPosition(event);
-        const totalScrollDistance = getLongPagedScrollDistance({
-          axis,
-          direction,
-          pointerPosition,
-          positionElement,
-          trackElement,
-        });
-        const newPosition = getNewScrollPosition(positionElement, {
-          direction,
-          distance: totalScrollDistance,
-          axis,
-        });
-        setScrollPosition(positionElement, { axis, value: newPosition });
-        const thumbPointerDown = new PointerEvent('pointerdown', event);
-
-        // Wait a tick for the DOM measurements to update, then fire event on the thumb to
-        // immediately shift to a thumbing state.
-        requestAnimationFrame(() => {
-          thumbElement.dispatchEvent(thumbPointerDown);
-        });
+          // Wait a tick for the DOM measurements to update, then fire event on the thumb to
+          // immediately shift to a thumbing state.
+          requestAnimationFrame(() => {
+            thumbElement.dispatchEvent(thumbPointerDown);
+          });
+        }
       }
-    });
+    );
 
     trackElement.addEventListener('pointerdown', handlePointerDown);
     return function () {
@@ -1231,29 +1232,30 @@ const ScrollAreaThumb = React.forwardRef(function ScrollAreaThumb(props, forward
     const positionElement = getPositionElementFromRef(positionRef);
     const { ownerDocument } = getOwnerGlobals(positionRef);
 
-    const handlePointerDown = composeEventHandlers(onPointerDown as any, function handlePointerDown(
-      event: PointerEvent
-    ) {
-      if (!isMainClick(event)) return;
+    const handlePointerDown = composeEventHandlers(
+      onPointerDown as any,
+      function handlePointerDown(event: PointerEvent) {
+        if (!isMainClick(event)) return;
 
-      // const pointerPosition = getPointerPosition(event)[axis];
+        // const pointerPosition = getPointerPosition(event)[axis];
 
-      const pointerPosition = getPointerPosition(event)[axis];
+        const pointerPosition = getPointerPosition(event)[axis];
 
-      // As the user moves the pointer, we want the thumb to stay positioned relative to the
-      // pointer position at the time of the initial pointerdown event. We'll store some data in a
-      // few refs that the pointermove handler can access to calculate this properly.
-      thumbInitialData.current = getLogicalRect(thumbElement, { axis });
-      trackInitialData.current = getLogicalRect(trackElement, { axis });
+        // As the user moves the pointer, we want the thumb to stay positioned relative to the
+        // pointer position at the time of the initial pointerdown event. We'll store some data in a
+        // few refs that the pointermove handler can access to calculate this properly.
+        thumbInitialData.current = getLogicalRect(thumbElement, { axis });
+        trackInitialData.current = getLogicalRect(trackElement, { axis });
 
-      pointerStartPointRef.current = pointerPosition;
-      pointerInitialStartPointRef.current = pointerPosition;
+        pointerStartPointRef.current = pointerPosition;
+        pointerInitialStartPointRef.current = pointerPosition;
 
-      thumbElement.setPointerCapture(event.pointerId);
-      ownerDocument.addEventListener('pointerup', handlePointerUp);
-      ownerDocument.addEventListener('pointermove', handlePointerMove);
-      dispatch({ type: ScrollAreaEvents.StartThumbing });
-    });
+        thumbElement.setPointerCapture(event.pointerId);
+        ownerDocument.addEventListener('pointerup', handlePointerUp);
+        ownerDocument.addEventListener('pointermove', handlePointerMove);
+        dispatch({ type: ScrollAreaEvents.StartThumbing });
+      }
+    );
 
     thumbElement.addEventListener('pointerdown', handlePointerDown);
     return function () {
@@ -1401,76 +1403,77 @@ const ScrollAreaButton = React.forwardRef(function ScrollAreaButton(props, forwa
     let buttonPointerDownTimeoutId: any;
 
     let buttonIntervalId: any = null;
-    const handlePointerDown = composeEventHandlers(onPointerDown as any, function handlePointerDown(
-      event: PointerEvent
-    ) {
-      if (!isMainClick(event)) return;
+    const handlePointerDown = composeEventHandlers(
+      onPointerDown as any,
+      function handlePointerDown(event: PointerEvent) {
+        if (!isMainClick(event)) return;
 
-      buttonElement.setPointerCapture(event.pointerId);
-      ownerDocument.addEventListener('pointerup', handlePointerUp);
-      ownerDocument.addEventListener('pointermove', handlePointerMove);
-      dispatch({ type: ScrollAreaEvents.StartButtonPress });
+        buttonElement.setPointerCapture(event.pointerId);
+        ownerDocument.addEventListener('pointerup', handlePointerUp);
+        ownerDocument.addEventListener('pointermove', handlePointerMove);
+        dispatch({ type: ScrollAreaEvents.StartButtonPress });
 
-      const delta = direction === 'start' ? -1 : 1;
-      if (prefersReducedMotion) {
-        scrollBy(positionElement, { axis, value: 51 * delta });
-      } else {
-        if (
-          canScroll(positionElement, { axis, delta }) //  &&
-          // Only queue new animation if the queue's state isn't already adding to the queue or
-          // pending a current animation. The prevents fast button clicks from creating an effect
-          // where the last queued animation stops too long after the user has stopped clicking.
-          // !scrollAnimationQueue.isBusy
-        ) {
-          scrollAnimationQueue.enqueue(() =>
-            animate({
-              duration: BUTTON_SCROLL_TIME,
-              timing: bezier(0.16, 0, 0.73, 1),
-              draw(progress) {
-                scrollBy(positionElement, { axis, value: progress * 15 * delta });
-              },
-              rafIdRef,
-            })
-          );
-        }
-      }
-
-      // Handle case for user holding down the button, in which case we will repeat the
-      // `scrollAfterButtonPress` call on a ~300 ms interval until they release the pointer.
-      // Scrolling will also need to pause if the pointer leaves the button, but it should resume
-      // should they mouse back over it before releasing the pointer. After some time (~400ms?),
-      // if the user still has the pointer down we'll start to scroll further to some relative
-      // distance near the pointer in relation to the track.
-      buttonPointerDownTimeoutId = setTimeout(() => {
+        const delta = direction === 'start' ? -1 : 1;
         if (prefersReducedMotion) {
-          buttonIntervalId = setInterval(() => {
-            if (canScroll(positionElement, { axis, delta })) {
-              scrollBy(positionElement, { axis, value: 60 * delta });
-            } else {
-              clearInterval(buttonIntervalId);
-            }
-          }, BUTTON_SCROLL_TIME);
+          scrollBy(positionElement, { axis, value: 51 * delta });
         } else {
-          const pointerId = event.pointerId;
-          (function keepScrolling() {
-            if (canScroll(positionElement, { axis, delta })) {
-              scrollAnimationQueue.enqueue(() =>
-                animate({
-                  duration: BUTTON_SCROLL_TIME,
-                  timing: (n) => n,
-                  draw(progress) {
-                    scrollBy(positionElement, { axis, value: progress * (15 * delta) });
-                  },
-                  done: buttonElement.hasPointerCapture(pointerId) ? keepScrolling : undefined,
-                  rafIdRef,
-                })
-              );
-            }
-          })();
+          if (
+            canScroll(positionElement, { axis, delta }) //  &&
+            // Only queue new animation if the queue's state isn't already adding to the queue or
+            // pending a current animation. The prevents fast button clicks from creating an effect
+            // where the last queued animation stops too long after the user has stopped clicking.
+            // !scrollAnimationQueue.isBusy
+          ) {
+            scrollAnimationQueue.enqueue(() =>
+              animate({
+                duration: BUTTON_SCROLL_TIME,
+                timing: bezier(0.16, 0, 0.73, 1),
+                draw(progress) {
+                  scrollBy(positionElement, { axis, value: progress * 15 * delta });
+                },
+                rafIdRef,
+              })
+            );
+          }
         }
-        clearTimeout(buttonPointerDownTimeoutId!);
-      }, 400);
-    });
+
+        // Handle case for user holding down the button, in which case we will repeat the
+        // `scrollAfterButtonPress` call on a ~300 ms interval until they release the pointer.
+        // Scrolling will also need to pause if the pointer leaves the button, but it should resume
+        // should they mouse back over it before releasing the pointer. After some time (~400ms?),
+        // if the user still has the pointer down we'll start to scroll further to some relative
+        // distance near the pointer in relation to the track.
+        buttonPointerDownTimeoutId = setTimeout(() => {
+          if (prefersReducedMotion) {
+            buttonIntervalId = setInterval(() => {
+              if (canScroll(positionElement, { axis, delta })) {
+                scrollBy(positionElement, { axis, value: 60 * delta });
+              } else {
+                clearInterval(buttonIntervalId);
+              }
+            }, BUTTON_SCROLL_TIME);
+          } else {
+            const pointerId = event.pointerId;
+            (function keepScrolling() {
+              if (canScroll(positionElement, { axis, delta })) {
+                scrollAnimationQueue.enqueue(() =>
+                  animate({
+                    duration: BUTTON_SCROLL_TIME,
+                    timing: (n) => n,
+                    draw(progress) {
+                      scrollBy(positionElement, { axis, value: progress * (15 * delta) });
+                    },
+                    done: buttonElement.hasPointerCapture(pointerId) ? keepScrolling : undefined,
+                    rafIdRef,
+                  })
+                );
+              }
+            })();
+          }
+          clearTimeout(buttonPointerDownTimeoutId!);
+        }, 400);
+      }
+    );
 
     buttonElement.addEventListener('pointerdown', handlePointerDown);
 
@@ -1852,7 +1855,7 @@ function scrollAreaStateReducer(
 // Alternatively we could reconsider exposing the Position component, or we could allow users to
 // pass their own positionRef with a prop.
 function useExtendedScrollAreaRef(
-  forwardedRef: React.ForwardedRef<any>,
+  forwardedRef: React.Ref<any>,
   scrollAreaRef: React.RefObject<HTMLElement | null | undefined>,
   positionRef: React.RefObject<HTMLElement | null | undefined>
 ) {

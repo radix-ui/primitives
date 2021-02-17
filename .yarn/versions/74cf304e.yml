@@ -1,0 +1,4 @@
+declined:
+  - primitives
+  - ssr-testing
+  - "@radix-ui/react-scroll-area"
