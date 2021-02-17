@@ -70,26 +70,22 @@ const Slottable = ({ children }: { children: React.ReactNode }) => {
 
 type AnyProps = Record<string, any>;
 
-function mergeProps(baseProps: AnyProps, otherProps: AnyProps) {
-  // all other props should override
-  const overrideProps = { ...otherProps };
+function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
+  // all child props should override
+  const overrideProps = { ...childProps };
 
   // if it's a handler, modify the override by composing the base handler
-  for (const propName in otherProps) {
-    const basePropValue = baseProps[propName];
-    const otherPropValue = otherProps[propName];
+  for (const propName in childProps) {
+    const slotPropValue = slotProps[propName];
+    const childPropValue = childProps[propName];
     const isHandler = /^on[A-Z]/.test(propName);
 
     if (isHandler) {
-      // make sure we only override handlers which are actually passed in as functions
-      overrideProps[propName] =
-        typeof basePropValue === 'function' && typeof otherPropValue === 'function'
-          ? composeEventHandlers(otherPropValue, basePropValue)
-          : basePropValue;
+      overrideProps[propName] = composeEventHandlers(childPropValue, slotPropValue);
     }
   }
 
-  return { ...baseProps, ...overrideProps };
+  return { ...slotProps, ...overrideProps };
 }
 
 const Root = Slot;
