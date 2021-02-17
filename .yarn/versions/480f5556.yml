@@ -1,6 +1,0 @@
-releases:
-  "@radix-ui/react-radio-group": patch
-  "@radix-ui/react-toolbar": patch
-
-declined:
-  - primitives
