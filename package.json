@@ -68,6 +68,9 @@
     "ts-jest": "^26.2.0",
     "typescript": "^3.9.7"
   },
+  "resolutions": {
+    "chokidar": "3.4.3"
+  },
   "engines": {
     "node": ">=12",
     "yarn": ">=2"
