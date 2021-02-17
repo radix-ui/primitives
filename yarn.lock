@@ -3566,10 +3566,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stitches/core@npm:^0.0.3-canary.4":
+  version: 0.0.3-canary.4
+  resolution: "@stitches/core@npm:0.0.3-canary.4"
+  checksum: 0af4fdf9321cda5fe38c6018d88e345f0c6efe7eda2d2c4651df12cd01958de3eefc7c0d933d64349f41a5b6b8dbde290bec55277633e905f252cab5fd0b35b8
+  languageName: node
+  linkType: hard
+
 "@stitches/core@npm:^0.1.0-canary.6":
   version: 0.1.0-canary.6
   resolution: "@stitches/core@npm:0.1.0-canary.6"
   checksum: 4ea7d6f923dfff0bb79d317b6c0b024f3c8d646f68f7f0deafa6367af5763595ee128b7159a739e41c50dbdcec1cb53ce75fcf39fbad90a15a2df3f0bc4b0fc9
+  languageName: node
+  linkType: hard
+
+"@stitches/react@npm:0.0.3-canary.4":
+  version: 0.0.3-canary.4
+  resolution: "@stitches/react@npm:0.0.3-canary.4"
+  dependencies:
+    "@stitches/core": ^0.0.3-canary.4
+  peerDependencies:
+    react: ^16.13.1
+  checksum: 095b01622a2781d543242d5fa48a1acb8c80521d6c6d00c457afd522a22e9f5e1bfb5613c5096dd73eefdfbc4027bb5f64e174cd1493b4e81eb3e64608f201d7
   languageName: node
   linkType: hard
 
@@ -15357,7 +15375,7 @@ __metadata:
   resolution: "primitives@workspace:."
   dependencies:
     "@babel/core": ^7.0.0
-    "@stitches/react": canary
+    "@stitches/react": 0.0.3-canary.4
     "@storybook/addon-storysource": 6.1.0-beta.4
     "@storybook/react": 6.1.0-beta.4
     "@testing-library/jest-dom": ^5.11.3
