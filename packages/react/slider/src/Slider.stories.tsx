@@ -114,6 +114,28 @@ export const WithMultipleRanges = () => {
   );
 };
 
+export const SmallSteps = () => {
+  const [value, setValue] = React.useState([0.1]);
+  return (
+    <>
+      <Slider
+        className={rootClass}
+        value={value}
+        onValueChange={setValue}
+        min={0.1}
+        max={0.2}
+        step={0.003}
+      >
+        <SliderTrack className={trackClass}>
+          <SliderRange className={rangeClass} />
+        </SliderTrack>
+        <SliderThumb className={thumbClass} />
+      </Slider>
+      <div>{value}</div>
+    </>
+  );
+};
+
 export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>

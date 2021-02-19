@@ -75,7 +75,7 @@ const Slider = React.forwardRef((props, forwardedRef) => {
     name,
     min = 0,
     max = 100,
-    step: stepProp = 1,
+    step = 1,
     orientation = 'horizontal',
     disabled = false,
     minStepsBetweenThumbs = 0,
@@ -84,8 +84,6 @@ const Slider = React.forwardRef((props, forwardedRef) => {
     onValueChange = () => {},
     ...sliderProps
   } = props;
-
-  const step = Math.max(stepProp, 1);
   const sliderRef = React.useRef<HTMLSpanElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, sliderRef);
   const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
@@ -121,7 +119,8 @@ const Slider = React.forwardRef((props, forwardedRef) => {
   }
 
   function updateValues(value: number, atIndex: number): Promise<number> {
-    const snapToStep = Math.round((value - min) / step) * step + min;
+    const decimalCount = getDecimalCount(step);
+    const snapToStep = roundValue(Math.round((value - min) / step) * step + min, decimalCount);
     const nextValue = clamp(snapToStep, [min, max]);
 
     return new Promise((resolve) => {
@@ -836,6 +835,15 @@ function linearScale(domain: [number, number], range: [number, number]) {
     const ratio = (range[1] - range[0]) / (domain[1] - domain[0]);
     return range[0] + ratio * (value - domain[0]);
   };
+}
+
+function getDecimalCount(value: number) {
+  return (String(value).split('.')[1] || '').length;
+}
+
+function roundValue(value: number, decimalCount: number) {
+  const rounder = Math.pow(10, decimalCount);
+  return Math.round(value * rounder) / rounder;
 }
 
 const Root = Slider;
