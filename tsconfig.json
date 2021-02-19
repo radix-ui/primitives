@@ -35,6 +35,7 @@
       "@radix-ui/react-separator": ["./packages/react/separator/src"],
       "@radix-ui/react-slider": ["./packages/react/slider/src"],
       "@radix-ui/react-slot": ["./packages/react/slot/src"],
+      "@radix-ui/react-ssr": ["./packages/react/ssr/src"],
       "@radix-ui/react-switch": ["./packages/react/switch/src"],
       "@radix-ui/react-tabs": ["./packages/react/tabs/src"],
       "@radix-ui/react-toggle-button": ["./packages/react/toggle-button/src"],

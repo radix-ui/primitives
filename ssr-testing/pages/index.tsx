@@ -7,14 +7,13 @@ export default function Home() {
     <>
       <Head>
         <title>Home</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
         <h1>Components</h1>
         <ul>
           <li>
-            <Link href="/radio-group">RadioGroup</Link>
+            <Link href="/ssr">SSR</Link>
           </li>
         </ul>
       </main>
