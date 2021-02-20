@@ -16,8 +16,7 @@
     "prepublish": "yarn clean"
   },
   "dependencies": {
-    "@radix-ui/react-utils": "workspace:*",
-    "@xstate/fsm": "^1.5.1"
+    "@radix-ui/react-utils": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=16.8"
