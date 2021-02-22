@@ -3427,6 +3427,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@radix-ui/react-ssr@workspace:packages/react/ssr":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-ssr@workspace:packages/react/ssr"
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@radix-ui/react-switch@workspace:packages/react/switch":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-switch@workspace:packages/react/switch"
