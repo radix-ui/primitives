@@ -25,38 +25,26 @@ Presence.displayName = 'Presence';
 /* -------------------------------------------------------------------------------------------------
  * usePresence
  * -----------------------------------------------------------------------------------------------*/
-type PresenceEvent =
-  | { type: 'MOUNT' }
-  | { type: 'UNMOUNT' }
-  | { type: 'ANIMATION_OUT' }
-  | { type: 'TRANSITION_OUT' }
-  | { type: 'ANIMATION_END' }
-  | { type: 'TRANSITION_END' };
-
-type PresenceState = { value: 'mounted' | 'unmounted' | 'unmountSuspended'; context: {} };
 
 function usePresence(present: boolean) {
   const [node, setNode] = React.useState<HTMLElement>();
   const [styles, setStyles] = React.useState<CSSStyleDeclaration>();
   const prevPresentRef = React.useRef(present);
   const prevAnimationNameRef = React.useRef<string>();
-  const { state, send } = useStateMachine<{}, PresenceEvent, PresenceState>({
-    id: 'presence',
-    initial: present ? 'mounted' : 'unmounted',
-    states: {
-      mounted: {
-        on: {
-          UNMOUNT: 'unmounted',
-          ANIMATION_OUT: 'unmountSuspended',
-          TRANSITION_OUT: 'unmountSuspended',
-        },
-      },
-      unmountSuspended: {
-        on: { MOUNT: 'mounted', ANIMATION_END: 'unmounted', TRANSITION_END: 'unmounted' },
-      },
-      unmounted: {
-        on: { MOUNT: 'mounted' },
-      },
+  const initialState = present ? 'mounted' : 'unmounted';
+  const [state, send] = useStateMachine(initialState, {
+    mounted: {
+      UNMOUNT: 'unmounted',
+      ANIMATION_OUT: 'unmountSuspended',
+      TRANSITION_OUT: 'unmountSuspended',
+    },
+    unmountSuspended: {
+      MOUNT: 'mounted',
+      ANIMATION_END: 'unmounted',
+      TRANSITION_END: 'unmounted',
+    },
+    unmounted: {
+      MOUNT: 'mounted',
     },
   });
 
@@ -69,41 +57,45 @@ function usePresence(present: boolean) {
   }, [node]);
 
   React.useEffect(() => {
+    const wasPresent = prevPresentRef.current;
+    const hasPresentChanged = wasPresent !== present;
+
     /**
      * We wait till after next frame so we can verify if an animation/transition is occurring.
      * Both mount and unmount events are triggered after the next frame so that the two
      * events happen at the same time. This is to avoid flickering on screen when elements
      * are mounting at the same time as elements that are unmounting.
      */
-    return waitForAfterNextFrame(() => {
-      const prevAnimationName = prevAnimationNameRef.current;
-      const currentAnimationName = getAnimationName(styles);
-      prevAnimationNameRef.current = currentAnimationName;
+    if (hasPresentChanged) {
+      return waitForAfterNextFrame(() => {
+        const prevAnimationName = prevAnimationNameRef.current;
+        const currentAnimationName = getAnimationName(styles);
+        prevAnimationNameRef.current = currentAnimationName;
 
-      if (present) {
-        send('MOUNT');
-      } else if (styles?.display === 'none') {
-        // If the element is hidden, animations won't run so we unmount instantly
-        send('UNMOUNT');
-      } else {
-        /**
-         * When `present` changes to `false`, we check changes to animation-name to
-         * determine whether an animation has started. We chose this approach (reading
-         * computed styles) because there is no `animationrun` event and `animationstart`
-         * fires after `animation-delay` has expired which would be too late.
-         */
-        const wasPresent = prevPresentRef.current;
-        const isAnimating = prevAnimationName !== currentAnimationName;
-
-        if (wasPresent && isAnimating) {
-          send('ANIMATION_OUT');
-        } else {
+        if (present) {
+          send('MOUNT');
+        } else if (styles?.display === 'none') {
+          // If the element is hidden, animations won't run so we unmount instantly
           send('UNMOUNT');
-        }
-      }
+        } else {
+          /**
+           * When `present` changes to `false`, we check changes to animation-name to
+           * determine whether an animation has started. We chose this approach (reading
+           * computed styles) because there is no `animationrun` event and `animationstart`
+           * fires after `animation-delay` has expired which would be too late.
+           */
+          const isAnimating = prevAnimationName !== currentAnimationName;
 
-      prevPresentRef.current = present;
-    });
+          if (wasPresent && isAnimating) {
+            send('ANIMATION_OUT');
+          } else {
+            send('UNMOUNT');
+          }
+        }
+
+        prevPresentRef.current = present;
+      });
+    }
   }, [present, styles, send]);
 
   React.useEffect(() => {

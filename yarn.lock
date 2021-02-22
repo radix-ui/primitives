@@ -3321,7 +3321,6 @@ __metadata:
   resolution: "@radix-ui/react-presence@workspace:packages/react/presence"
   dependencies:
     "@radix-ui/react-utils": "workspace:*"
-    "@xstate/fsm": ^1.5.1
   peerDependencies:
     react: ">=16.8"
   languageName: unknown
@@ -5046,13 +5045,6 @@ __metadata:
     "@webassemblyjs/wast-parser": 1.9.0
     "@xtuc/long": 4.2.2
   checksum: 9f013b27e28b60cb215011079a15c94d1a7b0784eb3b59ec4936f8c0635ecdb58875c6809485cff814e01df170f02c18676cf782826795dc08553b98e69c1049
-  languageName: node
-  linkType: hard
-
-"@xstate/fsm@npm:^1.5.1":
-  version: 1.6.0
-  resolution: "@xstate/fsm@npm:1.6.0"
-  checksum: 513401d52fda3e33a0cd72e6abff50a79b6227cc164bf7d0a0c448afae9ef6f4587f2d33d1e82a697f5ffa77cc5dadb2f4b8b97454a031cb11b6bc8b30e3b1a8
   languageName: node
   linkType: hard
 
