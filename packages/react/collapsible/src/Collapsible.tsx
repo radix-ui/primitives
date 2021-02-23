@@ -140,7 +140,7 @@ type CollapsibleContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(CONTENT_NAME), forceMount, id, children, ...contentProps } = props;
+  const { selector = getSelector(CONTENT_NAME), forceMount, children, ...contentProps } = props;
   const context = useCollapsibleContext(CONTENT_NAME);
 
   return (
@@ -149,10 +149,10 @@ const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
         <Primitive
           data-state={getState(context.open)}
           data-disabled={context.disabled ? '' : undefined}
+          id={context.contentId}
           {...contentProps}
           selector={selector}
           ref={forwardedRef}
-          id={id || context.contentId}
           hidden={!present}
         >
           {present && children}
