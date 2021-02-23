@@ -1,28 +1,28 @@
 import * as React from 'react';
 import Head from 'next/head';
-import { SSRProvider, useSSRSafeId } from '@radix-ui/react-ssr';
+import { IdProvider, useId } from '@radix-ui/react-id';
 
-export default function SSRPage() {
+export default function IdPage() {
   return (
     <>
       <Head>
-        <title>SSR</title>
+        <title>Id</title>
       </Head>
-      <SSRProvider>
+      <IdProvider>
         <Foo />
         <Foo />
 
-        <SSRProvider>
+        <IdProvider>
           <Foo />
           <Foo />
-        </SSRProvider>
-      </SSRProvider>
+        </IdProvider>
+      </IdProvider>
     </>
   );
 }
 
 function Foo(props: any) {
-  const id = useSSRSafeId(props.id);
+  const id = useId(props.id);
   return (
     <div {...props} id={id}>
       Foo {id}
