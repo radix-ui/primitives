@@ -8,6 +8,15 @@
 //  - PointerEvents
 //  - CSS scrollbar-width OR -webkit-scrollbar
 
+import * as React from 'react';
+import {
+  clamp,
+  getSelector,
+  getSelectorObj,
+  getResizeObserverEntryBorderBoxSize,
+  isMainClick,
+  namespaced,
+} from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContext,
@@ -18,17 +27,8 @@ import {
   useLayoutEffect,
   usePrefersReducedMotion,
 } from '@radix-ui/react-utils';
+import { canUseDOM } from '@radix-ui/react-ssr';
 import { Primitive } from '@radix-ui/react-primitive';
-import {
-  canUseDOM,
-  clamp,
-  getSelector,
-  getSelectorObj,
-  getResizeObserverEntryBorderBoxSize,
-  isMainClick,
-  namespaced,
-} from '@radix-ui/utils';
-import * as React from 'react';
 import { bezier } from './bezier-easing';
 import { Queue } from './queue';
 import { useHover } from './useHover';

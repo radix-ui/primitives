@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@radix-ui/react-polymorphic": "workspace:*",
+    "@radix-ui/react-ssr": "workspace:*",
     "@radix-ui/utils": "workspace:*"
   },
   "devDependencies": {

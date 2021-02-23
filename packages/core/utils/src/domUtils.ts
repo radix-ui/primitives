@@ -18,10 +18,6 @@ function getSelectorObj(selector: string | null) {
   return selector ? { [`data-${selector}`]: '' } : undefined;
 }
 
-function canUseDOM() {
-  return !!(typeof window !== 'undefined' && window.document && window.document.createElement);
-}
-
 function makeId(...args: (string | number | null | undefined)[]) {
   return args.filter((val) => val != null).join('-');
 }
@@ -47,7 +43,6 @@ function getResizeObserverEntryBorderBoxSize(entry: ResizeObserverEntry): Resize
 export {
   getSelector,
   getSelectorObj,
-  canUseDOM,
   makeId,
   namespaced,
   isMainClick,
