@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-popover": patch
+
+declined:
+  - primitives
+  - ssr-testing
