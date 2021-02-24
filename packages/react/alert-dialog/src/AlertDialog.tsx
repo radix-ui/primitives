@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { getSelector, makeId, warning } from '@radix-ui/utils';
+import { getSelector, warning } from '@radix-ui/utils';
 import {
   createContext,
   useComposedRefs,
-  useId,
   useDocumentRef,
   composeEventHandlers,
   extendComponent,
@@ -16,6 +15,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@radix-ui/react-dialog';
+import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -50,10 +50,8 @@ const [
  * -----------------------------------------------------------------------------------------------*/
 
 const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => {
-  const generatedId = makeId('alert-dialog', useId());
-  const alertDialogId = generatedId;
-  const descriptionId = makeId(alertDialogId, 'description');
-  const titleId = makeId(alertDialogId, 'title');
+  const descriptionId = useId();
+  const titleId = useId();
 
   return (
     <AlertDialogContext.Provider
@@ -248,21 +246,29 @@ const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialog
     'aria-describedby': ariaDescribedBy,
   } = props;
   const { ownerDocumentRef } = useAlertDialogContentContext(CANCEL_NAME);
-  const { descriptionId, titleId } = useAlertDialogContext('AlertDialogContent');
+  const context = useAlertDialogContext('AlertDialogContent');
+
   React.useEffect(() => {
     const ownerDocument = ownerDocumentRef.current;
     const hasLabel = Boolean(
       ariaLabel ||
         (ariaLabelledBy && ownerDocument.getElementById(ariaLabelledBy)) ||
-        (titleId && ownerDocument.getElementById(titleId))
+        (context.titleId && ownerDocument.getElementById(context.titleId))
     );
     const hasDescription = Boolean(
       (ariaDescribedBy && ownerDocument.getElementById(ariaDescribedBy)) ||
-        (descriptionId && ownerDocument.getElementById(descriptionId))
+        (context.descriptionId && ownerDocument.getElementById(context.descriptionId))
     );
     warning(hasLabel, LABEL_WARNING);
     warning(hasDescription, DESC_WARNING);
-  }, [titleId, ariaLabel, ariaDescribedBy, descriptionId, ariaLabelledBy, ownerDocumentRef]);
+  }, [
+    context.titleId,
+    ariaLabel,
+    ariaDescribedBy,
+    context.descriptionId,
+    ariaLabelledBy,
+    ownerDocumentRef,
+  ]);
 
   return null;
 };

@@ -13,6 +13,9 @@ export default function HomePage() {
           <Link href="/accordion">Accordion</Link>
         </li>
         <li>
+          <Link href="/alert-dialog">AlertDialog</Link>
+        </li>
+        <li>
           <Link href="/collapsible">Collapsible</Link>
         </li>
         <li>

@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-alert-dialog": patch
+
+declined:
+  - primitives
+  - ssr-testing
