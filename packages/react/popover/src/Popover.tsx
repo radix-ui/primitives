@@ -5,7 +5,6 @@ import {
   useComposedRefs,
   composeEventHandlers,
   useControlledState,
-  useId,
   composeRefs,
   extendComponent,
 } from '@radix-ui/react-utils';
@@ -16,6 +15,7 @@ import { Portal } from '@radix-ui/react-portal';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
+import { useId } from '@radix-ui/react-id';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
@@ -31,7 +31,7 @@ type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 
 type PopoverContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
-  id: string;
+  contentId: string;
   open: boolean;
   setOpen: (open: boolean | ((prevOpen?: boolean) => boolean)) => void;
 };
@@ -56,13 +56,17 @@ type PopoverOwnProps = {
 const Popover: React.FC<PopoverOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const id = `popover-${useId()}`;
+  const contentId = useId();
   const [open = false, setOpen] = useControlledState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, id, open, setOpen }), [id, open, setOpen]);
+  const context = React.useMemo(() => ({ triggerRef, contentId, open, setOpen }), [
+    contentId,
+    open,
+    setOpen,
+  ]);
 
   return <PopoverContext.Provider value={context}>{children}</PopoverContext.Provider>;
 };
@@ -91,7 +95,7 @@ const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
       type="button"
       aria-haspopup="dialog"
       aria-expanded={context.open}
-      aria-controls={context.id}
+      aria-controls={context.contentId}
       data-state={context.open ? 'open' : 'closed'}
       {...triggerProps}
       as={as}
@@ -315,6 +319,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                 <PopperPrimitive.Root
                   role="dialog"
                   aria-modal
+                  id={context.contentId}
                   {...contentProps}
                   selector={selector}
                   ref={composeRefs(
@@ -323,7 +328,6 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                     focusScopeProps.ref,
                     dismissableLayerProps.ref
                   )}
-                  id={context.id}
                   anchorRef={anchorRef || context.triggerRef}
                   style={{
                     ...dismissableLayerProps.style,
