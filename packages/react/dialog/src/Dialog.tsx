@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  createContext,
+  createContextObj,
   useComposedRefs,
   composeEventHandlers,
   useControlledState,
@@ -24,49 +24,40 @@ type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 
 /* -------------------------------------------------------------------------------------------------
- * Root level context
- * -----------------------------------------------------------------------------------------------*/
-
-type DialogContextValue = {
-  triggerRef: React.RefObject<HTMLButtonElement>;
-  contentId: string;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-};
-
-const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
-  'DialogContext',
-  'Dialog'
-);
-
-/* -------------------------------------------------------------------------------------------------
  * Dialog
  * -----------------------------------------------------------------------------------------------*/
 
 const DIALOG_NAME = 'Dialog';
 
+type DialogContextValue = {
+  triggerRef: React.RefObject<HTMLButtonElement>;
+  contentId: string;
+  open: boolean;
+  onOpenChange(open: boolean): void;
+};
+
+const [DialogProvider, useDialogContext] = createContextObj<DialogContextValue>(DIALOG_NAME);
+
 type DialogOwnProps = {
   open?: boolean;
   defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?(open: boolean): void;
 };
 
 const Dialog: React.FC<DialogOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const contentId = useId();
   const [open = false, setOpen] = useControlledState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, contentId, open, setOpen }), [
-    contentId,
-    open,
-    setOpen,
-  ]);
 
-  return <DialogContext.Provider value={context}>{children}</DialogContext.Provider>;
+  return (
+    <DialogProvider triggerRef={triggerRef} contentId={useId()} open={open} onOpenChange={setOpen}>
+      {children}
+    </DialogProvider>
+  );
 };
 
 Dialog.displayName = DIALOG_NAME;
@@ -99,7 +90,7 @@ const DialogTrigger = React.forwardRef((props, forwardedRef) => {
       as={as}
       selector={selector}
       ref={composedTriggerRef}
-      onClick={composeEventHandlers(props.onClick, () => context.setOpen(true))}
+      onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(true))}
     />
   );
 }) as DialogTriggerPrimitive;
@@ -261,7 +252,7 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
               // When focus is trapped, a focusout event may still happen.
               // We make sure we don't trigger our `onDismiss` in such case.
               onFocusOutside={(event) => event.preventDefault()}
-              onDismiss={() => context.setOpen(false)}
+              onDismiss={() => context.onOpenChange(false)}
             >
               {(dismissableLayerProps) => (
                 <Primitive
@@ -335,7 +326,7 @@ const DialogClose = React.forwardRef((props, forwardedRef) => {
       as={as}
       selector={selector}
       ref={forwardedRef}
-      onClick={composeEventHandlers(props.onClick, () => context.setOpen(false))}
+      onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
     />
   );
 }) as DialogClosePrimitive;
