@@ -10,6 +10,9 @@ export default function HomePage() {
           <Link href="/id">Id</Link>
         </li>
         <li>
+          <Link href="/accordion">Accordion</Link>
+        </li>
+        <li>
           <Link href="/collapsible">Collapsible</Link>
         </li>
       </ul>
