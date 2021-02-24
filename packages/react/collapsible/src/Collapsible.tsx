@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, composeEventHandlers, useControlledState } from '@radix-ui/react-utils';
+import { createContextObj, composeEventHandlers, useControlledState } from '@radix-ui/react-utils';
 import { getSelector } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
@@ -31,13 +31,12 @@ type CollapsiblePrimitive = Polymorphic.ForwardRefComponent<
 
 type CollapsibleContextValue = {
   contentId: string;
-  open: boolean;
   disabled?: boolean;
-  toggle(): void;
+  open: boolean;
+  onOpenToggle(): void;
 };
 
-const [CollapsibleContext, useCollapsibleContext] = createContext<CollapsibleContextValue>(
-  'CollapsibleContext',
+const [CollapsibleProvider, useCollapsibleContext] = createContextObj<CollapsibleContextValue>(
   COLLAPSIBLE_NAME
 );
 
@@ -56,22 +55,22 @@ const Collapsible = React.forwardRef((props, forwardedRef) => {
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const contentId = useId();
-  const context = React.useMemo(
-    () => ({ contentId, open, disabled, toggle: () => setOpen((prevOpen) => !prevOpen) }),
-    [contentId, disabled, open, setOpen]
-  );
 
   return (
-    <CollapsibleContext.Provider value={context}>
+    <CollapsibleProvider
+      disabled={disabled}
+      contentId={useId()}
+      open={open}
+      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+    >
       <Primitive
-        data-state={getState(context.open)}
+        data-state={getState(open)}
         data-disabled={disabled ? '' : undefined}
         {...collapsibleProps}
         selector={selector}
         ref={forwardedRef}
       />
-    </CollapsibleContext.Provider>
+    </CollapsibleProvider>
   );
 }) as CollapsiblePrimitive;
 
@@ -109,7 +108,7 @@ const CollapsibleButton = React.forwardRef((props, forwardedRef) => {
       as={as}
       selector={selector}
       ref={forwardedRef}
-      onClick={composeEventHandlers(onClick, context.toggle)}
+      onClick={composeEventHandlers(onClick, context.onOpenToggle)}
       disabled={context.disabled}
     />
   );
