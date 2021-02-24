@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers, createContext, extendComponent } from '@radix-ui/react-utils';
+import { composeEventHandlers, createContextObj, extendComponent } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { makeRect, getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
@@ -14,14 +14,13 @@ import type { Point, MeasurableElement } from '@radix-ui/utils';
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
 type ContextMenuContextValue = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   anchorPointRef: React.MutableRefObject<Point>;
   anchorRef: React.MutableRefObject<MeasurableElement | null>;
+  open: boolean;
+  onOpenChange(open: boolean): void;
 };
 
-const [ContextMenuContext, useContextMenuContext] = createContext<ContextMenuContextValue>(
-  CONTEXT_MENU_NAME + 'Context',
+const [ContextMenuProvider, useContextMenuContext] = createContextObj<ContextMenuContextValue>(
   CONTEXT_MENU_NAME
 );
 
@@ -32,9 +31,17 @@ const ContextMenu: React.FC = (props) => {
   const anchorRef = React.useRef({
     getBoundingClientRect: () => makeRect({ width: 0, height: 0 }, anchorPointRef.current),
   });
-  const context = React.useMemo(() => ({ open, setOpen, anchorPointRef, anchorRef }), [open]);
 
-  return <ContextMenuContext.Provider value={context}>{children}</ContextMenuContext.Provider>;
+  return (
+    <ContextMenuProvider
+      anchorPointRef={anchorPointRef}
+      anchorRef={anchorRef}
+      open={open}
+      onOpenChange={setOpen}
+    >
+      {children}
+    </ContextMenuProvider>
+  );
 };
 
 ContextMenu.displayName = CONTEXT_MENU_NAME;
@@ -64,7 +71,7 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
       onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
         event.preventDefault();
         const point = { x: event.clientX, y: event.clientY };
-        context.setOpen(true);
+        context.onOpenChange(true);
         context.anchorPointRef.current = point;
       })}
     />
@@ -107,7 +114,7 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
       align={align}
       disableOutsidePointerEvents={disableOutsidePointerEvents}
       open={context.open}
-      onOpenChange={context.setOpen}
+      onOpenChange={context.onOpenChange}
       style={{
         ...props.style,
         // re-namespace exposed content custom property
@@ -117,7 +124,7 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
       trapFocus
       disableOutsideScroll
       portalled
-      onDismiss={() => context.setOpen(false)}
+      onDismiss={() => context.onOpenChange(false)}
     />
   );
 }) as ContextMenuContentPrimitive;
