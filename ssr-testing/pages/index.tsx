@@ -21,6 +21,9 @@ export default function HomePage() {
         <li>
           <Link href="/popover">Popover</Link>
         </li>
+        <li>
+          <Link href="/tooltip">Tooltip</Link>
+        </li>
       </ul>
     </main>
   );
