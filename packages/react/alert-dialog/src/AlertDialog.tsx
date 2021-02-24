@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getSelector, warning } from '@radix-ui/utils';
 import {
-  createContext,
+  createContextObj,
   useComposedRefs,
   useDocumentRef,
   composeEventHandlers,
@@ -20,7 +20,7 @@ import { useId } from '@radix-ui/react-id';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
- * Root level context
+ * AlertDialog
  * -----------------------------------------------------------------------------------------------*/
 
 const ROOT_NAME = 'AlertDialog';
@@ -30,37 +30,15 @@ type AlertDialogContextValue = {
   titleId: string;
 };
 
-type AlertDialogContentContextValue = {
-  cancelRef: React.MutableRefObject<React.ElementRef<typeof AlertDialogCancel> | null>;
-  ownerDocumentRef: React.MutableRefObject<Document>;
-};
-
-const [AlertDialogContext, useAlertDialogContext] = createContext<AlertDialogContextValue>(
-  'AlertDialogContext',
+const [AlertDialogProvider, useAlertDialogContext] = createContextObj<AlertDialogContextValue>(
   ROOT_NAME
 );
 
-const [
-  AlertDialogContentContext,
-  useAlertDialogContentContext,
-] = createContext<AlertDialogContentContextValue>('AlertDialogContext', ROOT_NAME);
-
-/* -------------------------------------------------------------------------------------------------
- * AlertDialog
- * -----------------------------------------------------------------------------------------------*/
-
-const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => {
-  const descriptionId = useId();
-  const titleId = useId();
-
-  return (
-    <AlertDialogContext.Provider
-      value={React.useMemo(() => ({ descriptionId, titleId }), [descriptionId, titleId])}
-    >
-      <Dialog {...props} />
-    </AlertDialogContext.Provider>
-  );
-};
+const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => (
+  <AlertDialogProvider descriptionId={useId()} titleId={useId()}>
+    <Dialog {...props} />
+  </AlertDialogProvider>
+);
 
 AlertDialog.displayName = ROOT_NAME;
 
@@ -91,6 +69,16 @@ AlertDialogCancel.displayName = CANCEL_NAME;
 
 const CONTENT_NAME = 'AlertDialogContent';
 
+type AlertDialogContentContextValue = {
+  cancelRef: React.MutableRefObject<React.ElementRef<typeof AlertDialogCancel> | null>;
+  ownerDocumentRef: React.MutableRefObject<Document>;
+};
+
+const [
+  AlertDialogContentProvider,
+  useAlertDialogContentContext,
+] = createContextObj<AlertDialogContentContextValue>(CONTENT_NAME);
+
 type AlertDialogContentOwnProps = Omit<
   Polymorphic.OwnProps<typeof DialogContent>,
   'refToFocusOnOpen' | 'id'
@@ -116,14 +104,7 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
   const ref = useComposedRefs(forwardedRef, ownRef);
 
   return (
-    <AlertDialogContentContext.Provider
-      value={React.useMemo(() => {
-        return {
-          cancelRef,
-          ownerDocumentRef,
-        };
-      }, [cancelRef, ownerDocumentRef])}
-    >
+    <AlertDialogContentProvider cancelRef={cancelRef} ownerDocumentRef={ownerDocumentRef}>
       {process.env.NODE_ENV === 'development' && <AccessibilityDevWarnings {...props} />}
       <DialogContent
         role="alertdialog"
@@ -141,7 +122,7 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
           cancelRef.current?.focus({ preventScroll: true });
         })}
       />
-    </AlertDialogContentContext.Provider>
+    </AlertDialogContentProvider>
   );
 }) as AlertDialogContentPrimitive;
 
