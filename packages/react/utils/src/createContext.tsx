@@ -18,7 +18,12 @@ export function createContextObj<ContextValueType extends object>(rootComponentN
 
   function Provider(props: ContextValueType & { children: React.ReactNode }) {
     const { children, ...providerProps } = props;
-    const value = React.useMemo(() => providerProps, [providerProps]) as ContextValueType;
+    // Only re-memoize when prop values change
+    const value = React.useMemo(
+      () => providerProps,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      Object.values(providerProps)
+    ) as ContextValueType;
     return <Context.Provider value={value}>{children}</Context.Provider>;
   }
 
