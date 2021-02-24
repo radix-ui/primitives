@@ -18,6 +18,9 @@ export default function HomePage() {
         <li>
           <Link href="/dialog">Dialog</Link>
         </li>
+        <li>
+          <Link href="/dropdown-menu">DropdownMenu</Link>
+        </li>
       </ul>
     </main>
   );

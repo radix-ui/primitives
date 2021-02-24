@@ -5,11 +5,11 @@ import {
   extendComponent,
   useComposedRefs,
   useControlledState,
-  useId,
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
+import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
@@ -22,7 +22,7 @@ const DROPDOWN_MENU_NAME = 'DropdownMenu';
 
 type DropdownMenuContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
-  id: string;
+  contentId: string;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 };
@@ -33,23 +33,25 @@ const [DropdownMenuContext, useDropdownMenuContext] = createContext<DropdownMenu
 );
 
 type DropdownMenuOwnProps = {
-  id?: string;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 };
 
 const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
-  const { children, id: idProp, open: openProp, defaultOpen, onOpenChange } = props;
+  const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const generatedId = useId();
-  const id = idProp || `dropdown-menu-${generatedId}`;
+  const contentId = useId();
   const [open = false, setOpen] = useControlledState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, id, open, setOpen }), [id, open, setOpen]);
+  const context = React.useMemo(() => ({ triggerRef, contentId, open, setOpen }), [
+    contentId,
+    open,
+    setOpen,
+  ]);
 
   return <DropdownMenuContext.Provider value={context}>{children}</DropdownMenuContext.Provider>;
 };
@@ -79,7 +81,7 @@ const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
       type="button"
       aria-haspopup="menu"
       aria-expanded={context.open ? true : undefined}
-      aria-controls={context.open ? context.id : undefined}
+      aria-controls={context.open ? context.contentId : undefined}
       data-state={context.open ? 'open' : 'closed'}
       {...triggerProps}
       as={as}
@@ -133,10 +135,10 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
   const context = useDropdownMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
+      id={context.contentId}
       {...contentProps}
       selector={selector}
       ref={forwardedRef}
-      id={context.id}
       disableOutsidePointerEvents={disableOutsidePointerEvents}
       disableOutsideScroll={disableOutsideScroll}
       portalled={portalled}
