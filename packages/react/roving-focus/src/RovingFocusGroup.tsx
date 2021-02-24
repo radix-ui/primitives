@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { getSelector, wrap, clamp } from '@radix-ui/utils';
-import { createContext, useControlledState, useId } from '@radix-ui/react-utils';
+import { createContext, useControlledState } from '@radix-ui/react-utils';
+import { useId } from '@radix-ui/react-id';
 
 /* -------------------------------------------------------------------------------------------------
  * RovingFocusGroup
@@ -44,7 +45,7 @@ function RovingFocusGroup(props: RovingFocusGroupProps) {
     onChange: props.onReachableChange,
   });
   const [tabStopId, setTabStopId] = React.useState<string | null>(null);
-  const groupId = String(useId());
+  const groupId = useId();
 
   // prettier-ignore
   const context = React.useMemo(() => ({
@@ -65,7 +66,7 @@ const ITEM_NAME = 'RovingFocusItem';
 type UseRovingFocusItemOptions = { disabled?: boolean; active?: boolean };
 
 function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
-  const itemId = String(useId());
+  const itemId = useId();
   const context = useRovingFocusContext(ITEM_NAME);
   const isTabStop = itemId === context.tabStopId;
 
