@@ -3166,6 +3166,7 @@ __metadata:
     "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-focus-guards": "workspace:*"
     "@radix-ui/react-focus-scope": "workspace:*"
+    "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"

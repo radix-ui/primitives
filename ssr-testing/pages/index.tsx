@@ -16,6 +16,9 @@ export default function HomePage() {
           <Link href="/collapsible">Collapsible</Link>
         </li>
         <li>
+          <Link href="/dialog">Dialog</Link>
+        </li>
+        <li>
           <Link href="/dropdown-menu">DropdownMenu</Link>
         </li>
       </ul>
