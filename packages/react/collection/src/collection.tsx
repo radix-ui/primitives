@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, useLayoutEffect } from '@radix-ui/react-utils';
+import { createContextObj, useLayoutEffect } from '@radix-ui/react-utils';
 
 function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: string) {
   const providerName = name + 'CollectionProvider';
@@ -22,9 +22,8 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
     ssrSyncUseCollectionItemCountRef: React.MutableRefObject<number>;
   };
 
-  const [CollectionContext, useCollectionContext] = createContext<CollectionContextValue>(
-    name + 'CollectionContext',
-    providerName
+  const [CollectionProviderImpl, useCollectionContext] = createContextObj<CollectionContextValue>(
+    name + 'CollectionItems'
   );
 
   function CollectionProvider({ children }: { children: React.ReactNode }) {
@@ -59,14 +58,14 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
     ssrSyncUseCollectionItemCountRef.current = 0;
 
     return (
-      <CollectionContext.Provider
-        value={React.useMemo(
-          () => ({ items, addItem, removeItem, ssrSyncUseCollectionItemCountRef }),
-          [items, addItem, removeItem]
-        )}
+      <CollectionProviderImpl
+        items={items}
+        addItem={addItem}
+        removeItem={removeItem}
+        ssrSyncUseCollectionItemCountRef={ssrSyncUseCollectionItemCountRef}
       >
         {children}
-      </CollectionContext.Provider>
+      </CollectionProviderImpl>
     );
   }
 
