@@ -4,16 +4,16 @@ import {
   useComposedRefs,
   composeEventHandlers,
   useControlledState,
-  useId,
   composeRefs,
 } from '@radix-ui/react-utils';
-import { getSelector, makeId } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
+import { useId } from '@radix-ui/react-id';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
@@ -29,7 +29,7 @@ type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 
 type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
-  id: string;
+  contentId: string;
   open: boolean;
   setOpen: (open: boolean) => void;
 };
@@ -46,23 +46,25 @@ const [DialogContext, useDialogContext] = createContext<DialogContextValue>(
 const DIALOG_NAME = 'Dialog';
 
 type DialogOwnProps = {
-  id?: string;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 };
 
 const Dialog: React.FC<DialogOwnProps> = (props) => {
-  const { children, id: idProp, open: openProp, defaultOpen, onOpenChange } = props;
+  const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const generatedId = makeId('dialog', useId());
-  const id = idProp || generatedId;
+  const contentId = useId();
   const [open = false, setOpen] = useControlledState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, id, open, setOpen }), [id, open, setOpen]);
+  const context = React.useMemo(() => ({ triggerRef, contentId, open, setOpen }), [
+    contentId,
+    open,
+    setOpen,
+  ]);
 
   return <DialogContext.Provider value={context}>{children}</DialogContext.Provider>;
 };
@@ -91,7 +93,7 @@ const DialogTrigger = React.forwardRef((props, forwardedRef) => {
       type="button"
       aria-haspopup="dialog"
       aria-expanded={context.open}
-      aria-controls={context.id}
+      aria-controls={context.contentId}
       data-state={getState(context.open)}
       {...triggerProps}
       as={as}
@@ -265,6 +267,7 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
                 <Primitive
                   role="dialog"
                   aria-modal
+                  id={context.contentId}
                   {...contentProps}
                   selector={selector}
                   ref={composeRefs(
@@ -273,7 +276,6 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
                     focusScopeProps.ref,
                     dismissableLayerProps.ref
                   )}
-                  id={context.id}
                   style={{
                     ...dismissableLayerProps.style,
                     ...contentProps.style,

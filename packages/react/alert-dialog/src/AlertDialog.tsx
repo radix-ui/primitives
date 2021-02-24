@@ -40,18 +40,18 @@ const [AlertDialogContext, useAlertDialogContext] = createContext<AlertDialogCon
   ROOT_NAME
 );
 
-const [AlertDialogContentContext, useAlertDialogContentContext] = createContext<
-  AlertDialogContentContextValue
->('AlertDialogContext', ROOT_NAME);
+const [
+  AlertDialogContentContext,
+  useAlertDialogContentContext,
+] = createContext<AlertDialogContentContextValue>('AlertDialogContext', ROOT_NAME);
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
  * -----------------------------------------------------------------------------------------------*/
 
 const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => {
-  const { id: idProp, ...dialogProps } = props;
   const generatedId = makeId('alert-dialog', useId());
-  const alertDialogId = idProp || generatedId;
+  const alertDialogId = generatedId;
   const descriptionId = makeId(alertDialogId, 'description');
   const titleId = makeId(alertDialogId, 'title');
 
@@ -59,7 +59,7 @@ const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => {
     <AlertDialogContext.Provider
       value={React.useMemo(() => ({ descriptionId, titleId }), [descriptionId, titleId])}
     >
-      <Dialog {...dialogProps} />
+      <Dialog {...props} />
     </AlertDialogContext.Provider>
   );
 };
