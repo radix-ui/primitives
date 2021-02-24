@@ -15,6 +15,9 @@ export default function HomePage() {
         <li>
           <Link href="/collapsible">Collapsible</Link>
         </li>
+        <li>
+          <Link href="/tooltip">Tooltip</Link>
+        </li>
       </ul>
     </main>
   );
