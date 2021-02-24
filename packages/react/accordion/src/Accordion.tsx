@@ -2,7 +2,7 @@ import React from 'react';
 import { getSelector } from '@radix-ui/utils';
 import {
   composeEventHandlers,
-  createContext,
+  createContextObj,
   useComposedRefs,
   useControlledState,
 } from '@radix-ui/react-utils';
@@ -14,27 +14,22 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
- * Root level context
- * -----------------------------------------------------------------------------------------------*/
-
-type AccordionContextValue = {
-  buttonNodesRef: React.MutableRefObject<Set<HTMLElement | null>>;
-  value?: string;
-  disabled?: boolean;
-  setValue(value: string): void;
-};
-
-const [AccordionContext, useAccordionContext] = createContext<AccordionContextValue>(
-  'AccordionContext',
-  'Accordion'
-);
-
-/* -------------------------------------------------------------------------------------------------
  * Accordion
  * -----------------------------------------------------------------------------------------------*/
 
 const ACCORDION_NAME = 'Accordion';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
+
+type AccordionContextValue = {
+  buttonNodesRef: React.MutableRefObject<Set<HTMLElement | null>>;
+  value?: string;
+  disabled?: boolean;
+  onValueChange(value: string): void;
+};
+
+const [AccordionProvider, useAccordionContext] = createContextObj<AccordionContextValue>(
+  ACCORDION_NAME
+);
 
 type AccordionOwnProps = Merge<
   Polymorphic.OwnProps<typeof Primitive>,
@@ -129,25 +124,20 @@ const Accordion = React.forwardRef((props, forwardedRef) => {
     buttonNodes[clampedIndex]?.focus();
   });
 
-  const context: AccordionContextValue = React.useMemo(
-    () => ({
-      disabled,
-      buttonNodesRef,
-      value,
-      setValue,
-    }),
-    [disabled, value, setValue]
-  );
-
   return (
-    <AccordionContext.Provider value={context}>
+    <AccordionProvider
+      disabled={disabled}
+      buttonNodesRef={buttonNodesRef}
+      value={value}
+      onValueChange={setValue}
+    >
       <Primitive
         {...accordionProps}
         selector={selector}
         ref={composedRefs}
         onKeyDown={disabled ? undefined : handleKeyDown}
       />
-    </AccordionContext.Provider>
+    </AccordionProvider>
   );
 }) as AccordionPrimitive;
 
@@ -182,10 +172,10 @@ type AccordionItemPrimitive = Polymorphic.ForwardRefComponent<
 
 type AccordionItemContextValue = { open?: boolean; disabled?: boolean; buttonId: string };
 
-const [AccordionItemContext, useAccordionItemContext] = createContext<AccordionItemContextValue>(
-  'AccordionItemContext',
-  ITEM_NAME
-);
+const [
+  AccordionItemProvider,
+  useAccordionItemContext,
+] = createContextObj<AccordionItemContextValue>(ITEM_NAME);
 
 /**
  * `AccordionItem` contains all of the parts of a collapsible section inside of an `Accordion`.
@@ -197,13 +187,8 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
   const open = (value && value === accordionContext.value) || false;
   const disabled = accordionContext.disabled || props.disabled;
 
-  const itemContext: AccordionItemContextValue = React.useMemo(
-    () => ({ open, disabled, buttonId }),
-    [open, disabled, buttonId]
-  );
-
   return (
-    <AccordionItemContext.Provider value={itemContext}>
+    <AccordionItemProvider open={open} disabled={disabled} buttonId={buttonId}>
       <Collapsible
         {...accordionItemProps}
         selector={selector}
@@ -211,9 +196,9 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
         data-state={open ? 'open' : 'closed'}
         disabled={disabled}
         open={open}
-        onOpenChange={() => accordionContext.setValue(value)}
+        onOpenChange={() => accordionContext.onValueChange(value)}
       />
-    </AccordionItemContext.Provider>
+    </AccordionItemProvider>
   );
 }) as AccordionItemPrimitive;
 
