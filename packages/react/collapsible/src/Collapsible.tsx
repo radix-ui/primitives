@@ -1,13 +1,9 @@
 import * as React from 'react';
-import {
-  createContext,
-  useId,
-  composeEventHandlers,
-  useControlledState,
-} from '@radix-ui/react-utils';
+import { createContext, composeEventHandlers, useControlledState } from '@radix-ui/react-utils';
 import { getSelector } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
+import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
@@ -34,8 +30,7 @@ type CollapsiblePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 type CollapsibleContextValue = {
-  contentId?: string;
-  setContentId(id: string): void;
+  contentId: string;
   open: boolean;
   disabled?: boolean;
   toggle(): void;
@@ -49,7 +44,6 @@ const [CollapsibleContext, useCollapsibleContext] = createContext<CollapsibleCon
 const Collapsible = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(COLLAPSIBLE_NAME),
-    id: idProp,
     open: openProp,
     defaultOpen,
     disabled,
@@ -62,15 +56,9 @@ const Collapsible = React.forwardRef((props, forwardedRef) => {
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const [contentId, setContentId] = React.useState<string>();
+  const contentId = useId();
   const context = React.useMemo(
-    () => ({
-      contentId,
-      open,
-      disabled,
-      toggle: () => setOpen((prevOpen) => !prevOpen),
-      setContentId,
-    }),
+    () => ({ contentId, open, disabled, toggle: () => setOpen((prevOpen) => !prevOpen) }),
     [contentId, disabled, open, setOpen]
   );
 
@@ -152,31 +140,19 @@ type CollapsibleContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
-  const {
-    selector = getSelector(CONTENT_NAME),
-    id: idProp,
-    forceMount,
-    children,
-    ...contentProps
-  } = props;
-  const { setContentId, open, disabled } = useCollapsibleContext(CONTENT_NAME);
-  const generatedId = `collapsible-${useId()}`;
-  const id = idProp || generatedId;
-
-  React.useEffect(() => {
-    setContentId(id);
-  }, [id, setContentId]);
+  const { selector = getSelector(CONTENT_NAME), forceMount, children, ...contentProps } = props;
+  const context = useCollapsibleContext(CONTENT_NAME);
 
   return (
-    <Presence present={forceMount || open}>
+    <Presence present={forceMount || context.open}>
       {({ present }) => (
         <Primitive
-          data-state={getState(open)}
-          data-disabled={disabled ? '' : undefined}
+          data-state={getState(context.open)}
+          data-disabled={context.disabled ? '' : undefined}
+          id={context.contentId}
           {...contentProps}
           selector={selector}
           ref={forwardedRef}
-          id={id}
           hidden={!present}
         >
           {present && children}

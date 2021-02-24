@@ -3123,6 +3123,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-collapsible@workspace:packages/react/collapsible"
   dependencies:
+    "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -3221,7 +3222,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/react-id@workspace:packages/react/id":
+"@radix-ui/react-id@workspace:*, @radix-ui/react-id@workspace:packages/react/id":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-id@workspace:packages/react/id"
   peerDependencies:

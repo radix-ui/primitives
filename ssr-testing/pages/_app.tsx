@@ -1,14 +1,17 @@
 import * as React from 'react';
 import Head from 'next/head';
+import { IdProvider } from '@radix-ui/react-id';
 
 export default function App({ Component, pageProps }: any) {
   return (
     <>
       <Head>
-        <title>Home</title>
+        <title>SSR testing</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Component {...pageProps} />
+      <IdProvider>
+        <Component {...pageProps} />
+      </IdProvider>
     </>
   );
 }
