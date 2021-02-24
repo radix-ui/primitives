@@ -19,7 +19,7 @@ export default function HomePage() {
           <Link href="/dialog">Dialog</Link>
         </li>
         <li>
-          <Link href="/dropdown-menu">DropdownMenu</Link>
+          <Link href="/popover">Popover</Link>
         </li>
       </ul>
     </main>
