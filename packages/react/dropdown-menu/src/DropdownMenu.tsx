@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
   composeEventHandlers,
-  createContext,
+  createContextObj,
   extendComponent,
   useComposedRefs,
   useControlledState,
@@ -24,36 +24,40 @@ type DropdownMenuContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   contentId: string;
   open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  onOpenChange(open: boolean): void;
+  onOpenToggle(): void;
 };
 
-const [DropdownMenuContext, useDropdownMenuContext] = createContext<DropdownMenuContextValue>(
-  DROPDOWN_MENU_NAME + 'Context',
+const [DropdownMenuProvider, useDropdownMenuContext] = createContextObj<DropdownMenuContextValue>(
   DROPDOWN_MENU_NAME
 );
 
 type DropdownMenuOwnProps = {
   open?: boolean;
   defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?(open: boolean): void;
 };
 
 const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const contentId = useId();
   const [open = false, setOpen] = useControlledState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, contentId, open, setOpen }), [
-    contentId,
-    open,
-    setOpen,
-  ]);
 
-  return <DropdownMenuContext.Provider value={context}>{children}</DropdownMenuContext.Provider>;
+  return (
+    <DropdownMenuProvider
+      triggerRef={triggerRef}
+      contentId={useId()}
+      open={open}
+      onOpenChange={setOpen}
+      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+    >
+      {children}
+    </DropdownMenuProvider>
+  );
 };
 
 DropdownMenu.displayName = DROPDOWN_MENU_NAME;
@@ -91,13 +95,13 @@ const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)
         if (event.button === 0 && event.ctrlKey === false) {
-          context.setOpen((prevOpen) => !prevOpen);
+          context.onOpenToggle();
         }
       })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event: React.KeyboardEvent) => {
         if ([' ', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
           event.preventDefault();
-          context.setOpen(true);
+          context.onOpenChange(true);
         }
       })}
     />
@@ -148,7 +152,7 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
         ['--radix-dropdown-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
       }}
       open={context.open}
-      onOpenChange={context.setOpen}
+      onOpenChange={context.onOpenChange}
       anchorRef={props.anchorRef || context.triggerRef}
       trapFocus
       onCloseAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
@@ -168,7 +172,7 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
         },
         { checkForDefaultPrevented: false }
       )}
-      onDismiss={() => context.setOpen(false)}
+      onDismiss={() => context.onOpenChange(false)}
     />
   );
 }) as DropdownMenuContentPrimitive;
