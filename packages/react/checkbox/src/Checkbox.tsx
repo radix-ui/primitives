@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getSelector } from '@radix-ui/utils';
 import {
-  createContext,
+  createContextObj,
   composeEventHandlers,
   useControlledState,
   useComposedRefs,
@@ -43,8 +43,7 @@ type CheckboxContextValue = {
   disabled?: boolean;
 };
 
-const [CheckboxContext, useCheckboxContext] = createContext<CheckboxContextValue>(
-  CHECKBOX_NAME + 'Context',
+const [CheckboxProvider, useCheckboxContext] = createContextObj<CheckboxContextValue>(
   CHECKBOX_NAME
 );
 
@@ -78,8 +77,6 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
     inputRef.current && (inputRef.current.indeterminate = isIndeterminate);
   });
 
-  const context = React.useMemo(() => ({ state: checked, disabled }), [checked, disabled]);
-
   return (
     /**
      * The `input` is hidden from non-SR and SR users as it only exists to
@@ -101,7 +98,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <CheckboxContext.Provider value={context}>
+      <CheckboxProvider state={checked} disabled={disabled}>
         <Primitive
           type="button"
           aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
@@ -125,7 +122,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
             checkForDefaultPrevented: false,
           })}
         />
-      </CheckboxContext.Provider>
+      </CheckboxProvider>
     </>
   );
 }) as CheckboxPrimitive;
