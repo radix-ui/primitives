@@ -62,7 +62,7 @@ const Popover: React.FC<PopoverOwnProps> = (props) => {
       triggerRef={triggerRef}
       open={open}
       onOpenChange={setOpen}
-      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+      onOpenToggle={() => setOpen((prevOpen) => !prevOpen)}
     >
       {children}
     </PopoverProvider>

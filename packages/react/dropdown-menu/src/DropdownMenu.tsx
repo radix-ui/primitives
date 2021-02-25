@@ -53,7 +53,7 @@ const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
       contentId={useId()}
       open={open}
       onOpenChange={setOpen}
-      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+      onOpenToggle={() => setOpen((prevOpen) => !prevOpen)}
     >
       {children}
     </DropdownMenuProvider>

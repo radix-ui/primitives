@@ -61,7 +61,7 @@ const Collapsible = React.forwardRef((props, forwardedRef) => {
       disabled={disabled}
       contentId={useId()}
       open={open}
-      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+      onOpenToggle={() => setOpen((prevOpen) => !prevOpen)}
     >
       <Primitive
         data-state={getState(open)}
