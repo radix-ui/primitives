@@ -3385,6 +3385,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-roving-focus@workspace:packages/react/roving-focus"
   dependencies:
+    "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/utils": "workspace:*"
   peerDependencies:

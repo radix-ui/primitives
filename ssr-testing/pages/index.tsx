@@ -28,6 +28,9 @@ export default function HomePage() {
           <Link href="/popover">Popover</Link>
         </li>
         <li>
+          <Link href="/roving-focus-group">RovingFocusGroup</Link>
+        </li>
+        <li>
           <Link href="/tooltip">Tooltip</Link>
         </li>
       </ul>
