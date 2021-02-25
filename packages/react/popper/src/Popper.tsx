@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { getPlacementData } from '@radix-ui/popper';
-import { createContext, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
+import { createContextObj, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
 import { getSelector, getSelectorObj, makeRect } from '@radix-ui/utils';
@@ -9,25 +9,18 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Side, Align, Size, MeasurableElement, Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
- * Root level context
- * -----------------------------------------------------------------------------------------------*/
-
-type PopperContextValue = {
-  arrowRef: React.RefObject<HTMLElement>;
-  setArrowOffset: (offset?: number) => void;
-  arrowStyles: React.CSSProperties;
-};
-
-const [PopperContext, usePopperContext] = createContext<PopperContextValue>(
-  'PopperContext',
-  'Popper'
-);
-
-/* -------------------------------------------------------------------------------------------------
  * Popper
  * -----------------------------------------------------------------------------------------------*/
 
 const POPPER_NAME = 'Popper';
+
+type PopperContextValue = {
+  arrowRef: React.RefObject<HTMLElement>;
+  onArrowOffsetChange: (offset?: number) => void;
+  arrowStyles: React.CSSProperties;
+};
+
+const [PopperProvider, usePopperContext] = createContextObj<PopperContextValue>(POPPER_NAME);
 
 type PopperOwnProps = Merge<
   Polymorphic.OwnProps<typeof Primitive>,
@@ -89,11 +82,13 @@ const Popper = React.forwardRef((props, forwardedRef) => {
   });
   const isPlaced = placedSide !== undefined;
 
-  const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
-
   return (
     <div style={popperStyles} {...(selector ? getSelectorObj(selector + '-wrapper') : undefined)}>
-      <PopperContext.Provider value={context}>
+      <PopperProvider
+        arrowRef={arrowRef}
+        arrowStyles={arrowStyles}
+        onArrowOffsetChange={setArrowOffset}
+      >
         <Primitive
           selector={selector}
           {...popperProps}
@@ -107,7 +102,7 @@ const Popper = React.forwardRef((props, forwardedRef) => {
           data-side={placedSide}
           data-align={placedAlign}
         />
-      </PopperContext.Provider>
+      </PopperProvider>
     </div>
   );
 }) as PopperPrimitive;
@@ -129,18 +124,19 @@ type PopperArrowPrimitive = Polymorphic.ForwardRefComponent<
 
 const PopperArrow = React.forwardRef(function PopperArrow(props, forwardedRef) {
   const { selector = getSelector(ARROW_NAME), offset, ...arrowProps } = props;
-  const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
+  const context = usePopperContext(ARROW_NAME);
+  const { onArrowOffsetChange } = context;
 
   // send the Arrow's offset up to Popper
-  React.useEffect(() => setArrowOffset(offset), [setArrowOffset, offset]);
+  React.useEffect(() => onArrowOffsetChange(offset), [onArrowOffsetChange, offset]);
 
   return (
-    <span style={{ ...arrowStyles, pointerEvents: 'none' }}>
+    <span style={{ ...context.arrowStyles, pointerEvents: 'none' }}>
       <span
         // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
         // doesn't report size as we'd expect on SVG elements.
         // it reports their bounding box which is effectively the largest path inside the SVG.
-        ref={arrowRef}
+        ref={context.arrowRef}
         style={{
           display: 'inline-block',
           verticalAlign: 'top',
