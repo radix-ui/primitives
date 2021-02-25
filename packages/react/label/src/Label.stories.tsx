@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Label, useLabelContext } from './Label';
+import { IdProvider } from '@radix-ui/react-id';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Label', excludeStories: ['RECOMMENDED_CSS__LABEL__ROOT'] };
@@ -28,7 +29,7 @@ export const WithHtmlFor = () => (
 );
 
 export const Chromatic = () => (
-  <>
+  <IdProvider>
     <h1>Auto generated id</h1>
     <Label className={chromaticRootClass}>
       <Control />
@@ -50,7 +51,7 @@ export const Chromatic = () => (
     <Label className={rootAttrClass}>
       <Control />
     </Label>
-  </>
+  </IdProvider>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
 

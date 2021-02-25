@@ -3238,6 +3238,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-label@workspace:packages/react/label"
   dependencies:
+    "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"

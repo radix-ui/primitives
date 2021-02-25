@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { getSelector } from '@radix-ui/utils';
-import { useId, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
+import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
@@ -29,8 +30,7 @@ const Label = React.forwardRef((props, forwardedRef) => {
   } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
-  const generatedId = `label-${useId()}`;
-  const id = idProp || generatedId;
+  const id = useId(idProp);
 
   React.useEffect(() => {
     const label = labelRef.current;
