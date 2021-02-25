@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-progress": patch
+
+declined:
+  - primitives
+  - "@radix-ui/react-utils"
