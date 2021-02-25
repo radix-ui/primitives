@@ -8,6 +8,8 @@ import { useId } from '@radix-ui/react-id';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
 
+type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
+
 /* -------------------------------------------------------------------------------------------------
  * Root level context
  * -----------------------------------------------------------------------------------------------*/
@@ -17,6 +19,7 @@ type TabsContextValue = {
   value?: string;
   setValue?: (value: string) => void;
   orientation?: TabsOwnProps['orientation'];
+  dir?: TabsOwnProps['dir'];
   activationMode?: TabsOwnProps['activationMode'];
 };
 
@@ -43,6 +46,12 @@ type TabsOwnProps = Merge<
      * (default: horizontal)
      */
     orientation?: React.AriaAttributes['aria-orientation'];
+    /**
+     * The direction of navigation between toolbar items.
+     *
+     * @defaultValue ltr
+     */
+    dir?: RovingFocusGroupProps['dir'];
     /** Whether a tab is activated automatically or manually (default: automatic) */
     activationMode?: 'automatic' | 'manual';
   }
@@ -60,6 +69,7 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
     onValueChange,
     defaultValue,
     orientation = 'horizontal',
+    dir = 'ltr',
     activationMode = 'automatic',
     ...tabsProps
   } = props;
@@ -73,8 +83,8 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
   });
 
   const ctx: TabsContextValue = React.useMemo(
-    () => ({ baseId, value, setValue, orientation, activationMode }),
-    [baseId, value, setValue, orientation, activationMode]
+    () => ({ baseId, value, setValue, orientation, dir, activationMode }),
+    [baseId, value, setValue, orientation, dir, activationMode]
   );
 
   return (
@@ -115,14 +125,14 @@ type TabsListPrimitive = Polymorphic.ForwardRefComponent<
 
 const TabsList = React.forwardRef((props, forwardedRef) => {
   const { selector = getSelector(TAB_LIST_NAME), loop = true, ...otherProps } = props;
-  const { orientation } = useTabsContext(TAB_LIST_NAME);
+  const context = useTabsContext(TAB_LIST_NAME);
 
   return (
-    <RovingFocusGroup orientation={orientation} loop={loop}>
+    <RovingFocusGroup orientation={context.orientation} loop={loop} dir={context.dir}>
       <Primitive
-        data-orientation={orientation}
         role="tablist"
-        aria-orientation={orientation}
+        aria-orientation={context.orientation}
+        data-orientation={context.orientation}
         {...otherProps}
         selector={selector}
         ref={forwardedRef}
