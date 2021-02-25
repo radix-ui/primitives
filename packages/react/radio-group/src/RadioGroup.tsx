@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
   composeEventHandlers,
-  createContext,
+  createContextObj,
   useCallbackRef,
   useControlledState,
   useComposedRefs,
@@ -46,8 +46,7 @@ type RadioGroupContextValue = {
   onValueChange: Required<RadioGroupOwnProps>['onValueChange'];
 };
 
-const [RadioGroupContext, useRadioGroupContext] = createContext<RadioGroupContextValue>(
-  'RadioGroupContext',
+const [RadioGroupProvider, useRadioGroupContext] = createContextObj<RadioGroupContextValue>(
   RADIO_GROUP_NAME
 );
 
@@ -71,19 +70,6 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
     defaultProp: defaultValue,
   });
 
-  const context = React.useMemo(
-    () => ({
-      name,
-      value,
-      required,
-      rovingFocus,
-      onValueChange: composeEventHandlers(handleValueChange, (event) => {
-        setValue(event.target.value);
-      }),
-    }),
-    [name, value, required, rovingFocus, handleValueChange, setValue]
-  );
-
   const primitive = (
     <Primitive
       {...groupProps}
@@ -95,9 +81,18 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
   );
 
   return (
-    <RadioGroupContext.Provider value={context}>
+    <RadioGroupProvider
+      name={name}
+      value={value}
+      required={required}
+      rovingFocus={rovingFocus}
+      onValueChange={React.useCallback(
+        composeEventHandlers(handleValueChange, (event) => setValue(event.target.value)),
+        [handleValueChange]
+      )}
+    >
       {rovingFocus ? <RovingFocusGroup loop>{primitive}</RovingFocusGroup> : primitive}
-    </RadioGroupContext.Provider>
+    </RadioGroupProvider>
   );
 }) as RadioGroupPrimitive;
 
