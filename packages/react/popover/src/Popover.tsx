@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getSelector } from '@radix-ui/utils';
 import {
-  createContext,
+  createContextObj,
   useComposedRefs,
   composeEventHandlers,
   useControlledState,
@@ -26,26 +26,20 @@ type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 
 /* -------------------------------------------------------------------------------------------------
- * Root level context
+ * Popover
  * -----------------------------------------------------------------------------------------------*/
+
+const POPOVER_NAME = 'Popover';
 
 type PopoverContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   contentId: string;
   open: boolean;
-  setOpen: (open: boolean | ((prevOpen?: boolean) => boolean)) => void;
+  onOpenChange(open: boolean): void;
+  onOpenToggle(): void;
 };
 
-const [PopoverContext, usePopoverContext] = createContext<PopoverContextValue>(
-  'PopoverContext',
-  'Popover'
-);
-
-/* -------------------------------------------------------------------------------------------------
- * Popover
- * -----------------------------------------------------------------------------------------------*/
-
-const POPOVER_NAME = 'Popover';
+const [PopoverProvider, usePopoverContext] = createContextObj<PopoverContextValue>(POPOVER_NAME);
 
 type PopoverOwnProps = {
   open?: boolean;
@@ -56,19 +50,23 @@ type PopoverOwnProps = {
 const Popover: React.FC<PopoverOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const contentId = useId();
   const [open = false, setOpen] = useControlledState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, contentId, open, setOpen }), [
-    contentId,
-    open,
-    setOpen,
-  ]);
 
-  return <PopoverContext.Provider value={context}>{children}</PopoverContext.Provider>;
+  return (
+    <PopoverProvider
+      contentId={useId()}
+      triggerRef={triggerRef}
+      open={open}
+      onOpenChange={setOpen}
+      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+    >
+      {children}
+    </PopoverProvider>
+  );
 };
 
 Popover.displayName = POPOVER_NAME;
@@ -101,7 +99,7 @@ const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
       as={as}
       selector={selector}
       ref={composedTriggerRef}
-      onClick={composeEventHandlers(props.onClick, () => context.setOpen((prevOpen) => !prevOpen))}
+      onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
     />
   );
 }) as PopoverTriggerPrimitive;
@@ -313,7 +311,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                 { checkForDefaultPrevented: false }
               )}
               onInteractOutside={onInteractOutside}
-              onDismiss={() => context.setOpen(false)}
+              onDismiss={() => context.onOpenChange(false)}
             >
               {(dismissableLayerProps) => (
                 <PopperPrimitive.Root
@@ -390,7 +388,7 @@ const PopoverClose = React.forwardRef((props, forwardedRef) => {
       as={as}
       selector={selector}
       ref={forwardedRef}
-      onClick={composeEventHandlers(props.onClick, () => context.setOpen(false))}
+      onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
     />
   );
 }) as PopoverClosePrimitive;
