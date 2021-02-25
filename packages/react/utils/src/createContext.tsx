@@ -27,10 +27,10 @@ export function createContextObj<ContextValueType extends object>(rootComponentN
     return <Context.Provider value={value}>{children}</Context.Provider>;
   }
 
-  function useContext(componentName: string) {
+  function useContext(consumerName: string) {
     const context = React.useContext(Context);
     if (context === null) {
-      throw new Error(`\`${componentName}\` must be used within \`${rootComponentName}\``);
+      throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
     }
     return context;
   }
