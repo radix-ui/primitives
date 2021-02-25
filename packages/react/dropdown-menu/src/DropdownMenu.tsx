@@ -24,7 +24,8 @@ type DropdownMenuContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   contentId: string;
   open: boolean;
-  onOpenChange: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  onOpenChange(open: boolean): void;
+  onOpenToggle(): void;
 };
 
 const [DropdownMenuProvider, useDropdownMenuContext] = createContextObj<DropdownMenuContextValue>(
@@ -52,6 +53,7 @@ const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
       contentId={useId()}
       open={open}
       onOpenChange={setOpen}
+      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
     >
       {children}
     </DropdownMenuProvider>
@@ -93,7 +95,7 @@ const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)
         if (event.button === 0 && event.ctrlKey === false) {
-          context.onOpenChange((prevOpen) => !prevOpen);
+          context.onOpenToggle();
         }
       })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event: React.KeyboardEvent) => {
