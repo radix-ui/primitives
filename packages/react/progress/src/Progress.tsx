@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext } from '@radix-ui/react-utils';
+import { createContextObj } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
 
@@ -15,8 +15,7 @@ const DEFAULT_MAX = 100;
 
 type ProgressState = 'indeterminate' | 'complete' | 'loading';
 type ProgressContextValue = { value: number | null; max: number };
-const [ProgressContext, useProgressContext] = createContext<ProgressContextValue>(
-  PROGRESS_NAME + 'Context',
+const [ProgressProvider, useProgressContext] = createContextObj<ProgressContextValue>(
   PROGRESS_NAME
 );
 
@@ -45,11 +44,10 @@ const Progress = React.forwardRef((props, forwardedRef) => {
 
   const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
   const value = isValidValueNumber(valueProp, max) ? valueProp : null;
-  const ctx: ProgressContextValue = React.useMemo(() => ({ value, max }), [value, max]);
   const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
 
   return (
-    <ProgressContext.Provider value={ctx}>
+    <ProgressProvider value={value} max={max}>
       <Primitive
         aria-valuemax={max}
         aria-valuemin={0}
@@ -63,7 +61,7 @@ const Progress = React.forwardRef((props, forwardedRef) => {
         selector={selector}
         ref={forwardedRef}
       />
-    </ProgressContext.Provider>
+    </ProgressProvider>
   );
 }) as ProgressPrimitive;
 
@@ -103,12 +101,12 @@ type ProgressIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 
 const ProgressIndicator = React.forwardRef((props, forwardedRef) => {
   const { selector = getSelector(INDICATOR_NAME), ...indicatorProps } = props;
-  const { value, max } = useProgressContext(INDICATOR_NAME);
+  const context = useProgressContext(INDICATOR_NAME);
   return (
     <Primitive
-      data-state={getProgressState(value, max)}
-      data-value={value ?? undefined}
-      data-max={max}
+      data-state={getProgressState(context.value, context.max)}
+      data-value={context.value ?? undefined}
+      data-max={context.max}
       {...indicatorProps}
       selector={selector}
       ref={forwardedRef}
@@ -121,8 +119,8 @@ ProgressIndicator.displayName = INDICATOR_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 function useProgressState() {
-  const { value, max } = React.useContext(ProgressContext);
-  return getProgressState(value, max);
+  const context = useProgressContext('useProgressState');
+  return getProgressState(context.value, context.max);
 }
 
 function defaultGetValueLabel(value: number, max: number) {
