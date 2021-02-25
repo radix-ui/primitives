@@ -1,13 +1,9 @@
 import * as React from 'react';
-import {
-  composeEventHandlers,
-  createContext,
-  useControlledState,
-  useId,
-} from '@radix-ui/react-utils';
+import { composeEventHandlers, createContext, useControlledState } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
-import { getSelector, makeId } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
+import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
@@ -17,7 +13,7 @@ import type { Merge } from '@radix-ui/utils';
  * -----------------------------------------------------------------------------------------------*/
 
 type TabsContextValue = {
-  tabsId: string;
+  baseId: string;
   value?: string;
   setValue?: (value: string) => void;
   orientation?: TabsOwnProps['orientation'];
@@ -60,7 +56,6 @@ type TabsPrimitive = Polymorphic.ForwardRefComponent<
 const Tabs = React.forwardRef((props, forwardedRef) => {
   const {
     selector = getSelector(TABS_NAME),
-    id,
     value: valueProp,
     onValueChange,
     defaultValue,
@@ -69,8 +64,7 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
     ...tabsProps
   } = props;
 
-  const generatedTabsId = `tabs-${useId()}`;
-  const tabsId = id || generatedTabsId;
+  const baseId = useId();
 
   const [value, setValue] = useControlledState({
     prop: valueProp,
@@ -79,14 +73,13 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
   });
 
   const ctx: TabsContextValue = React.useMemo(
-    () => ({ tabsId, value, setValue, orientation, activationMode }),
-    [activationMode, orientation, value, setValue, tabsId]
+    () => ({ baseId, value, setValue, orientation, activationMode }),
+    [baseId, value, setValue, orientation, activationMode]
   );
 
   return (
     <TabsContext.Provider value={ctx}>
       <Primitive
-        id={tabsId}
         data-orientation={orientation}
         {...tabsProps}
         selector={selector}
@@ -162,8 +155,8 @@ type TabsTabPrimitive = Polymorphic.ForwardRefComponent<
 const TabsTab = React.forwardRef((props, forwardedRef) => {
   const { selector = getSelector(TAB_NAME), value, disabled, ...tabProps } = props;
   const context = useTabsContext(TAB_NAME);
-  const tabId = makeTabId(context.tabsId, value);
-  const tabPanelId = makeTabsPanelId(context.tabsId, value);
+  const tabId = makeTabId(context.baseId, value);
+  const tabPanelId = makeTabsPanelId(context.baseId, value);
   const isSelected = value === context.value;
   const rovingFocusProps = useRovingFocus({ disabled, active: isSelected });
   const selectTab = React.useCallback(() => context.setValue?.(value), [context.setValue, value]);
@@ -238,8 +231,8 @@ type TabsPanelPrimitive = Polymorphic.ForwardRefComponent<
 const TabsPanel = React.forwardRef((props, forwardedRef) => {
   const { selector = getSelector(TAB_PANEL_NAME), value, ...tabPanelProps } = props;
   const context = useTabsContext(TAB_PANEL_NAME);
-  const tabId = makeTabId(context.tabsId, value);
-  const tabPanelId = makeTabsPanelId(context.tabsId, value);
+  const tabId = makeTabId(context.baseId, value);
+  const tabPanelId = makeTabsPanelId(context.baseId, value);
   const isSelected = value === context.value;
 
   return (
@@ -262,12 +255,12 @@ TabsPanel.displayName = TAB_PANEL_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function makeTabId(tabsId: string, value: string) {
-  return makeId(tabsId, 'tab', value);
+function makeTabId(baseId: string, value: string) {
+  return `${baseId}-tab-${value}`;
 }
 
-function makeTabsPanelId(tabsId: string, value: string) {
-  return `${tabsId}-tabPanel-${value}`;
+function makeTabsPanelId(baseId: string, value: string) {
+  return `${baseId}-panel-${value}`;
 }
 
 const Root = Tabs;

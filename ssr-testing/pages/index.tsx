@@ -31,6 +31,9 @@ export default function HomePage() {
           <Link href="/roving-focus-group">RovingFocusGroup</Link>
         </li>
         <li>
+          <Link href="/tabs">Tabs</Link>
+        </li>
+        <li>
           <Link href="/tooltip">Tooltip</Link>
         </li>
       </ul>
