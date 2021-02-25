@@ -22,7 +22,7 @@ export function createContextObj<ContextValueType extends object>(rootComponentN
     // Only re-memoize when stringified props change
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const context = React.useMemo(() => ({} as ContextValueType), [providerPropsString]);
-    // mutate properties to ensure non primitive values are up to date
+    // mutate properties to ensure closures are up to date
     Object.entries(providerProps).forEach(([prop, value]) => ((context as any)[prop] = value));
     return <Context.Provider value={context}>{children}</Context.Provider>;
   }
