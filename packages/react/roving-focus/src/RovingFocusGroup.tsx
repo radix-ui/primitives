@@ -92,7 +92,7 @@ function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
   }
 
   return {
-    [getItemDataAttr(context.groupId)]: '',
+    [GROUP_ID_DATA_ATTR]: context.groupId,
     tabIndex: isTabStop ? 0 : -1,
     onFocus: () => {
       context.setReachable(true);
@@ -152,10 +152,10 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 
-const getItemDataAttr = (groupId: string) => `data-${getSelector(GROUP_NAME)}-${groupId}-item`;
+const GROUP_ID_DATA_ATTR = `data-${getSelector(GROUP_NAME)}-id`;
 
 function getRovingFocusItems(groupId: string): HTMLElement[] {
-  return Array.from(document.querySelectorAll(`[${getItemDataAttr(groupId)}]`));
+  return Array.from(document.querySelectorAll(`[${GROUP_ID_DATA_ATTR}="${groupId}"]`));
 }
 
 const Root = RovingFocusGroup;
