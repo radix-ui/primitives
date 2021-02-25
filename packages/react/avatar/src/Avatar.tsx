@@ -60,19 +60,21 @@ const AvatarImage = React.forwardRef((props, forwardedRef) => {
     as = IMAGE_DEFAULT_TAG,
     selector = getSelector(IMAGE_NAME),
     src,
-    onLoadingStatusChange: onLoadingStatusChangeProp = () => {},
+    onLoadingStatusChange = () => {},
     ...imageProps
   } = props;
-  const { onImageLoadingStatusChange } = useAvatarContext(IMAGE_NAME);
+  const context = useAvatarContext(IMAGE_NAME);
   const imageLoadingStatus = useImageLoadingStatus(src);
-  const onLoadingStatusChange = useCallbackRef(onLoadingStatusChangeProp);
+  const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
+    onLoadingStatusChange(status);
+    context.onImageLoadingStatusChange(status);
+  });
 
   useLayoutEffect(() => {
     if (imageLoadingStatus !== 'idle') {
-      onLoadingStatusChange(imageLoadingStatus);
-      onImageLoadingStatusChange(imageLoadingStatus);
+      handleLoadingStatusChange(imageLoadingStatus);
     }
-  }, [imageLoadingStatus, onImageLoadingStatusChange, onLoadingStatusChange]);
+  }, [imageLoadingStatus, handleLoadingStatusChange]);
 
   return imageLoadingStatus === 'loaded' ? (
     <Primitive {...imageProps} as={as} selector={selector} ref={forwardedRef} src={src} />
