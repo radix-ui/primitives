@@ -170,6 +170,7 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
     portalled,
     ...menuProps
   } = props;
+  const handleOpenChange = useCallbackRef(onOpenChange);
   const menuRef = React.useRef<HTMLDivElement>(null);
   const [menuTabIndex, setMenuTabIndex] = React.useState(0);
   const [itemsReachable, setItemsReachable] = React.useState(false);
@@ -203,7 +204,7 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
         <MenuProvider
           menuRef={menuRef}
           onItemsReachableChange={setItemsReachable}
-          onOpenChange={useCallbackRef(onOpenChange)}
+          onOpenChange={handleOpenChange}
         >
           <RovingFocusGroup
             reachable={itemsReachable}
