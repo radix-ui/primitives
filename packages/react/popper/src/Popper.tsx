@@ -6,7 +6,8 @@ import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
 import { getSelector, getSelectorObj, makeRect } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Side, Align, Size, MeasurableElement, Merge } from '@radix-ui/utils';
+import type { Side, Align, Size, Merge } from '@radix-ui/utils';
+import type { MeasurableElement } from '@radix-ui/rect';
 
 /* -------------------------------------------------------------------------------------------------
  * Popper

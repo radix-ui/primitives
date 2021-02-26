@@ -1,5 +1,3 @@
-import { rectEquals } from './geometry';
-
 type MeasurableElement = { getBoundingClientRect(): ClientRect };
 
 /**
@@ -88,6 +86,20 @@ function runLoop() {
   rafId = requestAnimationFrame(runLoop);
 }
 // ========================================================================
+
+/**
+ * Returns whether 2 rects are equal in values
+ */
+function rectEquals(rect1: ClientRect, rect2: ClientRect) {
+  return (
+    rect1.width === rect2.width &&
+    rect1.height === rect2.height &&
+    rect1.top === rect2.top &&
+    rect1.right === rect2.right &&
+    rect1.bottom === rect2.bottom &&
+    rect1.left === rect2.left
+  );
+}
 
 export { observeElementRect };
 export type { MeasurableElement };
