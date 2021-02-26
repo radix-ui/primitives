@@ -7,12 +7,16 @@ releases:
   "@radix-ui/react-tooltip": patch
   "@radix-ui/react-utils": patch
   "@radix-ui/rect": patch
+  "@radix-ui/utils": patch
 
 declined:
   - primitives
+  - "@radix-ui/popper"
   - "@radix-ui/react-accordion"
   - "@radix-ui/react-alert-dialog"
   - "@radix-ui/react-announce"
+  - "@radix-ui/react-arrow"
+  - "@radix-ui/react-aspect-ratio"
   - "@radix-ui/react-avatar"
   - "@radix-ui/react-checkbox"
   - "@radix-ui/react-collapsible"
@@ -23,16 +27,16 @@ declined:
   - "@radix-ui/react-label"
   - "@radix-ui/react-portal"
   - "@radix-ui/react-presence"
+  - "@radix-ui/react-primitive"
   - "@radix-ui/react-progress"
   - "@radix-ui/react-radio-group"
   - "@radix-ui/react-roving-focus"
   - "@radix-ui/react-scroll-area"
+  - "@radix-ui/react-separator"
   - "@radix-ui/react-slider"
   - "@radix-ui/react-slot"
   - "@radix-ui/react-switch"
   - "@radix-ui/react-tabs"
   - "@radix-ui/react-toggle-button"
   - "@radix-ui/react-toolbar"
-
-undecided:
-  - "@radix-ui/utils"
+  - "@radix-ui/react-visually-hidden"
