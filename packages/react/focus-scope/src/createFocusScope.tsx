@@ -1,5 +1,3 @@
-import { arrayRemove } from '@radix-ui/utils';
-
 type FocusableTarget = HTMLElement | { focus(): void };
 
 const AUTOFOCUS_ON_CREATE = 'focusScope.autoFocusOnCreate';
@@ -165,6 +163,15 @@ function createFocusScopesStack() {
       return stack.length;
     },
   };
+}
+
+function arrayRemove<T>(array: T[], item: T) {
+  const updatedArray = [...array];
+  const index = updatedArray.indexOf(item);
+  if (index !== -1) {
+    updatedArray.splice(index, 1);
+  }
+  return updatedArray;
 }
 
 export { createFocusScope, AUTOFOCUS_ON_CREATE, AUTOFOCUS_ON_DESTROY };
