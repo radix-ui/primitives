@@ -3,7 +3,7 @@ import { getSelector } from '@radix-ui/utils';
 import { clamp } from '@radix-ui/number';
 import {
   composeEventHandlers,
-  createContext,
+  createContextObj,
   useComposedRefs,
   useControlledState,
   useCallbackRef,
@@ -47,10 +47,7 @@ type SliderContextValue = {
   orientation: SliderOwnProps['orientation'];
 };
 
-const [SliderContext, useSliderContext] = createContext<SliderContextValue>(
-  'SliderContext',
-  SLIDER_NAME
-);
+const [SliderProvider, useSliderContext] = createContextObj<SliderContextValue>(SLIDER_NAME);
 
 type SliderOwnProps = Merge<
   Polymorphic.OwnProps<typeof Primitive>,
@@ -146,19 +143,14 @@ const Slider = React.forwardRef((props, forwardedRef) => {
   }
 
   return (
-    <SliderContext.Provider
-      value={React.useMemo(
-        () => ({
-          disabled,
-          min,
-          max,
-          valueIndexToChangeRef,
-          thumbs: thumbRefs.current,
-          values,
-          orientation,
-        }),
-        [disabled, min, max, values, orientation]
-      )}
+    <SliderProvider
+      disabled={disabled}
+      min={min}
+      max={max}
+      valueIndexToChangeRef={valueIndexToChangeRef}
+      thumbs={thumbRefs.current}
+      values={values}
+      orientation={orientation}
     >
       <SliderCollectionProvider>
         <SliderOrientation
@@ -199,7 +191,7 @@ const Slider = React.forwardRef((props, forwardedRef) => {
             />
           ))}
       </SliderCollectionProvider>
-    </SliderContext.Provider>
+    </SliderProvider>
   );
 }) as SliderPrimitive;
 
