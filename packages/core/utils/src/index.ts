@@ -1,4 +1,3 @@
-export * from './arrayUtils';
 export * from './domUtils';
 export * from './geometry';
 export * from './logging';
