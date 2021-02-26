@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { clamp, getSelector } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
+import { clamp } from '@radix-ui/number';
 import {
   composeEventHandlers,
   createContext,

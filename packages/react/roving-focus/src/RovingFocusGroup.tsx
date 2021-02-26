@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { getSelector, wrap, clamp } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
+import { wrap, clamp } from '@radix-ui/number';
 import { createContext, useControlledState } from '@radix-ui/react-utils';
 import { useId } from '@radix-ui/react-id';
 
