@@ -21,13 +21,13 @@ import {
 import { Primitive } from '@radix-ui/react-primitive';
 import {
   canUseDOM,
-  clamp,
   getSelector,
   getSelectorObj,
   getResizeObserverEntryBorderBoxSize,
   isMainClick,
   namespaced,
 } from '@radix-ui/utils';
+import { clamp } from '@radix-ui/number';
 import * as React from 'react';
 import { bezier } from './bezier-easing';
 import { Queue } from './queue';

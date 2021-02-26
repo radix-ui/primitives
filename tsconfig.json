@@ -3,6 +3,7 @@
   "compilerOptions": {
     "paths": {
       "*": ["node_modules/*"],
+      "@radix-ui/number": ["./packages/core/number/src"],
       "@radix-ui/popper": ["./packages/core/popper/src"],
       "@radix-ui/utils": ["./packages/core/utils/src"],
       "@radix-ui/react-accessible-icon": ["./packages/react/accessible-icon/src"],

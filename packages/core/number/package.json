@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-roving-focus",
-  "version": "0.0.5",
+  "name": "@radix-ui/number",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -14,15 +14,6 @@
   "scripts": {
     "clean": "rm -rf dist",
     "prepublish": "yarn clean"
-  },
-  "dependencies": {
-    "@radix-ui/number": "workspace:*",
-    "@radix-ui/react-id": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*",
-    "@radix-ui/utils": "workspace:*"
-  },
-  "peerDependencies": {
-    "react": "^16.8 || ^17.0"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
