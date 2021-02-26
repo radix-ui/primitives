@@ -236,12 +236,17 @@ const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialog
         (ariaLabelledBy && ownerDocument.getElementById(ariaLabelledBy)) ||
         (context.titleId && ownerDocument.getElementById(context.titleId))
     );
+    if (!hasLabel) {
+      console.warn(LABEL_WARNING);
+    }
+
     const hasDescription = Boolean(
       (ariaDescribedBy && ownerDocument.getElementById(ariaDescribedBy)) ||
         (context.descriptionId && ownerDocument.getElementById(context.descriptionId))
     );
-    warning(hasLabel, LABEL_WARNING);
-    warning(hasDescription, DESC_WARNING);
+    if (!hasDescription) {
+      console.warn(DESC_WARNING);
+    }
   }, [
     context.titleId,
     ariaLabel,
@@ -253,22 +258,6 @@ const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialog
 
   return null;
 };
-
-function warning(cond: boolean, message: string): void {
-  if (!cond) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(message);
-    }
-
-    try {
-      // This error is thrown as a convenience so you can more easily
-      // find the source for a warning that appears in the console by
-      // enabling "pause on exceptions" in your JavaScript debugger.
-      throw new Error(message);
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-  }
-}
 
 const Root = AlertDialog;
 const Title = AlertDialogTitle;
