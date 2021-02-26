@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getSelector, warning } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import {
   createContextObj,
   useComposedRefs,
@@ -253,6 +253,22 @@ const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialog
 
   return null;
 };
+
+function warning(cond: boolean, message: string): void {
+  if (!cond) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(message);
+    }
+
+    try {
+      // This error is thrown as a convenience so you can more easily
+      // find the source for a warning that appears in the console by
+      // enabling "pause on exceptions" in your JavaScript debugger.
+      throw new Error(message);
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
+}
 
 const Root = AlertDialog;
 const Title = AlertDialogTitle;
