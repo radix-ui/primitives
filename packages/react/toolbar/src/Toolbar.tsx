@@ -3,7 +3,7 @@ import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
 import { getSelector } from '@radix-ui/utils';
-import { createContext, composeEventHandlers } from '@radix-ui/react-utils';
+import { createContextObj, composeEventHandlers } from '@radix-ui/react-utils';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
 import { Separator as SeparatorPrimitive } from '@radix-ui/react-separator';
@@ -49,25 +49,14 @@ type ToolbarPrimitive = Polymorphic.ForwardRefComponent<
   ToolbarOwnProps
 >;
 
-type ToolbarContextValue = {
-  name: typeof TOOLBAR_CONTEXT_NAME;
-  orientation: Orientation;
-};
-
-const [ToolbarContext, useToolbarContext] = createContext<ToolbarContextValue>(
-  TOOLBAR_CONTEXT_NAME,
-  TOOLBAR_NAME
-);
+type ToolbarContextValue = { orientation: Orientation };
+const [ToolbarProvider, useToolbarContext] = createContextObj<ToolbarContextValue>(TOOLBAR_NAME);
 
 const Toolbar = React.forwardRef((props, forwardedRef) => {
   const { orientation = 'horizontal', dir = 'ltr', loop = true, ...toolbarProps } = props;
-  const context: ToolbarContextValue = React.useMemo(
-    () => ({ name: TOOLBAR_CONTEXT_NAME, orientation }),
-    [orientation]
-  );
 
   return (
-    <ToolbarContext.Provider value={context}>
+    <ToolbarProvider orientation={orientation}>
       <RovingFocusGroup orientation={orientation} dir={dir} loop={loop}>
         <Primitive
           role="toolbar"
@@ -78,7 +67,7 @@ const Toolbar = React.forwardRef((props, forwardedRef) => {
           ref={forwardedRef}
         />
       </RovingFocusGroup>
-    </ToolbarContext.Provider>
+    </ToolbarProvider>
   );
 }) as ToolbarPrimitive;
 
@@ -95,11 +84,11 @@ type ToolbarSeparatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ToolbarSeparator = React.forwardRef((props, forwardedRef) => {
-  const { orientation } = useToolbarContext(SEPARATOR_NAME);
+  const context = useToolbarContext(SEPARATOR_NAME);
 
   return (
     <SeparatorPrimitive
-      orientation={orientation === 'horizontal' ? 'vertical' : 'horizontal'}
+      orientation={context.orientation === 'horizontal' ? 'vertical' : 'horizontal'}
       {...props}
       selector={getSelector(SEPARATOR_NAME)}
       ref={forwardedRef}
