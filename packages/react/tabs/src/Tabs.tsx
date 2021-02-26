@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers, createContext, useControlledState } from '@radix-ui/react-utils';
+import { composeEventHandlers, createContextObj, useControlledState } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
@@ -11,8 +11,10 @@ import type { Merge } from '@radix-ui/utils';
 type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
 
 /* -------------------------------------------------------------------------------------------------
- * Root level context
+ * Tabs
  * -----------------------------------------------------------------------------------------------*/
+
+const TABS_NAME = 'Tabs';
 
 type TabsContextValue = {
   baseId: string;
@@ -23,13 +25,7 @@ type TabsContextValue = {
   activationMode?: TabsOwnProps['activationMode'];
 };
 
-const [TabsContext, useTabsContext] = createContext<TabsContextValue>('TabsContext', 'Tabs');
-
-/* -------------------------------------------------------------------------------------------------
- * Tabs
- * -----------------------------------------------------------------------------------------------*/
-
-const TABS_NAME = 'Tabs';
+const [TabsProvider, useTabsContext] = createContextObj<TabsContextValue>(TABS_NAME);
 
 type TabsOwnProps = Merge<
   Polymorphic.OwnProps<typeof Primitive>,
@@ -82,20 +78,22 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
     defaultProp: defaultValue,
   });
 
-  const ctx: TabsContextValue = React.useMemo(
-    () => ({ baseId, value, setValue, orientation, dir, activationMode }),
-    [baseId, value, setValue, orientation, dir, activationMode]
-  );
-
   return (
-    <TabsContext.Provider value={ctx}>
+    <TabsProvider
+      baseId={baseId}
+      value={value}
+      setValue={setValue}
+      orientation={orientation}
+      dir={dir}
+      activationMode={activationMode}
+    >
       <Primitive
         data-orientation={orientation}
         {...tabsProps}
         selector={selector}
         ref={forwardedRef}
       />
-    </TabsContext.Provider>
+    </TabsProvider>
   );
 }) as TabsPrimitive;
 
