@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getSelector } from '@radix-ui/utils';
 import {
-  createContext,
+  createContextObj,
   useComposedRefs,
   composeEventHandlers,
   useRect,
@@ -22,10 +22,17 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
- * Root level context
+ * State machine
  * -----------------------------------------------------------------------------------------------*/
 
 type StateAttribute = 'closed' | 'delayed-open' | 'instant-open';
+const stateMachine = createStateMachine(stateChart);
+
+/* -------------------------------------------------------------------------------------------------
+ * Tooltip
+ * -----------------------------------------------------------------------------------------------*/
+
+const TOOLTIP_NAME = 'Tooltip';
 
 type TooltipContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
@@ -34,22 +41,7 @@ type TooltipContextValue = {
   stateAttribute: StateAttribute;
 };
 
-const [TooltipContext, useTooltipContext] = createContext<TooltipContextValue>(
-  'TooltipContext',
-  'Tooltip'
-);
-
-/* -------------------------------------------------------------------------------------------------
- * State machine
- * -----------------------------------------------------------------------------------------------*/
-
-const stateMachine = createStateMachine(stateChart);
-
-/* -------------------------------------------------------------------------------------------------
- * Tooltip
- * -----------------------------------------------------------------------------------------------*/
-
-const TOOLTIP_NAME = 'Tooltip';
+const [TooltipProvider, useTooltipContext] = createContextObj<TooltipContextValue>(TOOLTIP_NAME);
 
 type TooltipOwnProps = {
   open?: boolean;
@@ -120,13 +112,16 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
     }
   }, [contentId, openProp]);
 
-  const context = React.useMemo(() => ({ triggerRef, contentId, open, stateAttribute }), [
-    contentId,
-    open,
-    stateAttribute,
-  ]);
-
-  return <TooltipContext.Provider value={context}>{children}</TooltipContext.Provider>;
+  return (
+    <TooltipProvider
+      triggerRef={triggerRef}
+      contentId={contentId}
+      open={open}
+      stateAttribute={stateAttribute}
+    >
+      {children}
+    </TooltipProvider>
+  );
 };
 
 Tooltip.displayName = TOOLTIP_NAME;
