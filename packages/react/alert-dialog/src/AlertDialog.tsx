@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getSelector, warning } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import {
   createContextObj,
   useComposedRefs,
@@ -236,12 +236,17 @@ const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialog
         (ariaLabelledBy && ownerDocument.getElementById(ariaLabelledBy)) ||
         (context.titleId && ownerDocument.getElementById(context.titleId))
     );
+    if (!hasLabel) {
+      console.warn(LABEL_WARNING);
+    }
+
     const hasDescription = Boolean(
       (ariaDescribedBy && ownerDocument.getElementById(ariaDescribedBy)) ||
         (context.descriptionId && ownerDocument.getElementById(context.descriptionId))
     );
-    warning(hasLabel, LABEL_WARNING);
-    warning(hasDescription, DESC_WARNING);
+    if (!hasDescription) {
+      console.warn(DESC_WARNING);
+    }
   }, [
     context.titleId,
     ariaLabel,
