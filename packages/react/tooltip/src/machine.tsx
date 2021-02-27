@@ -118,10 +118,17 @@ export function createStateMachine<State extends string, Event extends string, C
  * -----------------------------------------------------------------------------------------------*/
 
 // How long the mouse needs to stop moving for the tooltip to open
-const REST_THRESHOLD_DURATION = 300;
+const getRestThresholdDuration = () =>
+  typeof window !== 'undefined' && Number.isInteger(window?.RADIX_TOOLTIP_REST_THRESHOLD_DURATION)
+    ? window.RADIX_TOOLTIP_REST_THRESHOLD_DURATION
+    : 300;
 
 // How much time does the user has to move from one tooltip to another without incurring the rest wait
-const SKIP_REST_THRESHOLD_DURATION = 300;
+const getSkipRestThresholdDuration = () =>
+  typeof window !== 'undefined' &&
+  Number.isInteger(window?.RADIX_TOOLTIP_SKIP_REST_THRESHOLD_DURATION)
+    ? window.RADIX_TOOLTIP_SKIP_REST_THRESHOLD_DURATION
+    : 300;
 
 type TooltipState =
   // tooltip is closed
@@ -217,7 +224,7 @@ let restTimerId: number;
 
 function startRestTimer(transition: TooltipTransitionFn) {
   clearTimeout(restTimerId);
-  restTimerId = window.setTimeout(() => transition('restTimerElapsed'), REST_THRESHOLD_DURATION);
+  restTimerId = window.setTimeout(() => transition('restTimerElapsed'), getRestThresholdDuration());
 }
 
 function clearRestTimer() {
@@ -233,7 +240,7 @@ function startSkipRestTimer(transition: TooltipTransitionFn) {
   clearTimeout(skipRestTimerId);
   skipRestTimerId = window.setTimeout(
     () => transition('skipRestTimerElapsed'),
-    SKIP_REST_THRESHOLD_DURATION
+    getSkipRestThresholdDuration()
   );
 }
 
