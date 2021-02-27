@@ -4,7 +4,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from './Tooltip';
 
 const TOOLTIP_CONTENT_TEST_ID = 'TOOLTIP_CONTENT_TEST_ID';
 
-describe.skip('when using Tooltip primitives', () => {
+describe('when using Tooltip primitives', () => {
   describe('when adjusting mouse rest threshold durations', () => {
     beforeEach(() => {
       jest.useFakeTimers();
