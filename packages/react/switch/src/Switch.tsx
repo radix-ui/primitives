@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  createContext,
+  createContextObj,
   composeEventHandlers,
   useControlledState,
   useComposedRefs,
@@ -35,10 +35,7 @@ type SwitchPrimitive = Polymorphic.ForwardRefComponent<typeof SWITCH_DEFAULT_TAG
 
 type SwitchContextValue = { checked: boolean; disabled?: boolean };
 
-const [SwitchContext, useSwitchContext] = createContext<SwitchContextValue>(
-  SWITCH_NAME + 'Context',
-  SWITCH_NAME
-);
+const [SwitchProvider, useSwitchContext] = createContextObj<SwitchContextValue>(SWITCH_NAME);
 
 const Switch = React.forwardRef((props, forwardedRef) => {
   const {
@@ -65,8 +62,6 @@ const Switch = React.forwardRef((props, forwardedRef) => {
     defaultProp: defaultChecked,
   });
 
-  const context = React.useMemo(() => ({ checked, disabled }), [checked, disabled]);
-
   return (
     /**
      * The `input` is hidden from non-SR and SR users as it only exists to
@@ -88,7 +83,7 @@ const Switch = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <SwitchContext.Provider value={context}>
+      <SwitchProvider checked={checked} disabled={disabled}>
         <Primitive
           type="button"
           role="switch"
@@ -112,7 +107,7 @@ const Switch = React.forwardRef((props, forwardedRef) => {
             checkForDefaultPrevented: false,
           })}
         />
-      </SwitchContext.Provider>
+      </SwitchProvider>
     </>
   );
 }) as SwitchPrimitive;
