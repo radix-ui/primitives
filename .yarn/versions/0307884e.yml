@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-collection": patch
+  "@radix-ui/react-slider": patch
+
+declined:
+  - primitives

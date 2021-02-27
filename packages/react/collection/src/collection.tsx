@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, useLayoutEffect } from '@radix-ui/react-utils';
+import { createContextObj, useLayoutEffect } from '@radix-ui/react-utils';
 
 function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: string) {
   const providerName = name + 'CollectionProvider';
@@ -12,8 +12,8 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
 
   type CollectionContextValue = {
     items: Item[];
-    addItem: (item: Item) => void;
-    removeItem: (ref: ItemElementRef) => void;
+    onItemAdd: (item: Item) => void;
+    onItemRemove: (ref: ItemElementRef) => void;
     // Tracks how many times `useCollectionItem` is called to get initial indexes for SSR.
     // We increment this synchronously during render in `useCollectionItem`
     // and reset it synchronously during render in `CollectionProvider`.
@@ -22,17 +22,16 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
     ssrSyncUseCollectionItemCountRef: React.MutableRefObject<number>;
   };
 
-  const [CollectionContext, useCollectionContext] = createContext<CollectionContextValue>(
-    name + 'CollectionContext',
-    providerName
+  const [CollectionProviderImpl, useCollectionContext] = createContextObj<CollectionContextValue>(
+    name + 'CollectionItems'
   );
 
   function CollectionProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = React.useState<Item[]>([]);
     const ssrSyncUseCollectionItemCountRef = React.useRef(0);
 
-    const addItem = React.useCallback(
-      function addItem(item: Item) {
+    const handleItemAdd = React.useCallback(
+      (item: Item) => {
         setItems((previousItems) => {
           const exists = previousItems.find(({ ref }) => item.ref.current === ref.current);
           if (exists) return previousItems;
@@ -42,8 +41,8 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
       [setItems]
     );
 
-    const removeItem = React.useCallback(
-      function removeItem(ref: ItemElementRef) {
+    const handleItemRemove = React.useCallback(
+      (ref: ItemElementRef) => {
         setItems((items) => items.filter((item) => ref.current !== item.ref.current));
       },
       [setItems]
@@ -59,14 +58,14 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
     ssrSyncUseCollectionItemCountRef.current = 0;
 
     return (
-      <CollectionContext.Provider
-        value={React.useMemo(
-          () => ({ items, addItem, removeItem, ssrSyncUseCollectionItemCountRef }),
-          [items, addItem, removeItem]
-        )}
+      <CollectionProviderImpl
+        items={items}
+        onItemAdd={handleItemAdd}
+        onItemRemove={handleItemRemove}
+        ssrSyncUseCollectionItemCountRef={ssrSyncUseCollectionItemCountRef}
       >
         {children}
-      </CollectionContext.Provider>
+      </CollectionProviderImpl>
     );
   }
 
@@ -86,9 +85,12 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
 
   function useCollectionItem(state?: S) {
     const ref = React.useRef(null) as ItemElementRef;
-    const { items, addItem, removeItem, ssrSyncUseCollectionItemCountRef } = useCollectionContext(
-      'useCollectionItem'
-    );
+    const {
+      items,
+      onItemAdd,
+      onItemRemove,
+      ssrSyncUseCollectionItemCountRef,
+    } = useCollectionContext('useCollectionItem');
 
     // on first render, this will be -1 as the item hasn't been pushed into the `items` array yet
     const existingIndex = items.findIndex((item) => ref.current === item.ref.current);
@@ -99,13 +101,13 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
 
     // add item on every render, this is fine because we reset the items in the parent everytime
     useLayoutEffect(() => {
-      addItem(({ ...state, ref } as unknown) as Item);
+      onItemAdd(({ ...state, ref } as unknown) as Item);
     });
 
     // only remove on unmount
     useLayoutEffect(() => {
-      return () => removeItem(ref);
-    }, [ref, removeItem]);
+      return () => onItemRemove(ref);
+    }, [ref, onItemRemove]);
 
     return { ref, index };
   }
