@@ -364,6 +364,51 @@ export const SlottableContent = () => (
   </Tooltip>
 );
 
+export const ControlledRestThresholdDuration = () => {
+  const [restThresholdDuration, setRestThresholdDuration] = React.useState(300);
+  const [skipRestThresholdDuration, setSkipRestThresholdDuration] = React.useState(300);
+
+  React.useEffect(() => {
+    window.RADIX_TOOLTIP_REST_THRESHOLD_DURATION = restThresholdDuration;
+    window.RADIX_TOOLTIP_SKIP_REST_THRESHOLD_DURATION = skipRestThresholdDuration;
+  }, [restThresholdDuration, skipRestThresholdDuration]);
+
+  const setRestThresholdsToZero = () => {
+    setRestThresholdDuration(0);
+    setSkipRestThresholdDuration(0);
+  };
+
+  const resetRestThresholds = () => {
+    setRestThresholdDuration(300);
+    setSkipRestThresholdDuration(300);
+  };
+
+  const increaseRestThresholds = () => {
+    setRestThresholdDuration(1500);
+    setSkipRestThresholdDuration(1500);
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', flexDirection: 'column', width: '20vw', margin: '1rem' }}>
+        <button onClick={setRestThresholdsToZero} style={{ margin: '0.5rem' }}>
+          Eliminate Rest Threshold Duration
+        </button>
+        <button onClick={resetRestThresholds} style={{ margin: '0.5rem' }}>
+          Reset Rest Threshold Duration (300ms)
+        </button>
+        <button onClick={increaseRestThresholds} style={{ margin: '0.5rem' }}>
+          Increase Rest Threshold Duration to 1.5 seconds
+        </button>
+      </div>
+
+      <SimpleTooltip label="Hello world!">
+        <TooltipTrigger>Hover over me or focus on me</TooltipTrigger>
+      </SimpleTooltip>
+    </div>
+  );
+};
+
 // change order slightly for more pleasing visual
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
 
@@ -590,7 +635,7 @@ export const Chromatic = () => (
             className={chromaticTriggerClass}
             style={{
               position: 'absolute',
-              [side]: 10,
+              side: 10,
               ...((side === 'right' || side === 'left') &&
                 (align === 'start'
                   ? { bottom: 10 }
@@ -768,6 +813,6 @@ const styles = {
   // '&[data-state="closed"]': { borderColor: 'red' },
   // '&[data-state="instant-open"]': { borderColor: 'green' },
 };
-const triggerAttrClass = css({ '&[data-radix-tooltip-trigger]': styles });
-const contentAttrClass = css({ '&[data-radix-tooltip-content]': styles });
-const arrowAttrClass = css({ '&[data-radix-tooltip-arrow]': styles });
+const triggerAttrClass = css({ '&[dataRadixTooltipTrigger]': styles });
+const contentAttrClass = css({ '&[dataRadixTooltipContent]': styles });
+const arrowAttrClass = css({ '&[dataRadixTooltipArrow]': styles });
