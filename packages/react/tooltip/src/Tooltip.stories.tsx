@@ -635,7 +635,6 @@ export const Chromatic = () => (
             className={chromaticTriggerClass}
             style={{
               position: 'absolute',
-              side: 10,
               ...((side === 'right' || side === 'left') &&
                 (align === 'start'
                   ? { bottom: 10 }
