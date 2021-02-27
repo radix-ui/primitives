@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  createContext,
+  createContextObj,
   composeEventHandlers,
   useControlledState,
   useComposedRefs,
@@ -36,10 +36,7 @@ type RadioPrimitive = Polymorphic.ForwardRefComponent<typeof RADIO_DEFAULT_TAG, 
 
 type RadioContextValue = { checked: boolean; disabled?: boolean };
 
-const [RadioContext, useRadioContext] = createContext<RadioContextValue>(
-  RADIO_NAME + 'Context',
-  RADIO_NAME
-);
+const [RadioProvider, useRadioContext] = createContextObj<RadioContextValue>(RADIO_NAME);
 
 const Radio = React.forwardRef((props, forwardedRef) => {
   const {
@@ -66,8 +63,6 @@ const Radio = React.forwardRef((props, forwardedRef) => {
     defaultProp: defaultChecked,
   });
 
-  const context = React.useMemo(() => ({ checked, disabled }), [checked, disabled]);
-
   return (
     /**
      * The `input` is hidden from non-SR and SR users as it only exists to
@@ -89,7 +84,7 @@ const Radio = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <RadioContext.Provider value={context}>
+      <RadioProvider checked={checked} disabled={disabled}>
         <Primitive
           type="button"
           role="radio"
@@ -112,7 +107,7 @@ const Radio = React.forwardRef((props, forwardedRef) => {
             checkForDefaultPrevented: false,
           })}
         />
-      </RadioContext.Provider>
+      </RadioProvider>
     </>
   );
 }) as RadioPrimitive;
