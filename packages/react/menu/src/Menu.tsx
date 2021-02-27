@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   composeEventHandlers,
   composeRefs,
-  createContext,
+  createContextObj,
   extendComponent,
   useCallbackRef,
   useComposedRefs,
@@ -38,13 +38,10 @@ const MENU_NAME = 'Menu';
 
 type MenuContextValue = {
   menuRef: React.RefObject<HTMLDivElement>;
-  setItemsReachable: React.Dispatch<React.SetStateAction<boolean>>;
-  onOpenChange?: (open: boolean) => void;
+  onItemsReachableChange(open: boolean): void;
+  onOpenChange(open: boolean): void;
 };
-const [MenuContext, useMenuContext] = createContext<MenuContextValue>(
-  MENU_NAME + 'Context',
-  MENU_NAME
-);
+const [MenuProvider, useMenuContext] = createContextObj<MenuContextValue>(MENU_NAME);
 
 type MenuOwnProps = Merge<
   Polymorphic.OwnProps<typeof MenuImpl>,
@@ -173,17 +170,11 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
     portalled,
     ...menuProps
   } = props;
-
   const handleOpenChange = useCallbackRef(onOpenChange);
   const menuRef = React.useRef<HTMLDivElement>(null);
   const [menuTabIndex, setMenuTabIndex] = React.useState(0);
   const [itemsReachable, setItemsReachable] = React.useState(false);
   const menuTypeaheadProps = useMenuTypeahead();
-
-  const context = React.useMemo(
-    () => ({ menuRef, setItemsReachable, onOpenChange: handleOpenChange }),
-    [handleOpenChange]
-  );
 
   React.useEffect(() => {
     setMenuTabIndex(itemsReachable ? -1 : 0);
@@ -210,7 +201,11 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
   return (
     <PortalWrapper>
       <ScrollLockWrapper>
-        <MenuContext.Provider value={context}>
+        <MenuProvider
+          menuRef={menuRef}
+          onItemsReachableChange={setItemsReachable}
+          onOpenChange={handleOpenChange}
+        >
           <RovingFocusGroup
             reachable={itemsReachable}
             onReachableChange={setItemsReachable}
@@ -326,7 +321,7 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
               )}
             </FocusScope>
           </RovingFocusGroup>
-        </MenuContext.Provider>
+        </MenuProvider>
       </ScrollLockWrapper>
     </PortalWrapper>
   );
@@ -484,7 +479,7 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       })}
       // make items unreachable when an item is blurred
       onBlur={composeEventHandlers(itemProps.onBlur, (event) => {
-        context.setItemsReachable(false);
+        context.onItemsReachableChange(false);
       })}
       // focus the menu if the mouse leaves an item
       onMouseLeave={composeEventHandlers(itemProps.onMouseLeave, (event) => {
