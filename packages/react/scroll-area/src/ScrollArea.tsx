@@ -407,31 +407,6 @@ const ScrollAreaImpl = React.forwardRef(function ScrollAreaImpl(props, forwarded
     hoverProps: { onPointerEnter, onPointerLeave },
     isHovered,
   } = useHover();
-
-  const context: ScrollAreaContextValue = React.useMemo(() => {
-    return {
-      dir: props.dir,
-      isHovered,
-      onScroll: handleScroll,
-      overflowX,
-      overflowY,
-      prefersReducedMotion,
-      scrollbarVisibility,
-      scrollbarVisibilityRestTimeout,
-      trackClickBehavior,
-    };
-  }, [
-    props.dir,
-    handleScroll,
-    isHovered,
-    overflowX,
-    overflowY,
-    prefersReducedMotion,
-    scrollbarVisibility,
-    scrollbarVisibilityRestTimeout,
-    trackClickBehavior,
-  ]);
-
   const ref = useComposedRefs(forwardedRef, scrollAreaRef);
 
   useBorderBoxResizeObserver(scrollAreaRef, (size, scrollAreaElement) => {
