@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow } from './Tooltip';
 import { Slot } from '@radix-ui/react-slot';
-import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/utils';
+import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Tooltip' };

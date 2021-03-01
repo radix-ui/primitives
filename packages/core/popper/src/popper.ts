@@ -1,9 +1,13 @@
 import * as CSS from 'csstype';
-import { makeRect, getOppositeSide, getCollisions, getContractedRect } from '@radix-ui/utils';
 
-import type { Axis, Side, Align, Point, Size } from '@radix-ui/utils';
+const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const;
+const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
 
-type Collisions = ReturnType<typeof getCollisions>;
+type Axis = 'x' | 'y';
+type Side = typeof SIDE_OPTIONS[number];
+type Align = typeof ALIGN_OPTIONS[number];
+type Point = { x: number; y: number };
+type Size = { width: number; height: number };
 
 type GetPlacementDataOptions = {
   /** The rect of the anchor we are placing around */
@@ -48,7 +52,7 @@ type PlacementData = {
  * - the placed side (because it might have changed because of collisions)
  * - the placed align (because it might have changed because of collisions)
  */
-export function getPlacementData({
+function getPlacementData({
   anchorRect,
   popperSize,
   arrowSize,
@@ -105,7 +109,7 @@ export function getPlacementData({
   }
 
   // create a new rect as if element had been moved to new placement
-  const popperRect = makeRect(popperSize, popperPoint);
+  const popperRect = DOMRect.fromRect({ ...popperSize, ...popperPoint });
 
   // create a new rect representing the collision boundaries but taking into account any added tolerance
   const collisionBoundariesRectWithTolerance = getContractedRect(
@@ -120,7 +124,10 @@ export function getPlacementData({
   // this is because we need to check for potential collisions if we were to swap side
   const oppositeSide = getOppositeSide(side);
   const oppositeSidePopperPoint = allPlacementPoints[oppositeSide][align];
-  const updatedOppositeSidePopperPoint = makeRect(popperSize, oppositeSidePopperPoint);
+  const updatedOppositeSidePopperPoint = DOMRect.fromRect({
+    ...popperSize,
+    ...oppositeSidePopperPoint,
+  });
   const oppositeSidePopperCollisions = getCollisions(
     updatedOppositeSidePopperPoint,
     collisionBoundariesRectWithTolerance
@@ -244,7 +251,7 @@ function getPopperSlotsForAxis(anchorRect: ClientRect, popperSize: Size, axis: A
 /**
  * Gets an adjusted side based on collision information
  */
-export function getSideAccountingForCollisions(
+function getSideAccountingForCollisions(
   /** The side we want to ideally position to */
   side: Side,
   /** The collisions for this given side */
@@ -261,7 +268,7 @@ export function getSideAccountingForCollisions(
 /**
  * Gets an adjusted alignment based on collision information
  */
-export function getAlignAccountingForCollisions(
+function getAlignAccountingForCollisions(
   /** The size of the popper to place */
   popperSize: Size,
   /** The size of the anchor we are placing around */
@@ -456,3 +463,51 @@ function getArrowCssDirection(side: Side, align: Align): CSS.Property.Direction 
 
   return 'ltr';
 }
+
+/**
+ * Gets the opposite side of a given side (ie. top => bottom, left => right, …)
+ */
+function getOppositeSide(side: Side): Side {
+  const oppositeSides: Record<Side, Side> = {
+    top: 'bottom',
+    right: 'left',
+    bottom: 'top',
+    left: 'right',
+  };
+  return oppositeSides[side];
+}
+
+/**
+ * Creates a new rect (`ClientRect`) based on a given one but contracted by
+ * a given amout on each side.
+ */
+function getContractedRect(rect: ClientRect, amount: number) {
+  return DOMRect.fromRect({
+    width: rect.width - amount * 2,
+    height: rect.height - amount * 2,
+    x: rect.left + amount,
+    y: rect.top + amount,
+  });
+}
+
+/**
+ * Gets collisions for each side of a rect (top, right, bottom, left)
+ */
+function getCollisions(
+  /** The rect to test collisions against */
+  rect: ClientRect,
+  /** The rect which represents the boundaries for collision checks */
+  collisionBoundariesRect: ClientRect
+) {
+  return {
+    top: rect.top < collisionBoundariesRect.top,
+    right: rect.right > collisionBoundariesRect.right,
+    bottom: rect.bottom > collisionBoundariesRect.bottom,
+    left: rect.left < collisionBoundariesRect.left,
+  };
+}
+
+type Collisions = ReturnType<typeof getCollisions>;
+
+export { getPlacementData, SIDE_OPTIONS, ALIGN_OPTIONS };
+export type { Side, Align };

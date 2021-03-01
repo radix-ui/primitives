@@ -34,7 +34,7 @@ import { Queue } from './queue';
 import { useHover } from './useHover';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge, Axis, Size } from '@radix-ui/utils';
+import type { Merge } from '@radix-ui/utils';
 
 const SCROLL_AREA_CSS_PROPS_LIST = [
   'positionWidth',
@@ -2381,6 +2381,8 @@ function updateThumbPosition(args: {
    Types
    ---------------------------------------------------------------------------------------------- */
 
+type Axis = 'x' | 'y';
+type Size = { width: number; height: number };
 type LogicalDirection = 'start' | 'end';
 type OverflowBehavior = 'auto' | 'hidden' | 'scroll' | 'visible';
 type PointerPosition = { x: number; y: number };

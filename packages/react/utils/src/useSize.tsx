@@ -2,13 +2,11 @@
 
 import * as React from 'react';
 
-import type { Size } from '@radix-ui/utils';
-
 export function useSize(
   /** A reference to the element whose size to observe */
   refToObserve: React.RefObject<HTMLElement | SVGElement>
 ) {
-  const [size, setSize] = React.useState<Size | undefined>(undefined);
+  const [size, setSize] = React.useState<{ width: number; height: number } | undefined>(undefined);
 
   React.useEffect(() => {
     if (refToObserve.current) {
