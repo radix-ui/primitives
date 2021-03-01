@@ -1,4 +1,4 @@
-type MeasurableElement = { getBoundingClientRect(): ClientRect };
+type Measurable = { getBoundingClientRect(): ClientRect };
 
 /**
  * Observes an element's rectangle on screen (getBoundingClientRect)
@@ -7,7 +7,7 @@ type MeasurableElement = { getBoundingClientRect(): ClientRect };
  */
 function observeElementRect(
   /** The element whose rect to observe */
-  elementToObserve: MeasurableElement,
+  elementToObserve: Measurable,
   /** The callback which will be called when the rect changes */
   callback: CallbackFn
 ) {
@@ -61,7 +61,7 @@ type ObservedData = {
 };
 
 let rafId: number;
-const observedElements: Map<MeasurableElement, ObservedData> = new Map();
+const observedElements: Map<Measurable, ObservedData> = new Map();
 
 function runLoop() {
   const changedRectsData: Array<ObservedData> = [];
@@ -102,4 +102,4 @@ function rectEquals(rect1: ClientRect, rect2: ClientRect) {
 }
 
 export { observeElementRect };
-export type { MeasurableElement };
+export type { Measurable };

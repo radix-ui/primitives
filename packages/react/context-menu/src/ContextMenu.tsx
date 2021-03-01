@@ -14,11 +14,11 @@ import type { Point } from '@radix-ui/utils';
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
 type ExtractRef<T> = T extends React.RefObject<infer B> ? B : never;
-type MeasurableElement = ExtractRef<React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef']>;
+type Anchor = ExtractRef<React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef']>;
 
 type ContextMenuContextValue = {
   anchorPointRef: React.MutableRefObject<Point>;
-  anchorRef: React.MutableRefObject<MeasurableElement | null>;
+  anchorRef: React.MutableRefObject<Anchor | null>;
   open: boolean;
   onOpenChange(open: boolean): void;
 };

@@ -7,7 +7,7 @@ import { getSelector, getSelectorObj, makeRect } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Side, Align, Size, Merge } from '@radix-ui/utils';
-import type { MeasurableElement } from '@radix-ui/rect';
+import type { Measurable } from '@radix-ui/rect';
 
 /* -------------------------------------------------------------------------------------------------
  * Popper
@@ -26,7 +26,7 @@ const [PopperProvider, usePopperContext] = createContextObj<PopperContextValue>(
 type PopperOwnProps = Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
-    anchorRef: React.RefObject<MeasurableElement>;
+    anchorRef: React.RefObject<Measurable>;
     side?: Side;
     sideOffset?: number;
     align?: Align;

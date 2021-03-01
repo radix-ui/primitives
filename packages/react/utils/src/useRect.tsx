@@ -2,7 +2,7 @@ import * as React from 'react';
 import { observeElementRect } from '@radix-ui/rect';
 import { useLayoutEffect } from './useLayoutEffect';
 
-import type { MeasurableElement } from '@radix-ui/rect';
+import type { Measurable } from '@radix-ui/rect';
 
 /**
  * Use this custom hook to get access to an element's rect (getBoundingClientRect)
@@ -10,7 +10,7 @@ import type { MeasurableElement } from '@radix-ui/rect';
  */
 export function useRect(
   /** A reference to the element whose rect to observe */
-  refToObserve: React.RefObject<MeasurableElement>
+  refToObserve: React.RefObject<Measurable>
 ) {
   const [rect, setRect] = React.useState<ClientRect>();
   useLayoutEffect(() => {
