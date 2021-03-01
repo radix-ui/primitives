@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getSelector } from '@radix-ui/utils';
 import { wrap, clamp } from '@radix-ui/number';
-import { createContext, useControlledState } from '@radix-ui/react-utils';
+import { createContextObj, useControlledState } from '@radix-ui/react-utils';
 import { useId } from '@radix-ui/react-id';
 
 /* -------------------------------------------------------------------------------------------------
@@ -19,15 +19,14 @@ type RovingFocusGroupOptions = {
 type RovingContextValue = {
   groupId: string;
   tabStopId: string | null;
-  setTabStopId: React.Dispatch<React.SetStateAction<string | null>>;
+  onTabStopIdChange(itemId: string, active?: boolean): void;
   reachable: boolean;
-  setReachable: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  onReachableChange(reachable: boolean): void;
 } & RovingFocusGroupOptions;
 
 const GROUP_NAME = 'RovingFocusGroup';
 
-const [RovingFocusContext, useRovingFocusContext] = createContext<RovingContextValue>(
-  GROUP_NAME + 'Context',
+const [RovingFocusProvider, useRovingFocusContext] = createContextObj<RovingContextValue>(
   GROUP_NAME
 );
 
@@ -46,15 +45,30 @@ function RovingFocusGroup(props: RovingFocusGroupProps) {
     onChange: props.onReachableChange,
   });
   const [tabStopId, setTabStopId] = React.useState<string | null>(null);
-  const groupId = useId();
-
-  // prettier-ignore
-  const context = React.useMemo(() => ({
-    groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop }),
-    [groupId, tabStopId, setTabStopId, reachable, setReachable, orientation, dir, loop ]
+  const handleTabStopIdChange = React.useCallback(
+    (itemId, active) => {
+      setTabStopId((prevTabStopId) => {
+        const nextTabStopId = active || !prevTabStopId ? itemId : prevTabStopId;
+        return reachable ? nextTabStopId : null;
+      });
+    },
+    [reachable]
   );
 
-  return <RovingFocusContext.Provider value={context}>{children}</RovingFocusContext.Provider>;
+  return (
+    <RovingFocusProvider
+      groupId={useId()}
+      orientation={orientation}
+      dir={dir}
+      loop={loop}
+      tabStopId={tabStopId}
+      onTabStopIdChange={handleTabStopIdChange}
+      reachable={reachable}
+      onReachableChange={setReachable}
+    >
+      {children}
+    </RovingFocusProvider>
+  );
 }
 
 RovingFocusGroup.displayName = GROUP_NAME;
@@ -72,16 +86,10 @@ function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
   const isTabStop = itemId === context.tabStopId;
 
   // keep `context.tabStopId` in sync
-  const { reachable, setTabStopId } = context;
+  const { onTabStopIdChange } = context;
   React.useEffect(() => {
-    setTabStopId((prevTabStopId) => {
-      if (reachable) {
-        return active || !prevTabStopId ? itemId : prevTabStopId;
-      } else {
-        return null;
-      }
-    });
-  }, [active, itemId, reachable, setTabStopId]);
+    onTabStopIdChange(itemId, active);
+  }, [active, itemId, onTabStopIdChange]);
 
   if (disabled) {
     return {
@@ -96,8 +104,8 @@ function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
     [GROUP_ID_DATA_ATTR]: context.groupId,
     tabIndex: isTabStop ? 0 : -1,
     onFocus: () => {
-      context.setReachable(true);
-      context.setTabStopId(itemId);
+      context.onReachableChange(true);
+      context.onTabStopIdChange(itemId);
     },
     onKeyDown: (event: React.KeyboardEvent) => {
       const focusIntent = getFocusIntent(event, context.orientation, context.dir);
