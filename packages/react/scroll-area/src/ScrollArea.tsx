@@ -19,14 +19,6 @@ import {
   usePrefersReducedMotion,
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
-import {
-  canUseDOM,
-  getSelector,
-  getSelectorObj,
-  getResizeObserverEntryBorderBoxSize,
-  isMainClick,
-  namespaced,
-} from '@radix-ui/utils';
 import { clamp } from '@radix-ui/number';
 import * as React from 'react';
 import { bezier } from './bezier-easing';
@@ -281,7 +273,6 @@ type ScrollAreaNativePrimitive = Polymorphic.ForwardRefComponent<
 
 const ScrollAreaNative = React.forwardRef(function ScrollAreaNative(props, forwardedRef) {
   const {
-    selector = getSelector(ROOT_NAME),
     overflowX,
     overflowY,
     scrollbarVisibility,
@@ -298,7 +289,6 @@ const ScrollAreaNative = React.forwardRef(function ScrollAreaNative(props, forwa
   return (
     <Primitive
       {...domProps}
-      selector={selector}
       ref={ref}
       style={{
         ...domProps.style,
@@ -345,7 +335,6 @@ const initialState: ScrollAreaReducerState = {
 
 const ScrollAreaImpl = React.forwardRef(function ScrollAreaImpl(props, forwardedRef) {
   const {
-    selector = getSelector(ROOT_NAME),
     onScroll,
     overflowX,
     overflowY,
@@ -472,7 +461,6 @@ const ScrollAreaImpl = React.forwardRef(function ScrollAreaImpl(props, forwarded
           <ScrollAreaStateContext.Provider value={reducerState}>
             <Primitive
               {...domProps}
-              selector={selector}
               ref={ref}
               style={{
                 ...domProps.style,
@@ -504,7 +492,6 @@ const ScrollAreaViewportImpl = React.forwardRef(function ScrollAreaViewportImpl(
   props,
   forwardedRef
 ) {
-  const { selector = getSelector(VIEWPORT_NAME), ...domProps } = props;
   const {
     positionRef,
     thumbXRef,
@@ -629,7 +616,7 @@ const ScrollAreaViewportImpl = React.forwardRef(function ScrollAreaViewportImpl(
 
   return (
     <div
-      {...(selector ? getSelectorObj(selector + '-position') : undefined)}
+      data-radix-scroll-area-viewport-position=""
       ref={positionRef}
       onScroll={handleScroll}
       style={{
@@ -645,7 +632,7 @@ const ScrollAreaViewportImpl = React.forwardRef(function ScrollAreaViewportImpl(
       }}
     >
       <div
-        {...(selector ? getSelectorObj(selector + '-position-inner') : undefined)}
+        data-radix-scroll-area-viewport-position-inner=""
         style={{
           // The browser won’t add right padding of the viewport when you scroll to the end of the
           // x axis if we put the scrollbar offset padding directly on the position element. We
@@ -657,7 +644,7 @@ const ScrollAreaViewportImpl = React.forwardRef(function ScrollAreaViewportImpl(
           paddingRight: `var(${SCROLL_AREA_CSS_PROPS.scrollbarYOffset})`,
         }}
       >
-        <Primitive selector={selector} {...domProps} ref={ref} />
+        <Primitive {...props} ref={ref} />
       </div>
     </div>
   );
@@ -671,11 +658,7 @@ type ScrollAreaViewportPrimitive = Polymorphic.ForwardRefComponent<
 
 const ScrollAreaViewport = React.forwardRef(function ScrollAreaViewport(props, forwardedRef) {
   return useNativeScrollArea() ? (
-    <Primitive
-      {...props}
-      selector={props.selector || getSelector(VIEWPORT_NAME)}
-      ref={forwardedRef}
-    />
+    <Primitive {...props} ref={forwardedRef} />
   ) : (
     <ScrollAreaViewportImpl {...props} ref={forwardedRef} />
   );
@@ -852,12 +835,10 @@ type ScrollAreaScrollbarXPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollAreaScrollbarX = React.forwardRef(function ScrollAreaScrollbarX(props, forwardedRef) {
-  const { selector = getSelector(SCROLLBAR_X_NAME), ...scrollbarXProps } = props;
   const { domSizes } = useScrollAreaStateContext();
   return useNativeScrollArea() ? null : (
     <ScrollAreaScrollbar
-      {...scrollbarXProps}
-      selector={selector}
+      {...props}
       ref={forwardedRef}
       axis="x"
       name={SCROLLBAR_X_NAME}
@@ -881,12 +862,10 @@ type ScrollAreaScrollbarYPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollAreaScrollbarY = React.forwardRef(function ScrollAreaScrollbarY(props, forwardedRef) {
-  const { selector = getSelector(SCROLLBAR_Y_NAME), ...scrollbarYProps } = props;
   const { domSizes } = useScrollAreaStateContext();
   return useNativeScrollArea() ? null : (
     <ScrollAreaScrollbar
-      {...scrollbarYProps}
-      selector={selector}
+      {...props}
       ref={forwardedRef}
       axis="y"
       name={SCROLLBAR_Y_NAME}
@@ -916,11 +895,7 @@ type ScrollAreaTrackPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forwardedRef) {
-  const {
-    selector = getSelector(TRACK_NAME),
-    onPointerDown: onPointerDownProp,
-    ...domProps
-  } = props;
+  const { onPointerDown: onPointerDownProp, ...domProps } = props;
   const { axis, scrollAnimationQueue } = useScrollbarContext(TRACK_NAME);
   const { dispatch } = useDispatchContext(TRACK_NAME);
   const refsContext = useScrollAreaRefs(TRACK_NAME);
@@ -1126,7 +1101,7 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
     trackRef,
   ]);
 
-  return <Primitive {...domProps} selector={selector} ref={ref} data-axis={axis} />;
+  return <Primitive {...domProps} ref={ref} data-axis={axis} />;
 }) as ScrollAreaTrackPrimitive;
 
 ScrollAreaTrack.displayName = TRACK_NAME;
@@ -1144,11 +1119,7 @@ type ScrollAreaThumbPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollAreaThumb = React.forwardRef(function ScrollAreaThumb(props, forwardedRef) {
-  const {
-    selector = getSelector(THUMB_NAME),
-    onPointerDown: onPointerDownProp,
-    ...domProps
-  } = props;
+  const { onPointerDown: onPointerDownProp, ...domProps } = props;
   const { axis } = useScrollbarContext(THUMB_NAME);
   const refsContext = useScrollAreaRefs(THUMB_NAME);
   const { dispatch } = useDispatchContext(THUMB_NAME);
@@ -1301,7 +1272,6 @@ const ScrollAreaThumb = React.forwardRef(function ScrollAreaThumb(props, forward
   return (
     <Primitive
       {...domProps}
-      selector={selector}
       ref={ref}
       data-axis={axis}
       style={{
@@ -1504,15 +1474,8 @@ type ScrollAreaButtonStartPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollAreaButtonStart = React.forwardRef(function ScrollAreaButtonStart(props, forwardedRef) {
-  const { selector = getSelector(BUTTON_START_NAME), ...buttonStartProps } = props;
   return (
-    <ScrollAreaButton
-      {...buttonStartProps}
-      selector={selector}
-      ref={forwardedRef}
-      name={BUTTON_START_NAME}
-      direction="start"
-    />
+    <ScrollAreaButton {...props} ref={forwardedRef} name={BUTTON_START_NAME} direction="start" />
   );
 }) as ScrollAreaButtonStartPrimitive;
 
@@ -1529,16 +1492,7 @@ type ScrollAreaButtonEndPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollAreaButtonEnd = React.forwardRef(function ScrollAreaButtonEnd(props, forwardedRef) {
-  const { selector = getSelector(BUTTON_END_NAME), ...buttonEndProps } = props;
-  return (
-    <ScrollAreaButton
-      {...buttonEndProps}
-      selector={selector}
-      ref={forwardedRef}
-      name={BUTTON_END_NAME}
-      direction="end"
-    />
-  );
+  return <ScrollAreaButton {...props} ref={forwardedRef} name={BUTTON_END_NAME} direction="end" />;
 }) as ScrollAreaButtonEndPrimitive;
 
 ScrollAreaButtonEnd.displayName = BUTTON_END_NAME;
@@ -1556,7 +1510,6 @@ type ScrollAreaCornerImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollAreaCornerImpl = React.forwardRef(function ScrollAreaCornerImpl(props, forwardedRef) {
-  const { selector = getSelector(CORNER_NAME), ...cornerProps } = props;
   const { positionRef } = useScrollAreaRefs(CORNER_NAME);
   const { dispatch } = useDispatchContext(CORNER_NAME);
   const { dir } = useScrollAreaContext(CORNER_NAME);
@@ -1606,8 +1559,7 @@ const ScrollAreaCornerImpl = React.forwardRef(function ScrollAreaCornerImpl(prop
 
   return (
     <Primitive
-      {...cornerProps}
-      selector={selector}
+      {...props}
       ref={forwardedRef}
       style={{
         ...props.style,
@@ -2298,7 +2250,8 @@ function getValuesFromSizeObjects(obj: Record<string, Size>) {
 }
 
 function makeCssProperty(name: string) {
-  return `--${namespaced(`ScrollArea${ucFirst(name)}`)}`;
+  const cssProp = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+  return `--radix-scroll-area-${cssProp}`;
 }
 
 function reduceToCssProperties(
@@ -2335,7 +2288,7 @@ function shouldFallbackToNativeScroll() {
 }
 
 function supportsCustomScrollbars() {
-  if (!canUseDOM()) return false;
+  if (!Boolean(globalThis?.document)) return false;
   let supportsWebkitScrollbarSelector = false;
   try {
     // We cannot rely on `CSS.supports('selector(::-webkit-scrollbar)')` because the selector syntax
@@ -2346,10 +2299,6 @@ function supportsCustomScrollbars() {
   } catch (error) {}
 
   return !!(window.CSS?.supports?.('scrollbar-width: none') || supportsWebkitScrollbarSelector);
-}
-
-function ucFirst(string: string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 function updateThumbPosition(args: {
@@ -2374,6 +2323,24 @@ function updateThumbPosition(args: {
   } else if (axis === 'y') {
     thumbElement.style.top = `${thumbPos * 100}%`;
   }
+}
+
+function getResizeObserverEntryBorderBoxSize(entry: ResizeObserverEntry): ResizeObserverSize {
+  if ('borderBoxSize' in entry) {
+    return Array.isArray(entry.borderBoxSize) ? entry.borderBoxSize[0] : entry.borderBoxSize;
+  }
+
+  // for browsers that don't support `borderBoxSize` we calculate a rect ourselves to get the
+  // correct border box.
+  const rect = (entry as ResizeObserverEntry).target.getBoundingClientRect();
+  return {
+    inlineSize: rect.width,
+    blockSize: rect.height,
+  };
+}
+
+function isMainClick(event: MouseEvent | PointerEvent) {
+  return event.button === 0;
 }
 
 /* -------------------------------------------------------------------------------------------------

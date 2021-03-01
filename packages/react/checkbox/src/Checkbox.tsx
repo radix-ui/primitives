@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import {
   createContextObj,
   composeEventHandlers,
@@ -49,7 +48,6 @@ const [CheckboxProvider, useCheckboxContext] = createContextObj<CheckboxContextV
 const Checkbox = React.forwardRef((props, forwardedRef) => {
   const {
     as = CHECKBOX_DEFAULT_TAG,
-    selector = getSelector(CHECKBOX_NAME),
     'aria-labelledby': ariaLabelledby,
     name,
     checked: checkedProp,
@@ -108,7 +106,6 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           data-readonly={readOnly}
           {...checkboxProps}
           as={as}
-          selector={selector}
           ref={ref}
           role="checkbox"
           disabled={disabled}
@@ -152,12 +149,7 @@ type CheckboxIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const CheckboxIndicator = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = INDICATOR_DEFAULT_TAG,
-    selector = getSelector(INDICATOR_NAME),
-    forceMount,
-    ...indicatorProps
-  } = props;
+  const { as = INDICATOR_DEFAULT_TAG, forceMount, ...indicatorProps } = props;
   const context = useCheckboxContext(INDICATOR_NAME);
   return (
     <Presence present={forceMount || context.state === 'indeterminate' || context.state === true}>
@@ -166,7 +158,6 @@ const CheckboxIndicator = React.forwardRef((props, forwardedRef) => {
         data-disabled={context.disabled ? '' : undefined}
         {...indicatorProps}
         as={as}
-        selector={selector}
         ref={forwardedRef}
       />
     </Presence>

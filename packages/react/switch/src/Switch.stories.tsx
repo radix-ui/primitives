@@ -85,7 +85,7 @@ export const Chromatic = () => (
       <SwitchThumb className={thumbClass} />
     </Switch>
 
-    <h1>Data attribute selectors</h1>
+    <h1>State attributes</h1>
     <h2>Unchecked</h2>
     <Switch className={rootAttrClass}>
       <SwitchThumb className={thumbAttrClass} />
@@ -170,5 +170,5 @@ const styles = {
   '&[data-disabled]': { borderStyle: 'dashed' },
   '&:disabled': { opacity: 0.5 },
 };
-const rootAttrClass = css({ '&[data-radix-switch]': styles });
-const thumbAttrClass = css({ '&[data-radix-switch-thumb]': styles });
+const rootAttrClass = css(styles);
+const thumbAttrClass = css(styles);

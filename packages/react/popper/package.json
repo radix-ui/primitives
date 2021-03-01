@@ -21,8 +21,7 @@
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-utils": "workspace:*",
-    "@radix-ui/rect": "workspace:*",
-    "@radix-ui/utils": "workspace:*"
+    "@radix-ui/rect": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

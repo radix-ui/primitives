@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useId } from '@radix-ui/react-id';
@@ -23,13 +22,7 @@ type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
 const Label = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = DEFAULT_TAG,
-    selector = getSelector(NAME),
-    htmlFor,
-    id: idProp,
-    ...labelProps
-  } = props;
+  const { as = DEFAULT_TAG, htmlFor, id: idProp, ...labelProps } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
   const id = useId(idProp);
@@ -78,12 +71,12 @@ const Label = React.forwardRef((props, forwardedRef) => {
 
   return (
     <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
-      <Primitive {...labelProps} as={as} selector={selector} ref={ref} id={id} role="label" />
+      <Primitive {...labelProps} as={as} ref={ref} id={id} role="label" />
     </LabelContext.Provider>
   );
 }) as LabelPrimitive;
 
-Label.displayName = 'Label';
+Label.displayName = NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

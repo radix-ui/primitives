@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import {
   createContextObj,
   useComposedRefs,
@@ -139,7 +138,7 @@ type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useTooltipContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
@@ -150,7 +149,6 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
       data-state={context.stateAttribute}
       {...triggerProps}
       as={as}
-      selector={selector}
       ref={composedTriggerRef}
       onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
         stateMachine.transition('mouseEntered', { id: context.contentId })
@@ -229,14 +227,7 @@ type TooltipContentImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
-  const {
-    selector = getSelector(CONTENT_NAME),
-    children,
-    'aria-label': ariaLabel,
-    anchorRef,
-    portalled = true,
-    ...contentProps
-  } = props;
+  const { children, 'aria-label': ariaLabel, anchorRef, portalled = true, ...contentProps } = props;
   const context = useTooltipContext(CONTENT_NAME);
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
@@ -246,7 +237,6 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
       <PopperPrimitive.Root
         data-state={context.stateAttribute}
         {...contentProps}
-        selector={selector}
         ref={forwardedRef}
         anchorRef={anchorRef || context.triggerRef}
         style={{

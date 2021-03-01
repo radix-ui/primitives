@@ -10,7 +10,6 @@ import {
 import { Primitive } from '@radix-ui/react-primitive';
 import { Radio, RadioIndicator } from './Radio';
 import { useLabelContext } from '@radix-ui/react-label';
-import { getSelector } from '@radix-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -52,7 +51,6 @@ const [RadioGroupProvider, useRadioGroupContext] = createContextObj<RadioGroupCo
 const RadioGroup = React.forwardRef((props, forwardedRef) => {
   const {
     name,
-    selector = getSelector(RADIO_GROUP_NAME),
     'aria-labelledby': ariaLabelledby,
     defaultValue,
     value: valueProp,
@@ -70,13 +68,7 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
   });
 
   const primitive = (
-    <Primitive
-      {...groupProps}
-      selector={selector}
-      ref={forwardedRef}
-      role="radiogroup"
-      aria-labelledby={labelledBy}
-    />
+    <Primitive {...groupProps} ref={forwardedRef} role="radiogroup" aria-labelledby={labelledBy} />
   );
 
   return (
@@ -168,7 +160,7 @@ type RadioGroupItemImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const RadioGroupItemImpl = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(ITEM_NAME), disabled, required, ...itemProps } = props;
+  const { disabled, required, ...itemProps } = props;
   const context = useRadioGroupContext(ITEM_NAME);
   const isChecked = context.value === props.value;
   const handleChange = composeEventHandlers(itemProps.onCheckedChange, context.onValueChange);
@@ -177,7 +169,6 @@ const RadioGroupItemImpl = React.forwardRef((props, forwardedRef) => {
     <Radio
       {...itemProps}
       name={context.name}
-      selector={selector}
       ref={forwardedRef}
       disabled={disabled}
       required={required ?? context.required}

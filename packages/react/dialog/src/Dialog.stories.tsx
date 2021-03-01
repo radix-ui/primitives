@@ -189,7 +189,7 @@ export const Chromatic = () => (
     </div>
 
     <div>
-      <h1>Data attribute selectors</h1>
+      <h1>State attributes</h1>
       <h2>Closed</h2>
       <Dialog>
         <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
@@ -293,7 +293,7 @@ const styles = {
   '&[data-state="closed"]': { borderColor: 'red' },
   '&[data-state="open"]': { borderColor: 'green' },
 };
-const triggerAttrClass = css({ '&[data-radix-dialog-trigger]': styles });
-const overlayAttrClass = css(overlayClass, { '&[data-radix-dialog-overlay]': styles });
-const contentAttrClass = css(chromaticContentClass, { '&[data-radix-dialog-content]': styles });
-const closeAttrClass = css({ '&[data-radix-dialog-close]': styles });
+const triggerAttrClass = css(styles);
+const overlayAttrClass = css(overlayClass, styles);
+const contentAttrClass = css(chromaticContentClass, styles);
+const closeAttrClass = css(styles);

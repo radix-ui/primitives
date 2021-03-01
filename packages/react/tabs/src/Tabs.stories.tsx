@@ -145,7 +145,7 @@ export const Chromatic = () => (
       </TabsPanel>
     </Tabs>
 
-    <h1>Data attribute selectors</h1>
+    <h1>State attributes</h1>
     <Tabs defaultValue="tab3" className={rootAttrClass}>
       <TabsList aria-label="tabs example" className={listAttrClass}>
         <TabsTab value="tab1" className={tabAttrClass}>
@@ -265,13 +265,11 @@ const styles = {
   '&[data-state="inactive"]': { borderColor: 'red' },
   '&[data-state="active"]': { borderColor: 'green' },
 };
-const rootAttrClass = css({ '&[data-radix-tabs]': styles });
-const listAttrClass = css({ '&[data-radix-tabs-list]': styles });
-const tabAttrClass = css({ '&[data-radix-tabs-tab]': styles });
+const rootAttrClass = css(styles);
+const listAttrClass = css(styles);
+const tabAttrClass = css(styles);
 const panelAttrClass = css({
-  '&[data-radix-tabs-panel]': {
-    // ensure we can see the content (because it has `hidden` attribute)
-    display: 'block',
-    ...styles,
-  },
+  // ensure we can see the content (because it has `hidden` attribute)
+  display: 'block',
+  ...styles,
 });

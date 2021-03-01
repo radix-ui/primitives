@@ -7,7 +7,6 @@ import {
   useControlledState,
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
-import { getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useId } from '@radix-ui/react-id';
 
@@ -75,7 +74,7 @@ type DropdownMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useDropdownMenuContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
@@ -88,7 +87,6 @@ const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
       data-state={context.open ? 'open' : 'closed'}
       {...triggerProps}
       as={as}
-      selector={selector}
       ref={composedTriggerRef}
       onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
@@ -128,7 +126,6 @@ type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 
 const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(CONTENT_NAME),
     onCloseAutoFocus,
     disableOutsidePointerEvents = true,
     disableOutsideScroll = true,
@@ -140,7 +137,6 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
     <MenuPrimitive.Root
       id={context.contentId}
       {...contentProps}
-      selector={selector}
       ref={forwardedRef}
       disableOutsidePointerEvents={disableOutsidePointerEvents}
       disableOutsideScroll={disableOutsideScroll}

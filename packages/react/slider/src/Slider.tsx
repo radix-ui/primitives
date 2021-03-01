@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import { clamp } from '@radix-ui/number';
 import {
   composeEventHandlers,
@@ -398,7 +397,6 @@ type SliderPartPrimitive = Polymorphic.ForwardRefComponent<
 const SliderPart = React.forwardRef((props, forwardedRef) => {
   const {
     as = SLIDER_DEFAULT_TAG,
-    selector = getSelector(SLIDER_NAME),
     onSlideMouseDown,
     onSlideMouseMove,
     onSlideMouseUp,
@@ -435,7 +433,6 @@ const SliderPart = React.forwardRef((props, forwardedRef) => {
     <Primitive
       {...sliderProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
       onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
         // Slide only if main mouse button was clicked
@@ -504,7 +501,7 @@ type SliderTrackPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SliderTrack = React.forwardRef((props, forwardedRef) => {
-  const { as = TRACK_DEFAULT_TAG, selector = getSelector(TRACK_NAME), ...trackProps } = props;
+  const { as = TRACK_DEFAULT_TAG, ...trackProps } = props;
   const context = useSliderContext(TRACK_NAME);
   return (
     <Primitive
@@ -512,7 +509,6 @@ const SliderTrack = React.forwardRef((props, forwardedRef) => {
       data-orientation={context.orientation}
       {...trackProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
     />
   );
@@ -537,7 +533,7 @@ type SliderRangePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SliderRange = React.forwardRef((props, forwardedRef) => {
-  const { as = RANGE_DEFAULT_TAG, selector = getSelector(RANGE_NAME), ...rangeProps } = props;
+  const { as = RANGE_DEFAULT_TAG, ...rangeProps } = props;
   const context = useSliderContext(RANGE_NAME);
   const orientation = React.useContext(SliderOrientationContext);
   const ref = React.useRef<HTMLSpanElement>(null);
@@ -555,7 +551,6 @@ const SliderRange = React.forwardRef((props, forwardedRef) => {
       data-disabled={context.disabled ? '' : undefined}
       {...rangeProps}
       as={as}
-      selector={selector}
       ref={composedRefs}
       style={{
         ...props.style,
@@ -605,13 +600,7 @@ type SliderThumbImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = THUMB_DEFAULT_TAG,
-    selector = getSelector(THUMB_NAME),
-    index,
-    value,
-    ...thumbProps
-  } = props;
+  const { as = THUMB_DEFAULT_TAG, index, value, ...thumbProps } = props;
   const context = useSliderContext(THUMB_NAME);
   const orientation = React.useContext(SliderOrientationContext);
   const thumbRef = React.useRef<HTMLSpanElement>(null);
@@ -643,6 +632,7 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
       }}
     >
       <Primitive
+        data-radix-slider-thumb=""
         aria-label={props['aria-label'] || label}
         aria-valuemin={context.min}
         aria-valuenow={value}
@@ -653,7 +643,6 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
         role="slider"
         {...thumbProps}
         as={as}
-        selector={selector}
         ref={ref}
         tabIndex={0}
         onFocus={composeEventHandlers(props.onFocus, () => {
@@ -738,7 +727,7 @@ function getNextSortedValues(prevValues: number[] = [], nextValue: number, atInd
 }
 
 function isThumb(node: any): node is HTMLElement {
-  const thumbAttributeName = `data-${getSelector(THUMB_NAME)}`;
+  const thumbAttributeName = 'data-radix-slider-thumb';
   const thumbAttribute = node.getAttribute(thumbAttributeName);
   // `getAttribute` returns the attribute value and since we add the
   // attribute without a value, we must check it is an empty string

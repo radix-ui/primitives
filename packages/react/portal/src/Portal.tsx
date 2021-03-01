@@ -1,7 +1,6 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { useLayoutEffect } from '@radix-ui/react-utils';
-import { getSelector } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -27,9 +26,8 @@ type PortalPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const Portal = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(PORTAL_NAME), containerRef, style, ...portalProps } = props;
-  const hostElement =
-    containerRef?.current ?? (typeof document !== 'undefined' ? document.body : undefined);
+  const { containerRef, style, ...portalProps } = props;
+  const hostElement = containerRef?.current ?? globalThis?.document?.body;
   const [, forceUpdate] = React.useState({});
 
   /**
@@ -43,7 +41,6 @@ const Portal = React.forwardRef((props, forwardedRef) => {
   if (hostElement) {
     return ReactDOM.createPortal(
       <Primitive
-        selector={selector}
         {...portalProps}
         ref={forwardedRef}
         style={
@@ -71,6 +68,8 @@ const Portal = React.forwardRef((props, forwardedRef) => {
   // bail out of ssr
   return null;
 }) as PortalPrimitive;
+
+Portal.displayName = PORTAL_NAME;
 
 const Root = Portal;
 

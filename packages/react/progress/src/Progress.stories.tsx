@@ -47,7 +47,7 @@ export const Chromatic = () => (
       <ProgressIndicator className={chromaticIndicatorClass}>/</ProgressIndicator>
     </Progress>
 
-    <h1>Data attribute selectors</h1>
+    <h1>State attributes</h1>
     <h2>Loading (started)</h2>
     <Progress className={rootAttrClass} value={30}>
       <ProgressIndicator className={indicatorAttrClass}>/</ProgressIndicator>
@@ -126,10 +126,8 @@ const styles = {
   '&[data-state="indeterminate"]': { borderColor: 'purple' },
   '&[data-state="complete"]': { borderColor: 'green' },
 };
-const rootAttrClass = css({ '&[data-radix-progress]': styles });
-const indicatorAttrClass = css(indicatorPseudos, {
-  '&[data-radix-progress-indicator]': styles,
-});
+const rootAttrClass = css(styles);
+const indicatorAttrClass = css(indicatorPseudos, styles);
 
 type ProgressValue = number | null;
 function useProgressValueState(initialState: ProgressValue | (() => ProgressValue), max = 100) {

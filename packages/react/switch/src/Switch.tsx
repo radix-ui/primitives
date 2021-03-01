@@ -7,7 +7,6 @@ import {
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
-import { getSelector } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -39,7 +38,6 @@ const [SwitchProvider, useSwitchContext] = createContextObj<SwitchContextValue>(
 const Switch = React.forwardRef((props, forwardedRef) => {
   const {
     as = SWITCH_DEFAULT_TAG,
-    selector = getSelector(SWITCH_NAME),
     'aria-labelledby': ariaLabelledby,
     name,
     checked: checkedProp,
@@ -94,7 +92,6 @@ const Switch = React.forwardRef((props, forwardedRef) => {
           data-readonly={readOnly}
           {...switchProps}
           as={as}
-          selector={selector}
           ref={ref}
           disabled={disabled}
           value={value}
@@ -127,7 +124,7 @@ type SwitchThumbPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SwitchThumb = React.forwardRef((props, forwardedRef) => {
-  const { as = THUMB_DEFAULT_TAG, selector = getSelector(THUMB_NAME), ...thumbProps } = props;
+  const { as = THUMB_DEFAULT_TAG, ...thumbProps } = props;
   const context = useSwitchContext(THUMB_NAME);
   return (
     <Primitive
@@ -135,7 +132,6 @@ const SwitchThumb = React.forwardRef((props, forwardedRef) => {
       data-disabled={context.disabled ? '' : undefined}
       {...thumbProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
     />
   );

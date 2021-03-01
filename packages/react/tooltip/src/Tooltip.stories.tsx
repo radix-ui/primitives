@@ -638,25 +638,6 @@ export const Chromatic = () => (
         </div>
       </TooltipContent>
     </Tooltip>
-
-    <h1 style={{ marginTop: 100 }}>Data attribute selectors</h1>
-    <h2>Closed</h2>
-    <Tooltip>
-      <TooltipTrigger className={triggerAttrClass}>open</TooltipTrigger>
-      <TooltipContent className={contentAttrClass} sideOffset={5}>
-        Some content
-        <TooltipArrow className={arrowAttrClass} width={20} height={10} />
-      </TooltipContent>
-    </Tooltip>
-
-    <h2>Open</h2>
-    <Tooltip open>
-      <TooltipTrigger className={triggerAttrClass}>open</TooltipTrigger>
-      <TooltipContent className={contentAttrClass} side="right" sideOffset={5}>
-        Some content
-        <TooltipArrow className={arrowAttrClass} width={20} height={10} />
-      </TooltipContent>
-    </Tooltip>
   </div>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -759,15 +740,3 @@ const chromaticContentClass = css({
 const chromaticArrowClass = css({
   fill: 'black',
 });
-
-const styles = {
-  backgroundColor: 'rgba(0, 0, 255, 0.3)',
-  border: '2px solid blue',
-  padding: 10,
-
-  // '&[data-state="closed"]': { borderColor: 'red' },
-  // '&[data-state="instant-open"]': { borderColor: 'green' },
-};
-const triggerAttrClass = css({ '&[data-radix-tooltip-trigger]': styles });
-const contentAttrClass = css({ '&[data-radix-tooltip-content]': styles });
-const arrowAttrClass = css({ '&[data-radix-tooltip-arrow]': styles });

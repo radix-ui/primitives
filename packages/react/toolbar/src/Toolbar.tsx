@@ -2,7 +2,6 @@ import * as React from 'react';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
-import { getSelector } from '@radix-ui/utils';
 import { createContextObj, composeEventHandlers } from '@radix-ui/react-utils';
 import { Separator as SeparatorPrimitive } from '@radix-ui/react-separator';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
@@ -62,7 +61,6 @@ const Toolbar = React.forwardRef((props, forwardedRef) => {
           aria-orientation={orientation}
           data-orientation={orientation}
           {...toolbarProps}
-          selector={getSelector(TOOLBAR_NAME)}
           ref={forwardedRef}
         />
       </RovingFocusGroup>
@@ -89,7 +87,6 @@ const ToolbarSeparator = React.forwardRef((props, forwardedRef) => {
     <SeparatorPrimitive
       orientation={context.orientation === 'horizontal' ? 'vertical' : 'horizontal'}
       {...props}
-      selector={getSelector(SEPARATOR_NAME)}
       ref={forwardedRef}
     />
   );
@@ -111,12 +108,7 @@ type ToolbarButtonPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ToolbarButton = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = BUTTON_DEFAULT_TAG,
-    selector = getSelector(BUTTON_NAME),
-    disabled,
-    ...buttonProps
-  } = props;
+  const { as = BUTTON_DEFAULT_TAG, disabled, ...buttonProps } = props;
 
   const rovingFocusProps = useRovingFocus({
     disabled,
@@ -128,7 +120,6 @@ const ToolbarButton = React.forwardRef((props, forwardedRef) => {
       role="toolbaritem"
       {...buttonProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
       disabled={disabled}
       {...rovingFocusProps}
@@ -160,7 +151,6 @@ const ToolbarLink = React.forwardRef((props, forwardedRef) => {
     <ToolbarButton
       {...linkProps}
       as={as}
-      selector={getSelector(LINK_NAME)}
       ref={forwardedRef}
       onKeyDown={composeEventHandlers(linkProps.onKeyDown, (event) => {
         if (event.key === ' ') {
@@ -191,7 +181,6 @@ const ToolbarRadioGroup = React.forwardRef((props, forwardedRef) => {
     <RadioGroupPrimitive.Root
       data-orientation={context.orientation}
       {...props}
-      selector={getSelector(RADIO_GROUP_NAME)}
       ref={forwardedRef}
       rovingFocus={false}
     />
@@ -217,11 +206,7 @@ type ToolbarRadioPrimitive = Polymorphic.ForwardRefComponent<
 
 const ToolbarRadioItem = React.forwardRef((props, forwardedRef) => (
   <ToolbarButton as={Slot}>
-    <RadioGroupPrimitive.Item
-      {...props}
-      selector={getSelector(RADIO_GROUP_ITEM_NAME)}
-      ref={forwardedRef}
-    />
+    <RadioGroupPrimitive.Item {...props} ref={forwardedRef} />
   </ToolbarButton>
 )) as ToolbarRadioPrimitive;
 

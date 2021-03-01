@@ -8,7 +8,6 @@ import {
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
-import { getSelector } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -40,7 +39,6 @@ const [RadioProvider, useRadioContext] = createContextObj<RadioContextValue>(RAD
 const Radio = React.forwardRef((props, forwardedRef) => {
   const {
     as = RADIO_DEFAULT_TAG,
-    selector = getSelector(RADIO_NAME),
     'aria-labelledby': ariaLabelledby,
     name,
     checked: checkedProp,
@@ -94,7 +92,6 @@ const Radio = React.forwardRef((props, forwardedRef) => {
           data-disabled={disabled ? '' : undefined}
           {...radioProps}
           as={as}
-          selector={selector}
           ref={ref}
           disabled={disabled}
           value={value}
@@ -137,12 +134,7 @@ type RadioIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const RadioIndicator = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = INDICATOR_DEFAULT_TAG,
-    selector = getSelector(INDICATOR_NAME),
-    forceMount,
-    ...indicatorProps
-  } = props;
+  const { as = INDICATOR_DEFAULT_TAG, forceMount, ...indicatorProps } = props;
   const context = useRadioContext(INDICATOR_NAME);
   return (
     <Presence present={forceMount || context.checked}>
@@ -151,7 +143,6 @@ const RadioIndicator = React.forwardRef((props, forwardedRef) => {
         data-disabled={context.disabled ? '' : undefined}
         {...indicatorProps}
         as={as}
-        selector={selector}
         ref={forwardedRef}
       />
     </Presence>

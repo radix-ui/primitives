@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import { wrap, clamp } from '@radix-ui/number';
 import { createContextObj, useControlledState } from '@radix-ui/react-utils';
 import { useId } from '@radix-ui/react-id';
@@ -161,7 +160,7 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 
-const GROUP_ID_DATA_ATTR = `data-${getSelector(GROUP_NAME)}-id`;
+const GROUP_ID_DATA_ATTR = 'data-radix-roving-focus-group-id';
 
 function getRovingFocusItems(groupId: string): HTMLElement[] {
   return Array.from(document.querySelectorAll(`[${GROUP_ID_DATA_ATTR}="${groupId}"]`));

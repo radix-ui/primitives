@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import {
   createContextObj,
   useComposedRefs,
@@ -84,7 +83,7 @@ type PopoverTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = usePopoverContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
   return (
@@ -96,7 +95,6 @@ const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
       data-state={context.open ? 'open' : 'closed'}
       {...triggerProps}
       as={as}
-      selector={selector}
       ref={composedTriggerRef}
       onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
     />
@@ -219,7 +217,6 @@ type PopoverContentImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(CONTENT_NAME),
     anchorRef,
     trapFocus = true,
     onOpenAutoFocus,
@@ -318,7 +315,6 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                   aria-modal
                   id={context.contentId}
                   {...contentProps}
-                  selector={selector}
                   ref={composeRefs(
                     forwardedRef,
                     contentRef,
@@ -378,14 +374,13 @@ type PopoverClosePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const PopoverClose = React.forwardRef((props, forwardedRef) => {
-  const { as = CLOSE_DEFAULT_TAG, selector = getSelector(CLOSE_NAME), ...closeProps } = props;
+  const { as = CLOSE_DEFAULT_TAG, ...closeProps } = props;
   const context = usePopoverContext(CLOSE_NAME);
   return (
     <Primitive
       type="button"
       {...closeProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
       onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
     />

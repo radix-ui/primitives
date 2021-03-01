@@ -108,20 +108,7 @@ export const Chromatic = () => {
           style={{ width: 20, height: 20, backgroundColor: 'blue', marginLeft: 20, marginTop: 20 }}
         />
       </Portal>
-
-      <h1>Data attribute selectors</h1>
-      <div ref={portalContainerRef2} />
-      <Portal containerRef={portalContainerRef2} className={rootAttrClass}>
-        <p>Some content in a Portal</p>
-      </Portal>
     </div>
   );
 };
 Chromatic.parameters = { chromatic: { disable: false } };
-
-const styles = {
-  backgroundColor: 'rgba(0, 0, 255, 0.3)',
-  border: '2px solid blue',
-  padding: 10,
-};
-const rootAttrClass = css({ '&[data-radix-portal]': styles });

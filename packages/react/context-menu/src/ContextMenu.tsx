@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers, createContextObj, extendComponent } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
-import { getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -65,13 +64,12 @@ type ContextMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useContextMenuContext(TRIGGER_NAME);
   return (
     <Primitive
       {...triggerProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
       onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
         event.preventDefault();
@@ -103,7 +101,6 @@ type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 
 const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(CONTENT_NAME),
     side = 'bottom',
     align = 'start',
     disableOutsidePointerEvents = true,
@@ -113,7 +110,6 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
   return (
     <MenuPrimitive.Root
       {...contentProps}
-      selector={selector}
       ref={forwardedRef}
       side={side}
       align={align}

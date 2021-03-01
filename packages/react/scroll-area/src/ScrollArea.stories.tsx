@@ -260,7 +260,7 @@ export function WithoutNativeFallback() {
 
 export const Chromatic = () => (
   <>
-    <h1>Data attribute selectors </h1>
+    <h1>Styling</h1>
     <Resizable>
       <ScrollArea
         className={rootAttrClass}
@@ -523,35 +523,23 @@ const styles = {
   padding: 10,
 };
 const rootAttrClass = css(baseRootClass, {
-  '&[data-radix-scroll-area]': styles,
+  ...styles,
   '[data-radix-scroll-area-viewport-position]': { padding: 10, border: '2px solid blue' },
   '[data-radix-scroll-area-viewport-position-inner]': { padding: 10, border: '2px solid blue' },
 });
-const scrollbarYAttrClass = css(baseScrollbarYClass, {
-  '&[data-radix-scroll-area-scrollbar-y]': styles,
-});
-const scrollbarXAttrClass = css(baseScrollbarXClass, {
-  '&[data-radix-scroll-area-scrollbar-x]': styles,
-});
-const buttonStartAttrClass = css(baseScrollButtonClass, {
-  '&[data-radix-scroll-area-button-start]': styles,
-});
-const buttonEndAttrClass = css(baseScrollButtonClass, {
-  '&[data-radix-scroll-area-button-end]': styles,
-});
-const trackAttrClass = css(baseScrollTrackClass, {
-  '&[data-radix-scroll-area-track]': styles,
-});
-const thumbAttrClass = css(baseScrollThumbClass, {
-  '&[data-radix-scroll-area-thumb]': styles,
-});
+const scrollbarYAttrClass = css(baseScrollbarYClass, styles);
+const scrollbarXAttrClass = css(baseScrollbarXClass, styles);
+const buttonStartAttrClass = css(baseScrollButtonClass, styles);
+const buttonEndAttrClass = css(baseScrollButtonClass, styles);
+const trackAttrClass = css(baseScrollTrackClass, styles);
+const thumbAttrClass = css(baseScrollThumbClass, styles);
 const cornerAttrClass = css({
   ...RECOMMENDED_CSS__SCROLL_AREA__CORNER,
-  '&[data-radix-scroll-area-corner]': styles,
+  ...styles,
 });
 const viewportAttrClass = css({
   ...RECOMMENDED_CSS__SCROLL_AREA__VIEWPORT,
-  '&[data-radix-scroll-area-viewport]': styles,
+  ...styles,
 });
 
 const Arrow = React.forwardRef<SVGSVGElement, any>(function Arrow(

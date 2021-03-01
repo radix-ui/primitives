@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { createContextObj } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
-import { getSelector } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -34,7 +33,6 @@ type ProgressPrimitive = Polymorphic.ForwardRefComponent<
 
 const Progress = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(PROGRESS_NAME),
     value: valueProp,
     max: maxProp,
     getValueLabel = defaultGetValueLabel,
@@ -57,7 +55,6 @@ const Progress = React.forwardRef((props, forwardedRef) => {
         data-value={value ?? undefined}
         data-max={max}
         {...progressProps}
-        selector={selector}
         ref={forwardedRef}
       />
     </ProgressProvider>
@@ -99,15 +96,13 @@ type ProgressIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ProgressIndicator = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(INDICATOR_NAME), ...indicatorProps } = props;
   const context = useProgressContext(INDICATOR_NAME);
   return (
     <Primitive
       data-state={getProgressState(context.value, context.max)}
       data-value={context.value ?? undefined}
       data-max={context.max}
-      {...indicatorProps}
-      selector={selector}
+      {...props}
       ref={forwardedRef}
     />
   );

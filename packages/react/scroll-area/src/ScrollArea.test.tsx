@@ -4,7 +4,6 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { getSelector } from '@radix-ui/utils';
 import {
   ScrollArea,
   ScrollAreaViewport,
@@ -68,17 +67,6 @@ beforeAll(() => {
 
 describe('given a default ScrollArea', () => {
   let rendered: RenderResult;
-  let buttonUp: HTMLElement;
-  let buttonDown: HTMLElement;
-  let buttonLeft: HTMLElement;
-  let buttonRight: HTMLElement;
-  let trackX: HTMLElement;
-  let trackY: HTMLElement;
-  let thumbX: HTMLElement;
-  let thumbY: HTMLElement;
-  let longContent: HTMLElement | null;
-  let scrollArea: Node | null;
-  let scrollable: Node | null;
 
   beforeEach(() => {
     rendered = render(
@@ -86,61 +74,10 @@ describe('given a default ScrollArea', () => {
         <LongContent />
       </ScrollAreaTest>
     );
-    buttonUp = rendered.getByText(BUTTON_UP_TEXT);
-    buttonDown = rendered.getByText(BUTTON_DOWN_TEXT);
-    longContent = rendered.getByTestId(LONG_CONTENT_ID);
-    scrollArea = rendered.container.firstChild;
-
-    // NOTE: This is the actual scrollable element but we don't currently expose it as a component.
-    // May be a better way to query for this that doesn't rely on an implementation detail.
-    scrollable = rendered.container.querySelector(`[data-${getSelector('ScrollAreaPosition')}]`);
   });
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
-  });
-
-  it('should have a radix attribute on the container', () => {
-    const partDataAttr = `data-${getSelector('ScrollArea')}`;
-    expect(scrollArea).toHaveAttribute(partDataAttr);
-  });
-
-  it('should render an up button', () => {
-    // TODO:
-    expect(true).toBe(true);
-  });
-
-  it('should render a down button', () => {
-    // TODO:
-    expect(true).toBe(true);
-  });
-
-  describe('when clicking the up button', () => {
-    beforeEach(() => {
-      // fireEvent.click(buttonUp);
-      buttonUp = rendered.getByText(BUTTON_UP_TEXT);
-      longContent = rendered.getByTestId(LONG_CONTENT_ID);
-      scrollArea = rendered.container.firstChild;
-    });
-
-    it('should scroll up', () => {
-      // TODO:
-      expect(true).toBe(true);
-    });
-  });
-
-  describe('when clicking the down button', () => {
-    beforeEach(() => {
-      // fireEvent.click(buttonDown);
-      buttonDown = rendered.getByText(BUTTON_DOWN_TEXT);
-      longContent = rendered.getByTestId(LONG_CONTENT_ID);
-      scrollArea = rendered.container.firstChild;
-    });
-
-    it('should scroll down', () => {
-      // TODO:
-      expect(true).toBe(true);
-    });
   });
 });
 

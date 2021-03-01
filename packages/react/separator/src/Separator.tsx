@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
-import { getSelector } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -30,12 +29,7 @@ type SeparatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const Separator = React.forwardRef((props, forwardedRef) => {
-  const {
-    selector = getSelector(NAME),
-    decorative,
-    orientation: orientationProp = DEFAULT_ORIENTATION,
-    ...domProps
-  } = props;
+  const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
   const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
   // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
   const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
@@ -44,13 +38,7 @@ const Separator = React.forwardRef((props, forwardedRef) => {
     : { 'aria-orientation': ariaOrientation, role: 'separator' };
 
   return (
-    <Primitive
-      {...semanticProps}
-      data-orientation={orientation}
-      {...domProps}
-      selector={selector}
-      ref={forwardedRef}
-    />
+    <Primitive {...semanticProps} data-orientation={orientation} {...domProps} ref={forwardedRef} />
   );
 }) as SeparatorPrimitive;
 

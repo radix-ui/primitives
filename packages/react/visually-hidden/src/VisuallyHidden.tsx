@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -14,12 +13,11 @@ type VisuallyHiddenPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const VisuallyHidden = React.forwardRef((props, forwardedRef) => {
-  const { as = DEFAULT_TAG, selector = getSelector(NAME), ...visuallyHiddenProps } = props;
+  const { as = DEFAULT_TAG, ...visuallyHiddenProps } = props;
   return (
     <Primitive
       {...visuallyHiddenProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
       style={{
         ...props.style,
