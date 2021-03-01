@@ -10,7 +10,7 @@
 
 import {
   composeEventHandlers,
-  createContext,
+  createContextObj,
   getOwnerGlobals,
   useCallbackRef,
   useComposedRefs,
@@ -105,10 +105,7 @@ interface ScrollAreaRefs {
 }
 
 // Keeping refs in a separate context; should be a stable reference throughout the tree
-const [ScrollAreaRefsContext, useScrollAreaRefs] = createContext<ScrollAreaRefs>(
-  'ScrollAreaRefsContext',
-  ROOT_NAME
-);
+const [ScrollAreaRefsProvider, useScrollAreaRefs] = createContextObj<ScrollAreaRefs>(ROOT_NAME);
 
 interface ScrollAreaContextValue {
   dir?: TextDirection;
@@ -122,8 +119,7 @@ interface ScrollAreaContextValue {
   isHovered: boolean;
 }
 
-const [ScrollAreaContext, useScrollAreaContext] = createContext<ScrollAreaContextValue>(
-  'ScrollAreaContext',
+const [ScrollAreaProvider, useScrollAreaContext] = createContextObj<ScrollAreaContextValue>(
   ROOT_NAME
 );
 
@@ -140,10 +136,9 @@ function useScrollAreaStateContext() {
 const NativeScrollContext = React.createContext<boolean>(true);
 const useNativeScrollArea = () => React.useContext(NativeScrollContext);
 
-const [DispatchContext, useDispatchContext] = createContext<React.Dispatch<ScrollAreaEvent>>(
-  'DispatchContext',
-  ROOT_NAME
-);
+const [DispatchProvider, useDispatchContext] = createContextObj<{
+  dispatch: React.Dispatch<ScrollAreaEvent>;
+}>(ROOT_NAME);
 
 /* -------------------------------------------------------------------------------------------------
  * ScrollArea
@@ -412,31 +407,6 @@ const ScrollAreaImpl = React.forwardRef(function ScrollAreaImpl(props, forwarded
     hoverProps: { onPointerEnter, onPointerLeave },
     isHovered,
   } = useHover();
-
-  const context: ScrollAreaContextValue = React.useMemo(() => {
-    return {
-      dir: props.dir,
-      isHovered,
-      onScroll: handleScroll,
-      overflowX,
-      overflowY,
-      prefersReducedMotion,
-      scrollbarVisibility,
-      scrollbarVisibilityRestTimeout,
-      trackClickBehavior,
-    };
-  }, [
-    props.dir,
-    handleScroll,
-    isHovered,
-    overflowX,
-    overflowY,
-    prefersReducedMotion,
-    scrollbarVisibility,
-    scrollbarVisibilityRestTimeout,
-    trackClickBehavior,
-  ]);
-
   const ref = useComposedRefs(forwardedRef, scrollAreaRef);
 
   useBorderBoxResizeObserver(scrollAreaRef, (size, scrollAreaElement) => {
@@ -487,9 +457,19 @@ const ScrollAreaImpl = React.forwardRef(function ScrollAreaImpl(props, forwarded
   };
 
   return (
-    <DispatchContext.Provider value={dispatch}>
-      <ScrollAreaRefsContext.Provider value={refs}>
-        <ScrollAreaContext.Provider value={context}>
+    <DispatchProvider dispatch={dispatch}>
+      <ScrollAreaRefsProvider {...refs}>
+        <ScrollAreaProvider
+          dir={props.dir}
+          isHovered={isHovered}
+          onScroll={handleScroll}
+          overflowX={overflowX}
+          overflowY={overflowY}
+          prefersReducedMotion={prefersReducedMotion}
+          scrollbarVisibility={scrollbarVisibility}
+          scrollbarVisibilityRestTimeout={scrollbarVisibilityRestTimeout}
+          trackClickBehavior={trackClickBehavior}
+        >
           <ScrollAreaStateContext.Provider value={reducerState}>
             <Primitive
               {...domProps}
@@ -503,9 +483,9 @@ const ScrollAreaImpl = React.forwardRef(function ScrollAreaImpl(props, forwarded
               onPointerLeave={composeEventHandlers(props.onPointerLeave, onPointerLeave)}
             />
           </ScrollAreaStateContext.Provider>
-        </ScrollAreaContext.Provider>
-      </ScrollAreaRefsContext.Provider>
-    </DispatchContext.Provider>
+        </ScrollAreaProvider>
+      </ScrollAreaRefsProvider>
+    </DispatchProvider>
   );
 }) as ScrollAreaImplPrimitive;
 
@@ -538,7 +518,7 @@ const ScrollAreaViewportImpl = React.forwardRef(function ScrollAreaViewportImpl(
     VIEWPORT_NAME
   );
   const stateContext = useScrollAreaStateContext();
-  const dispatch = useDispatchContext(VIEWPORT_NAME);
+  const { dispatch } = useDispatchContext(VIEWPORT_NAME);
   const ref = useComposedRefs(forwardedRef, viewportRef);
 
   useBorderBoxResizeObserver(viewportRef, (size: ResizeObserverSize) => {
@@ -729,14 +709,13 @@ interface ScrollbarContextValue {
   scrollAnimationQueue: Queue<any>;
 }
 
-const [ScrollbarContext, useScrollbarContext] = createContext<ScrollbarContextValue>(
-  'ScrollbarContext',
+const [ScrollbarProvider, useScrollbarContext] = createContextObj<ScrollbarContextValue>(
   'ScrollAreaScrollbar'
 );
 
 const ScrollAreaScrollbar = React.forwardRef(function ScrollAreaScrollbar(props, forwardedRef) {
   const { axis, name, onWheel, onPointerDown, onPointerUp, onPointerMove, ...domProps } = props;
-  const dispatch = useDispatchContext(name);
+  const { dispatch } = useDispatchContext(name);
   const { scrollbarVisibility, scrollbarVisibilityRestTimeout, isHovered } = useScrollAreaContext(
     name
   );
@@ -847,15 +826,8 @@ const ScrollAreaScrollbar = React.forwardRef(function ScrollAreaScrollbar(props,
     }
   })();
 
-  const context: ScrollbarContextValue = React.useMemo(() => {
-    return {
-      axis,
-      scrollAnimationQueue,
-    };
-  }, [axis, scrollAnimationQueue]);
-
   return (
-    <ScrollbarContext.Provider value={context}>
+    <ScrollbarProvider axis={axis} scrollAnimationQueue={scrollAnimationQueue}>
       <Primitive
         {...domProps}
         ref={ref}
@@ -870,7 +842,7 @@ const ScrollAreaScrollbar = React.forwardRef(function ScrollAreaScrollbar(props,
         onPointerMove={handlePointerMove}
         onWheel={handleWheel}
       />
-    </ScrollbarContext.Provider>
+    </ScrollbarProvider>
   );
 }) as ScrollAreaScrollbarPrimitive;
 
@@ -951,7 +923,7 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
     ...domProps
   } = props;
   const { axis, scrollAnimationQueue } = useScrollbarContext(TRACK_NAME);
-  const dispatch = useDispatchContext(TRACK_NAME);
+  const { dispatch } = useDispatchContext(TRACK_NAME);
   const refsContext = useScrollAreaRefs(TRACK_NAME);
   const { trackClickBehavior, prefersReducedMotion } = useScrollAreaContext(TRACK_NAME);
   const { positionRef } = refsContext;
@@ -1180,7 +1152,7 @@ const ScrollAreaThumb = React.forwardRef(function ScrollAreaThumb(props, forward
   } = props;
   const { axis } = useScrollbarContext(THUMB_NAME);
   const refsContext = useScrollAreaRefs(THUMB_NAME);
-  const dispatch = useDispatchContext(THUMB_NAME);
+  const { dispatch } = useDispatchContext(THUMB_NAME);
   const { positionRef } = refsContext;
   const thumbRef = getThumbRef(axis, refsContext);
   const trackRef = getTrackRef(axis, refsContext);
@@ -1386,7 +1358,7 @@ type ScrollAreaButtonPrimitive = Polymorphic.ForwardRefComponent<
 const ScrollAreaButton = React.forwardRef(function ScrollAreaButton(props, forwardedRef) {
   const { direction, name, onPointerDown: onPointerDownProp, ...domProps } = props;
   const { axis, scrollAnimationQueue } = useScrollbarContext(name);
-  const dispatch = useDispatchContext(name);
+  const { dispatch } = useDispatchContext(name);
   const refsContext = useScrollAreaRefs(name);
   const { prefersReducedMotion } = useScrollAreaContext(name);
   const { positionRef } = refsContext;
@@ -1587,7 +1559,7 @@ type ScrollAreaCornerImplPrimitive = Polymorphic.ForwardRefComponent<
 const ScrollAreaCornerImpl = React.forwardRef(function ScrollAreaCornerImpl(props, forwardedRef) {
   const { selector = getSelector(CORNER_NAME), ...cornerProps } = props;
   const { positionRef } = useScrollAreaRefs(CORNER_NAME);
-  const dispatch = useDispatchContext(CORNER_NAME);
+  const { dispatch } = useDispatchContext(CORNER_NAME);
   const { dir } = useScrollAreaContext(CORNER_NAME);
   const { domSizes } = useScrollAreaStateContext();
   const isRTL = dir === 'rtl';
