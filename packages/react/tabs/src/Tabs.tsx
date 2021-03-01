@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { composeEventHandlers, createContextObj, useControlledState } from '@radix-ui/react-utils';
+import {
+  composeEventHandlers,
+  createContextObj,
+  useControlledState,
+  useCallbackRef,
+} from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
@@ -19,7 +24,7 @@ const TABS_NAME = 'Tabs';
 type TabsContextValue = {
   baseId: string;
   value?: string;
-  setValue?: (value: string) => void;
+  onValueChange: (value: string) => void;
   orientation?: TabsOwnProps['orientation'];
   dir?: TabsOwnProps['dir'];
   activationMode?: TabsOwnProps['activationMode'];
@@ -82,7 +87,7 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
     <TabsProvider
       baseId={baseId}
       value={value}
-      setValue={setValue}
+      onValueChange={setValue}
       orientation={orientation}
       dir={dir}
       activationMode={activationMode}
@@ -167,13 +172,13 @@ const TabsTab = React.forwardRef((props, forwardedRef) => {
   const tabPanelId = makeTabsPanelId(context.baseId, value);
   const isSelected = value === context.value;
   const rovingFocusProps = useRovingFocus({ disabled, active: isSelected });
-  const selectTab = React.useCallback(() => context.setValue?.(value), [context.setValue, value]);
+  const handleTabChange = useCallbackRef(() => context.onValueChange(value));
 
   const handleKeyDown = composeEventHandlers(
     tabProps.onKeyDown,
     composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
       if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
-        selectTab();
+        handleTabChange();
       }
     })
   );
@@ -184,7 +189,7 @@ const TabsTab = React.forwardRef((props, forwardedRef) => {
       // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
       // but not when the control key is pressed (avoiding MacOS right click)
       if (!disabled && event.button === 0 && event.ctrlKey === false) {
-        selectTab();
+        handleTabChange();
       }
     })
   );
@@ -196,7 +201,7 @@ const TabsTab = React.forwardRef((props, forwardedRef) => {
       // ie. activate tab following focus
       const isAutomaticActivation = context.activationMode !== 'manual';
       if (!isSelected && !disabled && isAutomaticActivation) {
-        selectTab();
+        handleTabChange();
       }
     })
   );
