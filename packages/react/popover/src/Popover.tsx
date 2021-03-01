@@ -20,7 +20,6 @@ import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
@@ -112,7 +111,7 @@ PopoverTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'PopoverContent';
 
-type PopoverContentOwnProps = Merge<
+type PopoverContentOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof PopoverContentImpl>,
   {
     /**
@@ -144,7 +143,7 @@ const PopoverContent = React.forwardRef((props, forwardedRef) => {
 }) as PopoverContentPrimitive;
 
 type PopperPrimitiveOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Root>;
-type PopoverContentImplOwnProps = Merge<
+type PopoverContentImplOwnProps = Polymorphic.Merge<
   PopperPrimitiveOwnProps,
   {
     /**

@@ -5,7 +5,6 @@ import { useComposedRefs, useLayoutEffect } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';
@@ -25,7 +24,7 @@ const listenerMap = new Map<Element, number>();
 
 const NAME = 'Announce';
 
-type AnnounceOwnProps = Merge<
+type AnnounceOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**

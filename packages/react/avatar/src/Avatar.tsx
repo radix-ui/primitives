@@ -4,7 +4,6 @@ import { createContextObj, useCallbackRef, useLayoutEffect } from '@radix-ui/rea
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar
@@ -45,7 +44,7 @@ Avatar.displayName = AVATAR_NAME;
 const IMAGE_NAME = 'AvatarImage';
 const IMAGE_DEFAULT_TAG = 'img';
 
-type AvatarImageOwnProps = Merge<
+type AvatarImageOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   { onLoadingStatusChange?: (status: ImageLoadingStatus) => void }
 >;
@@ -90,7 +89,10 @@ AvatarImage.displayName = IMAGE_NAME;
 const FALLBACK_NAME = 'AvatarFallback';
 const FALLBACK_DEFAULT_TAG = 'span';
 
-type AvatarFallbackOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { delayMs?: number }>;
+type AvatarFallbackOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { delayMs?: number }
+>;
 type AvatarFallbackPrimitive = Polymorphic.ForwardRefComponent<
   typeof FALLBACK_DEFAULT_TAG,
   AvatarFallbackOwnProps

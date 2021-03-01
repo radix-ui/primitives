@@ -11,7 +11,6 @@ import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
 
@@ -32,7 +31,7 @@ type TabsContextValue = {
 
 const [TabsProvider, useTabsContext] = createContextObj<TabsContextValue>(TABS_NAME);
 
-type TabsOwnProps = Merge<
+type TabsOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /** The value for the selected tab, if controlled */
@@ -110,7 +109,7 @@ Tabs.displayName = TABS_NAME;
 
 const TAB_LIST_NAME = 'TabsList';
 
-type TabsListOwnProps = Merge<
+type TabsListOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
@@ -152,7 +151,7 @@ TabsList.displayName = TAB_LIST_NAME;
 
 const TAB_NAME = 'TabsTab';
 
-type TabsTabOwnProps = Merge<
+type TabsTabOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     value: string;
@@ -235,7 +234,10 @@ TabsTab.displayName = TAB_NAME;
 
 const TAB_PANEL_NAME = 'TabsPanel';
 
-type TabsPanelPropsOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { value: string }>;
+type TabsPanelPropsOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { value: string }
+>;
 type TabsPanelPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof Primitive>,
   TabsPanelPropsOwnProps

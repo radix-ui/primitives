@@ -11,7 +11,6 @@ import { Collapsible, CollapsibleButton, CollapsibleContent } from '@radix-ui/re
 import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Accordion
@@ -31,7 +30,7 @@ const [AccordionProvider, useAccordionContext] = createContextObj<AccordionConte
   ACCORDION_NAME
 );
 
-type AccordionOwnProps = Merge<
+type AccordionOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
@@ -149,7 +148,7 @@ Accordion.displayName = ACCORDION_NAME;
 
 const ITEM_NAME = 'AccordionItem';
 
-type AccordionItemOwnProps = Merge<
+type AccordionItemOwnProps = Polymorphic.Merge<
   Omit<Polymorphic.OwnProps<typeof Collapsible>, 'open' | 'defaultOpen' | 'onOpenChange'>,
   {
     /**

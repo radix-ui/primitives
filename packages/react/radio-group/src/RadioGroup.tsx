@@ -14,14 +14,13 @@ import { getSelector } from '@radix-ui/utils';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
  * -----------------------------------------------------------------------------------------------*/
 const RADIO_GROUP_NAME = 'RadioGroup';
 
-type RadioGroupOwnProps = Merge<
+type RadioGroupOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     name?: string;
@@ -159,7 +158,7 @@ const RadioGroupRovingFocusItem = React.forwardRef((props, forwardedRef) => {
   );
 }) as RadioGroupRovingFocusItemPrimitive;
 
-type RadioGroupItemImplOwnProps = Merge<
+type RadioGroupItemImplOwnProps = Polymorphic.Merge<
   Omit<Polymorphic.OwnProps<typeof Radio>, 'name'>,
   { value: string }
 >;

@@ -4,7 +4,6 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { getSelector } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Progress
@@ -19,7 +18,7 @@ const [ProgressProvider, useProgressContext] = createContextObj<ProgressContextV
   PROGRESS_NAME
 );
 
-type ProgressOwnProps = Merge<
+type ProgressOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     value?: number | null | undefined;
