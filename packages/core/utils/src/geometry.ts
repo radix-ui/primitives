@@ -31,20 +31,6 @@ function getContractedRect(rect: ClientRect, amount: number) {
 }
 
 /**
- * Returns whether 2 rects are equal in values
- */
-function rectEquals(rect1: ClientRect, rect2: ClientRect) {
-  return (
-    rect1.width === rect2.width &&
-    rect1.height === rect2.height &&
-    rect1.top === rect2.top &&
-    rect1.right === rect2.right &&
-    rect1.bottom === rect2.bottom &&
-    rect1.left === rect2.left
-  );
-}
-
-/**
  * Gets the opposite side of a given side (ie. top => bottom, left => right, …)
  */
 function getOppositeSide(side: Side): Side {
@@ -74,13 +60,5 @@ function getCollisions(
   };
 }
 
-export {
-  SIDE_OPTIONS,
-  ALIGN_OPTIONS,
-  makeRect,
-  getContractedRect,
-  rectEquals,
-  getOppositeSide,
-  getCollisions,
-};
+export { SIDE_OPTIONS, ALIGN_OPTIONS, makeRect, getContractedRect, getOppositeSide, getCollisions };
 export type { Axis, Side, Align, Point, Size };

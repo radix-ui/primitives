@@ -5,7 +5,7 @@ import { makeRect, getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Point, MeasurableElement } from '@radix-ui/utils';
+import type { Point } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenu
@@ -13,9 +13,12 @@ import type { Point, MeasurableElement } from '@radix-ui/utils';
 
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
+type ExtractRef<T> = T extends React.RefObject<infer B> ? B : never;
+type Anchor = ExtractRef<React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef']>;
+
 type ContextMenuContextValue = {
   anchorPointRef: React.MutableRefObject<Point>;
-  anchorRef: React.MutableRefObject<MeasurableElement | null>;
+  anchorRef: React.MutableRefObject<Anchor | null>;
   open: boolean;
   onOpenChange(open: boolean): void;
 };
