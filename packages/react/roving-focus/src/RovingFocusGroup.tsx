@@ -19,8 +19,8 @@ type RovingFocusGroupOptions = {
 type RovingContextValue = {
   groupId: string;
   tabStopId: string | null;
-  reachable: boolean;
   onTabStopIdChange(itemId: string, active?: boolean): void;
+  reachable: boolean;
   onReachableChange(reachable: boolean): void;
 } & RovingFocusGroupOptions;
 
@@ -58,13 +58,13 @@ function RovingFocusGroup(props: RovingFocusGroupProps) {
   return (
     <RovingFocusProvider
       groupId={useId()}
-      tabStopId={tabStopId}
       orientation={orientation}
       dir={dir}
       loop={loop}
+      tabStopId={tabStopId}
+      onTabStopIdChange={handleTabStopIdChange}
       reachable={reachable}
       onReachableChange={setReachable}
-      onTabStopIdChange={handleTabStopIdChange}
     >
       {children}
     </RovingFocusProvider>
