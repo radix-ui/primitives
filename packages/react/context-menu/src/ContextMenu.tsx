@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { composeEventHandlers, createContextObj, extendComponent } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
-import { makeRect, getSelector } from '@radix-ui/utils';
+import { getSelector } from '@radix-ui/utils';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Point } from '@radix-ui/utils';
+
+type Point = { x: number; y: number };
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenu
@@ -32,7 +33,8 @@ const ContextMenu: React.FC = (props) => {
   const [open, setOpen] = React.useState(false);
   const anchorPointRef = React.useRef<Point>({ x: 0, y: 0 });
   const anchorRef = React.useRef({
-    getBoundingClientRect: () => makeRect({ width: 0, height: 0 }, anchorPointRef.current),
+    getBoundingClientRect: () =>
+      DOMRect.fromRect({ width: 0, height: 0, ...anchorPointRef.current }),
   });
 
   return (

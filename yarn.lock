@@ -3016,7 +3016,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/popper@workspace:packages/core/popper"
   dependencies:
-    "@radix-ui/utils": "workspace:*"
     csstype: ^3.0.4
   languageName: unknown
   linkType: soft

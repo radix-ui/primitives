@@ -3,10 +3,11 @@ import { getPlacementData } from '@radix-ui/popper';
 import { createContextObj, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
-import { getSelector, getSelectorObj, makeRect } from '@radix-ui/utils';
+import { getSelector, getSelectorObj } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Side, Align, Size, Merge } from '@radix-ui/utils';
+import type { Side, Align } from '@radix-ui/popper';
+import type { Merge } from '@radix-ui/utils';
 import type { Measurable } from '@radix-ui/rect';
 
 /* -------------------------------------------------------------------------------------------------
@@ -64,7 +65,9 @@ const Popper = React.forwardRef((props, forwardedRef) => {
   const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
 
   const windowSize = useWindowSize();
-  const collisionBoundariesRect = windowSize ? makeRect(windowSize, { x: 0, y: 0 }) : undefined;
+  const collisionBoundariesRect = windowSize
+    ? DOMRect.fromRect({ ...windowSize, x: 0, y: 0 })
+    : undefined;
 
   const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
     anchorRect,
@@ -166,7 +169,9 @@ PopperArrow.displayName = ARROW_NAME;
 const WINDOW_RESIZE_DEBOUNCE_WAIT_IN_MS = 100;
 
 function useWindowSize() {
-  const [windowSize, setWindowSize] = React.useState<Size | undefined>(undefined);
+  const [windowSize, setWindowSize] = React.useState<{ width: number; height: number } | undefined>(
+    undefined
+  );
 
   React.useEffect(() => {
     let debounceTimerId: number;

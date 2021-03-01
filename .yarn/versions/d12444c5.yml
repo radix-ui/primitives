@@ -1,0 +1,41 @@
+releases:
+  "@radix-ui/popper": patch
+  "@radix-ui/react-context-menu": patch
+  "@radix-ui/react-dropdown-menu": patch
+  "@radix-ui/react-menu": patch
+  "@radix-ui/react-popover": patch
+  "@radix-ui/react-popper": patch
+  "@radix-ui/react-scroll-area": patch
+  "@radix-ui/react-tooltip": patch
+  "@radix-ui/react-utils": patch
+  "@radix-ui/utils": patch
+
+declined:
+  - primitives
+  - "@radix-ui/react-accordion"
+  - "@radix-ui/react-alert-dialog"
+  - "@radix-ui/react-announce"
+  - "@radix-ui/react-arrow"
+  - "@radix-ui/react-aspect-ratio"
+  - "@radix-ui/react-avatar"
+  - "@radix-ui/react-checkbox"
+  - "@radix-ui/react-collapsible"
+  - "@radix-ui/react-collection"
+  - "@radix-ui/react-dialog"
+  - "@radix-ui/react-dismissable-layer"
+  - "@radix-ui/react-focus-scope"
+  - "@radix-ui/react-label"
+  - "@radix-ui/react-portal"
+  - "@radix-ui/react-presence"
+  - "@radix-ui/react-primitive"
+  - "@radix-ui/react-progress"
+  - "@radix-ui/react-radio-group"
+  - "@radix-ui/react-roving-focus"
+  - "@radix-ui/react-separator"
+  - "@radix-ui/react-slider"
+  - "@radix-ui/react-slot"
+  - "@radix-ui/react-switch"
+  - "@radix-ui/react-tabs"
+  - "@radix-ui/react-toggle-button"
+  - "@radix-ui/react-toolbar"
+  - "@radix-ui/react-visually-hidden"

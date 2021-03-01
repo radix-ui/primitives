@@ -1,1 +1,1 @@
-export { getPlacementData } from './popper';
+export * from './popper';

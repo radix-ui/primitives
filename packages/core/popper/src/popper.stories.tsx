@@ -1,7 +1,6 @@
 import React from 'react';
 import { useRect, useSize } from '@radix-ui/react-utils';
-import { SIDE_OPTIONS, ALIGN_OPTIONS, makeRect } from '@radix-ui/utils';
-import { getPlacementData } from './popper';
+import { getPlacementData, SIDE_OPTIONS, ALIGN_OPTIONS } from './popper';
 
 export default { title: 'Core/popper' };
 
@@ -61,10 +60,12 @@ function Demo({ disableCollisions = false }) {
     align,
     alignOffset,
     shouldAvoidCollisions: !disableCollisions,
-    collisionBoundariesRect: makeRect(
-      { width: window.innerWidth, height: window.innerHeight },
-      { x: 0, y: 0 }
-    ),
+    collisionBoundariesRect: DOMRect.fromRect({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      x: 0,
+      y: 0,
+    }),
     collisionTolerance,
   });
 
