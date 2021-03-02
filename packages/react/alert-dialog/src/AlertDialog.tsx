@@ -1,9 +1,9 @@
 import * as React from 'react';
+import { composeEventHandlers } from '@radix-ui/primitive';
 import {
   createContextObj,
   useComposedRefs,
   useDocumentRef,
-  composeEventHandlers,
   extendComponent,
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';

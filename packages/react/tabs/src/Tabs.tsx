@@ -1,10 +1,6 @@
 import * as React from 'react';
-import {
-  composeEventHandlers,
-  createContextObj,
-  useControlledState,
-  useCallbackRef,
-} from '@radix-ui/react-utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContextObj, useControlledState, useCallbackRef } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { useId } from '@radix-ui/react-id';

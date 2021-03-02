@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  composeEventHandlers,
-  createContextObj,
-  useComposedRefs,
-  useControlledState,
-} from '@radix-ui/react-utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContextObj, useComposedRefs, useControlledState } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from '@radix-ui/react-collapsible';
 import { useId } from '@radix-ui/react-id';

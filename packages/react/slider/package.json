@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@radix-ui/number": "workspace:*",
+    "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-collection": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",

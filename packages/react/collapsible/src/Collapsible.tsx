@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { createContextObj, composeEventHandlers, useControlledState } from '@radix-ui/react-utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContextObj, useControlledState } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';

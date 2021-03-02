@@ -1,8 +1,9 @@
 import * as React from 'react';
+import { composeEventHandlers } from '@radix-ui/primitive';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
-import { createContextObj, composeEventHandlers } from '@radix-ui/react-utils';
+import { createContextObj } from '@radix-ui/react-utils';
 import { Separator as SeparatorPrimitive } from '@radix-ui/react-separator';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 
