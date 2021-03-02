@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import {
   createContextObj,
   useComposedRefs,
   useRect,
   usePrevious,
   useControlledState,
-  useLayoutEffect,
   extendComponent,
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
