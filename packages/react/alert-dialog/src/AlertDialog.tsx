@@ -1,12 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import {
-  createContextObj,
-  useComposedRefs,
-  useDocumentRef,
-  extendComponent,
-} from '@radix-ui/react-utils';
-import { Primitive } from '@radix-ui/react-primitive';
+import { createContextObj, useComposedRefs, useDocumentRef } from '@radix-ui/react-utils';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import {
   Dialog,
   DialogOverlay,
@@ -173,9 +168,9 @@ AlertDialogDescription.displayName = DESCRIPTION_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const AlertDialogTrigger = extendComponent(DialogTrigger, 'AlertDialogTrigger');
-const AlertDialogOverlay = extendComponent(DialogOverlay, 'AlertDialogOverlay');
-const AlertDialogAction = extendComponent(DialogClose, 'AlertDialogAction');
+const AlertDialogTrigger = extendPrimitive(DialogTrigger, 'AlertDialogTrigger');
+const AlertDialogOverlay = extendPrimitive(DialogOverlay, 'AlertDialogOverlay');
+const AlertDialogAction = extendPrimitive(DialogClose, 'AlertDialogAction');
 
 /* ---------------------------------------------------------------------------------------------- */
 

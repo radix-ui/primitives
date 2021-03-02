@@ -5,7 +5,6 @@ import {
   useComposedRefs,
   useControlledState,
   composeRefs,
-  extendComponent,
 } from '@radix-ui/react-utils';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -13,7 +12,7 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import { useId } from '@radix-ui/react-id';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
@@ -391,7 +390,7 @@ PopoverClose.displayName = CLOSE_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const PopoverArrow = extendComponent(PopperPrimitive.Arrow, 'PopoverArrow');
+const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, 'PopoverArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 

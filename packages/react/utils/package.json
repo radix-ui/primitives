@@ -15,12 +15,7 @@
     "clean": "rm -rf dist",
     "prepublish": "yarn clean"
   },
-  "dependencies": {
-    "@radix-ui/react-polymorphic": "workspace:*",
-    "@radix-ui/react-use-layout-effect": "workspace:*"
-  },
   "devDependencies": {
-    "@testing-library/react": "^10.4.8",
     "@types/resize-observer-browser": "^0.1.4"
   },
   "peerDependencies": {

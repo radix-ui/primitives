@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
-function extendComponent<As extends Polymorphic.ForwardRefComponent<any, any>>(
+function extendPrimitive<As extends Polymorphic.ForwardRefComponent<any, any>>(
   Comp: As extends Polymorphic.ForwardRefComponent<infer I, infer P>
     ? Polymorphic.ForwardRefComponent<I, P>
     : As,
@@ -20,4 +20,4 @@ function extendComponent<As extends Polymorphic.ForwardRefComponent<any, any>>(
   return Extended;
 }
 
-export { extendComponent };
+export { extendPrimitive };

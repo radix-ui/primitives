@@ -7,9 +7,8 @@ import {
   useComposedRefs,
   useRect,
   useControlledState,
-  extendComponent,
 } from '@radix-ui/react-utils';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Slottable } from '@radix-ui/react-slot';
@@ -258,7 +257,7 @@ TooltipContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const TooltipArrow = extendComponent(PopperPrimitive.Arrow, 'TooltipArrow');
+const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, 'TooltipArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 

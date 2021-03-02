@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import { extendComponent } from './extendComponent';
+import { extendPrimitive } from './extendPrimitive';
 
 import type { RenderResult } from '@testing-library/react';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -21,7 +21,7 @@ const Button = React.forwardRef((props, forwardedRef) => {
  * Extended Polymorphic Button
  * -----------------------------------------------------------------------------------------------*/
 
-const ExtendedButton = extendComponent(Button, 'ExtendedButton');
+const ExtendedButton = extendPrimitive(Button, 'ExtendedButton');
 
 /* -------------------------------------------------------------------------------------------------
  * Normal Link
@@ -83,7 +83,7 @@ export function Test() {
   );
 }
 
-describe('Given extended components via extendComponent', () => {
+describe('Given extended components via extendPrimitive', () => {
   let rendered: RenderResult;
 
   beforeEach(() => {
