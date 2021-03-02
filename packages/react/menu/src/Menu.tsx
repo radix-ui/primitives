@@ -344,24 +344,6 @@ const MenuGroup = React.forwardRef((props, forwardedRef) => {
 MenuGroup.displayName = GROUP_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * MenuLabel
- * -----------------------------------------------------------------------------------------------*/
-
-const LABEL_NAME = 'MenuLabel';
-
-type MenuLabelOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type MenuLabelPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  MenuLabelOwnProps
->;
-
-const MenuLabel = React.forwardRef((props, forwardedRef) => {
-  return <Primitive {...props} ref={forwardedRef} />;
-}) as MenuLabelPrimitive;
-
-MenuLabel.displayName = LABEL_NAME;
-
-/* -------------------------------------------------------------------------------------------------
  * MenuItem
  * -----------------------------------------------------------------------------------------------*/
 
@@ -658,6 +640,7 @@ MenuSeparator.displayName = SEPARATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
+const MenuLabel = extendComponent(Primitive, 'MenuLabel');
 const MenuArrow = extendComponent(PopperPrimitive.Arrow, 'MenuArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
