@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { usePrevious } from '@radix-ui/react-use-previous';
 import {
   createContextObj,
   useComposedRefs,
   useRect,
-  usePrevious,
   useControlledState,
   extendComponent,
 } from '@radix-ui/react-utils';
