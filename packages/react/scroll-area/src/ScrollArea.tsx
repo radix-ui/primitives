@@ -8,8 +8,10 @@
 //  - PointerEvents
 //  - CSS scrollbar-width OR -webkit-scrollbar
 
+import * as React from 'react';
+import { clamp } from '@radix-ui/number';
+import { composeEventHandlers } from '@radix-ui/primitive';
 import {
-  composeEventHandlers,
   createContextObj,
   getOwnerGlobals,
   useCallbackRef,
@@ -19,8 +21,6 @@ import {
   usePrefersReducedMotion,
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
-import { clamp } from '@radix-ui/number';
-import * as React from 'react';
 import { bezier } from './bezier-easing';
 import { Queue } from './queue';
 import { useHover } from './useHover';

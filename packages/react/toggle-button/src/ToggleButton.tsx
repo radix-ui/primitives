@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { useControlledState, composeEventHandlers } from '@radix-ui/react-utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { useControlledState } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';

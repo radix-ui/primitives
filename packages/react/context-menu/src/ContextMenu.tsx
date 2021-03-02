@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { composeEventHandlers, createContextObj, extendComponent } from '@radix-ui/react-utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContextObj, extendComponent } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 

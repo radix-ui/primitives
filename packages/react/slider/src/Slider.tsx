@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { clamp } from '@radix-ui/number';
+import { composeEventHandlers } from '@radix-ui/primitive';
 import {
-  composeEventHandlers,
   createContextObj,
   useComposedRefs,
   useControlledState,
