@@ -1869,18 +1869,15 @@ function usePrefersReducedMotion(nodeRef: React.RefObject<Element>) {
   React.useEffect(() => {
     const globalWindow = nodeRef.current?.ownerDocument.defaultView || window;
 
-    try {
-      function handleChange(event: MediaQueryListEvent) {
-        setPrefersReducedMotion(!event.matches);
-      }
-      const mediaQueryList = globalWindow.matchMedia('(prefers-reduced-motion: no-preference)');
-      mediaQueryList.addEventListener('change', handleChange);
-      return function () {
-        mediaQueryList.removeEventListener('change', handleChange);
-      };
-    } catch (e) {}
-
-    return function () {};
+    function handleChange(event: MediaQueryListEvent) {
+      setPrefersReducedMotion(!event.matches);
+    }
+    const mediaQueryList = globalWindow.matchMedia('(prefers-reduced-motion: no-preference)');
+    mediaQueryList.addEventListener('change', handleChange);
+    
+    return () => {
+      mediaQueryList.removeEventListener('change', handleChange);
+    };
   }, [nodeRef]);
 
   return prefersReducedMotion;
