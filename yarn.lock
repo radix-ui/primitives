@@ -3072,6 +3072,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3107,6 +3108,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3147,6 +3149,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-collection@workspace:packages/react/collection"
   dependencies:
+    "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3328,7 +3331,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
     react-dom: ^16.8 || ^17.0
@@ -3403,6 +3406,7 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@stitches/react": canary
   peerDependencies:
@@ -3515,8 +3519,17 @@ __metadata:
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-use-layout-effect@workspace:*, @radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect"
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3527,6 +3540,7 @@ __metadata:
   resolution: "@radix-ui/react-utils@workspace:packages/react/utils"
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
     "@testing-library/react": ^10.4.8
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:

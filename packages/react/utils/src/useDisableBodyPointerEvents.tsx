@@ -1,4 +1,4 @@
-import { useLayoutEffect } from './useLayoutEffect';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 let changeCount = 0;
 let originalBodyPointerEvents: string;

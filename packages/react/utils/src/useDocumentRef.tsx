@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useLayoutEffect } from './useLayoutEffect';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 /**
  * Get a reference to the global document object relative to a specific node ref

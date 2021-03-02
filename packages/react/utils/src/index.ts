@@ -5,7 +5,6 @@ export * from './useComposedRefs';
 export * from './useControlledState';
 export * from './useDisableBodyPointerEvents';
 export * from './useDocumentRef';
-export * from './useLayoutEffect';
 export * from './usePrevious';
 export * from './useRect';
 export * from './useSize';

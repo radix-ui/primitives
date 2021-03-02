@@ -20,6 +20,7 @@
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
+    "@radix-ui/react-use-layout-effect": "workspace:*",
     "@radix-ui/react-utils": "workspace:*"
   },
   "devDependencies": {

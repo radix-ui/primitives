@@ -11,12 +11,12 @@
 import * as React from 'react';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import {
   createContextObj,
   getOwnerGlobals,
   useCallbackRef,
   useComposedRefs,
-  useLayoutEffect,
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { bezier } from './bezier-easing';
@@ -1874,7 +1874,7 @@ function usePrefersReducedMotion(nodeRef: React.RefObject<Element>) {
     }
     const mediaQueryList = globalWindow.matchMedia('(prefers-reduced-motion: no-preference)');
     mediaQueryList.addEventListener('change', handleChange);
-    
+
     return () => {
       mediaQueryList.removeEventListener('change', handleChange);
     };
