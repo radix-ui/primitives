@@ -12,7 +12,6 @@ import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * DropdownMenu
@@ -117,7 +116,7 @@ DropdownMenuTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'DropdownMenuContent';
 
 type MenuPrimitiveOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Root>;
-type DropdownMenuContentOwnProps = Merge<
+type DropdownMenuContentOwnProps = Polymorphic.Merge<
   Omit<MenuPrimitiveOwnProps, 'trapFocus' | 'onOpenAutoFocus' | 'onDismiss'>,
   { anchorRef?: MenuPrimitiveOwnProps['anchorRef'] }
 >;

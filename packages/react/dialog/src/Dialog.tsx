@@ -18,7 +18,6 @@ import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
@@ -103,7 +102,7 @@ DialogTrigger.displayName = TRIGGER_NAME;
 
 const OVERLAY_NAME = 'DialogOverlay';
 
-type DialogOverlayOwnProps = Merge<
+type DialogOverlayOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof DialogOverlayImpl>,
   {
     /**
@@ -152,7 +151,7 @@ DialogOverlay.displayName = OVERLAY_NAME;
 
 const CONTENT_NAME = 'DialogContent';
 
-type DialogContentOwnProps = Merge<
+type DialogContentOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof DialogContentImpl>,
   {
     /**
@@ -178,7 +177,7 @@ const DialogContent = React.forwardRef((props, forwardedRef) => {
   );
 }) as DialogContentPrimitive;
 
-type DialogContentImplOwnProps = Merge<
+type DialogContentImplOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**

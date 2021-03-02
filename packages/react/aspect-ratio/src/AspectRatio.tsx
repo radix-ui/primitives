@@ -3,7 +3,6 @@ import { getSelector, getSelectorObj } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * AspectRatio
@@ -11,7 +10,10 @@ import type { Merge } from '@radix-ui/utils';
 
 const NAME = 'AspectRatio';
 
-type AspectRatioOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { ratio?: number }>;
+type AspectRatioOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { ratio?: number }
+>;
 type AspectRatioPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof Primitive>,
   AspectRatioOwnProps

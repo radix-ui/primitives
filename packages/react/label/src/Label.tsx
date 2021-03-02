@@ -5,7 +5,6 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
@@ -14,7 +13,10 @@ import type { Merge } from '@radix-ui/utils';
 const NAME = 'Label';
 const DEFAULT_TAG = 'span';
 
-type LabelOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { htmlFor?: string }>;
+type LabelOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { htmlFor?: string }
+>;
 type LabelPrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, LabelOwnProps>;
 
 type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };

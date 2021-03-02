@@ -10,7 +10,6 @@ import { useLabelContext } from '@radix-ui/react-label';
 import { getSelector } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
@@ -20,7 +19,7 @@ const SWITCH_NAME = 'Switch';
 const SWITCH_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
-type SwitchOwnProps = Merge<
+type SwitchOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     checked?: boolean;

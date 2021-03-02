@@ -59,4 +59,4 @@ interface ForwardRefComponent<
   ): React.ReactElement | null;
 }
 
-export type { ForwardRefComponent, OwnProps, IntrinsicElement };
+export type { ForwardRefComponent, OwnProps, IntrinsicElement, Merge };

@@ -4,22 +4,21 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
 import { getSelector } from '@radix-ui/utils';
 import { createContextObj, composeEventHandlers } from '@radix-ui/react-utils';
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 import { Separator as SeparatorPrimitive } from '@radix-ui/react-separator';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
+
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
  * Toolbar
  * -----------------------------------------------------------------------------------------------*/
 
 const TOOLBAR_NAME = 'Toolbar';
-const TOOLBAR_CONTEXT_NAME = TOOLBAR_NAME + 'Context';
 
 type Orientation = React.AriaAttributes['aria-orientation'];
 type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
 
-type ToolbarOwnProps = Merge<
+type ToolbarOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
@@ -105,7 +104,7 @@ ToolbarSeparator.displayName = SEPARATOR_NAME;
 const BUTTON_NAME = 'ToolbarButton';
 const BUTTON_DEFAULT_TAG = 'button';
 
-type ToolbarButtonOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>>;
+type ToolbarButtonOwnProps = Polymorphic.Merge<Polymorphic.OwnProps<typeof Primitive>>;
 type ToolbarButtonPrimitive = Polymorphic.ForwardRefComponent<
   typeof BUTTON_DEFAULT_TAG,
   ToolbarButtonOwnProps
@@ -207,7 +206,7 @@ ToolbarRadioGroup.displayName = RADIO_GROUP_NAME;
 
 const RADIO_GROUP_ITEM_NAME = 'ToolbarRadioItem';
 
-type ToolbarRadioOwnProps = Merge<
+type ToolbarRadioOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof ToolbarButton>,
   Polymorphic.OwnProps<typeof RadioGroupPrimitive.Item>
 >;

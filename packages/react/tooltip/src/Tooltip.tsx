@@ -19,7 +19,6 @@ import { useId } from '@radix-ui/react-id';
 import { createStateMachine, stateChart } from './machine';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * State machine
@@ -206,7 +205,7 @@ const TooltipContent = React.forwardRef((props, forwardedRef) => {
 }) as TooltipContentPrimitive;
 
 type PopperPrimitiveOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Root>;
-type TooltipContentImplOwnProps = Merge<
+type TooltipContentImplOwnProps = Polymorphic.Merge<
   PopperPrimitiveOwnProps,
   {
     /**

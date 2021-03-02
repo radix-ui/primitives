@@ -11,7 +11,6 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
@@ -22,7 +21,7 @@ const CHECKBOX_DEFAULT_TAG = 'button';
 
 type CheckedState = boolean | 'indeterminate';
 type InputDOMProps = React.ComponentProps<'input'>;
-type CheckboxOwnProps = Merge<
+type CheckboxOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     checked?: CheckedState;
@@ -136,7 +135,7 @@ Checkbox.displayName = CHECKBOX_NAME;
 const INDICATOR_NAME = 'CheckboxIndicator';
 const INDICATOR_DEFAULT_TAG = 'span';
 
-type CheckboxIndicatorOwnProps = Merge<
+type CheckboxIndicatorOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**

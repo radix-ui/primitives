@@ -4,12 +4,11 @@ import { getSelector } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 const NAME = 'ToggleButton';
 const DEFAULT_TAG = 'button';
 
-type ToggleButtonOwnProps = Merge<
+type ToggleButtonOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /** Whether the button is toggled or not, if controlled */

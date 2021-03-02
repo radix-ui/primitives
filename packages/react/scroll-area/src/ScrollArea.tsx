@@ -34,7 +34,6 @@ import { Queue } from './queue';
 import { useHover } from './useHover';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 const SCROLL_AREA_CSS_PROPS_LIST = [
   'positionWidth',
@@ -144,7 +143,7 @@ const [DispatchProvider, useDispatchContext] = createContextObj<{
  * ScrollArea
  * -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaOwnProps = Merge<
+type ScrollAreaOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     children: React.ReactNode;
@@ -233,7 +232,7 @@ const ScrollArea = React.forwardRef(function ScrollArea(props, forwardedRef) {
   );
 }) as ScrollAreaPrimitive;
 
-type ScrollAreaNoNativeFallbackOwnProps = Merge<
+type ScrollAreaNoNativeFallbackOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   Omit<ScrollAreaOwnProps, 'unstable_forceNative'>
 >;
@@ -267,7 +266,7 @@ type ScrollAreaInternalProps = {
   scrollAreaRef: React.RefObject<HTMLDivElement>;
 };
 
-type ScrollAreaNativeOwnProps = Merge<
+type ScrollAreaNativeOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   (ScrollAreaInternalProps & Omit<ScrollAreaOwnProps, 'unstable_forceNative'>) & {
     overflowX: NonNullable<ScrollAreaOwnProps['overflowX']>;
@@ -315,7 +314,7 @@ const ScrollAreaNative = React.forwardRef(function ScrollAreaNative(props, forwa
   );
 }) as ScrollAreaNativePrimitive;
 
-type ScrollAreaImplProps = Merge<
+type ScrollAreaImplProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   ScrollAreaInternalProps & Omit<ScrollAreaOwnProps, 'unstable_forceNative'>
 >;
@@ -691,7 +690,7 @@ ScrollAreaViewport.displayName = VIEWPORT_NAME;
 const SCROLLBAR_X_NAME = 'ScrollAreaScrollbarX';
 const SCROLLBAR_Y_NAME = 'ScrollAreaScrollbarY';
 
-type ScrollAreaScrollbarOwnProps = Merge<
+type ScrollAreaScrollbarOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     axis: Axis;
@@ -1342,7 +1341,7 @@ const BUTTON_END_NAME = 'ScrollAreaButtonEnd';
 // We are concerned more about the bezier curve effect this creates vs. the actual values.
 const BUTTON_SCROLL_TIME = 135;
 
-type ScrollAreaButtonProps = Merge<
+type ScrollAreaButtonProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     direction: LogicalDirection;

@@ -13,7 +13,6 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from '@radix-ui/react-collection';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -49,7 +48,7 @@ type SliderContextValue = {
 
 const [SliderProvider, useSliderContext] = createContextObj<SliderContextValue>(SLIDER_NAME);
 
-type SliderOwnProps = Merge<
+type SliderOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     name?: string;
@@ -217,7 +216,7 @@ type SliderOrientationPartOwnProps = Omit<
   | 'onSlideTouchMove'
   | 'onSlideTouchEnd'
 >;
-type SliderOrientationOwnProps = Merge<
+type SliderOrientationOwnProps = Polymorphic.Merge<
   SliderOrientationPartOwnProps,
   {
     min: number;
@@ -376,7 +375,7 @@ const SliderVertical = React.forwardRef((props, forwardedRef) => {
 /* -------------------------------------------------------------------------------------------------
  * SliderPart
  * -----------------------------------------------------------------------------------------------*/
-type SliderPartOwnProps = Merge<
+type SliderPartOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     onSlideMouseDown(event: React.MouseEvent): void;
@@ -528,7 +527,10 @@ SliderTrack.displayName = TRACK_NAME;
 const RANGE_NAME = 'SliderRange';
 const RANGE_DEFAULT_TAG = 'span';
 
-type SliderRangeOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { children?: never }>;
+type SliderRangeOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { children?: never }
+>;
 type SliderRangePrimitive = Polymorphic.ForwardRefComponent<
   typeof RANGE_DEFAULT_TAG,
   SliderRangeOwnProps
@@ -589,7 +591,7 @@ const SliderThumb = React.forwardRef((props, forwardedRef) => {
   ) : null;
 }) as SliderThumbPrimitive;
 
-type SliderThumbImplOwnProps = Merge<
+type SliderThumbImplOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     value: number;

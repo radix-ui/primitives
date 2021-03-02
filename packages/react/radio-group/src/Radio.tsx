@@ -11,7 +11,6 @@ import { useLabelContext } from '@radix-ui/react-label';
 import { getSelector } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Radio
@@ -21,7 +20,7 @@ const RADIO_NAME = 'Radio';
 const RADIO_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
-type RadioOwnProps = Merge<
+type RadioOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     checked?: boolean;
@@ -121,7 +120,7 @@ Radio.displayName = RADIO_NAME;
 const INDICATOR_NAME = 'RadioIndicator';
 const INDICATOR_DEFAULT_TAG = 'span';
 
-type RadioIndicatorOwnProps = Merge<
+type RadioIndicatorOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**

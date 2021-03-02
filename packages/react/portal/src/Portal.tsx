@@ -5,7 +5,6 @@ import { getSelector } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 const MAX_Z_INDEX = 2147483647;
 
@@ -15,7 +14,7 @@ const MAX_Z_INDEX = 2147483647;
 
 const PORTAL_NAME = 'Portal';
 
-type PortalOwnProps = Merge<
+type PortalOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     containerRef?: React.RefObject<HTMLElement>;

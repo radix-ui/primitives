@@ -7,7 +7,6 @@ import { getSelector, getSelectorObj } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Side, Align } from '@radix-ui/popper';
-import type { Merge } from '@radix-ui/utils';
 import type { Measurable } from '@radix-ui/rect';
 
 /* -------------------------------------------------------------------------------------------------
@@ -24,7 +23,7 @@ type PopperContextValue = {
 
 const [PopperProvider, usePopperContext] = createContextObj<PopperContextValue>(POPPER_NAME);
 
-type PopperOwnProps = Merge<
+type PopperOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     anchorRef: React.RefObject<Measurable>;
@@ -119,7 +118,10 @@ Popper.displayName = POPPER_NAME;
 
 const ARROW_NAME = 'PopperArrow';
 
-type PopperArrowOwnProps = Merge<Polymorphic.OwnProps<typeof ArrowPrimitive>, { offset?: number }>;
+type PopperArrowOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof ArrowPrimitive>,
+  { offset?: number }
+>;
 
 type PopperArrowPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof ArrowPrimitive>,

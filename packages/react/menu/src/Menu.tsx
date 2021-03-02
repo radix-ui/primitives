@@ -21,7 +21,6 @@ import { hideOthers } from 'aria-hidden';
 import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
@@ -43,7 +42,7 @@ type MenuContextValue = {
 };
 const [MenuProvider, useMenuContext] = createContextObj<MenuContextValue>(MENU_NAME);
 
-type MenuOwnProps = Merge<
+type MenuOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof MenuImpl>,
   {
     open?: boolean;
@@ -71,7 +70,7 @@ const Menu = React.forwardRef((props, forwardedRef) => {
   );
 }) as MenuPrimitive;
 
-type MenuImplOwnProps = Merge<
+type MenuImplOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof PopperPrimitive.Root>,
   {
     open: boolean;
@@ -376,7 +375,7 @@ const ITEM_ATTR = `data-${getSelector(ITEM_NAME)}`;
 const ENABLED_ITEM_SELECTOR = `[${ITEM_ATTR}]:not([data-disabled])`;
 const ITEM_SELECT = 'menu.itemSelect';
 
-type MenuItemOwnProps = Merge<
+type MenuItemOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     disabled?: boolean;
@@ -497,7 +496,7 @@ MenuItem.displayName = ITEM_NAME;
 
 const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
-type MenuCheckboxItemOwnProps = Merge<
+type MenuCheckboxItemOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof MenuItem>,
   {
     checked?: boolean;
@@ -546,7 +545,7 @@ const RADIO_GROUP_NAME = 'MenuRadioGroup';
 
 const RadioGroupContext = React.createContext<MenuRadioGroupOwnProps>({} as any);
 
-type MenuRadioGroupOwnProps = Merge<
+type MenuRadioGroupOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof MenuGroup>,
   {
     value?: string;
@@ -581,7 +580,10 @@ MenuRadioGroup.displayName = RADIO_GROUP_NAME;
 
 const RADIO_ITEM_NAME = 'MenuRadioItem';
 
-type MenuRadioItemOwnProps = Merge<Polymorphic.OwnProps<typeof MenuItem>, { value: string }>;
+type MenuRadioItemOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof MenuItem>,
+  { value: string }
+>;
 type MenuRadioItemPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof MenuItem>,
   MenuRadioItemOwnProps
@@ -621,7 +623,7 @@ const ITEM_INDICATOR_DEFAULT_TAG = 'span';
 
 const ItemIndicatorContext = React.createContext(false);
 
-type MenuItemIndicatorOwnProps = Merge<
+type MenuItemIndicatorOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**

@@ -6,7 +6,6 @@ import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Collapsible
@@ -14,7 +13,7 @@ import type { Merge } from '@radix-ui/utils';
 
 const COLLAPSIBLE_NAME = 'Collapsible';
 
-type CollapsibleOwnProps = Merge<
+type CollapsibleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     defaultOpen?: boolean;
@@ -122,7 +121,7 @@ CollapsibleButton.displayName = BUTTON_NAME;
 
 const CONTENT_NAME = 'CollapsibleContent';
 
-type CollapsibleContentOwnProps = Merge<
+type CollapsibleContentOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
