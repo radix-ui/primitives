@@ -2,12 +2,8 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
-import {
-  createContextObj,
-  useComposedRefs,
-  useRect,
-  useControlledState,
-} from '@radix-ui/react-utils';
+import { useRect } from '@radix-ui/react-use-rect';
+import { createContextObj, useComposedRefs, useControlledState } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-export function useSize(
+function useSize(
   /** A reference to the element whose size to observe */
   refToObserve: React.RefObject<HTMLElement | SVGElement>
 ) {
@@ -55,3 +55,5 @@ export function useSize(
 
   return size;
 }
+
+export { useSize };
