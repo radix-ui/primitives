@@ -18,6 +18,9 @@
   "dependencies": {
     "@radix-ui/react-polymorphic": "workspace:*"
   },
+  "devDependencies": {
+    "@testing-library/react": "^10.4.8"
+  },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"
   },

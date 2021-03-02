@@ -5,9 +5,8 @@ import {
   useCallbackRef,
   useControlledState,
   useComposedRefs,
-  extendComponent,
 } from '@radix-ui/react-utils';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import { Radio, RadioIndicator } from './Radio';
 import { useLabelContext } from '@radix-ui/react-label';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
@@ -180,7 +179,7 @@ const RadioGroupItemImpl = React.forwardRef((props, forwardedRef) => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const RadioGroupIndicator = extendComponent(RadioIndicator, 'RadioGroupIndicator');
+const RadioGroupIndicator = extendPrimitive(RadioIndicator, 'RadioGroupIndicator');
 
 /* ---------------------------------------------------------------------------------------------- */
 

@@ -3,12 +3,11 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import {
   composeRefs,
   createContextObj,
-  extendComponent,
   useCallbackRef,
   useComposedRefs,
 } from '@radix-ui/react-utils';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -640,8 +639,8 @@ MenuSeparator.displayName = SEPARATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const MenuLabel = extendComponent(Primitive, 'MenuLabel');
-const MenuArrow = extendComponent(PopperPrimitive.Arrow, 'MenuArrow');
+const MenuLabel = extendPrimitive(Primitive, 'MenuLabel');
+const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, 'MenuArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContextObj, extendComponent } from '@radix-ui/react-utils';
-import { Primitive } from '@radix-ui/react-primitive';
+import { createContextObj } from '@radix-ui/react-utils';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -135,20 +135,20 @@ ContextMenuContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const ContextMenuGroup = extendComponent(MenuPrimitive.Group, 'ContextMenuGroup');
-const ContextMenuLabel = extendComponent(MenuPrimitive.Label, 'ContextMenuLabel');
-const ContextMenuItem = extendComponent(MenuPrimitive.Item, 'ContextMenuItem');
-const ContextMenuCheckboxItem = extendComponent(
+const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, 'ContextMenuGroup');
+const ContextMenuLabel = extendPrimitive(MenuPrimitive.Label, 'ContextMenuLabel');
+const ContextMenuItem = extendPrimitive(MenuPrimitive.Item, 'ContextMenuItem');
+const ContextMenuCheckboxItem = extendPrimitive(
   MenuPrimitive.CheckboxItem,
   'ContextMenuCheckboxItem'
 );
-const ContextMenuRadioGroup = extendComponent(MenuPrimitive.RadioGroup, 'ContextMenuRadioGroup');
-const ContextMenuRadioItem = extendComponent(MenuPrimitive.RadioItem, 'ContextMenuRadioItem');
-const ContextMenuItemIndicator = extendComponent(
+const ContextMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, 'ContextMenuRadioGroup');
+const ContextMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, 'ContextMenuRadioItem');
+const ContextMenuItemIndicator = extendPrimitive(
   MenuPrimitive.ItemIndicator,
   'ContextMenuItemIndicator'
 );
-const ContextMenuSeparator = extendComponent(MenuPrimitive.Separator, 'ContextMenuSeparator');
+const ContextMenuSeparator = extendPrimitive(MenuPrimitive.Separator, 'ContextMenuSeparator');
 
 /* -----------------------------------------------------------------------------------------------*/
 

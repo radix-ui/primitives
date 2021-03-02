@@ -1,12 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import {
-  createContextObj,
-  extendComponent,
-  useComposedRefs,
-  useControlledState,
-} from '@radix-ui/react-utils';
-import { Primitive } from '@radix-ui/react-primitive';
+import { createContextObj, useComposedRefs, useControlledState } from '@radix-ui/react-utils';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useId } from '@radix-ui/react-id';
 
@@ -176,21 +171,21 @@ DropdownMenuContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const DropdownMenuGroup = extendComponent(MenuPrimitive.Group, 'DropdownMenuGroup');
-const DropdownMenuLabel = extendComponent(MenuPrimitive.Label, 'DropdownMenuLabel');
-const DropdownMenuItem = extendComponent(MenuPrimitive.Item, 'DropdownMenuItem');
-const DropdownMenuCheckboxItem = extendComponent(
+const DropdownMenuGroup = extendPrimitive(MenuPrimitive.Group, 'DropdownMenuGroup');
+const DropdownMenuLabel = extendPrimitive(MenuPrimitive.Label, 'DropdownMenuLabel');
+const DropdownMenuItem = extendPrimitive(MenuPrimitive.Item, 'DropdownMenuItem');
+const DropdownMenuCheckboxItem = extendPrimitive(
   MenuPrimitive.CheckboxItem,
   'DropdownMenuCheckboxItem'
 );
-const DropdownMenuRadioGroup = extendComponent(MenuPrimitive.RadioGroup, 'DropdownMenuRadioGroup');
-const DropdownMenuRadioItem = extendComponent(MenuPrimitive.RadioItem, 'DropdownMenuRadioItem');
-const DropdownMenuItemIndicator = extendComponent(
+const DropdownMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, 'DropdownMenuRadioGroup');
+const DropdownMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, 'DropdownMenuRadioItem');
+const DropdownMenuItemIndicator = extendPrimitive(
   MenuPrimitive.ItemIndicator,
   'DropdownMenuItemIndicator'
 );
-const DropdownMenuSeparator = extendComponent(MenuPrimitive.Separator, 'DropdownMenuSeparator');
-const DropdownMenuArrow = extendComponent(MenuPrimitive.Arrow, 'DropdownMenuArrow');
+const DropdownMenuSeparator = extendPrimitive(MenuPrimitive.Separator, 'DropdownMenuSeparator');
+const DropdownMenuArrow = extendPrimitive(MenuPrimitive.Arrow, 'DropdownMenuArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 
