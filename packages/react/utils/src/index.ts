@@ -7,7 +7,6 @@ export * from './useControlledState';
 export * from './useDisableBodyPointerEvents';
 export * from './useDocumentRef';
 export * from './useId';
-export * from './useLayoutEffect';
 export * from './usePrefersReducedMotion';
 export * from './usePrevious';
 export * from './useRect';

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observeElementRect } from '@radix-ui/rect';
-import { useLayoutEffect } from './useLayoutEffect';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 import type { Measurable } from '@radix-ui/rect';
 

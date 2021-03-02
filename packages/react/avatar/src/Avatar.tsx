@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { createContextObj, useCallbackRef, useLayoutEffect } from '@radix-ui/react-utils';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { createContextObj, useCallbackRef } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';

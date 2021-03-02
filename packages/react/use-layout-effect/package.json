@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-utils",
-  "version": "0.0.5",
+  "name": "@radix-ui/react-use-layout-effect",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -14,14 +14,6 @@
   "scripts": {
     "clean": "rm -rf dist",
     "prepublish": "yarn clean"
-  },
-  "dependencies": {
-    "@radix-ui/react-polymorphic": "workspace:*",
-    "@radix-ui/react-use-layout-effect": "workspace:*"
-  },
-  "devDependencies": {
-    "@testing-library/react": "^10.4.8",
-    "@types/resize-observer-browser": "^0.1.4"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

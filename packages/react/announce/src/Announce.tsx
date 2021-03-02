@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { useComposedRefs, useLayoutEffect } from '@radix-ui/react-utils';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';

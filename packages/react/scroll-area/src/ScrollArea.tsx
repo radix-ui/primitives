@@ -11,13 +11,13 @@
 import * as React from 'react';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import {
   createContextObj,
   getOwnerGlobals,
   useCallbackRef,
   useComposedRefs,
   useConstant,
-  useLayoutEffect,
   usePrefersReducedMotion,
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
