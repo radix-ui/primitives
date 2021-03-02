@@ -3319,6 +3319,8 @@ __metadata:
     "@radix-ui/react-arrow": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-rect": "workspace:*"
+    "@radix-ui/react-use-size": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
@@ -3436,6 +3438,7 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-size": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3523,6 +3526,7 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-use-previous": "workspace:*"
+    "@radix-ui/react-use-rect": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
@@ -3551,6 +3555,27 @@ __metadata:
 "@radix-ui/react-use-previous@workspace:*, @radix-ui/react-use-previous@workspace:packages/react/use-previous":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-previous@workspace:packages/react/use-previous"
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-use-rect@workspace:*, @radix-ui/react-use-rect@workspace:packages/react/use-rect":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-use-rect@workspace:packages/react/use-rect"
+  dependencies:
+    "@radix-ui/react-use-layout-effect": "workspace:*"
+    "@radix-ui/rect": "workspace:*"
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
+"@radix-ui/react-use-size@workspace:*, @radix-ui/react-use-size@workspace:packages/react/use-size":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-use-size@workspace:packages/react/use-size"
+  dependencies:
+    "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown

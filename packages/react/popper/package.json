@@ -20,6 +20,8 @@
     "@radix-ui/react-arrow": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
+    "@radix-ui/react-use-rect": "workspace:*",
+    "@radix-ui/react-use-size": "workspace:*",
     "@radix-ui/react-utils": "workspace:*",
     "@radix-ui/rect": "workspace:*"
   },

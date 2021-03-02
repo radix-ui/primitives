@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-slider",
-  "version": "0.0.5",
+  "name": "@radix-ui/react-use-rect",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -16,13 +16,8 @@
     "prepublish": "yarn clean"
   },
   "dependencies": {
-    "@radix-ui/number": "workspace:*",
-    "@radix-ui/primitive": "workspace:*",
-    "@radix-ui/react-collection": "workspace:*",
-    "@radix-ui/react-polymorphic": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-use-size": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*",
+    "@radix-ui/rect": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

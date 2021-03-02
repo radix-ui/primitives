@@ -45,6 +45,8 @@
       "@radix-ui/react-use-body-pointer-events": ["./packages/react/use-body-pointer-events/src"],
       "@radix-ui/react-use-layout-effect": ["./packages/react/use-layout-effect/src"],
       "@radix-ui/react-use-previous": ["./packages/react/use-previous/src"],
+      "@radix-ui/react-use-rect": ["./packages/react/use-rect/src"],
+      "@radix-ui/react-use-size": ["./packages/react/use-size/src"],
       "@radix-ui/react-utils": ["./packages/react/utils/src"],
       "@radix-ui/react-visually-hidden": ["./packages/react/visually-hidden/src"]
     }
