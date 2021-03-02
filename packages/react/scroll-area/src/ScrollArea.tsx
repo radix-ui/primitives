@@ -16,9 +16,7 @@ import {
   getOwnerGlobals,
   useCallbackRef,
   useComposedRefs,
-  useConstant,
   useLayoutEffect,
-  usePrefersReducedMotion,
 } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { bezier } from './bezier-easing';
@@ -1863,6 +1861,38 @@ function useBorderBoxResizeObserver(
       observer.disconnect();
     };
   }, [onResize, ref]);
+}
+
+function usePrefersReducedMotion(nodeRef: React.RefObject<Element>) {
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
+
+  React.useEffect(() => {
+    const globalWindow = nodeRef.current?.ownerDocument.defaultView || window;
+
+    function handleChange(event: MediaQueryListEvent) {
+      setPrefersReducedMotion(!event.matches);
+    }
+    const mediaQueryList = globalWindow.matchMedia('(prefers-reduced-motion: no-preference)');
+    mediaQueryList.addEventListener('change', handleChange);
+    
+    return () => {
+      mediaQueryList.removeEventListener('change', handleChange);
+    };
+  }, [nodeRef]);
+
+  return prefersReducedMotion;
+}
+
+/**
+ * React hook for creating a value exactly once.
+ * @see https://github.com/Andarist/use-constant
+ */
+function useConstant<ValueType>(fn: () => ValueType): ValueType {
+  const ref = React.useRef<{ v: ValueType }>();
+  if (!ref.current) {
+    ref.current = { v: fn() };
+  }
+  return ref.current.v;
 }
 
 function animate({ duration, draw, timing, done, rafIdRef }: AnimationOptions) {
