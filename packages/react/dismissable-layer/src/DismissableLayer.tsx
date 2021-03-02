@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
-import { useCallbackRef } from '@radix-ui/react-utils';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
 // We need to compute the total count of layers AND a running count of all layers
 // in order to find which layer is the deepest one.

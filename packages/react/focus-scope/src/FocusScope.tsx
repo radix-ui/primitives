@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createFocusScope, AUTOFOCUS_ON_CREATE, AUTOFOCUS_ON_DESTROY } from './createFocusScope';
-import { useCallbackRef } from '@radix-ui/react-utils';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
 type FocusScopeProps = {
   children: (args: { ref: React.RefObject<any> }) => React.ReactElement;

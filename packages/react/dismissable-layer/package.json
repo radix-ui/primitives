@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@radix-ui/react-use-body-pointer-events": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
   },
   "devDependencies": {
     "react-remove-scroll": "^2.4.0"

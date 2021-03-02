@@ -15,6 +15,9 @@
     "clean": "rm -rf dist",
     "prepublish": "yarn clean"
   },
+  "dependencies": {
+    "@radix-ui/react-use-callback-ref": "workspace:*"
+  },
   "devDependencies": {
     "@types/resize-observer-browser": "^0.1.4"
   },

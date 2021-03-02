@@ -1,13 +1,9 @@
 import * as React from 'react';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useSize } from '@radix-ui/react-use-size';
-import {
-  createContextObj,
-  useComposedRefs,
-  useControlledState,
-  useCallbackRef,
-} from '@radix-ui/react-utils';
+import { createContextObj, useComposedRefs, useControlledState } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from '@radix-ui/react-collection';
 
