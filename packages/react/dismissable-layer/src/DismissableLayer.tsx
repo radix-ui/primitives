@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { useCallbackRef, useDisableBodyPointerEvents } from '@radix-ui/react-utils';
+import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
+import { useCallbackRef } from '@radix-ui/react-utils';
 
 // We need to compute the total count of layers AND a running count of all layers
 // in order to find which layer is the deepest one.
@@ -117,7 +118,7 @@ function DismissableLayerImpl(props: React.ComponentProps<typeof DismissableLaye
     totalLayerCountWithDisabledOutsidePointerEvents;
 
   // Disable pointer-events on `document.body` when at least one layer is disabling outside pointer events
-  useDisableBodyPointerEvents({ disabled: disableOutsidePointerEvents });
+  useBodyPointerEvents({ disabled: disableOutsidePointerEvents });
 
   // Dismiss on escape
   useEscapeKeydown((event) => {

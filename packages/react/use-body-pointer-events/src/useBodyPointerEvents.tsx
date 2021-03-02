@@ -3,7 +3,7 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 let changeCount = 0;
 let originalBodyPointerEvents: string;
 
-function useDisableBodyPointerEvents({ disabled }: { disabled: boolean }) {
+function useBodyPointerEvents({ disabled }: { disabled: boolean }) {
   useLayoutEffect(() => {
     if (disabled) {
       if (changeCount === 0) {
@@ -22,4 +22,4 @@ function useDisableBodyPointerEvents({ disabled }: { disabled: boolean }) {
   }, [disabled]);
 }
 
-export { useDisableBodyPointerEvents };
+export { useBodyPointerEvents };

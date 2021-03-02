@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-dismissable-layer",
-  "version": "0.0.5",
+  "name": "@radix-ui/react-use-body-pointer-events",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -16,11 +16,7 @@
     "prepublish": "yarn clean"
   },
   "dependencies": {
-    "@radix-ui/react-use-body-pointer-events": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*"
-  },
-  "devDependencies": {
-    "react-remove-scroll": "^2.4.0"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"
