@@ -42,6 +42,7 @@
       "@radix-ui/react-tabs": ["./packages/react/tabs/src"],
       "@radix-ui/react-toggle-button": ["./packages/react/toggle-button/src"],
       "@radix-ui/react-tooltip": ["./packages/react/tooltip/src"],
+      "@radix-ui/react-use-body-pointer-events": ["./packages/react/use-body-pointer-events/src"],
       "@radix-ui/react-use-layout-effect": ["./packages/react/use-layout-effect/src"],
       "@radix-ui/react-utils": ["./packages/react/utils/src"],
       "@radix-ui/react-visually-hidden": ["./packages/react/visually-hidden/src"]
