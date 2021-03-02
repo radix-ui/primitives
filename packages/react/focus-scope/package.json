@@ -16,7 +16,7 @@
     "prepublish": "yarn clean"
   },
   "dependencies": {
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

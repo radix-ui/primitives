@@ -3108,6 +3108,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
   peerDependencies:
@@ -3196,7 +3197,7 @@ __metadata:
   resolution: "@radix-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
   dependencies:
     "@radix-ui/react-use-body-pointer-events": "workspace:*"
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3230,7 +3231,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-focus-scope@workspace:packages/react/focus-scope"
   dependencies:
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3271,6 +3272,7 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     aria-hidden: ^1.1.1
     react-remove-scroll: ^2.4.0
@@ -3384,6 +3386,7 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3410,6 +3413,7 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
     "@stitches/react": canary
@@ -3438,6 +3442,7 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
   peerDependencies:
@@ -3479,6 +3484,7 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-utils": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3544,6 +3550,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@radix-ui/react-use-callback-ref@workspace:*, @radix-ui/react-use-callback-ref@workspace:packages/react/use-callback-ref":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-use-callback-ref@workspace:packages/react/use-callback-ref"
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@radix-ui/react-use-layout-effect@workspace:*, @radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect"
@@ -3585,6 +3599,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-utils@workspace:packages/react/utils"
   dependencies:
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
     react: ^16.8 || ^17.0
