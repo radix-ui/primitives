@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useControlledState, composeEventHandlers } from '@radix-ui/react-utils';
-import { getSelector } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -31,7 +30,6 @@ type ToggleButtonPrimitive = Polymorphic.ForwardRefComponent<
 const ToggleButton = React.forwardRef((props, forwardedRef) => {
   const {
     as = DEFAULT_TAG,
-    selector = getSelector(NAME),
     toggled: toggledProp,
     defaultToggled = false,
     onClick,
@@ -53,7 +51,6 @@ const ToggleButton = React.forwardRef((props, forwardedRef) => {
       data-disabled={props.disabled ? '' : undefined}
       {...buttonProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, () => {
         if (!props.disabled) {

@@ -63,13 +63,6 @@ export const Chromatic = () => (
         <AspectRatio ratio={2 / 1}>{image}</AspectRatio>
       </div>
     </div>
-
-    <h1>Data attribute selectors</h1>
-    <div className={wrapperTestClass}>
-      <div style={{ width: 300 }}>
-        <AspectRatio className={rootAttrClass} />
-      </div>
-    </div>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -81,7 +74,3 @@ const rootClass = css({
   backgroundColor: '$red',
   color: 'white',
 });
-
-const styles = { backgroundColor: 'rgba(0, 0, 255, 0.3)', border: '2px solid blue', padding: 10 };
-const rootAttrClass = css({ '&[data-radix-aspect-ratio]': styles });
-const wrapperTestClass = css({ '[data-radix-aspect-ratio-wrapper]': styles });

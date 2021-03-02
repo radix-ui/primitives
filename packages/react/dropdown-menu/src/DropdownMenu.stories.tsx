@@ -632,7 +632,7 @@ export const Chromatic = () => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <h1 style={{ marginTop: 500 }}>Data attribute selectors</h1>
+      <h1 style={{ marginTop: 500 }}>State attributes</h1>
       <h2>Closed</h2>
       <DropdownMenu open={false}>
         <DropdownMenuTrigger className={triggerAttrClass}>Open</DropdownMenuTrigger>
@@ -755,12 +755,12 @@ const styles = {
   '&[data-state="closed"]': { borderColor: 'red' },
   '&[data-state="open"]': { borderColor: 'green' },
 };
-const triggerAttrClass = css({ '&[data-radix-dropdown-menu-trigger]': styles });
-const contentAttrClass = css({ '&[data-radix-dropdown-menu-content]': styles });
-const itemAttrClass = css({ '&[data-radix-dropdown-menu-item]': styles });
-const itemIndicatorAttrClass = css({ '&[data-radix-dropdown-menu-item-indicator]': styles });
-const checkboxItemAttrClass = css({ '&[data-radix-dropdown-menu-checkbox-item]': styles });
-const radioGroupAttrClass = css({ '&[data-radix-dropdown-menu-radio-group]': styles });
-const radioItemAttrClass = css({ '&[data-radix-dropdown-menu-radio-item]': styles });
-const separatorAttrClass = css({ '&[data-radix-dropdown-menu-separator]': styles });
-const arrowAttrClass = css({ '&[data-radix-dropdown-menu-arrow]': styles });
+const triggerAttrClass = css(styles);
+const contentAttrClass = css(styles);
+const itemAttrClass = css(styles);
+const itemIndicatorAttrClass = css(styles);
+const checkboxItemAttrClass = css(styles);
+const radioGroupAttrClass = css(styles);
+const radioItemAttrClass = css(styles);
+const separatorAttrClass = css(styles);
+const arrowAttrClass = css(styles);

@@ -256,7 +256,7 @@ export const Chromatic = () => (
       <SliderThumb className={thumbClass} />
     </Slider>
 
-    <h1>Data attribute selectors</h1>
+    <h1>State attributes</h1>
     <h2>Default</h2>
     <Slider className={rootAttrClass} defaultValue={[20]}>
       <SliderTrack className={trackAttrClass}>
@@ -371,16 +371,7 @@ const styles = {
 
   '&[data-disabled]': { borderStyle: 'dashed' },
 };
-const rootAttrClass = css({ ...RECOMMENDED_CSS__SLIDER__ROOT, '&[data-radix-slider]': styles });
-const trackAttrClass = css({
-  ...RECOMMENDED_CSS__SLIDER__TRACK,
-  '&[data-radix-slider-track]': styles,
-});
-const rangeAttrClass = css({
-  ...RECOMMENDED_CSS__SLIDER__RANGE,
-  '&[data-radix-slider-range]': styles,
-});
-const thumbAttrClass = css({
-  ...RECOMMENDED_CSS__SLIDER__THUMB,
-  '&[data-radix-slider-thumb]': styles,
-});
+const rootAttrClass = css({ ...RECOMMENDED_CSS__SLIDER__ROOT, ...styles });
+const trackAttrClass = css({ ...RECOMMENDED_CSS__SLIDER__TRACK, ...styles });
+const rangeAttrClass = css({ ...RECOMMENDED_CSS__SLIDER__RANGE, ...styles });
+const thumbAttrClass = css({ ...RECOMMENDED_CSS__SLIDER__THUMB, ...styles });

@@ -23,8 +23,7 @@
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-utils": "workspace:*",
-    "@radix-ui/react-visually-hidden": "workspace:*",
-    "@radix-ui/utils": "workspace:*"
+    "@radix-ui/react-visually-hidden": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

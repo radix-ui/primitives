@@ -59,23 +59,6 @@ export const Chromatic = () => (
         <AvatarIcon />
       </AvatarFallback>
     </Avatar>
-
-    <h1>Data attribute selectors</h1>
-    <h2>With image & with fallback</h2>
-    <Avatar className={rootAttrClass}>
-      <AvatarImage className={imageAttrClass} alt="John Smith" src={src} />
-      <AvatarFallback delayMs={300} className={fallbackAttrClass}>
-        JS
-      </AvatarFallback>
-    </Avatar>
-
-    <h2>With image & with fallback (but broken src)</h2>
-    <Avatar className={rootAttrClass}>
-      <AvatarImage className={imageAttrClass} alt="John Smith" src={srcBroken} />
-      <AvatarFallback className={fallbackAttrClass}>
-        <AvatarIcon />
-      </AvatarFallback>
-    </Avatar>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false, delay: 1000 } };
@@ -121,17 +104,6 @@ const fallbackClass = css({
   ...RECOMMENDED_CSS__AVATAR__FALLBACK,
   backgroundColor: '$black',
   color: '$white',
-});
-
-const styles = { backgroundColor: 'rgba(0, 0, 255, 0.3)', border: '2px solid blue', padding: 10 };
-const rootAttrClass = css({ ...RECOMMENDED_CSS__AVATAR__ROOT, '&[data-radix-avatar]': styles });
-const imageAttrClass = css({
-  ...RECOMMENDED_CSS__AVATAR__IMAGE,
-  '&[data-radix-avatar-image]': styles,
-});
-const fallbackAttrClass = css({
-  ...RECOMMENDED_CSS__AVATAR__FALLBACK,
-  '&[data-radix-avatar-fallback]': styles,
 });
 
 const AvatarIcon = () => (

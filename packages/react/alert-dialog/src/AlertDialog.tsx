@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import {
   createContextObj,
   useComposedRefs,
@@ -55,10 +54,9 @@ type AlertDialogCancelPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const AlertDialogCancel = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(CANCEL_NAME), ...cancelProps } = props;
   const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
   const ref = useComposedRefs(forwardedRef, cancelRef);
-  return <DialogClose {...cancelProps} selector={selector} ref={ref} />;
+  return <DialogClose {...props} ref={ref} />;
 }) as AlertDialogCancelPrimitive;
 
 AlertDialogCancel.displayName = CANCEL_NAME;
@@ -91,7 +89,6 @@ type AlertDialogContentPrimitive = Polymorphic.ForwardRefComponent<
 
 const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(CONTENT_NAME),
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     'aria-describedby': ariaDescribedBy,
@@ -115,7 +112,6 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
         aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
         aria-label={ariaLabel || undefined}
         {...dialogContentProps}
-        selector={selector}
         ref={ref}
         onOpenAutoFocus={composeEventHandlers(dialogContentProps.onOpenAutoFocus, (event) => {
           event.preventDefault();
@@ -147,9 +143,9 @@ type AlertDialogTitlePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const AlertDialogTitle = React.forwardRef((props, forwardedRef) => {
-  const { as = TITLE_DEFAULT_TAG, selector = getSelector(TITLE_NAME), ...titleProps } = props;
+  const { as = TITLE_DEFAULT_TAG, ...titleProps } = props;
   const { titleId } = useAlertDialogContext(TITLE_NAME);
-  return <Primitive id={titleId} {...titleProps} as={as} selector={selector} ref={forwardedRef} />;
+  return <Primitive id={titleId} {...titleProps} as={as} ref={forwardedRef} />;
 }) as AlertDialogTitlePrimitive;
 
 AlertDialogTitle.displayName = TITLE_NAME;
@@ -168,21 +164,9 @@ type AlertDialogDescriptionPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const AlertDialogDescription = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = DESCRIPTION_DEFAULT_TAG,
-    selector = getSelector(DESCRIPTION_NAME),
-    ...descriptionProps
-  } = props;
+  const { as = DESCRIPTION_DEFAULT_TAG, ...descriptionProps } = props;
   const { descriptionId } = useAlertDialogContext(DESCRIPTION_NAME);
-  return (
-    <Primitive
-      id={descriptionId}
-      {...descriptionProps}
-      as={as}
-      selector={selector}
-      ref={forwardedRef}
-    />
-  );
+  return <Primitive id={descriptionId} {...descriptionProps} as={as} ref={forwardedRef} />;
 }) as AlertDialogDescriptionPrimitive;
 
 AlertDialogDescription.displayName = DESCRIPTION_NAME;

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { getSelector } from '@radix-ui/utils';
 import { useComposedRefs, useLayoutEffect } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
@@ -93,7 +92,6 @@ type AnnouncePrimitive = Polymorphic.ForwardRefComponent<
 
 const Announce = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(NAME),
     'aria-relevant': ariaRelevant,
     children,
     type = 'polite',
@@ -176,7 +174,7 @@ const Announce = React.forwardRef((props, forwardedRef) => {
 
   return (
     <React.Fragment>
-      <Primitive {...regionProps} selector={selector} ref={ref}>
+      <Primitive {...regionProps} ref={ref}>
         {children}
       </Primitive>
 
@@ -231,7 +229,7 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
 }
 
 function getLiveRegionPartDataAttr(id?: string) {
-  return `data-` + getSelector(NAME + 'Region') + (id ? `-${id}` : '');
+  return 'data-radix-announce-region' + (id ? `-${id}` : '');
 }
 
 const Root = Announce;

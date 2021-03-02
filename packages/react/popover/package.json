@@ -26,7 +26,6 @@
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-utils": "workspace:*",
-    "@radix-ui/utils": "workspace:*",
     "aria-hidden": "^1.1.1",
     "react-remove-scroll": "^2.4.0"
   },

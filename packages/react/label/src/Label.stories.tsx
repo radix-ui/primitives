@@ -46,11 +46,6 @@ export const Chromatic = () => (
       This should add an `aria-labelledby` to the control
     </Label>
     <Control id="two" />
-
-    <h1>Data attribute selectors</h1>
-    <Label className={rootAttrClass}>
-      <Control />
-    </Label>
   </IdProvider>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -97,10 +92,3 @@ const chromaticRootClass = css(rootClass, {
     content: 'attr(id)',
   },
 });
-
-const styles = {
-  backgroundColor: 'rgba(0, 0, 255, 0.3)',
-  border: '2px solid blue',
-  padding: 10,
-};
-const rootAttrClass = css(chromaticRootClass, { '&[data-radix-label]': styles });

@@ -477,7 +477,7 @@ export const Chromatic = () => (
       </PopoverContent>
     </Popover>
 
-    <h1 style={{ marginTop: 100 }}>Data attribute selectors</h1>
+    <h1 style={{ marginTop: 100 }}>State attributes</h1>
     <h2>Closed</h2>
     <Popover open={false}>
       <PopoverTrigger className={triggerAttrClass}>open</PopoverTrigger>
@@ -576,7 +576,7 @@ const styles = {
   '&[data-state="closed"]': { borderColor: 'red' },
   '&[data-state="open"]': { borderColor: 'green' },
 };
-const triggerAttrClass = css({ '&[data-radix-popover-trigger]': styles });
-const contentAttrClass = css(chromaticContentClass, { '&[data-radix-popover-content]': styles });
-const arrowAttrClass = css({ '&[data-radix-popover-arrow]': styles });
-const closeAttrClass = css({ '&[data-radix-popover-close]': styles });
+const triggerAttrClass = css(styles);
+const contentAttrClass = css(chromaticContentClass, styles);
+const arrowAttrClass = css(styles);
+const closeAttrClass = css(styles);

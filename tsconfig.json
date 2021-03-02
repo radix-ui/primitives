@@ -6,7 +6,6 @@
       "@radix-ui/number": ["./packages/core/number/src"],
       "@radix-ui/popper": ["./packages/core/popper/src"],
       "@radix-ui/rect": ["./packages/core/rect/src"],
-      "@radix-ui/utils": ["./packages/core/utils/src"],
       "@radix-ui/react-accessible-icon": ["./packages/react/accessible-icon/src"],
       "@radix-ui/react-accordion": ["./packages/react/accordion/src"],
       "@radix-ui/react-announce": ["./packages/react/announce/src"],

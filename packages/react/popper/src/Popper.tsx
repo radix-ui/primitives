@@ -3,7 +3,6 @@ import { getPlacementData } from '@radix-ui/popper';
 import { createContextObj, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
-import { getSelector, getSelectorObj } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Side, Align } from '@radix-ui/popper';
@@ -43,7 +42,6 @@ type PopperPrimitive = Polymorphic.ForwardRefComponent<
 
 const Popper = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(POPPER_NAME),
     anchorRef,
     side = 'bottom',
     sideOffset,
@@ -86,14 +84,13 @@ const Popper = React.forwardRef((props, forwardedRef) => {
   const isPlaced = placedSide !== undefined;
 
   return (
-    <div style={popperStyles} {...(selector ? getSelectorObj(selector + '-wrapper') : undefined)}>
+    <div style={popperStyles} data-radix-popper-wrapper="">
       <PopperProvider
         arrowRef={arrowRef}
         arrowStyles={arrowStyles}
         onArrowOffsetChange={setArrowOffset}
       >
         <Primitive
-          selector={selector}
           {...popperProps}
           style={{
             ...popperProps.style,
@@ -129,7 +126,7 @@ type PopperArrowPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const PopperArrow = React.forwardRef(function PopperArrow(props, forwardedRef) {
-  const { selector = getSelector(ARROW_NAME), offset, ...arrowProps } = props;
+  const { offset, ...arrowProps } = props;
   const context = usePopperContext(ARROW_NAME);
   const { onArrowOffsetChange } = context;
 
@@ -151,7 +148,6 @@ const PopperArrow = React.forwardRef(function PopperArrow(props, forwardedRef) {
       >
         <ArrowPrimitive
           {...arrowProps}
-          selector={selector}
           ref={forwardedRef}
           style={{
             ...arrowProps.style,

@@ -253,7 +253,7 @@ export const Chromatic = () => {
         ))}
       </Accordion>
 
-      <h1>Data attribute selectors</h1>
+      <h1>State attributes</h1>
       <Accordion className={rootAttrClass} defaultValue="Two">
         {items.map((item) => (
           <AccordionItem
@@ -347,14 +347,12 @@ const styles = {
   '&[data-disabled]': { borderStyle: 'dashed' },
   '&:disabled': { opacity: 0.5 },
 };
-const rootAttrClass = css({ '&[data-radix-accordion]': styles });
-const itemAttrClass = css({ '&[data-radix-accordion-item]': styles });
-const headerAttrClass = css({ '&[data-radix-accordion-header]': styles });
-const buttonAttrClass = css({ '&[data-radix-accordion-button]': styles });
+const rootAttrClass = css(styles);
+const itemAttrClass = css(styles);
+const headerAttrClass = css(styles);
+const buttonAttrClass = css(styles);
 const panelAttrClass = css({
-  '&[data-radix-accordion-panel]': {
-    // ensure we can see the content (because it has `hidden` attribute)
-    display: 'block',
-    ...styles,
-  },
+  // ensure we can see the content (because it has `hidden` attribute)
+  display: 'block',
+  ...styles,
 });

@@ -34,49 +34,6 @@ export const Chromatic = () => (
     <h1>Example</h1>
     <ToolbarExample />
     <ToolbarExample orientation="vertical" />
-
-    <h1>Data attribute selectors</h1>
-    <Toolbar className={rootAttrClass}>
-      <ToolbarButton className={buttonAttrClass}>Button</ToolbarButton>
-      <ToolbarButton className={buttonAttrClass} disabled>
-        Button (disabled)
-      </ToolbarButton>
-      <ToolbarSeparator className={separatorAttrClass}></ToolbarSeparator>
-      <ToolbarLink
-        className={linkAttrClass}
-        href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
-        target="_blank"
-      >
-        Link
-      </ToolbarLink>
-      <ToolbarSeparator className={separatorAttrClass}></ToolbarSeparator>
-      <ToolbarButton className={buttonAttrClass} as={ToggleButton}>
-        Toggle
-      </ToolbarButton>
-      <ToolbarSeparator className={separatorAttrClass}></ToolbarSeparator>
-      <ToolbarRadioGroup className={radioGroupAttrClass}>
-        <ToolbarRadioItem value="left" className={radioItemAttrClass}>
-          Left
-        </ToolbarRadioItem>
-        <ToolbarRadioItem value="center" className={radioItemAttrClass}>
-          Center
-        </ToolbarRadioItem>
-        <ToolbarRadioItem value="right" className={radioItemAttrClass}>
-          Right
-        </ToolbarRadioItem>
-      </ToolbarRadioGroup>
-      <ToolbarSeparator className={separatorAttrClass}></ToolbarSeparator>
-      <DropdownMenu>
-        <ToolbarButton className={buttonAttrClass} as={DropdownMenuTrigger}>
-          Menu
-        </ToolbarButton>
-        <DropdownMenuContent sideOffset={5}>
-          <DropdownMenuItem>Undo</DropdownMenuItem>
-          <DropdownMenuItem>Redo</DropdownMenuItem>
-          <DropdownMenuArrow />
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </Toolbar>
   </div>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -221,15 +178,3 @@ const toolbarRadioItemClass = css(toolbarItemClass, {
     color: 'white',
   },
 });
-
-const styles = {
-  backgroundColor: 'rgba(0, 0, 255, 0.3)',
-  border: '2px solid blue',
-  padding: 10,
-};
-const rootAttrClass = css({ display: 'flex', '&[data-radix-toolbar]': styles });
-const separatorAttrClass = css({ '&[data-radix-toolbar-separator]': styles });
-const buttonAttrClass = css({ '&[data-radix-toolbar-button]': styles });
-const linkAttrClass = css({ '&[data-radix-toolbar-link]': styles });
-const radioGroupAttrClass = css({ '&[data-radix-toolbar-radio-group]': styles });
-const radioItemAttrClass = css({ '&[data-radix-toolbar-radio-item]': styles });

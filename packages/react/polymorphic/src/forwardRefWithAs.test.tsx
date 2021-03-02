@@ -114,9 +114,6 @@ export function Test() {
       {/* Button accepts form prop */}
       <Button form="form" />
 
-      {/* Button accepts selector prop */}
-      <Button selector="test" />
-
       {/* Button accepts isDisabled prop */}
       <Button isDisabled />
 

@@ -31,9 +31,9 @@ const IdProvider: React.FC = (props) => {
 
 function useId(deterministicId?: string): string {
   const context = React.useContext(IdContext);
-  const isDOMEnv = canUseDOM();
+  const isBrowser = Boolean(globalThis?.document);
 
-  if (!isDOMEnv && context === defaultIdContext) {
+  if (!isBrowser && context === defaultIdContext) {
     console.warn(
       'When server rendering, you must wrap your application in an <IdProvider> to ensure consistent ids are generated between the client and server.'
     );
@@ -44,10 +44,6 @@ function useId(deterministicId?: string): string {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deterministicId]
   );
-}
-
-function canUseDOM() {
-  return Boolean(typeof window !== 'undefined' && window.document && window.document.createElement);
 }
 
 export { IdProvider, useId };

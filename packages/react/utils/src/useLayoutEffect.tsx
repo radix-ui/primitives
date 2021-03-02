@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { canUseDOM } from '@radix-ui/utils';
 
 /**
  * On the server, React emits a warning when calling `useLayoutEffect`.
@@ -8,4 +7,4 @@ import { canUseDOM } from '@radix-ui/utils';
  *
  * See: https://reactjs.org/docs/hooks-reference.html#uselayouteffect
  */
-export const useLayoutEffect = canUseDOM() ? React.useLayoutEffect : () => {};
+export const useLayoutEffect = Boolean(globalThis?.document) ? React.useLayoutEffect : () => {};

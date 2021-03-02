@@ -43,7 +43,7 @@ export const Chromatic = () => (
       Toggle
     </ToggleButton>
 
-    <h1>Data attribute selectors</h1>
+    <h1>State attributes</h1>
     <ToggleButton className={rootAttrClass}>Toggle</ToggleButton>
     <ToggleButton className={rootAttrClass} disabled>
       Toggle
@@ -85,4 +85,4 @@ const styles = {
   '&:disabled': { opacity: 0.5 },
   '&[data-disabled]': { borderStyle: 'dashed' },
 };
-const rootAttrClass = css({ '&[data-radix-toggle-button]': styles });
+const rootAttrClass = css(styles);

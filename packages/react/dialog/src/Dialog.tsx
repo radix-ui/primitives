@@ -6,7 +6,6 @@ import {
   useControlledState,
   composeRefs,
 } from '@radix-ui/react-utils';
-import { getSelector } from '@radix-ui/utils';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
@@ -75,7 +74,7 @@ type DialogTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DialogTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, selector = getSelector(TRIGGER_NAME), ...triggerProps } = props;
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useDialogContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
   return (
@@ -87,7 +86,6 @@ const DialogTrigger = React.forwardRef((props, forwardedRef) => {
       data-state={getState(context.open)}
       {...triggerProps}
       as={as}
-      selector={selector}
       ref={composedTriggerRef}
       onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(true))}
     />
@@ -135,10 +133,9 @@ type DialogOverlayImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DialogOverlayImpl = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(OVERLAY_NAME), ...overlayProps } = props;
   return (
     <Portal>
-      <Primitive {...overlayProps} selector={selector} ref={forwardedRef} />
+      <Primitive {...props} ref={forwardedRef} />
     </Portal>
   );
 }) as DialogOverlayImplPrimitive;
@@ -213,7 +210,6 @@ type DialogContentImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(CONTENT_NAME),
     onOpenAutoFocus,
     onCloseAutoFocus,
     onEscapeKeyDown,
@@ -259,7 +255,6 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
                   aria-modal
                   id={context.contentId}
                   {...contentProps}
-                  selector={selector}
                   ref={composeRefs(
                     forwardedRef,
                     contentRef,
@@ -316,14 +311,13 @@ type DialogClosePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DialogClose = React.forwardRef((props, forwardedRef) => {
-  const { as = CLOSE_DEFAULT_TAG, selector = getSelector(CLOSE_NAME), ...closeProps } = props;
+  const { as = CLOSE_DEFAULT_TAG, ...closeProps } = props;
   const context = useDialogContext(CLOSE_NAME);
   return (
     <Primitive
       type="button"
       {...closeProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
       onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
     />

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 
 function useMenuTypeahead() {
   const timerRef = React.useRef(0);
@@ -75,8 +74,7 @@ function getNextMatch(values: string[], search: string, currentMatch?: string) {
 
 const getValue = (element: Element) => element.getAttribute(ITEM_ATTR) ?? '';
 
-const ITEM_NAME = 'MenuTypeaheadItem';
-const ITEM_ATTR = `data-${getSelector(ITEM_NAME)}`;
+const ITEM_ATTR = 'data-radix-menu-typeahead-item';
 
 type UseMenuTypeaheadItemOptions = { textValue: string; disabled?: boolean };
 

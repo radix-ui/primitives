@@ -1,5 +1,4 @@
 import React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import {
   composeEventHandlers,
   createContextObj,
@@ -65,7 +64,6 @@ type AccordionPrimitive = Polymorphic.ForwardRefComponent<
  */
 const Accordion = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(ACCORDION_NAME),
     value: valueProp,
     defaultValue,
     disabled,
@@ -132,7 +130,6 @@ const Accordion = React.forwardRef((props, forwardedRef) => {
     >
       <Primitive
         {...accordionProps}
-        selector={selector}
         ref={composedRefs}
         onKeyDown={disabled ? undefined : handleKeyDown}
       />
@@ -180,7 +177,7 @@ const [
  * `AccordionItem` contains all of the parts of a collapsible section inside of an `Accordion`.
  */
 const AccordionItem = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(ITEM_NAME), value, ...accordionItemProps } = props;
+  const { value, ...accordionItemProps } = props;
   const accordionContext = useAccordionContext(ITEM_NAME);
   const buttonId = useId();
   const open = (value && value === accordionContext.value) || false;
@@ -190,7 +187,6 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
     <AccordionItemProvider open={open} disabled={disabled} buttonId={buttonId}>
       <Collapsible
         {...accordionItemProps}
-        selector={selector}
         ref={forwardedRef}
         data-state={open ? 'open' : 'closed'}
         disabled={disabled}
@@ -221,7 +217,7 @@ type AccordionHeaderPrimitive = Polymorphic.ForwardRefComponent<
  * whether or not its content is collapsed.
  */
 const AccordionHeader = React.forwardRef((props, forwardedRef) => {
-  const { as = HEADER_DEFAULT_TAG, selector = getSelector(HEADER_NAME), ...headerProps } = props;
+  const { as = HEADER_DEFAULT_TAG, ...headerProps } = props;
   const itemContext = useAccordionItemContext(BUTTON_NAME);
   return (
     <Primitive
@@ -229,7 +225,6 @@ const AccordionHeader = React.forwardRef((props, forwardedRef) => {
       data-disabled={itemContext.disabled ? '' : undefined}
       {...headerProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
     />
   );
@@ -254,7 +249,6 @@ type AccordionButtonPrimitive = Polymorphic.ForwardRefComponent<
  * should always be nested inside of an `AccordionHeader`.
  */
 const AccordionButton = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(BUTTON_NAME), ...buttonProps } = props;
   const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
   const itemContext = useAccordionItemContext(BUTTON_NAME);
 
@@ -278,8 +272,7 @@ const AccordionButton = React.forwardRef((props, forwardedRef) => {
     <CollapsibleButton
       aria-disabled={itemContext.open || undefined}
       id={itemContext.buttonId}
-      {...buttonProps}
-      selector={selector}
+      {...props}
       ref={composedRefs}
     />
   );
@@ -302,14 +295,12 @@ type AccordionPanelPrimitive = Polymorphic.ForwardRefComponent<
  * `AccordionPanel` contains the collapsible content for an `AccordionItem`.
  */
 const AccordionPanel = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(PANEL_NAME), ...panelProps } = props;
   const itemContext = useAccordionItemContext(PANEL_NAME);
   return (
     <CollapsibleContent
       role="region"
       aria-labelledby={itemContext.buttonId}
-      {...panelProps}
-      selector={selector}
+      {...props}
       ref={forwardedRef}
     />
   );

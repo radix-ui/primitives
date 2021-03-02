@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
-import { getSelector } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -15,8 +14,8 @@ type ArrowPrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, ArrowO
  * is replaced when consumer passes an `as` prop
  */
 const Arrow = React.forwardRef((props, forwardedRef) => {
-  const { as = ArrowImpl, selector = getSelector(NAME), ...arrowProps } = props;
-  return <Primitive {...arrowProps} as={as} selector={selector} ref={forwardedRef} />;
+  const { as = ArrowImpl, ...arrowProps } = props;
+  return <Primitive {...arrowProps} as={as} ref={forwardedRef} />;
 }) as ArrowPrimitive;
 
 const ArrowImpl = React.forwardRef<SVGSVGElement, React.ComponentProps<typeof DEFAULT_TAG>>(

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { createContextObj, composeEventHandlers, useControlledState } from '@radix-ui/react-utils';
-import { getSelector } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
@@ -40,14 +39,7 @@ const [CollapsibleProvider, useCollapsibleContext] = createContextObj<Collapsibl
 );
 
 const Collapsible = React.forwardRef((props, forwardedRef) => {
-  const {
-    selector = getSelector(COLLAPSIBLE_NAME),
-    open: openProp,
-    defaultOpen,
-    disabled,
-    onOpenChange,
-    ...collapsibleProps
-  } = props;
+  const { open: openProp, defaultOpen, disabled, onOpenChange, ...collapsibleProps } = props;
 
   const [open = false, setOpen] = useControlledState({
     prop: openProp,
@@ -66,7 +58,6 @@ const Collapsible = React.forwardRef((props, forwardedRef) => {
         data-state={getState(open)}
         data-disabled={disabled ? '' : undefined}
         {...collapsibleProps}
-        selector={selector}
         ref={forwardedRef}
       />
     </CollapsibleProvider>
@@ -89,12 +80,7 @@ type CollapsibleButtonPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const CollapsibleButton = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = BUTTON_DEFAULT_TAG,
-    selector = getSelector(BUTTON_NAME),
-    onClick,
-    ...buttonProps
-  } = props;
+  const { as = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
   const context = useCollapsibleContext(BUTTON_NAME);
 
   return (
@@ -105,7 +91,6 @@ const CollapsibleButton = React.forwardRef((props, forwardedRef) => {
       data-disabled={context.disabled ? '' : undefined}
       {...buttonProps}
       as={as}
-      selector={selector}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, context.onOpenToggle)}
       disabled={context.disabled}
@@ -138,7 +123,7 @@ type CollapsibleContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
-  const { selector = getSelector(CONTENT_NAME), forceMount, children, ...contentProps } = props;
+  const { forceMount, children, ...contentProps } = props;
   const context = useCollapsibleContext(CONTENT_NAME);
 
   return (
@@ -149,7 +134,6 @@ const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
           data-disabled={context.disabled ? '' : undefined}
           id={context.contentId}
           {...contentProps}
-          selector={selector}
           ref={forwardedRef}
           hidden={!present}
         >

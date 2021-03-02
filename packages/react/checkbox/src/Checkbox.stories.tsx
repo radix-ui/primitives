@@ -139,7 +139,7 @@ export const Chromatic = () => (
       <CheckboxIndicator className={indicatorClass} forceMount style={{ height: 20 }} />
     </Checkbox>
 
-    <h1>Data attribute selectors</h1>
+    <h1>State attributes</h1>
     <h2>Unchecked</h2>
     <Checkbox className={rootAttrClass}>
       <CheckboxIndicator className={indicatorAttrClass} />
@@ -237,5 +237,5 @@ const styles = {
   '&[data-disabled]': { borderStyle: 'dashed' },
   '&:disabled': { opacity: 0.5 },
 };
-const rootAttrClass = css({ '&[data-radix-checkbox]': styles });
-const indicatorAttrClass = css({ '&[data-radix-checkbox-indicator]': styles });
+const rootAttrClass = css(styles);
+const indicatorAttrClass = css(styles);

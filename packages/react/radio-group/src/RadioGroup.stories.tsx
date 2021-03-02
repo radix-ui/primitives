@@ -188,7 +188,7 @@ export const Chromatic = () => (
       </RadioGroupItem>
     </RadioGroup>
 
-    <h1>Data attribute selectors</h1>
+    <h1>State attributes</h1>
     <h2>Default</h2>
     <RadioGroup className={rootAttrClass} defaultValue="3">
       <RadioGroupItem className={itemAttrClass} value="1">
@@ -300,6 +300,6 @@ const styles = {
   '&[data-state="unchecked"]': { borderColor: 'red' },
   '&[data-state="checked"]': { borderColor: 'green' },
 };
-const rootAttrClass = css({ '&[data-radix-radio-group]': styles });
-const itemAttrClass = css({ '&[data-radix-radio-group-item]': styles });
-const indicatorAttrClass = css({ '&[data-radix-radio-group-indicator]': styles });
+const rootAttrClass = css(styles);
+const itemAttrClass = css(styles);
+const indicatorAttrClass = css(styles);
