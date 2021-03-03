@@ -101,7 +101,7 @@ export const Single = () => {
         </AccordionItem>
       </Accordion>
 
-      <h1>Controlled (without close)</h1>
+      <h1>Controlled (at least one open)</h1>
       <Accordion
         type="single"
         value={valueTwo}
