@@ -164,8 +164,8 @@ const RadioGroupItemImpl = React.forwardRef((props, forwardedRef) => {
     <Radio
       required={context.required}
       checked={isChecked}
-      {...props}
       name={context.name}
+      {...props}
       ref={forwardedRef}
       onCheckedChange={composeEventHandlers(props.onCheckedChange, context.onValueChange)}
     />
