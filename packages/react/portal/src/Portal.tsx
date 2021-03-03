@@ -41,6 +41,7 @@ const Portal = React.forwardRef((props, forwardedRef) => {
   if (hostElement) {
     return ReactDOM.createPortal(
       <Primitive
+        data-radix-portal=""
         {...portalProps}
         ref={forwardedRef}
         style={
