@@ -2,7 +2,6 @@ import * as React from 'react';
 import { createContext } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { useDocumentRef } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import {
   Dialog,
@@ -12,6 +11,7 @@ import {
   DialogClose,
 } from '@radix-ui/react-dialog';
 import { useId } from '@radix-ui/react-id';
+import { Slottable } from '@radix-ui/react-slot';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -39,26 +39,6 @@ const AlertDialog: React.FC<React.ComponentProps<typeof Dialog>> = (props) => (
 AlertDialog.displayName = ROOT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * AlertDialogCancel
- * -----------------------------------------------------------------------------------------------*/
-
-const CANCEL_NAME = 'AlertDialogCancel';
-
-type AlertDialogCancelOwnProps = Polymorphic.OwnProps<typeof DialogClose>;
-type AlertDialogCancelPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof DialogClose>,
-  AlertDialogCancelOwnProps
->;
-
-const AlertDialogCancel = React.forwardRef((props, forwardedRef) => {
-  const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
-  const ref = useComposedRefs(forwardedRef, cancelRef);
-  return <DialogClose {...props} ref={ref} />;
-}) as AlertDialogCancelPrimitive;
-
-AlertDialogCancel.displayName = CANCEL_NAME;
-
-/* -------------------------------------------------------------------------------------------------
  * AlertDialogContent
  * -----------------------------------------------------------------------------------------------*/
 
@@ -66,7 +46,6 @@ const CONTENT_NAME = 'AlertDialogContent';
 
 type AlertDialogContentContextValue = {
   cancelRef: React.MutableRefObject<React.ElementRef<typeof AlertDialogCancel> | null>;
-  ownerDocumentRef: React.MutableRefObject<Document>;
 };
 
 const [
@@ -89,33 +68,39 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     'aria-describedby': ariaDescribedBy,
+    children,
     ...dialogContentProps
   } = props;
   const { descriptionId, titleId } = useAlertDialogContext(CONTENT_NAME);
   const cancelRef = React.useRef<React.ElementRef<typeof AlertDialogCancel> | null>(null);
-  const ownRef = React.useRef<React.ElementRef<typeof DialogContent> | null>(null);
-  const ownerDocumentRef = useDocumentRef(ownRef);
-  const ref = useComposedRefs(forwardedRef, ownRef);
 
   return (
-    <AlertDialogContentProvider cancelRef={cancelRef} ownerDocumentRef={ownerDocumentRef}>
-      {process.env.NODE_ENV === 'development' && <AccessibilityDevWarnings {...props} />}
-      <DialogContent
-        role="alertdialog"
-        aria-describedby={ariaDescribedBy || descriptionId}
-        // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
-        // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
-        // `AlertDialogTitle`
-        aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
-        aria-label={ariaLabel || undefined}
-        {...dialogContentProps}
-        ref={ref}
-        onOpenAutoFocus={composeEventHandlers(dialogContentProps.onOpenAutoFocus, (event) => {
-          event.preventDefault();
-          cancelRef.current?.focus({ preventScroll: true });
-        })}
-      />
-    </AlertDialogContentProvider>
+    <DialogContent
+      role="alertdialog"
+      aria-describedby={ariaDescribedBy || descriptionId}
+      // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
+      // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
+      // `AlertDialogTitle`
+      aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || titleId}
+      aria-label={ariaLabel || undefined}
+      {...dialogContentProps}
+      ref={forwardedRef}
+      onOpenAutoFocus={composeEventHandlers(dialogContentProps.onOpenAutoFocus, (event) => {
+        event.preventDefault();
+        cancelRef.current?.focus({ preventScroll: true });
+      })}
+    >
+      <AlertDialogContentProvider cancelRef={cancelRef}>
+        {process.env.NODE_ENV === 'development' && <AccessibilityDevWarnings {...props} />}
+        {/**
+         * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
+         * around everything, otherwise the `AccessibilityDevWarnings` would be rendered straight away.
+         * This is because we want the accessibility checks to run only once the content is actually
+         * open and that behaviour is already encapsulated in `DialogContent`.
+         */}
+        <Slottable>{children}</Slottable>
+      </AlertDialogContentProvider>
+    </DialogContent>
   );
 }) as AlertDialogContentPrimitive;
 
@@ -168,6 +153,26 @@ const AlertDialogDescription = React.forwardRef((props, forwardedRef) => {
 
 AlertDialogDescription.displayName = DESCRIPTION_NAME;
 
+/* -------------------------------------------------------------------------------------------------
+ * AlertDialogCancel
+ * -----------------------------------------------------------------------------------------------*/
+
+const CANCEL_NAME = 'AlertDialogCancel';
+
+type AlertDialogCancelOwnProps = Polymorphic.OwnProps<typeof DialogClose>;
+type AlertDialogCancelPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof DialogClose>,
+  AlertDialogCancelOwnProps
+>;
+
+const AlertDialogCancel = React.forwardRef((props, forwardedRef) => {
+  const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
+  const ref = useComposedRefs(forwardedRef, cancelRef);
+  return <DialogClose {...props} ref={ref} />;
+}) as AlertDialogCancelPrimitive;
+
+AlertDialogCancel.displayName = CANCEL_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 const AlertDialogTrigger = extendPrimitive(DialogTrigger, 'AlertDialogTrigger');
@@ -207,35 +212,26 @@ const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialog
     'aria-labelledby': ariaLabelledBy,
     'aria-describedby': ariaDescribedBy,
   } = props;
-  const { ownerDocumentRef } = useAlertDialogContentContext(CANCEL_NAME);
   const context = useAlertDialogContext('AlertDialogContent');
 
   React.useEffect(() => {
-    const ownerDocument = ownerDocumentRef.current;
     const hasLabel = Boolean(
       ariaLabel ||
-        (ariaLabelledBy && ownerDocument.getElementById(ariaLabelledBy)) ||
-        (context.titleId && ownerDocument.getElementById(context.titleId))
+        (ariaLabelledBy && document.getElementById(ariaLabelledBy)) ||
+        (context.titleId && document.getElementById(context.titleId))
     );
     if (!hasLabel) {
       console.warn(LABEL_WARNING);
     }
 
     const hasDescription = Boolean(
-      (ariaDescribedBy && ownerDocument.getElementById(ariaDescribedBy)) ||
-        (context.descriptionId && ownerDocument.getElementById(context.descriptionId))
+      (ariaDescribedBy && document.getElementById(ariaDescribedBy)) ||
+        (context.descriptionId && document.getElementById(context.descriptionId))
     );
     if (!hasDescription) {
       console.warn(DESC_WARNING);
     }
-  }, [
-    context.titleId,
-    ariaLabel,
-    ariaDescribedBy,
-    context.descriptionId,
-    ariaLabelledBy,
-    ownerDocumentRef,
-  ]);
+  }, [context.titleId, ariaLabel, ariaDescribedBy, context.descriptionId, ariaLabelledBy]);
 
   return null;
 };

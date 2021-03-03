@@ -9,6 +9,7 @@
       "@radix-ui/rect": ["./packages/core/rect/src"],
       "@radix-ui/react-accessible-icon": ["./packages/react/accessible-icon/src"],
       "@radix-ui/react-accordion": ["./packages/react/accordion/src"],
+      "@radix-ui/react-alert-dialog": ["./packages/react/alert-dialog/src"],
       "@radix-ui/react-announce": ["./packages/react/announce/src"],
       "@radix-ui/react-arrow": ["./packages/react/arrow/src"],
       "@radix-ui/react-aspect-ratio": ["./packages/react/aspect-ratio/src"],
@@ -36,7 +37,7 @@
       "@radix-ui/react-progress": ["packages/react/progress/src"],
       "@radix-ui/react-radio-group": ["./packages/react/radio-group/src"],
       "@radix-ui/react-roving-focus": ["./packages/react/roving-focus/src"],
-      "@radix-ui/react-scroll-area": ["./packages/react/react-scroll-area/src"],
+      "@radix-ui/react-scroll-area": ["./packages/react/scroll-area/src"],
       "@radix-ui/react-separator": ["./packages/react/separator/src"],
       "@radix-ui/react-slider": ["./packages/react/slider/src"],
       "@radix-ui/react-slot": ["./packages/react/slot/src"],
@@ -51,7 +52,6 @@
       "@radix-ui/react-use-previous": ["./packages/react/use-previous/src"],
       "@radix-ui/react-use-rect": ["./packages/react/use-rect/src"],
       "@radix-ui/react-use-size": ["./packages/react/use-size/src"],
-      "@radix-ui/react-utils": ["./packages/react/utils/src"],
       "@radix-ui/react-visually-hidden": ["./packages/react/visually-hidden/src"]
     }
   }
