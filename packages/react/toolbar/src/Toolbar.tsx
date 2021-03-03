@@ -119,10 +119,10 @@ const ToolbarButton = React.forwardRef((props, forwardedRef) => {
   return (
     <Primitive
       role="toolbaritem"
+      disabled={disabled}
       {...buttonProps}
       as={as}
       ref={forwardedRef}
-      disabled={disabled}
       {...rovingFocusProps}
       onFocus={composeEventHandlers(buttonProps.onFocus, rovingFocusProps.onFocus)}
       onKeyDown={composeEventHandlers(buttonProps.onKeyDown, rovingFocusProps.onKeyDown)}

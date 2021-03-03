@@ -94,6 +94,8 @@ const Popper = React.forwardRef((props, forwardedRef) => {
         onArrowOffsetChange={setArrowOffset}
       >
         <Primitive
+          data-side={placedSide}
+          data-align={placedAlign}
           {...popperProps}
           style={{
             ...popperProps.style,
@@ -102,8 +104,6 @@ const Popper = React.forwardRef((props, forwardedRef) => {
             animation: !isPlaced ? 'none' : undefined,
           }}
           ref={composedPopperRef}
-          data-side={placedSide}
-          data-align={placedAlign}
         />
       </PopperProvider>
     </div>
