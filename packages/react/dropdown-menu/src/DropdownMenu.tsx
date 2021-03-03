@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContextObj, useComposedRefs, useControlledState } from '@radix-ui/react-utils';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useId } from '@radix-ui/react-id';
@@ -34,7 +35,7 @@ type DropdownMenuOwnProps = {
 const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const [open = false, setOpen] = useControlledState({
+  const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,

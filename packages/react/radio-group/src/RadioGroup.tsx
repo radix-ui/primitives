@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { createContextObj, useControlledState, useComposedRefs } from '@radix-ui/react-utils';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import { Radio, RadioIndicator } from './Radio';
 import { useLabelContext } from '@radix-ui/react-label';
@@ -57,7 +58,7 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
   const labelId = useLabelContext();
   const labelledBy = ariaLabelledby || labelId;
   const handleValueChange = useCallbackRef(onValueChange);
-  const [value, setValue] = useControlledState({
+  const [value, setValue] = useControllableState({
     prop: valueProp,
     defaultProp: defaultValue,
   });

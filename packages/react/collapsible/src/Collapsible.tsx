@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContextObj, useControlledState } from '@radix-ui/react-utils';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { createContextObj } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
@@ -42,7 +43,7 @@ const [CollapsibleProvider, useCollapsibleContext] = createContextObj<Collapsibl
 const Collapsible = React.forwardRef((props, forwardedRef) => {
   const { open: openProp, defaultOpen, disabled, onOpenChange, ...collapsibleProps } = props;
 
-  const [open = false, setOpen] = useControlledState({
+  const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,

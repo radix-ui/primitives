@@ -1,11 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import {
-  createContextObj,
-  useComposedRefs,
-  useControlledState,
-  composeRefs,
-} from '@radix-ui/react-utils';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { createContextObj, useComposedRefs, composeRefs } from '@radix-ui/react-utils';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
@@ -45,7 +41,7 @@ type DialogOwnProps = {
 const Dialog: React.FC<DialogOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const [open = false, setOpen] = useControlledState({
+  const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,

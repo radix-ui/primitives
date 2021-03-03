@@ -23,6 +23,7 @@
     "@radix-ui/react-portal": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",
+    "@radix-ui/react-use-controllable-state": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*",
     "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-use-rect": "workspace:*",

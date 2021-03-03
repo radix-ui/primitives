@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
-type UseControlledStateParams<T> = {
+type UseControllableStateParams<T> = {
   prop?: T | undefined;
   defaultProp?: T | undefined;
   onChange?: (state: T) => void;
@@ -9,11 +9,11 @@ type UseControlledStateParams<T> = {
 
 type SetStateFn<T> = (prevState?: T) => T;
 
-export function useControlledState<T>({
+function useControllableState<T>({
   prop,
   defaultProp,
   onChange = () => {},
-}: UseControlledStateParams<T>) {
+}: UseControllableStateParams<T>) {
   const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({ defaultProp, onChange });
   const isControlled = prop !== undefined;
   const value = isControlled ? prop : uncontrolledProp;
@@ -38,7 +38,7 @@ export function useControlledState<T>({
 function useUncontrolledState<T>({
   defaultProp,
   onChange,
-}: Omit<UseControlledStateParams<T>, 'prop'>) {
+}: Omit<UseControllableStateParams<T>, 'prop'>) {
   const uncontrolledState = React.useState<T | undefined>(defaultProp);
   const [value] = uncontrolledState;
   const prevValueRef = React.useRef(value);
@@ -53,3 +53,5 @@ function useUncontrolledState<T>({
 
   return uncontrolledState;
 }
+
+export { useControllableState };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContextObj, useComposedRefs, useControlledState } from '@radix-ui/react-utils';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from '@radix-ui/react-collapsible';
 import { useId } from '@radix-ui/react-id';
@@ -87,7 +88,7 @@ const AccordionSingle = React.forwardRef((props, forwardedRef) => {
     ...accordionSingleProps
   } = props;
 
-  const [value, setValue] = useControlledState({
+  const [value, setValue] = useControllableState({
     prop: valueProp,
     defaultProp: defaultValue,
     onChange: onValueChange,
@@ -140,7 +141,7 @@ const AccordionMultiple = React.forwardRef((props, forwardedRef) => {
     ...accordionMultipleProps
   } = props;
 
-  const [value = [], setValue] = useControlledState({
+  const [value = [], setValue] = useControllableState({
     prop: valueProp,
     defaultProp: defaultValue,
     onChange: onValueChange,
