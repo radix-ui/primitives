@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-roving-focus",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",

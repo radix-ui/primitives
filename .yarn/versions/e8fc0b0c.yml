@@ -1,6 +1,0 @@
-releases:
-  "@radix-ui/react-tabs": patch
-
-declined:
-  - primitives
-  - ssr-testing

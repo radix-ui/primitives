@@ -1,9 +1,0 @@
-releases:
-  "@radix-ui/react-checkbox": patch
-  "@radix-ui/react-label": patch
-  "@radix-ui/react-radio-group": patch
-  "@radix-ui/react-switch": patch
-
-declined:
-  - primitives
-  - ssr-testing
