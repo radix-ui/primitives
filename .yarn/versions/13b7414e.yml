@@ -7,7 +7,6 @@ releases:
   "@radix-ui/react-menu": patch
   "@radix-ui/react-popover": patch
   "@radix-ui/react-use-body-pointer-events": patch
-  "@radix-ui/react-utils": patch
 
 declined:
   - primitives

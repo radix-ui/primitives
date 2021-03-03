@@ -9,7 +9,6 @@ releases:
   "@radix-ui/react-slider": patch
   "@radix-ui/react-tabs": patch
   "@radix-ui/react-toolbar": patch
-  "@radix-ui/utils": patch
 
 declined:
   - primitives
@@ -34,5 +33,4 @@ declined:
   - "@radix-ui/react-switch"
   - "@radix-ui/react-toggle-button"
   - "@radix-ui/react-tooltip"
-  - "@radix-ui/react-utils"
   - "@radix-ui/react-visually-hidden"

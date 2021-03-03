@@ -7,8 +7,6 @@ releases:
   "@radix-ui/react-popper": patch
   "@radix-ui/react-scroll-area": patch
   "@radix-ui/react-tooltip": patch
-  "@radix-ui/react-utils": patch
-  "@radix-ui/utils": patch
 
 declined:
   - primitives

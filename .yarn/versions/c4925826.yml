@@ -6,7 +6,6 @@ releases:
   "@radix-ui/react-focus-scope": patch
   "@radix-ui/react-menu": patch
   "@radix-ui/react-popover": patch
-  "@radix-ui/utils": patch
 
 declined:
   - primitives
@@ -33,5 +32,4 @@ declined:
   - "@radix-ui/react-toggle-button"
   - "@radix-ui/react-toolbar"
   - "@radix-ui/react-tooltip"
-  - "@radix-ui/react-utils"
   - "@radix-ui/react-visually-hidden"

@@ -1,6 +1,5 @@
 releases:
   "@radix-ui/react-alert-dialog": patch
-  "@radix-ui/utils": patch
 
 declined:
   - primitives
@@ -32,5 +31,4 @@ declined:
   - "@radix-ui/react-toggle-button"
   - "@radix-ui/react-toolbar"
   - "@radix-ui/react-tooltip"
-  - "@radix-ui/react-utils"
   - "@radix-ui/react-visually-hidden"

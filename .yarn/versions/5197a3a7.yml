@@ -3,4 +3,3 @@ releases:
 
 declined:
   - primitives
-  - "@radix-ui/react-utils"

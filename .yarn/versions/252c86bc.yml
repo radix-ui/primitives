@@ -29,7 +29,6 @@ releases:
   "@radix-ui/react-toolbar": patch
   "@radix-ui/react-tooltip": patch
   "@radix-ui/react-use-layout-effect": patch
-  "@radix-ui/react-utils": patch
 
 declined:
   - primitives

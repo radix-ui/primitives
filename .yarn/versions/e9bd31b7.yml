@@ -1,6 +1,5 @@
 releases:
   "@radix-ui/react-accordion": patch
-  "@radix-ui/react-utils": patch
 
 declined:
   - primitives

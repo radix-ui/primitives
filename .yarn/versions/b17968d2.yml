@@ -30,7 +30,6 @@ releases:
   "@radix-ui/react-toggle-button": patch
   "@radix-ui/react-toolbar": patch
   "@radix-ui/react-tooltip": patch
-  "@radix-ui/react-utils": patch
   "@radix-ui/react-visually-hidden": patch
 
 declined:

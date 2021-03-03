@@ -1,7 +1,6 @@
 releases:
   "@radix-ui/react-tooltip": patch
   "@radix-ui/react-use-previous": patch
-  "@radix-ui/react-utils": patch
 
 declined:
   - primitives

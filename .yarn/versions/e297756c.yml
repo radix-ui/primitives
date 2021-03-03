@@ -5,9 +5,7 @@ releases:
   "@radix-ui/react-popover": patch
   "@radix-ui/react-popper": patch
   "@radix-ui/react-tooltip": patch
-  "@radix-ui/react-utils": patch
   "@radix-ui/rect": patch
-  "@radix-ui/utils": patch
 
 declined:
   - primitives

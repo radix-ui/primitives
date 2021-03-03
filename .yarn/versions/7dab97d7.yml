@@ -8,7 +8,6 @@ releases:
   "@radix-ui/react-tooltip": patch
   "@radix-ui/react-use-rect": patch
   "@radix-ui/react-use-size": patch
-  "@radix-ui/react-utils": patch
 
 declined:
   - primitives

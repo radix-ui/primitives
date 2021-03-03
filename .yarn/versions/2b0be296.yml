@@ -29,9 +29,7 @@ releases:
   "@radix-ui/react-toolbar": patch
   "@radix-ui/react-tooltip": patch
   "@radix-ui/react-visually-hidden": patch
-  "@radix-ui/utils": patch
 
 declined:
   - primitives
   - "@radix-ui/react-roving-focus"
-  - "@radix-ui/react-utils"
