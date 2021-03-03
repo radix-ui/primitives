@@ -16,6 +16,7 @@
       "@radix-ui/react-checkbox": ["./packages/react/checkbox/src"],
       "@radix-ui/react-collapsible": ["./packages/react/collapsible/src"],
       "@radix-ui/react-collection": ["./packages/react/collection/src"],
+      "@radix-ui/react-compose-refs": ["./packages/react/compose-refs/src"],
       "@radix-ui/react-context": ["packages/react/context/src"],
       "@radix-ui/react-context-menu": ["packages/react/context-menu/src"],
       "@radix-ui/react-dialog": ["./packages/react/dialog/src"],

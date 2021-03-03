@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",
+    "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-dismissable-layer": "workspace:*",
     "@radix-ui/react-focus-guards": "workspace:*",
@@ -27,7 +28,6 @@
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*",
     "aria-hidden": "^1.1.1",
     "react-remove-scroll": "^2.4.0"
   },

@@ -1,8 +1,8 @@
 import * as React from 'react';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { useComposedRefs } from '@radix-ui/react-utils';
 import { useLabelContext } from '@radix-ui/react-label';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';

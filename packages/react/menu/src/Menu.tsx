@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { composeRefs, useComposedRefs } from '@radix-ui/react-utils';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
