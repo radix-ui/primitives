@@ -60,7 +60,7 @@ const Menu = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Presence present={forceMount || open}>
-      <MenuImpl ref={forwardedRef} {...menuProps} open={open} data-state={getOpenState(open)} />
+      <MenuImpl data-state={getOpenState(open)} {...menuProps} ref={forwardedRef} open={open} />
     </Presence>
   );
 }) as MenuPrimitive;

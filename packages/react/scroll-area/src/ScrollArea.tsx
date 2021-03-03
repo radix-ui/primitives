@@ -1092,7 +1092,7 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
     trackRef,
   ]);
 
-  return <Primitive {...domProps} ref={ref} data-axis={axis} />;
+  return <Primitive data-axis={axis} {...domProps} ref={ref} />;
 }) as ScrollAreaTrackPrimitive;
 
 ScrollAreaTrack.displayName = TRACK_NAME;
@@ -1261,9 +1261,9 @@ const ScrollAreaThumb = React.forwardRef(function ScrollAreaThumb(props, forward
 
   return (
     <Primitive
+      data-axis={axis}
       {...domProps}
       ref={ref}
-      data-axis={axis}
       style={{
         ...domProps.style,
         ...thumbStyles,

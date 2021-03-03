@@ -91,11 +91,11 @@ const CollapsibleButton = React.forwardRef((props, forwardedRef) => {
       aria-expanded={context.open || false}
       data-state={getState(context.open)}
       data-disabled={context.disabled ? '' : undefined}
+      disabled={context.disabled}
       {...buttonProps}
       as={as}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, context.onOpenToggle)}
-      disabled={context.disabled}
     />
   );
 }) as CollapsibleButtonPrimitive;
@@ -135,9 +135,9 @@ const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
           data-state={getState(context.open)}
           data-disabled={context.disabled ? '' : undefined}
           id={context.contentId}
+          hidden={!present}
           {...contentProps}
           ref={forwardedRef}
-          hidden={!present}
         >
           {present && children}
         </Primitive>

@@ -94,18 +94,18 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
       <CheckboxProvider state={checked} disabled={disabled}>
         <Primitive
           type="button"
+          role="checkbox"
           aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
           aria-labelledby={labelledBy}
           aria-required={required}
           data-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
           data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
           {...checkboxProps}
           as={as}
           ref={ref}
-          role="checkbox"
-          disabled={disabled}
-          value={value}
           /**
            * The `input` is hidden, so when the button is clicked we trigger
            * the input manually

@@ -631,6 +631,7 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
     >
       <Primitive
         data-radix-slider-thumb=""
+        role="slider"
         aria-label={props['aria-label'] || label}
         aria-valuemin={context.min}
         aria-valuenow={value}
@@ -638,11 +639,10 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
         aria-orientation={context.orientation}
         data-orientation={context.orientation}
         data-disabled={context.disabled ? '' : undefined}
-        role="slider"
+        tabIndex={0}
         {...thumbProps}
         as={as}
         ref={ref}
-        tabIndex={0}
         onFocus={composeEventHandlers(props.onFocus, () => {
           context.valueIndexToChangeRef.current = index;
         })}

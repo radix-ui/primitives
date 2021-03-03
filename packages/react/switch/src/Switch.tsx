@@ -88,11 +88,11 @@ const Switch = React.forwardRef((props, forwardedRef) => {
           data-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
           data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
           {...switchProps}
           as={as}
           ref={ref}
-          disabled={disabled}
-          value={value}
           /**
            * The `input` is hidden, so when the button is clicked we trigger
            * the input manually

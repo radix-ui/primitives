@@ -88,11 +88,11 @@ const Radio = React.forwardRef((props, forwardedRef) => {
           data-state={getState(checked)}
           data-readonly={readOnly}
           data-disabled={disabled ? '' : undefined}
+          disabled={disabled}
+          value={value}
           {...radioProps}
           as={as}
           ref={ref}
-          disabled={disabled}
-          value={value}
           /**
            * The `input` is hidden, so when the button is clicked we trigger
            * the input manually

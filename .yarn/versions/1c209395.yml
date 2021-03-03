@@ -1,0 +1,20 @@
+releases:
+  "@radix-ui/react-accordion": patch
+  "@radix-ui/react-checkbox": patch
+  "@radix-ui/react-collapsible": patch
+  "@radix-ui/react-context-menu": patch
+  "@radix-ui/react-dropdown-menu": patch
+  "@radix-ui/react-label": patch
+  "@radix-ui/react-menu": patch
+  "@radix-ui/react-popover": patch
+  "@radix-ui/react-popper": patch
+  "@radix-ui/react-radio-group": patch
+  "@radix-ui/react-scroll-area": patch
+  "@radix-ui/react-slider": patch
+  "@radix-ui/react-switch": patch
+  "@radix-ui/react-tabs": patch
+  "@radix-ui/react-toolbar": patch
+  "@radix-ui/react-tooltip": patch
+
+declined:
+  - primitives

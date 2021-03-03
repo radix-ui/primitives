@@ -124,10 +124,10 @@ const RadioGroupRovingFocusItem = React.forwardRef((props, forwardedRef) => {
   const rovingFocusProps = useRovingFocus({ disabled, active: isChecked });
   return (
     <RadioGroupItemImpl
+      disabled={disabled}
       {...itemProps}
       {...rovingFocusProps}
       ref={composedRefs}
-      disabled={disabled}
       onKeyDown={composeEventHandlers(itemProps.onKeyDown, rovingFocusProps.onKeyDown)}
       onMouseDown={composeEventHandlers(itemProps.onMouseDown, rovingFocusProps.onMouseDown)}
       onFocus={composeEventHandlers(
@@ -157,20 +157,17 @@ type RadioGroupItemImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const RadioGroupItemImpl = React.forwardRef((props, forwardedRef) => {
-  const { disabled, required, ...itemProps } = props;
   const context = useRadioGroupContext(ITEM_NAME);
   const isChecked = context.value === props.value;
-  const handleChange = composeEventHandlers(itemProps.onCheckedChange, context.onValueChange);
 
   return (
     <Radio
-      {...itemProps}
-      name={context.name}
-      ref={forwardedRef}
-      disabled={disabled}
-      required={required ?? context.required}
+      required={context.required}
       checked={isChecked}
-      onCheckedChange={handleChange}
+      name={context.name}
+      {...props}
+      ref={forwardedRef}
+      onCheckedChange={composeEventHandlers(props.onCheckedChange, context.onValueChange)}
     />
   );
 }) as RadioGroupItemImplPrimitive;
