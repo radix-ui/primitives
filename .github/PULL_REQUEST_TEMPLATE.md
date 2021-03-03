@@ -1,14 +1,14 @@
-<!-- Thank you for contributing! Please fill in this template before submitting your PR to help us process your request more quickly. -->
+<!--
 
-- [ ] Use a meaningful title for the pull request. Include the name of the package modified.
-- [ ] Test the change in your own code.
-- [ ] Add or edit tests to reflect the change (run `yarn test`).
-- [ ] Add or edit Storybook examples to reflect the change (run `yarn dev`).
-- [ ] Add documentation to support any new features.
+Thank you for contributing! Please follow the steps below to help us process your PR quickly.
 
-This pull request:
+- 📝 Use a meaningful title for the pull request and include the name of the package modified.
+- ✅ Add or edit tests to reflect the change (run `yarn test`).
+- 🔍 Add or edit Storybook examples to reflect the change (run `yarn dev`).
+- 🙏 Please review your own PR to check for anything you may have missed.
 
-- [ ] Fixes a bug in an existing package
-- [ ] Adds additional features/functionality to an existing package
-- [ ] Updates documentation or example code
-- [ ] Other
+-->
+
+### Description
+
+<!-- Describe the change you are introducing -->
