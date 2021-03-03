@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { getPlacementData } from '@radix-ui/popper';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useRect } from '@radix-ui/react-use-rect';
 import { useSize } from '@radix-ui/react-use-size';
-import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
 

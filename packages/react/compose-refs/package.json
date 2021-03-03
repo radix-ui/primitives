@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-accordion",
-  "version": "0.0.5",
+  "name": "@radix-ui/react-compose-refs",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -14,16 +14,6 @@
   "scripts": {
     "clean": "rm -rf dist",
     "prepublish": "yarn clean"
-  },
-  "dependencies": {
-    "@radix-ui/primitive": "workspace:*",
-    "@radix-ui/react-collapsible": "workspace:*",
-    "@radix-ui/react-compose-refs": "workspace:*",
-    "@radix-ui/react-context": "workspace:*",
-    "@radix-ui/react-id": "workspace:*",
-    "@radix-ui/react-polymorphic": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-use-controllable-state": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

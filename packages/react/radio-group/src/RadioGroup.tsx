@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import { Radio, RadioIndicator } from './Radio';
 import { useLabelContext } from '@radix-ui/react-label';

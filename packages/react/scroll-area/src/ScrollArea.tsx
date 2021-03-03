@@ -11,10 +11,11 @@
 import * as React from 'react';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { getOwnerGlobals, useComposedRefs } from '@radix-ui/react-utils';
+import { getOwnerGlobals } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { bezier } from './bezier-easing';
 import { Queue } from './queue';

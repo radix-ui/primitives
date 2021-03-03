@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useId } from '@radix-ui/react-id';
 

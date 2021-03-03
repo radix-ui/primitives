@@ -19,13 +19,13 @@
     "@radix-ui/number": "workspace:*",
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-collection": "workspace:*",
+    "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
-    "@radix-ui/react-use-size": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-use-size": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { composeRefs } from '@radix-ui/react-utils';
+import { composeRefs } from '@radix-ui/react-compose-refs';
 
 /* -------------------------------------------------------------------------------------------------
  * Slot

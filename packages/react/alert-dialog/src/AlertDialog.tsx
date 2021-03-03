@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { createContext } from '@radix-ui/react-context';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { useComposedRefs, useDocumentRef } from '@radix-ui/react-utils';
+import { useDocumentRef } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import {
   Dialog,

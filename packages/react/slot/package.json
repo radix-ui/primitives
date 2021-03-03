@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-compose-refs": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

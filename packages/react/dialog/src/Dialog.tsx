@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { useComposedRefs, composeRefs } from '@radix-ui/react-utils';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
