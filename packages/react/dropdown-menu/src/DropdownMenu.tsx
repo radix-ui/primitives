@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useId } from '@radix-ui/react-id';
@@ -22,7 +23,7 @@ type DropdownMenuContextValue = {
   onOpenToggle(): void;
 };
 
-const [DropdownMenuProvider, useDropdownMenuContext] = createContextObj<DropdownMenuContextValue>(
+const [DropdownMenuProvider, useDropdownMenuContext] = createContext<DropdownMenuContextValue>(
   DROPDOWN_MENU_NAME
 );
 

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { getPlacementData } from '@radix-ui/popper';
+import { createContext } from '@radix-ui/react-context';
 import { useRect } from '@radix-ui/react-use-rect';
 import { useSize } from '@radix-ui/react-use-size';
-import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
 
@@ -22,7 +23,7 @@ type PopperContextValue = {
   arrowStyles: React.CSSProperties;
 };
 
-const [PopperProvider, usePopperContext] = createContextObj<PopperContextValue>(POPPER_NAME);
+const [PopperProvider, usePopperContext] = createContext<PopperContextValue>(POPPER_NAME);
 
 type PopperOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,

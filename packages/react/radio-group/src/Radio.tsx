@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
@@ -31,7 +32,7 @@ type RadioPrimitive = Polymorphic.ForwardRefComponent<typeof RADIO_DEFAULT_TAG, 
 
 type RadioContextValue = { checked: boolean; disabled?: boolean };
 
-const [RadioProvider, useRadioContext] = createContextObj<RadioContextValue>(RADIO_NAME);
+const [RadioProvider, useRadioContext] = createContext<RadioContextValue>(RADIO_NAME);
 
 const Radio = React.forwardRef((props, forwardedRef) => {
   const {

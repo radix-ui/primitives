@@ -1,6 +1,7 @@
 import * as React from 'react';
+import { createContext } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContextObj, useComposedRefs, useDocumentRef } from '@radix-ui/react-utils';
+import { useComposedRefs, useDocumentRef } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import {
   Dialog,
@@ -24,7 +25,7 @@ type AlertDialogContextValue = {
   titleId: string;
 };
 
-const [AlertDialogProvider, useAlertDialogContext] = createContextObj<AlertDialogContextValue>(
+const [AlertDialogProvider, useAlertDialogContext] = createContext<AlertDialogContextValue>(
   ROOT_NAME
 );
 
@@ -70,7 +71,7 @@ type AlertDialogContentContextValue = {
 const [
   AlertDialogContentProvider,
   useAlertDialogContentContext,
-] = createContextObj<AlertDialogContentContextValue>(CONTENT_NAME);
+] = createContext<AlertDialogContentContextValue>(CONTENT_NAME);
 
 type AlertDialogContentOwnProps = Omit<
   Polymorphic.OwnProps<typeof DialogContent>,

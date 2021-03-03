@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import { Radio, RadioIndicator } from './Radio';
 import { useLabelContext } from '@radix-ui/react-label';
@@ -40,7 +41,7 @@ type RadioGroupContextValue = {
   onValueChange: Required<RadioGroupOwnProps>['onValueChange'];
 };
 
-const [RadioGroupProvider, useRadioGroupContext] = createContextObj<RadioGroupContextValue>(
+const [RadioGroupProvider, useRadioGroupContext] = createContext<RadioGroupContextValue>(
   RADIO_GROUP_NAME
 );
 

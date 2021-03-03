@@ -16,11 +16,11 @@
     "prepublish": "yarn clean"
   },
   "dependencies": {
+    "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-layout-effect": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

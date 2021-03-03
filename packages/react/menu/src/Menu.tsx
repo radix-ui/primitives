@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { composeRefs, createContextObj, useComposedRefs } from '@radix-ui/react-utils';
+import { composeRefs, useComposedRefs } from '@radix-ui/react-utils';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
@@ -34,7 +35,7 @@ type MenuContextValue = {
   onItemsReachableChange(open: boolean): void;
   onOpenChange(open: boolean): void;
 };
-const [MenuProvider, useMenuContext] = createContextObj<MenuContextValue>(MENU_NAME);
+const [MenuProvider, useMenuContext] = createContext<MenuContextValue>(MENU_NAME);
 
 type MenuOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof MenuImpl>,

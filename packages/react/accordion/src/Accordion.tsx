@@ -1,7 +1,8 @@
 import React from 'react';
+import { createContext } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from '@radix-ui/react-collapsible';
 import { useId } from '@radix-ui/react-id';
@@ -50,7 +51,7 @@ type AccordionValueContextValue = {
 const [
   AccordionValueProvider,
   useAccordionValueContext,
-] = createContextObj<AccordionValueContextValue>(ACCORDION_NAME);
+] = createContext<AccordionValueContextValue>(ACCORDION_NAME);
 
 type AccordionSingleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof AccordionImpl>,
@@ -171,7 +172,7 @@ type AccordionImplContextValue = {
   disabled?: boolean;
 };
 
-const [AccordionImplProvider, useAccordionContext] = createContextObj<AccordionImplContextValue>(
+const [AccordionImplProvider, useAccordionContext] = createContext<AccordionImplContextValue>(
   ACCORDION_NAME
 );
 
@@ -278,10 +279,9 @@ type AccordionItemPrimitive = Polymorphic.ForwardRefComponent<
 
 type AccordionItemContextValue = { open?: boolean; disabled?: boolean; buttonId: string };
 
-const [
-  AccordionItemProvider,
-  useAccordionItemContext,
-] = createContextObj<AccordionItemContextValue>(ITEM_NAME);
+const [AccordionItemProvider, useAccordionItemContext] = createContext<AccordionItemContextValue>(
+  ITEM_NAME
+);
 
 /**
  * `AccordionItem` contains all of the parts of a collapsible section inside of an `Accordion`.

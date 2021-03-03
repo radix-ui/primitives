@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useSize } from '@radix-ui/react-use-size';
-import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from '@radix-ui/react-collection';
 
@@ -42,7 +43,7 @@ type SliderContextValue = {
   orientation: SliderOwnProps['orientation'];
 };
 
-const [SliderProvider, useSliderContext] = createContextObj<SliderContextValue>(SLIDER_NAME);
+const [SliderProvider, useSliderContext] = createContext<SliderContextValue>(SLIDER_NAME);
 
 type SliderOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,

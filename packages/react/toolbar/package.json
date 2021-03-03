@@ -17,11 +17,11 @@
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",
+    "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-roving-focus": "workspace:*",
-    "@radix-ui/react-slot": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

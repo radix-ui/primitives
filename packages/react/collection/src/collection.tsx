@@ -1,6 +1,6 @@
 import * as React from 'react';
+import { createContext } from '@radix-ui/react-context';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { createContextObj } from '@radix-ui/react-utils';
 
 function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: string) {
   const providerName = name + 'CollectionProvider';
@@ -23,7 +23,7 @@ function createCollection<E extends React.ElementRef<any> = void, S = {}>(name: 
     ssrSyncUseCollectionItemCountRef: React.MutableRefObject<number>;
   };
 
-  const [CollectionProviderImpl, useCollectionContext] = createContextObj<CollectionContextValue>(
+  const [CollectionProviderImpl, useCollectionContext] = createContext<CollectionContextValue>(
     name + 'CollectionItems'
   );
 

@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { createContext } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { useLabelContext } from '@radix-ui/react-label';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -38,9 +39,7 @@ type CheckboxContextValue = {
   disabled?: boolean;
 };
 
-const [CheckboxProvider, useCheckboxContext] = createContextObj<CheckboxContextValue>(
-  CHECKBOX_NAME
-);
+const [CheckboxProvider, useCheckboxContext] = createContext<CheckboxContextValue>(CHECKBOX_NAME);
 
 const Checkbox = React.forwardRef((props, forwardedRef) => {
   const {

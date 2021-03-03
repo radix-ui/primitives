@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContextObj } from '@radix-ui/react-utils';
+import { createContext } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -13,9 +13,7 @@ const DEFAULT_MAX = 100;
 
 type ProgressState = 'indeterminate' | 'complete' | 'loading';
 type ProgressContextValue = { value: number | null; max: number };
-const [ProgressProvider, useProgressContext] = createContextObj<ProgressContextValue>(
-  PROGRESS_NAME
-);
+const [ProgressProvider, useProgressContext] = createContext<ProgressContextValue>(PROGRESS_NAME);
 
 type ProgressOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,

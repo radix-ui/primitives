@@ -11,9 +11,10 @@
 import * as React from 'react';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { createContextObj, getOwnerGlobals, useComposedRefs } from '@radix-ui/react-utils';
+import { getOwnerGlobals, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { bezier } from './bezier-easing';
 import { Queue } from './queue';
@@ -90,7 +91,7 @@ interface ScrollAreaRefs {
 }
 
 // Keeping refs in a separate context; should be a stable reference throughout the tree
-const [ScrollAreaRefsProvider, useScrollAreaRefs] = createContextObj<ScrollAreaRefs>(ROOT_NAME);
+const [ScrollAreaRefsProvider, useScrollAreaRefs] = createContext<ScrollAreaRefs>(ROOT_NAME);
 
 interface ScrollAreaContextValue {
   dir?: TextDirection;
@@ -104,9 +105,7 @@ interface ScrollAreaContextValue {
   isHovered: boolean;
 }
 
-const [ScrollAreaProvider, useScrollAreaContext] = createContextObj<ScrollAreaContextValue>(
-  ROOT_NAME
-);
+const [ScrollAreaProvider, useScrollAreaContext] = createContext<ScrollAreaContextValue>(ROOT_NAME);
 
 const ScrollAreaStateContext = React.createContext<ScrollAreaReducerState>({} as any);
 ScrollAreaStateContext.displayName = 'ScrollAreaStateContext';
@@ -121,7 +120,7 @@ function useScrollAreaStateContext() {
 const NativeScrollContext = React.createContext<boolean>(true);
 const useNativeScrollArea = () => React.useContext(NativeScrollContext);
 
-const [DispatchProvider, useDispatchContext] = createContextObj<{
+const [DispatchProvider, useDispatchContext] = createContext<{
   dispatch: React.Dispatch<ScrollAreaEvent>;
 }>(ROOT_NAME);
 
@@ -685,7 +684,7 @@ interface ScrollbarContextValue {
   scrollAnimationQueue: Queue<any>;
 }
 
-const [ScrollbarProvider, useScrollbarContext] = createContextObj<ScrollbarContextValue>(
+const [ScrollbarProvider, useScrollbarContext] = createContext<ScrollbarContextValue>(
   'ScrollAreaScrollbar'
 );
 
