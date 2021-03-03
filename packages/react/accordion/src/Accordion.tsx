@@ -14,20 +14,50 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
 const ACCORDION_NAME = 'Accordion';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
 
-type AccordionContextValue = {
-  buttonNodesRef: React.MutableRefObject<Set<HTMLElement | null>>;
-  value?: string;
-  disabled?: boolean;
-  onValueChange(value: string): void;
+type AccordionOwnProps =
+  | Polymorphic.OwnProps<typeof AccordionSingle>
+  | Polymorphic.OwnProps<typeof AccordionMultiple>;
+
+type AccordionPrimitive = Polymorphic.ForwardRefComponent<
+  | Polymorphic.IntrinsicElement<typeof AccordionSingle>
+  | Polymorphic.IntrinsicElement<typeof AccordionMultiple>,
+  AccordionOwnProps
+>;
+
+const Accordion = React.forwardRef((props, forwardedRef) => {
+  if (props.type === 'single') {
+    return <AccordionSingle {...props} ref={forwardedRef} />;
+  }
+
+  if (props.type === 'multiple') {
+    return <AccordionMultiple {...props} ref={forwardedRef} />;
+  }
+
+  throw new Error(`Missing prop \`type\` expected on \`${ACCORDION_NAME}\``);
+}) as AccordionPrimitive;
+
+Accordion.displayName = ACCORDION_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
+
+type AccordionValueContextValue = {
+  value: string[];
+  onItemOpen(value: string): void;
+  onItemClose(value: string): void;
 };
 
-const [AccordionProvider, useAccordionContext] = createContextObj<AccordionContextValue>(
-  ACCORDION_NAME
-);
+const [
+  AccordionValueProvider,
+  useAccordionValueContext,
+] = createContextObj<AccordionValueContextValue>(ACCORDION_NAME);
 
-type AccordionOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type AccordionSingleOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof AccordionImpl>,
   {
+    /**
+     * Allow only one item to be open at a time.
+     */
+    type: 'single';
     /**
      * The controlled stateful value of the accordion item whose panel is expanded.
      */
@@ -38,44 +68,134 @@ type AccordionOwnProps = Polymorphic.Merge<
      */
     defaultValue?: string;
     /**
-     * Whether or not an accordion is disabled from user interaction.
-     *
-     * @defaultValue false
-     */
-    disabled?: boolean;
-    /**
      * The callback that fires when the state of the accordion changes.
      */
     onValueChange?(value: string): void;
   }
 >;
 
-type AccordionPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  AccordionOwnProps
+type AccordionSinglePrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof AccordionImpl>,
+  AccordionSingleOwnProps
 >;
 
-/**
- * `Accordion` is the root component.
- */
-const Accordion = React.forwardRef((props, forwardedRef) => {
+const AccordionSingle = React.forwardRef((props, forwardedRef) => {
   const {
     value: valueProp,
     defaultValue,
-    disabled,
     onValueChange = () => {},
-    ...accordionProps
+    ...accordionSingleProps
   } = props;
-
-  const buttonNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionButton>>>(new Set());
-  const accordionRef = React.useRef<React.ElementRef<typeof Accordion>>(null);
-  const composedRefs = useComposedRefs(accordionRef, forwardedRef);
 
   const [value, setValue] = useControlledState({
     prop: valueProp,
     defaultProp: defaultValue,
-    onChange: (value) => value && onValueChange(value),
+    onChange: onValueChange,
   });
+
+  return (
+    <AccordionValueProvider
+      value={value ? [value] : []}
+      onItemOpen={setValue}
+      onItemClose={() => setValue(undefined)}
+    >
+      <AccordionImpl {...accordionSingleProps} ref={forwardedRef} />
+    </AccordionValueProvider>
+  );
+}) as AccordionSinglePrimitive;
+
+type AccordionMultipleOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof AccordionImpl>,
+  {
+    /**
+     * Allow mutltiple items to be open at the same time.
+     */
+    type: 'multiple';
+    /**
+     * The controlled stateful value of the accordion items whose panels are expanded.
+     */
+    value?: string[];
+    /**
+     * The value of the items whose panels are expanded when the accordion is initially rendered. Use
+     * `defaultValue` if you do not need to control the state of an accordion.
+     */
+    defaultValue?: string[];
+    /**
+     * The callback that fires when the state of the accordion changes.
+     */
+    onValueChange?(value: string[]): void;
+  }
+>;
+
+type AccordionMultiplePrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof AccordionImpl>,
+  AccordionMultipleOwnProps
+>;
+
+const AccordionMultiple = React.forwardRef((props, forwardedRef) => {
+  const {
+    value: valueProp,
+    defaultValue,
+    onValueChange = () => {},
+    ...accordionMultipleProps
+  } = props;
+
+  const [value = [], setValue] = useControlledState({
+    prop: valueProp,
+    defaultProp: defaultValue,
+    onChange: onValueChange,
+  });
+
+  const handleItemOpen = React.useCallback(
+    (itemValue) => setValue((prevValue = []) => [...prevValue, itemValue]),
+    [setValue]
+  );
+
+  const handleItemClose = React.useCallback(
+    (itemValue) => setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
+    [setValue]
+  );
+
+  return (
+    <AccordionValueProvider value={value} onItemOpen={handleItemOpen} onItemClose={handleItemClose}>
+      <AccordionImpl {...accordionMultipleProps} ref={forwardedRef} />
+    </AccordionValueProvider>
+  );
+}) as AccordionMultiplePrimitive;
+
+/* -----------------------------------------------------------------------------------------------*/
+
+type AccordionImplContextValue = {
+  buttonNodesRef: React.MutableRefObject<Set<HTMLElement | null>>;
+  disabled?: boolean;
+};
+
+const [AccordionImplProvider, useAccordionContext] = createContextObj<AccordionImplContextValue>(
+  ACCORDION_NAME
+);
+
+type AccordionImplOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    /**
+     * Whether or not an accordion is disabled from user interaction.
+     *
+     * @defaultValue false
+     */
+    disabled?: boolean;
+  }
+>;
+
+type AccordionImplPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Primitive>,
+  AccordionImplOwnProps
+>;
+
+const AccordionImpl = React.forwardRef((props, forwardedRef) => {
+  const { disabled, ...accordionProps } = props;
+  const buttonNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionButton>>>(new Set());
+  const accordionRef = React.useRef<React.ElementRef<typeof AccordionImpl>>(null);
+  const composedRefs = useComposedRefs(accordionRef, forwardedRef);
 
   const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
     const target = event.target as HTMLElement;
@@ -85,7 +205,7 @@ const Accordion = React.forwardRef((props, forwardedRef) => {
       return;
     }
 
-    const buttonNodes = [...buttonNodesRef.current].filter((node) => !(node && node.disabled));
+    const buttonNodes = [...buttonNodesRef.current].filter((node) => !node?.disabled);
     const buttonCount = buttonNodes.length;
     const buttonIndex = buttonNodes.indexOf(target);
 
@@ -118,22 +238,15 @@ const Accordion = React.forwardRef((props, forwardedRef) => {
   });
 
   return (
-    <AccordionProvider
-      disabled={disabled}
-      buttonNodesRef={buttonNodesRef}
-      value={value}
-      onValueChange={setValue}
-    >
+    <AccordionImplProvider disabled={disabled} buttonNodesRef={buttonNodesRef}>
       <Primitive
         {...accordionProps}
         ref={composedRefs}
         onKeyDown={disabled ? undefined : handleKeyDown}
       />
-    </AccordionProvider>
+    </AccordionImplProvider>
   );
-}) as AccordionPrimitive;
-
-Accordion.displayName = ACCORDION_NAME;
+}) as AccordionImplPrimitive;
 
 /* -------------------------------------------------------------------------------------------------
  * AccordionItem
@@ -175,19 +288,26 @@ const [
 const AccordionItem = React.forwardRef((props, forwardedRef) => {
   const { value, ...accordionItemProps } = props;
   const accordionContext = useAccordionContext(ITEM_NAME);
+  const valueContext = useAccordionValueContext(ITEM_NAME);
   const buttonId = useId();
-  const open = (value && value === accordionContext.value) || false;
+  const open = (value && valueContext.value.includes(value)) || false;
   const disabled = accordionContext.disabled || props.disabled;
 
   return (
     <AccordionItemProvider open={open} disabled={disabled} buttonId={buttonId}>
       <Collapsible
+        data-state={open ? 'open' : 'closed'}
         {...accordionItemProps}
         ref={forwardedRef}
-        data-state={open ? 'open' : 'closed'}
         disabled={disabled}
         open={open}
-        onOpenChange={() => accordionContext.onValueChange(value)}
+        onOpenChange={(open) => {
+          if (open) {
+            valueContext.onItemOpen(value);
+          } else {
+            valueContext.onItemClose(value);
+          }
+        }}
       />
     </AccordionItemProvider>
   );
