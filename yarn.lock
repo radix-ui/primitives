@@ -3407,7 +3407,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/react-radio-group@workspace:packages/react/radio-group":
+"@radix-ui/react-radio-group@workspace:*, @radix-ui/react-radio-group@workspace:packages/react/radio-group":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-radio-group@workspace:packages/react/radio-group"
   dependencies:
@@ -3458,7 +3458,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/react-separator@workspace:packages/react/separator":
+"@radix-ui/react-separator@workspace:*, @radix-ui/react-separator@workspace:packages/react/separator":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-separator@workspace:packages/react/separator"
   dependencies:
@@ -3553,7 +3553,9 @@ __metadata:
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-radio-group": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-separator": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
