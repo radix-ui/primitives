@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 
@@ -30,7 +31,7 @@ type SwitchPrimitive = Polymorphic.ForwardRefComponent<typeof SWITCH_DEFAULT_TAG
 
 type SwitchContextValue = { checked: boolean; disabled?: boolean };
 
-const [SwitchProvider, useSwitchContext] = createContextObj<SwitchContextValue>(SWITCH_NAME);
+const [SwitchProvider, useSwitchContext] = createContext<SwitchContextValue>(SWITCH_NAME);
 
 const Switch = React.forwardRef((props, forwardedRef) => {
   const {

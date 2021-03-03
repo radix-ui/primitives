@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj, useComposedRefs, composeRefs } from '@radix-ui/react-utils';
+import { useComposedRefs, composeRefs } from '@radix-ui/react-utils';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
@@ -30,7 +31,7 @@ type DialogContextValue = {
   onOpenChange(open: boolean): void;
 };
 
-const [DialogProvider, useDialogContext] = createContextObj<DialogContextValue>(DIALOG_NAME);
+const [DialogProvider, useDialogContext] = createContext<DialogContextValue>(DIALOG_NAME);
 
 type DialogOwnProps = {
   open?: boolean;

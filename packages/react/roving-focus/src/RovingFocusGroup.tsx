@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { wrap, clamp } from '@radix-ui/number';
+import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj } from '@radix-ui/react-utils';
 import { useId } from '@radix-ui/react-id';
 
 /* -------------------------------------------------------------------------------------------------
@@ -26,9 +26,7 @@ type RovingContextValue = {
 
 const GROUP_NAME = 'RovingFocusGroup';
 
-const [RovingFocusProvider, useRovingFocusContext] = createContextObj<RovingContextValue>(
-  GROUP_NAME
-);
+const [RovingFocusProvider, useRovingFocusContext] = createContext<RovingContextValue>(GROUP_NAME);
 
 type RovingFocusGroupProps = RovingFocusGroupOptions & {
   children?: React.ReactNode;

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { useId } from '@radix-ui/react-id';
@@ -26,7 +26,7 @@ type TabsContextValue = {
   activationMode?: TabsOwnProps['activationMode'];
 };
 
-const [TabsProvider, useTabsContext] = createContextObj<TabsContextValue>(TABS_NAME);
+const [TabsProvider, useTabsContext] = createContext<TabsContextValue>(TABS_NAME);
 
 type TabsOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,

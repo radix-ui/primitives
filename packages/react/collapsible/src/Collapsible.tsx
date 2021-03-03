@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
@@ -36,7 +36,7 @@ type CollapsibleContextValue = {
   onOpenToggle(): void;
 };
 
-const [CollapsibleProvider, useCollapsibleContext] = createContextObj<CollapsibleContextValue>(
+const [CollapsibleProvider, useCollapsibleContext] = createContext<CollapsibleContextValue>(
   COLLAPSIBLE_NAME
 );
 

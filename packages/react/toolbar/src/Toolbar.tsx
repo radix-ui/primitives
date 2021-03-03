@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
-import { createContextObj } from '@radix-ui/react-utils';
 import { Separator as SeparatorPrimitive } from '@radix-ui/react-separator';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 
@@ -49,7 +49,7 @@ type ToolbarPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 type ToolbarContextValue = { orientation: Orientation };
-const [ToolbarProvider, useToolbarContext] = createContextObj<ToolbarContextValue>(TOOLBAR_NAME);
+const [ToolbarProvider, useToolbarContext] = createContext<ToolbarContextValue>(TOOLBAR_NAME);
 
 const Toolbar = React.forwardRef((props, forwardedRef) => {
   const { orientation = 'horizontal', dir = 'ltr', loop = true, ...toolbarProps } = props;

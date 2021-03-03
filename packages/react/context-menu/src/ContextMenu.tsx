@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContextObj } from '@radix-ui/react-utils';
+import { createContext } from '@radix-ui/react-context';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
@@ -24,7 +24,7 @@ type ContextMenuContextValue = {
   onOpenChange(open: boolean): void;
 };
 
-const [ContextMenuProvider, useContextMenuContext] = createContextObj<ContextMenuContextValue>(
+const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuContextValue>(
   CONTEXT_MENU_NAME
 );
 

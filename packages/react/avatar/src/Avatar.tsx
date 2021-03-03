@@ -1,7 +1,7 @@
 import * as React from 'react';
+import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { createContextObj } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -21,7 +21,7 @@ type AvatarContextValue = {
   onImageLoadingStatusChange(status: ImageLoadingStatus): void;
 };
 
-const [AvatarProvider, useAvatarContext] = createContextObj<AvatarContextValue>(AVATAR_NAME);
+const [AvatarProvider, useAvatarContext] = createContext<AvatarContextValue>(AVATAR_NAME);
 
 const Avatar = React.forwardRef((props, forwardedRef) => {
   const { as = AVATAR_DEFAULT_TAG, ...avatarProps } = props;

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { createContextObj, useComposedRefs, composeRefs } from '@radix-ui/react-utils';
+import { useComposedRefs, composeRefs } from '@radix-ui/react-utils';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
@@ -32,7 +33,7 @@ type PopoverContextValue = {
   onOpenToggle(): void;
 };
 
-const [PopoverProvider, usePopoverContext] = createContextObj<PopoverContextValue>(POPOVER_NAME);
+const [PopoverProvider, usePopoverContext] = createContext<PopoverContextValue>(POPOVER_NAME);
 
 type PopoverOwnProps = {
   open?: boolean;

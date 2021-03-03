@@ -18,6 +18,7 @@
   "dependencies": {
     "@radix-ui/popper": "workspace:*",
     "@radix-ui/react-arrow": "workspace:*",
+    "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-rect": "workspace:*",

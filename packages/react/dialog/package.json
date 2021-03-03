@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",
+    "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-dismissable-layer": "workspace:*",
     "@radix-ui/react-focus-guards": "workspace:*",
     "@radix-ui/react-focus-scope": "workspace:*",
