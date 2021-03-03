@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContextObj, useControlledState, useComposedRefs } from '@radix-ui/react-utils';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 
@@ -50,7 +51,7 @@ const Switch = React.forwardRef((props, forwardedRef) => {
   const ref = useComposedRefs(forwardedRef, buttonRef);
   const labelId = useLabelContext(buttonRef);
   const labelledBy = ariaLabelledby || labelId;
-  const [checked = false, setChecked] = useControlledState({
+  const [checked = false, setChecked] = useControllableState({
     prop: checkedProp,
     defaultProp: defaultChecked,
   });

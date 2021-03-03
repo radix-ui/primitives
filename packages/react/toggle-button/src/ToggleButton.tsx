@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { useControlledState } from '@radix-ui/react-utils';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -38,7 +38,7 @@ const ToggleButton = React.forwardRef((props, forwardedRef) => {
     ...buttonProps
   } = props;
 
-  const [toggled = false, setToggled] = useControlledState({
+  const [toggled = false, setToggled] = useControllableState({
     prop: toggledProp,
     onChange: onToggledChange,
     defaultProp: defaultToggled,

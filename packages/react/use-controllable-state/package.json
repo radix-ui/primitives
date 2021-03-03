@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-tabs",
-  "version": "0.0.5",
+  "name": "@radix-ui/react-use-controllable-state",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -16,14 +16,7 @@
     "prepublish": "yarn clean"
   },
   "dependencies": {
-    "@radix-ui/primitive": "workspace:*",
-    "@radix-ui/react-id": "workspace:*",
-    "@radix-ui/react-polymorphic": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-roving-focus": "workspace:*",
-    "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-controllable-state": "workspace:*",
-    "@radix-ui/react-utils": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

@@ -2,8 +2,9 @@ import * as React from 'react';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useSize } from '@radix-ui/react-use-size';
-import { createContextObj, useComposedRefs, useControlledState } from '@radix-ui/react-utils';
+import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from '@radix-ui/react-collection';
 
@@ -83,7 +84,7 @@ const Slider = React.forwardRef((props, forwardedRef) => {
   const isHorizontal = orientation === 'horizontal';
   const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
-  const [values = [], setValues] = useControlledState({
+  const [values = [], setValues] = useControllableState({
     prop: value,
     defaultProp: defaultValue,
     onChange: onValueChange,

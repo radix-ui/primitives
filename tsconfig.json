@@ -44,6 +44,7 @@
       "@radix-ui/react-tooltip": ["./packages/react/tooltip/src"],
       "@radix-ui/react-use-body-pointer-events": ["./packages/react/use-body-pointer-events/src"],
       "@radix-ui/react-use-callback-ref": ["./packages/react/use-callback-ref/src"],
+      "@radix-ui/react-use-controllable-state": ["./packages/react/use-controllable-state/src"],
       "@radix-ui/react-use-layout-effect": ["./packages/react/use-layout-effect/src"],
       "@radix-ui/react-use-previous": ["./packages/react/use-previous/src"],
       "@radix-ui/react-use-rect": ["./packages/react/use-rect/src"],

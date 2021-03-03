@@ -18,6 +18,7 @@
   "dependencies": {
     "@radix-ui/number": "workspace:*",
     "@radix-ui/react-id": "workspace:*",
+    "@radix-ui/react-use-controllable-state": "workspace:*",
     "@radix-ui/react-utils": "workspace:*"
   },
   "peerDependencies": {

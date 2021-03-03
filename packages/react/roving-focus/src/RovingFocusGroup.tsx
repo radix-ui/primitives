@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { wrap, clamp } from '@radix-ui/number';
-import { createContextObj, useControlledState } from '@radix-ui/react-utils';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { createContextObj } from '@radix-ui/react-utils';
 import { useId } from '@radix-ui/react-id';
 
 /* -------------------------------------------------------------------------------------------------
@@ -38,7 +39,7 @@ type RovingFocusGroupProps = RovingFocusGroupOptions & {
 
 function RovingFocusGroup(props: RovingFocusGroupProps) {
   const { children, orientation, loop, dir } = props;
-  const [reachable = true, setReachable] = useControlledState({
+  const [reachable = true, setReachable] = useControllableState({
     prop: props.reachable,
     defaultProp: props.defaultReachable,
     onChange: props.onReachableChange,

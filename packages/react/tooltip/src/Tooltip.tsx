@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useRect } from '@radix-ui/react-use-rect';
-import { createContextObj, useComposedRefs, useControlledState } from '@radix-ui/react-utils';
+import { createContextObj, useComposedRefs } from '@radix-ui/react-utils';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
@@ -46,7 +47,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen = false, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const contentId = useId();
-  const [open = false, setOpen] = useControlledState({
+  const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
