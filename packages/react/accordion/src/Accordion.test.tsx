@@ -70,7 +70,6 @@ describe('given a single Accordion', () => {
       fireEvent.click(button);
       await waitFor(() => {
         panelOne = rendered.getByText('Panel One');
-        return panelOne;
       });
     });
 
@@ -99,7 +98,6 @@ describe('given a single Accordion', () => {
         fireEvent.click(button);
         await waitFor(() => {
           panelTwo = rendered.getByText('Panel Two');
-          return panelTwo;
         });
       });
 
@@ -178,7 +176,6 @@ describe('given a multiple Accordion', () => {
       fireEvent.click(button);
       await waitFor(() => {
         panelOne = rendered.getByText('Panel One');
-        return panelOne;
       });
     });
 
@@ -207,7 +204,6 @@ describe('given a multiple Accordion', () => {
         fireEvent.click(button);
         await waitFor(() => {
           panelTwo = rendered.getByText('Panel Two');
-          return panelTwo;
         });
       });
 
