@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render } from '@testing-library/react';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Polymorphic from './forwardRefWithAs';
+import type * as Polymorphic from './polymorphic';
 import type { RenderResult } from '@testing-library/react';
 
 /* -------------------------------------------------------------------------------------------------
