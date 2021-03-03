@@ -15,7 +15,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { getOwnerGlobals } from '@radix-ui/react-utils';
 import { Primitive } from '@radix-ui/react-primitive';
 import { bezier } from './bezier-easing';
 import { Queue } from './queue';
@@ -392,8 +391,7 @@ const ScrollAreaImpl = React.forwardRef(function ScrollAreaImpl(props, forwarded
   const ref = useComposedRefs(forwardedRef, scrollAreaRef);
 
   useBorderBoxResizeObserver(scrollAreaRef, (size, scrollAreaElement) => {
-    const { ownerWindow } = getOwnerGlobals(scrollAreaRef);
-    const scrollAreaComputedStyle = ownerWindow.getComputedStyle(scrollAreaElement);
+    const scrollAreaComputedStyle = getComputedStyle(scrollAreaElement);
     dispatch({
       type: ScrollAreaEvents.HandleScrollAreaResize,
       scrollAreaComputedStyle,
@@ -918,7 +916,6 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
     const trackElement = getTrackElementFromRef(trackRef);
     const thumbElement = getThumbElementFromRef(thumbRef);
     const positionElement = getPositionElementFromRef(positionRef);
-    const { ownerDocument } = getOwnerGlobals(positionRef);
 
     const handlePointerDown = composeEventHandlers(
       onPointerDown as any,
@@ -942,8 +939,8 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
 
         if (trackClickBehavior === 'page') {
           dispatch({ type: ScrollAreaEvents.StartTracking });
-          ownerDocument.addEventListener('pointermove', handlePointerMove);
-          ownerDocument.addEventListener('pointerup', handlePointerUp);
+          document.addEventListener('pointermove', handlePointerMove);
+          document.addEventListener('pointerup', handlePointerUp);
           trackElement.setPointerCapture(event.pointerId);
 
           // Handle immediate scroll event.
@@ -1048,8 +1045,8 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
       clearTimeout(trackPointerDownTimeoutId!);
       clearTimeout(trackPointerUpTimeoutId!);
       trackElement.removeEventListener('pointerdown', handlePointerDown);
-      ownerDocument.removeEventListener('pointermove', handlePointerMove);
-      ownerDocument.removeEventListener('pointerup', handlePointerUp);
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
       dispatch({ type: ScrollAreaEvents.StopTracking });
       scrollAnimationQueue.stop();
     };
@@ -1062,7 +1059,7 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
     function handlePointerMove(event: PointerEvent) {
       if (event.pointerType === 'mouse' && pointerIsOutsideElement(event, trackElement)) {
         clearTimeout(trackPointerDownTimeoutId!);
-        ownerDocument.removeEventListener('pointermove', handlePointerMove);
+        document.removeEventListener('pointermove', handlePointerMove);
         scrollAnimationQueue.stop();
       }
     }
@@ -1070,8 +1067,8 @@ const ScrollAreaTrack = React.forwardRef(function ScrollAreaTrack(props, forward
     function handlePointerUp(event: PointerEvent) {
       trackElement.releasePointerCapture(event.pointerId);
       clearTimeout(trackPointerDownTimeoutId!);
-      ownerDocument.removeEventListener('pointermove', handlePointerMove);
-      ownerDocument.removeEventListener('pointerup', handlePointerUp);
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
       scrollAnimationQueue.stop();
       dispatch({ type: ScrollAreaEvents.StopTracking });
 
@@ -1166,7 +1163,6 @@ const ScrollAreaThumb = React.forwardRef(function ScrollAreaThumb(props, forward
     const thumbElement = getThumbElementFromRef(thumbRef);
     const trackElement = getTrackElementFromRef(trackRef);
     const positionElement = getPositionElementFromRef(positionRef);
-    const { ownerDocument } = getOwnerGlobals(positionRef);
 
     const handlePointerDown = composeEventHandlers(
       onPointerDown as any,
@@ -1187,8 +1183,8 @@ const ScrollAreaThumb = React.forwardRef(function ScrollAreaThumb(props, forward
         pointerInitialStartPointRef.current = pointerPosition;
 
         thumbElement.setPointerCapture(event.pointerId);
-        ownerDocument.addEventListener('pointerup', handlePointerUp);
-        ownerDocument.addEventListener('pointermove', handlePointerMove);
+        document.addEventListener('pointerup', handlePointerUp);
+        document.addEventListener('pointermove', handlePointerMove);
         dispatch({ type: ScrollAreaEvents.StartThumbing });
       }
     );
@@ -1200,8 +1196,8 @@ const ScrollAreaThumb = React.forwardRef(function ScrollAreaThumb(props, forward
     };
 
     function stopThumbing() {
-      ownerDocument.removeEventListener('pointermove', handlePointerMove);
-      ownerDocument.removeEventListener('pointerup', handlePointerUp);
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
       dispatch({ type: ScrollAreaEvents.StopThumbing });
     }
 
@@ -1333,7 +1329,6 @@ const ScrollAreaButton = React.forwardRef(function ScrollAreaButton(props, forwa
   React.useEffect(() => {
     const buttonElement = getButtonElementFromRef(buttonRef, direction);
     const positionElement = getPositionElementFromRef(positionRef);
-    const { ownerDocument } = getOwnerGlobals(positionRef);
 
     let buttonPointerDownTimeoutId: any;
 
@@ -1344,8 +1339,8 @@ const ScrollAreaButton = React.forwardRef(function ScrollAreaButton(props, forwa
         if (!isMainClick(event)) return;
 
         buttonElement.setPointerCapture(event.pointerId);
-        ownerDocument.addEventListener('pointerup', handlePointerUp);
-        ownerDocument.addEventListener('pointermove', handlePointerMove);
+        document.addEventListener('pointerup', handlePointerUp);
+        document.addEventListener('pointermove', handlePointerMove);
         dispatch({ type: ScrollAreaEvents.StartButtonPress });
 
         const delta = direction === 'start' ? -1 : 1;
@@ -1414,8 +1409,8 @@ const ScrollAreaButton = React.forwardRef(function ScrollAreaButton(props, forwa
 
     return function () {
       buttonElement.removeEventListener('pointerdown', handlePointerDown);
-      ownerDocument.removeEventListener('pointerup', handlePointerUp);
-      ownerDocument.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
+      document.removeEventListener('pointermove', handlePointerMove);
       clearTimeout(buttonPointerDownTimeoutId!);
       clearInterval(buttonIntervalId);
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1431,7 +1426,7 @@ const ScrollAreaButton = React.forwardRef(function ScrollAreaButton(props, forwa
     function handlePointerMove(event: PointerEvent) {
       if (event.pointerType === 'mouse' && pointerIsOutsideElement(event, buttonElement)) {
         clearTimeout(buttonPointerDownTimeoutId!);
-        ownerDocument.removeEventListener('pointermove', handlePointerMove);
+        document.removeEventListener('pointermove', handlePointerMove);
       }
     }
 
@@ -1542,8 +1537,7 @@ const ScrollAreaCornerImpl = React.forwardRef(function ScrollAreaCornerImpl(prop
    */
   useLayoutEffect(() => {
     if (positionRef.current) {
-      const { ownerWindow } = getOwnerGlobals(positionRef);
-      const computedStyles = ownerWindow.getComputedStyle(positionRef.current);
+      const computedStyles = getComputedStyle(positionRef.current);
       dispatch({
         type: ScrollAreaEvents.SetExplicitResize,
         value: computedStyles.resize as ResizeBehavior,

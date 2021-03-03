@@ -31,6 +31,9 @@ export default function HomePage() {
           <Link href="/roving-focus-group">RovingFocusGroup</Link>
         </li>
         <li>
+          <Link href="/scroll-area">ScrollArea</Link>
+        </li>
+        <li>
           <Link href="/tabs">Tabs</Link>
         </li>
         <li>
