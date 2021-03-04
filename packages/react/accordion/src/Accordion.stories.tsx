@@ -243,6 +243,65 @@ export const Multiple = () => {
   );
 };
 
+export const Animated = () => {
+  const values = ['One', 'Two', 'Three', 'Four'];
+  const [count, setCount] = React.useState(1);
+  const [hasDynamicContent, setHasDynamicContent] = React.useState(false);
+  const timerRef = React.useRef(0);
+
+  React.useEffect(() => {
+    if (hasDynamicContent) {
+      timerRef.current = window.setTimeout(() => {
+        setCount((prevCount) => {
+          const nextCount = prevCount < 5 ? prevCount + 1 : prevCount;
+          if (nextCount === 5) setHasDynamicContent(false);
+          return nextCount;
+        });
+      }, 3000);
+      return () => {
+        clearTimeout(timerRef.current);
+      };
+    }
+  }, [count, hasDynamicContent]);
+
+  return (
+    <>
+      <label>
+        <input
+          type="checkbox"
+          checked={hasDynamicContent}
+          onChange={(event) => {
+            const checked = event.target.checked;
+            if (checked) setCount(1);
+            setHasDynamicContent(checked);
+          }}
+        />{' '}
+        Dynamic content
+      </label>
+      <br />
+      <br />
+      <Accordion type="single" className={rootClass}>
+        {values.map((value) => (
+          <AccordionItem key={value} value={value} className={itemClass}>
+            <AccordionHeader className={headerClass}>
+              <AccordionButton className={buttonClass}>{value}</AccordionButton>
+            </AccordionHeader>
+            <AccordionPanel className={animatedPanelClass}>
+              {[...Array(count)].map((_, index) => (
+                <div style={{ padding: 10 }} key={index}>
+                  Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+                  viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque
+                  quam suscipit habitant sed.
+                </div>
+              ))}
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </>
+  );
+};
+
 export const OutsideViewport = () => (
   <>
     <p>Scroll down to see tabs</p>
@@ -544,6 +603,26 @@ const buttonClass = css({
 const panelClass = css({
   padding: 10,
   lineHeight: 1.5,
+});
+
+const slideDown = css.keyframes({
+  from: { height: 0 },
+  to: { height: 'var(--radix-accordion-panel-height)' },
+});
+
+const slideUp = css.keyframes({
+  from: { height: 'var(--radix-accordion-panel-height)' },
+  to: { height: 0 },
+});
+
+const animatedPanelClass = css({
+  overflow: 'hidden',
+  '&[data-state="open"]': {
+    animation: `${slideDown} 300ms ease-out`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${slideUp} 300ms ease-out`,
+  },
 });
 
 const styles = {
