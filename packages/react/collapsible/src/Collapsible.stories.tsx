@@ -11,14 +11,16 @@ export const Styled = () => (
   </Collapsible>
 );
 
-export const Animated = () => (
-  <Collapsible className={rootClass}>
-    <CollapsibleButton className={buttonClass}>Button</CollapsibleButton>
-    <CollapsibleContent className={`${contentClass} ${animatedContentClass}`}>
-      Content 1
-    </CollapsibleContent>
-  </Collapsible>
-);
+export const Animated = () => {
+  return (
+    <Collapsible className={rootClass}>
+      <CollapsibleButton className={buttonClass}>Button</CollapsibleButton>
+      <CollapsibleContent className={animatedContentClass}>
+        <div style={{ padding: 10 }}>Content 1</div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 export const Chromatic = () => (
   <>
@@ -127,22 +129,23 @@ const contentClass = css({
   lineHeight: 1.5,
 });
 
-const fadeIn = css.keyframes({
-  from: { opacity: 0 },
-  to: { opacity: 1 },
+const slideDown = css.keyframes({
+  from: { height: 0 },
+  to: { height: 'var(--radix-collapsible-content-height)' },
 });
 
-const fadeOut = css.keyframes({
-  from: { opacity: 1 },
-  to: { opacity: 0 },
+const slideUp = css.keyframes({
+  from: { height: 'var(--radix-collapsible-content-height)' },
+  to: { height: 0 },
 });
 
 const animatedContentClass = css({
+  overflow: 'hidden',
   '&[data-state="open"]': {
-    animation: `${fadeIn} 300ms ease-out`,
+    animation: `${slideDown} 300ms ease-out`,
   },
   '&[data-state="closed"]': {
-    animation: `${fadeOut} 300ms ease-in`,
+    animation: `${slideUp} 300ms ease-in`,
   },
 });
 
