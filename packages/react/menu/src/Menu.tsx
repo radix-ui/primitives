@@ -322,24 +322,6 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
 Menu.displayName = MENU_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * MenuGroup
- * -----------------------------------------------------------------------------------------------*/
-
-const GROUP_NAME = 'MenuGroup';
-
-type MenuGroupOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type MenuGroupPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  MenuGroupOwnProps
->;
-
-const MenuGroup = React.forwardRef((props, forwardedRef) => {
-  return <Primitive role="group" {...props} ref={forwardedRef} />;
-}) as MenuGroupPrimitive;
-
-MenuGroup.displayName = GROUP_NAME;
-
-/* -------------------------------------------------------------------------------------------------
  * MenuItem
  * -----------------------------------------------------------------------------------------------*/
 
@@ -616,28 +598,18 @@ const MenuItemIndicator = React.forwardRef((props, forwardedRef) => {
 
 MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * MenuSeparator
- * -----------------------------------------------------------------------------------------------*/
-
-const SEPARATOR_NAME = 'MenuSeparator';
-
-type MenuSeparatorOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type MenuSeparatorPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  MenuSeparatorOwnProps
->;
-
-const MenuSeparator = React.forwardRef((props, forwardedRef) => {
-  return <Primitive role="separator" aria-orientation="horizontal" {...props} ref={forwardedRef} />;
-}) as MenuSeparatorPrimitive;
-
-MenuSeparator.displayName = SEPARATOR_NAME;
-
 /* ---------------------------------------------------------------------------------------------- */
 
-const MenuLabel = extendPrimitive(Primitive, 'MenuLabel');
-const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, 'MenuArrow');
+const MenuGroup = extendPrimitive(Primitive, {
+  defaultProps: { role: 'group' },
+  displayName: 'MenuGroup',
+});
+const MenuLabel = extendPrimitive(Primitive, { displayName: 'MenuLabel' });
+const MenuSeparator = extendPrimitive(Primitive, {
+  defaultProps: { role: 'separator', 'aria-orientation': 'horizontal' },
+  displayName: 'MenuSeparator ',
+});
+const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'MenuArrow' });
 
 /* -----------------------------------------------------------------------------------------------*/
 

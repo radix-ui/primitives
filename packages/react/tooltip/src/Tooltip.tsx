@@ -255,7 +255,7 @@ TooltipContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, 'TooltipArrow');
+const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'TooltipArrow' });
 
 /* -----------------------------------------------------------------------------------------------*/
 

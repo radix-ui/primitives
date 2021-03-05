@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
 import { extendPrimitive } from './extendPrimitive';
+import { Primitive } from './Primitive';
 
 import type { RenderResult } from '@testing-library/react';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -18,10 +19,25 @@ const Button = React.forwardRef((props, forwardedRef) => {
 }) as ButtonPrimitive;
 
 /* -------------------------------------------------------------------------------------------------
+ * Extend `Primitive` as another element type
+ * -----------------------------------------------------------------------------------------------*/
+
+const PrimitiveAsButton = extendPrimitive(Primitive, { defaultProps: { as: 'button' } });
+
+/* -------------------------------------------------------------------------------------------------
  * Extended Polymorphic Button
  * -----------------------------------------------------------------------------------------------*/
 
-const ExtendedButton = extendPrimitive(Button, 'ExtendedButton');
+const ExtendedButton = extendPrimitive(Button, { displayName: 'ExtendedButton' });
+
+/* -------------------------------------------------------------------------------------------------
+ * Extended Polymorphic Button with default props
+ * -----------------------------------------------------------------------------------------------*/
+
+const ExtendedButtonDefaultProps = extendPrimitive(Button, {
+  defaultProps: { type: 'submit' },
+  displayName: 'ExtendedButton',
+});
 
 /* -------------------------------------------------------------------------------------------------
  * Normal Link
@@ -79,6 +95,9 @@ export function Test() {
       {/* ExtendedButton as Link does not accept form prop */}
       {/* @ts-expect-error */}
       <ExtendedButton as={Link} form="form" />
+
+      {/* PrimitiveAsButton accepts type prop */}
+      <PrimitiveAsButton type="submit" />
     </>
   );
 }
@@ -90,7 +109,31 @@ describe('Given extended components via extendPrimitive', () => {
     rendered = render(<Test />);
   });
 
-  it('should render', async () => {
+  it('should render', () => {
     expect(rendered.container.firstChild).toBeInTheDocument();
+  });
+});
+
+describe('Given an extended component with default props', () => {
+  let rendered: RenderResult;
+
+  beforeEach(() => {
+    rendered = render(<ExtendedButtonDefaultProps />);
+  });
+
+  it('should have the default attributes', () => {
+    expect(rendered.container.firstChild).toHaveAttribute('type', 'submit');
+  });
+});
+
+describe('Given an extended component with default as prop', () => {
+  let rendered: RenderResult;
+
+  beforeEach(() => {
+    rendered = render(<PrimitiveAsButton />);
+  });
+
+  it('should be a button element', () => {
+    expect(rendered.container.firstChild).toBeInstanceOf(HTMLButtonElement);
   });
 });

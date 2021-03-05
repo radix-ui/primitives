@@ -169,9 +169,15 @@ AlertDialogCancel.displayName = CANCEL_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const AlertDialogTrigger = extendPrimitive(DialogPrimitive.Trigger, 'AlertDialogTrigger');
-const AlertDialogOverlay = extendPrimitive(DialogPrimitive.Overlay, 'AlertDialogOverlay');
-const AlertDialogAction = extendPrimitive(DialogPrimitive.Close, 'AlertDialogAction');
+const AlertDialogTrigger = extendPrimitive(DialogPrimitive.Trigger, {
+  displayName: 'AlertDialogTrigger',
+});
+const AlertDialogOverlay = extendPrimitive(DialogPrimitive.Overlay, {
+  displayName: 'AlertDialogOverlay',
+});
+const AlertDialogAction = extendPrimitive(DialogPrimitive.Close, {
+  displayName: 'AlertDialogAction',
+});
 
 /* ---------------------------------------------------------------------------------------------- */
 
