@@ -21,7 +21,7 @@ const Button = React.forwardRef((props, forwardedRef) => {
  * Extended Polymorphic Button
  * -----------------------------------------------------------------------------------------------*/
 
-const ExtendedButton = extendPrimitive(Button, 'ExtendedButton');
+const ExtendedButton = extendPrimitive(Button, { displayName: 'ExtendedButton' });
 
 /* -------------------------------------------------------------------------------------------------
  * Normal Link

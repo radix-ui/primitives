@@ -6,17 +6,14 @@ function extendPrimitive<As extends Polymorphic.ForwardRefComponent<any, any>>(
   Comp: As extends Polymorphic.ForwardRefComponent<infer I, infer P>
     ? Polymorphic.ForwardRefComponent<I, P>
     : As,
-  displayName: string
+  config: { displayName?: string; defaultProps?: Partial<React.ComponentProps<typeof Comp>> }
 ) {
-  type ExtendedPrimitive = Polymorphic.ForwardRefComponent<
-    Polymorphic.IntrinsicElement<typeof Comp>,
-    Polymorphic.OwnProps<typeof Comp>
-  >;
   const Extended = React.forwardRef((props, forwardedRef) => {
     const As = Comp as any;
-    return <As {...props} ref={forwardedRef} />;
-  }) as ExtendedPrimitive;
-  Extended.displayName = displayName;
+    const propsWithDefaults = { ...config.defaultProps, ...props };
+    return <As {...propsWithDefaults} ref={forwardedRef} />;
+  }) as As;
+  Extended.displayName = config.displayName || 'Extended' + Comp.displayName;
   return Extended;
 }
 

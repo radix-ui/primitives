@@ -173,21 +173,31 @@ DropdownMenuContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const DropdownMenuGroup = extendPrimitive(MenuPrimitive.Group, 'DropdownMenuGroup');
-const DropdownMenuLabel = extendPrimitive(MenuPrimitive.Label, 'DropdownMenuLabel');
-const DropdownMenuItem = extendPrimitive(MenuPrimitive.Item, 'DropdownMenuItem');
-const DropdownMenuCheckboxItem = extendPrimitive(
-  MenuPrimitive.CheckboxItem,
-  'DropdownMenuCheckboxItem'
-);
-const DropdownMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, 'DropdownMenuRadioGroup');
-const DropdownMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, 'DropdownMenuRadioItem');
-const DropdownMenuItemIndicator = extendPrimitive(
-  MenuPrimitive.ItemIndicator,
-  'DropdownMenuItemIndicator'
-);
-const DropdownMenuSeparator = extendPrimitive(MenuPrimitive.Separator, 'DropdownMenuSeparator');
-const DropdownMenuArrow = extendPrimitive(MenuPrimitive.Arrow, 'DropdownMenuArrow');
+const DropdownMenuGroup = extendPrimitive(MenuPrimitive.Group, {
+  displayName: 'DropdownMenuGroup',
+});
+const DropdownMenuLabel = extendPrimitive(MenuPrimitive.Label, {
+  displayName: 'DropdownMenuLabel',
+});
+const DropdownMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'DropdownMenuItem' });
+const DropdownMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
+  displayName: 'DropdownMenuCheckboxItem',
+});
+const DropdownMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, {
+  displayName: 'DropdownMenuRadioGroup',
+});
+const DropdownMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, {
+  displayName: 'DropdownMenuRadioItem',
+});
+const DropdownMenuItemIndicator = extendPrimitive(MenuPrimitive.ItemIndicator, {
+  displayName: 'DropdownMenuItemIndicator',
+});
+const DropdownMenuSeparator = extendPrimitive(MenuPrimitive.Separator, {
+  displayName: 'DropdownMenuSeparator',
+});
+const DropdownMenuArrow = extendPrimitive(MenuPrimitive.Arrow, {
+  displayName: 'DropdownMenuArrow',
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 

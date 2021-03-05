@@ -135,20 +135,24 @@ ContextMenuContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, 'ContextMenuGroup');
-const ContextMenuLabel = extendPrimitive(MenuPrimitive.Label, 'ContextMenuLabel');
-const ContextMenuItem = extendPrimitive(MenuPrimitive.Item, 'ContextMenuItem');
-const ContextMenuCheckboxItem = extendPrimitive(
-  MenuPrimitive.CheckboxItem,
-  'ContextMenuCheckboxItem'
-);
-const ContextMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, 'ContextMenuRadioGroup');
-const ContextMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, 'ContextMenuRadioItem');
-const ContextMenuItemIndicator = extendPrimitive(
-  MenuPrimitive.ItemIndicator,
-  'ContextMenuItemIndicator'
-);
-const ContextMenuSeparator = extendPrimitive(MenuPrimitive.Separator, 'ContextMenuSeparator');
+const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, { displayName: 'ContextMenuGroup' });
+const ContextMenuLabel = extendPrimitive(MenuPrimitive.Label, { displayName: 'ContextMenuLabel' });
+const ContextMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'ContextMenuItem' });
+const ContextMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
+  displayName: 'ContextMenuCheckboxItem',
+});
+const ContextMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, {
+  displayName: 'ContextMenuRadioGroup',
+});
+const ContextMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, {
+  displayName: 'ContextMenuRadioItem',
+});
+const ContextMenuItemIndicator = extendPrimitive(MenuPrimitive.ItemIndicator, {
+  displayName: 'ContextMenuItemIndicator',
+});
+const ContextMenuSeparator = extendPrimitive(MenuPrimitive.Separator, {
+  displayName: 'ContextMenuSeparator',
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 

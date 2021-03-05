@@ -174,7 +174,7 @@ const RadioGroupItemImpl = React.forwardRef((props, forwardedRef) => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const RadioGroupIndicator = extendPrimitive(RadioIndicator, 'RadioGroupIndicator');
+const RadioGroupIndicator = extendPrimitive(RadioIndicator, { displayName: 'RadioGroupIndicator' });
 
 /* ---------------------------------------------------------------------------------------------- */
 

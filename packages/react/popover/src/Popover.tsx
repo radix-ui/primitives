@@ -387,7 +387,7 @@ PopoverClose.displayName = CLOSE_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, 'PopoverArrow');
+const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'PopoverArrow' });
 
 /* -----------------------------------------------------------------------------------------------*/
 

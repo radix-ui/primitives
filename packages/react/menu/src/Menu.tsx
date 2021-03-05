@@ -636,8 +636,8 @@ MenuSeparator.displayName = SEPARATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const MenuLabel = extendPrimitive(Primitive, 'MenuLabel');
-const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, 'MenuArrow');
+const MenuLabel = extendPrimitive(Primitive, { displayName: 'MenuLabel' });
+const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'MenuArrow' });
 
 /* -----------------------------------------------------------------------------------------------*/
 
