@@ -10,7 +10,7 @@ import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Slottable } from '@radix-ui/react-slot';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 import { useId } from '@radix-ui/react-id';
 import { createStateMachine, stateChart } from './machine';
 
@@ -243,9 +243,9 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
         }}
       >
         <Slottable>{children}</Slottable>
-        <VisuallyHidden id={context.contentId} role="tooltip">
+        <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
           {ariaLabel || children}
-        </VisuallyHidden>
+        </VisuallyHiddenPrimitive.Root>
       </PopperPrimitive.Root>
     </PortalWrapper>
   );

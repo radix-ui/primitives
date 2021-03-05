@@ -4,7 +4,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Collapsible, CollapsibleButton, CollapsibleContent } from '@radix-ui/react-collapsible';
+import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
 import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -257,7 +257,10 @@ const AccordionImpl = React.forwardRef((props, forwardedRef) => {
 const ITEM_NAME = 'AccordionItem';
 
 type AccordionItemOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof Collapsible>, 'open' | 'defaultOpen' | 'onOpenChange'>,
+  Omit<
+    Polymorphic.OwnProps<typeof CollapsiblePrimitive.Root>,
+    'open' | 'defaultOpen' | 'onOpenChange'
+  >,
   {
     /**
      * Whether or not an accordion item is disabled from user interaction.
@@ -273,7 +276,7 @@ type AccordionItemOwnProps = Polymorphic.Merge<
 >;
 
 type AccordionItemPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Collapsible>,
+  Polymorphic.IntrinsicElement<typeof CollapsiblePrimitive.Root>,
   AccordionItemOwnProps
 >;
 
@@ -296,7 +299,7 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
 
   return (
     <AccordionItemProvider open={open} disabled={disabled} buttonId={buttonId}>
-      <Collapsible
+      <CollapsiblePrimitive.Root
         data-state={open ? 'open' : 'closed'}
         disabled={disabled}
         {...accordionItemProps}
@@ -355,9 +358,9 @@ AccordionHeader.displayName = HEADER_NAME;
 
 const BUTTON_NAME = 'AccordionButton';
 
-type AccordionButtonOwnProps = Polymorphic.OwnProps<typeof CollapsibleButton>;
+type AccordionButtonOwnProps = Polymorphic.OwnProps<typeof CollapsiblePrimitive.Button>;
 type AccordionButtonPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof CollapsibleButton>,
+  Polymorphic.IntrinsicElement<typeof CollapsiblePrimitive.Button>,
   AccordionButtonOwnProps
 >;
 
@@ -369,7 +372,7 @@ const AccordionButton = React.forwardRef((props, forwardedRef) => {
   const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
   const itemContext = useAccordionItemContext(BUTTON_NAME);
 
-  const ref = React.useRef<React.ElementRef<typeof CollapsibleButton>>(null);
+  const ref = React.useRef<React.ElementRef<typeof CollapsiblePrimitive.Button>>(null);
   const composedRefs = useComposedRefs(ref, forwardedRef);
 
   React.useEffect(() => {
@@ -386,7 +389,7 @@ const AccordionButton = React.forwardRef((props, forwardedRef) => {
   }, [buttonNodesRef]);
 
   return (
-    <CollapsibleButton
+    <CollapsiblePrimitive.Button
       aria-disabled={itemContext.open || undefined}
       id={itemContext.buttonId}
       {...props}
@@ -403,9 +406,9 @@ AccordionButton.displayName = BUTTON_NAME;
 
 const PANEL_NAME = 'AccordionPanel';
 
-type AccordionPanelOwnProps = Polymorphic.OwnProps<typeof CollapsibleContent>;
+type AccordionPanelOwnProps = Polymorphic.OwnProps<typeof CollapsiblePrimitive.Content>;
 type AccordionPanelPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof CollapsibleContent>,
+  Polymorphic.IntrinsicElement<typeof CollapsiblePrimitive.Content>,
   AccordionPanelOwnProps
 >;
 /**
@@ -414,7 +417,7 @@ type AccordionPanelPrimitive = Polymorphic.ForwardRefComponent<
 const AccordionPanel = React.forwardRef((props, forwardedRef) => {
   const itemContext = useAccordionItemContext(PANEL_NAME);
   return (
-    <CollapsibleContent
+    <CollapsiblePrimitive.Content
       role="region"
       aria-labelledby={itemContext.buttonId}
       {...props}
