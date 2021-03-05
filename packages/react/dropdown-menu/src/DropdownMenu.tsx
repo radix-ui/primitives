@@ -1,18 +1,13 @@
 import * as React from 'react';
-import {
-  composeEventHandlers,
-  createContext,
-  extendComponent,
-  useComposedRefs,
-  useControlledState,
-  useId,
-} from '@radix-ui/react-utils';
-import { Primitive } from '@radix-ui/react-primitive';
-import { getSelector } from '@radix-ui/utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { createContext } from '@radix-ui/react-context';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
+import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * DropdownMenu
@@ -22,36 +17,42 @@ const DROPDOWN_MENU_NAME = 'DropdownMenu';
 
 type DropdownMenuContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
-  id: string;
+  contentId: string;
   open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  onOpenChange(open: boolean): void;
+  onOpenToggle(): void;
 };
 
-const [DropdownMenuContext, useDropdownMenuContext] = createContext<DropdownMenuContextValue>(
-  DROPDOWN_MENU_NAME + 'Context',
+const [DropdownMenuProvider, useDropdownMenuContext] = createContext<DropdownMenuContextValue>(
   DROPDOWN_MENU_NAME
 );
 
 type DropdownMenuOwnProps = {
-  id?: string;
   open?: boolean;
   defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?(open: boolean): void;
 };
 
 const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
-  const { children, id: idProp, open: openProp, defaultOpen, onOpenChange } = props;
+  const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const generatedId = useId();
-  const id = idProp || `dropdown-menu-${generatedId}`;
-  const [open = false, setOpen] = useControlledState({
+  const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const context = React.useMemo(() => ({ triggerRef, id, open, setOpen }), [id, open, setOpen]);
 
-  return <DropdownMenuContext.Provider value={context}>{children}</DropdownMenuContext.Provider>;
+  return (
+    <DropdownMenuProvider
+      triggerRef={triggerRef}
+      contentId={useId()}
+      open={open}
+      onOpenChange={setOpen}
+      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+    >
+      {children}
+    </DropdownMenuProvider>
+  );
 };
 
 DropdownMenu.displayName = DROPDOWN_MENU_NAME;
@@ -70,30 +71,31 @@ type DropdownMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useDropdownMenuContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
   return (
     <Primitive
-      as={TRIGGER_DEFAULT_TAG}
-      selector={getSelector(TRIGGER_NAME)}
       type="button"
       aria-haspopup="menu"
       aria-expanded={context.open ? true : undefined}
-      aria-controls={context.open ? context.id : undefined}
-      {...props}
+      aria-controls={context.open ? context.contentId : undefined}
+      data-state={context.open ? 'open' : 'closed'}
+      {...triggerProps}
+      as={as}
       ref={composedTriggerRef}
       onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)
         if (event.button === 0 && event.ctrlKey === false) {
-          context.setOpen((prevOpen) => !prevOpen);
+          context.onOpenToggle();
         }
       })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event: React.KeyboardEvent) => {
         if ([' ', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
           event.preventDefault();
-          context.setOpen(true);
+          context.onOpenChange(true);
         }
       })}
     />
@@ -109,8 +111,8 @@ DropdownMenuTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'DropdownMenuContent';
 
 type MenuPrimitiveOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Root>;
-type DropdownMenuContentOwnProps = Merge<
-  Omit<MenuPrimitiveOwnProps, 'trapFocus' | 'onCloseAutoFocus' | 'onOpenAutoFocus' | 'onDismiss'>,
+type DropdownMenuContentOwnProps = Polymorphic.Merge<
+  Omit<MenuPrimitiveOwnProps, 'trapFocus' | 'onOpenAutoFocus' | 'onDismiss'>,
   { anchorRef?: MenuPrimitiveOwnProps['anchorRef'] }
 >;
 
@@ -120,29 +122,35 @@ type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
+  const {
+    onCloseAutoFocus,
+    disableOutsidePointerEvents = true,
+    disableOutsideScroll = true,
+    portalled = true,
+    ...contentProps
+  } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
-      selector={getSelector(CONTENT_NAME)}
-      disableOutsidePointerEvents
-      disableOutsideScroll
-      portalled
-      {...props}
+      id={context.contentId}
+      {...contentProps}
       ref={forwardedRef}
-      id={context.id}
+      disableOutsidePointerEvents={disableOutsidePointerEvents}
+      disableOutsideScroll={disableOutsideScroll}
+      portalled={portalled}
       style={{
         ...props.style,
         // re-namespace exposed content custom property
         ['--radix-dropdown-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
       }}
       open={context.open}
-      onOpenChange={context.setOpen}
+      onOpenChange={context.onOpenChange}
       anchorRef={props.anchorRef || context.triggerRef}
       trapFocus
-      onCloseAutoFocus={(event) => {
+      onCloseAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
         event.preventDefault();
         context.triggerRef.current?.focus();
-      }}
+      })}
       onPointerDownOutside={composeEventHandlers(
         props.onPointerDownOutside,
         (event) => {
@@ -156,7 +164,7 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
         },
         { checkForDefaultPrevented: false }
       )}
-      onDismiss={() => context.setOpen(false)}
+      onDismiss={() => context.onOpenChange(false)}
     />
   );
 }) as DropdownMenuContentPrimitive;
@@ -165,21 +173,21 @@ DropdownMenuContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const DropdownMenuGroup = extendComponent(MenuPrimitive.Group, 'DropdownMenuGroup');
-const DropdownMenuLabel = extendComponent(MenuPrimitive.Label, 'DropdownMenuLabel');
-const DropdownMenuItem = extendComponent(MenuPrimitive.Item, 'DropdownMenuItem');
-const DropdownMenuCheckboxItem = extendComponent(
+const DropdownMenuGroup = extendPrimitive(MenuPrimitive.Group, 'DropdownMenuGroup');
+const DropdownMenuLabel = extendPrimitive(MenuPrimitive.Label, 'DropdownMenuLabel');
+const DropdownMenuItem = extendPrimitive(MenuPrimitive.Item, 'DropdownMenuItem');
+const DropdownMenuCheckboxItem = extendPrimitive(
   MenuPrimitive.CheckboxItem,
   'DropdownMenuCheckboxItem'
 );
-const DropdownMenuRadioGroup = extendComponent(MenuPrimitive.RadioGroup, 'DropdownMenuRadioGroup');
-const DropdownMenuRadioItem = extendComponent(MenuPrimitive.RadioItem, 'DropdownMenuRadioItem');
-const DropdownMenuItemIndicator = extendComponent(
+const DropdownMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, 'DropdownMenuRadioGroup');
+const DropdownMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, 'DropdownMenuRadioItem');
+const DropdownMenuItemIndicator = extendPrimitive(
   MenuPrimitive.ItemIndicator,
   'DropdownMenuItemIndicator'
 );
-const DropdownMenuSeparator = extendComponent(MenuPrimitive.Separator, 'DropdownMenuSeparator');
-const DropdownMenuArrow = extendComponent(MenuPrimitive.Arrow, 'DropdownMenuArrow');
+const DropdownMenuSeparator = extendPrimitive(MenuPrimitive.Separator, 'DropdownMenuSeparator');
+const DropdownMenuArrow = extendPrimitive(MenuPrimitive.Arrow, 'DropdownMenuArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 

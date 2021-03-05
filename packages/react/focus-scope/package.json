@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-focus-scope",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -12,14 +12,11 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
-    "version": "yarn version",
-    "prepublish": "yarn clean && yarn build"
+    "prepublish": "yarn clean"
   },
   "dependencies": {
-    "@radix-ui/react-utils": "workspace:*",
-    "@radix-ui/utils": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

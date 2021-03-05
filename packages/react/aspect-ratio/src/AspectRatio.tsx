@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * AspectRatio
@@ -11,14 +9,17 @@ import type { Merge } from '@radix-ui/utils';
 
 const NAME = 'AspectRatio';
 
-type AspectRatioOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { ratio?: number }>;
+type AspectRatioOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { ratio?: number }
+>;
 type AspectRatioPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof Primitive>,
   AspectRatioOwnProps
 >;
 
 const AspectRatio = React.forwardRef((props, forwardedRef) => {
-  const { ratio = 1 / 1, style, children, ...aspectRatioProps } = props;
+  const { ratio = 1 / 1, style, ...aspectRatioProps } = props;
   return (
     <div
       style={{
@@ -28,9 +29,9 @@ const AspectRatio = React.forwardRef((props, forwardedRef) => {
         width: '100%',
         paddingBottom: `${100 / ratio}%`,
       }}
+      data-radix-aspect-ratio-wrapper=""
     >
       <Primitive
-        selector={getSelector(NAME)}
         {...aspectRatioProps}
         ref={forwardedRef}
         style={{
@@ -42,9 +43,7 @@ const AspectRatio = React.forwardRef((props, forwardedRef) => {
           bottom: 0,
           left: 0,
         }}
-      >
-        {children}
-      </Primitive>
+      />
     </div>
   );
 }) as AspectRatioPrimitive;

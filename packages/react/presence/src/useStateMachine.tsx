@@ -1,27 +1,20 @@
 import * as React from 'react';
-import { createMachine, interpret } from '@xstate/fsm';
-import type { StateMachine, EventObject, Typestate } from '@xstate/fsm';
 
-export function useStateMachine<
-  C extends object,
-  E extends EventObject = EventObject,
-  S extends Typestate<C> = { value: any; context: C }
->(fsmConfig: StateMachine.Config<C, E, S>) {
-  const [machine] = React.useState(() => interpret(createMachine<C, E, S>(fsmConfig)));
-  const [state, setState] = React.useState<S['value']>(fsmConfig.initial);
-  const [context, setContext] = React.useState<C | undefined>(fsmConfig.context);
+type Machine<S> = { [k: string]: { [k: string]: S } };
+type MachineState<T> = keyof T;
+type MachineEvent<T> = keyof UnionToIntersection<T[keyof T]>;
 
-  React.useEffect(() => {
-    const subscription = machine.subscribe((state) => {
-      setState(state.value);
-      setContext(state.context);
-    });
-    machine.start();
-    return () => {
-      subscription.unsubscribe();
-      machine.stop();
-    };
-  }, [machine]);
+// 🤯 https://fettblog.eu/typescript-union-to-intersection/
+type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any
+  ? R
+  : never;
 
-  return React.useMemo(() => ({ state, context, send: machine.send }), [state, context, machine]);
+export function useStateMachine<M>(
+  initialState: MachineState<M>,
+  machine: M & Machine<MachineState<M>>
+) {
+  return React.useReducer((state: MachineState<M>, event: MachineEvent<M>): MachineState<M> => {
+    const nextState = (machine[state] as any)[event];
+    return nextState ?? state;
+  }, initialState);
 }

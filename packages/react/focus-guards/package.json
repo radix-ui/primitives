@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-focus-guards",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -12,10 +12,8 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
-    "version": "yarn version",
-    "prepublish": "yarn clean && yarn build"
+    "prepublish": "yarn clean"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

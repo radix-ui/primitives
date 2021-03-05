@@ -1,0 +1,27 @@
+name: 'Chromatic'
+
+on:
+  push:
+    branches:
+      - main
+  # "You must append a colon (:) to all events, including events without configuration."
+  # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-using-multiple-events-with-activity-types-or-configuration
+  pull_request:
+
+jobs:
+  chromatic-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: yarn
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          exitOnceUploaded: true
+          exitZeroOnChanges: true

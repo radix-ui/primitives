@@ -3,7 +3,6 @@ import { Popper, PopperArrow } from './Popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Arrow } from '@radix-ui/react-arrow';
 import { styled, css } from '../../../../stitches.config';
-import { makeRect } from '@radix-ui/utils';
 
 export default { title: 'Components/Popper' };
 
@@ -83,8 +82,7 @@ export const WithPortal = () => {
 export const WithVirtualElement = () => {
   const mousePosRef = React.useRef({ x: 0, y: 0 });
   const anchorRef = React.useRef({
-    getBoundingClientRect: () =>
-      makeRect({ width: 0, height: 0 }, { x: mousePosRef.current.x, y: mousePosRef.current.y }),
+    getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...mousePosRef.current }),
   });
 
   React.useEffect(() => {

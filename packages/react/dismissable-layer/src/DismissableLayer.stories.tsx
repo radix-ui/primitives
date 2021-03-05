@@ -4,7 +4,7 @@ import React from 'react';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Popper, PopperArrow } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
-import { composeRefs } from '@radix-ui/react-utils';
+import { composeRefs } from '@radix-ui/react-compose-refs';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from './DismissableLayer';

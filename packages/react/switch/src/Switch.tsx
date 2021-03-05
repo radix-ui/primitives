@@ -1,16 +1,12 @@
 import * as React from 'react';
-import {
-  createContext,
-  composeEventHandlers,
-  useControlledState,
-  useComposedRefs,
-} from '@radix-ui/react-utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { createContext } from '@radix-ui/react-context';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
-import { getSelector } from '@radix-ui/utils';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
@@ -20,7 +16,7 @@ const SWITCH_NAME = 'Switch';
 const SWITCH_DEFAULT_TAG = 'button';
 
 type InputDOMProps = React.ComponentProps<'input'>;
-type SwitchOwnProps = Merge<
+type SwitchOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     checked?: boolean;
@@ -33,15 +29,14 @@ type SwitchOwnProps = Merge<
 
 type SwitchPrimitive = Polymorphic.ForwardRefComponent<typeof SWITCH_DEFAULT_TAG, SwitchOwnProps>;
 
-const [SwitchContext, useSwitchContext] = createContext<boolean>(
-  SWITCH_NAME + 'Context',
-  SWITCH_NAME
-);
+type SwitchContextValue = { checked: boolean; disabled?: boolean };
+
+const [SwitchProvider, useSwitchContext] = createContext<SwitchContextValue>(SWITCH_NAME);
 
 const Switch = React.forwardRef((props, forwardedRef) => {
   const {
+    as = SWITCH_DEFAULT_TAG,
     'aria-labelledby': ariaLabelledby,
-    children,
     name,
     checked: checkedProp,
     defaultChecked,
@@ -57,7 +52,7 @@ const Switch = React.forwardRef((props, forwardedRef) => {
   const ref = useComposedRefs(forwardedRef, buttonRef);
   const labelId = useLabelContext(buttonRef);
   const labelledBy = ariaLabelledby || labelId;
-  const [checked = false, setChecked] = useControlledState({
+  const [checked = false, setChecked] = useControllableState({
     prop: checkedProp,
     defaultProp: defaultChecked,
   });
@@ -83,30 +78,30 @@ const Switch = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <Primitive
-        as={SWITCH_DEFAULT_TAG}
-        selector={getSelector(SWITCH_NAME)}
-        type="button"
-        {...switchProps}
-        ref={ref}
-        role="switch"
-        aria-checked={checked}
-        aria-labelledby={labelledBy}
-        aria-required={required}
-        data-state={getState(checked)}
-        data-readonly={readOnly}
-        disabled={disabled}
-        value={value}
-        /**
-         * The `input` is hidden, so when the button is clicked we trigger
-         * the input manually
-         */
-        onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
-          checkForDefaultPrevented: false,
-        })}
-      >
-        <SwitchContext.Provider value={checked}>{children}</SwitchContext.Provider>
-      </Primitive>
+      <SwitchProvider checked={checked} disabled={disabled}>
+        <Primitive
+          type="button"
+          role="switch"
+          aria-checked={checked}
+          aria-labelledby={labelledBy}
+          aria-required={required}
+          data-state={getState(checked)}
+          data-disabled={disabled ? '' : undefined}
+          data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
+          {...switchProps}
+          as={as}
+          ref={ref}
+          /**
+           * The `input` is hidden, so when the button is clicked we trigger
+           * the input manually
+           */
+          onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
+            checkForDefaultPrevented: false,
+          })}
+        />
+      </SwitchProvider>
     </>
   );
 }) as SwitchPrimitive;
@@ -127,13 +122,14 @@ type SwitchThumbPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SwitchThumb = React.forwardRef((props, forwardedRef) => {
-  const checked = useSwitchContext(THUMB_NAME);
+  const { as = THUMB_DEFAULT_TAG, ...thumbProps } = props;
+  const context = useSwitchContext(THUMB_NAME);
   return (
     <Primitive
-      as={THUMB_DEFAULT_TAG}
-      selector={getSelector(THUMB_NAME)}
-      {...props}
-      data-state={getState(checked)}
+      data-state={getState(context.checked)}
+      data-disabled={context.disabled ? '' : undefined}
+      {...thumbProps}
+      as={as}
       ref={forwardedRef}
     />
   );

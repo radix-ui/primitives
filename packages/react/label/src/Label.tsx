@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
-import { useId, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
+import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
@@ -13,18 +12,20 @@ import type { Merge } from '@radix-ui/utils';
 const NAME = 'Label';
 const DEFAULT_TAG = 'span';
 
-type LabelOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { htmlFor?: string }>;
+type LabelOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { htmlFor?: string }
+>;
 type LabelPrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, LabelOwnProps>;
 
 type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
 const Label = React.forwardRef((props, forwardedRef) => {
-  const { htmlFor, id: idProp, children, ...labelProps } = props;
+  const { as = DEFAULT_TAG, htmlFor, id: idProp, ...labelProps } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
-  const generatedId = `label-${useId()}`;
-  const id = idProp || generatedId;
+  const id = useId(idProp);
 
   React.useEffect(() => {
     const label = labelRef.current;
@@ -69,22 +70,13 @@ const Label = React.forwardRef((props, forwardedRef) => {
   }, [id, htmlFor]);
 
   return (
-    <Primitive
-      as={DEFAULT_TAG}
-      selector={getSelector(NAME)}
-      {...labelProps}
-      ref={ref}
-      id={id}
-      role="label"
-    >
-      <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
-        {children}
-      </LabelContext.Provider>
-    </Primitive>
+    <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
+      <Primitive role="label" id={id} {...labelProps} as={as} ref={ref} />
+    </LabelContext.Provider>
   );
 }) as LabelPrimitive;
 
-Label.displayName = 'Label';
+Label.displayName = NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

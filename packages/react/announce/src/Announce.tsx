@@ -1,11 +1,10 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { getSelector } from '@radix-ui/utils';
-import { useComposedRefs, useLayoutEffect } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';
@@ -25,7 +24,7 @@ const listenerMap = new Map<Element, number>();
 
 const NAME = 'Announce';
 
-type AnnounceOwnProps = Merge<
+type AnnounceOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
@@ -176,7 +175,7 @@ const Announce = React.forwardRef((props, forwardedRef) => {
 
   return (
     <React.Fragment>
-      <Primitive selector={getSelector(NAME)} {...regionProps} ref={ref}>
+      <Primitive {...regionProps} ref={ref}>
         {children}
       </Primitive>
 
@@ -231,7 +230,7 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
 }
 
 function getLiveRegionPartDataAttr(id?: string) {
-  return `data-` + getSelector(NAME + 'Region') + (id ? `-${id}` : '');
+  return 'data-radix-announce-region' + (id ? `-${id}` : '');
 }
 
 const Root = Announce;

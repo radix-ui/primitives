@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getSelector, wrapArray } from '@radix-ui/utils';
 
 function useMenuTypeahead() {
   const timerRef = React.useRef(0);
@@ -75,13 +74,20 @@ function getNextMatch(values: string[], search: string, currentMatch?: string) {
 
 const getValue = (element: Element) => element.getAttribute(ITEM_ATTR) ?? '';
 
-const ITEM_NAME = 'MenuTypeaheadItem';
-const ITEM_ATTR = `data-${getSelector(ITEM_NAME)}`;
+const ITEM_ATTR = 'data-radix-menu-typeahead-item';
 
 type UseMenuTypeaheadItemOptions = { textValue: string; disabled?: boolean };
 
 function useMenuTypeaheadItem({ textValue, disabled }: UseMenuTypeaheadItemOptions) {
   return { [ITEM_ATTR]: disabled ? undefined : textValue };
+}
+
+/**
+ * Wraps an array around itself at a given start index
+ * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
+ */
+function wrapArray<T>(array: T[], startIndex: number) {
+  return array.map((_, index) => array[(startIndex + index) % array.length]);
 }
 
 export { useMenuTypeahead, useMenuTypeaheadItem };

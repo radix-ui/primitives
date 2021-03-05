@@ -54,13 +54,6 @@ Our goal is to create a well-funded open-source component library that the commu
 - Components ship with CSS-in-JS style objects that provide a minimal set styles needed to easily reset user agent styles and provide a clean slate for consumers to build upon.
 - Our components can be composed or styled the same way underlying JSX components are composed or styled, with limitations only introduced to prevent UX/accessibility dark patterns where needed.
 - Consumers can choose whether or not to apply these styles in their app, as well as the styling tool; we do not enforce a particular methodology or library.
-- As each component that renders to the DOM will render only one element, we can provide predictable prefixed DOM attributes that can be used as CSS selectors:
-
-| Component      | Rendered element                  |
-| -------------- | --------------------------------- |
-| `<Avatar />`   | `<div data-radix-avatar="" />`    |
-| `<Tabs />`     | `<div data-radix-tabs="" />`      |
-| `<TabsList />` | `<div data-radix-tabs-list="" />` |
 
 ## Other considerations
 

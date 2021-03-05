@@ -1,16 +1,14 @@
 import * as React from 'react';
-import {
-  createContext,
-  useId,
-  composeEventHandlers,
-  useControlledState,
-} from '@radix-ui/react-utils';
-import { getSelector } from '@radix-ui/utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
+import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Collapsible
@@ -18,7 +16,7 @@ import type { Merge } from '@radix-ui/utils';
 
 const COLLAPSIBLE_NAME = 'Collapsible';
 
-type CollapsibleOwnProps = Merge<
+type CollapsibleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     defaultOpen?: boolean;
@@ -34,55 +32,39 @@ type CollapsiblePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 type CollapsibleContextValue = {
-  contentId?: string;
-  setContentId(id: string): void;
-  open: boolean;
+  contentId: string;
   disabled?: boolean;
-  toggle(): void;
+  open: boolean;
+  onOpenToggle(): void;
 };
 
-const [CollapsibleContext, useCollapsibleContext] = createContext<CollapsibleContextValue>(
-  'CollapsibleContext',
+const [CollapsibleProvider, useCollapsibleContext] = createContext<CollapsibleContextValue>(
   COLLAPSIBLE_NAME
 );
 
 const Collapsible = React.forwardRef((props, forwardedRef) => {
-  const {
-    id: idProp,
-    children,
-    open: openProp,
-    defaultOpen,
-    disabled,
-    onOpenChange,
-    ...collapsibleProps
-  } = props;
+  const { open: openProp, defaultOpen, disabled, onOpenChange, ...collapsibleProps } = props;
 
-  const [open = false, setOpen] = useControlledState({
+  const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const [contentId, setContentId] = React.useState<string>();
-  const context = React.useMemo(
-    () => ({
-      contentId,
-      open,
-      disabled,
-      toggle: () => setOpen((prevOpen) => !prevOpen),
-      setContentId,
-    }),
-    [contentId, disabled, open, setOpen]
-  );
 
   return (
-    <Primitive
-      selector={getSelector(COLLAPSIBLE_NAME)}
-      {...collapsibleProps}
-      data-state={getState(context.open)}
-      ref={forwardedRef}
+    <CollapsibleProvider
+      disabled={disabled}
+      contentId={useId()}
+      open={open}
+      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
     >
-      <CollapsibleContext.Provider value={context}>{children}</CollapsibleContext.Provider>
-    </Primitive>
+      <Primitive
+        data-state={getState(open)}
+        data-disabled={disabled ? '' : undefined}
+        {...collapsibleProps}
+        ref={forwardedRef}
+      />
+    </CollapsibleProvider>
   );
 }) as CollapsiblePrimitive;
 
@@ -102,20 +84,20 @@ type CollapsibleButtonPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const CollapsibleButton = React.forwardRef((props, forwardedRef) => {
-  const { onClick, ...buttonProps } = props;
+  const { as = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
   const context = useCollapsibleContext(BUTTON_NAME);
 
   return (
     <Primitive
-      as={BUTTON_DEFAULT_TAG}
-      selector={getSelector(BUTTON_NAME)}
       aria-controls={context.contentId}
       aria-expanded={context.open || false}
       data-state={getState(context.open)}
-      {...buttonProps}
-      ref={forwardedRef}
-      onClick={composeEventHandlers(onClick, context.toggle)}
+      data-disabled={context.disabled ? '' : undefined}
       disabled={context.disabled}
+      {...buttonProps}
+      as={as}
+      ref={forwardedRef}
+      onClick={composeEventHandlers(onClick, context.onOpenToggle)}
     />
   );
 }) as CollapsibleButtonPrimitive;
@@ -128,8 +110,8 @@ CollapsibleButton.displayName = BUTTON_NAME;
 
 const CONTENT_NAME = 'CollapsibleContent';
 
-type CollapsibleContentOwnProps = Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type CollapsibleContentOwnProps = Polymorphic.Merge<
+  Omit<Polymorphic.OwnProps<typeof CollapsibleContentImpl>, 'present'>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -140,39 +122,87 @@ type CollapsibleContentOwnProps = Merge<
 >;
 
 type CollapsibleContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
+  Polymorphic.IntrinsicElement<typeof CollapsibleContentImpl>,
   CollapsibleContentOwnProps
 >;
 
 const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
-  const { id: idProp, forceMount, children, ...contentProps } = props;
-  const { setContentId, open } = useCollapsibleContext(CONTENT_NAME);
-  const generatedId = `collapsible-${useId()}`;
-  const id = idProp || generatedId;
-
-  React.useEffect(() => {
-    setContentId(id);
-  }, [id, setContentId]);
-
+  const { forceMount, ...contentProps } = props;
+  const context = useCollapsibleContext(CONTENT_NAME);
   return (
-    <Presence present={forceMount || open}>
-      {({ present }) => (
-        <Primitive
-          selector={getSelector(CONTENT_NAME)}
-          {...contentProps}
-          ref={forwardedRef}
-          id={id}
-          hidden={!present}
-          data-state={getState(open)}
-        >
-          {present && children}
-        </Primitive>
-      )}
+    <Presence present={forceMount || context.open}>
+      {({ present }) => <CollapsibleContentImpl {...contentProps} present={present} />}
     </Presence>
   );
 }) as CollapsibleContentPrimitive;
 
 CollapsibleContent.displayName = CONTENT_NAME;
+
+type CollapsibleContentImplOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { present: boolean }
+>;
+
+type CollapsibleContentImplPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Primitive>,
+  CollapsibleContentImplOwnProps
+>;
+
+const CollapsibleContentImpl = React.forwardRef((props, forwardedRef) => {
+  const { present, children, ...contentProps } = props;
+  const context = useCollapsibleContext(CONTENT_NAME);
+  const [isPresent, setIsPresent] = React.useState(present);
+  const ref = React.useRef<React.ElementRef<typeof Primitive>>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+  const heightRef = React.useRef<number | undefined>(0);
+  const height = heightRef.current;
+  // when opening we want it to immediately open to retrieve dimensions
+  // when closing we delay `present` to retreive dimensions before closing
+  const isOpen = context.open || isPresent;
+
+  useLayoutEffect(() => {
+    const node = ref.current;
+    if (node) {
+      const originalTransition = node.style.transition;
+      const originalAnimation = node.style.animation;
+      // block any animations/transitions so the element renders at its full dimensions
+      node.style.transition = 'none';
+      node.style.animation = 'none';
+
+      // set height to height from full dimensions
+      const rect = node.getBoundingClientRect();
+      heightRef.current = rect.height;
+
+      // kick off any animations/transitions that were originally set up
+      node.style.transition = originalTransition;
+      node.style.animation = originalAnimation;
+      setIsPresent(present);
+    }
+    /**
+     * depends on `context.open` because it will change to `false`
+     * when a close is triggered but `present` will be `false` on
+     * animation end (so when close finishes). This allows us to
+     * retrieve the dimensions *before* closing.
+     */
+  }, [context.open, present]);
+
+  return (
+    <Primitive
+      data-state={getState(context.open)}
+      data-disabled={context.disabled ? '' : undefined}
+      id={context.contentId}
+      hidden={!isOpen}
+      {...contentProps}
+      ref={composedRefs}
+      style={{
+        [`--radix-collapsible-content-height` as any]: height ? `${height}px` : undefined,
+        ...props.style,
+      }}
+    >
+      {isOpen && children}
+    </Primitive>
+  );
+}) as CollapsibleContentImplPrimitive;
 
 /* -----------------------------------------------------------------------------------------------*/
 

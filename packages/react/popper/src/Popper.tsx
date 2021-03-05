@@ -1,27 +1,15 @@
 import * as React from 'react';
 import { getPlacementData } from '@radix-ui/popper';
-import { createContext, useRect, useSize, useComposedRefs } from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { createContext } from '@radix-ui/react-context';
+import { useRect } from '@radix-ui/react-use-rect';
+import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
-import { getSelector, getSelectorObj, makeRect } from '@radix-ui/utils';
+import * as ArrowPrimitive from '@radix-ui/react-arrow';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Side, Align, Size, MeasurableElement, Merge } from '@radix-ui/utils';
-
-/* -------------------------------------------------------------------------------------------------
- * Root level context
- * -----------------------------------------------------------------------------------------------*/
-
-type PopperContextValue = {
-  arrowRef: React.RefObject<HTMLElement>;
-  setArrowOffset: (offset?: number) => void;
-  arrowStyles: React.CSSProperties;
-};
-
-const [PopperContext, usePopperContext] = createContext<PopperContextValue>(
-  'PopperContext',
-  'Popper'
-);
+import type { Side, Align } from '@radix-ui/popper';
+import type { Measurable } from '@radix-ui/rect';
 
 /* -------------------------------------------------------------------------------------------------
  * Popper
@@ -29,10 +17,18 @@ const [PopperContext, usePopperContext] = createContext<PopperContextValue>(
 
 const POPPER_NAME = 'Popper';
 
-type PopperOwnProps = Merge<
+type PopperContextValue = {
+  arrowRef: React.RefObject<HTMLElement>;
+  onArrowOffsetChange: (offset?: number) => void;
+  arrowStyles: React.CSSProperties;
+};
+
+const [PopperProvider, usePopperContext] = createContext<PopperContextValue>(POPPER_NAME);
+
+type PopperOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
-    anchorRef: React.RefObject<MeasurableElement>;
+    anchorRef: React.RefObject<Measurable>;
     side?: Side;
     sideOffset?: number;
     align?: Align;
@@ -49,8 +45,6 @@ type PopperPrimitive = Polymorphic.ForwardRefComponent<
 
 const Popper = React.forwardRef((props, forwardedRef) => {
   const {
-    selector = getSelector(POPPER_NAME),
-    children,
     anchorRef,
     side = 'bottom',
     sideOffset,
@@ -71,7 +65,9 @@ const Popper = React.forwardRef((props, forwardedRef) => {
   const composedPopperRef = useComposedRefs(forwardedRef, popperRef);
 
   const windowSize = useWindowSize();
-  const collisionBoundariesRect = windowSize ? makeRect(windowSize, { x: 0, y: 0 }) : undefined;
+  const collisionBoundariesRect = windowSize
+    ? DOMRect.fromRect({ ...windowSize, x: 0, y: 0 })
+    : undefined;
 
   const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
     anchorRect,
@@ -90,25 +86,26 @@ const Popper = React.forwardRef((props, forwardedRef) => {
   });
   const isPlaced = placedSide !== undefined;
 
-  const context = React.useMemo(() => ({ arrowRef, arrowStyles, setArrowOffset }), [arrowStyles]);
-
   return (
-    <div style={popperStyles} {...(selector ? getSelectorObj(selector + '-wrapper') : undefined)}>
-      <Primitive
-        selector={selector}
-        {...popperProps}
-        style={{
-          ...popperProps.style,
-          // if the Popper hasn't been placed yet (not all measurements done)
-          // we prevent animations so that users's animation don't kick in too early referring wrong sides
-          animation: !isPlaced ? 'none' : undefined,
-        }}
-        ref={composedPopperRef}
-        data-side={placedSide}
-        data-align={placedAlign}
+    <div style={popperStyles} data-radix-popper-wrapper="">
+      <PopperProvider
+        arrowRef={arrowRef}
+        arrowStyles={arrowStyles}
+        onArrowOffsetChange={setArrowOffset}
       >
-        <PopperContext.Provider value={context}>{children}</PopperContext.Provider>
-      </Primitive>
+        <Primitive
+          data-side={placedSide}
+          data-align={placedAlign}
+          {...popperProps}
+          style={{
+            ...popperProps.style,
+            // if the Popper hasn't been placed yet (not all measurements done)
+            // we prevent animations so that users's animation don't kick in too early referring wrong sides
+            animation: !isPlaced ? 'none' : undefined,
+          }}
+          ref={composedPopperRef}
+        />
+      </PopperProvider>
     </div>
   );
 }) as PopperPrimitive;
@@ -121,35 +118,38 @@ Popper.displayName = POPPER_NAME;
 
 const ARROW_NAME = 'PopperArrow';
 
-type PopperArrowOwnProps = Merge<Polymorphic.OwnProps<typeof ArrowPrimitive>, { offset?: number }>;
+type PopperArrowOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof ArrowPrimitive.Root>,
+  { offset?: number }
+>;
 
 type PopperArrowPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ArrowPrimitive>,
+  Polymorphic.IntrinsicElement<typeof ArrowPrimitive.Root>,
   PopperArrowOwnProps
 >;
 
 const PopperArrow = React.forwardRef(function PopperArrow(props, forwardedRef) {
   const { offset, ...arrowProps } = props;
-  const { arrowRef, setArrowOffset, arrowStyles } = usePopperContext(ARROW_NAME);
+  const context = usePopperContext(ARROW_NAME);
+  const { onArrowOffsetChange } = context;
 
   // send the Arrow's offset up to Popper
-  React.useEffect(() => setArrowOffset(offset), [setArrowOffset, offset]);
+  React.useEffect(() => onArrowOffsetChange(offset), [onArrowOffsetChange, offset]);
 
   return (
-    <span style={{ ...arrowStyles, pointerEvents: 'none' }}>
+    <span style={{ ...context.arrowStyles, pointerEvents: 'none' }}>
       <span
         // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
         // doesn't report size as we'd expect on SVG elements.
         // it reports their bounding box which is effectively the largest path inside the SVG.
-        ref={arrowRef}
+        ref={context.arrowRef}
         style={{
           display: 'inline-block',
           verticalAlign: 'top',
           pointerEvents: 'auto',
         }}
       >
-        <ArrowPrimitive
-          selector={getSelector(ARROW_NAME)}
+        <ArrowPrimitive.Root
           {...arrowProps}
           ref={forwardedRef}
           style={{
@@ -170,7 +170,9 @@ PopperArrow.displayName = ARROW_NAME;
 const WINDOW_RESIZE_DEBOUNCE_WAIT_IN_MS = 100;
 
 function useWindowSize() {
-  const [windowSize, setWindowSize] = React.useState<Size | undefined>(undefined);
+  const [windowSize, setWindowSize] = React.useState<{ width: number; height: number } | undefined>(
+    undefined
+  );
 
   React.useEffect(() => {
     let debounceTimerId: number;

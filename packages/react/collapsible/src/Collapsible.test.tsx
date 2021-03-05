@@ -1,8 +1,7 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
-import { getSelector } from '@radix-ui/utils';
+import { render, fireEvent } from '@testing-library/react';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
 
 const BUTTON_TEXT = 'Button';
@@ -19,116 +18,56 @@ describe('given a default Collapsible', () => {
   let rendered: RenderResult;
   let button: HTMLElement;
   let content: HTMLElement | null;
-  let collapsible: Node | null;
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest />);
     button = rendered.getByText(BUTTON_TEXT);
-    content = rendered.queryByText(CONTENT_TEXT);
-    collapsible = rendered.container.firstChild;
   });
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
-  it('should have a radix attribute on the container', () => {
-    const partDataAttr = `data-${getSelector('Collapsible')}`;
-    expect(collapsible).toHaveAttribute(partDataAttr);
-  });
-
-  it('should have a data-state attribute on the container set to `closed`', () => {
-    expect(collapsible).toHaveAttribute('data-state', 'closed');
-  });
-
-  it('should render a button', () => {
-    expect(button).toBeVisible();
-  });
-
-  it('should have a data-state attribute on the button set to `closed`', () => {
-    expect(button).toHaveAttribute('data-state', 'closed');
-  });
-
-  it('should have a radix attribute on the button', () => {
-    const partDataAttr = `data-${getSelector('CollapsibleButton')}`;
-    expect(button).toHaveAttribute(partDataAttr);
-  });
-
-  it('should not render content', () => {
-    expect(content).toBe(null);
-  });
-
   describe('when clicking the button', () => {
     beforeEach(async () => {
       fireEvent.click(button);
-      await waitFor(() => {
-        content = rendered.getByText(CONTENT_TEXT);
-        expect(content).toBeVisible();
-      });
+      content = rendered.queryByText(CONTENT_TEXT);
     });
 
-    it('should have a radix attribute on the content', () => {
-      const partDataAttr = `data-${getSelector('CollapsibleContent')}`;
-      expect(content).toHaveAttribute(partDataAttr);
-    });
-
-    it('should have a data-state attribute on the container set to `open`', () => {
-      expect(collapsible).toHaveAttribute('data-state', 'open');
-    });
-
-    it('should have a data-state attribute on the button set to `open`', () => {
-      expect(button).toHaveAttribute('data-state', 'open');
+    it('should open the content', () => {
+      expect(content).toBeVisible();
     });
 
     describe('and clicking the button again', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         fireEvent.click(button);
-        await waitForElementToBeRemoved(() => rendered.getByText(CONTENT_TEXT));
       });
 
-      it('should have a data-state attribute on the container set to `closed`', () => {
-        expect(collapsible).toHaveAttribute('data-state', 'closed');
-      });
-
-      it('should have a data-state attribute on the button set to `closed`', () => {
-        expect(button).toHaveAttribute('data-state', 'closed');
+      it('should close the content', () => {
+        expect(content).not.toBeVisible();
       });
     });
-  });
-});
-
-describe('given a disabled Collapsible', () => {
-  let rendered: RenderResult;
-
-  beforeEach(() => {
-    rendered = render(<CollapsibleTest disabled />);
-  });
-
-  it('should render a disabled button', () => {
-    const button = rendered.getByText(BUTTON_TEXT);
-    expect(button).toBeDisabled();
   });
 });
 
 describe('given an open uncontrolled Collapsible', () => {
   let rendered: RenderResult;
-  let content: HTMLElement;
+  let content: HTMLElement | null;
   const onOpenChange = jest.fn();
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest defaultOpen onOpenChange={onOpenChange} />);
-    content = rendered.getByText(CONTENT_TEXT);
-  });
-
-  it('should render with open content', () => {
-    expect(content).toBeVisible();
   });
 
   describe('when clicking the button', () => {
     beforeEach(async () => {
       const button = rendered.getByText(BUTTON_TEXT);
+      content = rendered.getByText(CONTENT_TEXT);
       fireEvent.click(button);
-      await waitForElementToBeRemoved(() => rendered.getByText(CONTENT_TEXT));
+    });
+
+    it('should close the content', () => {
+      expect(content).not.toBeVisible();
     });
 
     it('should call `onOpenChange` prop with `false` value', () => {
@@ -147,10 +86,6 @@ describe('given an open controlled Collapsible', () => {
     content = rendered.getByText(CONTENT_TEXT);
   });
 
-  it('should render with open content', () => {
-    expect(content).toBeVisible();
-  });
-
   describe('when clicking the button', () => {
     beforeEach(() => {
       const button = rendered.getByText(BUTTON_TEXT);
@@ -164,33 +99,5 @@ describe('given an open controlled Collapsible', () => {
     it('should not close the content', () => {
       expect(content).toBeVisible();
     });
-  });
-});
-
-describe('given styled parts', () => {
-  let rendered: RenderResult;
-
-  beforeEach(() => {
-    rendered = render(
-      <Collapsible className="container-class" open>
-        <CollapsibleButton className="button-class">{BUTTON_TEXT}</CollapsibleButton>
-        <CollapsibleContent className="content-class">{CONTENT_TEXT}</CollapsibleContent>
-      </Collapsible>
-    );
-  });
-
-  it('should pass the className to the container', () => {
-    const container = rendered.container.firstChild;
-    expect(container).toHaveClass('container-class');
-  });
-
-  it('should pass the className to the button', () => {
-    const button = rendered.getByText(BUTTON_TEXT);
-    expect(button).toHaveClass('button-class');
-  });
-
-  it('should pass the className to the content', () => {
-    const content = rendered.getByText(CONTENT_TEXT);
-    expect(content).toHaveClass('content-class');
   });
 });

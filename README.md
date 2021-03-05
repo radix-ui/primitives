@@ -25,6 +25,10 @@ Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 - Chance Strickland ([@chancethedev](https://twitter.com/chancethedev)) - [Modulz](https://modulz.app)
 - Pedro Duarte ([@peduarte](https://twitter.com/peduarte)) - [Modulz](https://modulz.app)
 
+## Contributors
+
+- Ar Nazeh ([@Nazeh](https://twitter.com/arnazeh))
+
 ---
 
 ## Community
@@ -35,6 +39,11 @@ Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 - [Discord](https://discord.com/invite/7Xb99uG) - To get involved with the Radix community, ask questions and share tips.
 - [Twitter](https://twitter.com/radix_ui) - To receive updates, announcements, blog posts, and general Radix tips.
 
+## Thanks
+
+<a href="https://www.chromatic.com/"><img src="https://user-images.githubusercontent.com/321738/84662277-e3db4f80-af1b-11ea-88f5-91d67a5e59f6.png" width="153" height="30" alt="Chromatic" /></a>
+
+Thanks to [Chromatic](https://www.chromatic.com/) for providing the visual testing platform that helps us review UI changes and catch visual regressions.
 
 ---
 

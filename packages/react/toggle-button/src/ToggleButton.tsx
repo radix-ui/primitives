@@ -1,15 +1,14 @@
 import * as React from 'react';
-import { useControlledState, composeEventHandlers } from '@radix-ui/react-utils';
-import { getSelector } from '@radix-ui/utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 const NAME = 'ToggleButton';
 const DEFAULT_TAG = 'button';
 
-type ToggleButtonOwnProps = Merge<
+type ToggleButtonOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /** Whether the button is toggled or not, if controlled */
@@ -31,15 +30,15 @@ type ToggleButtonPrimitive = Polymorphic.ForwardRefComponent<
 
 const ToggleButton = React.forwardRef((props, forwardedRef) => {
   const {
+    as = DEFAULT_TAG,
     toggled: toggledProp,
     defaultToggled = false,
     onClick,
     onToggledChange,
-    children,
     ...buttonProps
   } = props;
 
-  const [toggled = false, setToggled] = useControlledState({
+  const [toggled = false, setToggled] = useControllableState({
     prop: toggledProp,
     onChange: onToggledChange,
     defaultProp: defaultToggled,
@@ -47,22 +46,19 @@ const ToggleButton = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Primitive
-      as={DEFAULT_TAG}
-      selector={getSelector(NAME)}
       type="button"
       aria-pressed={toggled}
       data-state={toggled ? 'on' : 'off'}
       data-disabled={props.disabled ? '' : undefined}
       {...buttonProps}
+      as={as}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, () => {
         if (!props.disabled) {
           setToggled(!toggled);
         }
       })}
-    >
-      {children}
-    </Primitive>
+    />
   );
 }) as ToggleButtonPrimitive;
 

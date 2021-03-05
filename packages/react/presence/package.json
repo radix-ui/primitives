@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-presence",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -12,14 +12,11 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
-    "version": "yarn version",
-    "prepublish": "yarn clean && yarn build"
+    "prepublish": "yarn clean"
   },
   "dependencies": {
-    "@radix-ui/react-utils": "workspace:*",
-    "@xstate/fsm": "^1.5.1"
+    "@radix-ui/react-compose-refs": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=16.8"

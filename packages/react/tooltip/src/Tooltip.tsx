@@ -1,47 +1,26 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
-import {
-  createContext,
-  useComposedRefs,
-  useId,
-  composeEventHandlers,
-  useRect,
-  usePrevious,
-  useControlledState,
-  useLayoutEffect,
-  extendComponent,
-} from '@radix-ui/react-utils';
-import { Primitive } from '@radix-ui/react-primitive';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { createContext } from '@radix-ui/react-context';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { usePrevious } from '@radix-ui/react-use-previous';
+import { useRect } from '@radix-ui/react-use-rect';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { Slottable } from '@radix-ui/react-slot';
+import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
+import { useId } from '@radix-ui/react-id';
 import { createStateMachine, stateChart } from './machine';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
-
-/* -------------------------------------------------------------------------------------------------
- * Root level context
- * -----------------------------------------------------------------------------------------------*/
-
-type StateAttribute = 'closed' | 'delayed-open' | 'instant-open';
-
-type TooltipContextValue = {
-  triggerRef: React.RefObject<HTMLButtonElement>;
-  id: string;
-  open: boolean;
-  stateAttribute: StateAttribute;
-};
-
-const [TooltipContext, useTooltipContext] = createContext<TooltipContextValue>(
-  'TooltipContext',
-  'Tooltip'
-);
 
 /* -------------------------------------------------------------------------------------------------
  * State machine
  * -----------------------------------------------------------------------------------------------*/
 
+type StateAttribute = 'closed' | 'delayed-open' | 'instant-open';
 const stateMachine = createStateMachine(stateChart);
 
 /* -------------------------------------------------------------------------------------------------
@@ -49,6 +28,15 @@ const stateMachine = createStateMachine(stateChart);
  * -----------------------------------------------------------------------------------------------*/
 
 const TOOLTIP_NAME = 'Tooltip';
+
+type TooltipContextValue = {
+  triggerRef: React.RefObject<HTMLButtonElement>;
+  contentId: string;
+  open: boolean;
+  stateAttribute: StateAttribute;
+};
+
+const [TooltipProvider, useTooltipContext] = createContext<TooltipContextValue>(TOOLTIP_NAME);
 
 type TooltipOwnProps = {
   open?: boolean;
@@ -59,8 +47,8 @@ type TooltipOwnProps = {
 const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen = false, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const id = `tooltip-${useId()}`;
-  const [open = false, setOpen] = useControlledState({
+  const contentId = useId();
+  const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
@@ -72,7 +60,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   // control open state using state machine subscription
   React.useEffect(() => {
     const unsubscribe = stateMachine.subscribe(({ state, context }) => {
-      if (state === 'OPEN' && context.id === id) {
+      if (state === 'OPEN' && context.id === contentId) {
         setOpen(true);
       } else {
         setOpen(false);
@@ -80,7 +68,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
     });
 
     return unsubscribe;
-  }, [id, setOpen]);
+  }, [contentId, setOpen]);
 
   // sync state attribute with using state machine subscription
   React.useEffect(() => {
@@ -107,25 +95,28 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   // send transition if the component unmounts
   React.useEffect(() => {
     return () => {
-      stateMachine.transition('unmounted', { id });
+      stateMachine.transition('unmounted', { id: contentId });
     };
-  }, [id]);
+  }, [contentId]);
 
   // if we're controlling the component
   // put the state machine in the appropriate state
   useLayoutEffect(() => {
     if (openProp === true) {
-      stateMachine.transition('mouseEntered', { id });
+      stateMachine.transition('mouseEntered', { id: contentId });
     }
-  }, [id, openProp]);
+  }, [contentId, openProp]);
 
-  const context = React.useMemo(() => ({ triggerRef, id, open, stateAttribute }), [
-    id,
-    open,
-    stateAttribute,
-  ]);
-
-  return <TooltipContext.Provider value={context}>{children}</TooltipContext.Provider>;
+  return (
+    <TooltipProvider
+      triggerRef={triggerRef}
+      contentId={contentId}
+      open={open}
+      stateAttribute={stateAttribute}
+    >
+      {children}
+    </TooltipProvider>
+  );
 };
 
 Tooltip.displayName = TOOLTIP_NAME;
@@ -144,44 +135,45 @@ type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useTooltipContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
   return (
     <Primitive
-      as={TRIGGER_DEFAULT_TAG}
-      selector={getSelector(TRIGGER_NAME)}
       type="button"
-      aria-describedby={context.open ? context.id : undefined}
-      {...props}
+      aria-describedby={context.open ? context.contentId : undefined}
+      data-state={context.stateAttribute}
+      {...triggerProps}
+      as={as}
       ref={composedTriggerRef}
       onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
-        stateMachine.transition('mouseEntered', { id: context.id })
+        stateMachine.transition('mouseEntered', { id: context.contentId })
       )}
       onMouseMove={composeEventHandlers(props.onMouseMove, () =>
-        stateMachine.transition('mouseMoved', { id: context.id })
+        stateMachine.transition('mouseMoved', { id: context.contentId })
       )}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
         const stateMachineContext = stateMachine.getContext();
-        if (stateMachineContext.id === context.id) {
-          stateMachine.transition('mouseLeft', { id: context.id });
+        if (stateMachineContext.id === context.contentId) {
+          stateMachine.transition('mouseLeft', { id: context.contentId });
         }
       })}
       onFocus={composeEventHandlers(props.onFocus, () =>
-        stateMachine.transition('focused', { id: context.id })
+        stateMachine.transition('focused', { id: context.contentId })
       )}
       onBlur={composeEventHandlers(props.onBlur, () => {
         const stateMachineContext = stateMachine.getContext();
-        if (stateMachineContext.id === context.id) {
-          stateMachine.transition('blurred', { id: context.id });
+        if (stateMachineContext.id === context.contentId) {
+          stateMachine.transition('blurred', { id: context.contentId });
         }
       })}
       onMouseDown={composeEventHandlers(props.onMouseDown, () =>
-        stateMachine.transition('activated', { id: context.id })
+        stateMachine.transition('activated', { id: context.contentId })
       )}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-          stateMachine.transition('activated', { id: context.id });
+          stateMachine.transition('activated', { id: context.contentId });
         }
       })}
     />
@@ -208,7 +200,7 @@ const TooltipContent = React.forwardRef((props, forwardedRef) => {
 }) as TooltipContentPrimitive;
 
 type PopperPrimitiveOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Root>;
-type TooltipContentImplOwnProps = Merge<
+type TooltipContentImplOwnProps = Polymorphic.Merge<
   PopperPrimitiveOwnProps,
   {
     /**
@@ -240,9 +232,8 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
     <PortalWrapper>
       <CheckTriggerMoved />
       <PopperPrimitive.Root
-        selector={getSelector(CONTENT_NAME)}
-        {...contentProps}
         data-state={context.stateAttribute}
+        {...contentProps}
         ref={forwardedRef}
         anchorRef={anchorRef || context.triggerRef}
         style={{
@@ -251,10 +242,10 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
           ['--radix-tooltip-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
         }}
       >
-        {children}
-        <VisuallyHidden id={context.id} role="tooltip">
+        <Slottable>{children}</Slottable>
+        <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
           {ariaLabel || children}
-        </VisuallyHidden>
+        </VisuallyHiddenPrimitive.Root>
       </PopperPrimitive.Root>
     </PortalWrapper>
   );
@@ -264,14 +255,14 @@ TooltipContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const TooltipArrow = extendComponent(PopperPrimitive.Arrow, 'TooltipArrow');
+const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, 'TooltipArrow');
 
 /* -----------------------------------------------------------------------------------------------*/
 
 function CheckTriggerMoved() {
-  const { triggerRef, id } = useTooltipContext('CheckTriggerMoved');
+  const context = useTooltipContext('CheckTriggerMoved');
 
-  const triggerRect = useRect(triggerRef);
+  const triggerRect = useRect(context.triggerRef);
   const triggerLeft = triggerRect?.left;
   const previousTriggerLeft = usePrevious(triggerLeft);
   const triggerTop = triggerRect?.top;
@@ -284,9 +275,9 @@ function CheckTriggerMoved() {
       (previousTriggerTop !== undefined && previousTriggerTop !== triggerTop);
 
     if (hasTriggerMoved) {
-      stateMachine.transition('triggerMoved', { id });
+      stateMachine.transition('triggerMoved', { id: context.contentId });
     }
-  }, [id, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
+  }, [context.contentId, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
 
   return null;
 }

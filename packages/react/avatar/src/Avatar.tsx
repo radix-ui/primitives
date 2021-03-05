@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
-import { createContext, useCallbackRef, useLayoutEffect } from '@radix-ui/react-utils';
+import { createContext } from '@radix-ui/react-context';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar
@@ -16,28 +16,23 @@ const AVATAR_DEFAULT_TAG = 'span';
 type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
 type AvatarOwnProps = Polymorphic.OwnProps<typeof Primitive>;
 type AvatarPrimitive = Polymorphic.ForwardRefComponent<typeof AVATAR_DEFAULT_TAG, AvatarOwnProps>;
-type AvatarContextValue = [
-  ImageLoadingStatus,
-  React.Dispatch<React.SetStateAction<ImageLoadingStatus>>
-];
+type AvatarContextValue = {
+  imageLoadingStatus: ImageLoadingStatus;
+  onImageLoadingStatusChange(status: ImageLoadingStatus): void;
+};
 
-const [AvatarContext, useAvatarContext] = createContext<AvatarContextValue>(
-  'AvatarContext',
-  AVATAR_NAME
-);
+const [AvatarProvider, useAvatarContext] = createContext<AvatarContextValue>(AVATAR_NAME);
 
 const Avatar = React.forwardRef((props, forwardedRef) => {
-  const { children, ...avatarProps } = props;
-  const context = React.useState<ImageLoadingStatus>('idle');
+  const { as = AVATAR_DEFAULT_TAG, ...avatarProps } = props;
+  const [imageLoadingStatus, setImageLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
   return (
-    <Primitive
-      as={AVATAR_DEFAULT_TAG}
-      selector={getSelector(AVATAR_NAME)}
-      {...avatarProps}
-      ref={forwardedRef}
+    <AvatarProvider
+      imageLoadingStatus={imageLoadingStatus}
+      onImageLoadingStatusChange={setImageLoadingStatus}
     >
-      <AvatarContext.Provider value={context}>{children}</AvatarContext.Provider>
-    </Primitive>
+      <Primitive {...avatarProps} as={as} ref={forwardedRef} />
+    </AvatarProvider>
   );
 }) as AvatarPrimitive;
 
@@ -50,7 +45,7 @@ Avatar.displayName = AVATAR_NAME;
 const IMAGE_NAME = 'AvatarImage';
 const IMAGE_DEFAULT_TAG = 'img';
 
-type AvatarImageOwnProps = Merge<
+type AvatarImageOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   { onLoadingStatusChange?: (status: ImageLoadingStatus) => void }
 >;
@@ -61,26 +56,22 @@ type AvatarImagePrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const AvatarImage = React.forwardRef((props, forwardedRef) => {
-  const { src, onLoadingStatusChange: onLoadingStatusChangeProp = () => {}, ...imageProps } = props;
-  const [, setImageLoadingStatus] = useAvatarContext(IMAGE_NAME);
+  const { as = IMAGE_DEFAULT_TAG, src, onLoadingStatusChange = () => {}, ...imageProps } = props;
+  const context = useAvatarContext(IMAGE_NAME);
   const imageLoadingStatus = useImageLoadingStatus(src);
-  const onLoadingStatusChange = useCallbackRef(onLoadingStatusChangeProp);
+  const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
+    onLoadingStatusChange(status);
+    context.onImageLoadingStatusChange(status);
+  });
 
   useLayoutEffect(() => {
     if (imageLoadingStatus !== 'idle') {
-      onLoadingStatusChange(imageLoadingStatus);
-      setImageLoadingStatus(imageLoadingStatus);
+      handleLoadingStatusChange(imageLoadingStatus);
     }
-  }, [imageLoadingStatus, setImageLoadingStatus, onLoadingStatusChange]);
+  }, [imageLoadingStatus, handleLoadingStatusChange]);
 
   return imageLoadingStatus === 'loaded' ? (
-    <Primitive
-      as={IMAGE_DEFAULT_TAG}
-      selector={getSelector(IMAGE_NAME)}
-      {...imageProps}
-      src={src}
-      ref={forwardedRef}
-    />
+    <Primitive {...imageProps} as={as} ref={forwardedRef} src={src} />
   ) : null;
 }) as AvatarImagePrimitive;
 
@@ -93,15 +84,18 @@ AvatarImage.displayName = IMAGE_NAME;
 const FALLBACK_NAME = 'AvatarFallback';
 const FALLBACK_DEFAULT_TAG = 'span';
 
-type AvatarFallbackOwnProps = Merge<Polymorphic.OwnProps<typeof Primitive>, { delayMs?: number }>;
+type AvatarFallbackOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  { delayMs?: number }
+>;
 type AvatarFallbackPrimitive = Polymorphic.ForwardRefComponent<
   typeof FALLBACK_DEFAULT_TAG,
   AvatarFallbackOwnProps
 >;
 
 const AvatarFallback = React.forwardRef((props, forwardedRef) => {
-  const { delayMs, ...fallbackProps } = props;
-  const [imageLoadingStatus] = useAvatarContext(FALLBACK_NAME);
+  const { as = FALLBACK_DEFAULT_TAG, delayMs, ...fallbackProps } = props;
+  const context = useAvatarContext(FALLBACK_NAME);
   const [canRender, setCanRender] = React.useState(delayMs === undefined);
 
   React.useEffect(() => {
@@ -111,13 +105,8 @@ const AvatarFallback = React.forwardRef((props, forwardedRef) => {
     }
   }, [delayMs]);
 
-  return canRender && imageLoadingStatus !== 'loaded' ? (
-    <Primitive
-      as={FALLBACK_DEFAULT_TAG}
-      selector={getSelector(FALLBACK_NAME)}
-      {...fallbackProps}
-      ref={forwardedRef}
-    />
+  return canRender && context.imageLoadingStatus !== 'loaded' ? (
+    <Primitive {...fallbackProps} as={as} ref={forwardedRef} />
   ) : null;
 }) as AvatarFallbackPrimitive;
 

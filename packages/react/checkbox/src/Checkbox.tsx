@@ -1,17 +1,13 @@
 import * as React from 'react';
-import { getSelector } from '@radix-ui/utils';
-import {
-  createContext,
-  composeEventHandlers,
-  useControlledState,
-  useComposedRefs,
-} from '@radix-ui/react-utils';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { createContext } from '@radix-ui/react-context';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLabelContext } from '@radix-ui/react-label';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Merge } from '@radix-ui/utils';
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
@@ -22,7 +18,7 @@ const CHECKBOX_DEFAULT_TAG = 'button';
 
 type CheckedState = boolean | 'indeterminate';
 type InputDOMProps = React.ComponentProps<'input'>;
-type CheckboxOwnProps = Merge<
+type CheckboxOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     checked?: CheckedState;
@@ -38,15 +34,17 @@ type CheckboxPrimitive = Polymorphic.ForwardRefComponent<
   CheckboxOwnProps
 >;
 
-const [CheckboxContext, useCheckboxContext] = createContext<CheckedState>(
-  CHECKBOX_NAME + 'Context',
-  CHECKBOX_NAME
-);
+type CheckboxContextValue = {
+  state: CheckedState;
+  disabled?: boolean;
+};
+
+const [CheckboxProvider, useCheckboxContext] = createContext<CheckboxContextValue>(CHECKBOX_NAME);
 
 const Checkbox = React.forwardRef((props, forwardedRef) => {
   const {
+    as = CHECKBOX_DEFAULT_TAG,
     'aria-labelledby': ariaLabelledby,
-    children,
     name,
     checked: checkedProp,
     defaultChecked,
@@ -62,7 +60,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
   const ref = useComposedRefs(forwardedRef, buttonRef);
   const labelId = useLabelContext(buttonRef);
   const labelledBy = ariaLabelledby || labelId;
-  const [checked = false, setChecked] = useControlledState({
+  const [checked = false, setChecked] = useControllableState({
     prop: checkedProp,
     defaultProp: defaultChecked,
   });
@@ -93,30 +91,30 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           setChecked(event.target.checked);
         })}
       />
-      <Primitive
-        as={CHECKBOX_DEFAULT_TAG}
-        selector={getSelector(CHECKBOX_NAME)}
-        type="button"
-        {...checkboxProps}
-        ref={ref}
-        role="checkbox"
-        aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
-        aria-labelledby={labelledBy}
-        aria-required={required}
-        data-state={getState(checked)}
-        data-readonly={readOnly}
-        disabled={disabled}
-        value={value}
-        /**
-         * The `input` is hidden, so when the button is clicked we trigger
-         * the input manually
-         */
-        onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
-          checkForDefaultPrevented: false,
-        })}
-      >
-        <CheckboxContext.Provider value={checked}>{children}</CheckboxContext.Provider>
-      </Primitive>
+      <CheckboxProvider state={checked} disabled={disabled}>
+        <Primitive
+          type="button"
+          role="checkbox"
+          aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
+          aria-labelledby={labelledBy}
+          aria-required={required}
+          data-state={getState(checked)}
+          data-disabled={disabled ? '' : undefined}
+          data-readonly={readOnly}
+          disabled={disabled}
+          value={value}
+          {...checkboxProps}
+          as={as}
+          ref={ref}
+          /**
+           * The `input` is hidden, so when the button is clicked we trigger
+           * the input manually
+           */
+          onClick={composeEventHandlers(props.onClick, () => inputRef.current?.click(), {
+            checkForDefaultPrevented: false,
+          })}
+        />
+      </CheckboxProvider>
     </>
   );
 }) as CheckboxPrimitive;
@@ -130,7 +128,7 @@ Checkbox.displayName = CHECKBOX_NAME;
 const INDICATOR_NAME = 'CheckboxIndicator';
 const INDICATOR_DEFAULT_TAG = 'span';
 
-type CheckboxIndicatorOwnProps = Merge<
+type CheckboxIndicatorOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
@@ -147,15 +145,15 @@ type CheckboxIndicatorPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const CheckboxIndicator = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, ...indicatorProps } = props;
-  const checked = useCheckboxContext(INDICATOR_NAME);
+  const { as = INDICATOR_DEFAULT_TAG, forceMount, ...indicatorProps } = props;
+  const context = useCheckboxContext(INDICATOR_NAME);
   return (
-    <Presence present={forceMount || checked === 'indeterminate' || checked === true}>
+    <Presence present={forceMount || context.state === 'indeterminate' || context.state === true}>
       <Primitive
-        as={INDICATOR_DEFAULT_TAG}
-        selector={getSelector(INDICATOR_NAME)}
+        data-state={getState(context.state)}
+        data-disabled={context.disabled ? '' : undefined}
         {...indicatorProps}
-        data-state={getState(checked)}
+        as={as}
         ref={forwardedRef}
       />
     </Presence>

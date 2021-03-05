@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { composeEventHandlers, createContext, extendComponent } from '@radix-ui/react-utils';
-import { Primitive } from '@radix-ui/react-primitive';
-import { makeRect, getSelector } from '@radix-ui/utils';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { createContext } from '@radix-ui/react-context';
+import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-import type { Point, MeasurableElement } from '@radix-ui/utils';
+
+type Point = { x: number; y: number };
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenu
@@ -13,15 +14,17 @@ import type { Point, MeasurableElement } from '@radix-ui/utils';
 
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
+type ExtractRef<T> = T extends React.RefObject<infer B> ? B : never;
+type Anchor = ExtractRef<React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef']>;
+
 type ContextMenuContextValue = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   anchorPointRef: React.MutableRefObject<Point>;
-  anchorRef: React.MutableRefObject<MeasurableElement | null>;
+  anchorRef: React.MutableRefObject<Anchor | null>;
+  open: boolean;
+  onOpenChange(open: boolean): void;
 };
 
-const [ContextMenuContext, useContextMenuContext] = createContext<ContextMenuContextValue>(
-  CONTEXT_MENU_NAME + 'Context',
+const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuContextValue>(
   CONTEXT_MENU_NAME
 );
 
@@ -30,11 +33,20 @@ const ContextMenu: React.FC = (props) => {
   const [open, setOpen] = React.useState(false);
   const anchorPointRef = React.useRef<Point>({ x: 0, y: 0 });
   const anchorRef = React.useRef({
-    getBoundingClientRect: () => makeRect({ width: 0, height: 0 }, anchorPointRef.current),
+    getBoundingClientRect: () =>
+      DOMRect.fromRect({ width: 0, height: 0, ...anchorPointRef.current }),
   });
-  const context = React.useMemo(() => ({ open, setOpen, anchorPointRef, anchorRef }), [open]);
 
-  return <ContextMenuContext.Provider value={context}>{children}</ContextMenuContext.Provider>;
+  return (
+    <ContextMenuProvider
+      anchorPointRef={anchorPointRef}
+      anchorRef={anchorRef}
+      open={open}
+      onOpenChange={setOpen}
+    >
+      {children}
+    </ContextMenuProvider>
+  );
 };
 
 ContextMenu.displayName = CONTEXT_MENU_NAME;
@@ -53,17 +65,17 @@ type ContextMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useContextMenuContext(TRIGGER_NAME);
   return (
     <Primitive
-      as={TRIGGER_DEFAULT_TAG}
-      selector={getSelector(TRIGGER_NAME)}
-      {...props}
+      {...triggerProps}
+      as={as}
       ref={forwardedRef}
       onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
         event.preventDefault();
         const point = { x: event.clientX, y: event.clientY };
-        context.setOpen(true);
+        context.onOpenChange(true);
         context.anchorPointRef.current = point;
       })}
     />
@@ -80,13 +92,7 @@ const CONTENT_NAME = 'ContextMenuContent';
 
 type ContextMenuContentOwnProps = Omit<
   Polymorphic.OwnProps<typeof MenuPrimitive.Root>,
-  | 'anchorRef'
-  | 'trapFocus'
-  | 'disableOutsideScroll'
-  | 'portalled'
-  | 'onCloseAutoFocus'
-  | 'onOpenAutoFocus'
-  | 'onDismiss'
+  'anchorRef' | 'trapFocus' | 'disableOutsideScroll' | 'portalled' | 'onOpenAutoFocus' | 'onDismiss'
 >;
 
 type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
@@ -95,17 +101,22 @@ type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
+  const {
+    side = 'bottom',
+    align = 'start',
+    disableOutsidePointerEvents = true,
+    ...contentProps
+  } = props;
   const context = useContextMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Root
-      selector={getSelector(CONTENT_NAME)}
-      disableOutsidePointerEvents
-      side="bottom"
-      align="start"
-      {...props}
+      {...contentProps}
       ref={forwardedRef}
+      side={side}
+      align={align}
+      disableOutsidePointerEvents={disableOutsidePointerEvents}
       open={context.open}
-      onOpenChange={context.setOpen}
+      onOpenChange={context.onOpenChange}
       style={{
         ...props.style,
         // re-namespace exposed content custom property
@@ -115,7 +126,7 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
       trapFocus
       disableOutsideScroll
       portalled
-      onDismiss={() => context.setOpen(false)}
+      onDismiss={() => context.onOpenChange(false)}
     />
   );
 }) as ContextMenuContentPrimitive;
@@ -124,20 +135,20 @@ ContextMenuContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const ContextMenuGroup = extendComponent(MenuPrimitive.Group, 'ContextMenuGroup');
-const ContextMenuLabel = extendComponent(MenuPrimitive.Label, 'ContextMenuLabel');
-const ContextMenuItem = extendComponent(MenuPrimitive.Item, 'ContextMenuItem');
-const ContextMenuCheckboxItem = extendComponent(
+const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, 'ContextMenuGroup');
+const ContextMenuLabel = extendPrimitive(MenuPrimitive.Label, 'ContextMenuLabel');
+const ContextMenuItem = extendPrimitive(MenuPrimitive.Item, 'ContextMenuItem');
+const ContextMenuCheckboxItem = extendPrimitive(
   MenuPrimitive.CheckboxItem,
   'ContextMenuCheckboxItem'
 );
-const ContextMenuRadioGroup = extendComponent(MenuPrimitive.RadioGroup, 'ContextMenuRadioGroup');
-const ContextMenuRadioItem = extendComponent(MenuPrimitive.RadioItem, 'ContextMenuRadioItem');
-const ContextMenuItemIndicator = extendComponent(
+const ContextMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, 'ContextMenuRadioGroup');
+const ContextMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, 'ContextMenuRadioItem');
+const ContextMenuItemIndicator = extendPrimitive(
   MenuPrimitive.ItemIndicator,
   'ContextMenuItemIndicator'
 );
-const ContextMenuSeparator = extendComponent(MenuPrimitive.Separator, 'ContextMenuSeparator');
+const ContextMenuSeparator = extendPrimitive(MenuPrimitive.Separator, 'ContextMenuSeparator');
 
 /* -----------------------------------------------------------------------------------------------*/
 
