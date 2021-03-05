@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { Checkbox, CheckboxIndicator } from './Checkbox';
 
 const CHECKBOX_ROLE = 'checkbox';
@@ -25,10 +25,7 @@ describe('given a default Checkbox', () => {
   describe('when clicking the checkbox', () => {
     beforeEach(async () => {
       fireEvent.click(checkbox);
-      await waitFor(() => {
-        indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
-        expect(indicator).toBeInTheDocument();
-      });
+      indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
     });
 
     it('should render a visible indicator', () => {
@@ -38,10 +35,6 @@ describe('given a default Checkbox', () => {
     describe('and clicking the checkbox again', () => {
       beforeEach(async () => {
         fireEvent.click(checkbox);
-        await waitForElementToBeRemoved(() => {
-          indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
-          return indicator;
-        });
       });
 
       it('should remove the indicator', () => {
@@ -82,10 +75,10 @@ describe('given an uncontrolled `checked` Checkbox', () => {
   describe('when clicking the checkbox', () => {
     beforeEach(async () => {
       fireEvent.click(checkbox);
-      await waitForElementToBeRemoved(() => {
-        indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
-        return indicator;
-      });
+    });
+
+    it('should remove the indicator', () => {
+      expect(indicator).not.toBeInTheDocument();
     });
 
     it('should call `onCheckedChange` prop', () => {

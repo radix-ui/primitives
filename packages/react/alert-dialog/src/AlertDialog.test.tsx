@@ -1,7 +1,7 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import { RenderResult } from '@testing-library/react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import * as AlertDialog from './AlertDialog';
 
 const OPEN_TEXT = 'Open';
@@ -26,14 +26,13 @@ const DialogTest = (props: React.ComponentProps<typeof AlertDialog.Root>) => (
 
 describe('given a default Dialog', () => {
   let rendered: RenderResult;
-  let content: HTMLElement;
   let title: HTMLElement;
-  let trigger: HTMLButtonElement;
-  let cancelButton: HTMLButtonElement;
+  let trigger: HTMLElement;
+  let cancelButton: HTMLElement;
 
   beforeEach(() => {
     rendered = render(<DialogTest />);
-    trigger = rendered.getByText(OPEN_TEXT) as HTMLButtonElement;
+    trigger = rendered.getByText(OPEN_TEXT);
   });
 
   it('should have no accessibility violations in default state', async () => {
@@ -41,14 +40,14 @@ describe('given a default Dialog', () => {
   });
 
   describe('after clicking the trigger', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       fireEvent.click(trigger);
-      await waitFor(() => {
-        title = rendered.getByText(TITLE_TEXT);
-        content = title.parentElement!;
-        cancelButton = rendered.getByText(CANCEL_TEXT) as HTMLButtonElement;
-        expect(content).toBeVisible();
-      });
+      title = rendered.getByText(TITLE_TEXT);
+      cancelButton = rendered.getByText(CANCEL_TEXT);
+    });
+
+    it('should open the content', () => {
+      expect(title).toBeVisible();
     });
 
     it('should have no accessibility violations when open', async () => {

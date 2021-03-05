@@ -1,7 +1,7 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
 
 const BUTTON_TEXT = 'Button';
@@ -22,7 +22,6 @@ describe('given a default Collapsible', () => {
   beforeEach(() => {
     rendered = render(<CollapsibleTest />);
     button = rendered.getByText(BUTTON_TEXT);
-    content = rendered.queryByText(CONTENT_TEXT);
   });
 
   it('should have no accessibility violations', async () => {
@@ -32,10 +31,7 @@ describe('given a default Collapsible', () => {
   describe('when clicking the button', () => {
     beforeEach(async () => {
       fireEvent.click(button);
-      await waitFor(() => {
-        content = rendered.getByText(CONTENT_TEXT);
-        expect(content).toBeVisible();
-      });
+      content = rendered.queryByText(CONTENT_TEXT);
     });
 
     it('should open the content', () => {
@@ -43,12 +39,11 @@ describe('given a default Collapsible', () => {
     });
 
     describe('and clicking the button again', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         fireEvent.click(button);
-        await waitForElementToBeRemoved(() => rendered.getByText(CONTENT_TEXT));
       });
 
-      it('should close the content', async () => {
+      it('should close the content', () => {
         expect(content).not.toBeVisible();
       });
     });
@@ -57,6 +52,7 @@ describe('given a default Collapsible', () => {
 
 describe('given an open uncontrolled Collapsible', () => {
   let rendered: RenderResult;
+  let content: HTMLElement | null;
   const onOpenChange = jest.fn();
 
   beforeEach(() => {
@@ -66,8 +62,12 @@ describe('given an open uncontrolled Collapsible', () => {
   describe('when clicking the button', () => {
     beforeEach(async () => {
       const button = rendered.getByText(BUTTON_TEXT);
+      content = rendered.getByText(CONTENT_TEXT);
       fireEvent.click(button);
-      await waitForElementToBeRemoved(() => rendered.getByText(CONTENT_TEXT));
+    });
+
+    it('should close the content', () => {
+      expect(content).not.toBeVisible();
     });
 
     it('should call `onOpenChange` prop with `false` value', () => {
