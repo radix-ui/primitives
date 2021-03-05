@@ -179,9 +179,10 @@ const CollapsibleContentImpl = React.forwardRef((props, forwardedRef) => {
       setIsPresent(present);
     }
     /**
-     * depends on `context.open` because this will change to `false`
-     * immediately (before animations/transitions have run) which
-     * allows us to retrieve the dimensions before closing.
+     * depends on `context.open` because it will change to `false`
+     * when a close is triggered but `present` will be `false` on
+     * animation end (so when close finishes). This allows us to
+     * retrieve the dimensions *before* closing.
      */
   }, [context.open, present]);
 
