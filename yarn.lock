@@ -3142,12 +3142,14 @@ __metadata:
   resolution: "@radix-ui/react-collapsible@workspace:packages/react/collapsible"
   dependencies:
     "@radix-ui/primitive": "workspace:*"
+    "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
