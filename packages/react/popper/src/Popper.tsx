@@ -5,7 +5,7 @@ import { createContext } from '@radix-ui/react-context';
 import { useRect } from '@radix-ui/react-use-rect';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Arrow as ArrowPrimitive } from '@radix-ui/react-arrow';
+import * as ArrowPrimitive from '@radix-ui/react-arrow';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import type { Side, Align } from '@radix-ui/popper';
@@ -119,12 +119,12 @@ Popper.displayName = POPPER_NAME;
 const ARROW_NAME = 'PopperArrow';
 
 type PopperArrowOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof ArrowPrimitive>,
+  Polymorphic.OwnProps<typeof ArrowPrimitive.Root>,
   { offset?: number }
 >;
 
 type PopperArrowPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ArrowPrimitive>,
+  Polymorphic.IntrinsicElement<typeof ArrowPrimitive.Root>,
   PopperArrowOwnProps
 >;
 
@@ -149,7 +149,7 @@ const PopperArrow = React.forwardRef(function PopperArrow(props, forwardedRef) {
           pointerEvents: 'auto',
         }}
       >
-        <ArrowPrimitive
+        <ArrowPrimitive.Root
           {...arrowProps}
           ref={forwardedRef}
           style={{

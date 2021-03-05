@@ -4,7 +4,7 @@ import { createContext } from '@radix-ui/react-context';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
-import { Separator as SeparatorPrimitive } from '@radix-ui/react-separator';
+import * as SeparatorPrimitive from '@radix-ui/react-separator';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -75,9 +75,9 @@ const Toolbar = React.forwardRef((props, forwardedRef) => {
 
 const SEPARATOR_NAME = 'ToolbarSeparator';
 
-type ToolbarSeparatorOwnProps = Polymorphic.OwnProps<typeof SeparatorPrimitive>;
+type ToolbarSeparatorOwnProps = Polymorphic.OwnProps<typeof SeparatorPrimitive.Root>;
 type ToolbarSeparatorPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof SeparatorPrimitive>,
+  Polymorphic.IntrinsicElement<typeof SeparatorPrimitive.Root>,
   ToolbarSeparatorOwnProps
 >;
 
@@ -85,7 +85,7 @@ const ToolbarSeparator = React.forwardRef((props, forwardedRef) => {
   const context = useToolbarContext(SEPARATOR_NAME);
 
   return (
-    <SeparatorPrimitive
+    <SeparatorPrimitive.Root
       orientation={context.orientation === 'horizontal' ? 'vertical' : 'horizontal'}
       {...props}
       ref={forwardedRef}

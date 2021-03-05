@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 const NAME = 'AccessibleIcon';
 
@@ -20,7 +20,7 @@ const AccessibleIcon: React.FC<AccessibleIconOwnProps> = ({ children, label }) =
         'aria-hidden': 'true',
         focusable: 'false', // See: https://allyjs.io/tutorials/focusing-in-svg.html#making-svg-elements-focusable
       })}
-      <VisuallyHidden>{label}</VisuallyHidden>
+      <VisuallyHiddenPrimitive.Root>{label}</VisuallyHiddenPrimitive.Root>
     </>
   );
 };
