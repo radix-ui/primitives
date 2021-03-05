@@ -34,21 +34,6 @@ export const WithSuspendedUnmountAnimation = () => {
   );
 };
 
-export const WithSuspendedUnmountTransition = () => {
-  const ref = React.useRef<React.ElementRef<typeof Transitioned>>(null);
-  const [open, setOpen] = React.useState(false);
-  return (
-    <>
-      <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
-      <Presence present={open}>
-        <Transitioned data-state={open ? 'open' : 'closed'} ref={ref}>
-          Content
-        </Transitioned>
-      </Presence>
-    </>
-  );
-};
-
 function Toggles({ open, onOpenChange, nodeRef }: any) {
   function handleToggleVisibility() {
     const node = nodeRef.current;
@@ -95,13 +80,5 @@ const Animated = styled('div', {
   },
   '&[data-state="closed"]': {
     animation: `${fadeOut} 3s ease-in`,
-  },
-});
-
-const Transitioned = styled('div', {
-  opacity: 1,
-  transition: 'opacity 3s ease-out',
-  '&[data-state="closed"]': {
-    opacity: 0,
   },
 });

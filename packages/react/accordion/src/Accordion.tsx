@@ -418,6 +418,10 @@ const AccordionPanel = React.forwardRef((props, forwardedRef) => {
       role="region"
       aria-labelledby={itemContext.buttonId}
       {...props}
+      style={{
+        ['--radix-accordion-panel-height' as any]: 'var(--radix-collapsible-content-height)',
+        ...props.style,
+      }}
       ref={forwardedRef}
     />
   );

@@ -91,14 +91,34 @@ export const WithinForm = () => {
   );
 };
 
-export const Animated = () => (
-  <Label>
-    Label{' '}
-    <Checkbox className={rootClass}>
-      <CheckboxIndicator className={`${indicatorClass} ${animatedIndicatorClass}`} />
-    </Checkbox>
-  </Label>
-);
+export const Animated = () => {
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
+
+  return (
+    <>
+      <p>
+        <Checkbox
+          className={rootClass}
+          checked={checked}
+          onCheckedChange={(event) => setChecked(event.target.checked)}
+        >
+          <CheckboxIndicator className={animatedIndicatorClass} />
+        </Checkbox>
+      </p>
+
+      <button
+        type="button"
+        onClick={() =>
+          setChecked((prevIsChecked) =>
+            prevIsChecked === 'indeterminate' ? false : 'indeterminate'
+          )
+        }
+      >
+        Toggle indeterminate
+      </button>
+    </>
+  );
+};
 
 export const Chromatic = () => (
   <>
@@ -197,12 +217,9 @@ const indicatorClass = css({
   backgroundColor: '$red',
   display: 'block',
   width: 20,
+  height: 4,
 
-  '&[data-state="indeterminate"]': {
-    height: 4,
-  },
-
-  '&[data-state="checked"]': {
+  '&[data-state="checked"], &[data-state="unchecked"]': {
     height: 20,
   },
 });
@@ -217,12 +234,14 @@ const fadeOut = css.keyframes({
   to: { opacity: 0 },
 });
 
-const animatedIndicatorClass = css({
+const animatedIndicatorClass = css(indicatorClass, {
+  transition: 'height 300ms',
+
   '&[data-state="checked"]': {
-    animation: `${fadeIn} 300ms ease-out`,
+    animation: `${fadeIn} 1000ms ease-out`,
   },
   '&[data-state="unchecked"]': {
-    animation: `${fadeOut} 300ms ease-in`,
+    animation: `${fadeOut} 1000ms ease-in`,
   },
 });
 

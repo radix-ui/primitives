@@ -1,20 +1,17 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import { RenderResult } from '@testing-library/react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
 import * as Dialog from './Dialog';
 
 const OPEN_TEXT = 'Open';
 const CLOSE_TEXT = 'Close';
-const INNER_TEXT = 'Hello from the Dialog';
-const OVERLAY_TEST_ID = 'test-overlay';
 
 const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
   <Dialog.Root {...props}>
     <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
-    <Dialog.Overlay data-testid={OVERLAY_TEST_ID} />
+    <Dialog.Overlay />
     <Dialog.Content>
-      <p>{INNER_TEXT}</p>
       <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
     </Dialog.Content>
   </Dialog.Root>
@@ -22,13 +19,12 @@ const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
 
 describe('given a default Dialog', () => {
   let rendered: RenderResult;
-  let content: HTMLElement;
-  let trigger: HTMLButtonElement;
-  let closeButton: HTMLButtonElement;
+  let trigger: HTMLElement;
+  let closeButton: HTMLElement;
 
   beforeEach(() => {
     rendered = render(<DialogTest />);
-    trigger = rendered.getByText(OPEN_TEXT) as HTMLButtonElement;
+    trigger = rendered.getByText(OPEN_TEXT);
   });
 
   it('should have no accessibility violations in default state', async () => {
@@ -36,16 +32,16 @@ describe('given a default Dialog', () => {
   });
 
   describe('after clicking the trigger', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       fireEvent.click(trigger);
-      await waitFor(() => {
-        content = rendered.getByText(INNER_TEXT).parentElement!;
-        closeButton = rendered.getByText(CLOSE_TEXT) as HTMLButtonElement;
-        expect(content).toBeVisible();
-      });
+      closeButton = rendered.getByText(CLOSE_TEXT);
     });
 
-    it('should have no accessibility violations when open', async () => {
+    it('should open the content', () => {
+      expect(closeButton).toBeVisible();
+    });
+
+    it('should have no accessibility violations', async () => {
       expect(await axe(rendered.container)).toHaveNoViolations();
     });
 
@@ -53,15 +49,13 @@ describe('given a default Dialog', () => {
       expect(closeButton).toHaveFocus();
     });
 
-    describe('after pressing escape', () => {
-      let innerContent: HTMLElement | null;
-      beforeAll(() => {
+    describe('when pressing escape', () => {
+      beforeEach(() => {
         fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
-        innerContent = rendered.queryByText(INNER_TEXT);
       });
 
-      it('should be closed', () => {
-        expect(innerContent).not.toBeInTheDocument();
+      it('should close the content', () => {
+        expect(closeButton).not.toBeInTheDocument();
       });
     });
   });
