@@ -1,165 +1,276 @@
 import * as React from 'react';
-import {
-  ToggleGroupItem,
-  MultiSelectToggleGroup,
-  MultiSelectToggleGroupItem,
-  ToggleGroup,
-} from './ToggleGroup';
-import { styled } from '../../../../stitches.config';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
+import { css } from '../../../../stitches.config';
 
 export default {
   title: 'Components/ToggleGroup',
 };
 
-export const Styled = () => {
-  return (
-    <ToggleGroup aria-label="Options" defaultValue="1">
-      <ToggleGroupItem value="1" as={StyledItem}>
-        Option 1
-      </ToggleGroupItem>
-      <ToggleGroupItem value="2" as={StyledItem}>
-        Option 2
-      </ToggleGroupItem>
-      <ToggleGroupItem value="3" as={StyledItem}>
-        Option 3
-      </ToggleGroupItem>
-    </ToggleGroup>
-  );
-};
+export const Styled = () => (
+  <ToggleGroup type="single" className={rootClass} aria-label="Options" defaultValue="1">
+    <ToggleGroupItem value="1" className={itemClass}>
+      Option 1
+    </ToggleGroupItem>
+    <ToggleGroupItem value="2" className={itemClass}>
+      Option 2
+    </ToggleGroupItem>
+    <ToggleGroupItem value="3" className={itemClass}>
+      Option 3
+    </ToggleGroupItem>
+  </ToggleGroup>
+);
 
 export const Controlled = () => {
-  const [value, setValue] = React.useState<string | null>(null);
-  function handleChange(value: string | null) {
-    setValue((prevValue) => {
-      return value == null ? prevValue : value;
-    });
-  }
-
+  const [value, setValue] = React.useState<string>();
   return (
-    <ToggleGroup aria-label="Options" value={value} onValueChange={handleChange}>
-      <ToggleGroupItem value="1" as={StyledItem}>
+    <ToggleGroup
+      type="single"
+      className={rootClass}
+      aria-label="Options"
+      value={value}
+      onValueChange={setValue}
+    >
+      <ToggleGroupItem value="1" className={itemClass}>
         Option 1
       </ToggleGroupItem>
-      <ToggleGroupItem value="2" as={StyledItem}>
+      <ToggleGroupItem value="2" className={itemClass}>
         Option 2
       </ToggleGroupItem>
-      <ToggleGroupItem value="3" as={StyledItem}>
+      <ToggleGroupItem value="3" className={itemClass}>
         Option 3
       </ToggleGroupItem>
     </ToggleGroup>
   );
 };
 
-export const WithRovingFocus = () => {
-  return (
-    <div>
-      <VisuallyHidden id="desc">
-        To navigate the buttons within the group, use the arrow keys
-      </VisuallyHidden>
-      <ToggleGroup aria-label="Options" aria-describedby="desc" defaultValue="1" rovingFocus>
-        <ToggleGroupItem value="1" as={StyledItem}>
-          Option 1
-        </ToggleGroupItem>
-        <ToggleGroupItem value="2" as={StyledItem}>
-          Option 2
-        </ToggleGroupItem>
-        <ToggleGroupItem value="3" as={StyledItem}>
-          Option 3
-        </ToggleGroupItem>
-      </ToggleGroup>
-    </div>
-  );
-};
-
-export const MultiSelect = () => {
-  return (
-    <div>
-      <MultiSelectToggleGroup aria-label="Options" defaultValue={['1']}>
-        <MultiSelectToggleGroupItem value="1" as={StyledItem}>
-          Option 1
-        </MultiSelectToggleGroupItem>
-        <MultiSelectToggleGroupItem value="2" as={StyledItem}>
-          Option 2
-        </MultiSelectToggleGroupItem>
-        <MultiSelectToggleGroupItem value="3" as={StyledItem}>
-          Option 3
-        </MultiSelectToggleGroupItem>
-      </MultiSelectToggleGroup>
-    </div>
-  );
-};
+export const MultiSelect = () => (
+  <ToggleGroup
+    type="multiple"
+    className={rootClass}
+    aria-label="Options"
+    defaultValue={['1']}
+    onValueChange={console.log}
+  >
+    <ToggleGroupItem value="1" className={itemClass}>
+      Option 1
+    </ToggleGroupItem>
+    <ToggleGroupItem value="2" className={itemClass}>
+      Option 2
+    </ToggleGroupItem>
+    <ToggleGroupItem value="3" className={itemClass}>
+      Option 3
+    </ToggleGroupItem>
+  </ToggleGroup>
+);
 
 export const ControlledMultiSelect = () => {
   const [value, setValue] = React.useState<string[]>([]);
-  function handleChange(value: string[]) {
-    setValue((prevValue) => {
-      return value.length < 1 ? prevValue : value;
-    });
-  }
-
   return (
-    <div>
-      <MultiSelectToggleGroup aria-label="Options" value={value} onValueChange={handleChange}>
-        <MultiSelectToggleGroupItem value="1" as={StyledItem}>
-          Option 1
-        </MultiSelectToggleGroupItem>
-        <MultiSelectToggleGroupItem value="2" as={StyledItem}>
-          Option 2
-        </MultiSelectToggleGroupItem>
-        <MultiSelectToggleGroupItem value="3" as={StyledItem}>
-          Option 3
-        </MultiSelectToggleGroupItem>
-      </MultiSelectToggleGroup>
-    </div>
+    <ToggleGroup
+      type="multiple"
+      className={rootClass}
+      aria-label="Options"
+      value={value}
+      onValueChange={setValue}
+    >
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass}>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
   );
 };
 
-export const MultiSelectWithRovingFocus = () => {
-  return (
-    <div>
-      <VisuallyHidden id="desc">
-        To navigate the buttons within the group, use the arrow keys
-      </VisuallyHidden>
-      <MultiSelectToggleGroup
-        aria-label="Options"
-        aria-describedby="desc"
-        defaultValue={['1']}
-        rovingFocus
-      >
-        <MultiSelectToggleGroupItem value="1" as={StyledItem}>
-          Option 1
-        </MultiSelectToggleGroupItem>
-        <MultiSelectToggleGroupItem value="2" as={StyledItem}>
-          Option 2
-        </MultiSelectToggleGroupItem>
-        <MultiSelectToggleGroupItem value="3" as={StyledItem}>
-          Option 3
-        </MultiSelectToggleGroupItem>
-      </MultiSelectToggleGroup>
-    </div>
-  );
-};
+export const Chromatic = () => (
+  <>
+    <h1>Single select</h1>
 
-const StyledItem = styled('button', {
-  padding: 6,
-  lineHeight: 1,
-  border: 'none',
-  fontFamily: 'sans-serif',
-  fontWeight: 'bold',
+    <h2>Off</h2>
+    <ToggleGroup type="single" className={rootClass}>
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass} disabled>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h2>On</h2>
+    <ToggleGroup type="single" className={rootClass} defaultValue="1">
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass} disabled>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h2>Disabled</h2>
+    <ToggleGroup type="single" className={rootClass} disabled>
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass}>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h1>Multi select</h1>
+    <h2>Off</h2>
+    <ToggleGroup type="multiple" className={rootClass}>
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass} disabled>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h2>One on</h2>
+    <ToggleGroup type="multiple" className={rootClass} defaultValue={['1']}>
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass} disabled>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h2>One and two on</h2>
+    <ToggleGroup type="multiple" className={rootClass} defaultValue={['1', '2']}>
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass}>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h2>Disabled</h2>
+    <ToggleGroup type="multiple" className={rootClass} disabled>
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass}>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h1>State attributes</h1>
+    <h2>Group disabled</h2>
+    <ToggleGroup type="multiple" className={rootClass} defaultValue={['1', '2']} disabled>
+      <ToggleGroupItem value="1" className={itemAttrClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemAttrClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemAttrClass}>
+        Option 3
+      </ToggleGroupItem>
+      <ToggleGroupItem value="4" className={itemAttrClass}>
+        Option 4
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h2>Group enabled with button override</h2>
+    <ToggleGroup type="multiple" className={rootClass} defaultValue={['1', '2']} disabled={false}>
+      <ToggleGroupItem value="1" className={itemAttrClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemAttrClass} disabled>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemAttrClass}>
+        Option 3
+      </ToggleGroupItem>
+      <ToggleGroupItem value="4" className={itemAttrClass} disabled>
+        Option 4
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h2>Group disabled with button override</h2>
+    <ToggleGroup type="multiple" className={rootClass} defaultValue={['1', '2']} disabled={true}>
+      <ToggleGroupItem value="1" className={itemAttrClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemAttrClass} disabled={false}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemAttrClass}>
+        Option 3
+      </ToggleGroupItem>
+      <ToggleGroupItem value="4" className={itemAttrClass} disabled={false}>
+        Option 4
+      </ToggleGroupItem>
+    </ToggleGroup>
+  </>
+);
+Chromatic.parameters = { chromatic: { disable: false } };
+
+const rootClass = css({
+  display: 'flex',
+  gap: 5,
+  padding: 5,
+});
+
+const itemClass = css({
+  border: '1px solid $black',
+  borderRadius: 6,
+  padding: '5px 10px',
+  fontSize: 13,
+  backgroundColor: '$white',
+  color: '$black',
 
   '&:focus': {
     outline: 'none',
-    boxShadow: '0 0 0 2px $black',
+    boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.5)',
   },
 
-  '&[data-state="off"]': {
-    backgroundColor: '$red',
-    color: '$white',
+  '&:disabled': {
+    opacity: 0.5,
   },
 
   '&[data-state="on"]': {
-    backgroundColor: '$green',
+    backgroundColor: '$black',
     color: '$white',
   },
 });
+
+const styles = {
+  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+  border: '2px solid blue',
+  padding: 10,
+
+  '&[data-state="off"]': { borderColor: 'red' },
+  '&[data-state="on"]': { borderColor: 'green' },
+  '&[data-disabled]': { borderStyle: 'dashed' },
+  '&:disabled': { opacity: 0.5 },
+};
+const itemAttrClass = css(styles);
