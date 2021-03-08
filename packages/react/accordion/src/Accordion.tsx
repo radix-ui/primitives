@@ -301,9 +301,9 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
     <AccordionItemProvider open={open} disabled={disabled} buttonId={buttonId}>
       <CollapsiblePrimitive.Root
         data-state={open ? 'open' : 'closed'}
-        disabled={disabled}
         {...accordionItemProps}
         ref={forwardedRef}
+        disabled={disabled}
         open={open}
         onOpenChange={(open) => {
           if (open) {

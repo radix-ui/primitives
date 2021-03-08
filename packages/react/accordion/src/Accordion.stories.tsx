@@ -522,13 +522,51 @@ export const Chromatic = () => {
       </Accordion>
 
       <h1>State attributes</h1>
-      <Accordion type="single" className={rootAttrClass} defaultValue="Two">
+      <h2>Accordion disabled</h2>
+      <Accordion type="single" className={rootAttrClass} defaultValue="Two" disabled>
+        {items.map((item) => (
+          <AccordionItem key={item} className={itemAttrClass} value={item}>
+            <AccordionHeader className={headerAttrClass}>
+              <AccordionButton className={buttonAttrClass}>{item}</AccordionButton>
+            </AccordionHeader>
+            <AccordionPanel className={panelAttrClass}>
+              {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+              viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
+              suscipit habitant sed.
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      <h2>Accordion enabled with item override</h2>
+      <Accordion type="single" className={rootAttrClass} defaultValue="Two" disabled={false}>
         {items.map((item) => (
           <AccordionItem
             key={item}
             className={itemAttrClass}
             value={item}
-            disabled={item === 'Four'}
+            disabled={['Two', 'Four'].includes(item)}
+          >
+            <AccordionHeader className={headerAttrClass}>
+              <AccordionButton className={buttonAttrClass}>{item}</AccordionButton>
+            </AccordionHeader>
+            <AccordionPanel className={panelAttrClass}>
+              {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+              viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
+              suscipit habitant sed.
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      <h2>Accordion disabled with item override</h2>
+      <Accordion type="single" className={rootAttrClass} defaultValue="Two" disabled={true}>
+        {items.map((item) => (
+          <AccordionItem
+            key={item}
+            className={itemAttrClass}
+            value={item}
+            disabled={['Two', 'Four'].includes(item) ? false : undefined}
           >
             <AccordionHeader className={headerAttrClass}>
               <AccordionButton className={buttonAttrClass}>{item}</AccordionButton>
