@@ -359,7 +359,7 @@ const UNMEASURED_POPPER_STYLES: CSS.Properties = {
   top: 0,
   left: 0,
   opacity: 0,
-  pointerEvents: 'none',
+  transform: 'translate3d(0, -200%, 0)',
 };
 
 const UNMEASURED_ARROW_STYLES: CSS.Properties = {
