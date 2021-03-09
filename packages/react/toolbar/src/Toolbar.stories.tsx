@@ -8,7 +8,7 @@ import {
   ToolbarToggleItem,
 } from './Toolbar';
 import { css } from '../../../../stitches.config';
-import { ToggleButton } from '@radix-ui/react-toggle-button';
+import { Toggle } from '@radix-ui/react-toggle';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -60,7 +60,7 @@ const ToolbarExample = ({ title, orientation }: any) => (
         Link
       </ToolbarLink>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-      <ToolbarButton className={toolbarToggleButtonClass} as={ToggleButton}>
+      <ToolbarButton className={toolbarToggleButtonClass} as={Toggle}>
         Toggle
       </ToolbarButton>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>

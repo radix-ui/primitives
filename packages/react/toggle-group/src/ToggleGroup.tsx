@@ -4,7 +4,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
-import { ToggleButton } from '@radix-ui/react-toggle-button';
+import { Toggle } from '@radix-ui/react-toggle';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -268,7 +268,7 @@ const ToggleGroupRovingFocusItem = React.forwardRef((props, forwardedRef) => {
 /* -----------------------------------------------------------------------------------------------*/
 
 type ToggleGroupItemImplOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof ToggleButton>, 'onToggledChange' | 'toggled' | 'defaultToggled'>,
+  Omit<Polymorphic.OwnProps<typeof Toggle>, 'onToggledChange' | 'toggled' | 'defaultToggled'>,
   {
     /**
      * A string value for the toggle group item. All items within a toggle group should use a unique value.
@@ -278,7 +278,7 @@ type ToggleGroupItemImplOwnProps = Polymorphic.Merge<
 >;
 
 type ToggleGroupItemImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ToggleButton>,
+  Polymorphic.IntrinsicElement<typeof Toggle>,
   ToggleGroupItemImplOwnProps
 >;
 
@@ -290,7 +290,7 @@ const ToggleGroupItemImpl = React.forwardRef((props, forwardedRef) => {
   const disabled = context.disabled ? true : props.disabled;
 
   return (
-    <ToggleButton
+    <Toggle
       {...itemProps}
       ref={forwardedRef}
       disabled={disabled}

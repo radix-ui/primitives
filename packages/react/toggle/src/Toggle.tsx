@@ -5,30 +5,32 @@ import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
-const NAME = 'ToggleButton';
+const NAME = 'Toggle';
 const DEFAULT_TAG = 'button';
 
-type ToggleButtonOwnProps = Polymorphic.Merge<
+type ToggleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
-    /** Whether the button is toggled or not, if controlled */
+    /**
+     * The controlled pressed state of the toggle.
+     */
     toggled?: boolean;
     /**
-     * Whether the button is toggled by default, if uncontrolled
-     * (default: false)
+     * The pressed state of the toggle when initially rendered. Use `defaultToggled`
+     * if you do not need to control the state of the toggle.
+     * @defaultValue false
      */
     defaultToggled?: boolean;
-    /** A function called when the button is toggled */
+    /**
+     * The callback that fires when the state of the toggle changes.
+     */
     onToggledChange?(toggled: boolean): void;
   }
 >;
 
-type ToggleButtonPrimitive = Polymorphic.ForwardRefComponent<
-  typeof DEFAULT_TAG,
-  ToggleButtonOwnProps
->;
+type TogglePrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, ToggleOwnProps>;
 
-const ToggleButton = React.forwardRef((props, forwardedRef) => {
+const Toggle = React.forwardRef((props, forwardedRef) => {
   const {
     as = DEFAULT_TAG,
     toggled: toggledProp,
@@ -60,14 +62,14 @@ const ToggleButton = React.forwardRef((props, forwardedRef) => {
       })}
     />
   );
-}) as ToggleButtonPrimitive;
+}) as TogglePrimitive;
 
-ToggleButton.displayName = NAME;
+Toggle.displayName = NAME;
 
-const Root = ToggleButton;
+const Root = Toggle;
 
 export {
-  ToggleButton,
+  Toggle,
   //
   Root,
 };
