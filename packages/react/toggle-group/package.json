@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-toggle-group",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -12,17 +12,15 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "parcel build src/index.ts --no-cache",
     "clean": "rm -rf dist",
-    "version": "yarn version",
-    "prepublish": "yarn clean && yarn build"
+    "prepublish": "yarn clean"
   },
   "dependencies": {
-    "@radix-ui/primitive": "workspace: *",
-    "@radix-ui/react-context": "workspace: *",
+    "@radix-ui/primitive": "workspace:*",
+    "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-roving-focus": "workspace: *",
+    "@radix-ui/react-roving-focus": "workspace:*",
     "@radix-ui/react-toggle-button": "workspace:*"
   },
   "peerDependencies": {
