@@ -295,15 +295,15 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
   const valueContext = useAccordionValueContext(ITEM_NAME);
   const buttonId = useId();
   const open = (value && valueContext.value.includes(value)) || false;
-  const disabled = accordionContext.disabled || props.disabled;
+  const disabled = accordionContext.disabled === true ? true : props.disabled;
 
   return (
     <AccordionItemProvider open={open} disabled={disabled} buttonId={buttonId}>
       <CollapsiblePrimitive.Root
         data-state={open ? 'open' : 'closed'}
-        disabled={disabled}
         {...accordionItemProps}
         ref={forwardedRef}
+        disabled={disabled}
         open={open}
         onOpenChange={(open) => {
           if (open) {
