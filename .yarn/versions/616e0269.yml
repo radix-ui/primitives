@@ -1,0 +1,5 @@
+releases:
+  "@radix-ui/react-toolbar": patch
+
+declined:
+  - primitives
