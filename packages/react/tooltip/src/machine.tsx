@@ -1,25 +1,24 @@
 /* -------------------------------------------------------------------------------------------------
  * Core state machine implementation
- * TODO: Consider adopting a state machine lib or reimplementing for broader usage
  * -----------------------------------------------------------------------------------------------*/
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-export type StateChart<State extends string, Event extends string, Context> = {
+type StateChart<State extends string, Event extends string, Context> = {
   initial: State;
   context: Context;
   states: Record<State, StateDefinition<State, Event, Context>>;
 };
 
 type StateDefinition<State, Event extends string, Context> = {
-  onEnterState?: (transitionFn: TransitionFn<Event, Context>) => void;
-  onLeaveState?: (transitionFn: TransitionFn<Event, Context>) => void;
+  onEnterState?: (transitionFn: TransitionFn<Event, Context>, context: Context) => void;
+  onLeaveState?: (transitionFn: TransitionFn<Event, Context>, context: Context) => void;
   on?: { [index in Event]?: State };
 };
 
-export type TransitionFn<Event, Context> = (event: Event, context?: Context) => void;
+type TransitionFn<Event, Context> = (event: Event, context?: Context) => void;
 
-export function createStateMachine<State extends string, Event extends string, Context>(
+function createStateMachine<State extends string, Event extends string, Context>(
   stateChart: StateChart<State, Event, Context>,
   { debug = false, warnOnUnknownTransitions = !isProduction } = {}
 ) {
@@ -67,19 +66,19 @@ export function createStateMachine<State extends string, Event extends string, C
       PREVIOUS_CONTEXT = CURRENT_CONTEXT;
 
       if (stateDefinition.onLeaveState) {
-        stateDefinition.onLeaveState(transition);
+        stateDefinition.onLeaveState(transition, CURRENT_CONTEXT);
       }
 
       const nextStateDefinition = stateChart.states[nextState];
-
-      if (nextStateDefinition.onEnterState) {
-        nextStateDefinition.onEnterState(transition);
-      }
 
       CURRENT_STATE = nextState;
 
       if (context !== undefined) {
         CURRENT_CONTEXT = context;
+      }
+
+      if (nextStateDefinition.onEnterState) {
+        nextStateDefinition.onEnterState(transition, CURRENT_CONTEXT);
       }
 
       if (debug) {
@@ -112,31 +111,20 @@ export function createStateMachine<State extends string, Event extends string, C
   };
 }
 
-/* -------------------------------------------------------------------------------------------------
- * Core state machine implementation
- * TODO: Consider adopting a state machine lib or reimplementing for broader usage
- * -----------------------------------------------------------------------------------------------*/
-
-// How long the mouse needs to stop moving for the tooltip to open
-const REST_THRESHOLD_DURATION = 300;
-
-// How much time does the user has to move from one tooltip to another without incurring the rest wait
-const SKIP_REST_THRESHOLD_DURATION = 300;
-
 type TooltipState =
   // tooltip is closed
   | 'CLOSED'
 
   // still closed
-  // we are waiting for the mouse to stop moving (REST_THRESHOLD_DURATION)
+  // we are waiting for the mouse to stop moving (rest duration)
   | 'WAITING_FOR_REST'
 
   // tooltip is open
   | 'OPEN'
 
   // tooltip is closed
-  // we are checking if the mouse enters another tooltip trigger (SKIP_REST_THRESHOLD_DURATION)
-  | 'CHECKING_IF_SHOULD_SKIP_REST_THRESHOLD'
+  // we are checking if the mouse enters another tooltip trigger (bypass rest duration)
+  | 'CHECKING_IF_SHOULD_BYPASS_REST'
 
   // tooltip has been dismissed via click or keyboard action (escape, space, enter)
   | 'DISMISSED';
@@ -146,19 +134,23 @@ type TooltipEvent =
   | 'mouseMoved'
   | 'mouseLeft'
   | 'restTimerElapsed'
-  | 'skipRestTimerElapsed'
+  | 'bypassRestTimerElapsed'
   | 'focused'
   | 'blurred'
   | 'activated'
   | 'triggerMoved'
   | 'unmounted';
 
-type TooltipContext = { id: string | null };
+type TooltipContext = {
+  id: string | null;
+  restDuration?: number;
+  bypassRestDuration?: number;
+};
 
 type TooltipStateChart = StateChart<TooltipState, TooltipEvent, TooltipContext>;
 type TooltipTransitionFn = TransitionFn<TooltipEvent, TooltipContext>;
 
-export const stateChart: TooltipStateChart = {
+const stateChart: TooltipStateChart = {
   initial: 'CLOSED',
   context: { id: null },
   states: {
@@ -181,7 +173,7 @@ export const stateChart: TooltipStateChart = {
     },
     OPEN: {
       on: {
-        mouseLeft: 'CHECKING_IF_SHOULD_SKIP_REST_THRESHOLD',
+        mouseLeft: 'CHECKING_IF_SHOULD_BYPASS_REST',
         mouseEntered: 'OPEN',
         mouseMoved: 'OPEN',
         activated: 'DISMISSED',
@@ -190,11 +182,11 @@ export const stateChart: TooltipStateChart = {
         unmounted: 'CLOSED',
       },
     },
-    CHECKING_IF_SHOULD_SKIP_REST_THRESHOLD: {
-      onEnterState: startSkipRestTimer,
-      onLeaveState: clearSkipRestTimer,
+    CHECKING_IF_SHOULD_BYPASS_REST: {
+      onEnterState: startBypassRestTimer,
+      onLeaveState: clearBypassRestTimer,
       on: {
-        skipRestTimerElapsed: 'CLOSED',
+        bypassRestTimerElapsed: 'CLOSED',
         mouseEntered: 'OPEN',
         focused: 'OPEN',
         activated: 'DISMISSED',
@@ -215,28 +207,30 @@ export const stateChart: TooltipStateChart = {
 // period of time over the trigger, before deciding to open the tooltip.
 let restTimerId: number;
 
-function startRestTimer(transition: TooltipTransitionFn) {
+function startRestTimer(transition: TooltipTransitionFn, context: TooltipContext) {
+  const duration = context.restDuration ?? 300;
   clearTimeout(restTimerId);
-  restTimerId = window.setTimeout(() => transition('restTimerElapsed'), REST_THRESHOLD_DURATION);
+  restTimerId = window.setTimeout(() => transition('restTimerElapsed'), duration);
 }
 
 function clearRestTimer() {
   clearTimeout(restTimerId);
 }
 
-// The skip rest timer is used to check if the user enters another tooltip trigger
-// in a certain period of time, in which case, we would skip the rest timer and open
+// The bypass rest timer is used to check if the user enters another tooltip trigger
+// in a certain period of time, in which case, we would bypass the rest timer and open
 // the tooltip instantly.
-let skipRestTimerId: number;
+let bypassRestTimerId: number;
 
-function startSkipRestTimer(transition: TooltipTransitionFn) {
-  clearTimeout(skipRestTimerId);
-  skipRestTimerId = window.setTimeout(
-    () => transition('skipRestTimerElapsed'),
-    SKIP_REST_THRESHOLD_DURATION
-  );
+function startBypassRestTimer(transition: TooltipTransitionFn, context: TooltipContext) {
+  const duration = context.bypassRestDuration ?? 300;
+  clearTimeout(bypassRestTimerId);
+  bypassRestTimerId = window.setTimeout(() => transition('bypassRestTimerElapsed'), duration);
 }
 
-function clearSkipRestTimer() {
-  clearTimeout(skipRestTimerId);
+function clearBypassRestTimer() {
+  clearTimeout(bypassRestTimerId);
 }
+
+export { stateChart, createStateMachine };
+export type { StateChart, TransitionFn };

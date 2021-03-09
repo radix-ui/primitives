@@ -32,6 +32,40 @@ export const Controlled = () => {
   );
 };
 
+export const CustomDurations = () => (
+  <>
+    <Tooltip>
+      <TooltipTrigger className={triggerClass} restDuration={0} bypassRestDuration={0}>
+        Hover or Focus me
+      </TooltipTrigger>
+      <TooltipContent className={contentClass} sideOffset={5}>
+        Nicely done!
+        <TooltipArrow className={arrowClass} offset={10} />
+      </TooltipContent>
+    </Tooltip>
+    something
+    <Tooltip>
+      <TooltipTrigger className={triggerClass} restDuration={1000}>
+        Hover or Focus me
+      </TooltipTrigger>
+      <TooltipContent className={contentClass} sideOffset={5}>
+        Nicely done!
+        <TooltipArrow className={arrowClass} offset={10} />
+      </TooltipContent>
+    </Tooltip>
+    something
+    <Tooltip>
+      <TooltipTrigger className={triggerClass} restDuration={1000} bypassRestDuration={5000}>
+        Hover or Focus me
+      </TooltipTrigger>
+      <TooltipContent className={contentClass} sideOffset={5}>
+        Nicely done!
+        <TooltipArrow className={arrowClass} offset={10} />
+      </TooltipContent>
+    </Tooltip>
+  </>
+);
+
 export const CustomContent = () => (
   <div style={{ display: 'flex', gap: 20, padding: 100 }}>
     <Tooltip>

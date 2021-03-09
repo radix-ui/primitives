@@ -77,10 +77,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
         if (previousState === 'WAITING_FOR_REST') {
           setStateAttribute('delayed-open');
         }
-        if (
-          previousState === 'CHECKING_IF_SHOULD_SKIP_REST_THRESHOLD' ||
-          previousState === 'CLOSED'
-        ) {
+        if (previousState === 'CHECKING_IF_SHOULD_BYPASS_REST' || previousState === 'CLOSED') {
           setStateAttribute('instant-open');
         }
       }
@@ -128,14 +125,36 @@ Tooltip.displayName = TOOLTIP_NAME;
 const TRIGGER_NAME = 'TooltipTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type TooltipTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type TooltipTriggerOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    /**
+     * The duration a user has to "rest" (not move) his mouse over the trigger
+     * before the tooltip gets opened.
+     * (default: 300)
+     */
+    restDuration?: number;
+
+    /**
+     * How much time a user has to move his mouse to another trigger without incurring
+     * another rest duration.
+     * (default: 300)
+     */
+    bypassRestDuration?: number;
+  }
+>;
 type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
   typeof TRIGGER_DEFAULT_TAG,
   TooltipTriggerOwnProps
 >;
 
 const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
+  const {
+    as = TRIGGER_DEFAULT_TAG,
+    restDuration = 300,
+    bypassRestDuration = 300,
+    ...triggerProps
+  } = props;
   const context = useTooltipContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
@@ -148,15 +167,15 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
       as={as}
       ref={composedTriggerRef}
       onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
-        stateMachine.transition('mouseEntered', { id: context.contentId })
+        stateMachine.transition('mouseEntered', { id: context.contentId, restDuration })
       )}
       onMouseMove={composeEventHandlers(props.onMouseMove, () =>
-        stateMachine.transition('mouseMoved', { id: context.contentId })
+        stateMachine.transition('mouseMoved', { id: context.contentId, restDuration })
       )}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
         const stateMachineContext = stateMachine.getContext();
         if (stateMachineContext.id === context.contentId) {
-          stateMachine.transition('mouseLeft', { id: context.contentId });
+          stateMachine.transition('mouseLeft', { id: context.contentId, bypassRestDuration });
         }
       })}
       onFocus={composeEventHandlers(props.onFocus, () =>
