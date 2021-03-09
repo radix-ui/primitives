@@ -5,7 +5,7 @@ import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
 import * as SeparatorPrimitive from '@radix-ui/react-separator';
-import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
+import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -165,53 +165,53 @@ const ToolbarLink = React.forwardRef((props, forwardedRef) => {
 ToolbarLink.displayName = LINK_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * ToolbarRadioGroup
+ * ToolbarToggleGroup
  * -----------------------------------------------------------------------------------------------*/
 
-const RADIO_GROUP_NAME = 'ToolbarRadioGroup';
+const TOGGLE_GROUP_NAME = 'ToolbarToggleGroup';
 
-type ToolbarRadioGroupOwnProps = Polymorphic.OwnProps<typeof RadioGroupPrimitive.Root>;
-type ToolbarRadioGroupPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof RadioGroupPrimitive.Root>,
-  ToolbarRadioGroupOwnProps
+type ToolbarToggleGroupOwnProps = Polymorphic.OwnProps<typeof ToggleGroupPrimitive.Root>;
+type ToolbarToggleGroupPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof ToggleGroupPrimitive.Root>,
+  ToolbarToggleGroupOwnProps
 >;
 
-const ToolbarRadioGroup = React.forwardRef((props, forwardedRef) => {
-  const context = useToolbarContext(RADIO_GROUP_NAME);
+const ToolbarToggleGroup = React.forwardRef((props, forwardedRef) => {
+  const context = useToolbarContext(TOGGLE_GROUP_NAME);
   return (
-    <RadioGroupPrimitive.Root
+    <ToggleGroupPrimitive.Root
       data-orientation={context.orientation}
       {...props}
       ref={forwardedRef}
       rovingFocus={false}
     />
   );
-}) as ToolbarRadioGroupPrimitive;
+}) as ToolbarToggleGroupPrimitive;
 
-ToolbarRadioGroup.displayName = RADIO_GROUP_NAME;
+ToolbarToggleGroup.displayName = TOGGLE_GROUP_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * ToolbarRadioItem
+ * ToolbarToggleItem
  * -----------------------------------------------------------------------------------------------*/
 
-const RADIO_GROUP_ITEM_NAME = 'ToolbarRadioItem';
+const TOGGLE_ITEM_NAME = 'ToolbarToggleItem';
 
 type ToolbarRadioOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof ToolbarButton>,
-  Polymorphic.OwnProps<typeof RadioGroupPrimitive.Item>
+  Polymorphic.OwnProps<typeof ToggleGroupPrimitive.Item>
 >;
 type ToolbarRadioPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof RadioGroupPrimitive.Item>,
+  Polymorphic.IntrinsicElement<typeof ToggleGroupPrimitive.Item>,
   ToolbarRadioOwnProps
 >;
 
-const ToolbarRadioItem = React.forwardRef((props, forwardedRef) => (
+const ToolbarToggleItem = React.forwardRef((props, forwardedRef) => (
   <ToolbarButton as={Slot}>
-    <RadioGroupPrimitive.Item {...props} ref={forwardedRef} />
+    <ToggleGroupPrimitive.Item {...props} ref={forwardedRef} />
   </ToolbarButton>
 )) as ToolbarRadioPrimitive;
 
-ToolbarRadioItem.displayName = RADIO_GROUP_ITEM_NAME;
+ToolbarToggleItem.displayName = TOGGLE_ITEM_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -219,21 +219,21 @@ const Root = Toolbar;
 const Separator = ToolbarSeparator;
 const Button = ToolbarButton;
 const Link = ToolbarLink;
-const RadioGroup = ToolbarRadioGroup;
-const RadioItem = ToolbarRadioItem;
+const ToggleGroup = ToolbarToggleGroup;
+const ToggleItem = ToolbarToggleItem;
 
 export {
   Toolbar,
   ToolbarSeparator,
   ToolbarButton,
   ToolbarLink,
-  ToolbarRadioGroup,
-  ToolbarRadioItem,
+  ToolbarToggleGroup,
+  ToolbarToggleItem,
   //
   Root,
   Separator,
   Button,
   Link,
-  RadioGroup,
-  RadioItem,
+  ToggleGroup,
+  ToggleItem,
 };

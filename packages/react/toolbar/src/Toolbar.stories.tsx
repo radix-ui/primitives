@@ -4,8 +4,8 @@ import {
   ToolbarSeparator,
   ToolbarButton,
   ToolbarLink,
-  ToolbarRadioGroup,
-  ToolbarRadioItem,
+  ToolbarToggleGroup,
+  ToolbarToggleItem,
 } from './Toolbar';
 import { css } from '../../../../stitches.config';
 import { ToggleButton } from '@radix-ui/react-toggle-button';
@@ -64,17 +64,17 @@ const ToolbarExample = ({ title, orientation }: any) => (
         Toggle
       </ToolbarButton>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-      <ToolbarRadioGroup className={toolbarRadioGroupClass}>
-        <ToolbarRadioItem value="left" className={toolbarRadioItemClass}>
+      <ToolbarToggleGroup type="single" className={toolbarToggleGroupClass}>
+        <ToolbarToggleItem value="left" className={toolbarToggleItemClass}>
           Left
-        </ToolbarRadioItem>
-        <ToolbarRadioItem value="center" className={toolbarRadioItemClass}>
+        </ToolbarToggleItem>
+        <ToolbarToggleItem value="center" className={toolbarToggleItemClass}>
           Center
-        </ToolbarRadioItem>
-        <ToolbarRadioItem value="right" className={toolbarRadioItemClass}>
+        </ToolbarToggleItem>
+        <ToolbarToggleItem value="right" className={toolbarToggleItemClass}>
           Right
-        </ToolbarRadioItem>
-      </ToolbarRadioGroup>
+        </ToolbarToggleItem>
+      </ToolbarToggleGroup>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
       <DropdownMenu>
         <ToolbarButton className={toolbarItemClass} as={DropdownMenuTrigger}>
@@ -164,7 +164,7 @@ const toolbarToggleButtonClass = css(toolbarItemClass, {
   },
 });
 
-const toolbarRadioGroupClass = css({
+const toolbarToggleGroupClass = css({
   ...RECOMMENDED_CSS__TOOLBAR,
   gap: 5,
   '&[data-orientation="vertical"]': {
@@ -172,8 +172,8 @@ const toolbarRadioGroupClass = css({
   },
 });
 
-const toolbarRadioItemClass = css(toolbarItemClass, {
-  '&[data-state="checked"]': {
+const toolbarToggleItemClass = css(toolbarItemClass, {
+  '&[data-state="on"]': {
     background: 'black',
     color: 'white',
   },
