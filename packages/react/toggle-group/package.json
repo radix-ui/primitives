@@ -1,0 +1,37 @@
+{
+  "name": "@radix-ui/react-toggle-group",
+  "version": "0.0.0",
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.module.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "clean": "rm -rf dist",
+    "prepublish": "yarn clean"
+  },
+  "dependencies": {
+    "@radix-ui/primitive": "workspace:*",
+    "@radix-ui/react-context": "workspace:*",
+    "@radix-ui/react-polymorphic": "workspace:*",
+    "@radix-ui/react-primitive": "workspace:*",
+    "@radix-ui/react-roving-focus": "workspace:*",
+    "@radix-ui/react-toggle-button": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^16.8 || ^17.0"
+  },
+  "homepage": "https://radix-ui.com/primitives",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radix-ui/primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/radix-ui/primitives/issues"
+  }
+}
