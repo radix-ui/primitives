@@ -12,11 +12,11 @@ type ToggleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
-     * The controlled pressed state of the toggle.
+     * The controlled state of the toggle.
      */
     toggled?: boolean;
     /**
-     * The pressed state of the toggle when initially rendered. Use `defaultToggled`
+     * The state of the toggle when initially rendered. Use `defaultToggled`
      * if you do not need to control the state of the toggle.
      * @defaultValue false
      */
