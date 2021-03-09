@@ -9,7 +9,7 @@ import { ToggleButton } from '@radix-ui/react-toggle-button';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
- * ToggleGroups
+ * ToggleGroup
  * -----------------------------------------------------------------------------------------------*/
 
 const TOGGLE_GROUP_NAME = 'ToggleGroup';
@@ -55,15 +55,15 @@ type ToggleGroupSingleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof ToggleGroupImpl>,
   {
     /**
-     * Allow only one button to be toggled at a time.
+     * Allow only one button to be pressed at a time.
      */
     type: 'single';
     /**
-     * The controlled stateful value of the button that is toggled.
+     * The controlled stateful value of the item that is pressed.
      */
     value?: string;
     /**
-     * The value of the button that is toggled when initially rendered. Use
+     * The value of the item that is pressed when initially rendered. Use
      * `defaultValue` if you do not need to control the state of a toggle group.
      */
     defaultValue?: string;
@@ -108,20 +108,20 @@ type ToggleGroupMultipleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof ToggleGroupImpl>,
   {
     /**
-     * Allow mutltiple items to be open at the same time.
+     * Allow mutltiple items to be pressed at the same time.
      */
     type: 'multiple';
     /**
-     * The controlled stateful value of the accordion items whose panels are expanded.
+     * The controlled stateful value of the items that are pressed.
      */
     value?: string[];
     /**
-     * The value of the items whose panels are expanded when the accordion is initially rendered. Use
-     * `defaultValue` if you do not need to control the state of an accordion.
+     * The value of the items that are pressed when initially rendered. Use
+     * `defaultValue` if you do not need to control the state of a toggle group.
      */
     defaultValue?: string[];
     /**
-     * The callback that fires when the state of the accordion changes.
+     * The callback that fires when the state of the toggle group changes.
      */
     onValueChange?(value: string[]): void;
   }
