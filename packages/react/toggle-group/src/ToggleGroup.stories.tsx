@@ -6,89 +6,87 @@ export default {
   title: 'Components/ToggleGroup',
 };
 
-export const Styled = () => (
-  <ToggleGroup type="single" className={rootClass} aria-label="Options" defaultValue="1">
-    <ToggleGroupItem value="1" className={itemClass}>
-      Option 1
-    </ToggleGroupItem>
-    <ToggleGroupItem value="2" className={itemClass}>
-      Option 2
-    </ToggleGroupItem>
-    <ToggleGroupItem value="3" className={itemClass}>
-      Option 3
-    </ToggleGroupItem>
-  </ToggleGroup>
-);
-
-export const Controlled = () => {
+export const Single = () => {
   const [value, setValue] = React.useState<string>();
   return (
-    <ToggleGroup
-      type="single"
-      className={rootClass}
-      aria-label="Options"
-      value={value}
-      onValueChange={setValue}
-    >
-      <ToggleGroupItem value="1" className={itemClass}>
-        Option 1
-      </ToggleGroupItem>
-      <ToggleGroupItem value="2" className={itemClass}>
-        Option 2
-      </ToggleGroupItem>
-      <ToggleGroupItem value="3" className={itemClass}>
-        Option 3
-      </ToggleGroupItem>
-    </ToggleGroup>
+    <>
+      <h1>Uncontrolled</h1>
+      <ToggleGroup type="single" className={rootClass} aria-label="Options" defaultValue="1">
+        <ToggleGroupItem value="1" className={itemClass}>
+          Option 1
+        </ToggleGroupItem>
+        <ToggleGroupItem value="2" className={itemClass}>
+          Option 2
+        </ToggleGroupItem>
+        <ToggleGroupItem value="3" className={itemClass}>
+          Option 3
+        </ToggleGroupItem>
+      </ToggleGroup>
+
+      <h1>Controlled</h1>
+      <ToggleGroup
+        type="single"
+        className={rootClass}
+        aria-label="Options"
+        value={value}
+        onValueChange={setValue}
+      >
+        <ToggleGroupItem value="1" className={itemClass}>
+          Option 1
+        </ToggleGroupItem>
+        <ToggleGroupItem value="2" className={itemClass}>
+          Option 2
+        </ToggleGroupItem>
+        <ToggleGroupItem value="3" className={itemClass}>
+          Option 3
+        </ToggleGroupItem>
+      </ToggleGroup>
+    </>
   );
 };
 
-export const MultiSelect = () => (
-  <ToggleGroup
-    type="multiple"
-    className={rootClass}
-    aria-label="Options"
-    defaultValue={['1']}
-    onValueChange={console.log}
-  >
-    <ToggleGroupItem value="1" className={itemClass}>
-      Option 1
-    </ToggleGroupItem>
-    <ToggleGroupItem value="2" className={itemClass}>
-      Option 2
-    </ToggleGroupItem>
-    <ToggleGroupItem value="3" className={itemClass}>
-      Option 3
-    </ToggleGroupItem>
-  </ToggleGroup>
-);
-
-export const ControlledMultiSelect = () => {
+export const Multiple = () => {
   const [value, setValue] = React.useState<string[]>([]);
   return (
-    <ToggleGroup
-      type="multiple"
-      className={rootClass}
-      aria-label="Options"
-      value={value}
-      onValueChange={setValue}
-    >
-      <ToggleGroupItem value="1" className={itemClass}>
-        Option 1
-      </ToggleGroupItem>
-      <ToggleGroupItem value="2" className={itemClass}>
-        Option 2
-      </ToggleGroupItem>
-      <ToggleGroupItem value="3" className={itemClass}>
-        Option 3
-      </ToggleGroupItem>
-    </ToggleGroup>
+    <>
+      <h1>Uncontrolled</h1>
+      <ToggleGroup type="multiple" className={rootClass} aria-label="Options" defaultValue={['1']}>
+        <ToggleGroupItem value="1" className={itemClass}>
+          Option 1
+        </ToggleGroupItem>
+        <ToggleGroupItem value="2" className={itemClass}>
+          Option 2
+        </ToggleGroupItem>
+        <ToggleGroupItem value="3" className={itemClass}>
+          Option 3
+        </ToggleGroupItem>
+      </ToggleGroup>
+
+      <h1>Controlled</h1>
+      <ToggleGroup
+        type="multiple"
+        className={rootClass}
+        aria-label="Options"
+        value={value}
+        onValueChange={setValue}
+      >
+        <ToggleGroupItem value="1" className={itemClass}>
+          Option 1
+        </ToggleGroupItem>
+        <ToggleGroupItem value="2" className={itemClass}>
+          Option 2
+        </ToggleGroupItem>
+        <ToggleGroupItem value="3" className={itemClass}>
+          Option 3
+        </ToggleGroupItem>
+      </ToggleGroup>
+    </>
   );
 };
 
 export const Chromatic = () => (
   <>
-    <h1>Single select</h1>
+    <h1>Single</h1>
 
     <h2>Off</h2>
     <ToggleGroup type="single" className={rootClass}>
@@ -129,7 +127,7 @@ export const Chromatic = () => (
       </ToggleGroupItem>
     </ToggleGroup>
 
-    <h1>Multi select</h1>
+    <h1>Multiple</h1>
     <h2>Off</h2>
     <ToggleGroup type="multiple" className={rootClass}>
       <ToggleGroupItem value="1" className={itemClass}>
