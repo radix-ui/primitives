@@ -7,11 +7,11 @@ export default { title: 'Components/Toggle' };
 export const Styled = () => <Toggle className={rootClass}>Toggle</Toggle>;
 
 export const Controlled = () => {
-  const [toggled, setToggled] = React.useState(true);
+  const [pressed, setPressed] = React.useState(true);
 
   return (
-    <Toggle className={rootClass} toggled={toggled} onToggledChange={setToggled}>
-      {toggled ? 'On' : 'Off'}
+    <Toggle className={rootClass} pressed={pressed} onPressedChange={setPressed}>
+      {pressed ? 'On' : 'Off'}
     </Toggle>
   );
 };
@@ -23,18 +23,18 @@ export const Chromatic = () => (
     <Toggle className={rootClass}>Toggle</Toggle>
 
     <h2>On</h2>
-    <Toggle className={rootClass} defaultToggled>
+    <Toggle className={rootClass} defaultPressed>
       Toggle
     </Toggle>
 
     <h1>Controlled</h1>
     <h2>Off</h2>
-    <Toggle className={rootClass} toggled={false}>
+    <Toggle className={rootClass} pressed={false}>
       Toggle
     </Toggle>
 
     <h2>On</h2>
-    <Toggle className={rootClass} toggled>
+    <Toggle className={rootClass} pressed>
       Toggle
     </Toggle>
 

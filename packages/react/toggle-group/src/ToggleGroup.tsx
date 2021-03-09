@@ -268,7 +268,7 @@ const ToggleGroupRovingFocusItem = React.forwardRef((props, forwardedRef) => {
 /* -----------------------------------------------------------------------------------------------*/
 
 type ToggleGroupItemImplOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof Toggle>, 'onToggledChange' | 'toggled' | 'defaultToggled'>,
+  Omit<Polymorphic.OwnProps<typeof Toggle>, 'onPressedChange' | 'pressed' | 'defaultToggled'>,
   {
     /**
      * A string value for the toggle group item. All items within a toggle group should use a unique value.
@@ -286,7 +286,7 @@ const ToggleGroupItemImpl = React.forwardRef((props, forwardedRef) => {
   const { value, ...itemProps } = props;
   const context = useToggleGroupContext(ITEM_NAME);
   const valueContext = useToggleGroupValueContext(ITEM_NAME);
-  const toggled = valueContext.value.includes(props.value);
+  const pressed = valueContext.value.includes(props.value);
   const disabled = context.disabled ? true : props.disabled;
 
   return (
@@ -294,9 +294,9 @@ const ToggleGroupItemImpl = React.forwardRef((props, forwardedRef) => {
       {...itemProps}
       ref={forwardedRef}
       disabled={disabled}
-      toggled={toggled}
-      onToggledChange={(toggled) => {
-        if (toggled) {
+      pressed={pressed}
+      onPressedChange={(pressed) => {
+        if (pressed) {
           valueContext.onItemActivate(value);
         } else {
           valueContext.onItemDeactivate(value);

@@ -14,17 +14,17 @@ type ToggleOwnProps = Polymorphic.Merge<
     /**
      * The controlled state of the toggle.
      */
-    toggled?: boolean;
+    pressed?: boolean;
     /**
-     * The state of the toggle when initially rendered. Use `defaultToggled`
+     * The state of the toggle when initially rendered. Use `defaultPressed`
      * if you do not need to control the state of the toggle.
      * @defaultValue false
      */
-    defaultToggled?: boolean;
+    defaultPressed?: boolean;
     /**
      * The callback that fires when the state of the toggle changes.
      */
-    onToggledChange?(toggled: boolean): void;
+    onPressedChange?(pressed: boolean): void;
   }
 >;
 
@@ -33,31 +33,31 @@ type TogglePrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, Toggl
 const Toggle = React.forwardRef((props, forwardedRef) => {
   const {
     as = DEFAULT_TAG,
-    toggled: toggledProp,
-    defaultToggled = false,
+    pressed: pressedProp,
+    defaultPressed = false,
     onClick,
-    onToggledChange,
+    onPressedChange,
     ...buttonProps
   } = props;
 
-  const [toggled = false, setToggled] = useControllableState({
-    prop: toggledProp,
-    onChange: onToggledChange,
-    defaultProp: defaultToggled,
+  const [pressed = false, setPressed] = useControllableState({
+    prop: pressedProp,
+    onChange: onPressedChange,
+    defaultProp: defaultPressed,
   });
 
   return (
     <Primitive
       type="button"
-      aria-pressed={toggled}
-      data-state={toggled ? 'on' : 'off'}
+      aria-pressed={pressed}
+      data-state={pressed ? 'on' : 'off'}
       data-disabled={props.disabled ? '' : undefined}
       {...buttonProps}
       as={as}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, () => {
         if (!props.disabled) {
-          setToggled(!toggled);
+          setPressed(!pressed);
         }
       })}
     />
