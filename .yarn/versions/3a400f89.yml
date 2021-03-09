@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-toggle": patch
+  "@radix-ui/react-toggle-group": patch
+
+declined:
+  - primitives
