@@ -287,7 +287,7 @@ const ToggleGroupItemImpl = React.forwardRef((props, forwardedRef) => {
   const context = useToggleGroupContext(ITEM_NAME);
   const valueContext = useToggleGroupValueContext(ITEM_NAME);
   const toggled = valueContext.value.includes(props.value);
-  const disabled = context.disabled || props.disabled;
+  const disabled = context.disabled ? true : props.disabled;
 
   return (
     <ToggleButton
