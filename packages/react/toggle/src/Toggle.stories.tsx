@@ -1,18 +1,18 @@
 import * as React from 'react';
-import { ToggleButton } from './ToggleButton';
+import { Toggle } from './Toggle';
 import { css } from '../../../../stitches.config';
 
-export default { title: 'Components/ToggleButton' };
+export default { title: 'Components/Toggle' };
 
-export const Styled = () => <ToggleButton className={rootClass}>Toggle</ToggleButton>;
+export const Styled = () => <Toggle className={rootClass}>Toggle</Toggle>;
 
 export const Controlled = () => {
-  const [toggled, setToggled] = React.useState(true);
+  const [pressed, setPressed] = React.useState(true);
 
   return (
-    <ToggleButton className={rootClass} toggled={toggled} onToggledChange={setToggled}>
-      {toggled ? 'On' : 'Off'}
-    </ToggleButton>
+    <Toggle className={rootClass} pressed={pressed} onPressedChange={setPressed}>
+      {pressed ? 'On' : 'Off'}
+    </Toggle>
   );
 };
 
@@ -20,34 +20,34 @@ export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
     <h2>Off</h2>
-    <ToggleButton className={rootClass}>Toggle</ToggleButton>
+    <Toggle className={rootClass}>Toggle</Toggle>
 
     <h2>On</h2>
-    <ToggleButton className={rootClass} defaultToggled>
+    <Toggle className={rootClass} defaultPressed>
       Toggle
-    </ToggleButton>
+    </Toggle>
 
     <h1>Controlled</h1>
     <h2>Off</h2>
-    <ToggleButton className={rootClass} toggled={false}>
+    <Toggle className={rootClass} pressed={false}>
       Toggle
-    </ToggleButton>
+    </Toggle>
 
     <h2>On</h2>
-    <ToggleButton className={rootClass} toggled>
+    <Toggle className={rootClass} pressed>
       Toggle
-    </ToggleButton>
+    </Toggle>
 
     <h1>Disabled</h1>
-    <ToggleButton className={rootClass} disabled>
+    <Toggle className={rootClass} disabled>
       Toggle
-    </ToggleButton>
+    </Toggle>
 
     <h1>State attributes</h1>
-    <ToggleButton className={rootAttrClass}>Toggle</ToggleButton>
-    <ToggleButton className={rootAttrClass} disabled>
+    <Toggle className={rootAttrClass}>Toggle</Toggle>
+    <Toggle className={rootAttrClass} disabled>
       Toggle
-    </ToggleButton>
+    </Toggle>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };

@@ -43,7 +43,7 @@
       "@radix-ui/react-slot": ["./packages/react/slot/src"],
       "@radix-ui/react-switch": ["./packages/react/switch/src"],
       "@radix-ui/react-tabs": ["./packages/react/tabs/src"],
-      "@radix-ui/react-toggle-button": ["./packages/react/toggle-button/src"],
+      "@radix-ui/react-toggle": ["./packages/react/toggle/src"],
       "@radix-ui/react-toggle-group": ["./packages/react/toggle-group/src"],
       "@radix-ui/react-tooltip": ["./packages/react/tooltip/src"],
       "@radix-ui/react-use-body-pointer-events": ["./packages/react/use-body-pointer-events/src"],
