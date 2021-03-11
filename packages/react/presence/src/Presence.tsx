@@ -28,7 +28,7 @@ Presence.displayName = 'Presence';
 
 function usePresence(present: boolean) {
   const [node, setNode] = React.useState<HTMLElement>();
-  const [styles, setStyles] = React.useState<CSSStyleDeclaration>();
+  const stylesRef = React.useRef<CSSStyleDeclaration>({} as any);
   const prevPresentRef = React.useRef(present);
   const prevAnimationNameRef = React.useRef<string>();
   const initialState = present ? 'mounted' : 'unmounted';
@@ -47,32 +47,19 @@ function usePresence(present: boolean) {
   });
 
   React.useEffect(() => {
-    if (node) {
-      const styles = getComputedStyle(node);
-      prevAnimationNameRef.current = getAnimationName(styles);
-      setStyles(styles);
-    }
-  }, [node]);
-
-  React.useEffect(() => {
+    const styles = stylesRef.current;
     const wasPresent = prevPresentRef.current;
     const hasPresentChanged = wasPresent !== present;
 
-    /**
-     * We wait till after next frame so we can verify if an animation is occurring.
-     * Both mount and unmount events are triggered after the next frame so that the two
-     * events happen at the same time. This is to avoid flickering on screen when elements
-     * are mounting at the same time as elements that are unmounting.
-     */
     if (hasPresentChanged) {
       const prevAnimationName = prevAnimationNameRef.current;
       const currentAnimationName = getAnimationName(styles);
-      prevAnimationNameRef.current = currentAnimationName;
 
       if (present) {
         send('MOUNT');
-      } else if (styles?.display === 'none') {
-        // If the element is hidden, animations won't run so we unmount instantly
+      } else if (currentAnimationName === 'none' || styles?.display === 'none') {
+        // If there is no exit animation or the element is hidden, animations won't run
+        // so we unmount instantly
         send('UNMOUNT');
       } else {
         /**
@@ -92,7 +79,7 @@ function usePresence(present: boolean) {
 
       prevPresentRef.current = present;
     }
-  }, [present, styles, send]);
+  }, [present, send]);
 
   React.useEffect(() => {
     if (node) {
@@ -102,9 +89,13 @@ function usePresence(present: boolean) {
        * make sure we only trigger ANIMATION_END for the currently active animation.
        */
       const handleAnimationEnd = (event: AnimationEvent) => {
-        const currentAnimationName = getAnimationName(styles);
+        const currentAnimationName = getAnimationName(stylesRef.current);
         const isCurrentAnimation = event.animationName === currentAnimationName;
-        if (event.target === node && isCurrentAnimation) send('ANIMATION_END');
+        if (event.target === node && isCurrentAnimation) {
+          // if animation occurred, store its name as the previous animation
+          prevAnimationNameRef.current = getAnimationName(stylesRef.current);
+          send('ANIMATION_END');
+        }
       };
 
       node.addEventListener('animationcancel', handleAnimationEnd);
@@ -115,11 +106,16 @@ function usePresence(present: boolean) {
         node.removeEventListener('animationend', handleAnimationEnd);
       };
     }
-  }, [node, present, styles, send]);
+  }, [node, send]);
 
   return {
-    ref: (node: HTMLElement) => setNode(node),
     isPresent: ['mounted', 'unmountSuspended'].includes(state),
+    ref: React.useCallback((node: HTMLElement) => {
+      if (node) {
+        stylesRef.current = getComputedStyle(node);
+        setNode(node);
+      }
+    }, []),
   };
 }
 
