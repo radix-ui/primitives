@@ -32,6 +32,186 @@ export const Controlled = () => {
   );
 };
 
+export const CustomDurations = () => (
+  <>
+    <h1>Rest duration</h1>
+    <h2>Default (300ms)</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+    </div>
+
+    <h2>Custom (0ms = instant open)</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} restDuration={0}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} restDuration={0}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} restDuration={0}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+    </div>
+
+    <h2>Custom (1s)</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} restDuration={1000}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} restDuration={1000}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} restDuration={1000}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+    </div>
+
+    <h1>Bypass rest duration</h1>
+    <h2>Default (300ms to move from one to another tooltip)</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+    </div>
+
+    <h2>Custom (0ms to move from one to another tooltip = never bypass)</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} bypassRestDuration={0}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} bypassRestDuration={0}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} bypassRestDuration={0}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+    </div>
+
+    <h2>Custom (5s to move from one to another tooltip)</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} bypassRestDuration={5000}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} bypassRestDuration={5000}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger className={triggerClass} bypassRestDuration={5000}>
+          Hover me
+        </TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  </>
+);
+
 export const CustomContent = () => (
   <div style={{ display: 'flex', gap: 20, padding: 100 }}>
     <Tooltip>
