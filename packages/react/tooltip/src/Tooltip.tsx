@@ -12,7 +12,8 @@ import { Portal } from '@radix-ui/react-portal';
 import { Slottable } from '@radix-ui/react-slot';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 import { useId } from '@radix-ui/react-id';
-import { createStateMachine, stateChart } from './machine';
+import { createStateMachine } from './createStateMachine';
+import { tooltipStateChart } from './tooltipStateChart';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -21,7 +22,7 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
  * -----------------------------------------------------------------------------------------------*/
 
 type StateAttribute = 'closed' | 'delayed-open' | 'instant-open';
-const stateMachine = createStateMachine(stateChart);
+const stateMachine = createStateMachine(tooltipStateChart);
 
 /* -------------------------------------------------------------------------------------------------
  * Tooltip
@@ -60,7 +61,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   // control open state using state machine subscription
   React.useEffect(() => {
     const unsubscribe = stateMachine.subscribe(({ state, context }) => {
-      if (state === 'OPEN' && context.id === contentId) {
+      if (state === 'open' && context.id === contentId) {
         setOpen(true);
       } else {
         setOpen(false);
@@ -73,18 +74,15 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   // sync state attribute with using state machine subscription
   React.useEffect(() => {
     const unsubscribe = stateMachine.subscribe(({ state, previousState }) => {
-      if (state === 'OPEN') {
-        if (previousState === 'WAITING_FOR_REST') {
+      if (state === 'open') {
+        if (previousState === 'waitingForRest') {
           setStateAttribute('delayed-open');
         }
-        if (
-          previousState === 'CHECKING_IF_SHOULD_SKIP_REST_THRESHOLD' ||
-          previousState === 'CLOSED'
-        ) {
+        if (previousState === 'checkingIfShouldSkipRestThreshold' || previousState === 'closed') {
           setStateAttribute('instant-open');
         }
       }
-      if (state === 'CLOSED') {
+      if (state === 'closed') {
         setStateAttribute('closed');
       }
     });
@@ -95,7 +93,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   // send transition if the component unmounts
   React.useEffect(() => {
     return () => {
-      stateMachine.transition('unmounted', { id: contentId });
+      stateMachine.send({ type: 'UNMOUNT', id: contentId });
     };
   }, [contentId]);
 
@@ -103,7 +101,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   // put the state machine in the appropriate state
   useLayoutEffect(() => {
     if (openProp === true) {
-      stateMachine.transition('mouseEntered', { id: contentId });
+      stateMachine.send({ type: 'MOUSE_ENTER', id: contentId });
     }
   }, [contentId, openProp]);
 
@@ -148,32 +146,32 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
       as={as}
       ref={composedTriggerRef}
       onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
-        stateMachine.transition('mouseEntered', { id: context.contentId })
+        stateMachine.send({ type: 'MOUSE_ENTER', id: context.contentId })
       )}
       onMouseMove={composeEventHandlers(props.onMouseMove, () =>
-        stateMachine.transition('mouseMoved', { id: context.contentId })
+        stateMachine.send({ type: 'MOUSE_MOVE', id: context.contentId })
       )}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
         const stateMachineContext = stateMachine.getContext();
         if (stateMachineContext.id === context.contentId) {
-          stateMachine.transition('mouseLeft', { id: context.contentId });
+          stateMachine.send({ type: 'MOUSE_LEAVE', id: context.contentId });
         }
       })}
       onFocus={composeEventHandlers(props.onFocus, () =>
-        stateMachine.transition('focused', { id: context.contentId })
+        stateMachine.send({ type: 'FOCUS', id: context.contentId })
       )}
       onBlur={composeEventHandlers(props.onBlur, () => {
         const stateMachineContext = stateMachine.getContext();
         if (stateMachineContext.id === context.contentId) {
-          stateMachine.transition('blurred', { id: context.contentId });
+          stateMachine.send({ type: 'BLUR', id: context.contentId });
         }
       })}
       onMouseDown={composeEventHandlers(props.onMouseDown, () =>
-        stateMachine.transition('activated', { id: context.contentId })
+        stateMachine.send({ type: 'ACTIVATE', id: context.contentId })
       )}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-          stateMachine.transition('activated', { id: context.contentId });
+          stateMachine.send({ type: 'ACTIVATE', id: context.contentId });
         }
       })}
     />
@@ -275,7 +273,7 @@ function CheckTriggerMoved() {
       (previousTriggerTop !== undefined && previousTriggerTop !== triggerTop);
 
     if (hasTriggerMoved) {
-      stateMachine.transition('triggerMoved', { id: context.contentId });
+      stateMachine.send({ type: 'TRIGGER_MOVE', id: context.contentId });
     }
   }, [context.contentId, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
 
