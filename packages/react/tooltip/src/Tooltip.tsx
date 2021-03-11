@@ -101,7 +101,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   // put the state machine in the appropriate state
   useLayoutEffect(() => {
     if (openProp === true) {
-      stateMachine.send({ type: 'MOUSE_ENTER', id: contentId });
+      stateMachine.send({ type: 'FOCUS', id: contentId });
     }
   }, [contentId, openProp]);
 
@@ -126,14 +126,36 @@ Tooltip.displayName = TOOLTIP_NAME;
 const TRIGGER_NAME = 'TooltipTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type TooltipTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type TooltipTriggerOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    /**
+     * The duration a user has to "rest" (not move) his mouse over the trigger
+     * before the tooltip gets opened.
+     * (default: 300)
+     */
+    restDuration?: number;
+
+    /**
+     * How much time a user has to move his mouse to another trigger without incurring
+     * another rest duration.
+     * (default: 300)
+     */
+    bypassRestDuration?: number;
+  }
+>;
 type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
   typeof TRIGGER_DEFAULT_TAG,
   TooltipTriggerOwnProps
 >;
 
 const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
+  const {
+    as = TRIGGER_DEFAULT_TAG,
+    restDuration = 300,
+    bypassRestDuration = 300,
+    ...triggerProps
+  } = props;
   const context = useTooltipContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
@@ -146,15 +168,15 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
       as={as}
       ref={composedTriggerRef}
       onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
-        stateMachine.send({ type: 'MOUSE_ENTER', id: context.contentId })
+        stateMachine.send({ type: 'MOUSE_ENTER', id: context.contentId, restDuration })
       )}
       onMouseMove={composeEventHandlers(props.onMouseMove, () =>
-        stateMachine.send({ type: 'MOUSE_MOVE', id: context.contentId })
+        stateMachine.send({ type: 'MOUSE_MOVE', id: context.contentId, restDuration })
       )}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
         const stateMachineContext = stateMachine.getContext();
         if (stateMachineContext.id === context.contentId) {
-          stateMachine.send({ type: 'MOUSE_LEAVE', id: context.contentId });
+          stateMachine.send({ type: 'MOUSE_LEAVE', id: context.contentId, bypassRestDuration });
         }
       })}
       onFocus={composeEventHandlers(props.onFocus, () =>

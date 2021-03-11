@@ -2,12 +2,6 @@ import { assign } from './createStateMachine';
 
 import type { StateChart } from './createStateMachine';
 
-// How long the mouse needs to stop moving for the tooltip to open
-const REST_THRESHOLD_DURATION = 300;
-
-// How much time does the user has to move from one tooltip to another without incurring the rest wait
-const SKIP_REST_THRESHOLD_DURATION = 300;
-
 type TooltipState =
   // tooltip is closed
   | 'closed'
@@ -27,9 +21,9 @@ type TooltipState =
   | 'dismissed';
 
 type TooltipEvent =
-  | { type: 'MOUSE_ENTER'; id: string }
-  | { type: 'MOUSE_MOVE'; id: string }
-  | { type: 'MOUSE_LEAVE'; id: string }
+  | { type: 'MOUSE_ENTER'; id: string; restDuration: number }
+  | { type: 'MOUSE_MOVE'; id: string; restDuration: number }
+  | { type: 'MOUSE_LEAVE'; id: string; bypassRestDuration: number }
   | { type: 'REST_TIMER_ELAPSE'; id: string }
   | { type: 'SKIP_REST_TIMER_ELAPSE'; id: string }
   | { type: 'FOCUS'; id: string }
@@ -71,7 +65,8 @@ const tooltipStateChart: TooltipStateChart = {
         (event, context, send) => {
           restTimerId = window.setTimeout(
             () => send({ type: 'REST_TIMER_ELAPSE', id: event.id }),
-            REST_THRESHOLD_DURATION
+            // @ts-ignore
+            event.restDuration
           );
         },
       ],
@@ -104,7 +99,8 @@ const tooltipStateChart: TooltipStateChart = {
         (event, context, send) => {
           skipRestTimerId = window.setTimeout(
             () => send({ type: 'SKIP_REST_TIMER_ELAPSE', id: event.id }),
-            SKIP_REST_THRESHOLD_DURATION
+            // @ts-ignore
+            event.bypassRestDuration
           );
         },
       ],
