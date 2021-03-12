@@ -17,7 +17,7 @@ type StateChart<State extends string, Event extends { type: string }, Context> =
 };
 
 type Transition<State extends string, Event, Context> = {
-  target: State;
+  target?: State;
   actions?: Array<Action<Event, Context>>;
 };
 
@@ -73,8 +73,7 @@ function createStateMachine<State extends string, Event extends { type: string }
       PREVIOUS_STATE = CURRENT_STATE;
       PREVIOUS_CONTEXT = { ...CURRENT_CONTEXT };
       const nextState = transition.target;
-      const nextStateDefinition = stateChart.states[nextState];
-      CURRENT_STATE = nextState;
+      const nextStateDefinition = nextState ? stateChart.states[nextState] : {};
 
       // execute actions
       const allActions = (stateDefinition.exit || []).concat(
@@ -83,17 +82,21 @@ function createStateMachine<State extends string, Event extends { type: string }
       );
       CURRENT_CONTEXT = executeActions(allActions, event, CURRENT_CONTEXT);
 
-      if (debug) {
-        console.log({
-          previousState: PREVIOUS_STATE,
-          previousContext: PREVIOUS_CONTEXT,
-          event,
-          state: CURRENT_STATE,
-          context: CURRENT_CONTEXT,
-        });
-      }
+      if (nextState) {
+        CURRENT_STATE = nextState;
 
-      notify();
+        if (debug) {
+          console.log({
+            previousState: PREVIOUS_STATE,
+            previousContext: PREVIOUS_CONTEXT,
+            event,
+            state: CURRENT_STATE,
+            context: CURRENT_CONTEXT,
+          });
+        }
+
+        notify();
+      }
     }
   };
 
@@ -132,4 +135,4 @@ function assign<Event, Context>(
 }
 
 export { createStateMachine, assign };
-export type { StateChart };
+export type { StateChart, Action };

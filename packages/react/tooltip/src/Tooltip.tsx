@@ -2,6 +2,7 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
@@ -73,22 +74,18 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
 
   // sync state attribute with using state machine subscription
   React.useEffect(() => {
-    const unsubscribe = stateMachine.subscribe(({ state, previousState }) => {
-      if (state === 'open') {
-        if (previousState === 'waitingForRest') {
-          setStateAttribute('delayed-open');
+    const unsubscribe = stateMachine.subscribe(({ state, context }) => {
+      if (context.id === contentId) {
+        if (state === 'open') {
+          setStateAttribute(context.shouldSkipDelay ? 'instant-open' : 'delayed-open');
+        } else if (state === 'closed') {
+          setStateAttribute('closed');
         }
-        if (previousState === 'checkingIfShouldSkipRestThreshold' || previousState === 'closed') {
-          setStateAttribute('instant-open');
-        }
-      }
-      if (state === 'closed') {
-        setStateAttribute('closed');
       }
     });
 
     return unsubscribe;
-  }, []);
+  }, [contentId]);
 
   // send transition if the component unmounts
   React.useEffect(() => {
@@ -130,18 +127,16 @@ type TooltipTriggerOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
-     * The duration a user has to "rest" (not move) his mouse over the trigger
-     * before the tooltip gets opened.
-     * (default: 300)
+     * The duration from when the mouse enters the trigger until the tooltip gets opened.
+     * (default: 800)
      */
-    restDuration?: number;
+    delayDuration?: number;
 
     /**
-     * How much time a user has to move his mouse to another trigger without incurring
-     * another rest duration.
-     * (default: 300)
+     * How much time a user has to enter another trigger without incurring a delay again.
+     * (default: 500)
      */
-    bypassRestDuration?: number;
+    skipDelayDuration?: number;
   }
 >;
 type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
@@ -152,8 +147,8 @@ type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
   const {
     as = TRIGGER_DEFAULT_TAG,
-    restDuration = 300,
-    bypassRestDuration = 300,
+    delayDuration = 800,
+    skipDelayDuration = 500,
     ...triggerProps
   } = props;
   const context = useTooltipContext(TRIGGER_NAME);
@@ -168,15 +163,13 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
       as={as}
       ref={composedTriggerRef}
       onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
-        stateMachine.send({ type: 'MOUSE_ENTER', id: context.contentId, restDuration })
-      )}
-      onMouseMove={composeEventHandlers(props.onMouseMove, () =>
-        stateMachine.send({ type: 'MOUSE_MOVE', id: context.contentId, restDuration })
+        stateMachine.send({ type: 'MOUSE_ENTER', id: context.contentId, delayDuration })
       )}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
         const stateMachineContext = stateMachine.getContext();
+        // only send a MOUSE_LEAVE event from the currently opened tooltip
         if (stateMachineContext.id === context.contentId) {
-          stateMachine.send({ type: 'MOUSE_LEAVE', id: context.contentId, bypassRestDuration });
+          stateMachine.send({ type: 'MOUSE_LEAVE', id: context.contentId, skipDelayDuration });
         }
       })}
       onFocus={composeEventHandlers(props.onFocus, () =>
@@ -184,6 +177,7 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
       )}
       onBlur={composeEventHandlers(props.onBlur, () => {
         const stateMachineContext = stateMachine.getContext();
+        // only send a BLUR event from the currently opened tooltip
         if (stateMachineContext.id === context.contentId) {
           stateMachine.send({ type: 'BLUR', id: context.contentId });
         }
@@ -192,7 +186,7 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
         stateMachine.send({ type: 'ACTIVATE', id: context.contentId })
       )}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+        if (event.key === 'Enter' || event.key === ' ') {
           stateMachine.send({ type: 'ACTIVATE', id: context.contentId });
         }
       })}
@@ -248,6 +242,10 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
   const context = useTooltipContext(CONTENT_NAME);
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
+  useEscapeKeydown(() => {
+    stateMachine.send({ type: 'DISMISS', id: context.contentId });
+  });
+
   return (
     <PortalWrapper>
       <CheckTriggerMoved />
@@ -300,6 +298,23 @@ function CheckTriggerMoved() {
   }, [context.contentId, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
 
   return null;
+}
+
+/**
+ * Listens for when the escape key is down
+ */
+function useEscapeKeydown(onEscapeKeyDownProp?: (event: KeyboardEvent) => void) {
+  const onEscapeKeyDown = useCallbackRef(onEscapeKeyDownProp);
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onEscapeKeyDown(event);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onEscapeKeyDown]);
 }
 
 const Root = Tooltip;
