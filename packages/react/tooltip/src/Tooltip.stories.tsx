@@ -34,8 +34,8 @@ export const Controlled = () => {
 
 export const CustomDurations = () => (
   <>
-    <h1>Rest duration</h1>
-    <h2>Default (300ms)</h2>
+    <h1>Delay duration</h1>
+    <h2>Default (800ms)</h2>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip>
         <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
@@ -63,7 +63,7 @@ export const CustomDurations = () => (
     <h2>Custom (0ms = instant open)</h2>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} restDuration={0}>
+        <TooltipTrigger className={triggerClass} delayDuration={0}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -72,7 +72,7 @@ export const CustomDurations = () => (
         </TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} restDuration={0}>
+        <TooltipTrigger className={triggerClass} delayDuration={0}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -81,7 +81,7 @@ export const CustomDurations = () => (
         </TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} restDuration={0}>
+        <TooltipTrigger className={triggerClass} delayDuration={0}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -91,10 +91,10 @@ export const CustomDurations = () => (
       </Tooltip>
     </div>
 
-    <h2>Custom (1s)</h2>
+    <h2>Custom (2s)</h2>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} restDuration={1000}>
+        <TooltipTrigger className={triggerClass} delayDuration={2000}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -103,7 +103,7 @@ export const CustomDurations = () => (
         </TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} restDuration={1000}>
+        <TooltipTrigger className={triggerClass} delayDuration={2000}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -112,7 +112,7 @@ export const CustomDurations = () => (
         </TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} restDuration={1000}>
+        <TooltipTrigger className={triggerClass} delayDuration={2000}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -122,8 +122,8 @@ export const CustomDurations = () => (
       </Tooltip>
     </div>
 
-    <h1>Bypass rest duration</h1>
-    <h2>Default (300ms to move from one to another tooltip)</h2>
+    <h1>Skip delay duration</h1>
+    <h2>Default (500ms to move from one to another tooltip)</h2>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip>
         <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
@@ -148,10 +148,10 @@ export const CustomDurations = () => (
       </Tooltip>
     </div>
 
-    <h2>Custom (0ms to move from one to another tooltip = never bypass)</h2>
+    <h2>Custom (0ms to move from one to another tooltip = never skip)</h2>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} bypassRestDuration={0}>
+        <TooltipTrigger className={triggerClass} skipDelayDuration={0}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -160,7 +160,7 @@ export const CustomDurations = () => (
         </TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} bypassRestDuration={0}>
+        <TooltipTrigger className={triggerClass} skipDelayDuration={0}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -169,7 +169,7 @@ export const CustomDurations = () => (
         </TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} bypassRestDuration={0}>
+        <TooltipTrigger className={triggerClass} skipDelayDuration={0}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -182,7 +182,7 @@ export const CustomDurations = () => (
     <h2>Custom (5s to move from one to another tooltip)</h2>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} bypassRestDuration={5000}>
+        <TooltipTrigger className={triggerClass} skipDelayDuration={5000}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -191,7 +191,7 @@ export const CustomDurations = () => (
         </TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} bypassRestDuration={5000}>
+        <TooltipTrigger className={triggerClass} skipDelayDuration={5000}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
@@ -200,7 +200,7 @@ export const CustomDurations = () => (
         </TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger className={triggerClass} bypassRestDuration={5000}>
+        <TooltipTrigger className={triggerClass} skipDelayDuration={5000}>
           Hover me
         </TooltipTrigger>
         <TooltipContent className={contentClass} sideOffset={5}>
