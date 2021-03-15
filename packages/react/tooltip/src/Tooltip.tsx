@@ -128,13 +128,13 @@ type TooltipTriggerOwnProps = Polymorphic.Merge<
   {
     /**
      * The duration from when the mouse enters the trigger until the tooltip gets opened.
-     * (default: 800)
+     * (default: 700)
      */
     delayDuration?: number;
 
     /**
      * How much time a user has to enter another trigger without incurring a delay again.
-     * (default: 500)
+     * (default: 300)
      */
     skipDelayDuration?: number;
   }
@@ -147,8 +147,8 @@ type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
   const {
     as = TRIGGER_DEFAULT_TAG,
-    delayDuration = 800,
-    skipDelayDuration = 500,
+    delayDuration = 700,
+    skipDelayDuration = 300,
     ...triggerProps
   } = props;
   const context = useTooltipContext(TRIGGER_NAME);

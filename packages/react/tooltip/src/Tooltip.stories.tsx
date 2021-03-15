@@ -35,7 +35,7 @@ export const Controlled = () => {
 export const CustomDurations = () => (
   <>
     <h1>Delay duration</h1>
-    <h2>Default (800ms)</h2>
+    <h2>Default (700ms)</h2>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip>
         <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
@@ -123,7 +123,7 @@ export const CustomDurations = () => (
     </div>
 
     <h1>Skip delay duration</h1>
-    <h2>Default (500ms to move from one to another tooltip)</h2>
+    <h2>Default (300ms to move from one to another tooltip)</h2>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip>
         <TooltipTrigger className={triggerClass}>Hover me</TooltipTrigger>
