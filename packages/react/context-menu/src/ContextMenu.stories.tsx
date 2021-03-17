@@ -319,5 +319,5 @@ const scaleIn = css.keyframes({
 
 const animatedContentClass = css(rootClass, {
   transformOrigin: 'var(--radix-context-menu-content-transform-origin)',
-  animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
+  '&[data-state="open"]': { animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)` },
 });
