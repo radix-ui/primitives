@@ -1,0 +1,7 @@
+releases:
+  "@radix-ui/react-alert-dialog": patch
+  "@radix-ui/react-context-menu": patch
+  "@radix-ui/react-dialog": patch
+
+declined:
+  - primitives

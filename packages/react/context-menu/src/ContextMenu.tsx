@@ -114,7 +114,7 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
       ref={forwardedRef}
       side={side}
       align={align}
-      disableOutsidePointerEvents={disableOutsidePointerEvents}
+      disableOutsidePointerEvents={context.open ? disableOutsidePointerEvents : false}
       open={context.open}
       onOpenChange={context.onOpenChange}
       style={{
