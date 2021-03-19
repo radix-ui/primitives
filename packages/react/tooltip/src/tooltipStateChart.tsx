@@ -2,83 +2,90 @@ import { assign } from './createStateMachine';
 
 import type { StateChart, Action } from './createStateMachine';
 
-type TooltipState = 'closed' | 'open';
+type TooltipState = 'closed' | 'opening' | 'open' | 'closing';
+
 type TooltipEvent =
-  | { type: 'MOUSE_ENTER'; id: string; delayDuration: number }
-  | { type: 'MOUSE_LEAVE'; id: string; skipDelayDuration: number }
-  | { type: 'DELAY_TIMER_ELAPSE'; id: string }
-  | { type: 'DELAY_TIMER_SKIP'; id: string }
-  | { type: 'SKIP_DELAY_TIMER_ELAPSE'; id: string }
+  | { type: 'OPEN'; id: string; delayDuration: number }
+  | { type: 'CLOSE'; id: string; skipDelayDuration: number }
   | { type: 'FOCUS'; id: string }
-  | { type: 'BLUR'; id: string }
-  | { type: 'ACTIVATE'; id: string }
-  | { type: 'DISMISS'; id: string }
-  | { type: 'TRIGGER_MOVE'; id: string }
-  | { type: 'UNMOUNT'; id: string };
-type TooltipContext = { id: string | null; shouldSkipDelay: boolean };
-type TooltipStateChart = StateChart<TooltipState, TooltipEvent, TooltipContext>;
-type TooltipAction = Action<TooltipEvent, TooltipContext>;
+  | { type: 'DELAY_TIMER_END' }
+  | { type: 'SKIP_DELAY_TIMER_END' };
 
-// context assignment actions
-const setId: TooltipAction = assign((context, event) => ({ ...context, id: event.id }));
-const setShouldSkipDelay = (shouldSkipDelay: boolean): TooltipAction => {
-  return assign((context) => ({ ...context, shouldSkipDelay }));
-};
+type TooltipContext = { id: string | null; delayed: boolean };
 
+type TooltipStateChart = StateChart<TooltipState, TooltipContext, TooltipEvent>;
+type TooltipAction = Action<TooltipContext, TooltipEvent>;
+
+// actions
 let delayTimerId: number;
 let skipDelayTimerId: number;
 
-// other actions
-const startDelayTimer: TooltipAction = (event, context, send) => {
-  if (context.shouldSkipDelay) {
-    send({ type: 'DELAY_TIMER_SKIP', id: event.id });
-  } else {
-    delayTimerId = window.setTimeout(
-      () => send({ type: 'DELAY_TIMER_ELAPSE', id: event.id }),
-      // @ts-ignore
-      event.delayDuration
-    );
-  }
+const startDelayTimer: TooltipAction = (context, event, send) => {
+  const delayDuration = (event as any).delayDuration ?? 700;
+  delayTimerId = window.setTimeout(() => send({ type: 'DELAY_TIMER_END' }), delayDuration);
 };
+
 const cancelDelayTimer: TooltipAction = () => clearTimeout(delayTimerId);
-const startSkipDelayTimer: TooltipAction = (event, context, send) => {
+
+const startSkipDelayTimer: TooltipAction = (context, event, send) => {
+  const skipDelayDuration = (event as any).skipDelayDuration ?? 300;
   skipDelayTimerId = window.setTimeout(
-    () => send({ type: 'SKIP_DELAY_TIMER_ELAPSE', id: event.id }),
-    // @ts-ignore
-    event.skipDelayDuration
+    () => send({ type: 'SKIP_DELAY_TIMER_END' }),
+    skipDelayDuration
   );
 };
+
 const cancelSkipDelayTimer: TooltipAction = () => clearTimeout(skipDelayTimerId);
+
+const setId: TooltipAction = assign((context, event) => ({
+  ...context,
+  id: (event as any).id ?? context.id,
+}));
+const resetId: TooltipAction = assign((context) => ({ ...context, id: null }));
+const setDelayed: TooltipAction = assign((context) => ({ ...context, delayed: true }));
+const resetDelayed: TooltipAction = assign((context) => ({ ...context, delayed: false }));
 
 const tooltipStateChart: TooltipStateChart = {
   initial: 'closed',
-  context: { id: null, shouldSkipDelay: false },
+  context: { id: null, delayed: false },
+  on: {
+    FOCUS: { target: 'open' },
+  },
   states: {
     closed: {
-      exit: [cancelDelayTimer],
+      entry: [resetId],
       on: {
-        MOUSE_ENTER: { actions: [setId, startDelayTimer] },
-        FOCUS: { target: 'open', actions: [setId, setShouldSkipDelay(true)] },
-        DELAY_TIMER_ELAPSE: { target: 'open', actions: [setId] },
-        DELAY_TIMER_SKIP: { target: 'open', actions: [setId] },
-        SKIP_DELAY_TIMER_ELAPSE: { actions: [setId, setShouldSkipDelay(false)] },
-        MOUSE_LEAVE: { actions: [setId, cancelDelayTimer] },
+        OPEN: { target: 'opening' },
       },
     },
-    open: {
-      entry: [cancelSkipDelayTimer],
+
+    opening: {
+      entry: [startDelayTimer, setId, setDelayed],
+      exit: [cancelDelayTimer],
       on: {
-        MOUSE_ENTER: { target: 'open', actions: [setId] },
-        FOCUS: { target: 'open', actions: [setId, setShouldSkipDelay(true)] },
-        MOUSE_LEAVE: {
-          target: 'closed',
-          actions: [setId, setShouldSkipDelay(true), startSkipDelayTimer],
+        DELAY_TIMER_END: { target: 'open' },
+        CLOSE: { target: 'closed' },
+      },
+    },
+
+    open: {
+      entry: [setId],
+      exit: [resetDelayed],
+      on: {
+        OPEN: { target: 'open' },
+        CLOSE: {
+          target: 'closing',
+          cond: (context, event) => context.id === (event as any).id,
         },
-        ACTIVATE: { target: 'closed', actions: [setId] },
-        DISMISS: { target: 'closed', actions: [setId] },
-        BLUR: { target: 'closed', actions: [setId, setShouldSkipDelay(false)] },
-        TRIGGER_MOVE: { target: 'closed', actions: [setId] },
-        UNMOUNT: { target: 'closed', actions: [setId] },
+      },
+    },
+
+    closing: {
+      entry: [startSkipDelayTimer],
+      exit: [cancelSkipDelayTimer],
+      on: {
+        OPEN: { target: 'open' },
+        SKIP_DELAY_TIMER_END: { target: 'closed' },
       },
     },
   },
