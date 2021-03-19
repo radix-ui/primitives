@@ -101,7 +101,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
       if (context.id === contentId) {
         if (state === 'open') {
           setStateAttribute(context.delayed ? 'delayed-open' : 'instant-open');
-        } else if (state === 'closed') {
+        } else {
           setStateAttribute('closed');
         }
       } else {
