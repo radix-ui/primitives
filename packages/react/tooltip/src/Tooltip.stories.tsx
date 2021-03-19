@@ -857,12 +857,20 @@ const fadeIn = css.keyframes({
   '100%': { opacity: 1 },
 });
 
+const fadeOut = css.keyframes({
+  '0%': { opacity: 1 },
+  '100%': { opacity: 0 },
+});
+
 const animatedContentClass = css(contentClass, {
   '&[data-state="delayed-open"]': {
     animation: `${scaleIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
   },
   '&[data-state="instant-open"]': {
     animation: `${fadeIn} 0.2s ease-out`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${fadeOut} 0.2s ease-out`,
   },
 });
 

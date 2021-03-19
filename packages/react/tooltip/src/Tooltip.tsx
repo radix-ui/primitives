@@ -7,6 +7,7 @@ import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useRect } from '@radix-ui/react-use-rect';
+import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
@@ -100,9 +101,11 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
       if (context.id === contentId) {
         if (state === 'open') {
           setStateAttribute(context.delayed ? 'delayed-open' : 'instant-open');
-        } else if (state === 'closed') {
+        } else {
           setStateAttribute('closed');
         }
+      } else {
+        setStateAttribute('closed');
       }
     });
 
@@ -197,15 +200,30 @@ TooltipTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'TooltipContent';
 
-type TooltipContentOwnProps = Polymorphic.OwnProps<typeof TooltipContentImpl>;
+type TooltipContentOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof TooltipContentImpl>,
+  {
+    /**
+     * Used to force mounting when more control is needed. Useful when
+     * controlling animation with React animation libraries.
+     */
+    forceMount?: true;
+  }
+>;
+
 type TooltipContentPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof TooltipContentImpl>,
   TooltipContentOwnProps
 >;
 
 const TooltipContent = React.forwardRef((props, forwardedRef) => {
+  const { forceMount, ...contentProps } = props;
   const context = useTooltipContext(CONTENT_NAME);
-  return context.open ? <TooltipContentImpl ref={forwardedRef} {...props} /> : null;
+  return (
+    <Presence present={forceMount || context.open}>
+      <TooltipContentImpl ref={forwardedRef} {...contentProps} />
+    </Presence>
+  );
 }) as TooltipContentPrimitive;
 
 type PopperPrimitiveOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Root>;
