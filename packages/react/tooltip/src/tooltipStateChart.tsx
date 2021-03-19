@@ -5,7 +5,7 @@ import type { StateChart, Action } from './createStateMachine';
 type TooltipState = 'closed' | 'opening' | 'open' | 'closing';
 
 type TooltipEvent =
-  | { type: 'OPEN'; id: string; delayDuration: number }
+  | { type: 'OPEN'; id: string; delayDuration?: number }
   | { type: 'CLOSE'; id: string; skipDelayDuration: number }
   | { type: 'FOCUS'; id: string }
   | { type: 'DELAY_TIMER_END' }
@@ -21,14 +21,19 @@ let delayTimerId: number;
 let skipDelayTimerId: number;
 
 const startDelayTimer: TooltipAction = (context, event, send) => {
-  const delayDuration = (event as any).delayDuration ?? 700;
-  delayTimerId = window.setTimeout(() => send({ type: 'DELAY_TIMER_END' }), delayDuration);
+  const delayDuration: number | undefined = (event as any).delayDuration;
+  const sendTimerEnd = () => send({ type: 'DELAY_TIMER_END' });
+  if (delayDuration === undefined) {
+    sendTimerEnd();
+  } else {
+    delayTimerId = window.setTimeout(sendTimerEnd, delayDuration);
+  }
 };
 
 const cancelDelayTimer: TooltipAction = () => clearTimeout(delayTimerId);
 
 const startSkipDelayTimer: TooltipAction = (context, event, send) => {
-  const skipDelayDuration = (event as any).skipDelayDuration ?? 300;
+  const skipDelayDuration: number = (event as any).skipDelayDuration ?? 300;
   skipDelayTimerId = window.setTimeout(
     () => send({ type: 'SKIP_DELAY_TIMER_END' }),
     skipDelayDuration

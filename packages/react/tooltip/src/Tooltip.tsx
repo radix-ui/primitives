@@ -128,9 +128,9 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   // put the state machine in the appropriate state
   useLayoutEffect(() => {
     if (openProp === true) {
-      handleFocus();
+      stateMachine.send({ type: 'OPEN', id: contentId });
     }
-  }, [handleFocus, openProp]);
+  }, [contentId, openProp]);
 
   return (
     <TooltipProvider
