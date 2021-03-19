@@ -3,6 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useRect } from '@radix-ui/react-use-rect';
@@ -35,6 +36,9 @@ type TooltipContextValue = {
   contentId: string;
   open: boolean;
   stateAttribute: StateAttribute;
+  onFocus(): void;
+  onOpen(): void;
+  onClose(): void;
 };
 
 const [TooltipProvider, useTooltipContext] = createContext<TooltipContextValue>(TOOLTIP_NAME);
@@ -43,10 +47,29 @@ type TooltipOwnProps = {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+
+  /**
+   * The duration from when the mouse enters the trigger until the tooltip gets opened.
+   * (default: 700)
+   */
+  delayDuration?: number;
+
+  /**
+   * How much time a user has to enter another trigger without incurring a delay again.
+   * (default: 300)
+   */
+  skipDelayDuration?: number;
 };
 
 const Tooltip: React.FC<TooltipOwnProps> = (props) => {
-  const { children, open: openProp, defaultOpen = false, onOpenChange } = props;
+  const {
+    children,
+    open: openProp,
+    defaultOpen = false,
+    onOpenChange,
+    delayDuration = 700,
+    skipDelayDuration = 300,
+  } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const contentId = useId();
   const [open = false, setOpen] = useControllableState({
@@ -73,35 +96,39 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
 
   // sync state attribute with using state machine subscription
   React.useEffect(() => {
-    const unsubscribe = stateMachine.subscribe(({ state, previousState }) => {
-      if (state === 'open') {
-        if (previousState === 'waitingForRest') {
-          setStateAttribute('delayed-open');
+    const unsubscribe = stateMachine.subscribe(({ state, context }) => {
+      if (context.id === contentId) {
+        if (state === 'open') {
+          setStateAttribute(context.delayed ? 'delayed-open' : 'instant-open');
+        } else if (state === 'closed') {
+          setStateAttribute('closed');
         }
-        if (previousState === 'checkingIfShouldSkipRestThreshold' || previousState === 'closed') {
-          setStateAttribute('instant-open');
-        }
-      }
-      if (state === 'closed') {
-        setStateAttribute('closed');
       }
     });
 
     return unsubscribe;
-  }, []);
+  }, [contentId]);
+
+  const handleFocus = React.useCallback(() => stateMachine.send({ type: 'FOCUS', id: contentId }), [
+    contentId,
+  ]);
+  const handleOpen = React.useCallback(
+    () => stateMachine.send({ type: 'OPEN', id: contentId, delayDuration }),
+    [contentId, delayDuration]
+  );
+  const handleClose = React.useCallback(
+    () => stateMachine.send({ type: 'CLOSE', id: contentId, skipDelayDuration }),
+    [skipDelayDuration, contentId]
+  );
 
   // send transition if the component unmounts
-  React.useEffect(() => {
-    return () => {
-      stateMachine.send({ type: 'UNMOUNT', id: contentId });
-    };
-  }, [contentId]);
+  React.useEffect(() => () => handleClose(), [handleClose]);
 
   // if we're controlling the component
   // put the state machine in the appropriate state
   useLayoutEffect(() => {
     if (openProp === true) {
-      stateMachine.send({ type: 'FOCUS', id: contentId });
+      stateMachine.send({ type: 'OPEN', id: contentId });
     }
   }, [contentId, openProp]);
 
@@ -111,6 +138,9 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
       contentId={contentId}
       open={open}
       stateAttribute={stateAttribute}
+      onFocus={handleFocus}
+      onOpen={handleOpen}
+      onClose={handleClose}
     >
       {children}
     </TooltipProvider>
@@ -126,36 +156,14 @@ Tooltip.displayName = TOOLTIP_NAME;
 const TRIGGER_NAME = 'TooltipTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type TooltipTriggerOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
-  {
-    /**
-     * The duration a user has to "rest" (not move) his mouse over the trigger
-     * before the tooltip gets opened.
-     * (default: 300)
-     */
-    restDuration?: number;
-
-    /**
-     * How much time a user has to move his mouse to another trigger without incurring
-     * another rest duration.
-     * (default: 300)
-     */
-    bypassRestDuration?: number;
-  }
->;
+type TooltipTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
 type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
   typeof TRIGGER_DEFAULT_TAG,
   TooltipTriggerOwnProps
 >;
 
 const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = TRIGGER_DEFAULT_TAG,
-    restDuration = 300,
-    bypassRestDuration = 300,
-    ...triggerProps
-  } = props;
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useTooltipContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
@@ -167,33 +175,14 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
       {...triggerProps}
       as={as}
       ref={composedTriggerRef}
-      onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
-        stateMachine.send({ type: 'MOUSE_ENTER', id: context.contentId, restDuration })
-      )}
-      onMouseMove={composeEventHandlers(props.onMouseMove, () =>
-        stateMachine.send({ type: 'MOUSE_MOVE', id: context.contentId, restDuration })
-      )}
-      onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
-        const stateMachineContext = stateMachine.getContext();
-        if (stateMachineContext.id === context.contentId) {
-          stateMachine.send({ type: 'MOUSE_LEAVE', id: context.contentId, bypassRestDuration });
-        }
-      })}
-      onFocus={composeEventHandlers(props.onFocus, () =>
-        stateMachine.send({ type: 'FOCUS', id: context.contentId })
-      )}
-      onBlur={composeEventHandlers(props.onBlur, () => {
-        const stateMachineContext = stateMachine.getContext();
-        if (stateMachineContext.id === context.contentId) {
-          stateMachine.send({ type: 'BLUR', id: context.contentId });
-        }
-      })}
-      onMouseDown={composeEventHandlers(props.onMouseDown, () =>
-        stateMachine.send({ type: 'ACTIVATE', id: context.contentId })
-      )}
+      onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onOpen)}
+      onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onClose)}
+      onMouseDown={composeEventHandlers(props.onMouseDown, context.onClose)}
+      onFocus={composeEventHandlers(props.onFocus, context.onFocus)}
+      onBlur={composeEventHandlers(props.onBlur, context.onClose)}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-          stateMachine.send({ type: 'ACTIVATE', id: context.contentId });
+        if (event.key === 'Enter' || event.key === ' ') {
+          context.onClose();
         }
       })}
     />
@@ -248,6 +237,8 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
   const context = useTooltipContext(CONTENT_NAME);
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
+  useEscapeKeydown(() => context.onClose());
+
   return (
     <PortalWrapper>
       <CheckTriggerMoved />
@@ -287,6 +278,7 @@ function CheckTriggerMoved() {
   const previousTriggerLeft = usePrevious(triggerLeft);
   const triggerTop = triggerRect?.top;
   const previousTriggerTop = usePrevious(triggerTop);
+  const handleClose = context.onClose;
 
   React.useEffect(() => {
     // checking if the user has scrolled…
@@ -295,9 +287,9 @@ function CheckTriggerMoved() {
       (previousTriggerTop !== undefined && previousTriggerTop !== triggerTop);
 
     if (hasTriggerMoved) {
-      stateMachine.send({ type: 'TRIGGER_MOVE', id: context.contentId });
+      handleClose();
     }
-  }, [context.contentId, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
+  }, [handleClose, previousTriggerLeft, previousTriggerTop, triggerLeft, triggerTop]);
 
   return null;
 }

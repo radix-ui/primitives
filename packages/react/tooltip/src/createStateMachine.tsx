@@ -2,43 +2,45 @@ const ASSIGN_ACTION_TYPE = 'machine.actions.assign' as const;
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-type StateChart<State extends string, Event extends { type: string }, Context> = {
+type StateChart<State extends string, Context, Event extends { type: string }> = {
   initial: State;
   context: Context;
+  on?: {
+    [eventType in Event['type']]?: Transition<State, Context, Event>;
+  };
   states: {
     [stateValue in State]: {
       on?: {
-        [eventType in Event['type']]?: Transition<State, Event, Context>;
+        [eventType in Event['type']]?: Transition<State, Context, Event>;
       };
-      entry?: Array<Action<Event, Context>>;
-      exit?: Array<Action<Event, Context>>;
+      entry?: Array<Action<Context, Event>>;
+      exit?: Array<Action<Context, Event>>;
     };
   };
 };
 
-type Transition<State extends string, Event, Context> = {
-  target: State;
-  actions?: Array<Action<Event, Context>>;
+type Transition<State extends string, Context, Event> = {
+  target?: State;
+  actions?: Array<Action<Context, Event>>;
+  cond?: (context: Context, Event: Event) => boolean;
 };
 
-type Action<Event, Context> = ActionFunction<Event, Context> | AssignAction<Event, Context>;
+type Action<Context, Event> = ActionFunction<Context, Event> | AssignAction<Context, Event>;
 
-type ActionFunction<Event, Context> = (
-  event: Event,
+type ActionFunction<Context, Event> = (
   context: Context,
+  event: Event,
   send: (event: Event) => void
 ) => void;
 
-function createStateMachine<State extends string, Event extends { type: string }, Context>(
-  stateChart: StateChart<State, Event, Context>,
+function createStateMachine<State extends string, Context, Event extends { type: string }>(
+  stateChart: StateChart<State, Context, Event>,
   { debug = false, warnOnUnknownTransitions = !isProduction } = {}
 ) {
-  let PREVIOUS_STATE: State | undefined;
-  let CURRENT_STATE = stateChart.initial;
-  let PREVIOUS_CONTEXT: Context | undefined;
-  let CURRENT_CONTEXT = stateChart.context;
+  let currentState = stateChart.initial;
+  let currentContext = stateChart.context;
 
-  type CallbackFn = (args: { state: State; previousState?: State; context: Context }) => void;
+  type CallbackFn = (args: { state: State; context: Context }) => void;
   const subscriptions: Array<CallbackFn> = [];
 
   function subscribe(callback: CallbackFn) {
@@ -49,67 +51,64 @@ function createStateMachine<State extends string, Event extends { type: string }
   }
 
   function notify() {
-    subscriptions.forEach((callback) =>
-      callback({
-        state: CURRENT_STATE,
-        previousState: PREVIOUS_STATE,
-        context: CURRENT_CONTEXT,
-      })
-    );
+    subscriptions.forEach((callback) => callback({ state: currentState, context: currentContext }));
   }
 
   const send = (event: Event) => {
-    const stateDefinition = stateChart.states[CURRENT_STATE];
+    const stateDefinition = stateChart.states[currentState];
     const type: Event['type'] | undefined = event.type;
-    const transition: Transition<State, Event, Context> | undefined = stateDefinition.on?.[type];
+    const topLevelTransition: Transition<State, Context, Event> | undefined = stateChart.on?.[type];
+    const stateTransition: Transition<State, Context, Event> | undefined =
+      stateDefinition.on?.[type];
+    const transition = topLevelTransition ?? stateTransition;
 
     if (transition === undefined) {
       if (warnOnUnknownTransitions) {
         console.warn(
-          `From state: "${CURRENT_STATE}", event "${type}" has no transition to any state`
+          `From state: "${currentState}", event "${type}" has no transition to any state`
         );
       }
     } else {
-      PREVIOUS_STATE = CURRENT_STATE;
-      PREVIOUS_CONTEXT = { ...CURRENT_CONTEXT };
-      const nextState = transition.target;
-      const nextStateDefinition = stateChart.states[nextState];
-      CURRENT_STATE = nextState;
+      const { target: nextState, actions = [], cond = () => true } = transition;
+      const nextStateDefinition = nextState ? stateChart.states[nextState] : {};
 
-      // execute actions
-      const allActions = (stateDefinition.exit || []).concat(
-        transition.actions || [],
-        nextStateDefinition.entry || []
-      );
-      CURRENT_CONTEXT = executeActions(allActions, event, CURRENT_CONTEXT);
+      if (cond(currentContext, event)) {
+        // execute actions
+        const allActions = (stateDefinition.exit || []).concat(
+          actions,
+          nextStateDefinition.entry || []
+        );
+        currentContext = executeActions(allActions, event, currentContext);
 
-      if (debug) {
-        console.log({
-          previousState: PREVIOUS_STATE,
-          previousContext: PREVIOUS_CONTEXT,
-          event,
-          state: CURRENT_STATE,
-          context: CURRENT_CONTEXT,
-        });
+        if (nextState) {
+          currentState = nextState;
+
+          if (debug) {
+            console.group('event:', event);
+            console.log('state:', currentState);
+            console.log('context:', currentContext);
+            console.groupEnd();
+          }
+
+          notify();
+        }
       }
-
-      notify();
     }
   };
 
   function getContext() {
-    return CURRENT_CONTEXT;
+    return currentContext;
   }
 
   function executeActions(
-    actions: Array<Action<Event, Context>>,
+    actions: Array<Action<Context, Event>>,
     event: Event,
     context: Context
   ): Context {
     let nextContext = context;
     actions?.forEach((action) => {
       if (typeof action === 'function') {
-        action(event, nextContext, send);
+        action(nextContext, event, send);
       } else if (action.type === ASSIGN_ACTION_TYPE) {
         nextContext = action.assign(nextContext, event);
       }
@@ -120,16 +119,16 @@ function createStateMachine<State extends string, Event extends { type: string }
   return { subscribe, send, getContext };
 }
 
-type AssignAction<Event, Context> = {
+type AssignAction<Context, Event> = {
   type: typeof ASSIGN_ACTION_TYPE;
   assign(context: Context, event: Event): Context;
 };
 
-function assign<Event, Context>(
-  assignFn: AssignAction<Event, Context>['assign']
-): AssignAction<Event, Context> {
+function assign<Context, Event>(
+  assignFn: AssignAction<Context, Event>['assign']
+): AssignAction<Context, Event> {
   return { type: ASSIGN_ACTION_TYPE, assign: assignFn };
 }
 
 export { createStateMachine, assign };
-export type { StateChart };
+export type { StateChart, Action };

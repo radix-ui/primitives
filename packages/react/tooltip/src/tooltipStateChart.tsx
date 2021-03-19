@@ -1,127 +1,96 @@
 import { assign } from './createStateMachine';
 
-import type { StateChart } from './createStateMachine';
+import type { StateChart, Action } from './createStateMachine';
 
-type TooltipState =
-  // tooltip is closed
-  | 'closed'
-
-  // still closed
-  // we are waiting for the mouse to stop moving (REST_THRESHOLD_DURATION)
-  | 'waitingForRest'
-
-  // tooltip is open
-  | 'open'
-
-  // tooltip is closed
-  // we are checking if the mouse enters another tooltip trigger (SKIP_REST_THRESHOLD_DURATION)
-  | 'checkingIfShouldSkipRestThreshold'
-
-  // tooltip has been dismissed via click or keyboard action (escape, space, enter)
-  | 'dismissed';
+type TooltipState = 'closed' | 'opening' | 'open' | 'closing';
 
 type TooltipEvent =
-  | { type: 'MOUSE_ENTER'; id: string; restDuration: number }
-  | { type: 'MOUSE_MOVE'; id: string; restDuration: number }
-  | { type: 'MOUSE_LEAVE'; id: string; bypassRestDuration: number }
-  | { type: 'REST_TIMER_ELAPSE'; id: string }
-  | { type: 'SKIP_REST_TIMER_ELAPSE'; id: string }
+  | { type: 'OPEN'; id: string; delayDuration?: number }
+  | { type: 'CLOSE'; id: string; skipDelayDuration: number }
   | { type: 'FOCUS'; id: string }
-  | { type: 'BLUR'; id: string }
-  | { type: 'ACTIVATE'; id: string }
-  | { type: 'TRIGGER_MOVE'; id: string }
-  | { type: 'UNMOUNT'; id: string };
+  | { type: 'DELAY_TIMER_END' }
+  | { type: 'SKIP_DELAY_TIMER_END' };
 
-type TooltipContext = { id: string | null };
+type TooltipContext = { id: string | null; delayed: boolean };
 
-type TooltipStateChart = StateChart<TooltipState, TooltipEvent, TooltipContext>;
+type TooltipStateChart = StateChart<TooltipState, TooltipContext, TooltipEvent>;
+type TooltipAction = Action<TooltipContext, TooltipEvent>;
 
-// The rest timer is used to check for the user "resting" a certain
-// period of time over the trigger, before deciding to open the tooltip.
-let restTimerId: number;
+// actions
+let delayTimerId: number;
+let skipDelayTimerId: number;
 
-// The skip rest timer is used to check if the user enters another tooltip trigger
-// in a certain period of time, in which case, we would skip the rest timer and open
-// the tooltip instantly.
-let skipRestTimerId: number;
+const startDelayTimer: TooltipAction = (context, event, send) => {
+  const delayDuration: number | undefined = (event as any).delayDuration;
+  const sendTimerEnd = () => send({ type: 'DELAY_TIMER_END' });
+  if (delayDuration === undefined) {
+    sendTimerEnd();
+  } else {
+    delayTimerId = window.setTimeout(sendTimerEnd, delayDuration);
+  }
+};
 
-const assignId = assign((context: TooltipContext, event: TooltipEvent) => ({
+const cancelDelayTimer: TooltipAction = () => clearTimeout(delayTimerId);
+
+const startSkipDelayTimer: TooltipAction = (context, event, send) => {
+  const skipDelayDuration: number = (event as any).skipDelayDuration ?? 300;
+  skipDelayTimerId = window.setTimeout(
+    () => send({ type: 'SKIP_DELAY_TIMER_END' }),
+    skipDelayDuration
+  );
+};
+
+const cancelSkipDelayTimer: TooltipAction = () => clearTimeout(skipDelayTimerId);
+
+const setId: TooltipAction = assign((context, event) => ({
   ...context,
-  id: event.id,
+  id: (event as any).id ?? context.id,
 }));
+const resetId: TooltipAction = assign((context) => ({ ...context, id: null }));
+const setDelayed: TooltipAction = assign((context) => ({ ...context, delayed: true }));
+const resetDelayed: TooltipAction = assign((context) => ({ ...context, delayed: false }));
 
 const tooltipStateChart: TooltipStateChart = {
   initial: 'closed',
-  context: { id: null },
+  context: { id: null, delayed: false },
+  on: {
+    FOCUS: { target: 'open' },
+  },
   states: {
     closed: {
+      entry: [resetId],
       on: {
-        MOUSE_ENTER: { target: 'waitingForRest', actions: [assignId] },
-        FOCUS: { target: 'open', actions: [assignId] },
+        OPEN: { target: 'opening' },
       },
     },
-    waitingForRest: {
-      entry: [
-        (event, context, send) => {
-          restTimerId = window.setTimeout(
-            () => send({ type: 'REST_TIMER_ELAPSE', id: event.id }),
-            // @ts-ignore
-            event.restDuration
-          );
-        },
-      ],
-      exit: [
-        (event, context) => {
-          clearTimeout(restTimerId);
-        },
-      ],
+
+    opening: {
+      entry: [startDelayTimer, setId, setDelayed],
+      exit: [cancelDelayTimer],
       on: {
-        REST_TIMER_ELAPSE: { target: 'open', actions: [assignId] },
-        MOUSE_MOVE: { target: 'waitingForRest', actions: [assignId] },
-        MOUSE_LEAVE: { target: 'closed', actions: [assignId] },
-        ACTIVATE: { target: 'dismissed', actions: [assignId] },
-        UNMOUNT: { target: 'closed', actions: [assignId] },
+        DELAY_TIMER_END: { target: 'open' },
+        CLOSE: { target: 'closed' },
       },
     },
+
     open: {
+      entry: [setId],
+      exit: [resetDelayed],
       on: {
-        MOUSE_LEAVE: { target: 'checkingIfShouldSkipRestThreshold', actions: [assignId] },
-        MOUSE_ENTER: { target: 'open', actions: [assignId] },
-        MOUSE_MOVE: { target: 'open', actions: [assignId] },
-        ACTIVATE: { target: 'dismissed', actions: [assignId] },
-        BLUR: { target: 'closed', actions: [assignId] },
-        TRIGGER_MOVE: { target: 'closed', actions: [assignId] },
-        UNMOUNT: { target: 'closed', actions: [assignId] },
+        OPEN: { target: 'open' },
+        CLOSE: {
+          target: 'closing',
+          cond: (context, event) => context.id === (event as any).id,
+        },
       },
     },
-    checkingIfShouldSkipRestThreshold: {
-      entry: [
-        (event, context, send) => {
-          skipRestTimerId = window.setTimeout(
-            () => send({ type: 'SKIP_REST_TIMER_ELAPSE', id: event.id }),
-            // @ts-ignore
-            event.bypassRestDuration
-          );
-        },
-      ],
-      exit: [
-        (event, context) => {
-          clearTimeout(skipRestTimerId);
-        },
-      ],
+
+    closing: {
+      entry: [startSkipDelayTimer],
+      exit: [cancelSkipDelayTimer],
       on: {
-        SKIP_REST_TIMER_ELAPSE: { target: 'closed', actions: [assignId] },
-        MOUSE_ENTER: { target: 'open', actions: [assignId] },
-        FOCUS: { target: 'open', actions: [assignId] },
-        ACTIVATE: { target: 'dismissed', actions: [assignId] },
-        UNMOUNT: { target: 'closed', actions: [assignId] },
-      },
-    },
-    dismissed: {
-      on: {
-        MOUSE_LEAVE: { target: 'closed', actions: [assignId] },
-        BLUR: { target: 'closed', actions: [assignId] },
-        UNMOUNT: { target: 'closed', actions: [assignId] },
+        OPEN: { target: 'open' },
+        SKIP_DELAY_TIMER_END: { target: 'closed' },
       },
     },
   },

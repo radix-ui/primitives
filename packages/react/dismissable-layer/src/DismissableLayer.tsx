@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 
 // We need to compute the total count of layers AND a running count of all layers
 // in order to find which layer is the deepest one.
@@ -183,23 +184,6 @@ function DismissableLayerImpl(props: React.ComponentProps<typeof DismissableLaye
 /* -------------------------------------------------------------------------------------------------
  * Utility hooks
  * -----------------------------------------------------------------------------------------------*/
-
-/**
- * Listens for when the escape key is down
- */
-function useEscapeKeydown(onEscapeKeyDownProp?: (event: KeyboardEvent) => void) {
-  const onEscapeKeyDown = useCallbackRef(onEscapeKeyDownProp);
-
-  React.useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onEscapeKeyDown(event);
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onEscapeKeyDown]);
-}
 
 /**
  * Sets up mousedown/touchstart listeners which listens for pointer down events outside a react subtree.
