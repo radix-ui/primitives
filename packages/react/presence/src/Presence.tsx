@@ -90,18 +90,25 @@ function usePresence(present: boolean) {
        */
       const handleAnimationEnd = (event: AnimationEvent) => {
         const currentAnimationName = getAnimationName(stylesRef.current);
-        const isCurrentAnimation = event.animationName === currentAnimationName;
+        const isCurrentAnimation = currentAnimationName.includes(event.animationName);
         if (event.target === node && isCurrentAnimation) {
-          // if animation occurred, store its name as the previous animation
-          prevAnimationNameRef.current = getAnimationName(stylesRef.current);
           send('ANIMATION_END');
         }
       };
 
+      const handleAnimationStart = (event: AnimationEvent) => {
+        if (event.target === node) {
+          // if animation occurred, store its name as the previous animation.
+          prevAnimationNameRef.current = getAnimationName(stylesRef.current);
+        }
+      };
+
+      node.addEventListener('animationstart', handleAnimationStart);
       node.addEventListener('animationcancel', handleAnimationEnd);
       node.addEventListener('animationend', handleAnimationEnd);
 
       return () => {
+        node.removeEventListener('animationstart', handleAnimationStart);
         node.removeEventListener('animationcancel', handleAnimationEnd);
         node.removeEventListener('animationend', handleAnimationEnd);
       };
