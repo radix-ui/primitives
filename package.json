@@ -32,6 +32,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@babel/plugin-transform-typescript": "^7.13.0",
+    "@babel/preset-react": "^7.12.13",
+    "@parcel/babel-plugin-transform-runtime": "^2.0.0-nightly.1823",
+    "@parcel/babel-preset-env": "^2.0.0-alpha.3",
     "@parcel/packager-ts": "2.0.0-nightly.629+a3aa8681",
     "@parcel/transformer-typescript-types": "2.0.0-nightly.629+a3aa8681",
     "@stitches/react": "0.0.3-canary.4",

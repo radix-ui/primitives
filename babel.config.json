@@ -1,0 +1,20 @@
+{
+  "presets": [
+    [
+      "@parcel/babel-preset-env",
+      {
+        "useBuiltIns": "usage",
+        "corejs": 3,
+        "targets": {
+          "browsers": "> 0.25%, not ie >= 9",
+          "node": 12
+        }
+      }
+    ],
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    ["@parcel/babel-plugin-transform-runtime", { "corejs": 3 }],
+    ["@babel/plugin-transform-typescript", { "isTSX": true }]
+  ]
+}

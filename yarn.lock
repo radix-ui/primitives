@@ -108,6 +108,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/compat-data@npm:^7.13.0, @babel/compat-data@npm:^7.13.8":
+  version: 7.13.12
+  resolution: "@babel/compat-data@npm:7.13.12"
+  checksum: a7165243d68ee4d3f22cddd431175678df9c01dc12c11621ba8a76af9907d922d68afaa9f32a05ce2b85e55895dd8ca5c9407a8ec72ffcda12400ca24714d15a
+  languageName: node
+  linkType: hard
+
 "@babel/core@npm:^7.0.0, @babel/core@npm:^7.1.0, @babel/core@npm:^7.12.0, @babel/core@npm:^7.12.3, @babel/core@npm:^7.7.5":
   version: 7.12.16
   resolution: "@babel/core@npm:7.12.16"
@@ -139,6 +146,17 @@ __metadata:
     jsesc: ^2.5.1
     source-map: ^0.5.0
   checksum: 243c7c8987b9720d7cc8ecec165f69fda4159bb3ab19d3f09a4d5c6d35644d3b62293903aab0ae1f34dda61e39094bfea604d88a035e9f9ec485ffde636a734f
+  languageName: node
+  linkType: hard
+
+"@babel/generator@npm:^7.13.0":
+  version: 7.13.9
+  resolution: "@babel/generator@npm:7.13.9"
+  dependencies:
+    "@babel/types": ^7.13.0
+    jsesc: ^2.5.1
+    source-map: ^0.5.0
+  checksum: d9cf7db910dd703a55c3ba147a8024564d51de06f5e3e61aef6ca197bcd80a6cb0a633fe4688c8c9f6226c70ee6f32a747050a8e420972b45cc98a6b3fc5ae66
   languageName: node
   linkType: hard
 
@@ -175,6 +193,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-compilation-targets@npm:^7.13.0":
+  version: 7.13.10
+  resolution: "@babel/helper-compilation-targets@npm:7.13.10"
+  dependencies:
+    "@babel/compat-data": ^7.13.8
+    "@babel/helper-validator-option": ^7.12.17
+    browserslist: ^4.14.5
+    semver: ^6.3.0
+  peerDependencies:
+    "@babel/core": ^7.0.0
+  checksum: 80eb7a380d01d785de42006370e13bbda63b76745a8da1c68dcbf3dc4bff630bd9db8a76cf3053628c61d91c1452328a4ad9a8d9fc24ed65c02f635327234678
+  languageName: node
+  linkType: hard
+
 "@babel/helper-create-class-features-plugin@npm:^7.12.13, @babel/helper-create-class-features-plugin@npm:^7.12.16":
   version: 7.12.16
   resolution: "@babel/helper-create-class-features-plugin@npm:7.12.16"
@@ -190,6 +222,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-create-class-features-plugin@npm:^7.13.0":
+  version: 7.13.11
+  resolution: "@babel/helper-create-class-features-plugin@npm:7.13.11"
+  dependencies:
+    "@babel/helper-function-name": ^7.12.13
+    "@babel/helper-member-expression-to-functions": ^7.13.0
+    "@babel/helper-optimise-call-expression": ^7.12.13
+    "@babel/helper-replace-supers": ^7.13.0
+    "@babel/helper-split-export-declaration": ^7.12.13
+  peerDependencies:
+    "@babel/core": ^7.0.0
+  checksum: 14da13eeb919216abd1f933a6ee0d7fab3a04899c091b6a4e7857be547249c0ac4e071689d97c2af5649e8688dcc99139039f74a500ca6728f9f7297a59e8d8c
+  languageName: node
+  linkType: hard
+
 "@babel/helper-create-regexp-features-plugin@npm:^7.12.13":
   version: 7.12.16
   resolution: "@babel/helper-create-regexp-features-plugin@npm:7.12.16"
@@ -199,6 +246,24 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0
   checksum: f1fd81069e4e187848e4e616dd85cf5d2618b56d12a7530d6aa01b322938f50f3ed764ecc537bcf2a853a3e191892d29806218aebadadc0a1c1b07f7b7f6f37d
+  languageName: node
+  linkType: hard
+
+"@babel/helper-define-polyfill-provider@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "@babel/helper-define-polyfill-provider@npm:0.1.5"
+  dependencies:
+    "@babel/helper-compilation-targets": ^7.13.0
+    "@babel/helper-module-imports": ^7.12.13
+    "@babel/helper-plugin-utils": ^7.13.0
+    "@babel/traverse": ^7.13.0
+    debug: ^4.1.1
+    lodash.debounce: ^4.0.8
+    resolve: ^1.14.2
+    semver: ^6.1.2
+  peerDependencies:
+    "@babel/core": ^7.4.0-0
+  checksum: 41a3bf1b016cd94cece5eec1aa7fcc868ca32e0b630735e2be934d1ff7145226633b8c7d67884c18d7a090a5465a94bb8c4b01160ed8ea240f952d6aa1057ef0
   languageName: node
   linkType: hard
 
@@ -249,6 +314,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-member-expression-to-functions@npm:^7.13.0, @babel/helper-member-expression-to-functions@npm:^7.13.12":
+  version: 7.13.12
+  resolution: "@babel/helper-member-expression-to-functions@npm:7.13.12"
+  dependencies:
+    "@babel/types": ^7.13.12
+  checksum: 2c075f72e5bda1432c74484548272577485d45c4d6c7cc9e84c5d053eaa6e0890e93c9b018bab97f65cbb81ac04dd9cdca73d5ae0e94b03cfc00d10972b99185
+  languageName: node
+  linkType: hard
+
 "@babel/helper-module-imports@npm:^7.0.0, @babel/helper-module-imports@npm:^7.12.13":
   version: 7.12.13
   resolution: "@babel/helper-module-imports@npm:7.12.13"
@@ -291,6 +365,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-plugin-utils@npm:^7.13.0":
+  version: 7.13.0
+  resolution: "@babel/helper-plugin-utils@npm:7.13.0"
+  checksum: 229ac1917b43ad38732d2d4a9a826f87d8945719249efe1d6191f3e25ba6027a289af70380d82d62a03fc9e82558a0ea6f12739cbb55b64bb280d6b511b4ca65
+  languageName: node
+  linkType: hard
+
 "@babel/helper-remap-async-to-generator@npm:^7.12.13":
   version: 7.12.13
   resolution: "@babel/helper-remap-async-to-generator@npm:7.12.13"
@@ -311,6 +392,18 @@ __metadata:
     "@babel/traverse": ^7.12.13
     "@babel/types": ^7.12.13
   checksum: 1a433f4e4b0a1fc7fbcf4884a12abd75873269f8978c66a72a63e5ba83614c2208851111100d0dc25b9f3bc15e244356810b581d3e8b8cb2c11f8c42f2673400
+  languageName: node
+  linkType: hard
+
+"@babel/helper-replace-supers@npm:^7.13.0":
+  version: 7.13.12
+  resolution: "@babel/helper-replace-supers@npm:7.13.12"
+  dependencies:
+    "@babel/helper-member-expression-to-functions": ^7.13.12
+    "@babel/helper-optimise-call-expression": ^7.12.13
+    "@babel/traverse": ^7.13.0
+    "@babel/types": ^7.13.12
+  checksum: 38b79cb56a9a5324e32567660fcafbac4efae6f2c2c2ef048deb2d022476fc1c7acfda5ab841f7135d07b4f39e62142f9d253cfe824232030432c86f94d226f1
   languageName: node
   linkType: hard
 
@@ -355,6 +448,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-validator-option@npm:^7.12.17":
+  version: 7.12.17
+  resolution: "@babel/helper-validator-option@npm:7.12.17"
+  checksum: 9201d17a5634b05a6f3d561b95e73a4e4f9ba2e56c55cfc3b9a2a9618c4090b4b507720ac7a2e77209e68dc9bdc00a59b5ba7ad9ecbca3fb2c9217e814b7b5a5
+  languageName: node
+  linkType: hard
+
 "@babel/helper-wrap-function@npm:^7.12.13":
   version: 7.12.13
   resolution: "@babel/helper-wrap-function@npm:7.12.13"
@@ -395,6 +495,15 @@ __metadata:
   bin:
     parser: ./bin/babel-parser.js
   checksum: 437970f6cfbe5ffbd1bcb316c3550e5ecd0003a525bf16f3c15ceb4105a6a3db22389c84c37a6d2b266e222dc92a05c25cf268bbeb937b496d9a48b8232c273f
+  languageName: node
+  linkType: hard
+
+"@babel/parser@npm:^7.13.0":
+  version: 7.13.12
+  resolution: "@babel/parser@npm:7.13.12"
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: d73d8fa55627697501e3f86b84a6f91edd93695347bb7aa02e7466ddc7e39fc79dc1b43a496c6a253d7a8608f8cfcf420692d2f88ff2ca668f8273742b804430
   languageName: node
   linkType: hard
 
@@ -1160,6 +1269,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/plugin-transform-runtime@npm:^7.8.3":
+  version: 7.13.10
+  resolution: "@babel/plugin-transform-runtime@npm:7.13.10"
+  dependencies:
+    "@babel/helper-module-imports": ^7.12.13
+    "@babel/helper-plugin-utils": ^7.13.0
+    babel-plugin-polyfill-corejs2: ^0.1.4
+    babel-plugin-polyfill-corejs3: ^0.1.3
+    babel-plugin-polyfill-regenerator: ^0.1.2
+    semver: ^6.3.0
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 2b36d86770696e80bf1aed9f97d4d7bb684a6dc1bb407f2da607a13f190fd1feed06a454a6f89d6d60da9bc554c3aef942f5ad307217a48ac9ddcf8edd57894e
+  languageName: node
+  linkType: hard
+
 "@babel/plugin-transform-shorthand-properties@npm:^7.12.1, @babel/plugin-transform-shorthand-properties@npm:^7.12.13":
   version: 7.12.13
   resolution: "@babel/plugin-transform-shorthand-properties@npm:7.12.13"
@@ -1226,6 +1351,19 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: cb42a4d548e1679fbc2074efff532aa5ce83c98edc4c81b9e4c872ee1ba8a5d4764b84a08f33b1650750a5324737b86abcc36ef00a92f2d35f07d5c561ba52b5
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-transform-typescript@npm:^7.13.0":
+  version: 7.13.0
+  resolution: "@babel/plugin-transform-typescript@npm:7.13.0"
+  dependencies:
+    "@babel/helper-create-class-features-plugin": ^7.13.0
+    "@babel/helper-plugin-utils": ^7.13.0
+    "@babel/plugin-syntax-typescript": ^7.12.13
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: cbf557689f6dcd59545b394d47d77ed9aeacefdbb68532e5d13b5983543f568c948a0ff492b37bc233f7073e405162076a6d29995e26230f691ceaf9d5630183
   languageName: node
   linkType: hard
 
@@ -1355,7 +1493,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-react@npm:^7.0.0, @babel/preset-react@npm:^7.12.1, @babel/preset-react@npm:^7.12.5":
+"@babel/preset-react@npm:^7.0.0, @babel/preset-react@npm:^7.12.1, @babel/preset-react@npm:^7.12.13, @babel/preset-react@npm:^7.12.5":
   version: 7.12.13
   resolution: "@babel/preset-react@npm:7.12.13"
   dependencies:
@@ -1408,6 +1546,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime-corejs3@npm:^7.13.10":
+  version: 7.13.10
+  resolution: "@babel/runtime-corejs3@npm:7.13.10"
+  dependencies:
+    core-js-pure: ^3.0.0
+    regenerator-runtime: ^0.13.4
+  checksum: cbf4de5c0e73197447c112b31e1e7bb48b7940c815fdc6e8aee28a9e33f57f5c3991ba0598dfbfb8bc4d22a7cfe3b2eced0f08c12f8e618aa2ccf73684ced051
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:7.12.5":
   version: 7.12.5
   resolution: "@babel/runtime@npm:7.12.5"
@@ -1454,6 +1602,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/traverse@npm:^7.13.0":
+  version: 7.13.0
+  resolution: "@babel/traverse@npm:7.13.0"
+  dependencies:
+    "@babel/code-frame": ^7.12.13
+    "@babel/generator": ^7.13.0
+    "@babel/helper-function-name": ^7.12.13
+    "@babel/helper-split-export-declaration": ^7.12.13
+    "@babel/parser": ^7.13.0
+    "@babel/types": ^7.13.0
+    debug: ^4.1.0
+    globals: ^11.1.0
+    lodash: ^4.17.19
+  checksum: e5d1b690157da325b5bea98e472f4df0fff16048242a70880e2da7939b005ccd5b63d2b4527e203cfc71a422da0fa513c0ad84114bff002d583ebd7dbd2c8576
+  languageName: node
+  linkType: hard
+
 "@babel/types@npm:7.8.3":
   version: 7.8.3
   resolution: "@babel/types@npm:7.8.3"
@@ -1473,6 +1638,17 @@ __metadata:
     lodash: ^4.17.19
     to-fast-properties: ^2.0.0
   checksum: b6bb1356a7f3737a03c9362df03fd08a2b0599d117169cf7e2e856551fdf01cf4d5188d6370b23315f196058b0239fd609b65ccadcfed3bb3c0b90c27575e805
+  languageName: node
+  linkType: hard
+
+"@babel/types@npm:^7.13.0, @babel/types@npm:^7.13.12":
+  version: 7.13.12
+  resolution: "@babel/types@npm:7.13.12"
+  dependencies:
+    "@babel/helper-validator-identifier": ^7.12.11
+    lodash: ^4.17.19
+    to-fast-properties: ^2.0.0
+  checksum: 154392625ea7b7c550be1ebf624b9cfed394d11bf8b7cb39b0ec874a84313d26dc708cca62b18de9901bce19a9a187f0d4834e8cf365ad2fc9357c96c13923f7
   languageName: node
   linkType: hard
 
@@ -2021,6 +2197,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@parcel/babel-plugin-transform-runtime@npm:^2.0.0-nightly.1823":
+  version: 2.0.0-nightly.2254
+  resolution: "@parcel/babel-plugin-transform-runtime@npm:2.0.0-nightly.2254"
+  dependencies:
+    "@babel/plugin-transform-runtime": ^7.8.3
+    semver: ^5.4.1
+  checksum: fb64a2db601ad2c280a47b711246539e59f3b21338df4fed9968025ec72769ef02b7a0744d5870fbe44b456ed9b31612b0e313c2ef8d63aaa6ce1b139c693871
+  languageName: node
+  linkType: hard
+
 "@parcel/babel-preset-env@npm:2.0.0-nightly.629+a3aa8681":
   version: 2.0.0-nightly.629
   resolution: "@parcel/babel-preset-env@npm:2.0.0-nightly.629"
@@ -2030,6 +2216,18 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.12.0
   checksum: 8218989a0855bf119ba31d03d98fb83d2af3a5cb07ebd52354b9ab52258a7f423b871de034c0911ea33ea8e1922b7584bc645d394cb9171501fb9f9374ebb3e2
+  languageName: node
+  linkType: hard
+
+"@parcel/babel-preset-env@npm:^2.0.0-alpha.3":
+  version: 2.0.0-nightly.632
+  resolution: "@parcel/babel-preset-env@npm:2.0.0-nightly.632"
+  dependencies:
+    "@babel/preset-env": ^7.4.0
+    semver: ^5.4.1
+  peerDependencies:
+    "@babel/core": ^7.12.0
+  checksum: e9f116d3612a33f366cc393910407cdf9b43c7b63d141652630e2ac82fee0cd828c43a895a4829999ec70f4e896f87f5a928bcf38c220a004553a6ae6d7890af
   languageName: node
   linkType: hard
 
@@ -2790,6 +2988,8 @@ __metadata:
 "@radix-ui/number@workspace:*, @radix-ui/number@workspace:packages/core/number":
   version: 0.0.0-use.local
   resolution: "@radix-ui/number@workspace:packages/core/number"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   languageName: unknown
   linkType: soft
 
@@ -2797,6 +2997,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/popper@workspace:packages/core/popper"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     csstype: ^3.0.4
   languageName: unknown
   linkType: soft
@@ -2804,6 +3005,8 @@ __metadata:
 "@radix-ui/primitive@workspace:*, @radix-ui/primitive@workspace:packages/core/primitive":
   version: 0.0.0-use.local
   resolution: "@radix-ui/primitive@workspace:packages/core/primitive"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   languageName: unknown
   linkType: soft
 
@@ -2811,6 +3014,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-accessible-icon@workspace:packages/react/accessible-icon"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -2821,6 +3025,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-accordion@workspace:packages/react/accordion"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-collapsible": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
@@ -2838,6 +3043,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-alert-dialog@workspace:packages/react/alert-dialog"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -2855,6 +3061,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-announce@workspace:packages/react/announce"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -2869,6 +3076,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-arrow@workspace:packages/react/arrow"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
@@ -2880,6 +3088,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
@@ -2891,6 +3100,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-avatar@workspace:packages/react/avatar"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -2905,6 +3115,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-checkbox@workspace:packages/react/checkbox"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -2922,6 +3133,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-collapsible@workspace:packages/react/collapsible"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -2940,6 +3152,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-collection@workspace:packages/react/collection"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
@@ -2950,6 +3163,8 @@ __metadata:
 "@radix-ui/react-compose-refs@workspace:*, @radix-ui/react-compose-refs@workspace:packages/react/compose-refs":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-compose-refs@workspace:packages/react/compose-refs"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -2959,6 +3174,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-context-menu@workspace:packages/react/context-menu"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-menu": "workspace:*"
@@ -2972,6 +3188,8 @@ __metadata:
 "@radix-ui/react-context@workspace:*, @radix-ui/react-context@workspace:packages/react/context":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-context@workspace:packages/react/context"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -2981,6 +3199,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-dialog@workspace:packages/react/dialog"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3004,6 +3223,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-use-body-pointer-events": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-escape-keydown": "workspace:*"
@@ -3017,6 +3237,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3033,6 +3254,8 @@ __metadata:
 "@radix-ui/react-focus-guards@workspace:*, @radix-ui/react-focus-guards@workspace:packages/react/focus-guards":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-focus-guards@workspace:packages/react/focus-guards"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3042,6 +3265,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-focus-scope@workspace:packages/react/focus-scope"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3051,6 +3275,8 @@ __metadata:
 "@radix-ui/react-id@workspace:*, @radix-ui/react-id@workspace:packages/react/id":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-id@workspace:packages/react/id"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3060,6 +3286,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-label@workspace:packages/react/label"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
@@ -3073,6 +3300,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-menu@workspace:packages/react/menu"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3097,6 +3325,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-polymorphic@workspace:packages/react/polymorphic"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@testing-library/react": ^10.4.8
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3107,6 +3336,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-popover@workspace:packages/react/popover"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3131,6 +3361,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-popper@workspace:packages/react/popper"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/popper": "workspace:*"
     "@radix-ui/react-arrow": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
@@ -3149,6 +3380,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-portal@workspace:packages/react/portal"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
@@ -3162,6 +3394,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-presence@workspace:packages/react/presence"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
   peerDependencies:
     react: ">=16.8"
@@ -3172,6 +3405,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-primitive@workspace:packages/react/primitive"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@testing-library/react": ^10.4.8
   peerDependencies:
@@ -3183,6 +3417,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-progress@workspace:packages/react/progress"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -3195,6 +3430,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-radio-group@workspace:packages/react/radio-group"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3214,6 +3450,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-roving-focus@workspace:packages/react/roving-focus"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/number": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
@@ -3227,6 +3464,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-scroll-area@workspace:packages/react/scroll-area"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/number": "workspace:*"
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
@@ -3246,6 +3484,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-separator@workspace:packages/react/separator"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
@@ -3257,6 +3496,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-slider@workspace:packages/react/slider"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/number": "workspace:*"
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-collection": "workspace:*"
@@ -3276,6 +3516,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-slot@workspace:packages/react/slot"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
   peerDependencies:
@@ -3287,6 +3528,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-switch@workspace:packages/react/switch"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3303,6 +3545,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-tabs@workspace:packages/react/tabs"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
@@ -3320,6 +3563,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-toggle-group@workspace:packages/react/toggle-group"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
@@ -3336,6 +3580,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-toggle@workspace:packages/react/toggle"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -3349,6 +3594,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-toolbar@workspace:packages/react/toolbar"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
@@ -3366,6 +3612,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-tooltip@workspace:packages/react/tooltip"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3391,6 +3638,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-body-pointer-events@workspace:packages/react/use-body-pointer-events"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3400,6 +3648,8 @@ __metadata:
 "@radix-ui/react-use-callback-ref@workspace:*, @radix-ui/react-use-callback-ref@workspace:packages/react/use-callback-ref":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-callback-ref@workspace:packages/react/use-callback-ref"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3409,6 +3659,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-controllable-state@workspace:packages/react/use-controllable-state"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3419,6 +3670,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-escape-keydown@workspace:packages/react/use-escape-keydown"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3428,6 +3680,8 @@ __metadata:
 "@radix-ui/react-use-layout-effect@workspace:*, @radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3436,6 +3690,8 @@ __metadata:
 "@radix-ui/react-use-previous@workspace:*, @radix-ui/react-use-previous@workspace:packages/react/use-previous":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-previous@workspace:packages/react/use-previous"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3445,6 +3701,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-rect@workspace:packages/react/use-rect"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
@@ -3456,6 +3713,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-size@workspace:packages/react/use-size"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3466,6 +3724,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-visually-hidden@workspace:packages/react/visually-hidden"
   dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
@@ -3476,6 +3735,8 @@ __metadata:
 "@radix-ui/rect@workspace:*, @radix-ui/rect@workspace:packages/core/rect":
   version: 0.0.0-use.local
   resolution: "@radix-ui/rect@workspace:packages/core/rect"
+  dependencies:
+    "@babel/runtime-corejs3": ^7.13.10
   languageName: unknown
   linkType: soft
 
@@ -5985,6 +6246,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babel-plugin-polyfill-corejs2@npm:^0.1.4":
+  version: 0.1.10
+  resolution: "babel-plugin-polyfill-corejs2@npm:0.1.10"
+  dependencies:
+    "@babel/compat-data": ^7.13.0
+    "@babel/helper-define-polyfill-provider": ^0.1.5
+    semver: ^6.1.1
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: b11a01d9d3a078de5f26eeef8216f29b104239eee3ae93767dccdff9df558d07d159a35941ce5d77d6c658b9017475922831a232f8e60d94056412ba6ef2692b
+  languageName: node
+  linkType: hard
+
+"babel-plugin-polyfill-corejs3@npm:^0.1.3":
+  version: 0.1.7
+  resolution: "babel-plugin-polyfill-corejs3@npm:0.1.7"
+  dependencies:
+    "@babel/helper-define-polyfill-provider": ^0.1.5
+    core-js-compat: ^3.8.1
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: d6f94262fbcfbfcffdb526abd20b49bdd730d646df3709b06536248b72c7b4c53a4f75f755c9041f249bf8486bd4eb1e79fdfb0796e4795cef64942b51123b50
+  languageName: node
+  linkType: hard
+
+"babel-plugin-polyfill-regenerator@npm:^0.1.2":
+  version: 0.1.6
+  resolution: "babel-plugin-polyfill-regenerator@npm:0.1.6"
+  dependencies:
+    "@babel/helper-define-polyfill-provider": ^0.1.5
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 49b98a19015074d3466e8b020928b7dc09ff2c1a62d8d8ba2f02f6e7e0cc99e3ac5e7624a7611acf0a8073d363c2d6aa6a0a6e7508b85f63982150164f1d7e25
+  languageName: node
+  linkType: hard
+
 "babel-plugin-react-docgen@npm:^4.2.1":
   version: 4.2.1
   resolution: "babel-plugin-react-docgen@npm:4.2.1"
@@ -7336,7 +7633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js-compat@npm:^3.8.0":
+"core-js-compat@npm:^3.8.0, core-js-compat@npm:^3.8.1":
   version: 3.8.3
   resolution: "core-js-compat@npm:3.8.3"
   dependencies:
@@ -12707,6 +13004,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.debounce@npm:^4.0.8":
+  version: 4.0.8
+  resolution: "lodash.debounce@npm:4.0.8"
+  checksum: b6042bd8c09ff1961c9127d32266316bc21f946ece5e3464a663ec61fadb98e7d56ec0ef7e23b47d393695310c19cf24e651c1756be6da91ac02c72be7f79465
+  languageName: node
+  linkType: hard
+
 "lodash.memoize@npm:^4.1.2":
   version: 4.1.2
   resolution: "lodash.memoize@npm:4.1.2"
@@ -15373,6 +15677,10 @@ __metadata:
   resolution: "primitives@workspace:."
   dependencies:
     "@babel/core": ^7.0.0
+    "@babel/plugin-transform-typescript": ^7.13.0
+    "@babel/preset-react": ^7.12.13
+    "@parcel/babel-plugin-transform-runtime": ^2.0.0-nightly.1823
+    "@parcel/babel-preset-env": ^2.0.0-alpha.3
     "@parcel/packager-ts": 2.0.0-nightly.629+a3aa8681
     "@parcel/transformer-typescript-types": 2.0.0-nightly.629+a3aa8681
     "@stitches/react": 0.0.3-canary.4
@@ -16490,7 +16798,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@^1.1.6, resolve@^1.10.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.17.0, resolve@^1.18.1":
+"resolve@^1.1.6, resolve@^1.10.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.17.0, resolve@^1.18.1":
   version: 1.20.0
   resolution: "resolve@npm:1.20.0"
   dependencies:
@@ -16500,7 +16808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.6#builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#builtin<compat/resolve>":
+"resolve@patch:resolve@^1.1.6#builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#builtin<compat/resolve>":
   version: 1.20.0
   resolution: "resolve@patch:resolve@npm%3A1.20.0#builtin<compat/resolve>::version=1.20.0&hash=3388aa"
   dependencies:
@@ -16795,7 +17103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^6.0.0, semver@npm:^6.1.2, semver@npm:^6.3.0":
+"semver@npm:^6.0.0, semver@npm:^6.1.1, semver@npm:^6.1.2, semver@npm:^6.3.0":
   version: 6.3.0
   resolution: "semver@npm:6.3.0"
   bin:
