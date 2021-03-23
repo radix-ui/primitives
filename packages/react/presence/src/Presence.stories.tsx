@@ -18,21 +18,30 @@ export const Basic = () => {
   );
 };
 
-export const WithSuspendedUnmountAnimation = () => {
-  const ref = React.useRef<React.ElementRef<typeof Animated>>(null);
+export const WithMountAnimation = () => <Animation className={mountAnimationClass} />;
+export const WithMultipleMountAnimations = () => (
+  <Animation className={multipleMountAnimationsClass} />
+);
+export const WithOpenAndCloseAnimation = () => <Animation className={openAndCloseAnimationClass} />;
+export const WithMultipleOpenAndCloseAnimations = () => (
+  <Animation className={multipleOpenAndCloseAnimationsClass} />
+);
+
+function Animation(props: React.ComponentProps<'div'>) {
+  const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
 
   return (
     <>
       <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
       <Presence present={open}>
-        <Animated data-state={open ? 'open' : 'closed'} ref={ref}>
+        <div {...props} data-state={open ? 'open' : 'closed'} ref={ref}>
           Content
-        </Animated>
+        </div>
       </Presence>
     </>
   );
-};
+}
 
 function Toggles({ open, onOpenChange, nodeRef }: any) {
   function handleToggleVisibility() {
@@ -74,11 +83,38 @@ const fadeOut = css.keyframes({
   to: { opacity: 0 },
 });
 
-const Animated = styled('div', {
+const slideUp = css.keyframes({
+  from: { transform: 'translateY(30px)' },
+  to: { transform: 'translateY(0)' },
+});
+
+const slideDown = css.keyframes({
+  from: { transform: 'translateY(0)' },
+  to: { transform: 'translateY(30px)' },
+});
+
+const mountAnimationClass = css({
+  animation: `${fadeIn} 3s ease-out`,
+});
+
+const multipleMountAnimationsClass = css({
+  animation: `${fadeIn} 6s cubic-bezier(0.22, 1, 0.36, 1), ${slideUp} 6s cubic-bezier(0.22, 1, 0.36, 1)`,
+});
+
+const openAndCloseAnimationClass = css({
   '&[data-state="open"]': {
     animation: `${fadeIn} 3s ease-out`,
   },
   '&[data-state="closed"]': {
     animation: `${fadeOut} 3s ease-in`,
+  },
+});
+
+const multipleOpenAndCloseAnimationsClass = css({
+  '&[data-state="open"]': {
+    animation: `${fadeIn} 3s cubic-bezier(0.22, 1, 0.36, 1), ${slideUp} 1s cubic-bezier(0.22, 1, 0.36, 1)`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${fadeOut} 3s cubic-bezier(0.22, 1, 0.36, 1), ${slideDown} 1s cubic-bezier(0.22, 1, 0.36, 1) forwards`,
   },
 });
