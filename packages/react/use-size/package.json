@@ -13,7 +13,8 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rm -rf dist",
-    "prepublish": "yarn clean"
+    "prepublish": "yarn clean",
+    "version": "yarn version"
   },
   "devDependencies": {
     "@types/resize-observer-browser": "^0.1.4"
@@ -28,5 +29,8 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
+  },
+  "dependencies": {
+    "@babel/runtime-corejs3": "^7.13.10"
   }
 }

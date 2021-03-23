@@ -13,9 +13,11 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rm -rf dist",
-    "prepublish": "yarn clean"
+    "prepublish": "yarn clean",
+    "version": "yarn version"
   },
   "dependencies": {
+    "@babel/runtime-corejs3": "^7.13.10",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",

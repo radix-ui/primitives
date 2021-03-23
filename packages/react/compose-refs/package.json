@@ -13,7 +13,8 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rm -rf dist",
-    "prepublish": "yarn clean"
+    "prepublish": "yarn clean",
+    "version": "yarn version"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"
@@ -25,5 +26,8 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
+  },
+  "dependencies": {
+    "@babel/runtime-corejs3": "^7.13.10"
   }
 }
