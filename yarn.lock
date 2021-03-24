@@ -3272,6 +3272,7 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
     react: ">=16.8"
+    react-dom: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3400,6 +3401,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3434,6 +3436,7 @@ __metadata:
     react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3466,6 +3469,7 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3536,6 +3540,7 @@ __metadata:
     react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3572,6 +3577,7 @@ __metadata:
     react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
@@ -3849,6 +3855,7 @@ __metadata:
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
   languageName: unknown
   linkType: soft
 
