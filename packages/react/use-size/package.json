@@ -31,6 +31,6 @@
     "url": "https://github.com/radix-ui/primitives/issues"
   },
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.13.10"
+    "@babel/runtime": "^7.13.10"
   }
 }
