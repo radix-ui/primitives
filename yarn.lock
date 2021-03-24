@@ -1546,16 +1546,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime-corejs3@npm:^7.13.10":
-  version: 7.13.10
-  resolution: "@babel/runtime-corejs3@npm:7.13.10"
-  dependencies:
-    core-js-pure: ^3.0.0
-    regenerator-runtime: ^0.13.4
-  checksum: cbf4de5c0e73197447c112b31e1e7bb48b7940c815fdc6e8aee28a9e33f57f5c3991ba0598dfbfb8bc4d22a7cfe3b2eced0f08c12f8e618aa2ccf73684ced051
-  languageName: node
-  linkType: hard
-
 "@babel/runtime@npm:7.12.5":
   version: 7.12.5
   resolution: "@babel/runtime@npm:7.12.5"
@@ -2998,7 +2988,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/number@workspace:packages/core/number"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   languageName: unknown
   linkType: soft
 
@@ -3015,7 +3005,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/primitive@workspace:packages/core/primitive"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   languageName: unknown
   linkType: soft
 
@@ -3173,7 +3163,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-compose-refs@workspace:packages/react/compose-refs"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3198,7 +3188,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-context@workspace:packages/react/context"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3264,7 +3254,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-focus-guards@workspace:packages/react/focus-guards"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3285,7 +3275,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-id@workspace:packages/react/id"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3334,7 +3324,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-polymorphic@workspace:packages/react/polymorphic"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@testing-library/react": ^10.4.8
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3658,7 +3648,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-callback-ref@workspace:packages/react/use-callback-ref"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3690,7 +3680,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3700,7 +3690,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-previous@workspace:packages/react/use-previous"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3722,7 +3712,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-size@workspace:packages/react/use-size"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3745,7 +3735,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/rect@workspace:packages/core/rect"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
   languageName: unknown
   linkType: soft
 
