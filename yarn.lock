@@ -1574,6 +1574,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.13.10":
+  version: 7.13.10
+  resolution: "@babel/runtime@npm:7.13.10"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 22014226b96a8c8e8d4e8bcdb011f317d1b32881aef424a669dc6ceaee14993d3609172967853cbf9c25c724c25145d45885b6c9df56ba241c12820776607f1f
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.12.13, @babel/template@npm:^7.3.3, @babel/template@npm:^7.4.0":
   version: 7.12.13
   resolution: "@babel/template@npm:7.12.13"
@@ -2997,7 +3006,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/popper@workspace:packages/core/popper"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     csstype: ^3.0.4
   languageName: unknown
   linkType: soft
@@ -3014,7 +3023,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-accessible-icon@workspace:packages/react/accessible-icon"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3025,7 +3034,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-accordion@workspace:packages/react/accordion"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-collapsible": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
@@ -3043,7 +3052,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-alert-dialog@workspace:packages/react/alert-dialog"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3061,7 +3070,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-announce@workspace:packages/react/announce"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -3076,7 +3085,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-arrow@workspace:packages/react/arrow"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
@@ -3088,7 +3097,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
@@ -3100,7 +3109,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-avatar@workspace:packages/react/avatar"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -3115,7 +3124,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-checkbox@workspace:packages/react/checkbox"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3133,7 +3142,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-collapsible@workspace:packages/react/collapsible"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3152,7 +3161,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-collection@workspace:packages/react/collection"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
@@ -3174,7 +3183,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-context-menu@workspace:packages/react/context-menu"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-menu": "workspace:*"
@@ -3199,7 +3208,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-dialog@workspace:packages/react/dialog"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3223,7 +3232,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-body-pointer-events": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-escape-keydown": "workspace:*"
@@ -3237,7 +3246,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-dropdown-menu@workspace:packages/react/dropdown-menu"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3265,7 +3274,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-focus-scope@workspace:packages/react/focus-scope"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3286,7 +3295,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-label@workspace:packages/react/label"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
@@ -3300,7 +3309,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-menu@workspace:packages/react/menu"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3336,7 +3345,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-popover@workspace:packages/react/popover"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3361,7 +3370,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-popper@workspace:packages/react/popper"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/popper": "workspace:*"
     "@radix-ui/react-arrow": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
@@ -3380,7 +3389,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-portal@workspace:packages/react/portal"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
@@ -3394,7 +3403,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-presence@workspace:packages/react/presence"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
   peerDependencies:
     react: ">=16.8"
@@ -3405,7 +3414,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-primitive@workspace:packages/react/primitive"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@testing-library/react": ^10.4.8
   peerDependencies:
@@ -3417,7 +3426,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-progress@workspace:packages/react/progress"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -3430,7 +3439,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-radio-group@workspace:packages/react/radio-group"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3450,7 +3459,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-roving-focus@workspace:packages/react/roving-focus"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/number": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
@@ -3464,7 +3473,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-scroll-area@workspace:packages/react/scroll-area"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/number": "workspace:*"
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
@@ -3484,7 +3493,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-separator@workspace:packages/react/separator"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
@@ -3496,7 +3505,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-slider@workspace:packages/react/slider"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/number": "workspace:*"
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-collection": "workspace:*"
@@ -3516,7 +3525,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-slot@workspace:packages/react/slot"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
   peerDependencies:
@@ -3528,7 +3537,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-switch@workspace:packages/react/switch"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3545,7 +3554,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-tabs@workspace:packages/react/tabs"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
@@ -3563,7 +3572,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-toggle-group@workspace:packages/react/toggle-group"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
@@ -3580,7 +3589,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-toggle@workspace:packages/react/toggle"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -3594,7 +3603,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-toolbar@workspace:packages/react/toolbar"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
@@ -3612,7 +3621,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-tooltip@workspace:packages/react/tooltip"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3638,7 +3647,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-body-pointer-events@workspace:packages/react/use-body-pointer-events"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3659,7 +3668,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-controllable-state@workspace:packages/react/use-controllable-state"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3670,7 +3679,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-escape-keydown@workspace:packages/react/use-escape-keydown"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3701,7 +3710,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-rect@workspace:packages/react/use-rect"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
@@ -3724,7 +3733,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-visually-hidden@workspace:packages/react/visually-hidden"
   dependencies:
-    "@babel/runtime-corejs3": ^7.13.10
+    "@babel/runtime": ^7.13.10
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
