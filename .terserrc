@@ -1,0 +1,6 @@
+{
+  format: {
+    preserve_annotations: true,
+    comments: '/__PURE__/',
+  }
+}
