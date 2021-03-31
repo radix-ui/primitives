@@ -228,6 +228,15 @@ export const Chromatic = () => (
       </PopoverContent>
     </Popover>
 
+    <h2 style={{ marginTop: 100 }}>Open with reordered parts</h2>
+    <Popover defaultOpen>
+      <PopoverContent className={contentClass} sideOffset={5}>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} />
+      </PopoverContent>
+      <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+    </Popover>
+
     <h1 style={{ marginTop: 100 }}>Controlled</h1>
     <h2>Closed</h2>
     <Popover open={false}>
@@ -247,10 +256,42 @@ export const Chromatic = () => (
       </PopoverContent>
     </Popover>
 
+    <h2 style={{ marginTop: 100 }}>Open with reordered parts</h2>
+    <Popover open>
+      <PopoverContent className={contentClass} sideOffset={5}>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} />
+      </PopoverContent>
+      <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+    </Popover>
+
     <h1 style={{ marginTop: 100 }}>Force mounted content</h1>
     <Popover>
       <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
       <PopoverContent className={contentClass} sideOffset={5} forceMount>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} />
+      </PopoverContent>
+    </Popover>
+
+    <h1 style={{ marginTop: 100 }}>Anchor</h1>
+    <h2>Controlled</h2>
+    <Popover open>
+      <PopoverAnchor style={{ padding: 20, background: 'gainsboro' }}>
+        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+      </PopoverAnchor>
+      <PopoverContent className={contentClass}>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} />
+      </PopoverContent>
+    </Popover>
+
+    <h2>Uncontrolled</h2>
+    <Popover defaultOpen>
+      <PopoverAnchor style={{ padding: 20, background: 'gainsboro' }}>
+        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+      </PopoverAnchor>
+      <PopoverContent className={contentClass}>
         <PopoverClose className={closeClass}>close</PopoverClose>
         <PopoverArrow className={arrowClass} width={20} height={10} />
       </PopoverContent>

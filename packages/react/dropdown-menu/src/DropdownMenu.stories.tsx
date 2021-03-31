@@ -258,6 +258,35 @@ export const Chromatic = () => {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <h2 style={{ marginTop: 200 }}>Open with reordered parts</h2>
+      <DropdownMenu defaultOpen>
+        <DropdownMenuContent
+          className={contentClass}
+          sideOffset={5}
+          avoidCollisions={false}
+          disableOutsideScroll={false}
+        >
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+            Undo
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+            Redo
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className={separatorClass} />
+          <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+            Cut
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+            Copy
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+            Paste
+          </DropdownMenuItem>
+          <DropdownMenuArrow />
+        </DropdownMenuContent>
+        <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
+      </DropdownMenu>
+
       <h1 style={{ marginTop: 200 }}>Controlled</h1>
       <h2>Closed</h2>
       <DropdownMenu open={false}>
@@ -315,6 +344,35 @@ export const Chromatic = () => {
           </DropdownMenuItem>
           <DropdownMenuArrow />
         </DropdownMenuContent>
+      </DropdownMenu>
+
+      <h2 style={{ marginTop: 200 }}>Open with reordered parts</h2>
+      <DropdownMenu open>
+        <DropdownMenuContent
+          className={contentClass}
+          sideOffset={5}
+          avoidCollisions={false}
+          disableOutsideScroll={false}
+        >
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+            Undo
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+            Redo
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className={separatorClass} />
+          <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+            Cut
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+            Copy
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+            Paste
+          </DropdownMenuItem>
+          <DropdownMenuArrow />
+        </DropdownMenuContent>
+        <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
       </DropdownMenu>
 
       <h1 style={{ marginTop: 200 }}>Positioning</h1>

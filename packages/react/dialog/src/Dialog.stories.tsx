@@ -141,7 +141,7 @@ export const Chromatic = () => (
   <div
     style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(2, 1fr)',
+      gridTemplateColumns: 'repeat(4, 1fr)',
       gridTemplateRows: 'repeat(2, 1fr)',
       height: '100vh',
     }}
@@ -160,10 +160,34 @@ export const Chromatic = () => (
       <h2>Open</h2>
       <Dialog defaultOpen>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogOverlay className={overlayClass} style={{ right: '50%', bottom: '50%' }} />
-        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '25%' }}>
+        <DialogOverlay className={overlayClass} style={{ left: 0, bottom: '50%', width: '25%' }} />
+        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '12%' }}>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
+      </Dialog>
+    </div>
+
+    <div>
+      <h1>Uncontrolled with reordered parts</h1>
+      <h2>Closed</h2>
+      <Dialog>
+        <DialogOverlay className={overlayClass} />
+        <DialogContent className={chromaticContentClass}>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+        <DialogTrigger className={triggerClass}>open</DialogTrigger>
+      </Dialog>
+
+      <h2>Open</h2>
+      <Dialog defaultOpen>
+        <DialogOverlay
+          className={overlayClass}
+          style={{ left: '25%', bottom: '50%', width: '25%' }}
+        />
+        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '37%' }}>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+        <DialogTrigger className={triggerClass}>open</DialogTrigger>
       </Dialog>
     </div>
 
@@ -181,10 +205,37 @@ export const Chromatic = () => (
       <h2>Open</h2>
       <Dialog open>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogOverlay className={overlayClass} style={{ left: '50%', bottom: '50%' }} />
-        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '75%' }}>
+        <DialogOverlay
+          className={overlayClass}
+          style={{ left: '50%', bottom: '50%', width: '25%' }}
+        />
+        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '62%' }}>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
+      </Dialog>
+    </div>
+
+    <div>
+      <h1>Controlled with reordered parts</h1>
+      <h2>Closed</h2>
+      <Dialog open={false}>
+        <DialogOverlay className={overlayClass} />
+        <DialogContent className={chromaticContentClass}>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+        <DialogTrigger className={triggerClass}>open</DialogTrigger>
+      </Dialog>
+
+      <h2>Open</h2>
+      <Dialog open>
+        <DialogOverlay
+          className={overlayClass}
+          style={{ left: '75%', bottom: '50%', width: '25%' }}
+        />
+        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '88%' }}>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+        <DialogTrigger className={triggerClass}>open</DialogTrigger>
       </Dialog>
     </div>
 
