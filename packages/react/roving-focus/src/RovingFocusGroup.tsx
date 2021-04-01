@@ -114,7 +114,7 @@ function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
       if (focusIntent !== undefined) {
         event.preventDefault();
 
-        const items = getRovingFocusItems(context.groupId);
+        const items = filterVisibleItems(getRovingFocusItems(context.groupId));
         const count = items.length;
         const currentItem = document.activeElement as HTMLElement | null;
         const currentIndex = currentItem ? items.indexOf(currentItem) : -1;
@@ -165,6 +165,11 @@ function getRovingFocusItems(groupId: string): HTMLElement[] {
   return Array.from(document.querySelectorAll(`[${GROUP_ID_DATA_ATTR}="${groupId}"]`));
 }
 
+// items that are not visible (ie: display: none) should not be cycled through
+function filterVisibleItems(elements: HTMLElement[]) {
+  return elements.filter((item) => Boolean(item.offsetParent));
+}
+
 const Root = RovingFocusGroup;
 
 export {
@@ -173,4 +178,6 @@ export {
   Root,
   //
   useRovingFocus,
+  //
+  filterVisibleItems,
 };

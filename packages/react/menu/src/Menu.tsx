@@ -5,7 +5,7 @@ import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
-import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
+import { RovingFocusGroup, useRovingFocus, filterVisibleItems } from '@radix-ui/react-roving-focus';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
@@ -299,7 +299,9 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
                         if (event.target === menu) {
                           if (ALL_KEYS.includes(event.key)) {
                             event.preventDefault();
-                            const items = Array.from(menu.querySelectorAll(ENABLED_ITEM_SELECTOR));
+                            const items = filterVisibleItems(
+                              Array.from(menu.querySelectorAll(ENABLED_ITEM_SELECTOR))
+                            );
                             const item = FIRST_KEYS.includes(event.key)
                               ? items[0]
                               : items.reverse()[0];

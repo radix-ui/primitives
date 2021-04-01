@@ -184,6 +184,24 @@ export const PreventClosing = () => (
   </div>
 );
 
+// Contains invisible (display: none) items
+export const InvisibleItems = () => (
+  <div style={{ textAlign: 'center', padding: 50 }}>
+    <DropdownMenu>
+      <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
+      <DropdownMenuContent className={rootClass} sideOffset={5}>
+        <DropdownMenuItem className={itemClass}>Item 1 (Visible)</DropdownMenuItem>
+        <DropdownMenuItem className={itemClass}>Item 2 (Visible)</DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} style={{ display: 'none' }}>
+          Item 3 (Invisible)
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass}>Item 4 (Visible)</DropdownMenuItem>
+        <DropdownMenuArrow />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </div>
+);
+
 // change order slightly for more pleasing visual
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
 
