@@ -19,7 +19,7 @@ type RovingFocusGroupOptions = {
 type RovingContextValue = {
   groupId: string;
   tabStopId: string | null;
-  onTabStopIdChange(tabStop: string): void;
+  onTabStopIdChange(tabStopId: string): void;
   reachable: boolean;
   onReachableChange(reachable: boolean): void;
   itemMap: Map<string, boolean | null>;
