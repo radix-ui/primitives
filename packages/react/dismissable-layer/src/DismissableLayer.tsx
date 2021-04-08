@@ -31,7 +31,6 @@ type DismissableLayerProps = {
   children: (
     args: ReturnType<typeof usePointerDownOutside> &
       ReturnType<typeof useFocusOutside> & {
-        ref: React.RefObject<any>;
         style: React.CSSProperties;
       }
   ) => React.ReactElement;
@@ -101,8 +100,6 @@ function DismissableLayerImpl(props: React.ComponentProps<typeof DismissableLaye
     onDismiss,
   } = props;
 
-  const nodeRef = React.useRef<HTMLElement>(null);
-
   const totalLayerCount = useTotalLayerCount();
   const prevRunningLayerCount = usePreviousRunningLayerCount();
   const runningLayerCount = prevRunningLayerCount + 1;
@@ -171,7 +168,6 @@ function DismissableLayerImpl(props: React.ComponentProps<typeof DismissableLaye
         runningCount={runningLayerCountWithDisabledOutsidePointerEvents}
       >
         {children({
-          ref: nodeRef,
           style: shouldReEnablePointerEvents ? { pointerEvents: 'auto' } : {},
           ...pointerDownOutside,
           ...focusOutside,

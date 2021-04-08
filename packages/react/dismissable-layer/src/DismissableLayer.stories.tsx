@@ -4,7 +4,6 @@ import React from 'react';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Popper, PopperArrow } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
-import { composeRefs } from '@radix-ui/react-compose-refs';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from './DismissableLayer';
@@ -160,12 +159,12 @@ export const WithFocusScope = () => {
           disableOutsidePointerEvents
           onDismiss={() => setOpen(false)}
         >
-          {({ ref: dismissableLayerContainerRef, ...props }) => (
+          {(dismissableLayerProps) => (
             <FocusScope trapped>
-              {({ ref: focusScopeContainerRef }) => (
+              {(focusScopeProps) => (
                 <div
-                  ref={composeRefs(focusScopeContainerRef, dismissableLayerContainerRef)}
-                  {...props}
+                  {...dismissableLayerProps}
+                  {...focusScopeProps}
                   style={{
                     display: 'inline-flex',
                     justifyContent: 'center',
@@ -176,7 +175,7 @@ export const WithFocusScope = () => {
                     backgroundColor: 'black',
                     borderRadius: 10,
                     marginBottom: 20,
-                    ...props.style,
+                    ...dismissableLayerProps.style,
                   }}
                 >
                   <input type="text" />
@@ -529,7 +528,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
                     {(focusScopeProps) => (
                       <div
                         {...dismissableLayerProps}
-                        ref={composeRefs(dismissableLayerProps.ref, focusScopeProps.ref)}
+                        {...focusScopeProps}
                         style={{
                           boxSizing: 'border-box',
                           display: 'flex',
@@ -636,7 +635,7 @@ function DummyPopover({
                     {(focusScopeProps) => (
                       <Popper
                         {...dismissableLayerProps}
-                        ref={composeRefs(dismissableLayerProps.ref, focusScopeProps.ref)}
+                        {...focusScopeProps}
                         anchorRef={openButtonRef}
                         style={{
                           filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.12))',

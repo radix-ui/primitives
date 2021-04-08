@@ -256,12 +256,7 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
                     <PopperPrimitive.Root
                       role="menu"
                       {...menuProps}
-                      ref={composeRefs(
-                        forwardedRef,
-                        menuRef,
-                        focusScopeProps.ref,
-                        dismissableLayerProps.ref
-                      )}
+                      ref={composeRefs(forwardedRef, menuRef, focusScopeProps.ref)}
                       anchorRef={anchorRef}
                       tabIndex={menuTabIndex}
                       style={{
