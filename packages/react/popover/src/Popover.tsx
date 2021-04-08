@@ -311,12 +311,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                   aria-modal
                   id={context.contentId}
                   {...contentProps}
-                  ref={composeRefs(
-                    forwardedRef,
-                    contentRef,
-                    focusScopeProps.ref,
-                    dismissableLayerProps.ref
-                  )}
+                  ref={composeRefs(forwardedRef, contentRef, focusScopeProps.ref)}
                   anchorRef={anchorRef || context.triggerRef}
                   style={{
                     ...dismissableLayerProps.style,
