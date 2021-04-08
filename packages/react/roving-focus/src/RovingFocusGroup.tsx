@@ -19,9 +19,10 @@ type RovingFocusGroupOptions = {
 type RovingContextValue = {
   groupId: string;
   tabStopId: string | null;
-  onTabStopIdChange(itemId: string, active?: boolean): void;
+  onTabStopIdChange(tabStopId: string): void;
   reachable: boolean;
   onReachableChange(reachable: boolean): void;
+  itemMap: Map<string, boolean | null>;
 } & RovingFocusGroupOptions;
 
 const GROUP_NAME = 'RovingFocusGroup';
@@ -43,15 +44,18 @@ function RovingFocusGroup(props: RovingFocusGroupProps) {
     onChange: props.onReachableChange,
   });
   const [tabStopId, setTabStopId] = React.useState<string | null>(null);
-  const handleTabStopIdChange = React.useCallback(
-    (itemId, active) => {
-      setTabStopId((prevTabStopId) => {
-        const nextTabStopId = active || !prevTabStopId ? itemId : prevTabStopId;
-        return reachable ? nextTabStopId : null;
-      });
-    },
-    [reachable]
-  );
+  const itemMapRef = React.useRef<Map<string, boolean>>(new Map());
+
+  React.useEffect(() => {
+    if (reachable) {
+      const itemIds = Array.from(itemMapRef.current.keys());
+      const firstActiveId = itemIds.find((id) => itemMapRef.current.get(id) === true);
+      const firstItemId = itemIds[0];
+      setTabStopId(firstActiveId || firstItemId || null);
+    } else {
+      setTabStopId(null);
+    }
+  }, [reachable]);
 
   return (
     <RovingFocusProvider
@@ -60,9 +64,10 @@ function RovingFocusGroup(props: RovingFocusGroupProps) {
       dir={dir}
       loop={loop}
       tabStopId={tabStopId}
-      onTabStopIdChange={handleTabStopIdChange}
+      onTabStopIdChange={setTabStopId}
       reachable={reachable}
       onReachableChange={setReachable}
+      itemMap={itemMapRef.current}
     >
       {children}
     </RovingFocusProvider>
@@ -78,16 +83,17 @@ const ITEM_NAME = 'RovingFocusItem';
 
 type UseRovingFocusItemOptions = { disabled?: boolean; active?: boolean };
 
-function useRovingFocus({ disabled, active }: UseRovingFocusItemOptions) {
+function useRovingFocus({ disabled, active = false }: UseRovingFocusItemOptions) {
   const itemId = useId();
   const context = useRovingFocusContext(ITEM_NAME);
   const isTabStop = itemId === context.tabStopId;
 
-  // keep `context.tabStopId` in sync
-  const { onTabStopIdChange } = context;
   React.useEffect(() => {
-    onTabStopIdChange(itemId, active);
-  }, [active, itemId, onTabStopIdChange]);
+    context.itemMap.set(itemId, active);
+    return () => {
+      context.itemMap.delete(itemId);
+    };
+  }, [active, itemId, context.itemMap]);
 
   if (disabled) {
     return {
