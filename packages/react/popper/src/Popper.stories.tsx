@@ -1,87 +1,98 @@
 import * as React from 'react';
-import { Popper, PopperArrow } from './Popper';
+import { Popper, PopperAnchor, PopperContent, PopperArrow } from './Popper';
 import { Portal } from '@radix-ui/react-portal';
-import { Arrow } from '@radix-ui/react-arrow';
-import { styled, css } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Popper' };
 
 export const Styled = () => {
   const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLDivElement>(null);
   return (
     <Scrollable>
-      <Anchor ref={anchorRef} onClick={() => setOpen(true)} />
+      <Popper>
+        <PopperAnchor className={anchorClass} onClick={() => setOpen(true)}>
+          open
+        </PopperAnchor>
 
-      {open && (
-        <Popper as={StyledRoot} anchorRef={anchorRef} sideOffset={5}>
-          <button onClick={() => setOpen(false)}>close</button>
-          <PopperArrow as={StyledArrow} width={20} height={10} />
-        </Popper>
-      )}
+        {open && (
+          <PopperContent className={contentClass} sideOffset={5}>
+            <button onClick={() => setOpen(false)}>close</button>
+            <PopperArrow className={arrowClass} width={20} height={10} />
+          </PopperContent>
+        )}
+      </Popper>
     </Scrollable>
   );
 };
 
 export const WithCustomArrow = () => {
   const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLDivElement>(null);
   return (
     <Scrollable>
-      <Anchor ref={anchorRef} onClick={() => setOpen(true)} />
+      <Popper>
+        <PopperAnchor className={anchorClass} onClick={() => setOpen(true)}>
+          open
+        </PopperAnchor>
 
-      {open && (
-        <Popper as={StyledRoot} anchorRef={anchorRef} side="right" sideOffset={5}>
-          <button onClick={() => setOpen(false)}>close</button>
-          <PopperArrow as={CustomArrow} width={20} height={10} offset={20} />
-        </Popper>
-      )}
+        {open && (
+          <PopperContent className={contentClass} side="right" sideOffset={5}>
+            <button onClick={() => setOpen(false)}>close</button>
+            <PopperArrow as={CustomArrow} width={20} height={10} offset={20} />
+          </PopperContent>
+        )}
+      </Popper>
     </Scrollable>
   );
 };
 
 export const Animated = () => {
   const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <Scrollable>
-      <Anchor ref={anchorRef} onClick={() => setOpen(true)} />
+      <Popper>
+        <PopperAnchor className={anchorClass} onClick={() => setOpen(true)}>
+          open
+        </PopperAnchor>
 
-      {open && (
-        <Portal>
-          <Popper as={AnimatedPopper} anchorRef={anchorRef} sideOffset={5}>
-            <button onClick={() => setOpen(false)}>close</button>
-            <PopperArrow as={StyledArrow} width={20} height={10} offset={25} />
-          </Popper>
-        </Portal>
-      )}
+        {open && (
+          <Portal>
+            <PopperContent className={animatedContentClass} sideOffset={5}>
+              <button onClick={() => setOpen(false)}>close</button>
+              <PopperArrow className={arrowClass} width={20} height={10} offset={25} />
+            </PopperContent>
+          </Portal>
+        )}
+      </Popper>
     </Scrollable>
   );
 };
 
 export const WithPortal = () => {
   const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLDivElement>(null);
   return (
     <Scrollable>
-      <Anchor ref={anchorRef} onClick={() => setOpen(true)} />
+      <Popper>
+        <PopperAnchor className={anchorClass} onClick={() => setOpen(true)}>
+          open
+        </PopperAnchor>
 
-      {open && (
-        <Portal>
-          <Popper as={StyledRoot} anchorRef={anchorRef} sideOffset={5}>
-            <button onClick={() => setOpen(false)}>close</button>
-            <PopperArrow as={StyledArrow} width={20} height={10} />
-          </Popper>
-        </Portal>
-      )}
+        {open && (
+          <Portal>
+            <PopperContent className={contentClass} sideOffset={5}>
+              <button onClick={() => setOpen(false)}>close</button>
+              <PopperArrow className={arrowClass} width={20} height={10} />
+            </PopperContent>
+          </Portal>
+        )}
+      </Popper>
     </Scrollable>
   );
 };
 
 export const WithVirtualElement = () => {
   const mousePosRef = React.useRef({ x: 0, y: 0 });
-  const anchorRef = React.useRef({
+  const virtualRef = React.useRef({
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...mousePosRef.current }),
   });
 
@@ -93,7 +104,12 @@ export const WithVirtualElement = () => {
     return () => document.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  return <Popper as={StyledRoot} anchorRef={anchorRef} align="start" />;
+  return (
+    <Popper>
+      <PopperAnchor virtualRef={virtualRef} />
+      <PopperContent className={contentClass} align="start" />
+    </Popper>
+  );
 };
 
 const Scrollable = (props: any) => (
@@ -103,34 +119,26 @@ const Scrollable = (props: any) => (
   />
 );
 
-const Anchor = React.forwardRef<HTMLDivElement, any>((props, forwardedRef) => (
-  <div ref={forwardedRef} style={{ backgroundColor: 'hotpink', width: 100, height: 100 }}>
-    <button {...props}>open</button>
-  </div>
-));
+const CustomArrow = (props: any) => (
+  <div
+    {...props}
+    style={{
+      ...props.style,
+      width: 20,
+      height: 10,
+      borderBottomLeftRadius: 10,
+      borderBottomRightRadius: 10,
+      backgroundColor: 'tomato',
+    }}
+  />
+);
 
-function CustomArrow(props: any) {
-  return (
-    <div
-      {...props}
-      style={{
-        ...props.style,
-        width: 20,
-        height: 10,
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        backgroundColor: 'tomato',
-      }}
-    />
-  );
-}
-
-const RECOMMENDED_CSS__POPPER__ROOT = {
+const RECOMMENDED_CSS__POPPER__CONTENT = {
   transformOrigin: 'var(--radix-popper-transform-origin)',
 };
 
-const StyledRoot = styled('div', {
-  ...RECOMMENDED_CSS__POPPER__ROOT,
+const contentClass = css({
+  ...RECOMMENDED_CSS__POPPER__CONTENT,
   backgroundColor: '$gray100',
   width: 300,
   height: 150,
@@ -138,7 +146,13 @@ const StyledRoot = styled('div', {
   borderRadius: 10,
 });
 
-const StyledArrow = styled(Arrow, {
+const anchorClass = css({
+  backgroundColor: 'hotpink',
+  width: 100,
+  height: 100,
+});
+
+const arrowClass = css({
   fill: '$gray100',
 });
 
@@ -147,7 +161,7 @@ const rotateIn = css.keyframes({
   '100%': { transform: 'scale(1)' },
 });
 
-const AnimatedPopper = styled(StyledRoot, {
+const animatedContentClass = css(contentClass, {
   '&[data-side="top"]': { '--direction': '1' },
   '&[data-side="bottom"]': { '--direction': '-1' },
   animation: `${rotateIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,

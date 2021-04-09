@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
-    "@radix-ui/react-use-layout-effect": "workspace:*",
     "@radix-ui/rect": "workspace:*"
   },
   "peerDependencies": {

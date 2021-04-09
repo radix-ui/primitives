@@ -18,7 +18,7 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 
 import { classes } from '../../menu/src/Menu.stories';
-const { rootClass: dropdownMenuRootClass, itemClass: dropdownMenuItemClass } = classes;
+const { contentClass: dropdownMenuRootClass, itemClass: dropdownMenuItemClass } = classes;
 
 export default { title: 'Components/Toolbar' };
 

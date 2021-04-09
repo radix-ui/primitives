@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { FocusScope } from '@radix-ui/react-focus-scope';
-import { Popper, PopperArrow } from '@radix-ui/react-popper';
+import { Popper, PopperAnchor, PopperContent, PopperArrow } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -595,10 +595,15 @@ function DummyPopover({
   const openButtonRef = React.useRef(null);
   const ScrollContainer = preventScroll ? RemoveScroll : React.Fragment;
   return (
-    <>
-      <button ref={openButtonRef} type="button" onClick={() => setOpen((prevOpen) => !prevOpen)}>
+    <Popper>
+      <PopperAnchor
+        as="button"
+        type="button"
+        ref={openButtonRef}
+        onClick={() => setOpen((prevOpen) => !prevOpen)}
+      >
         {openLabel}
-      </button>
+      </PopperAnchor>
       {open ? (
         <FocusGuards>
           <Portal>
@@ -633,10 +638,9 @@ function DummyPopover({
                     }}
                   >
                     {(focusScopeProps) => (
-                      <Popper
+                      <PopperContent
                         {...dismissableLayerProps}
                         {...focusScopeProps}
-                        anchorRef={openButtonRef}
                         style={{
                           filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.12))',
                           display: 'flex',
@@ -659,7 +663,7 @@ function DummyPopover({
                         </button>
                         <input type="text" defaultValue="hello world" />
                         <PopperArrow width={10} height={4} style={{ fill: color }} offset={20} />
-                      </Popper>
+                      </PopperContent>
                     )}
                   </FocusScope>
                 )}
@@ -668,6 +672,6 @@ function DummyPopover({
           </Portal>
         </FocusGuards>
       ) : null}
-    </>
+    </Popper>
   );
 }

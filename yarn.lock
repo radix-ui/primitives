@@ -3572,6 +3572,8 @@ __metadata:
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     aria-hidden: ^1.1.1
     react-remove-scroll: ^2.4.0
@@ -3927,7 +3929,6 @@ __metadata:
   resolution: "@radix-ui/react-use-rect@workspace:packages/react/use-rect"
   dependencies:
     "@babel/runtime": ^7.13.10
-    "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0

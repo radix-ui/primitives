@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {
   Menu as MenuPrimitive,
+  MenuAnchor,
+  MenuContent,
   MenuGroup,
   MenuLabel,
   MenuItem,
@@ -13,9 +15,10 @@ import {
 import { css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
-
-export default { title: 'Components/Menu', excludeStories: ['TickIcon', 'styledComponents'] };
+export default {
+  title: 'Components/Menu',
+  excludeStories: ['TickIcon', 'styledComponents', 'classes'],
+};
 
 export const Styled = () => (
   <Menu>
@@ -249,9 +252,8 @@ export const Animated = () => {
 };
 
 type MenuOwnProps = Omit<
-  Polymorphic.OwnProps<typeof MenuPrimitive>,
+  React.ComponentProps<typeof MenuPrimitive> & React.ComponentProps<typeof MenuContent>,
   | 'onOpenChange'
-  | 'anchorRef'
   | 'portalled'
   | 'trapFocus'
   | 'onOpenAutoFocus'
@@ -260,23 +262,13 @@ type MenuOwnProps = Omit<
   | 'disableOutsideScroll'
 >;
 
-type MenuPrimitiveType = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuPrimitive>,
-  MenuOwnProps
->;
-
-const Menu = React.forwardRef((props, forwardedRef) => {
-  const { open = true } = props;
-  const ref = React.useRef<HTMLDivElement>(null);
+const Menu: React.FC<MenuOwnProps> = (props) => {
+  const { open = true, children, ...contentProps } = props;
   return (
-    <>
-      <div ref={ref} />
-      <MenuPrimitive
-        className={rootClass}
-        ref={forwardedRef}
-        open={open}
-        onOpenChange={() => {}}
-        anchorRef={ref}
+    <MenuPrimitive open={open} onOpenChange={() => {}}>
+      <MenuAnchor />
+      <MenuContent
+        className={contentClass}
         portalled
         trapFocus={false}
         onOpenAutoFocus={(event) => event.preventDefault()}
@@ -284,13 +276,15 @@ const Menu = React.forwardRef((props, forwardedRef) => {
         disableOutsidePointerEvents={false}
         disableOutsideScroll={false}
         align="start"
-        {...props}
-      />
-    </>
+        {...contentProps}
+      >
+        {children}
+      </MenuContent>
+    </MenuPrimitive>
   );
-}) as MenuPrimitiveType;
+};
 
-const rootClass = css({
+const contentClass = css({
   display: 'inline-block',
   boxSizing: 'border-box',
   minWidth: 130,
@@ -355,7 +349,7 @@ const fadeOut = css.keyframes({
   to: { opacity: 0 },
 });
 
-const animatedRootClass = css(rootClass, {
+const animatedRootClass = css(contentClass, {
   '&[data-state="open"]': {
     animation: `${fadeIn} 300ms ease-out`,
   },
@@ -390,7 +384,7 @@ export const TickIcon = () => (
 );
 
 export const classes = {
-  rootClass,
+  contentClass,
   labelClass,
   itemClass,
   separatorClass,

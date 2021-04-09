@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Popover, PopoverTrigger, PopoverContent, PopoverClose, PopoverArrow } from './Popover';
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverClose,
+  PopoverArrow,
+} from './Popover';
 import { Slot } from '@radix-ui/react-slot';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 import { css } from '../../../../stitches.config';
@@ -139,12 +146,9 @@ export const Nested = () => {
   );
 };
 
-export const CustomAnchor = () => {
-  const itemBoxRef = React.useRef<HTMLDivElement>(null);
-
-  return (
-    <div
-      ref={itemBoxRef}
+export const CustomAnchor = () => (
+  <Popover>
+    <PopoverAnchor
       style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -155,23 +159,19 @@ export const CustomAnchor = () => {
         backgroundColor: '#eee',
       }}
     >
-      Item
-      <Popover>
-        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
-        <PopoverContent
-          className={contentClass}
-          anchorRef={itemBoxRef}
-          side="right"
-          sideOffset={1}
-          align="start"
-          style={{ borderRadius: 0, width: 200, height: 100 }}
-        >
-          <PopoverClose>close</PopoverClose>
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-};
+      Item <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+    </PopoverAnchor>
+    <PopoverContent
+      className={contentClass}
+      side="right"
+      sideOffset={1}
+      align="start"
+      style={{ borderRadius: 0, width: 200, height: 100 }}
+    >
+      <PopoverClose>close</PopoverClose>
+    </PopoverContent>
+  </Popover>
+);
 
 export const NonModal = () => {
   return (
