@@ -260,8 +260,13 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
                   role="dialog"
                   aria-modal
                   id={context.contentId}
+                  {...focusScopeProps}
                   {...contentProps}
                   ref={composeRefs(forwardedRef, contentRef, focusScopeProps.ref)}
+                  onKeyDown={composeEventHandlers(
+                    contentProps.onKeyDown,
+                    focusScopeProps.onKeyDown
+                  )}
                   style={{
                     ...dismissableLayerProps.style,
                     ...contentProps.style,

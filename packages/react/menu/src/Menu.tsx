@@ -255,6 +255,7 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
                   {(dismissableLayerProps) => (
                     <PopperPrimitive.Root
                       role="menu"
+                      {...focusScopeProps}
                       {...menuProps}
                       ref={composeRefs(forwardedRef, menuRef, focusScopeProps.ref)}
                       anchorRef={anchorRef}
@@ -289,19 +290,24 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
                         menuTypeaheadProps.onKeyDownCapture
                       )}
                       // focus first/last item based on key pressed
-                      onKeyDown={composeEventHandlers(menuProps.onKeyDown, (event) => {
-                        const menu = menuRef.current;
-                        if (event.target === menu) {
-                          if (ALL_KEYS.includes(event.key)) {
-                            event.preventDefault();
-                            const items = Array.from(menu.querySelectorAll(ENABLED_ITEM_SELECTOR));
-                            const item = FIRST_KEYS.includes(event.key)
-                              ? items[0]
-                              : items.reverse()[0];
-                            (item as HTMLElement | undefined)?.focus();
+                      onKeyDown={composeEventHandlers(
+                        menuProps.onKeyDown,
+                        composeEventHandlers(focusScopeProps.onKeyDown, (event) => {
+                          const menu = menuRef.current;
+                          if (event.target === menu) {
+                            if (ALL_KEYS.includes(event.key)) {
+                              event.preventDefault();
+                              const items = Array.from(
+                                menu.querySelectorAll(ENABLED_ITEM_SELECTOR)
+                              );
+                              const item = FIRST_KEYS.includes(event.key)
+                                ? items[0]
+                                : items.reverse()[0];
+                              (item as HTMLElement | undefined)?.focus();
+                            }
                           }
-                        }
-                      })}
+                        })
+                      )}
                     />
                   )}
                 </DismissableLayer>
