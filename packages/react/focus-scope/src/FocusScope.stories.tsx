@@ -229,9 +229,9 @@ export const WithOptions = () => {
             }
           }}
         >
-          {({ ref }) => (
+          {(props) => (
             <form
-              ref={ref}
+              {...props}
               key="form"
               style={{
                 display: 'inline-flex',
