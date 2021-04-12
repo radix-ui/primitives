@@ -2,15 +2,11 @@
 
 import * as React from 'react';
 
-function useSize(
-  /** A reference to the element whose size to observe */
-  refToObserve: React.RefObject<HTMLElement | SVGElement>
-) {
+function useSize<T extends HTMLElement | SVGElement>(elementToObserve: T | null) {
   const [size, setSize] = React.useState<{ width: number; height: number } | undefined>(undefined);
 
   React.useEffect(() => {
-    if (refToObserve.current) {
-      const elementToObserve = refToObserve.current;
+    if (elementToObserve) {
       const resizeObserver = new ResizeObserver((entries) => {
         if (!Array.isArray(entries)) {
           return;
@@ -51,7 +47,7 @@ function useSize(
       };
     }
     return;
-  }, [refToObserve]);
+  }, [elementToObserve]);
 
   return size;
 }

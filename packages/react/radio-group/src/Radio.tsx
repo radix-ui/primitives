@@ -49,9 +49,9 @@ const Radio = React.forwardRef((props, forwardedRef) => {
     ...radioProps
   } = props;
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const buttonRef = React.useRef<HTMLButtonElement>(null);
-  const ref = useComposedRefs(forwardedRef, buttonRef);
-  const labelId = useLabelContext(buttonRef);
+  const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
+  const labelId = useLabelContext(button);
   const labelledBy = ariaLabelledby || labelId;
   const [checked = false, setChecked] = useControllableState({
     prop: checkedProp,
@@ -92,7 +92,7 @@ const Radio = React.forwardRef((props, forwardedRef) => {
           value={value}
           {...radioProps}
           as={as}
-          ref={ref}
+          ref={composedRefs}
           /**
            * The `input` is hidden, so when the button is clicked we trigger
            * the input manually
