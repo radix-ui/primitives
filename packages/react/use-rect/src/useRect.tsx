@@ -7,9 +7,9 @@ import type { Measurable } from '@radix-ui/rect';
  * Use this custom hook to get access to an element's rect (getBoundingClientRect)
  * and observe it along time.
  */
-function useRect(
+function useRect<T extends Measurable>(
   /** A reference to the element whose rect to observe */
-  refToObserve: React.RefObject<Measurable>
+  refToObserve: React.RefObject<T>
 ) {
   const [rect, setRect] = React.useState<ClientRect>();
 

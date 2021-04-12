@@ -48,10 +48,16 @@ const PopperAnchor = React.forwardRef((props, forwardedRef) => {
   const { virtualRef, children, ...anchorProps } = props;
   const context = usePopperContext(ANCHOR_NAME);
   const ref = React.useRef<React.ElementRef<typeof Primitive>>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
+  const composedRefs = useComposedRefs(
+    forwardedRef,
+    ref,
+    context.anchorRef as React.MutableRefObject<React.ElementRef<typeof Primitive>>
+  );
 
   React.useEffect(() => {
-    context.anchorRef.current = virtualRef?.current || ref.current;
+    if (virtualRef?.current) {
+      context.anchorRef.current = virtualRef.current;
+    }
   });
 
   return virtualRef ? (
