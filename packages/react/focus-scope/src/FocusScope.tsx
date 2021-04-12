@@ -195,14 +195,14 @@ function getTabbableCandidates(container: HTMLElement) {
   const nodes: HTMLElement[] = [];
   const walker = createTabbableWalker(container);
   while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
-  // we do not take into account the order of nodes with positive `tabIndex` as it is
-  // considered an accessibility issue.
+  // we do not take into account the order of nodes with positive `tabIndex` as it
+  // hinders accessibility to have tab order different from visual order.
   return nodes;
 }
 
 /**
  * Creates a tree that contains only tabbable elements.
- * This is only a close aproximation. For example it doesn't take into account cases like when
+ * This is only a close approximation. For example it doesn't take into account cases like when
  * elements are not visible. This cannot be worked out easily by just reading a property, but rather
  * necessitate runtime knowledge (computed styles, etc). We deal with these cases separately.
  *
