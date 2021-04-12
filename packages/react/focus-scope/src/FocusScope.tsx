@@ -43,19 +43,19 @@ function FocusScope(props: FocusScopeProps) {
   const wrapped = trapped;
   const contained = trapped;
 
-  const scopeRef = React.useRef({
+  const focusScope = React.useRef({
     paused: false,
     pause() {
-      scopeRef.current = { ...scopeRef.current, paused: true };
+      this.paused = true;
     },
     resume() {
-      scopeRef.current = { ...scopeRef.current, paused: false };
+      this.paused = false;
     },
-  });
+  }).current;
 
   React.useEffect(() => {
     if (container) {
-      focusScopesStack.add(scopeRef);
+      focusScopesStack.add(focusScope);
       const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement as HTMLElement | null;
 
       // we need to setup the listeners before we `dispatchEvent`
@@ -86,61 +86,60 @@ function FocusScope(props: FocusScopeProps) {
           // we need to remove the listener after we `dispatchEvent`
           container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
 
-          focusScopesStack.remove(scopeRef);
+          focusScopesStack.remove(focusScope);
         }, 0);
       };
     }
-  }, [container, onMountAutoFocus, onUnmountAutoFocus]);
+  }, [container, onMountAutoFocus, onUnmountAutoFocus, focusScope]);
 
   // Takes care of containing focus and wrapping focus (when tabbing whilst at the edges)
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent) => {
       if (!wrapped && !contained) return;
-      if (scopeRef.current.paused) return;
+      if (focusScope.paused) return;
 
-      if (event.key === 'Tab' && !event.altKey && !event.ctrlKey && !event.metaKey) {
-        const focusedElement = document.activeElement as HTMLElement | null;
-        if (focusedElement) {
-          const container = event.currentTarget as HTMLElement;
-          const [first, last] = getTabbableEdges(container);
-          if (!first || !last) {
+      const isTabKey = event.key === 'Tab' && !event.altKey && !event.ctrlKey && !event.metaKey;
+      const focusedElement = document.activeElement as HTMLElement | null;
+
+      if (isTabKey && focusedElement) {
+        const container = event.currentTarget as HTMLElement;
+        const [first, last] = getTabbableEdges(container);
+        const hasTabbableElementsInside = first && last;
+
+        // we can only wrap focus if we have tabbable edges
+        if (!hasTabbableElementsInside) {
+          if (focusedElement === container) event.preventDefault();
+        } else {
+          if (!event.shiftKey && focusedElement === last) {
             event.preventDefault();
-          } else {
-            if (event.shiftKey) {
-              if (focusedElement === first) {
-                if (wrapped || contained) event.preventDefault();
-                if (wrapped) focus(last, { select: true });
-              }
-            } else {
-              if (focusedElement === last) {
-                if (wrapped || contained) event.preventDefault();
-                if (wrapped) focus(first, { select: true });
-              }
-            }
+            if (wrapped) focus(first, { select: true });
+          } else if (event.shiftKey && focusedElement === first) {
+            event.preventDefault();
+            if (wrapped) focus(last, { select: true });
           }
         }
       }
     },
-    [wrapped, contained]
+    [wrapped, contained, focusScope.paused]
   );
 
   // Takes care of containing focus if focus is moved outside programmatically for example
   React.useEffect(() => {
     if (contained) {
       function handleFocusIn(event: FocusEvent) {
-        if (scopeRef.current.paused || !container) return;
+        if (focusScope.paused || !container) return;
         const target = event.target as HTMLElement | null;
         if (container.contains(target)) {
           lastFocusedElementRef.current = target;
         } else {
-          focus(lastFocusedElementRef.current);
+          focus(lastFocusedElementRef.current, { select: true });
         }
       }
 
       function handleFocusOut(event: FocusEvent) {
-        if (scopeRef.current.paused || !container) return;
+        if (focusScope.paused || !container) return;
         if (!container.contains(event.relatedTarget as HTMLElement | null)) {
-          focus(lastFocusedElementRef.current);
+          focus(lastFocusedElementRef.current, { select: true });
         }
       }
 
@@ -151,7 +150,7 @@ function FocusScope(props: FocusScopeProps) {
         document.removeEventListener('focusout', handleFocusOut);
       };
     }
-  }, [contained, container]);
+  }, [contained, container, focusScope.paused]);
 
   return children({
     ref: React.useCallback((node) => setContainer(node), []),
@@ -178,39 +177,27 @@ function focusFirst(candidates: HTMLElement[], { select = false } = {}) {
 
 /**
  * Returns the first and last tabbable elements inside a container.
- * NOTE: This takes into account if elements are hidden or not.
  */
 function getTabbableEdges(container: HTMLElement) {
   const candidates = getTabbableCandidates(container);
-  const first = getFirstRealTabbable(candidates, container);
-  const last = getFirstRealTabbable(candidates.reverse(), container);
+  const first = findVisible(candidates, container);
+  const last = findVisible(candidates.reverse(), container);
   return [first, last] as const;
 }
 
 /**
  * Returns a list of potential tabbable candidates.
- * NOTE: They are considered candidates at this point, because it includes elements that are hidden.
- */
-function getTabbableCandidates(container: HTMLElement) {
-  const nodes: HTMLElement[] = [];
-  const walker = createTabbableWalker(container);
-  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
-  // we do not take into account the order of nodes with positive `tabIndex` as it
-  // hinders accessibility to have tab order different from visual order.
-  return nodes;
-}
-
-/**
- * Creates a tree that contains only tabbable elements.
- * This is only a close approximation. For example it doesn't take into account cases like when
+ *
+ * NOTE: This is only a close approximation. For example it doesn't take into account cases like when
  * elements are not visible. This cannot be worked out easily by just reading a property, but rather
  * necessitate runtime knowledge (computed styles, etc). We deal with these cases separately.
  *
  * See: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  * Credit: https://github.com/discord/focus-layers/blob/master/src/util/wrapFocus.tsx#L1
  */
-function createTabbableWalker(container: HTMLElement) {
-  return document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+function getTabbableCandidates(container: HTMLElement) {
+  const nodes: HTMLElement[] = [];
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
       if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
@@ -220,16 +207,20 @@ function createTabbableWalker(container: HTMLElement) {
       return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
     },
   });
+  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
+  // we do not take into account the order of nodes with positive `tabIndex` as it
+  // hinders accessibility to have tab order different from visual order.
+  return nodes;
 }
 
 /**
- * Returns the first "real" tabbable in a list of candidates.
- * NOTE: This takes into account if elements are hidden or not.
+ * Returns the first visible element in a list.
+ * NOTE: Only checks visibility up to the `container`.
  */
-function getFirstRealTabbable(candidates: HTMLElement[], container: HTMLElement) {
-  for (const candidate of candidates) {
+function findVisible(elements: HTMLElement[], container: HTMLElement) {
+  for (const element of elements) {
     // we stop checking if it's hidden at the `container` level (excluding)
-    if (!isHidden(candidate, { upTo: container })) return candidate;
+    if (!isHidden(element, { upTo: container })) return element;
   }
 }
 
@@ -249,11 +240,14 @@ function isSelectableInput(element: any): element is FocusableTarget & { select:
 }
 
 function focus(element?: FocusableTarget | null, { select = false } = {}) {
-  // only focus if that element is focusable and not already focused
-  if (element && element.focus && element !== document.activeElement) {
+  // only focus if that element is focusable
+  if (element && element.focus) {
+    const previouslyFocusedElement = document.activeElement;
     // NOTE: we prevent scrolling on focus, to minimize jarring transitions for users
     element.focus({ preventScroll: true });
-    if (select && isSelectableInput(element)) element.select();
+    // only select if its not the same element, it supports selection and we need to select
+    if (element !== previouslyFocusedElement && isSelectableInput(element) && select)
+      element.select();
   }
 }
 
@@ -266,23 +260,23 @@ const focusScopesStack = createFocusScopesStack();
 
 function createFocusScopesStack() {
   /** A stack of focus scopes, with the active one at the top */
-  let stack: React.RefObject<FocusScope>[] = [];
+  let stack: FocusScope[] = [];
 
   return {
-    add(focusScopeRef: React.RefObject<FocusScope>) {
+    add(focusScope: FocusScope) {
       // pause the currently active focus scope (at the top of the stack)
-      const activeFocusScopeRef = stack[0];
-      if (focusScopeRef !== activeFocusScopeRef) {
-        activeFocusScopeRef?.current?.pause();
+      const activeFocusScope = stack[0];
+      if (focusScope !== activeFocusScope) {
+        activeFocusScope?.pause();
       }
       // remove in case it already exists (because we'll re-add it at the top of the stack)
-      stack = arrayRemove(stack, focusScopeRef);
-      stack.unshift(focusScopeRef);
+      stack = arrayRemove(stack, focusScope);
+      stack.unshift(focusScope);
     },
 
-    remove(focusScopeRef: React.RefObject<FocusScope>) {
-      stack = arrayRemove(stack, focusScopeRef);
-      stack[0]?.current?.resume();
+    remove(focusScope: FocusScope) {
+      stack = arrayRemove(stack, focusScope);
+      stack[0]?.resume();
     },
   };
 }
