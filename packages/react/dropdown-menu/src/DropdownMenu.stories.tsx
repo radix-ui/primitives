@@ -258,7 +258,7 @@ export const Chromatic = () => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <h2 style={{ marginTop: 200 }}>Open with reordered parts</h2>
+      <h2 style={{ marginTop: 180 }}>Open with reordered parts</h2>
       <DropdownMenu defaultOpen>
         <DropdownMenuContent
           className={contentClass}
@@ -346,7 +346,7 @@ export const Chromatic = () => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <h2 style={{ marginTop: 200 }}>Open with reordered parts</h2>
+      <h2 style={{ marginTop: 180 }}>Open with reordered parts</h2>
       <DropdownMenu open>
         <DropdownMenuContent
           className={contentClass}
