@@ -85,7 +85,7 @@ describe('given a single Accordion', () => {
       });
 
       it('should call onValueChange', () => {
-        expect(handleValueChange).toHaveBeenCalledWith(undefined);
+        expect(handleValueChange).toHaveBeenCalledWith('');
       });
     });
 
