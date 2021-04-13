@@ -22,6 +22,9 @@ export default function HomePage() {
           <Link href="/dialog">Dialog</Link>
         </li>
         <li>
+          <Link href="/hover-card">HoverCard</Link>
+        </li>
+        <li>
           <Link href="/label">Label</Link>
         </li>
         <li>

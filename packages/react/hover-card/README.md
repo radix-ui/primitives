@@ -10,6 +10,4 @@ $ npm install @radix-ui/react-hover-card
 
 ## Usage
 
-TODO
-
-View docs ...
+View docs [here](https://radix-ui.com/primitives/docs/components/hover-card).
