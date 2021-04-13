@@ -308,6 +308,7 @@ export const Chromatic = () => (
       <HoverCardTrigger className={triggerClass}>trigger</HoverCardTrigger>
       <HoverCardContent className={contentClass} sideOffset={5}>
         <HoverCardArrow className={arrowClass} width={20} height={10} />
+        Some content
       </HoverCardContent>
     </HoverCard>
 
@@ -316,6 +317,7 @@ export const Chromatic = () => (
       <HoverCardTrigger className={triggerClass}>trigger</HoverCardTrigger>
       <HoverCardContent className={contentClass} sideOffset={5}>
         <HoverCardArrow className={arrowClass} width={20} height={10} />
+        Some content
       </HoverCardContent>
     </HoverCard>
 
@@ -325,6 +327,7 @@ export const Chromatic = () => (
       <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
       <HoverCardContent className={contentClass} sideOffset={5}>
         <HoverCardArrow className={arrowClass} width={20} height={10} />
+        Some content
       </HoverCardContent>
     </HoverCard>
 
@@ -333,6 +336,7 @@ export const Chromatic = () => (
       <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
       <HoverCardContent className={contentClass} sideOffset={5}>
         <HoverCardArrow className={arrowClass} width={20} height={10} />
+        Some content
       </HoverCardContent>
     </HoverCard>
 
@@ -341,6 +345,7 @@ export const Chromatic = () => (
       <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
       <HoverCardContent className={contentClass} sideOffset={5} forceMount>
         <HoverCardArrow className={arrowClass} width={20} height={10} />
+        Some content
       </HoverCardContent>
     </HoverCard>
 
@@ -561,6 +566,7 @@ export const Chromatic = () => (
       </HoverCardTrigger>
       <HoverCardContent className={contentClass} sideOffset={5}>
         <HoverCardArrow className={arrowClass} width={20} height={10} offset={10} />
+        Some content
       </HoverCardContent>
     </HoverCard>
 
@@ -570,6 +576,7 @@ export const Chromatic = () => (
       <HoverCardTrigger className={triggerAttrClass}>open</HoverCardTrigger>
       <HoverCardContent className={contentAttrClass} sideOffset={5}>
         <HoverCardArrow className={arrowAttrClass} width={20} height={10} />
+        Some content
       </HoverCardContent>
     </HoverCard>
 
@@ -578,6 +585,7 @@ export const Chromatic = () => (
       <HoverCardTrigger className={triggerAttrClass}>open</HoverCardTrigger>
       <HoverCardContent className={contentAttrClass} side="right" sideOffset={5}>
         <HoverCardArrow className={arrowAttrClass} width={20} height={10} />
+        Some content
       </HoverCardContent>
     </HoverCard>
   </div>

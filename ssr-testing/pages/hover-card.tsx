@@ -6,7 +6,7 @@ import {
   HoverCardArrow,
 } from '@radix-ui/react-hover-card';
 
-export default function PopoverPage() {
+export default function HoverCardPage() {
   return (
     <HoverCard>
       <HoverCardTrigger>Hover me</HoverCardTrigger>
