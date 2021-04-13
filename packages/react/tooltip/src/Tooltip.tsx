@@ -36,8 +36,8 @@ type TooltipContextValue = {
   contentId: string;
   open: boolean;
   stateAttribute: StateAttribute;
-  trigger: HTMLButtonElement | null;
-  onTriggerChange(trigger: HTMLButtonElement | null): void;
+  trigger: React.ElementRef<typeof TooltipTrigger> | null;
+  onTriggerChange(trigger: React.ElementRef<typeof TooltipTrigger> | null): void;
   onFocus(): void;
   onOpen(): void;
   onClose(): void;

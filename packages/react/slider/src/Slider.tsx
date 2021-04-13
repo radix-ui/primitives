@@ -683,11 +683,11 @@ const BubbleInput = (props: React.ComponentProps<'input'>) => {
   return <input hidden {...inputProps} ref={ref} />;
 };
 
-function useDirection<E extends HTMLElement>({
+function useDirection({
   element,
   directionProp,
 }: {
-  element: E | null;
+  element: HTMLElement | null;
   directionProp?: Direction;
 }) {
   const [direction, setDirection] = React.useState<Direction>('ltr');

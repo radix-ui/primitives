@@ -2,11 +2,11 @@
 
 import * as React from 'react';
 
-function useSize<T extends HTMLElement | SVGElement>(elementToObserve: T | null) {
+function useSize(element: HTMLElement | SVGElement | null) {
   const [size, setSize] = React.useState<{ width: number; height: number } | undefined>(undefined);
 
   React.useEffect(() => {
-    if (elementToObserve) {
+    if (element) {
       const resizeObserver = new ResizeObserver((entries) => {
         if (!Array.isArray(entries)) {
           return;
@@ -31,7 +31,7 @@ function useSize<T extends HTMLElement | SVGElement>(elementToObserve: T | null)
         } else {
           // for browsers that don't support `borderBoxSize`
           // we calculate a rect ourselves to get the correct border box.
-          const rect = elementToObserve.getBoundingClientRect();
+          const rect = element.getBoundingClientRect();
           width = rect.width;
           height = rect.height;
         }
@@ -39,15 +39,15 @@ function useSize<T extends HTMLElement | SVGElement>(elementToObserve: T | null)
         setSize({ width, height });
       });
 
-      resizeObserver.observe(elementToObserve, { box: 'border-box' });
+      resizeObserver.observe(element, { box: 'border-box' });
 
       return () => {
         setSize(undefined);
-        resizeObserver.unobserve(elementToObserve);
+        resizeObserver.unobserve(element);
       };
     }
     return;
-  }, [elementToObserve]);
+  }, [element]);
 
   return size;
 }

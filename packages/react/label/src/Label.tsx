@@ -80,7 +80,7 @@ Label.displayName = NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const useLabelContext = <E extends HTMLElement>(element?: E | null) => {
+const useLabelContext = (element?: HTMLElement | null) => {
   const context = React.useContext(LabelContext);
 
   React.useEffect(() => {
