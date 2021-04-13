@@ -99,7 +99,7 @@ const AccordionSingle = React.forwardRef((props, forwardedRef) => {
     <AccordionValueProvider
       value={value ? [value] : []}
       onItemOpen={setValue}
-      onItemClose={() => setValue(undefined)}
+      onItemClose={() => setValue('')}
     >
       <AccordionImpl {...accordionSingleProps} ref={forwardedRef} />
     </AccordionValueProvider>
