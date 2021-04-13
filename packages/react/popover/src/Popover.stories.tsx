@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Popover, PopoverTrigger, PopoverContent, PopoverClose, PopoverArrow } from './Popover';
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverClose,
+  PopoverArrow,
+} from './Popover';
 import { Slot } from '@radix-ui/react-slot';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 import { css } from '../../../../stitches.config';
@@ -139,12 +146,9 @@ export const Nested = () => {
   );
 };
 
-export const CustomAnchor = () => {
-  const itemBoxRef = React.useRef<HTMLDivElement>(null);
-
-  return (
-    <div
-      ref={itemBoxRef}
+export const CustomAnchor = () => (
+  <Popover>
+    <PopoverAnchor
       style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -155,23 +159,19 @@ export const CustomAnchor = () => {
         backgroundColor: '#eee',
       }}
     >
-      Item
-      <Popover>
-        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
-        <PopoverContent
-          className={contentClass}
-          anchorRef={itemBoxRef}
-          side="right"
-          sideOffset={1}
-          align="start"
-          style={{ borderRadius: 0, width: 200, height: 100 }}
-        >
-          <PopoverClose>close</PopoverClose>
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-};
+      Item <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+    </PopoverAnchor>
+    <PopoverContent
+      className={contentClass}
+      side="right"
+      sideOffset={1}
+      align="start"
+      style={{ borderRadius: 0, width: 200, height: 100 }}
+    >
+      <PopoverClose>close</PopoverClose>
+    </PopoverContent>
+  </Popover>
+);
 
 export const NonModal = () => {
   return (
@@ -228,6 +228,15 @@ export const Chromatic = () => (
       </PopoverContent>
     </Popover>
 
+    <h2 style={{ marginTop: 100 }}>Open with reordered parts</h2>
+    <Popover defaultOpen>
+      <PopoverContent className={contentClass} sideOffset={5}>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} />
+      </PopoverContent>
+      <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+    </Popover>
+
     <h1 style={{ marginTop: 100 }}>Controlled</h1>
     <h2>Closed</h2>
     <Popover open={false}>
@@ -247,10 +256,42 @@ export const Chromatic = () => (
       </PopoverContent>
     </Popover>
 
+    <h2 style={{ marginTop: 100 }}>Open with reordered parts</h2>
+    <Popover open>
+      <PopoverContent className={contentClass} sideOffset={5}>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} />
+      </PopoverContent>
+      <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+    </Popover>
+
     <h1 style={{ marginTop: 100 }}>Force mounted content</h1>
     <Popover>
       <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
       <PopoverContent className={contentClass} sideOffset={5} forceMount>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} />
+      </PopoverContent>
+    </Popover>
+
+    <h1 style={{ marginTop: 100 }}>Anchor</h1>
+    <h2>Controlled</h2>
+    <Popover open>
+      <PopoverAnchor style={{ padding: 20, background: 'gainsboro' }}>
+        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+      </PopoverAnchor>
+      <PopoverContent className={contentClass}>
+        <PopoverClose className={closeClass}>close</PopoverClose>
+        <PopoverArrow className={arrowClass} width={20} height={10} />
+      </PopoverContent>
+    </Popover>
+
+    <h2>Uncontrolled</h2>
+    <Popover defaultOpen>
+      <PopoverAnchor style={{ padding: 20, background: 'gainsboro' }}>
+        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+      </PopoverAnchor>
+      <PopoverContent className={contentClass}>
         <PopoverClose className={closeClass}>close</PopoverClose>
         <PopoverArrow className={arrowClass} width={20} height={10} />
       </PopoverContent>

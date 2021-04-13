@@ -14,12 +14,7 @@ type Point = { x: number; y: number };
 
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
-type ExtractRef<T> = T extends React.RefObject<infer B> ? B : never;
-type Anchor = ExtractRef<React.ComponentProps<typeof MenuPrimitive.Root>['anchorRef']>;
-
 type ContextMenuContextValue = {
-  anchorPointRef: React.MutableRefObject<Point>;
-  anchorRef: React.MutableRefObject<Anchor | null>;
   open: boolean;
   onOpenChange(open: boolean): void;
 };
@@ -31,21 +26,13 @@ const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuCo
 const ContextMenu: React.FC = (props) => {
   const { children } = props;
   const [open, setOpen] = React.useState(false);
-  const anchorPointRef = React.useRef<Point>({ x: 0, y: 0 });
-  const anchorRef = React.useRef({
-    getBoundingClientRect: () =>
-      DOMRect.fromRect({ width: 0, height: 0, ...anchorPointRef.current }),
-  });
 
   return (
-    <ContextMenuProvider
-      anchorPointRef={anchorPointRef}
-      anchorRef={anchorRef}
-      open={open}
-      onOpenChange={setOpen}
-    >
-      {children}
-    </ContextMenuProvider>
+    <MenuPrimitive.Root open={open} onOpenChange={setOpen}>
+      <ContextMenuProvider open={open} onOpenChange={setOpen}>
+        {children}
+      </ContextMenuProvider>
+    </MenuPrimitive.Root>
   );
 };
 
@@ -67,18 +54,25 @@ type ContextMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
   const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useContextMenuContext(TRIGGER_NAME);
+  const pointRef = React.useRef<Point>({ x: 0, y: 0 });
+  const virtualRef = React.useRef({
+    getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
+  });
+
   return (
-    <Primitive
-      {...triggerProps}
-      as={as}
-      ref={forwardedRef}
-      onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
-        event.preventDefault();
-        const point = { x: event.clientX, y: event.clientY };
-        context.onOpenChange(true);
-        context.anchorPointRef.current = point;
-      })}
-    />
+    <>
+      <MenuPrimitive.Anchor virtualRef={virtualRef} />
+      <Primitive
+        {...triggerProps}
+        as={as}
+        ref={forwardedRef}
+        onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
+          event.preventDefault();
+          pointRef.current = { x: event.clientX, y: event.clientY };
+          context.onOpenChange(true);
+        })}
+      />
+    </>
   );
 }) as ContextMenuTriggerPrimitive;
 
@@ -91,12 +85,12 @@ ContextMenuTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'ContextMenuContent';
 
 type ContextMenuContentOwnProps = Omit<
-  Polymorphic.OwnProps<typeof MenuPrimitive.Root>,
-  'anchorRef' | 'trapFocus' | 'disableOutsideScroll' | 'portalled' | 'onOpenAutoFocus' | 'onDismiss'
+  Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
+  'trapFocus' | 'disableOutsideScroll' | 'portalled' | 'onOpenAutoFocus'
 >;
 
 type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Root>,
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Content>,
   ContextMenuContentOwnProps
 >;
 
@@ -109,24 +103,20 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
   } = props;
   const context = useContextMenuContext(CONTENT_NAME);
   return (
-    <MenuPrimitive.Root
+    <MenuPrimitive.Content
       {...contentProps}
       ref={forwardedRef}
       side={side}
       align={align}
       disableOutsidePointerEvents={context.open ? disableOutsidePointerEvents : false}
-      open={context.open}
-      onOpenChange={context.onOpenChange}
       style={{
         ...props.style,
         // re-namespace exposed content custom property
         ['--radix-context-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
       }}
-      anchorRef={context.anchorRef}
       trapFocus
       disableOutsideScroll
       portalled
-      onDismiss={() => context.onOpenChange(false)}
     />
   );
 }) as ContextMenuContentPrimitive;

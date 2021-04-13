@@ -31,17 +31,48 @@ const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 const MENU_NAME = 'Menu';
 
 type MenuContextValue = {
-  menuRef: React.RefObject<HTMLDivElement>;
-  onItemsReachableChange(open: boolean): void;
+  open: boolean;
   onOpenChange(open: boolean): void;
 };
+
 const [MenuProvider, useMenuContext] = createContext<MenuContextValue>(MENU_NAME);
 
-type MenuOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof MenuImpl>,
-  {
-    open?: boolean;
+type MenuOwnProps = {
+  open?: boolean;
+  onOpenChange?(open: boolean): void;
+};
 
+const Menu: React.FC<MenuOwnProps> = (props) => {
+  const { open = false, children, onOpenChange } = props;
+  const handleOpenChange = useCallbackRef(onOpenChange);
+  return (
+    <PopperPrimitive.Root>
+      <MenuProvider open={open} onOpenChange={handleOpenChange}>
+        {children}
+      </MenuProvider>
+    </PopperPrimitive.Root>
+  );
+};
+
+Menu.displayName = MENU_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuContent
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONTENT_NAME = 'MenuContent';
+
+type MenuContentContextValue = {
+  contentRef: React.RefObject<HTMLDivElement>;
+  onItemsReachableChange(open: boolean): void;
+};
+const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
+  CONTENT_NAME
+);
+
+type MenuContentOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof MenuContentImpl>,
+  {
     /**
      * Used to force mounting when more control is needed. Useful when
      * controlling animation with React animation libraries.
@@ -50,30 +81,32 @@ type MenuOwnProps = Polymorphic.Merge<
   }
 >;
 
-type MenuPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuImpl>,
-  MenuOwnProps
+type MenuContentPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuContentImpl>,
+  MenuContentOwnProps
 >;
 
-const Menu = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, open = false, ...menuProps } = props;
-
+const MenuContent = React.forwardRef((props, forwardedRef) => {
+  const { forceMount, ...contentProps } = props;
+  const context = useMenuContext(CONTENT_NAME);
   return (
-    <Presence present={forceMount || open}>
-      <MenuImpl data-state={getOpenState(open)} {...menuProps} ref={forwardedRef} open={open} />
+    <Presence present={forceMount || context.open}>
+      <MenuContentImpl
+        data-state={getOpenState(context.open)}
+        {...contentProps}
+        ref={forwardedRef}
+      />
     </Presence>
   );
-}) as MenuPrimitive;
+}) as MenuContentPrimitive;
 
-type MenuImplOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof PopperPrimitive.Root>,
+type MenuContentImplOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof PopperPrimitive.Content>,
   {
-    open: boolean;
-    onOpenChange?: (open: boolean) => void;
     loop?: boolean;
 
     /**
-     * Whether focus should be trapped within the `Menu`
+     * Whether focus should be trapped within the `MenuContent`
      * (default: false)
      */
     trapFocus?: FocusScopeProps['trapped'];
@@ -91,9 +124,9 @@ type MenuImplOwnProps = Polymorphic.Merge<
     onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 
     /**
-     * When `true`, hover/focus/click interactions will be disabled on elements outside the `Menu`.
+     * When `true`, hover/focus/click interactions will be disabled on elements outside the `MenuContent`.
      * Users will need to click twice on outside elements to interact with them:
-     * Once to close the `Menu`, and again to trigger the element.
+     * Once to close the `MenuContent`, and again to trigger the element.
      */
     disableOutsidePointerEvents?: DismissableLayerProps['disableOutsidePointerEvents'];
 
@@ -104,51 +137,45 @@ type MenuImplOwnProps = Polymorphic.Merge<
     onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
 
     /**
-     * Event handler called when the a pointer event happens outside of the `Menu`.
+     * Event handler called when the a pointer event happens outside of the `MenuContent`.
      * Can be prevented.
      */
     onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 
     /**
-     * Event handler called when the focus moves outside of the `Menu`.
+     * Event handler called when the focus moves outside of the `MenuContent`.
      * Can be prevented.
      */
     onFocusOutside?: DismissableLayerProps['onFocusOutside'];
 
     /**
-     * Event handler called when an interaction happens outside the `Menu`.
-     * Specifically, when a pointer event happens outside of the `Menu` or focus moves outside of it.
+     * Event handler called when an interaction happens outside the `MenuContent`.
+     * Specifically, when a pointer event happens outside of the `MenuContent` or focus moves outside of it.
      * Can be prevented.
      */
     onInteractOutside?: DismissableLayerProps['onInteractOutside'];
 
-    /** Callback called when the `DismissableLayer` should be dismissed */
-    onDismiss?: DismissableLayerProps['onDismiss'];
-
     /**
-     * Whether scrolling outside the `Menu` should be prevented
+     * Whether scrolling outside the `MenuContent` should be prevented
      * (default: `false`)
      */
     disableOutsideScroll?: boolean;
 
     /**
-     * Whether the `Menu` should render in a `Portal`
+     * Whether the `MenuContent` should render in a `Portal`
      * (default: `true`)
      */
     portalled?: boolean;
   }
 >;
 
-type MenuImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Root>,
-  MenuImplOwnProps
+type MenuContentImplPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Content>,
+  MenuContentImplOwnProps
 >;
 
-const MenuImpl = React.forwardRef((props, forwardedRef) => {
+const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
-    open,
-    onOpenChange,
-    anchorRef,
     loop,
     trapFocus,
     onOpenAutoFocus,
@@ -158,19 +185,18 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
     onPointerDownOutside,
     onFocusOutside,
     onInteractOutside,
-    onDismiss,
     disableOutsideScroll,
     portalled,
-    ...menuProps
+    ...contentProps
   } = props;
-  const handleOpenChange = useCallbackRef(onOpenChange);
-  const menuRef = React.useRef<HTMLDivElement>(null);
-  const [menuTabIndex, setMenuTabIndex] = React.useState(0);
+  const context = useMenuContext(CONTENT_NAME);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const [contentTabIndex, setContentTabIndex] = React.useState(0);
   const [itemsReachable, setItemsReachable] = React.useState(false);
-  const menuTypeaheadProps = useMenuTypeahead();
+  const typeaheadProps = useMenuTypeahead();
 
   React.useEffect(() => {
-    setMenuTabIndex(itemsReachable ? -1 : 0);
+    setContentTabIndex(itemsReachable ? -1 : 0);
   }, [itemsReachable]);
 
   const [
@@ -181,24 +207,20 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
 
-  // Make sure the whole tree has focus guards as our `Menu` may be
+  // Make sure the whole tree has focus guards as our `MenuContent` may be
   // the last element in the DOM (beacuse of the `Portal`)
   useFocusGuards();
 
-  // Hide everything from ARIA except the `Menu`
+  // Hide everything from ARIA except the `MenuContent`
   React.useEffect(() => {
-    const menu = menuRef.current;
-    if (menu) return hideOthers(menu);
+    const content = contentRef.current;
+    if (content) return hideOthers(content);
   }, []);
 
   return (
     <PortalWrapper>
       <ScrollLockWrapper>
-        <MenuProvider
-          menuRef={menuRef}
-          onItemsReachableChange={setItemsReachable}
-          onOpenChange={handleOpenChange}
-        >
+        <MenuContentProvider contentRef={contentRef} onItemsReachableChange={setItemsReachable}>
           <RovingFocusGroup
             reachable={itemsReachable}
             onReachableChange={setItemsReachable}
@@ -210,7 +232,7 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
               // in cases where outside pointer events are permitted, we stop trapping.
               // we also make sure we're not trapping once it's been closed
               // (closed !== unmounted when animating out)
-              trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus && open}
+              trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus && context.open}
               onMountAutoFocus={onOpenAutoFocus}
               onUnmountAutoFocus={(event) => {
                 // skip autofocus on unmount if clicking outside is permitted and it happened
@@ -250,55 +272,54 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
                     { checkForDefaultPrevented: false }
                   )}
                   onInteractOutside={onInteractOutside}
-                  onDismiss={onDismiss}
+                  onDismiss={() => context.onOpenChange(false)}
                 >
                   {(dismissableLayerProps) => (
-                    <PopperPrimitive.Root
+                    <PopperPrimitive.Content
                       role="menu"
                       {...focusScopeProps}
-                      {...menuProps}
-                      ref={composeRefs(forwardedRef, menuRef, focusScopeProps.ref)}
-                      anchorRef={anchorRef}
-                      tabIndex={menuTabIndex}
+                      {...contentProps}
+                      ref={composeRefs(forwardedRef, contentRef, focusScopeProps.ref)}
+                      tabIndex={contentTabIndex}
                       style={{
                         ...dismissableLayerProps.style,
                         outline: 'none',
-                        ...menuProps.style,
+                        ...contentProps.style,
                       }}
                       onBlurCapture={composeEventHandlers(
-                        menuProps.onBlurCapture,
+                        contentProps.onBlurCapture,
                         dismissableLayerProps.onBlurCapture,
                         { checkForDefaultPrevented: false }
                       )}
                       onFocusCapture={composeEventHandlers(
-                        menuProps.onFocusCapture,
+                        contentProps.onFocusCapture,
                         dismissableLayerProps.onFocusCapture,
                         { checkForDefaultPrevented: false }
                       )}
                       onMouseDownCapture={composeEventHandlers(
-                        menuProps.onMouseDownCapture,
+                        contentProps.onMouseDownCapture,
                         dismissableLayerProps.onMouseDownCapture,
                         { checkForDefaultPrevented: false }
                       )}
                       onTouchStartCapture={composeEventHandlers(
-                        menuProps.onTouchStartCapture,
+                        contentProps.onTouchStartCapture,
                         dismissableLayerProps.onTouchStartCapture,
                         { checkForDefaultPrevented: false }
                       )}
                       onKeyDownCapture={composeEventHandlers(
-                        menuProps.onKeyDownCapture,
-                        menuTypeaheadProps.onKeyDownCapture
+                        contentProps.onKeyDownCapture,
+                        typeaheadProps.onKeyDownCapture
                       )}
                       // focus first/last item based on key pressed
                       onKeyDown={composeEventHandlers(
-                        menuProps.onKeyDown,
+                        contentProps.onKeyDown,
                         composeEventHandlers(focusScopeProps.onKeyDown, (event) => {
-                          const menu = menuRef.current;
-                          if (event.target === menu) {
+                          const content = contentRef.current;
+                          if (event.target === content) {
                             if (ALL_KEYS.includes(event.key)) {
                               event.preventDefault();
                               const items = Array.from(
-                                menu.querySelectorAll(ENABLED_ITEM_SELECTOR)
+                                content.querySelectorAll(ENABLED_ITEM_SELECTOR)
                               );
                               const item = FIRST_KEYS.includes(event.key)
                                 ? items[0]
@@ -314,13 +335,13 @@ const MenuImpl = React.forwardRef((props, forwardedRef) => {
               )}
             </FocusScope>
           </RovingFocusGroup>
-        </MenuProvider>
+        </MenuContentProvider>
       </ScrollLockWrapper>
     </PortalWrapper>
   );
-}) as MenuImplPrimitive;
+}) as MenuContentImplPrimitive;
 
-Menu.displayName = MENU_NAME;
+MenuContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuItem
@@ -350,6 +371,7 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
   const menuItemRef = React.useRef<HTMLDivElement>(null);
   const composedRef = useComposedRefs(forwardedRef, menuItemRef);
   const context = useMenuContext(ITEM_NAME);
+  const contentContext = useMenuContentContext(ITEM_NAME);
   const rovingFocusProps = useRovingFocus({ disabled });
 
   // get the item's `.textContent` as default strategy for typeahead `textValue`
@@ -428,11 +450,11 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       })}
       // make items unreachable when an item is blurred
       onBlur={composeEventHandlers(itemProps.onBlur, (event) => {
-        context.onItemsReachableChange(false);
+        contentContext.onItemsReachableChange(false);
       })}
       // focus the menu if the mouse leaves an item
       onMouseLeave={composeEventHandlers(itemProps.onMouseLeave, (event) => {
-        context.menuRef.current?.focus();
+        contentContext.contentRef.current?.focus();
       })}
     />
   );
@@ -601,6 +623,7 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
+const MenuAnchor = extendPrimitive(PopperPrimitive.Anchor, { displayName: 'MenuAnchor' });
 const MenuGroup = extendPrimitive(Primitive, {
   defaultProps: { role: 'group' },
   displayName: 'MenuGroup',
@@ -623,6 +646,8 @@ function getCheckedState(checked: boolean) {
 }
 
 const Root = Menu;
+const Anchor = MenuAnchor;
+const Content = MenuContent;
 const Group = MenuGroup;
 const Label = MenuLabel;
 const Item = MenuItem;
@@ -635,6 +660,8 @@ const Arrow = MenuArrow;
 
 export {
   Menu,
+  MenuAnchor,
+  MenuContent,
   MenuGroup,
   MenuLabel,
   MenuItem,
@@ -646,6 +673,8 @@ export {
   MenuArrow,
   //
   Root,
+  Anchor,
+  Content,
   Group,
   Label,
   Item,

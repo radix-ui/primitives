@@ -69,7 +69,7 @@ export const Chromatic = () => (
   <div
     style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(2, 1fr)',
+      gridTemplateColumns: 'repeat(4, 1fr)',
       gridTemplateRows: 'repeat(2, 1fr)',
       height: '100vh',
     }}
@@ -91,13 +91,46 @@ export const Chromatic = () => (
       <h2>Open</h2>
       <AlertDialog defaultOpen>
         <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-        <AlertDialogOverlay className={overlayClass} style={{ right: '50%', bottom: '50%' }} />
-        <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '25%' }}>
+        <AlertDialogOverlay
+          className={overlayClass}
+          style={{ left: 0, bottom: '50%', width: '25%' }}
+        />
+        <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '12%' }}>
           <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
           <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
           <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
           <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
         </AlertDialogContent>
+      </AlertDialog>
+    </div>
+
+    <div>
+      <h1>Uncontrolled with reordered parts</h1>
+      <h2>Closed</h2>
+      <AlertDialog>
+        <AlertDialogOverlay className={overlayClass} />
+        <AlertDialogContent className={chromaticContentClass}>
+          <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
+          <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
+      </AlertDialog>
+
+      <h2>Open</h2>
+      <AlertDialog defaultOpen>
+        <AlertDialogOverlay
+          className={overlayClass}
+          style={{ left: '25%', bottom: '50%', width: '25%' }}
+        />
+        <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '37%' }}>
+          <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
+          <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
       </AlertDialog>
     </div>
 
@@ -118,13 +151,46 @@ export const Chromatic = () => (
       <h2>Open</h2>
       <AlertDialog open>
         <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-        <AlertDialogOverlay className={overlayClass} style={{ left: '50%', bottom: '50%' }} />
-        <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '75%' }}>
+        <AlertDialogOverlay
+          className={overlayClass}
+          style={{ left: '50%', bottom: '50%', width: '25%' }}
+        />
+        <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '62%' }}>
           <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
           <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
           <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
           <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
         </AlertDialogContent>
+      </AlertDialog>
+    </div>
+
+    <div>
+      <h1>Controlled with reordered parts</h1>
+      <h2>Closed</h2>
+      <AlertDialog open={false}>
+        <AlertDialogOverlay className={overlayClass} />
+        <AlertDialogContent className={chromaticContentClass}>
+          <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
+          <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
+      </AlertDialog>
+
+      <h2>Open</h2>
+      <AlertDialog open>
+        <AlertDialogOverlay
+          className={overlayClass}
+          style={{ left: '75%', bottom: '50%', width: '25%' }}
+        />
+        <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '88%' }}>
+          <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
+          <AlertDialogDescription className={descriptionClass}>Description</AlertDialogDescription>
+          <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
+          <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>
+        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
       </AlertDialog>
     </div>
 

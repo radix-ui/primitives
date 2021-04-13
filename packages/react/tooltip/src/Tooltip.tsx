@@ -8,7 +8,7 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useRect } from '@radix-ui/react-use-rect';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
+import { extendPrimitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Slottable } from '@radix-ui/react-slot';
@@ -136,17 +136,19 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   }, [contentId, openProp]);
 
   return (
-    <TooltipProvider
-      triggerRef={triggerRef}
-      contentId={contentId}
-      open={open}
-      stateAttribute={stateAttribute}
-      onFocus={handleFocus}
-      onOpen={handleOpen}
-      onClose={handleClose}
-    >
-      {children}
-    </TooltipProvider>
+    <PopperPrimitive.Root>
+      <TooltipProvider
+        triggerRef={triggerRef}
+        contentId={contentId}
+        open={open}
+        stateAttribute={stateAttribute}
+        onFocus={handleFocus}
+        onOpen={handleOpen}
+        onClose={handleClose}
+      >
+        {children}
+      </TooltipProvider>
+    </PopperPrimitive.Root>
   );
 };
 
@@ -159,7 +161,10 @@ Tooltip.displayName = TOOLTIP_NAME;
 const TRIGGER_NAME = 'TooltipTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type TooltipTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type TooltipTriggerOwnProps = Omit<
+  Polymorphic.OwnProps<typeof PopperPrimitive.Anchor>,
+  'virtualRef'
+>;
 type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
   typeof TRIGGER_DEFAULT_TAG,
   TooltipTriggerOwnProps
@@ -171,7 +176,7 @@ const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
   return (
-    <Primitive
+    <PopperPrimitive.Anchor
       type="button"
       aria-describedby={context.open ? context.contentId : undefined}
       data-state={context.stateAttribute}
@@ -226,16 +231,13 @@ const TooltipContent = React.forwardRef((props, forwardedRef) => {
   );
 }) as TooltipContentPrimitive;
 
-type PopperPrimitiveOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Root>;
 type TooltipContentImplOwnProps = Polymorphic.Merge<
-  PopperPrimitiveOwnProps,
+  Polymorphic.OwnProps<typeof PopperPrimitive.Content>,
   {
     /**
      * A more descriptive label for accessibility purpose
      */
     'aria-label'?: string;
-
-    anchorRef?: PopperPrimitiveOwnProps['anchorRef'];
 
     /**
      * Whether the Tooltip should render in a Portal
@@ -246,12 +248,12 @@ type TooltipContentImplOwnProps = Polymorphic.Merge<
 >;
 
 type TooltipContentImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Root>,
+  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Content>,
   TooltipContentImplOwnProps
 >;
 
 const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
-  const { children, 'aria-label': ariaLabel, anchorRef, portalled = true, ...contentProps } = props;
+  const { children, 'aria-label': ariaLabel, portalled = true, ...contentProps } = props;
   const context = useTooltipContext(CONTENT_NAME);
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
@@ -260,11 +262,10 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
   return (
     <PortalWrapper>
       <CheckTriggerMoved />
-      <PopperPrimitive.Root
+      <PopperPrimitive.Content
         data-state={context.stateAttribute}
         {...contentProps}
         ref={forwardedRef}
-        anchorRef={anchorRef || context.triggerRef}
         style={{
           ...contentProps.style,
           // re-namespace exposed content custom property
@@ -275,7 +276,7 @@ const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
         <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
           {ariaLabel || children}
         </VisuallyHiddenPrimitive.Root>
-      </PopperPrimitive.Root>
+      </PopperPrimitive.Content>
     </PortalWrapper>
   );
 }) as TooltipContentImplPrimitive;

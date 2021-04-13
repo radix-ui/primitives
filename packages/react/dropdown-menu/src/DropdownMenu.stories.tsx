@@ -18,7 +18,7 @@ import { css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 import { classes, TickIcon } from '../../menu/src/Menu.stories';
 
-const { rootClass, itemClass, labelClass, separatorClass } = classes;
+const { contentClass, itemClass, labelClass, separatorClass } = classes;
 
 export default { title: 'Components/DropdownMenu' };
 
@@ -26,7 +26,7 @@ export const Styled = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}>
     <DropdownMenu>
       <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
-      <DropdownMenuContent className={rootClass} sideOffset={5}>
+      <DropdownMenuContent className={contentClass} sideOffset={5}>
         <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
           Undo
         </DropdownMenuItem>
@@ -53,7 +53,7 @@ export const WithLabels = () => (
   <div style={{ textAlign: 'center', padding: 50 }}>
     <DropdownMenu>
       <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
-      <DropdownMenuContent className={rootClass} sideOffset={5}>
+      <DropdownMenuContent className={contentClass} sideOffset={5}>
         {foodGroups.map((foodGroup, index) => (
           <DropdownMenuGroup key={index}>
             {foodGroup.label && (
@@ -92,7 +92,7 @@ export const CheckboxItems = () => {
     <div style={{ textAlign: 'center', padding: 50 }}>
       <DropdownMenu>
         <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
-        <DropdownMenuContent className={rootClass} sideOffset={5}>
+        <DropdownMenuContent className={contentClass} sideOffset={5}>
           <DropdownMenuItem className={itemClass} onSelect={() => console.log('show')}>
             Show fonts
           </DropdownMenuItem>
@@ -132,7 +132,7 @@ export const RadioItems = () => {
     <div style={{ textAlign: 'center', padding: 50 }}>
       <DropdownMenu>
         <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
-        <DropdownMenuContent className={rootClass} sideOffset={5}>
+        <DropdownMenuContent className={contentClass} sideOffset={5}>
           <DropdownMenuItem className={itemClass} onSelect={() => console.log('minimize')}>
             Minimize window
           </DropdownMenuItem>
@@ -165,7 +165,7 @@ export const PreventClosing = () => (
   <div style={{ textAlign: 'center', padding: 50 }}>
     <DropdownMenu>
       <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
-      <DropdownMenuContent className={rootClass} sideOffset={5}>
+      <DropdownMenuContent className={contentClass} sideOffset={5}>
         <DropdownMenuItem className={itemClass} onSelect={() => window.alert('action 1')}>
           I will close
         </DropdownMenuItem>
@@ -204,7 +204,7 @@ export const Chromatic = () => {
       <DropdownMenu>
         <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
         <DropdownMenuContent
-          className={rootClass}
+          className={contentClass}
           sideOffset={5}
           avoidCollisions={false}
           disableOutsideScroll={false}
@@ -233,7 +233,7 @@ export const Chromatic = () => {
       <DropdownMenu defaultOpen>
         <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
         <DropdownMenuContent
-          className={rootClass}
+          className={contentClass}
           sideOffset={5}
           avoidCollisions={false}
           disableOutsideScroll={false}
@@ -258,12 +258,41 @@ export const Chromatic = () => {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <h2 style={{ marginTop: 180 }}>Open with reordered parts</h2>
+      <DropdownMenu defaultOpen>
+        <DropdownMenuContent
+          className={contentClass}
+          sideOffset={5}
+          avoidCollisions={false}
+          disableOutsideScroll={false}
+        >
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+            Undo
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+            Redo
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className={separatorClass} />
+          <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+            Cut
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+            Copy
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+            Paste
+          </DropdownMenuItem>
+          <DropdownMenuArrow />
+        </DropdownMenuContent>
+        <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
+      </DropdownMenu>
+
       <h1 style={{ marginTop: 200 }}>Controlled</h1>
       <h2>Closed</h2>
       <DropdownMenu open={false}>
         <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
         <DropdownMenuContent
-          className={rootClass}
+          className={contentClass}
           sideOffset={5}
           avoidCollisions={false}
           disableOutsideScroll={false}
@@ -292,7 +321,7 @@ export const Chromatic = () => {
       <DropdownMenu open>
         <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
         <DropdownMenuContent
-          className={rootClass}
+          className={contentClass}
           sideOffset={5}
           avoidCollisions={false}
           disableOutsideScroll={false}
@@ -315,6 +344,35 @@ export const Chromatic = () => {
           </DropdownMenuItem>
           <DropdownMenuArrow />
         </DropdownMenuContent>
+      </DropdownMenu>
+
+      <h2 style={{ marginTop: 180 }}>Open with reordered parts</h2>
+      <DropdownMenu open>
+        <DropdownMenuContent
+          className={contentClass}
+          sideOffset={5}
+          avoidCollisions={false}
+          disableOutsideScroll={false}
+        >
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+            Undo
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+            Redo
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className={separatorClass} />
+          <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+            Cut
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+            Copy
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+            Paste
+          </DropdownMenuItem>
+          <DropdownMenuArrow />
+        </DropdownMenuContent>
+        <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
       </DropdownMenu>
 
       <h1 style={{ marginTop: 200 }}>Positioning</h1>
@@ -553,7 +611,7 @@ export const Chromatic = () => {
       <DropdownMenu open>
         <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
         <DropdownMenuContent
-          className={rootClass}
+          className={contentClass}
           sideOffset={5}
           avoidCollisions={false}
           disableOutsideScroll={false}
@@ -588,7 +646,7 @@ export const Chromatic = () => {
       <DropdownMenu open>
         <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
         <DropdownMenuContent
-          className={rootClass}
+          className={contentClass}
           sideOffset={5}
           avoidCollisions={false}
           disableOutsideScroll={false}

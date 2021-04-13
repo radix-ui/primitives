@@ -18,7 +18,7 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 
 import { classes } from '../../menu/src/Menu.stories';
-const { rootClass: dropdownMenuRootClass, itemClass: dropdownMenuItemClass } = classes;
+const { contentClass: dropdownMenuContentClass, itemClass: dropdownMenuItemClass } = classes;
 
 export default { title: 'Components/Toolbar' };
 
@@ -80,7 +80,7 @@ const ToolbarExample = ({ title, orientation }: any) => (
         <ToolbarButton className={toolbarItemClass} as={DropdownMenuTrigger}>
           Menu
         </ToolbarButton>
-        <DropdownMenuContent className={dropdownMenuRootClass} sideOffset={5}>
+        <DropdownMenuContent className={dropdownMenuContentClass} sideOffset={5}>
           <DropdownMenuItem className={dropdownMenuItemClass}>Undo</DropdownMenuItem>
           <DropdownMenuItem className={dropdownMenuItemClass}>Redo</DropdownMenuItem>
           <DropdownMenuArrow />

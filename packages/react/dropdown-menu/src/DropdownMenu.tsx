@@ -3,7 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
+import { extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useId } from '@radix-ui/react-id';
 
@@ -43,15 +43,17 @@ const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
   });
 
   return (
-    <DropdownMenuProvider
-      triggerRef={triggerRef}
-      contentId={useId()}
-      open={open}
-      onOpenChange={setOpen}
-      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
-    >
-      {children}
-    </DropdownMenuProvider>
+    <MenuPrimitive.Root open={open} onOpenChange={setOpen}>
+      <DropdownMenuProvider
+        triggerRef={triggerRef}
+        contentId={useId()}
+        open={open}
+        onOpenChange={setOpen}
+        onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+      >
+        {children}
+      </DropdownMenuProvider>
+    </MenuPrimitive.Root>
   );
 };
 
@@ -64,7 +66,10 @@ DropdownMenu.displayName = DROPDOWN_MENU_NAME;
 const TRIGGER_NAME = 'DropdownMenuTrigger';
 const TRIGGER_DEFAULT_TAG = 'button';
 
-type DropdownMenuTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type DropdownMenuTriggerOwnProps = Omit<
+  Polymorphic.OwnProps<typeof MenuPrimitive.Anchor>,
+  'virtualRef'
+>;
 type DropdownMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
   typeof TRIGGER_DEFAULT_TAG,
   DropdownMenuTriggerOwnProps
@@ -76,7 +81,7 @@ const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
   return (
-    <Primitive
+    <MenuPrimitive.Anchor
       type="button"
       aria-haspopup="menu"
       aria-expanded={context.open ? true : undefined}
@@ -110,14 +115,13 @@ DropdownMenuTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'DropdownMenuContent';
 
-type MenuPrimitiveOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Root>;
-type DropdownMenuContentOwnProps = Polymorphic.Merge<
-  Omit<MenuPrimitiveOwnProps, 'trapFocus' | 'onOpenAutoFocus' | 'onDismiss'>,
-  { anchorRef?: MenuPrimitiveOwnProps['anchorRef'] }
+type DropdownMenuContentOwnProps = Omit<
+  Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
+  'trapFocus' | 'onOpenAutoFocus'
 >;
 
 type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Root>,
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Content>,
   DropdownMenuContentOwnProps
 >;
 
@@ -131,7 +135,7 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
   } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
   return (
-    <MenuPrimitive.Root
+    <MenuPrimitive.Content
       id={context.contentId}
       {...contentProps}
       ref={forwardedRef}
@@ -143,9 +147,6 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
         // re-namespace exposed content custom property
         ['--radix-dropdown-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
       }}
-      open={context.open}
-      onOpenChange={context.onOpenChange}
-      anchorRef={props.anchorRef || context.triggerRef}
       trapFocus
       onCloseAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
         event.preventDefault();
@@ -164,7 +165,6 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
         },
         { checkForDefaultPrevented: false }
       )}
-      onDismiss={() => context.onOpenChange(false)}
     />
   );
 }) as DropdownMenuContentPrimitive;

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { observeElementRect } from '@radix-ui/rect';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 import type { Measurable } from '@radix-ui/rect';
 
@@ -13,7 +12,7 @@ function useRect(
   refToObserve: React.RefObject<Measurable>
 ) {
   const [rect, setRect] = React.useState<ClientRect>();
-  useLayoutEffect(() => {
+  React.useEffect(() => {
     if (refToObserve.current) {
       const unobserve = observeElementRect(refToObserve.current, setRect);
       return () => {

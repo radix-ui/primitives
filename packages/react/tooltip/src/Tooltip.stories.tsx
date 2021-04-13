@@ -544,6 +544,15 @@ export const Chromatic = () => (
       </TooltipContent>
     </Tooltip>
 
+    <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
+    <Tooltip defaultOpen>
+      <TooltipContent className={contentClass} sideOffset={5}>
+        Some content
+        <TooltipArrow className={arrowClass} offset={10} />
+      </TooltipContent>
+      <TooltipTrigger className={triggerClass}>open</TooltipTrigger>
+    </Tooltip>
+
     <h1 style={{ marginTop: 100 }}>Controlled</h1>
     <h2>Closed</h2>
     <Tooltip open={false}>
@@ -561,6 +570,15 @@ export const Chromatic = () => (
         Some content
         <TooltipArrow className={arrowClass} offset={10} />
       </TooltipContent>
+    </Tooltip>
+
+    <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
+    <Tooltip open>
+      <TooltipContent className={contentClass} sideOffset={5}>
+        Some content
+        <TooltipArrow className={arrowClass} offset={10} />
+      </TooltipContent>
+      <TooltipTrigger className={triggerClass}>open</TooltipTrigger>
     </Tooltip>
 
     <h1 style={{ marginTop: 100 }}>Positioning</h1>

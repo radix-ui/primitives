@@ -2,6 +2,7 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -10,6 +11,7 @@ import { Portal } from '@radix-ui/react-portal';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
+import { Slot } from '@radix-ui/react-slot';
 import { useId } from '@radix-ui/react-id';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
@@ -31,6 +33,9 @@ type PopoverContextValue = {
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
+  hasCustomAnchor: boolean;
+  onCustomAnchorAdd(): void;
+  onCustomAnchorRemove(): void;
 };
 
 const [PopoverProvider, usePopoverContext] = createContext<PopoverContextValue>(POPOVER_NAME);
@@ -44,6 +49,7 @@ type PopoverOwnProps = {
 const Popover: React.FC<PopoverOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
@@ -51,19 +57,50 @@ const Popover: React.FC<PopoverOwnProps> = (props) => {
   });
 
   return (
-    <PopoverProvider
-      contentId={useId()}
-      triggerRef={triggerRef}
-      open={open}
-      onOpenChange={setOpen}
-      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
-    >
-      {children}
-    </PopoverProvider>
+    <PopperPrimitive.Root>
+      <PopoverProvider
+        contentId={useId()}
+        triggerRef={triggerRef}
+        open={open}
+        onOpenChange={setOpen}
+        onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+        hasCustomAnchor={hasCustomAnchor}
+        onCustomAnchorAdd={React.useCallback(() => setHasCustomAnchor(true), [])}
+        onCustomAnchorRemove={React.useCallback(() => setHasCustomAnchor(false), [])}
+      >
+        {children}
+      </PopoverProvider>
+    </PopperPrimitive.Root>
   );
 };
 
 Popover.displayName = POPOVER_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * PopoverAnchor
+ * -----------------------------------------------------------------------------------------------*/
+
+const ANCHOR_NAME = 'PopoverAnchor';
+
+type PopoverAnchorOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Anchor>;
+type PopoverAnchorPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Anchor>,
+  PopoverAnchorOwnProps
+>;
+
+const PopoverAnchor = React.forwardRef((props, forwardedRef) => {
+  const context = usePopoverContext(ANCHOR_NAME);
+  const { onCustomAnchorAdd, onCustomAnchorRemove } = context;
+
+  React.useEffect(() => {
+    onCustomAnchorAdd();
+    return () => onCustomAnchorRemove();
+  }, [onCustomAnchorAdd, onCustomAnchorRemove]);
+
+  return <PopperPrimitive.Anchor {...props} ref={forwardedRef} />;
+}) as PopoverAnchorPrimitive;
+
+PopoverAnchor.displayName = ANCHOR_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverTrigger
@@ -82,7 +119,8 @@ const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
   const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = usePopoverContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
-  return (
+
+  const trigger = (
     <Primitive
       type="button"
       aria-haspopup="dialog"
@@ -94,6 +132,12 @@ const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
       ref={composedTriggerRef}
       onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
     />
+  );
+
+  return context.hasCustomAnchor ? (
+    trigger
+  ) : (
+    <PopperPrimitive.Anchor as={Slot}>{trigger}</PopperPrimitive.Anchor>
   );
 }) as PopoverTriggerPrimitive;
 
@@ -136,7 +180,7 @@ const PopoverContent = React.forwardRef((props, forwardedRef) => {
   );
 }) as PopoverContentPrimitive;
 
-type PopperPrimitiveOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Root>;
+type PopperPrimitiveOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Content>;
 type PopoverContentImplOwnProps = Polymorphic.Merge<
   PopperPrimitiveOwnProps,
   {
@@ -201,19 +245,16 @@ type PopoverContentImplOwnProps = Polymorphic.Merge<
      * (default: `true`)
      */
     portalled?: boolean;
-
-    anchorRef?: PopperPrimitiveOwnProps['anchorRef'];
   }
 >;
 
 type PopoverContentImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Root>,
+  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Content>,
   PopoverContentImplOwnProps
 >;
 
 const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
-    anchorRef,
     trapFocus = true,
     onOpenAutoFocus,
     onCloseAutoFocus,
@@ -306,14 +347,13 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
               onDismiss={() => context.onOpenChange(false)}
             >
               {(dismissableLayerProps) => (
-                <PopperPrimitive.Root
+                <PopperPrimitive.Content
                   role="dialog"
                   aria-modal
                   id={context.contentId}
                   {...focusScopeProps}
                   {...contentProps}
                   ref={composeRefs(forwardedRef, contentRef, focusScopeProps.ref)}
-                  anchorRef={anchorRef || context.triggerRef}
                   onKeyDown={composeEventHandlers(
                     contentProps.onKeyDown,
                     focusScopeProps.onKeyDown
@@ -392,6 +432,7 @@ const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'Popo
 /* -----------------------------------------------------------------------------------------------*/
 
 const Root = Popover;
+const Anchor = PopoverAnchor;
 const Trigger = PopoverTrigger;
 const Content = PopoverContent;
 const Close = PopoverClose;
@@ -399,12 +440,14 @@ const Arrow = PopoverArrow;
 
 export {
   Popover,
+  PopoverAnchor,
   PopoverTrigger,
   PopoverContent,
   PopoverClose,
   PopoverArrow,
   //
   Root,
+  Anchor,
   Trigger,
   Content,
   Close,
