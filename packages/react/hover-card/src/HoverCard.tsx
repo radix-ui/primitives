@@ -22,8 +22,8 @@ type HoverCardContextValue = {
   contentId: string;
   open: boolean;
   onOpenChange(open: boolean): void;
-  onOpen(): void;
-  onClose(): void;
+  onMouseEnter(): void;
+  onMouseLeave(): void;
 };
 
 const [HoverCardProvider, useHoverCardContext] = createContext<HoverCardContextValue>(
@@ -33,17 +33,64 @@ const [HoverCardProvider, useHoverCardContext] = createContext<HoverCardContextV
 type HoverCardOwnProps = {
   open?: boolean;
   defaultOpen?: boolean;
+  enterDelayDuration?: number;
+  exitDelayDuration?: number;
   onOpenChange?: (open: boolean) => void;
 };
 
 const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
-  const { children, open: openProp, defaultOpen, onOpenChange } = props;
+  const {
+    children,
+    open: openProp,
+    defaultOpen,
+    onOpenChange,
+    enterDelayDuration = 700,
+    exitDelayDuration = 400,
+  } = props;
   const triggerRef = React.useRef<HTMLAnchorElement>(null);
+  const enterEnvoked = React.useRef(false);
+  const enterTimerRef = React.useRef(0);
+  const leaveTimerRef = React.useRef(0);
+
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
+
+  const clearEnterTimer = React.useCallback(() => {
+    clearTimeout(enterTimerRef.current);
+  }, [enterTimerRef]);
+
+  const clearLeaveTimer = React.useCallback(() => {
+    clearTimeout(leaveTimerRef.current);
+  }, [leaveTimerRef]);
+
+  const handleMouseEnter = React.useCallback(() => {
+    clearLeaveTimer();
+    enterTimerRef.current = window.setTimeout(() => {
+      setOpen(true);
+      enterEnvoked.current = true;
+    }, enterDelayDuration);
+  }, [clearLeaveTimer, enterDelayDuration, setOpen]);
+
+  const handelMouseLeave = React.useCallback(() => {
+    clearEnterTimer();
+    leaveTimerRef.current = window.setTimeout(() => {
+      if (enterEnvoked.current) {
+        setOpen(false);
+        enterEnvoked.current = false;
+      }
+    }, exitDelayDuration);
+  }, [clearEnterTimer, exitDelayDuration, setOpen]);
+
+  // cleanup any queued state updates on unmount
+  React.useEffect(() => {
+    return () => {
+      clearEnterTimer();
+      clearLeaveTimer();
+    };
+  }, [clearEnterTimer, clearLeaveTimer]);
 
   return (
     <HoverCardProvider
@@ -51,8 +98,8 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
       triggerRef={triggerRef}
       open={open}
       onOpenChange={setOpen}
-      onOpen={React.useCallback(() => setOpen(true), [setOpen])}
-      onClose={React.useCallback(() => setOpen(false), [setOpen])}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handelMouseLeave}
     >
       {children}
     </HoverCardProvider>
@@ -85,8 +132,8 @@ const HoverCardTrigger = React.forwardRef((props, forwardedRef) => {
       {...triggerProps}
       as={as}
       ref={composedTriggerRef}
-      onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onOpen)}
-      onMouseLeave={composeEventHandlers(props.onMouseEnter, context.onClose)}
+      onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onMouseEnter)}
+      onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onMouseLeave)}
     />
   );
 }) as HoverCardTriggerPrimitive;
@@ -124,6 +171,8 @@ const HoverCardContent = React.forwardRef((props, forwardedRef) => {
       <HoverCardContentImpl
         data-state={context.open ? 'open' : 'closed'}
         {...contentProps}
+        onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onMouseEnter)}
+        onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onMouseLeave)}
         ref={forwardedRef}
       />
     </Presence>

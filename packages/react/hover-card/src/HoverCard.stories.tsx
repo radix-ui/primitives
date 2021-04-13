@@ -99,62 +99,63 @@ export const Nested = () => {
   const anchorRef = React.useRef<HTMLAnchorElement>(null);
 
   return (
-    <div
-      style={{
-        height: '300vh',
-        width: '300vw',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <a
-        href="/"
-        style={{ position: 'fixed', top: 10, left: 10 }}
-        onClick={() => anchorRef.current?.focus()}
+    <HoverCard>
+      <HoverCardTrigger className={triggerClass} ref={anchorRef}>
+        Open HoverCard
+      </HoverCardTrigger>
+
+      <HoverCardContent
+        className={contentClass}
+        sideOffset={5}
+        style={{ backgroundColor: 'crimson' }}
       >
-        Focus HoverCard button
-      </a>
+        <HoverCard>
+          <HoverCardTrigger className={triggerClass}>Open level 1 HoverCard</HoverCardTrigger>
+          <HoverCardContent
+            className={contentClass}
+            side="top"
+            align="center"
+            sideOffset={5}
+            style={{ backgroundColor: 'green' }}
+          >
+            <HoverCardArrow
+              className={arrowClass}
+              width={20}
+              height={10}
+              offset={20}
+              style={{ fill: 'green' }}
+            />
+            <HoverCard>
+              <HoverCardTrigger className={triggerClass}>Open level 2 HoverCard</HoverCardTrigger>
+              <HoverCardContent
+                className={contentClass}
+                side="bottom"
+                align="start"
+                sideOffset={5}
+                style={{ backgroundColor: 'purple' }}
+              >
+                <HoverCardArrow
+                  className={arrowClass}
+                  width={20}
+                  height={10}
+                  offset={20}
+                  style={{ fill: 'purple' }}
+                />
+                Level 2 content
+              </HoverCardContent>
+            </HoverCard>
+          </HoverCardContent>
+        </HoverCard>
 
-      <HoverCard>
-        <HoverCardTrigger className={triggerClass} ref={anchorRef}>
-          Open HoverCard
-        </HoverCardTrigger>
-
-        <HoverCardContent
-          className={contentClass}
-          sideOffset={5}
-          style={{ backgroundColor: 'crimson' }}
-        >
-          <HoverCard>
-            <HoverCardTrigger className={triggerClass}>Open nested HoverCard</HoverCardTrigger>
-            <HoverCardContent
-              className={contentClass}
-              side="top"
-              align="center"
-              sideOffset={5}
-              style={{ backgroundColor: 'green' }}
-            >
-              <HoverCardArrow
-                className={arrowClass}
-                width={20}
-                height={10}
-                offset={20}
-                style={{ fill: 'green' }}
-              />
-            </HoverCardContent>
-          </HoverCard>
-          dfsdf
-          <HoverCardArrow
-            className={arrowClass}
-            width={20}
-            height={10}
-            offset={20}
-            style={{ fill: 'crimson' }}
-          />
-        </HoverCardContent>
-      </HoverCard>
-    </div>
+        <HoverCardArrow
+          className={arrowClass}
+          width={20}
+          height={10}
+          offset={20}
+          style={{ fill: 'crimson' }}
+        />
+      </HoverCardContent>
+    </HoverCard>
   );
 };
 
