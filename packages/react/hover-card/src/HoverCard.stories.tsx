@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { HoverCard, HoverCardTrigger, HoverCardContent, HoverCardArrow } from './HoverCard';
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+  HoverCardArrow,
+  HoverCardAnchor,
+} from './HoverCard';
 import { Slot } from '@radix-ui/react-slot';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 import { css } from '../../../../stitches.config';
@@ -63,7 +69,7 @@ export const AsyncUpdate = () => {
 };
 
 export const CustomDurations = () => (
-  <>
+  <div>
     <h1>Delay duration</h1>
     <h2>Default (700ms enter, 400ms exit)</h2>
 
@@ -92,12 +98,11 @@ export const CustomDurations = () => (
       <HoverCardTrigger href="/" className={triggerClass}>
         trigger
       </HoverCardTrigger>
-      <HoverCardContent className={contentClass} sideOffset={5}>
-        <HoverCardArrow className={arrowClass} width={20} height={10} />
+      <HoverCardContent className={contentClass}>
         <CardContentPlaceholder />
       </HoverCardContent>
     </HoverCard>
-  </>
+  </div>
 );
 
 export const Controlled = () => {
@@ -217,36 +222,34 @@ export const Nested = () => {
 };
 
 export const CustomAnchor = () => {
-  const itemBoxRef = React.useRef<HTMLDivElement>(null);
-
   return (
-    <div
-      ref={itemBoxRef}
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: 250,
-        padding: 20,
-        margin: 100,
-        backgroundColor: '#eee',
-      }}
-    >
-      Item
-      <HoverCard>
+    <HoverCard>
+      <HoverCardAnchor
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: 250,
+          padding: 20,
+          margin: 100,
+          backgroundColor: '#eee',
+        }}
+      >
+        Item
         <HoverCardTrigger href="/" className={triggerClass}>
           trigger
         </HoverCardTrigger>
-        <HoverCardContent
-          className={contentClass}
-          anchorRef={itemBoxRef}
-          side="right"
-          sideOffset={1}
-          align="start"
-          style={{ borderRadius: 0, width: 200, height: 100 }}
-        ></HoverCardContent>
-      </HoverCard>
-    </div>
+      </HoverCardAnchor>
+      <HoverCardContent
+        className={contentClass}
+        side="right"
+        sideOffset={1}
+        align="start"
+        style={{ borderRadius: 0, width: 200, height: 100 }}
+      >
+        content
+      </HoverCardContent>
+    </HoverCard>
   );
 };
 
