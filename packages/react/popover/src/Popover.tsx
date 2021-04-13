@@ -65,8 +65,8 @@ const Popover: React.FC<PopoverOwnProps> = (props) => {
         onOpenChange={setOpen}
         onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
         hasCustomAnchor={hasCustomAnchor}
-        onCustomAnchorAdd={() => setHasCustomAnchor(true)}
-        onCustomAnchorRemove={() => setHasCustomAnchor(false)}
+        onCustomAnchorAdd={React.useCallback(() => setHasCustomAnchor(true), [])}
+        onCustomAnchorRemove={React.useCallback(() => setHasCustomAnchor(false), [])}
       >
         {children}
       </PopoverProvider>
@@ -90,13 +90,12 @@ type PopoverAnchorPrimitive = Polymorphic.ForwardRefComponent<
 
 const PopoverAnchor = React.forwardRef((props, forwardedRef) => {
   const context = usePopoverContext(ANCHOR_NAME);
-  const handleCustomAnchorAdd = useCallbackRef(context.onCustomAnchorAdd);
-  const handleCustomAnchorRemove = useCallbackRef(context.onCustomAnchorRemove);
+  const { onCustomAnchorAdd, onCustomAnchorRemove } = context;
 
   React.useEffect(() => {
-    handleCustomAnchorAdd();
-    return () => handleCustomAnchorRemove();
-  }, [handleCustomAnchorAdd, handleCustomAnchorRemove]);
+    onCustomAnchorAdd();
+    return () => onCustomAnchorRemove();
+  }, [onCustomAnchorAdd, onCustomAnchorRemove]);
 
   return <PopperPrimitive.Anchor {...props} ref={forwardedRef} />;
 }) as PopoverAnchorPrimitive;
