@@ -55,14 +55,15 @@ const PopperAnchor = React.forwardRef((props, forwardedRef) => {
   );
 
   React.useEffect(() => {
+    // Consumer can anchor the popper to something that isn't
+    // a DOM node e.g. pointer position, so we override the
+    // `anchorRef` with their virtual ref in this case.
     if (virtualRef?.current) {
       context.anchorRef.current = virtualRef.current;
     }
   });
 
-  return virtualRef ? (
-    <>{children}</>
-  ) : (
+  return virtualRef ? null : (
     <Primitive {...anchorProps} ref={composedRefs}>
       {children}
     </Primitive>
@@ -148,7 +149,7 @@ const PopperContent = React.forwardRef((props, forwardedRef) => {
   const isPlaced = placedSide !== undefined;
 
   return (
-    <div style={popperStyles} data-radix-popper-wrapper="">
+    <div style={popperStyles} data-radix-popper-content-wrapper="">
       <PopperContentProvider
         arrowRef={arrowRef}
         arrowStyles={arrowStyles}

@@ -121,7 +121,7 @@ const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
   const context = usePopoverContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
-  const primitive = (
+  const trigger = (
     <Primitive
       type="button"
       aria-haspopup="dialog"
@@ -136,9 +136,9 @@ const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
   );
 
   return context.hasCustomAnchor ? (
-    primitive
+    trigger
   ) : (
-    <PopperPrimitive.Anchor as={Slot}>{primitive}</PopperPrimitive.Anchor>
+    <PopperPrimitive.Anchor as={Slot}>{trigger}</PopperPrimitive.Anchor>
   );
 }) as PopoverTriggerPrimitive;
 

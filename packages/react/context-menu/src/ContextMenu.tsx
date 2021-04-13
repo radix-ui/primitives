@@ -60,7 +60,8 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
   });
 
   return (
-    <MenuPrimitive.Anchor virtualRef={virtualRef}>
+    <>
+      <MenuPrimitive.Anchor virtualRef={virtualRef} />
       <Primitive
         {...triggerProps}
         as={as}
@@ -71,7 +72,7 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
           context.onOpenChange(true);
         })}
       />
-    </MenuPrimitive.Anchor>
+    </>
   );
 }) as ContextMenuTriggerPrimitive;
 
