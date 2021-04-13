@@ -234,14 +234,14 @@ type SliderHorizontalPrimitive = Polymorphic.ForwardRefComponent<
 
 const SliderHorizontal = React.forwardRef((props, forwardedRef) => {
   const { min, max, dir, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
-  const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
-  const ref = useComposedRefs(forwardedRef, sliderRef);
+  const [slider, setSlider] = React.useState<React.ElementRef<typeof SliderPart> | null>(null);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
   const rectRef = React.useRef<ClientRect>();
-  const direction = useDirection({ ref: sliderRef, directionProp: dir });
+  const direction = useDirection({ element: slider, directionProp: dir });
   const isDirectionLTR = direction === 'ltr';
 
   function getValueFromPointer(pointerPosition: number) {
-    const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
+    const rect = rectRef.current || slider!.getBoundingClientRect();
     const input: [number, number] = [0, rect.width];
     const output: [number, number] = isDirectionLTR ? [min, max] : [max, min];
     const value = linearScale(input, output);
@@ -265,7 +265,7 @@ const SliderHorizontal = React.forwardRef((props, forwardedRef) => {
       <SliderPart
         data-orientation="horizontal"
         {...sliderProps}
-        ref={ref}
+        ref={composedRefs}
         style={{
           ...sliderProps.style,
           ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
@@ -601,9 +601,9 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
   const { as = THUMB_DEFAULT_TAG, index, value, ...thumbProps } = props;
   const context = useSliderContext(THUMB_NAME);
   const orientation = React.useContext(SliderOrientationContext);
-  const thumbRef = React.useRef<HTMLSpanElement>(null);
-  const ref = useComposedRefs(forwardedRef, thumbRef);
-  const size = useSize(thumbRef);
+  const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
+  const size = useSize(thumb);
   const percent = convertValueToPercentage(value, context.min, context.max);
   const label = getLabel(index, context.values.length);
   const orientationSize = size?.[orientation.size];
@@ -612,14 +612,13 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
     : 0;
 
   React.useEffect(() => {
-    const thumb = thumbRef.current;
     if (thumb) {
       context.thumbs.add(thumb);
       return () => {
         context.thumbs.delete(thumb);
       };
     }
-  }, [context.thumbs]);
+  }, [thumb, context.thumbs]);
 
   return (
     <span
@@ -642,7 +641,7 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
         tabIndex={0}
         {...thumbProps}
         as={as}
-        ref={ref}
+        ref={composedRefs}
         onFocus={composeEventHandlers(props.onFocus, () => {
           context.valueIndexToChangeRef.current = index;
         })}
@@ -685,10 +684,10 @@ const BubbleInput = (props: React.ComponentProps<'input'>) => {
 };
 
 function useDirection({
-  ref,
+  element,
   directionProp,
 }: {
-  ref: React.RefObject<any>;
+  element: HTMLElement | null;
   directionProp?: Direction;
 }) {
   const [direction, setDirection] = React.useState<Direction>('ltr');
@@ -696,11 +695,11 @@ function useDirection({
   const rAFRef = React.useRef<number>(0);
 
   React.useEffect(() => {
-    if (directionProp === undefined) {
-      const computedStyle = getComputedStyle(ref.current);
+    if (element && directionProp === undefined) {
+      const computedStyle = getComputedStyle(element);
       setComputedStyle(computedStyle);
     }
-  }, [directionProp, ref]);
+  }, [element, directionProp]);
 
   React.useEffect(() => {
     function getDirection() {

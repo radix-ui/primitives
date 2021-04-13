@@ -42,14 +42,14 @@ function Demo({ disableCollisions = false }) {
   const side = SIDE_OPTIONS[sideIndex];
   const align = ALIGN_OPTIONS[alignIndex];
 
-  const anchorRef = React.useRef<HTMLDivElement>(null);
-  const anchorRect = useRect(anchorRef);
+  const [anchor, setAnchor] = React.useState<HTMLDivElement | null>(null);
+  const anchorRect = useRect(anchor);
 
-  const popperRef = React.useRef<HTMLDivElement>(null);
-  const popperSize = useSize(popperRef);
+  const [popper, setPopper] = React.useState<HTMLDivElement | null>(null);
+  const popperSize = useSize(popper);
 
-  const arrowRef = React.useRef<HTMLDivElement>(null);
-  const arrowSize = useSize(arrowRef);
+  const [arrow, setArrow] = React.useState<HTMLDivElement | null>(null);
+  const arrowSize = useSize(arrow);
 
   const { popperStyles, arrowStyles } = getPlacementData({
     popperSize,
@@ -73,7 +73,7 @@ function Demo({ disableCollisions = false }) {
   return (
     <>
       <div
-        ref={anchorRef}
+        ref={setAnchor}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -88,7 +88,7 @@ function Demo({ disableCollisions = false }) {
 
       <div style={popperStyles}>
         <div
-          ref={popperRef}
+          ref={setPopper}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -172,7 +172,7 @@ function Demo({ disableCollisions = false }) {
 
         <span style={arrowStyles}>
           <div
-            ref={arrowRef}
+            ref={setArrow}
             style={{
               width: 20,
               height: 10,

@@ -18,13 +18,18 @@ import type { Measurable } from '@radix-ui/rect';
 const POPPER_NAME = 'Popper';
 
 type PopperContextValue = {
-  anchorRef: React.MutableRefObject<Measurable | null>;
+  anchor: Measurable | null;
+  onAnchorChange(anchor: Measurable | null): void;
 };
 const [PopperProvider, usePopperContext] = createContext<PopperContextValue>(POPPER_NAME);
 
 const Popper: React.FC = ({ children }) => {
-  const anchorRef = React.useRef<Measurable | null>(null);
-  return <PopperProvider anchorRef={anchorRef}>{children}</PopperProvider>;
+  const [anchor, setAnchor] = React.useState<Measurable | null>(null);
+  return (
+    <PopperProvider anchor={anchor} onAnchorChange={setAnchor}>
+      {children}
+    </PopperProvider>
+  );
 };
 
 Popper.displayName = POPPER_NAME;
@@ -48,19 +53,13 @@ const PopperAnchor = React.forwardRef((props, forwardedRef) => {
   const { virtualRef, children, ...anchorProps } = props;
   const context = usePopperContext(ANCHOR_NAME);
   const ref = React.useRef<React.ElementRef<typeof Primitive>>(null);
-  const composedRefs = useComposedRefs(
-    forwardedRef,
-    ref,
-    context.anchorRef as React.MutableRefObject<React.ElementRef<typeof Primitive>>
-  );
+  const composedRefs = useComposedRefs(forwardedRef, ref);
 
   React.useEffect(() => {
     // Consumer can anchor the popper to something that isn't
     // a DOM node e.g. pointer position, so we override the
     // `anchorRef` with their virtual ref in this case.
-    if (virtualRef?.current) {
-      context.anchorRef.current = virtualRef.current;
-    }
+    context.onAnchorChange(virtualRef?.current || ref.current);
   });
 
   return virtualRef ? null : (
@@ -79,8 +78,8 @@ PopperAnchor.displayName = ANCHOR_NAME;
 const CONTENT_NAME = 'PopperContent';
 
 type PopperContentContextValue = {
-  arrowRef: React.RefObject<HTMLElement>;
   arrowStyles: React.CSSProperties;
+  onArrowChange(arrow: HTMLSpanElement | null): void;
   onArrowOffsetChange(offset?: number): void;
 };
 
@@ -118,13 +117,13 @@ const PopperContent = React.forwardRef((props, forwardedRef) => {
 
   const context = usePopperContext(CONTENT_NAME);
   const [arrowOffset, setArrowOffset] = React.useState<number>();
-  const anchorRect = useRect(context.anchorRef);
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const contentSize = useSize(contentRef);
-  const arrowRef = React.useRef<HTMLSpanElement>(null);
-  const arrowSize = useSize(arrowRef);
+  const anchorRect = useRect(context.anchor);
+  const [content, setContent] = React.useState<HTMLDivElement | null>(null);
+  const contentSize = useSize(content);
+  const [arrow, setArrow] = React.useState<HTMLSpanElement | null>(null);
+  const arrowSize = useSize(arrow);
 
-  const composedRefs = useComposedRefs(forwardedRef, contentRef);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
 
   const windowSize = useWindowSize();
   const collisionBoundariesRect = windowSize
@@ -151,8 +150,8 @@ const PopperContent = React.forwardRef((props, forwardedRef) => {
   return (
     <div style={popperStyles} data-radix-popper-content-wrapper="">
       <PopperContentProvider
-        arrowRef={arrowRef}
         arrowStyles={arrowStyles}
+        onArrowChange={setArrow}
         onArrowOffsetChange={setArrowOffset}
       >
         <Primitive
@@ -204,7 +203,7 @@ const PopperArrow = React.forwardRef(function PopperArrow(props, forwardedRef) {
         // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
         // doesn't report size as we'd expect on SVG elements.
         // it reports their bounding box which is effectively the largest path inside the SVG.
-        ref={context.arrowRef}
+        ref={context.onArrowChange}
         style={{
           display: 'inline-block',
           verticalAlign: 'top',

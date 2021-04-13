@@ -80,17 +80,16 @@ Label.displayName = NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const useLabelContext = <E extends HTMLElement>(ref?: React.RefObject<E>) => {
+const useLabelContext = (element?: HTMLElement | null) => {
   const context = React.useContext(LabelContext);
 
   React.useEffect(() => {
     const label = context?.ref.current;
-    const element = ref?.current;
 
     if (label && element) {
       return addLabelClickEventListener(label, element);
     }
-  }, [context, ref]);
+  }, [context, element]);
 
   return context?.id;
 };

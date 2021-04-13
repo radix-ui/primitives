@@ -33,10 +33,11 @@ const stateMachine = createStateMachine(tooltipStateChart);
 const TOOLTIP_NAME = 'Tooltip';
 
 type TooltipContextValue = {
-  triggerRef: React.RefObject<HTMLButtonElement>;
   contentId: string;
   open: boolean;
   stateAttribute: StateAttribute;
+  trigger: React.ElementRef<typeof TooltipTrigger> | null;
+  onTriggerChange(trigger: React.ElementRef<typeof TooltipTrigger> | null): void;
   onFocus(): void;
   onOpen(): void;
   onClose(): void;
@@ -71,7 +72,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
     delayDuration = 700,
     skipDelayDuration = 300,
   } = props;
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
   const contentId = useId();
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -138,10 +139,11 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   return (
     <PopperPrimitive.Root>
       <TooltipProvider
-        triggerRef={triggerRef}
         contentId={contentId}
         open={open}
         stateAttribute={stateAttribute}
+        trigger={trigger}
+        onTriggerChange={setTrigger}
         onFocus={handleFocus}
         onOpen={handleOpen}
         onClose={handleClose}
@@ -173,7 +175,7 @@ type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
   const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useTooltipContext(TRIGGER_NAME);
-  const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
+  const composedTriggerRef = useComposedRefs(forwardedRef, (node) => context.onTriggerChange(node));
 
   return (
     <PopperPrimitive.Anchor
@@ -292,7 +294,7 @@ const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'Tool
 function CheckTriggerMoved() {
   const context = useTooltipContext('CheckTriggerMoved');
 
-  const triggerRect = useRect(context.triggerRef);
+  const triggerRect = useRect(context.trigger);
   const triggerLeft = triggerRect?.left;
   const previousTriggerLeft = usePrevious(triggerLeft);
   const triggerTop = triggerRect?.top;
