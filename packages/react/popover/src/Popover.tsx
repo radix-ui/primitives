@@ -2,7 +2,6 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
