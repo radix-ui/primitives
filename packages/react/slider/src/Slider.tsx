@@ -179,12 +179,7 @@ const Slider = React.forwardRef((props, forwardedRef) => {
          */}
         {name &&
           values.map((value, index) => (
-            <BubbleInput
-              key={index}
-              name={name + (values.length > 1 ? '[]' : '')}
-              value={value}
-              hidden
-            />
+            <BubbleInput key={index} name={name + (values.length > 1 ? '[]' : '')} value={value} />
           ))}
       </SliderCollectionProvider>
     </SliderProvider>
@@ -680,7 +675,7 @@ const BubbleInput = (props: React.ComponentProps<'input'>) => {
    * Adding the `value` will cause React to consider the programatic
    * dispatch a duplicate and it will get swallowed.
    */
-  return <input hidden {...inputProps} ref={ref} />;
+  return <input style={{ display: 'none' }} {...inputProps} ref={ref} />;
 };
 
 function useDirection({
