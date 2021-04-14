@@ -267,7 +267,7 @@ export const Chromatic = () => (
     <h1>Uncontrolled</h1>
     <h2>Closed</h2>
     <HoverCard>
-      <HoverCardTrigger className={triggerClass}>trigger</HoverCardTrigger>
+      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
       <HoverCardContent className={contentClass} sideOffset={5}>
         <HoverCardArrow className={arrowClass} width={20} height={10} />
         Some content
@@ -276,11 +276,20 @@ export const Chromatic = () => (
 
     <h2>Open</h2>
     <HoverCard defaultOpen>
-      <HoverCardTrigger className={triggerClass}>trigger</HoverCardTrigger>
+      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
       <HoverCardContent className={contentClass} sideOffset={5}>
         <HoverCardArrow className={arrowClass} width={20} height={10} />
         Some content
       </HoverCardContent>
+    </HoverCard>
+
+    <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
+    <HoverCard defaultOpen>
+      <HoverCardContent className={contentClass} sideOffset={5}>
+        Some content
+        <HoverCardArrow className={arrowClass} offset={10} />
+      </HoverCardContent>
+      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
     </HoverCard>
 
     <h1 style={{ marginTop: 100 }}>Controlled</h1>
@@ -300,6 +309,15 @@ export const Chromatic = () => (
         <HoverCardArrow className={arrowClass} width={20} height={10} />
         Some content
       </HoverCardContent>
+    </HoverCard>
+
+    <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
+    <HoverCard open>
+      <HoverCardContent className={contentClass} sideOffset={5}>
+        Some content
+        <HoverCardArrow className={arrowClass} offset={10} />
+      </HoverCardContent>
+      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
     </HoverCard>
 
     <h1 style={{ marginTop: 100 }}>Force mounted content</h1>
