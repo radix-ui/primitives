@@ -65,7 +65,7 @@ export const AsyncUpdate = () => {
 export const CustomDurations = () => (
   <div>
     <h1>Delay duration</h1>
-    <h2>Default (700ms enter, 400ms exit)</h2>
+    <h2>Default (700ms open, 300ms close)</h2>
 
     <HoverCard>
       <HoverCardTrigger href="/" className={triggerClass}>
@@ -76,8 +76,8 @@ export const CustomDurations = () => (
       </HoverCardContent>
     </HoverCard>
 
-    <h2>Custom (instant open, 0ms enter, 0ms exit)</h2>
-    <HoverCard enterDelayDuration={0} exitDelayDuration={0}>
+    <h2>Custom (instant, 0ms open, 0ms close)</h2>
+    <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger href="/" className={triggerClass}>
         trigger
       </HoverCardTrigger>
@@ -86,9 +86,9 @@ export const CustomDurations = () => (
       </HoverCardContent>
     </HoverCard>
 
-    <h2>Custom (2s enter, 1s exit)</h2>
+    <h2>Custom (300ms open, 100ms close)</h2>
 
-    <HoverCard enterDelayDuration={2000} exitDelayDuration={1000}>
+    <HoverCard openDelay={300} closeDelay={100}>
       <HoverCardTrigger href="/" className={triggerClass}>
         trigger
       </HoverCardTrigger>

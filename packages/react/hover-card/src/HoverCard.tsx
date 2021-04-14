@@ -29,8 +29,8 @@ type HoverCardOwnProps = {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  enterDelayDuration?: number;
-  exitDelayDuration?: number;
+  openDelay?: number;
+  closeDelay?: number;
 };
 
 const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
@@ -39,8 +39,8 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
     open: openProp,
     defaultOpen,
     onOpenChange,
-    enterDelayDuration = 700,
-    exitDelayDuration = 400,
+    openDelay = 700,
+    closeDelay = 300,
   } = props;
   const enterInvokedRef = React.useRef(false);
   const enterTimerRef = React.useRef(0);
@@ -58,8 +58,8 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
     enterTimerRef.current = window.setTimeout(() => {
       setOpen(true);
       enterInvokedRef.current = true;
-    }, enterDelayDuration);
-  }, [enterDelayDuration, setOpen]);
+    }, openDelay);
+  }, [openDelay, setOpen]);
 
   const handelMouseLeave = React.useCallback(() => {
     clearTimeout(enterTimerRef.current);
@@ -69,8 +69,8 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
         setOpen(false);
         enterInvokedRef.current = false;
       }
-    }, exitDelayDuration);
-  }, [exitDelayDuration, setOpen]);
+    }, closeDelay);
+  }, [closeDelay, setOpen]);
 
   // cleanup any queued state updates on unmount
   React.useEffect(() => {
