@@ -22,7 +22,6 @@ type SwitchOwnProps = Polymorphic.Merge<
     checked?: boolean;
     defaultChecked?: boolean;
     required?: InputDOMProps['required'];
-    readOnly?: InputDOMProps['readOnly'];
     onCheckedChange?: InputDOMProps['onChange'];
   }
 >;
@@ -42,7 +41,6 @@ const Switch = React.forwardRef((props, forwardedRef) => {
     defaultChecked,
     required,
     disabled,
-    readOnly,
     value = 'on',
     onCheckedChange,
     ...switchProps
@@ -71,7 +69,6 @@ const Switch = React.forwardRef((props, forwardedRef) => {
         checked={checked}
         required={required}
         disabled={disabled}
-        readOnly={readOnly}
         value={value}
         hidden
         onChange={composeEventHandlers(onCheckedChange, (event) => {
@@ -87,7 +84,6 @@ const Switch = React.forwardRef((props, forwardedRef) => {
           aria-required={required}
           data-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
-          data-readonly={readOnly}
           disabled={disabled}
           value={value}
           {...switchProps}
