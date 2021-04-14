@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  HoverCard,
-  HoverCardTrigger,
-  HoverCardContent,
-  HoverCardArrow,
-  HoverCardAnchor,
-} from './HoverCard';
+import { HoverCard, HoverCardTrigger, HoverCardContent, HoverCardArrow } from './HoverCard';
 import { Slot } from '@radix-ui/react-slot';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 import { css } from '../../../../stitches.config';
@@ -216,38 +210,6 @@ export const Nested = () => {
           offset={20}
           style={{ fill: 'crimson' }}
         />
-      </HoverCardContent>
-    </HoverCard>
-  );
-};
-
-export const CustomAnchor = () => {
-  return (
-    <HoverCard>
-      <HoverCardAnchor
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: 250,
-          padding: 20,
-          margin: 100,
-          backgroundColor: '#eee',
-        }}
-      >
-        Item
-        <HoverCardTrigger href="/" className={triggerClass}>
-          trigger
-        </HoverCardTrigger>
-      </HoverCardAnchor>
-      <HoverCardContent
-        className={contentClass}
-        side="right"
-        sideOffset={1}
-        align="start"
-        style={{ borderRadius: 0, width: 200, height: 100 }}
-      >
-        content
       </HoverCardContent>
     </HoverCard>
   );

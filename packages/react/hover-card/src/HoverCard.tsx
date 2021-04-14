@@ -6,7 +6,6 @@ import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
-import { Slot } from '@radix-ui/react-slot';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 /* -------------------------------------------------------------------------------------------------
@@ -20,9 +19,6 @@ type HoverCardContextValue = {
   onOpenChange(open: boolean): void;
   onMouseEnter(): void;
   onMouseLeave(): void;
-  hasCustomAnchor: boolean;
-  onCustomAnchorAdd(): void;
-  onCustomAnchorRemove(): void;
 };
 
 const [HoverCardProvider, useHoverCardContext] = createContext<HoverCardContextValue>(
@@ -46,7 +42,6 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
     enterDelayDuration = 700,
     exitDelayDuration = 400,
   } = props;
-  const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
   const enterInvokedRef = React.useRef(false);
   const enterTimerRef = React.useRef(0);
   const leaveTimerRef = React.useRef(0);
@@ -92,9 +87,6 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
         onOpenChange={setOpen}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handelMouseLeave}
-        hasCustomAnchor={hasCustomAnchor}
-        onCustomAnchorAdd={React.useCallback(() => setHasCustomAnchor(true), [])}
-        onCustomAnchorRemove={React.useCallback(() => setHasCustomAnchor(false), [])}
       >
         {children}
       </HoverCardProvider>
@@ -103,32 +95,6 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
 };
 
 HoverCard.displayName = HOVERCARD_NAME;
-
-/* -------------------------------------------------------------------------------------------------
- * HoverCardAnchor
- * -----------------------------------------------------------------------------------------------*/
-
-const ANCHOR_NAME = 'HoverCardAnchor';
-
-type HoverCardAnchorOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Anchor>;
-type HoverCardAnchorPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Anchor>,
-  HoverCardAnchorOwnProps
->;
-
-const HoverCardAnchor = React.forwardRef((props, forwardedRef) => {
-  const context = useHoverCardContext(ANCHOR_NAME);
-  const { onCustomAnchorAdd, onCustomAnchorRemove } = context;
-
-  React.useEffect(() => {
-    onCustomAnchorAdd();
-    return () => onCustomAnchorRemove();
-  }, [onCustomAnchorAdd, onCustomAnchorRemove]);
-
-  return <PopperPrimitive.Anchor {...props} ref={forwardedRef} />;
-}) as HoverCardAnchorPrimitive;
-
-HoverCardAnchor.displayName = ANCHOR_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * HoverCardTrigger
@@ -147,8 +113,8 @@ const HoverCardTrigger = React.forwardRef((props, forwardedRef) => {
   const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useHoverCardContext(TRIGGER_NAME);
 
-  const trigger = (
-    <Primitive
+  return (
+    <PopperPrimitive.Anchor
       data-state={context.open ? 'open' : 'closed'}
       {...triggerProps}
       as={as}
@@ -156,12 +122,6 @@ const HoverCardTrigger = React.forwardRef((props, forwardedRef) => {
       onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onMouseEnter)}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onMouseLeave)}
     />
-  );
-
-  return context.hasCustomAnchor ? (
-    trigger
-  ) : (
-    <PopperPrimitive.Anchor as={Slot}>{trigger}</PopperPrimitive.Anchor>
   );
 }) as HoverCardTriggerPrimitive;
 
@@ -255,17 +215,14 @@ const Root = HoverCard;
 const Trigger = HoverCardTrigger;
 const Content = HoverCardContent;
 const Arrow = HoverCardArrow;
-const Anchor = HoverCardAnchor;
 
 export {
   HoverCard,
-  HoverCardAnchor,
   HoverCardTrigger,
   HoverCardContent,
   HoverCardArrow,
   //
   Root,
-  Anchor,
   Trigger,
   Content,
   Arrow,
