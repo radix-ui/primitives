@@ -23,7 +23,6 @@ type RadioOwnProps = Polymorphic.Merge<
     checked?: boolean;
     defaultChecked?: boolean;
     required?: InputDOMProps['required'];
-    readOnly?: InputDOMProps['readOnly'];
     onCheckedChange?: InputDOMProps['onChange'];
   }
 >;
@@ -43,7 +42,6 @@ const Radio = React.forwardRef((props, forwardedRef) => {
     defaultChecked,
     required,
     disabled,
-    readOnly,
     value = 'on',
     onCheckedChange,
     ...radioProps
@@ -72,7 +70,6 @@ const Radio = React.forwardRef((props, forwardedRef) => {
         checked={checked}
         required={required}
         disabled={disabled}
-        readOnly={readOnly}
         value={value}
         hidden
         onChange={composeEventHandlers(onCheckedChange, (event) => {
@@ -86,7 +83,6 @@ const Radio = React.forwardRef((props, forwardedRef) => {
           aria-checked={checked}
           aria-labelledby={labelledBy}
           data-state={getState(checked)}
-          data-readonly={readOnly}
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
           value={value}

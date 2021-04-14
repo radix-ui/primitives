@@ -24,7 +24,6 @@ type CheckboxOwnProps = Polymorphic.Merge<
     checked?: CheckedState;
     defaultChecked?: CheckedState;
     required?: InputDOMProps['required'];
-    readOnly?: InputDOMProps['readOnly'];
     onCheckedChange?: InputDOMProps['onChange'];
   }
 >;
@@ -50,7 +49,6 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
     defaultChecked,
     required,
     disabled,
-    readOnly,
     value = 'on',
     onCheckedChange,
     ...checkboxProps
@@ -84,7 +82,6 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
         checked={checked === 'indeterminate' ? false : checked}
         required={required}
         disabled={disabled}
-        readOnly={readOnly}
         value={value}
         hidden
         onChange={composeEventHandlers(onCheckedChange, (event) => {
@@ -100,7 +97,6 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           aria-required={required}
           data-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
-          data-readonly={readOnly}
           disabled={disabled}
           value={value}
           {...checkboxProps}
