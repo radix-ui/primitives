@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
-import { useId } from '@radix-ui/react-id';
 import { Slot } from '@radix-ui/react-slot';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -18,8 +16,6 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
 const HOVERCARD_NAME = 'HoverCard';
 
 type HoverCardContextValue = {
-  triggerRef: React.RefObject<HTMLAnchorElement>;
-  contentId: string;
   open: boolean;
   onOpenChange(open: boolean): void;
   onMouseEnter(): void;
@@ -36,9 +32,9 @@ const [HoverCardProvider, useHoverCardContext] = createContext<HoverCardContextV
 type HoverCardOwnProps = {
   open?: boolean;
   defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
   enterDelayDuration?: number;
   exitDelayDuration?: number;
-  onOpenChange?: (open: boolean) => void;
 };
 
 const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
@@ -50,9 +46,8 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
     enterDelayDuration = 700,
     exitDelayDuration = 400,
   } = props;
-  const triggerRef = React.useRef<HTMLAnchorElement>(null);
   const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
-  const enterEnvoked = React.useRef(false);
+  const enterInvokedRef = React.useRef(false);
   const enterTimerRef = React.useRef(0);
   const leaveTimerRef = React.useRef(0);
 
@@ -62,45 +57,37 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
     onChange: onOpenChange,
   });
 
-  const clearEnterTimer = React.useCallback(() => {
-    clearTimeout(enterTimerRef.current);
-  }, [enterTimerRef]);
-
-  const clearLeaveTimer = React.useCallback(() => {
-    clearTimeout(leaveTimerRef.current);
-  }, [leaveTimerRef]);
-
   const handleMouseEnter = React.useCallback(() => {
-    clearLeaveTimer();
+    clearTimeout(leaveTimerRef.current);
+
     enterTimerRef.current = window.setTimeout(() => {
       setOpen(true);
-      enterEnvoked.current = true;
+      enterInvokedRef.current = true;
     }, enterDelayDuration);
-  }, [clearLeaveTimer, enterDelayDuration, setOpen]);
+  }, [enterDelayDuration, setOpen]);
 
   const handelMouseLeave = React.useCallback(() => {
-    clearEnterTimer();
+    clearTimeout(enterTimerRef.current);
+
     leaveTimerRef.current = window.setTimeout(() => {
-      if (enterEnvoked.current) {
+      if (enterInvokedRef.current) {
         setOpen(false);
-        enterEnvoked.current = false;
+        enterInvokedRef.current = false;
       }
     }, exitDelayDuration);
-  }, [clearEnterTimer, exitDelayDuration, setOpen]);
+  }, [exitDelayDuration, setOpen]);
 
   // cleanup any queued state updates on unmount
   React.useEffect(() => {
     return () => {
-      clearEnterTimer();
-      clearLeaveTimer();
+      clearTimeout(enterTimerRef.current);
+      clearTimeout(leaveTimerRef.current);
     };
-  }, [clearEnterTimer, clearLeaveTimer]);
+  }, []);
 
   return (
     <PopperPrimitive.Root>
       <HoverCardProvider
-        contentId={useId()}
-        triggerRef={triggerRef}
         open={open}
         onOpenChange={setOpen}
         onMouseEnter={handleMouseEnter}
@@ -159,15 +146,13 @@ type HoverCardTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const HoverCardTrigger = React.forwardRef((props, forwardedRef) => {
   const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useHoverCardContext(TRIGGER_NAME);
-  const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
   const trigger = (
     <Primitive
-      type="a"
       data-state={context.open ? 'open' : 'closed'}
       {...triggerProps}
       as={as}
-      ref={composedTriggerRef}
+      ref={forwardedRef}
       onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onMouseEnter)}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onMouseLeave)}
     />
@@ -240,20 +225,18 @@ type HoverCardContentImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const HoverCardContentImpl = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentProps } = props;
-  const context = useHoverCardContext(CONTENT_NAME);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
   return (
     <PortalWrapper>
       <PopperPrimitive.Content
-        id={context.contentId}
         {...contentProps}
         ref={forwardedRef}
         style={{
           ...contentProps.style,
           // re-namespace exposed content custom property
-          ['--radix-hovercard-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
+          ['--radix-hover-card-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
         }}
       />
     </PortalWrapper>
