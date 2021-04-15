@@ -20,40 +20,46 @@ const { contentClass, itemClass, labelClass, separatorClass } = classes;
 
 export default { title: 'Components/ContextMenu' };
 
-export const Styled = () => (
-  <div
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '200vw',
-      height: '200vh',
-      gap: 20,
-    }}
-  >
-    <ContextMenu>
-      <ContextMenuTrigger className={triggerClass} />
-      <ContextMenuContent className={contentClass} sideOffset={-5}>
-        <ContextMenuItem className={itemClass} onSelect={() => console.log('undo')}>
-          Undo
-        </ContextMenuItem>
-        <ContextMenuItem className={itemClass} onSelect={() => console.log('redo')}>
-          Redo
-        </ContextMenuItem>
-        <ContextMenuSeparator className={separatorClass} />
-        <ContextMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
-          Cut
-        </ContextMenuItem>
-        <ContextMenuItem className={itemClass} onSelect={() => console.log('copy')}>
-          Copy
-        </ContextMenuItem>
-        <ContextMenuItem className={itemClass} onSelect={() => console.log('paste')}>
-          Paste
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
-  </div>
-);
+export const Styled = () => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '200vw',
+        height: '200vh',
+        gap: 20,
+      }}
+    >
+      <ContextMenu onOpenChange={setOpen}>
+        <ContextMenuTrigger
+          className={triggerClass}
+          style={{ background: open ? 'lightblue' : undefined }}
+        />
+        <ContextMenuContent className={contentClass} sideOffset={-5}>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+            Undo
+          </ContextMenuItem>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+            Redo
+          </ContextMenuItem>
+          <ContextMenuSeparator className={separatorClass} />
+          <ContextMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+            Cut
+          </ContextMenuItem>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+            Copy
+          </ContextMenuItem>
+          <ContextMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+            Paste
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+    </div>
+  );
+};
 
 export const WithLabels = () => (
   <div style={{ textAlign: 'center', padding: 50 }}>

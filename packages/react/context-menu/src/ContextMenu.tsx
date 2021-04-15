@@ -3,6 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContext } from '@radix-ui/react-context';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -23,13 +24,22 @@ const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuCo
   CONTEXT_MENU_NAME
 );
 
-const ContextMenu: React.FC = (props) => {
-  const { children } = props;
+const ContextMenu: React.FC<{ onOpenChange?(open: boolean): void }> = (props) => {
+  const { children, onOpenChange } = props;
   const [open, setOpen] = React.useState(false);
+  const handleOpenChangeProp = useCallbackRef(onOpenChange);
+
+  const handleOpenChange = React.useCallback(
+    (open) => {
+      setOpen(open);
+      handleOpenChangeProp(open);
+    },
+    [handleOpenChangeProp]
+  );
 
   return (
-    <MenuPrimitive.Root open={open} onOpenChange={setOpen}>
-      <ContextMenuProvider open={open} onOpenChange={setOpen}>
+    <MenuPrimitive.Root open={open} onOpenChange={handleOpenChange}>
+      <ContextMenuProvider open={open} onOpenChange={handleOpenChange}>
         {children}
       </ContextMenuProvider>
     </MenuPrimitive.Root>
