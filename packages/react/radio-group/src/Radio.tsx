@@ -71,7 +71,7 @@ const Radio = React.forwardRef((props, forwardedRef) => {
         required={required}
         disabled={disabled}
         value={value}
-        hidden
+        style={{ display: 'none' }}
         onChange={composeEventHandlers(onCheckedChange, (event) => {
           setChecked(event.target.checked);
         })}
