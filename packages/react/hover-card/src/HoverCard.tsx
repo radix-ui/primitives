@@ -112,8 +112,8 @@ const HoverCardTrigger = React.forwardRef((props, forwardedRef) => {
       {...triggerProps}
       as={as}
       ref={forwardedRef}
-      onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onOpen)}
-      onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onClose)}
+      onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
+      onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
     />
   );
 }) as HoverCardTriggerPrimitive;
@@ -151,8 +151,8 @@ const HoverCardContent = React.forwardRef((props, forwardedRef) => {
       <HoverCardContentImpl
         data-state={context.open ? 'open' : 'closed'}
         {...contentProps}
-        onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onOpen)}
-        onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onClose)}
+        onPointerEnter={composeEventHandlers(props.onMouseEnter, excludeTouch(context.onOpen))}
+        onPointerLeave={composeEventHandlers(props.onMouseLeave, excludeTouch(context.onClose))}
         ref={forwardedRef}
       />
     </Presence>
@@ -203,6 +203,11 @@ HoverCardContent.displayName = CONTENT_NAME;
 const HoverCardArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'HoverCardArrow' });
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function excludeTouch<E>(eventHandler: () => void) {
+  return (event: React.PointerEvent<E>) =>
+    event.pointerType === 'touch' ? undefined : eventHandler();
+}
 
 const Root = HoverCard;
 const Trigger = HoverCardTrigger;
