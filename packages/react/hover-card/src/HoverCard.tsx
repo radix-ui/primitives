@@ -81,16 +81,14 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
   }, []);
 
   return (
-    <PopperPrimitive.Root>
-      <HoverCardProvider
-        open={open}
-        onOpenChange={setOpen}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handelMouseLeave}
-      >
-        {children}
-      </HoverCardProvider>
-    </PopperPrimitive.Root>
+    <HoverCardProvider
+      open={open}
+      onOpenChange={setOpen}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handelMouseLeave}
+    >
+      <PopperPrimitive.Root>{children}</PopperPrimitive.Root>
+    </HoverCardProvider>
   );
 };
 
