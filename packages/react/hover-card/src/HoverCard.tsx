@@ -42,7 +42,6 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
     openDelay = 700,
     closeDelay = 300,
   } = props;
-  const openInvokedRef = React.useRef(false);
   const openTimerRef = React.useRef(0);
   const closeTimerRef = React.useRef(0);
 
@@ -57,7 +56,6 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
 
     openTimerRef.current = window.setTimeout(() => {
       setOpen(true);
-      openInvokedRef.current = true;
     }, openDelay);
   }, [openDelay, setOpen]);
 
@@ -65,10 +63,7 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
     clearTimeout(openTimerRef.current);
 
     closeTimerRef.current = window.setTimeout(() => {
-      if (openInvokedRef.current) {
-        setOpen(false);
-        openInvokedRef.current = false;
-      }
+      setOpen(false);
     }, closeDelay);
   }, [closeDelay, setOpen]);
 
