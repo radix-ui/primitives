@@ -31,11 +31,13 @@ export const Styled = () => {
         width: '200vw',
         height: '200vh',
         gap: 20,
-        background: open ? 'lightblue' : undefined,
       }}
     >
       <ContextMenu onOpenChange={setOpen}>
-        <ContextMenuTrigger className={triggerClass} />
+        <ContextMenuTrigger
+          className={triggerClass}
+          style={{ background: open ? 'lightblue' : undefined }}
+        />
         <ContextMenuContent className={contentClass} sideOffset={-5}>
           <ContextMenuItem className={itemClass} onSelect={() => console.log('undo')}>
             Undo
