@@ -595,7 +595,7 @@ function CardContentPlaceholder() {
 }
 
 const RECOMMENDED_CSS__HOVERCARD__CONTENT = {
-  transformOrigin: 'var(--radix-hovercard-content-transform-origin)',
+  transformOrigin: 'var(--radix-hover-card-content-transform-origin)',
 };
 
 const contentClass = css({
@@ -620,8 +620,6 @@ const fadeOut = css.keyframes({
 });
 
 const animatedContentClass = css(contentClass, {
-  transformOrigin: 'top center',
-
   '&[data-state="open"]': {
     animation: `${fadeIn} 300ms ease`,
   },
