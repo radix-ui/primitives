@@ -54,17 +54,13 @@ const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
   const handleOpen = React.useCallback(() => {
     clearTimeout(closeTimerRef.current);
 
-    openTimerRef.current = window.setTimeout(() => {
-      setOpen(true);
-    }, openDelay);
+    openTimerRef.current = window.setTimeout(() => setOpen(true), openDelay);
   }, [openDelay, setOpen]);
 
   const handleClose = React.useCallback(() => {
     clearTimeout(openTimerRef.current);
 
-    closeTimerRef.current = window.setTimeout(() => {
-      setOpen(false);
-    }, closeDelay);
+    closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay);
   }, [closeDelay, setOpen]);
 
   // cleanup any queued state updates on unmount
