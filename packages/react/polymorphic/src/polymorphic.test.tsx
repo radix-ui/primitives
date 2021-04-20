@@ -40,7 +40,7 @@ export function ExtendedButtonUsingReactUtilsWithInternalInlineAs(
   props: React.ComponentProps<typeof Button>
 ) {
   /* Should not error with inline `as` component */
-  return <Button as={(props) => <button {...props} />} {...props} />;
+  return <Button as={(prop: any) => <button {...props} />} {...props} />;
 }
 
 /* -------------------------------------------------------------------------------------------------

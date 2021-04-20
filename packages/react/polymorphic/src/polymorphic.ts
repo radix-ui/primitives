@@ -4,8 +4,7 @@ import * as React from 'react';
  * Utility types
  * -----------------------------------------------------------------------------------------------*/
 type Merge<P1 = {}, P2 = {}> = Omit<P1, keyof P2> & P2;
-
-type MergeProps<E, P = {}> = P &
+type MergeWithRefProps<E, P = {}> = P &
   Merge<E extends React.ElementType ? React.ComponentPropsWithRef<E> : never, P>;
 
 /**
@@ -32,30 +31,26 @@ interface ForwardRefComponent<
    * with polymorphic components still e.g. `React.ElementRef` etc.
    */
 > extends React.ForwardRefExoticComponent<
-    MergeProps<IntrinsicElementString, OwnProps & { as?: IntrinsicElementString }>
+    MergeWithRefProps<IntrinsicElementString, OwnProps & { as?: IntrinsicElementString }>
   > {
   /**
-   * When passing an `as` prop as a string, use this overload.
+   * When `as` prop is passed, use this overload.
    * Merges original own props (without DOM props) and the inferred props
    * from `as` element with the own props taking precendence.
    *
-   * We explicitly define a `JSX.IntrinsicElements` overload so that
-   * events are typed for consumers.
+   * We explicitly avoid `React.ElementType` and manually narrow the prop types
+   * so that events are typed when using JSX.IntrinsicElements.
    */
-  <As extends keyof JSX.IntrinsicElements = NarrowIntrinsic<IntrinsicElementString>>(
-    props: MergeProps<As, OwnProps & { as: As }>
-  ): React.ReactElement | null;
-
-  /**
-   * When passing an `as` prop as a component, use this overload.
-   * Merges original own props (without DOM props) and the inferred props
-   * from `as` element with the own props taking precendence.
-   *
-   * We don't use `React.ComponentType` here as we get type errors
-   * when consumers try to do inline `as` components.
-   */
-  <As extends React.ElementType>(
-    props: MergeProps<As, OwnProps & { as: As }>
+  <
+    As extends
+      | keyof JSX.IntrinsicElements
+      | React.JSXElementConstructor<any> = NarrowIntrinsic<IntrinsicElementString>
+  >(
+    props: As extends keyof JSX.IntrinsicElements
+      ? Merge<JSX.IntrinsicElements[As], OwnProps & { as: As }>
+      : As extends React.JSXElementConstructor<infer P>
+      ? Merge<P, OwnProps & { as: As }>
+      : never
   ): React.ReactElement | null;
 }
 
