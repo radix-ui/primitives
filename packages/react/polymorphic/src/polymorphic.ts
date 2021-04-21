@@ -4,8 +4,6 @@ import * as React from 'react';
  * Utility types
  * -----------------------------------------------------------------------------------------------*/
 type Merge<P1 = {}, P2 = {}> = Omit<P1, keyof P2> & P2;
-type MergeWithRefProps<E, P = {}> = P &
-  Merge<E extends React.ElementType ? React.ComponentPropsWithRef<E> : never, P>;
 
 /**
  * Infers the OwnProps if E is a ForwardRefExoticComponentWithAs
@@ -19,6 +17,10 @@ type IntrinsicElement<E> = E extends ForwardRefComponent<infer I, any> ? I : nev
 
 type NarrowIntrinsic<E> = E extends keyof JSX.IntrinsicElements ? E : never;
 
+type ForwardRefExoticComponent<E, OwnProps> = React.ForwardRefExoticComponent<
+  Merge<E extends React.ElementType ? React.ComponentPropsWithRef<E> : never, OwnProps & { as?: E }>
+>;
+
 /* -------------------------------------------------------------------------------------------------
  * ForwardRefComponent
  * -----------------------------------------------------------------------------------------------*/
@@ -30,9 +32,7 @@ interface ForwardRefComponent<
    * Extends original type to ensure built in React types play nice
    * with polymorphic components still e.g. `React.ElementRef` etc.
    */
-> extends React.ForwardRefExoticComponent<
-    MergeWithRefProps<IntrinsicElementString, OwnProps & { as?: IntrinsicElementString }>
-  > {
+> extends ForwardRefExoticComponent<IntrinsicElementString, OwnProps> {
   /**
    * When `as` prop is passed, use this overload.
    * Merges original own props (without DOM props) and the inferred props
