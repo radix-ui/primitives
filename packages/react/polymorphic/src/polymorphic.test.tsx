@@ -40,7 +40,7 @@ export function ExtendedButtonUsingReactUtilsWithInternalInlineAs(
   props: React.ComponentProps<typeof Button>
 ) {
   /* Should not error with inline `as` component */
-  return <Button as={(props) => <button {...props} />} {...props} />;
+  return <Button as={(buttonProps: any) => <button {...buttonProps} />} {...props} />;
 }
 
 /* -------------------------------------------------------------------------------------------------
@@ -99,8 +99,21 @@ const Anchor = React.forwardRef((props, forwardedRef) => {
 /* -----------------------------------------------------------------------------------------------*/
 
 export function Test() {
+  const buttonRef = React.useRef<React.ElementRef<typeof Button>>(null);
+  const buttonAsDivRef = React.useRef<HTMLDivElement>(null);
+  const buttonAsLinkRef = React.useRef<React.ElementRef<typeof Link>>(null);
+
   return (
     <>
+      {/* Button accepts ref */}
+      <Button ref={buttonRef} />
+
+      {/* Button as "div" accepts ref */}
+      <Button as="div" ref={buttonAsDivRef} />
+
+      {/* Button as Link accepts ref */}
+      <Button as={Link} ref={buttonAsLinkRef} />
+
       {/* Link accepts onToggle prop */}
       <Link onToggle={(open) => console.log(open)} />
 

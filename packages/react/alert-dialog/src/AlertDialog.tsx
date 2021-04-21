@@ -85,7 +85,13 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
       })}
     >
       <AlertDialogContentProvider cancelRef={cancelRef}>
-        {process.env.NODE_ENV === 'development' && <AccessibilityDevWarnings {...props} />}
+        {process.env.NODE_ENV === 'development' && (
+          <AccessibilityDevWarnings
+            ariaLabel={ariaLabel}
+            ariaLabelledBy={ariaLabelledBy}
+            ariaDescribedBy={ariaDescribedBy}
+          />
+        )}
         {/**
          * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
          * around everything, otherwise the `AccessibilityDevWarnings` would be rendered straight away.
@@ -204,14 +210,12 @@ For more information, see https://LINK-TO-DOCS.com`;
 // underlying DialogContent mounts. We stick this inner component inside DialogContent to make
 // sure the effects fire as expected. This component is only useful in a dev environment, so we
 // won't bother rendering it in production.
-const AccessibilityDevWarnings: React.FC<React.ComponentProps<typeof AlertDialogContent>> = (
-  props
-) => {
-  const {
-    'aria-label': ariaLabel,
-    'aria-labelledby': ariaLabelledBy,
-    'aria-describedby': ariaDescribedBy,
-  } = props;
+const AccessibilityDevWarnings: React.FC<{
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
+  ariaDescribedBy?: string;
+}> = (props) => {
+  const { ariaLabel, ariaLabelledBy, ariaDescribedBy } = props;
   const context = useAlertDialogContext('AlertDialogContent');
 
   React.useEffect(() => {
