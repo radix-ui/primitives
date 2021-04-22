@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-slider",
-  "version": "0.0.13",
+  "name": "@radix-ui/react-use-direction",
+  "version": "0.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -16,19 +16,6 @@
     "prepublish": "yarn clean",
     "version": "yarn version"
   },
-  "dependencies": {
-    "@babel/runtime": "^7.13.10",
-    "@radix-ui/number": "workspace:*",
-    "@radix-ui/primitive": "workspace:*",
-    "@radix-ui/react-compose-refs": "workspace:*",
-    "@radix-ui/react-context": "workspace:*",
-    "@radix-ui/react-polymorphic": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-controllable-state": "workspace:*",
-    "@radix-ui/react-use-direction": "workspace:*",
-    "@radix-ui/react-use-size": "workspace:*"
-  },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"
   },
@@ -39,5 +26,8 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.13.10"
   }
 }
