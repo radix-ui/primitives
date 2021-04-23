@@ -19,12 +19,24 @@ type Orientation = React.AriaAttributes['aria-orientation'];
 type Direction = 'ltr' | 'rtl';
 
 type RovingFocusGroupOptions = {
+  /**
+   * The orientation of the group.
+   * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
+   */
   orientation?: Orientation;
+  /**
+   * The direction of navigation between toolbar items.
+   * @defaultValue ltr
+   */
   dir?: Direction;
+  /**
+   * Whether keyboard navigation should loop around
+   * @defaultValue false
+   */
   loop?: boolean;
 };
 
-type Item = { ref: React.RefObject<HTMLElement>; id: string; disabled: boolean; active: boolean };
+type Item = { ref: React.RefObject<HTMLElement>; id: string; focusable: boolean; active: boolean };
 type RovingContextValue = RovingFocusGroupOptions & {
   itemMap: Map<string, Item>;
   currentTabStopId: string | null;
@@ -50,7 +62,7 @@ type RovingFocusGroupPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
-  const { as = GROUP_DEFAULT_TAG, orientation, loop, dir, ...groupProps } = props;
+  const { as = GROUP_DEFAULT_TAG, orientation, dir = 'ltr', loop = false, ...groupProps } = props;
   const itemMap = React.useRef<RovingContextValue['itemMap']>(new Map()).current;
   const [currentTabStopId, setCurrentTabStopId] = React.useState<string | null>(null);
   const [reachable = true, setReachable] = useControllableState({
@@ -84,12 +96,14 @@ const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
     >
       <Primitive
         tabIndex={reachable && !isTabbingBackOut ? 0 : undefined}
+        aria-orientation={orientation}
+        data-orientation={orientation}
         {...groupProps}
         as={as}
         ref={forwardedRef}
         onFocus={composeEventHandlers(props.onFocus, (event) => {
           if (!isTabbingBackOut && event.target === event.currentTarget) {
-            const items = Array.from(itemMap.values()).filter((item) => !item.disabled);
+            const items = Array.from(itemMap.values()).filter((item) => item.focusable);
             const activeItem = items.find((item) => item.active);
             const currentItem = hasInteracted
               ? items.find((item) => item.id === currentTabStopId)
@@ -117,7 +131,7 @@ const ITEM_DEFAULT_TAG = 'span';
 type RovingFocusItemOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
-    disabled?: boolean;
+    focusable?: boolean;
     active?: boolean;
   }
 >;
@@ -128,11 +142,10 @@ type RovingFocusItemPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
-  const { as = ITEM_DEFAULT_TAG, active = false, ...itemProps } = props;
+  const { as = ITEM_DEFAULT_TAG, focusable = true, active = false, ...itemProps } = props;
   const id = useId();
   const ref = React.useRef<HTMLElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
-  const disabled = Boolean(props.disabled);
   const context = useRovingFocusContext(ITEM_NAME);
   const isCurrentTabStop = context.currentTabStopId === id;
   const isCurrentTabStopRef = React.useRef(isCurrentTabStop);
@@ -141,20 +154,21 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
   // We keep an up to date map of every item. We do this on every render
   // to make sure the map insertion order reflects the DOM order.
   React.useEffect(() => {
-    context.itemMap.set(id, { ref, id, disabled, active });
+    context.itemMap.set(id, { ref, id, focusable, active });
     return () => void context.itemMap.delete(id);
   });
 
   return (
     <Primitive
       tabIndex={isCurrentTabStop ? 0 : -1}
+      data-orientation={context.orientation}
       {...itemProps}
       as={as}
       ref={composedRefs}
       onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
-        // We prevent focusing disabled items on `mousedown`.
+        // We prevent focusing non-focusable items on `mousedown`.
         // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
-        if (disabled) event.preventDefault();
+        if (!focusable) event.preventDefault();
         else context.onInteract();
       })}
       onFocus={composeEventHandlers(props.onFocus, () => context.onItemFocus(id))}
@@ -174,7 +188,7 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
         if (focusIntent !== undefined) {
           event.preventDefault();
           context.onInteract();
-          const items = Array.from(context.itemMap.values()).filter((item) => !item.disabled);
+          const items = Array.from(context.itemMap.values()).filter((item) => item.focusable);
           let candidateNodes = items.map((item) => item.ref.current!);
 
           if (focusIntent === 'first' || focusIntent === 'last') {
