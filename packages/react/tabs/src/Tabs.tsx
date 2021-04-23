@@ -100,9 +100,12 @@ const TAB_LIST_DEFAULT_TAG = 'div';
 
 type TabsListOwnProps = Omit<
   Polymorphic.OwnProps<typeof RovingFocusGroup>,
-  'orientation' | 'reachable' | 'defaultReachable' | 'onReachableChange'
+  | 'orientation'
+  | 'currentTabStopId'
+  | 'defaultCurrentTabStopId'
+  | 'onCurrentTabStopIdChange'
+  | 'onEntryFocus'
 >;
-
 type TabsListPrimitive = Polymorphic.ForwardRefComponent<
   typeof TAB_LIST_DEFAULT_TAG,
   TabsListOwnProps

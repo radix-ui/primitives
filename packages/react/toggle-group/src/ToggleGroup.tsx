@@ -181,7 +181,7 @@ const [ToggleGroupContext, useToggleGroupContext] = createContext<ToggleGroupCon
 type ToggleGroupImplOwnProps = Polymorphic.Merge<
   Omit<
     Polymorphic.OwnProps<typeof RovingFocusGroup>,
-    'reachable' | 'defaultReachable' | 'onReachableChange'
+    'currentTabStopId' | 'defaultCurrentTabStopId' | 'onCurrentTabStopIdChange' | 'onEntryFocus'
   >,
   {
     /**

@@ -18,9 +18,8 @@ const TOOLBAR_DEFAULT_TAG = 'div';
 
 type ToolbarOwnProps = Omit<
   Polymorphic.OwnProps<typeof RovingFocusGroup>,
-  'reachable' | 'defaultReachable' | 'onReachableChange'
+  'currentTabStopId' | 'defaultCurrentTabStopId' | 'onCurrentTabStopIdChange' | 'onEntryFocus'
 >;
-
 type ToolbarPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof Primitive>,
   ToolbarOwnProps

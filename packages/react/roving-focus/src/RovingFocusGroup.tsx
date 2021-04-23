@@ -2,11 +2,15 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
-import { Primitive } from '@radix-ui/react-primitive';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useId } from '@radix-ui/react-id';
+import { Primitive } from '@radix-ui/react-primitive';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
+
+const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
+const EVENT_OPTIONS = { bubbles: false, cancelable: true };
 
 /* -------------------------------------------------------------------------------------------------
  * RovingFocusGroup
@@ -50,9 +54,10 @@ const [RovingFocusProvider, useRovingFocusContext] = createContext<RovingContext
 type RovingFocusGroupOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   RovingFocusGroupOptions & {
-    reachable?: boolean;
-    defaultReachable?: boolean;
-    onReachableChange?: (reachable: boolean) => void;
+    currentTabStopId?: string | null;
+    defaultCurrentTabStopId?: string;
+    onCurrentTabStopIdChange?: (tabStopId: string | null) => void;
+    onEntryFocus?: (event: Event) => void;
   }
 >;
 
@@ -62,20 +67,36 @@ type RovingFocusGroupPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
-  const { as = GROUP_DEFAULT_TAG, orientation, dir = 'ltr', loop = false, ...groupProps } = props;
+  const {
+    as = GROUP_DEFAULT_TAG,
+    orientation,
+    dir = 'ltr',
+    loop = false,
+    currentTabStopId: currentTabStopIdProp,
+    defaultCurrentTabStopId,
+    onCurrentTabStopIdChange,
+    onEntryFocus,
+    ...groupProps
+  } = props;
+  const ref = React.useRef<React.ElementRef<typeof RovingFocusGroup>>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
   const itemMap = React.useRef<RovingContextValue['itemMap']>(new Map()).current;
-  const [currentTabStopId, setCurrentTabStopId] = React.useState<string | null>(null);
-  const [reachable = true, setReachable] = useControllableState({
-    prop: props.reachable,
-    defaultProp: props.defaultReachable,
-    onChange: props.onReachableChange,
+  const [currentTabStopId = null, setCurrentTabStopId] = useControllableState({
+    prop: currentTabStopIdProp,
+    defaultProp: defaultCurrentTabStopId,
+    onChange: onCurrentTabStopIdChange,
   });
   const [hasInteracted, setHasInteracted] = React.useState(false);
   const [isTabbingBackOut, setIsTabbingBackOut] = React.useState(false);
+  const handleEntryFocus = useCallbackRef(onEntryFocus);
 
   React.useEffect(() => {
-    if (!reachable) setCurrentTabStopId(null);
-  }, [reachable]);
+    const node = ref.current;
+    if (node) {
+      node.addEventListener(ENTRY_FOCUS, handleEntryFocus);
+      return () => node.removeEventListener(ENTRY_FOCUS, handleEntryFocus);
+    }
+  }, [handleEntryFocus]);
 
   return (
     <RovingFocusProvider
@@ -85,32 +106,33 @@ const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
       itemMap={itemMap}
       currentTabStopId={currentTabStopId}
       onInteract={React.useCallback(() => setHasInteracted(true), [])}
-      onItemFocus={React.useCallback(
-        (tabStopId) => {
-          setCurrentTabStopId(tabStopId);
-          setReachable(true);
-        },
-        [setReachable]
-      )}
+      onItemFocus={React.useCallback((tabStopId) => setCurrentTabStopId(tabStopId), [
+        setCurrentTabStopId,
+      ])}
       onItemShiftTab={React.useCallback(() => setIsTabbingBackOut(true), [])}
     >
       <Primitive
-        tabIndex={reachable && !isTabbingBackOut ? 0 : undefined}
+        tabIndex={isTabbingBackOut ? -1 : 0}
         aria-orientation={orientation}
         data-orientation={orientation}
         {...groupProps}
         as={as}
-        ref={forwardedRef}
+        ref={composedRefs}
         onFocus={composeEventHandlers(props.onFocus, (event) => {
           if (!isTabbingBackOut && event.target === event.currentTarget) {
-            const items = Array.from(itemMap.values()).filter((item) => item.focusable);
-            const activeItem = items.find((item) => item.active);
-            const currentItem = hasInteracted
-              ? items.find((item) => item.id === currentTabStopId)
-              : undefined;
-            const candidateItems = [activeItem, currentItem, ...items].filter(Boolean) as Item[];
-            const candidateNodes = candidateItems.map((item) => item.ref.current!);
-            focusFirst(candidateNodes);
+            const entryFocusEvent = new Event(ENTRY_FOCUS, EVENT_OPTIONS);
+            event.currentTarget.dispatchEvent(entryFocusEvent);
+
+            if (!entryFocusEvent.defaultPrevented) {
+              const items = Array.from(itemMap.values()).filter((item) => item.focusable);
+              const activeItem = items.find((item) => item.active);
+              const currentItem = hasInteracted
+                ? items.find((item) => item.id === currentTabStopId)
+                : undefined;
+              const candidateItems = [activeItem, currentItem, ...items].filter(Boolean) as Item[];
+              const candidateNodes = candidateItems.map((item) => item.ref.current!);
+              focusFirst(candidateNodes);
+            }
           }
         })}
         onBlur={composeEventHandlers(props.onBlur, () => setIsTabbingBackOut(false))}

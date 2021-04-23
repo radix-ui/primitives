@@ -21,7 +21,7 @@ const RADIO_GROUP_DEFAULT_TAG = 'div';
 type RadioGroupOwnProps = Polymorphic.Merge<
   Omit<
     Polymorphic.OwnProps<typeof RovingFocusGroup>,
-    'reachable' | 'defaultReachable' | 'onReachableChange'
+    'currentTabStopId' | 'defaultCurrentTabStopId' | 'onCurrentTabStopIdChange' | 'onEntryFocus'
   >,
   {
     name?: string;

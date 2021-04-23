@@ -110,36 +110,6 @@ export const Nested = () => (
   </ButtonGroup>
 );
 
-export const Reachable = () => {
-  const [reachable, setReachable] = React.useState(true);
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 20 }}>
-      <label>
-        <input
-          type="checkbox"
-          checked={reachable}
-          onChange={(event) => setReachable(event.target.checked)}
-        />{' '}
-        Reachable?
-      </label>
-
-      <div>
-        <ButtonGroup reachable={reachable}>
-          <Button value="one">One</Button>
-          <Button value="two">Two</Button>
-          <Button disabled value="three">
-            Three
-          </Button>
-          <Button value="four">Four</Button>
-        </ButtonGroup>
-      </div>
-
-      <input />
-    </div>
-  );
-};
-
 export const EdgeCases = () => {
   const [extra, setExtra] = React.useState(false);
   const [disabled, setDisabled] = React.useState(false);
