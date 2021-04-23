@@ -63,7 +63,11 @@ Menu.displayName = MENU_NAME;
 
 const CONTENT_NAME = 'MenuContent';
 
-type MenuContentContextValue = { onReset(): void };
+type MenuItemRef = React.RefObject<React.ElementRef<typeof MenuItem>>;
+type MenuContentContextValue = {
+  itemMap: Map<MenuItemRef, MenuItemRef>;
+  onReset(): void;
+};
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
 );
@@ -200,6 +204,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const contentRef = React.useRef<HTMLDivElement>(null);
   const typeaheadProps = useMenuTypeahead();
 
+  const itemMap = React.useRef<MenuContentContextValue['itemMap']>(new Map()).current;
   const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
   const [
     isPermittedPointerDownOutsideEvent,
@@ -223,6 +228,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     <PortalWrapper>
       <ScrollLockWrapper>
         <MenuContentProvider
+          itemMap={itemMap}
           onReset={React.useCallback(() => {
             contentRef.current?.focus();
             setCurrentItemId(null);
@@ -325,18 +331,13 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                         contentProps.onKeyDown,
                         composeEventHandlers(focusScopeProps.onKeyDown, (event) => {
                           const content = contentRef.current;
-                          if (event.target === content) {
-                            if (ALL_KEYS.includes(event.key)) {
-                              event.preventDefault();
-                              const items = Array.from(
-                                content.querySelectorAll(ENABLED_ITEM_SELECTOR)
-                              );
-                              const item = FIRST_KEYS.includes(event.key)
-                                ? items[0]
-                                : items.reverse()[0];
-                              (item as HTMLElement | undefined)?.focus();
-                            }
-                          }
+                          if (event.target !== content) return;
+                          if (!ALL_KEYS.includes(event.key)) return;
+                          event.preventDefault();
+                          const itemRefs = Array.from(itemMap.values());
+                          const candidateNodes = itemRefs.map((ref) => ref.current!);
+                          if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
+                          focusFirst(candidateNodes);
                         })
                       )}
                     />
@@ -359,9 +360,6 @@ MenuContent.displayName = CONTENT_NAME;
 
 const ITEM_NAME = 'MenuItem';
 const ITEM_DEFAULT_TAG = 'div';
-
-const ITEM_ATTR = 'data-radix-menu-item';
-const ENABLED_ITEM_SELECTOR = `[${ITEM_ATTR}]:not([data-disabled])`;
 const ITEM_SELECT = 'menu.itemSelect';
 
 type MenuItemOwnProps = Polymorphic.Merge<
@@ -381,6 +379,15 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const context = useMenuContext(ITEM_NAME);
   const contentContext = useMenuContentContext(ITEM_NAME);
+
+  // We keep an up to date map of every item. We do this on every render
+  // to make sure the map insertion order reflects the DOM order.
+  React.useEffect(() => {
+    if (!disabled) {
+      contentContext.itemMap.set(ref, ref);
+      return () => void contentContext.itemMap.delete(ref);
+    }
+  });
 
   // get the item's `.textContent` as default strategy for typeahead `textValue`
   const [textContent, setTextContent] = React.useState('');
@@ -428,7 +435,6 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       focusable={!disabled}
       {...itemProps}
       {...menuTypeaheadItemProps}
-      {...{ [ITEM_ATTR]: '' }}
       as={as}
       ref={composedRefs}
       data-disabled={disabled ? '' : undefined}
@@ -648,6 +654,16 @@ function getOpenState(open: boolean) {
 
 function getCheckedState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
+}
+
+function focusFirst(candidates: HTMLElement[]) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+  for (const candidate of candidates) {
+    // if focus is already where we want to go, we don't want to keep going through the candidates
+    if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
+    candidate.focus();
+    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+  }
 }
 
 const Root = Menu;
