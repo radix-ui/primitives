@@ -213,11 +213,8 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
           const items = Array.from(context.itemMap.values()).filter((item) => item.focusable);
           let candidateNodes = items.map((item) => item.ref.current!);
 
-          if (focusIntent === 'first' || focusIntent === 'last') {
-            if (focusIntent === 'last') candidateNodes.reverse();
-          }
-
-          if (focusIntent === 'prev' || focusIntent === 'next') {
+          if (focusIntent === 'last') candidateNodes.reverse();
+          else if (focusIntent === 'prev' || focusIntent === 'next') {
             if (focusIntent === 'prev') candidateNodes.reverse();
             const currentIndex = candidateNodes.indexOf(event.currentTarget);
             candidateNodes = context.loop
