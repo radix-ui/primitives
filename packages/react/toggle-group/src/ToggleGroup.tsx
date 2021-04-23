@@ -206,9 +206,10 @@ const ToggleGroupImpl = React.forwardRef((props, forwardedRef) => {
   const {
     as = TOGGLE_GROUP_DEFAULT_TAG,
     disabled = false,
-    orientation,
-    loop = true,
     rovingFocus = true,
+    orientation,
+    dir = 'ltr',
+    loop = true,
     ...toggleGroupProps
   } = props;
   return (
@@ -217,6 +218,7 @@ const ToggleGroupImpl = React.forwardRef((props, forwardedRef) => {
         <RovingFocusGroup
           role="group"
           orientation={orientation}
+          dir={dir}
           loop={loop}
           {...toggleGroupProps}
           as={as}

@@ -295,7 +295,7 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
   const valueContext = useAccordionValueContext(ITEM_NAME);
   const buttonId = useId();
   const open = (value && valueContext.value.includes(value)) || false;
-  const disabled = accordionContext.disabled === true ? true : props.disabled;
+  const disabled = accordionContext.disabled || props.disabled;
 
   return (
     <AccordionItemProvider open={open} disabled={disabled} buttonId={buttonId}>
