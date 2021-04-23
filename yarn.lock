@@ -3556,6 +3556,7 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     aria-hidden: ^1.1.1
     react-remove-scroll: ^2.4.0
@@ -3685,6 +3686,7 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
@@ -3697,9 +3699,13 @@ __metadata:
   resolution: "@radix-ui/react-roving-focus@workspace:packages/react/roving-focus"
   dependencies:
     "@babel/runtime": ^7.13.10
-    "@radix-ui/number": "workspace:*"
+    "@radix-ui/primitive": "workspace:*"
+    "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
+    "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3792,12 +3798,12 @@ __metadata:
   resolution: "@radix-ui/react-tabs@workspace:packages/react/tabs"
   dependencies:
     "@babel/runtime": ^7.13.10
-    "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
