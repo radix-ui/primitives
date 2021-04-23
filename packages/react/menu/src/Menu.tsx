@@ -414,9 +414,8 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
   };
 
   const handleLeave = () => {
-    // on leave, we reset the content (we focus it)
+    // on leave, we reset (the content gets focused, and the current item tab stop gets reset)
     contentContext.onReset();
-    if (ref.current) ref.current.tabIndex = -1;
   };
 
   React.useEffect(() => {
