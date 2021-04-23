@@ -24,12 +24,13 @@ type RovingFocusGroupOptions = {
   loop?: boolean;
 };
 
+type Item = { ref: React.RefObject<HTMLElement>; id: string; disabled: boolean; active: boolean };
 type RovingContextValue = RovingFocusGroupOptions & {
-  itemMap: Map<string, { ref: React.RefObject<HTMLElement>; disabled: boolean; active: boolean }>;
+  itemMap: Map<string, Item>;
   currentTabStopId: string | null;
-  onItemFocus(tabStopId: string): void;
   onInteract(): void;
-  onCurrentTabStopRemove(): void;
+  onItemFocus(tabStopId: string): void;
+  onItemShiftTab(): void;
 };
 
 const [RovingFocusProvider, useRovingFocusContext] = createContext<RovingContextValue>(GROUP_NAME);
@@ -58,15 +59,11 @@ const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
     onChange: props.onReachableChange,
   });
   const [hasInteracted, setHasInteracted] = React.useState(false);
-
-  const reset = React.useCallback(() => {
-    setCurrentTabStopId(null);
-    setHasInteracted(false);
-  }, []);
+  const [isTabbingBackOut, setIsTabbingBackOut] = React.useState(false);
 
   React.useEffect(() => {
-    if (!reachable) reset();
-  }, [reachable, reset]);
+    if (!reachable) setCurrentTabStopId(null);
+  }, [reachable]);
 
   return (
     <RovingFocusProvider
@@ -75,6 +72,7 @@ const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
       loop={loop}
       itemMap={itemMap}
       currentTabStopId={currentTabStopId}
+      onInteract={React.useCallback(() => setHasInteracted(true), [])}
       onItemFocus={React.useCallback(
         (tabStopId) => {
           setCurrentTabStopId(tabStopId);
@@ -82,26 +80,26 @@ const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
         },
         [setReachable]
       )}
-      onInteract={React.useCallback(() => setHasInteracted(true), [])}
-      onCurrentTabStopRemove={reset}
+      onItemShiftTab={React.useCallback(() => setIsTabbingBackOut(true), [])}
     >
       <Primitive
-        tabIndex={reachable && currentTabStopId === null ? 0 : undefined}
+        tabIndex={reachable && !isTabbingBackOut ? 0 : undefined}
         {...groupProps}
         as={as}
         ref={forwardedRef}
         onFocus={composeEventHandlers(props.onFocus, (event) => {
-          if (event.target === event.currentTarget && !hasInteracted) {
+          if (!isTabbingBackOut && event.target === event.currentTarget) {
             const items = Array.from(itemMap.values()).filter((item) => !item.disabled);
             const activeItem = items.find((item) => item.active);
-            const candidateItems = (activeItem ? [activeItem] : []).concat(items);
+            const currentItem = hasInteracted
+              ? items.find((item) => item.id === currentTabStopId)
+              : undefined;
+            const candidateItems = [activeItem, currentItem, ...items].filter(Boolean) as Item[];
             const candidateNodes = candidateItems.map((item) => item.ref.current!);
             focusFirst(candidateNodes);
           }
         })}
-        onBlur={composeEventHandlers(props.onBlur, () => {
-          if (!hasInteracted) setCurrentTabStopId(null);
-        })}
+        onBlur={composeEventHandlers(props.onBlur, () => setIsTabbingBackOut(false))}
       />
     </RovingFocusProvider>
   );
@@ -139,47 +137,13 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
   const isCurrentTabStop = context.currentTabStopId === id;
   const isCurrentTabStopRef = React.useRef(isCurrentTabStop);
   React.useEffect(() => void (isCurrentTabStopRef.current = isCurrentTabStop));
-  const { onCurrentTabStopRemove } = context;
 
   // We keep an up to date map of every item. We do this on every render
   // to make sure the map insertion order reflects the DOM order.
   React.useEffect(() => {
-    context.itemMap.set(id, { ref, disabled, active });
+    context.itemMap.set(id, { ref, id, disabled, active });
     return () => void context.itemMap.delete(id);
   });
-
-  // This item is the current tab stop, but it was removed
-  React.useEffect(() => {
-    return () => void (isCurrentTabStopRef.current && onCurrentTabStopRemove());
-  }, [onCurrentTabStopRemove]);
-
-  // This item is the current tab stop, but it became `disabled`
-  React.useEffect(() => {
-    if (disabled && isCurrentTabStopRef.current) onCurrentTabStopRemove();
-  }, [disabled, onCurrentTabStopRemove]);
-
-  // This item is the current tab stop, but it became "hidden"
-  const stylesRef = React.useRef<CSSStyleDeclaration | null>(null);
-  // In rare cases, we will need to check if an item is hidden. At worse we will `getComputedStyle`
-  // only once, we use a cache otherwise because the styles are "live".
-  // We limit ourselves to checking `display: none` on the item itself as a reasonable tradeoff.
-  const rafIdRef = React.useRef(0);
-  React.useEffect(() => {
-    const node = ref.current;
-    if (isCurrentTabStop && node) {
-      const checkIfHidden = () => {
-        stylesRef.current = stylesRef.current || getComputedStyle(node);
-        if (stylesRef.current.display === 'none') {
-          onCurrentTabStopRemove();
-          cancelAnimationFrame(rafIdRef.current);
-        } else {
-          rafIdRef.current = requestAnimationFrame(checkIfHidden);
-        }
-      };
-      rafIdRef.current = requestAnimationFrame(checkIfHidden);
-      return () => cancelAnimationFrame(rafIdRef.current);
-    }
-  }, [isCurrentTabStop, onCurrentTabStopRemove]);
 
   return (
     <Primitive
@@ -195,7 +159,13 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
       })}
       onFocus={composeEventHandlers(props.onFocus, () => context.onItemFocus(id))}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        if (event.key === 'Tab' && event.shiftKey) {
+          context.onItemShiftTab();
+          return;
+        }
+
         if (event.target !== event.currentTarget) return;
+
         // stop key events from propagating to parent in case we're in a nested roving focus group
         if (KEYS.includes(event.key)) event.stopPropagation();
 
