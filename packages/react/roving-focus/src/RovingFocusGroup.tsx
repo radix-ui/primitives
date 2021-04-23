@@ -29,7 +29,7 @@ type RovingFocusGroupOptions = {
    */
   orientation?: Orientation;
   /**
-   * The direction of navigation between toolbar items.
+   * The direction of navigation between items.
    * @defaultValue ltr
    */
   dir?: Direction;
