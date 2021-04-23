@@ -103,7 +103,10 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 const ITEM_NAME = 'RadioGroupItem';
 
 type RadioGroupItemOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Radio>,
+  Polymorphic.Merge<
+    Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
+    Polymorphic.OwnProps<typeof Radio>
+  >,
   { value: string; name?: never }
 >;
 type RadioGroupItemPrimitive = Polymorphic.ForwardRefComponent<
