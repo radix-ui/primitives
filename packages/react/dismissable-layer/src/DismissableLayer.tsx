@@ -231,6 +231,11 @@ function usePointerDownOutside(
 function useFocusOutside(onFocusOutside?: (event: React.FocusEvent) => void) {
   const timerRef = React.useRef<number>(0);
 
+  // Cleanup timer if an unmount occurs before onFocusCapture fires
+  React.useEffect(() => {
+    return () => window.clearTimeout(timerRef.current);
+  }, []);
+
   return {
     onBlurCapture: (event: React.FocusEvent) => {
       event.persist();
