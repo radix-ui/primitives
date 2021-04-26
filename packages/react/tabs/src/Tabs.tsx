@@ -42,7 +42,7 @@ type TabsOwnProps = Polymorphic.Merge<
      * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
      * @defaultValue horizontal
      */
-    orientation?: React.AriaAttributes['aria-orientation'];
+    orientation?: RovingFocusGroupProps['orientation'];
     /**
      * The direction of navigation between toolbar items.
      * @defaultValue ltr

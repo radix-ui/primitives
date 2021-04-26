@@ -256,7 +256,7 @@ const ToggleGroupItem = React.forwardRef((props, forwardedRef) => {
   const disabled = context.disabled || props.disabled;
   const Comp = context.rovingFocus ? ToggleGroupRovingFocusItem : ToggleGroupItemImpl;
 
-  return <Comp {...props} pressed={pressed} disabled={disabled} ref={forwardedRef} />;
+  return <Comp {...props} ref={forwardedRef} pressed={pressed} disabled={disabled} />;
 }) as ToggleGroupItemPrimitive;
 
 ToggleGroupItem.displayName = ITEM_NAME;

@@ -3803,7 +3803,6 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
-    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
@@ -3821,6 +3820,7 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-toggle": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
