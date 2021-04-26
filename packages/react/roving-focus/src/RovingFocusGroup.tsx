@@ -170,8 +170,6 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const context = useRovingFocusContext(ITEM_NAME);
   const isCurrentTabStop = context.currentTabStopId === id;
-  const isCurrentTabStopRef = React.useRef(isCurrentTabStop);
-  React.useEffect(() => void (isCurrentTabStopRef.current = isCurrentTabStop));
 
   // We keep an up to date map of every item. We do this on every render
   // to make sure the map insertion order reflects the DOM order.
@@ -201,9 +199,6 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
         }
 
         if (event.target !== event.currentTarget) return;
-
-        // stop key events from propagating to parent in case we're in a nested roving focus group
-        if (KEYS.includes(event.key)) event.stopPropagation();
 
         const focusIntent = getFocusIntent(event, context.orientation, context.dir);
 
@@ -242,7 +237,6 @@ const MAP_KEY_TO_FOCUS_INTENT: Record<string, FocusIntent> = {
   PageUp: 'first', Home: 'first',
   PageDown: 'last', End: 'last',
 };
-const KEYS = Object.keys(MAP_KEY_TO_FOCUS_INTENT);
 
 function getDirectionAwareKey(key: string, dir?: Direction) {
   if (dir !== 'rtl') return key;

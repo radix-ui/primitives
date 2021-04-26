@@ -20,6 +20,7 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
+type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
 
 const FIRST_KEYS = ['ArrowDown', 'PageUp', 'Home'];
 const LAST_KEYS = ['ArrowUp', 'PageDown', 'End'];
@@ -65,8 +66,8 @@ const CONTENT_NAME = 'MenuContent';
 
 type MenuItemRef = React.RefObject<React.ElementRef<typeof MenuItem>>;
 type MenuContentContextValue = {
-  itemMap: Map<MenuItemRef, MenuItemRef>;
-  onReset(): void;
+  itemMap: Map<MenuItemRef, { ref: MenuItemRef; disabled: boolean }>;
+  onItemLeave(): void;
 };
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
@@ -103,17 +104,7 @@ const MenuContent = React.forwardRef((props, forwardedRef) => {
 }) as MenuContentPrimitive;
 
 type MenuContentImplOwnProps = Polymorphic.Merge<
-  Polymorphic.Merge<
-    Omit<
-      Polymorphic.OwnProps<typeof RovingFocusGroup>,
-      | 'orientation'
-      | 'currentTabStopId'
-      | 'defaultCurrentTabStopId'
-      | 'onCurrentTabStopIdChange'
-      | 'onEntryFocus'
-    >,
-    Polymorphic.OwnProps<typeof PopperPrimitive.Content>
-  >,
+  Polymorphic.OwnProps<typeof PopperPrimitive.Content>,
   {
     /**
      * Whether focus should be trapped within the `MenuContent`
@@ -170,6 +161,18 @@ type MenuContentImplOwnProps = Polymorphic.Merge<
      * (default: `false`)
      */
     disableOutsideScroll?: boolean;
+
+    /**
+     * The direction of navigation between menu items.
+     * @defaultValue ltr
+     */
+    dir?: RovingFocusGroupProps['dir'];
+
+    /**
+     * Whether keyboard navigation should loop around
+     * @defaultValue false
+     */
+    loop?: RovingFocusGroupProps['loop'];
 
     /**
      * Whether the `MenuContent` should render in a `Portal`
@@ -229,7 +232,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
       <ScrollLockWrapper>
         <MenuContentProvider
           itemMap={itemMap}
-          onReset={React.useCallback(() => {
+          onItemLeave={React.useCallback(() => {
             contentRef.current?.focus();
             setCurrentItemId(null);
           }, [])}
@@ -334,8 +337,10 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                           if (event.target !== content) return;
                           if (!ALL_KEYS.includes(event.key)) return;
                           event.preventDefault();
-                          const itemRefs = Array.from(itemMap.values());
-                          const candidateNodes = itemRefs.map((ref) => ref.current!);
+                          const items = Array.from(itemMap.values()).filter(
+                            (item) => !item.disabled
+                          );
+                          const candidateNodes = items.map((item) => item.ref.current!);
                           if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
                           focusFirst(candidateNodes);
                         })
@@ -374,7 +379,7 @@ type MenuItemOwnProps = Polymorphic.Merge<
 type MenuItemPrimitive = Polymorphic.ForwardRefComponent<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>;
 
 const MenuItem = React.forwardRef((props, forwardedRef) => {
-  const { as = ITEM_DEFAULT_TAG, disabled, textValue, onSelect, ...itemProps } = props;
+  const { as = ITEM_DEFAULT_TAG, disabled = false, textValue, onSelect, ...itemProps } = props;
   const ref = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const context = useMenuContext(ITEM_NAME);
@@ -383,10 +388,8 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
   // We keep an up to date map of every item. We do this on every render
   // to make sure the map insertion order reflects the DOM order.
   React.useEffect(() => {
-    if (!disabled) {
-      contentContext.itemMap.set(ref, ref);
-      return () => void contentContext.itemMap.delete(ref);
-    }
+    contentContext.itemMap.set(ref, { ref, disabled });
+    return () => void contentContext.itemMap.delete(ref);
   });
 
   // get the item's `.textContent` as default strategy for typeahead `textValue`
@@ -411,11 +414,6 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       if (itemSelectEvent.defaultPrevented) return;
       context.onOpenChange?.(false);
     }
-  };
-
-  const handleLeave = () => {
-    // on leave, we reset (the content gets focused, and the current item tab stop gets reset)
-    contentContext.onReset();
   };
 
   React.useEffect(() => {
@@ -462,10 +460,10 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
           const item = event.currentTarget;
           item.focus();
         } else {
-          handleLeave();
+          contentContext.onItemLeave();
         }
       })}
-      onMouseLeave={composeEventHandlers(props.onMouseLeave, handleLeave)}
+      onMouseLeave={composeEventHandlers(props.onMouseLeave, () => contentContext.onItemLeave())}
     />
   );
 }) as MenuItemPrimitive;

@@ -254,19 +254,24 @@ const ToggleGroupItem = React.forwardRef((props, forwardedRef) => {
   const context = useToggleGroupContext(ITEM_NAME);
   const pressed = valueContext.value.includes(props.value);
   const disabled = context.disabled || props.disabled;
-  const Comp = context.rovingFocus ? ToggleGroupRovingFocusItem : ToggleGroupItemImpl;
 
-  return <Comp {...props} ref={forwardedRef} pressed={pressed} disabled={disabled} />;
+  return context.rovingFocus ? (
+    <ToggleGroupRovingFocusItem
+      {...props}
+      ref={forwardedRef}
+      pressed={pressed}
+      disabled={disabled}
+    />
+  ) : (
+    <ToggleGroupItemImpl {...props} ref={forwardedRef} pressed={pressed} disabled={disabled} />
+  );
 }) as ToggleGroupItemPrimitive;
 
 ToggleGroupItem.displayName = ITEM_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ToggleGroupRovingFocusItemOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
-  Polymorphic.OwnProps<typeof ToggleGroupItemImpl>
->;
+type ToggleGroupRovingFocusItemOwnProps = Polymorphic.OwnProps<typeof ToggleGroupItemImpl>;
 
 type ToggleGroupRovingFocusItemPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof ToggleGroupItemImpl>,

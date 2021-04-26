@@ -164,9 +164,9 @@ const TabsTab = React.forwardRef((props, forwardedRef) => {
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
       id={tabId}
+      {...tabProps}
       focusable={!disabled}
       active={isSelected}
-      {...tabProps}
       as={as}
       ref={forwardedRef}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {

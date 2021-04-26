@@ -103,10 +103,7 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 const ITEM_NAME = 'RadioGroupItem';
 
 type RadioGroupItemOwnProps = Polymorphic.Merge<
-  Polymorphic.Merge<
-    Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
-    Polymorphic.OwnProps<typeof Radio>
-  >,
+  Polymorphic.OwnProps<typeof Radio>,
   { value: string; name?: never }
 >;
 type RadioGroupItemPrimitive = Polymorphic.ForwardRefComponent<
@@ -128,7 +125,6 @@ const RadioGroupItem = React.forwardRef((props, forwardedRef) => {
         required={context.required}
         checked={checked}
         {...itemProps}
-        // add `name` after spreading the props because users cannot pass a `name`
         name={context.name}
         ref={composedRefs}
         onCheckedChange={composeEventHandlers(props.onCheckedChange, context.onValueChange)}

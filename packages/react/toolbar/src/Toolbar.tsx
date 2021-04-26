@@ -2,7 +2,6 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContext } from '@radix-ui/react-context';
 import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
-import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
 import * as SeparatorPrimitive from '@radix-ui/react-separator';
 import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group';
@@ -21,7 +20,7 @@ type ToolbarOwnProps = Omit<
   'currentTabStopId' | 'defaultCurrentTabStopId' | 'onCurrentTabStopIdChange' | 'onEntryFocus'
 >;
 type ToolbarPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
+  typeof TOOLBAR_DEFAULT_TAG,
   ToolbarOwnProps
 >;
 
