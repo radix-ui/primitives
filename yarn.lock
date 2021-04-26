@@ -3798,6 +3798,7 @@ __metadata:
   resolution: "@radix-ui/react-tabs@workspace:packages/react/tabs"
   dependencies:
     "@babel/runtime": ^7.13.10
+    "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
