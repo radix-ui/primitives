@@ -44,7 +44,6 @@ type Item = { ref: React.RefObject<HTMLElement>; id: string; focusable: boolean;
 type RovingContextValue = RovingFocusGroupOptions & {
   itemMap: Map<string, Item>;
   currentTabStopId: string | null;
-  onInteract(): void;
   onItemFocus(tabStopId: string): void;
   onItemShiftTab(): void;
 };
@@ -86,7 +85,6 @@ const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
     defaultProp: defaultCurrentTabStopId,
     onChange: onCurrentTabStopIdChange,
   });
-  const [hasInteracted, setHasInteracted] = React.useState(false);
   const [isTabbingBackOut, setIsTabbingBackOut] = React.useState(false);
   const handleEntryFocus = useCallbackRef(onEntryFocus);
 
@@ -105,7 +103,6 @@ const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
       loop={loop}
       itemMap={itemMap}
       currentTabStopId={currentTabStopId}
-      onInteract={React.useCallback(() => setHasInteracted(true), [])}
       onItemFocus={React.useCallback((tabStopId) => setCurrentTabStopId(tabStopId), [
         setCurrentTabStopId,
       ])}
@@ -119,16 +116,14 @@ const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
         as={as}
         ref={composedRefs}
         onFocus={composeEventHandlers(props.onFocus, (event) => {
-          if (!isTabbingBackOut && event.target === event.currentTarget) {
+          if (event.target === event.currentTarget && !isTabbingBackOut) {
             const entryFocusEvent = new Event(ENTRY_FOCUS, EVENT_OPTIONS);
             event.currentTarget.dispatchEvent(entryFocusEvent);
 
             if (!entryFocusEvent.defaultPrevented) {
               const items = Array.from(itemMap.values()).filter((item) => item.focusable);
               const activeItem = items.find((item) => item.active);
-              const currentItem = hasInteracted
-                ? items.find((item) => item.id === currentTabStopId)
-                : undefined;
+              const currentItem = items.find((item) => item.id === currentTabStopId);
               const candidateItems = [activeItem, currentItem, ...items].filter(Boolean) as Item[];
               const candidateNodes = candidateItems.map((item) => item.ref.current!);
               focusFirst(candidateNodes);
@@ -189,7 +184,6 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
         // We prevent focusing non-focusable items on `mousedown`.
         // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
         if (!focusable) event.preventDefault();
-        else context.onInteract();
       })}
       onFocus={composeEventHandlers(props.onFocus, () => context.onItemFocus(id))}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
@@ -204,7 +198,6 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
 
         if (focusIntent !== undefined) {
           event.preventDefault();
-          context.onInteract();
           const items = Array.from(context.itemMap.values()).filter((item) => item.focusable);
           let candidateNodes = items.map((item) => item.ref.current!);
 
