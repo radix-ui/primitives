@@ -7,7 +7,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
-import { createCollection } from '@radix-ui/react-collection';
+import { createCollection } from './collection';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
