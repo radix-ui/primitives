@@ -421,10 +421,10 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       onKeyDown={composeEventHandlers(
         itemProps.onKeyDown,
         composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
-          if (!disabled) {
-            if (event.key === 'Enter' || event.key === ' ') {
-              handleSelect();
-            }
+          if (!disabled && (event.key === 'Enter' || event.key === ' ')) {
+            // prevent page scroll if using the space key to select an item
+            if (event.key === ' ') event.preventDefault();
+            handleSelect();
           }
         })
       )}
