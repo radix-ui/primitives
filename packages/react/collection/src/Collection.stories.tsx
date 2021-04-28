@@ -126,6 +126,8 @@ export const Nested = () => (
 type ListItemOwnProps = { disabled?: boolean };
 
 const [List, ListItem, useItems] = createCollection<ListItemOwnProps>();
+List.displayName = 'List';
+ListItem.displayName = 'ListItem';
 
 // Ensure that our implementation doesn't break if the item list/item is memoized
 const MemoItem = React.memo(ListItem);
