@@ -296,8 +296,6 @@ const scrollbarClass = css({
   transition: '160ms ease-out',
   transitionProperty: 'background, opacity, width, height',
   padding: 2,
-  userSelect: 'none',
-  touchAction: 'none',
   background: 'rgba(0, 0, 0, 0.3)',
   '&:hover': {
     background: 'rgba(0, 0, 0, 0.5)',

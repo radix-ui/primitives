@@ -25,8 +25,7 @@
     "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-direction": "workspace:*",
-    "lodash.debounce": "^4.0.8"
+    "@radix-ui/react-use-direction": "workspace:*"
   },
   "devDependencies": {
     "@stitches/react": "canary",

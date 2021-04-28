@@ -3729,7 +3729,6 @@ __metadata:
     "@stitches/react": canary
     "@types/lodash.debounce": ^4
     "@types/resize-observer-browser": ^0.1.4
-    lodash.debounce: ^4.0.8
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown

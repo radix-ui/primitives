@@ -9,7 +9,6 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useDirection } from '@radix-ui/react-use-direction';
 import { linearScale } from '@radix-ui/number';
 import { useStateMachine } from './useStateMachine';
-import debounce from 'lodash.debounce';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import { composeEventHandlers } from '@radix-ui/primitive';
@@ -148,7 +147,8 @@ type ScrollAreaViewportPrimitive = Polymorphic.ForwardRefComponent<
 const ScrollAreaViewport = React.forwardRef((props, forwardedRef) => {
   const { children, ...viewportProps } = props;
   const context = useScrollAreaContext(VIEWPORT_NAME);
-  const composedRefs = useComposedRefs(forwardedRef, context.onViewportChange);
+  const ref = React.useRef<React.ElementRef<typeof Primitive>>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
   return (
     <>
       <style
@@ -289,7 +289,7 @@ const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
   const { forceMount, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
   const isHorizontal = props.orientation === 'horizontal';
-  const debounceScrollEnd = React.useRef(debounce(() => send('SCROLL_END'), 100)).current;
+  const debounceScrollEnd = useDebounceCallback(() => send('SCROLL_END'), 100);
   const [state, send] = useStateMachine('hidden', {
     idle: {
       HIDE: 'hidden',
@@ -649,8 +649,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
   const rectRef = React.useRef<ClientRect | null>(null);
   const viewport = context.viewport;
   const handleWheelScroll = useCallbackRef(onWheelScroll);
-  const handleResize = useCallbackRef(onResize);
-  const debounceResize = React.useRef(debounce(handleResize, 10)).current;
+  const debounceResize = useDebounceCallback(onResize, 10);
 
   /**
    * We bind wheel event imperatively so we can switch off passive
@@ -861,6 +860,15 @@ function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes) {
 
 function scrollingWithinScrollbarBounds(scrollPos: number, maxScrollPos: number) {
   return scrollPos > 0 && scrollPos < maxScrollPos;
+}
+
+function useDebounceCallback(callback: () => void, delay: number) {
+  const handleCallback = useCallbackRef(callback);
+  const debounceTimerRef = React.useRef(0);
+  return React.useCallback(() => {
+    window.clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = window.setTimeout(handleCallback, delay);
+  }, [handleCallback, delay]);
 }
 
 function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
