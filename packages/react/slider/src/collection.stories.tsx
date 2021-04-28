@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createCollection } from './collection';
 
-export default { title: 'Components/Collection' };
+export default { title: 'Components/Collection (deprecated)' };
 
 export const Basic = () => (
   <List>
