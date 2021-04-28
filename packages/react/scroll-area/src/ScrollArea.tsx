@@ -175,8 +175,6 @@ const ScrollAreaViewport = React.forwardRef((props, forwardedRef) => {
           overflowX: context.scrollbarXEnabled ? 'scroll' : 'hidden',
           overflowY: context.scrollbarYEnabled ? 'scroll' : 'hidden',
           scrollbarWidth: 'none',
-          width: '100%',
-          height: '100%',
           ...props.style,
         }}
       >
@@ -526,7 +524,7 @@ const ScrollAreaScrollbarX = React.forwardRef((props, forwardedRef) => {
           if (ref.current && context.viewport && computedStyle) {
             onSizesChange({
               content: context.viewport.scrollWidth,
-              viewport: context.viewport.offsetHeight,
+              viewport: context.viewport.offsetWidth,
               scrollbar: {
                 size: ref.current.clientWidth,
                 paddingStart: toInt(computedStyle.paddingLeft),
