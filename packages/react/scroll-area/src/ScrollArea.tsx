@@ -772,9 +772,8 @@ type ScrollAreaCornerPrimitive = Polymorphic.ForwardRefComponent<
 
 const ScrollAreaCorner = React.forwardRef((props, forwardedRef) => {
   const context = useScrollAreaContext(CORNER_NAME);
-  const isScrollbarsEnabled = Boolean(context.scrollbarXEnabled && context.scrollbarYEnabled);
   const isScrollbarVisible = Boolean(context.scrollbarX || context.scrollbarY);
-  const hasCorner = isScrollbarsEnabled && isScrollbarVisible;
+  const hasCorner = context.type !== 'scroll' && isScrollbarVisible;
   return hasCorner ? <ScrollAreaCornerImpl {...props} ref={forwardedRef} /> : null;
 }) as ScrollAreaCornerPrimitive;
 
