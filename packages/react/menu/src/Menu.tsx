@@ -2,6 +2,7 @@ import * as React from 'react';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { createCollection } from '@radix-ui/react-collection';
 import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -64,11 +65,13 @@ Menu.displayName = MENU_NAME;
 
 const CONTENT_NAME = 'MenuContent';
 
-type MenuItemRef = React.RefObject<React.ElementRef<typeof MenuItem>>;
-type MenuContentContextValue = {
-  itemMap: Map<MenuItemRef, { ref: MenuItemRef; disabled: boolean }>;
-  onItemLeave(): void;
-};
+type ItemData = { disabled: boolean };
+const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
+  HTMLSpanElement,
+  ItemData
+>();
+
+type MenuContentContextValue = { onItemLeave(): void };
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
 );
@@ -94,11 +97,13 @@ const MenuContent = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(CONTENT_NAME);
   return (
     <Presence present={forceMount || context.open}>
-      <MenuContentImpl
-        data-state={getOpenState(context.open)}
-        {...contentProps}
-        ref={forwardedRef}
-      />
+      <CollectionSlot>
+        <MenuContentImpl
+          data-state={getOpenState(context.open)}
+          {...contentProps}
+          ref={forwardedRef}
+        />
+      </CollectionSlot>
     </Presence>
   );
 }) as MenuContentPrimitive;
@@ -206,8 +211,8 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(CONTENT_NAME);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const typeaheadProps = useMenuTypeahead();
+  const { getItems } = useCollection();
 
-  const itemMap = React.useRef<MenuContentContextValue['itemMap']>(new Map()).current;
   const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
   const [
     isPermittedPointerDownOutsideEvent,
@@ -231,7 +236,6 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     <PortalWrapper>
       <ScrollLockWrapper>
         <MenuContentProvider
-          itemMap={itemMap}
           onItemLeave={React.useCallback(() => {
             contentRef.current?.focus();
             setCurrentItemId(null);
@@ -337,9 +341,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                           if (event.target !== content) return;
                           if (!ALL_KEYS.includes(event.key)) return;
                           event.preventDefault();
-                          const items = Array.from(itemMap.values()).filter(
-                            (item) => !item.disabled
-                          );
+                          const items = getItems().filter((item) => !item.disabled);
                           const candidateNodes = items.map((item) => item.ref.current!);
                           if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
                           focusFirst(candidateNodes);
@@ -385,13 +387,6 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(ITEM_NAME);
   const contentContext = useMenuContentContext(ITEM_NAME);
 
-  // We keep an up to date map of every item. We do this on every render
-  // to make sure the map insertion order reflects the DOM order.
-  React.useEffect(() => {
-    contentContext.itemMap.set(ref, { ref, disabled });
-    return () => void contentContext.itemMap.delete(ref);
-  });
-
   // get the item's `.textContent` as default strategy for typeahead `textValue`
   const [textContent, setTextContent] = React.useState('');
   React.useEffect(() => {
@@ -426,45 +421,47 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
   }, [onSelect]);
 
   return (
-    <RovingFocusItem
-      role="menuitem"
-      aria-disabled={disabled || undefined}
-      focusable={!disabled}
-      {...itemProps}
-      {...menuTypeaheadItemProps}
-      as={as}
-      ref={composedRefs}
-      data-disabled={disabled ? '' : undefined}
-      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        if (!disabled && (event.key === 'Enter' || event.key === ' ')) {
-          // prevent page scroll if using the space key to select an item
-          if (event.key === ' ') event.preventDefault();
-          handleSelect();
-        }
-      })}
-      // we handle selection on `mouseUp` rather than `click` to match native menus implementation
-      onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
-      /**
-       * We focus items on `mouseMove` to achieve the following:
-       *
-       * - Mouse over an item (it focuses)
-       * - Leave mouse where it is and use keyboard to focus a different item
-       * - Wiggle mouse without it leaving previously focused item
-       * - Previously focused item should re-focus
-       *
-       * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
-       * wiggles. This is to match native menu implementation.
-       */
-      onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
-        if (!disabled) {
-          const item = event.currentTarget;
-          item.focus();
-        } else {
-          contentContext.onItemLeave();
-        }
-      })}
-      onMouseLeave={composeEventHandlers(props.onMouseLeave, () => contentContext.onItemLeave())}
-    />
+    <CollectionItemSlot disabled={disabled}>
+      <RovingFocusItem
+        role="menuitem"
+        aria-disabled={disabled || undefined}
+        focusable={!disabled}
+        {...itemProps}
+        {...menuTypeaheadItemProps}
+        as={as}
+        ref={composedRefs}
+        data-disabled={disabled ? '' : undefined}
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          if (!disabled && (event.key === 'Enter' || event.key === ' ')) {
+            // prevent page scroll if using the space key to select an item
+            if (event.key === ' ') event.preventDefault();
+            handleSelect();
+          }
+        })}
+        // we handle selection on `mouseUp` rather than `click` to match native menus implementation
+        onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
+        /**
+         * We focus items on `mouseMove` to achieve the following:
+         *
+         * - Mouse over an item (it focuses)
+         * - Leave mouse where it is and use keyboard to focus a different item
+         * - Wiggle mouse without it leaving previously focused item
+         * - Previously focused item should re-focus
+         *
+         * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
+         * wiggles. This is to match native menu implementation.
+         */
+        onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
+          if (!disabled) {
+            const item = event.currentTarget;
+            item.focus();
+          } else {
+            contentContext.onItemLeave();
+          }
+        })}
+        onMouseLeave={composeEventHandlers(props.onMouseLeave, () => contentContext.onItemLeave())}
+      />
+    </CollectionItemSlot>
   );
 }) as MenuItemPrimitive;
 

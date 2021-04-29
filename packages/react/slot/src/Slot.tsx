@@ -8,7 +8,7 @@ import { composeRefs } from '@radix-ui/react-compose-refs';
 
 type SlotProps = { children: React.ReactNode };
 
-const Slot = React.forwardRef<never, SlotProps>((props, forwardedRef) => {
+const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
   const childLength = React.Children.count(children);
 
