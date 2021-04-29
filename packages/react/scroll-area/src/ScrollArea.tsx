@@ -14,8 +14,8 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import { composeEventHandlers } from '@radix-ui/primitive';
 
 type ScrollAreaElement = React.ElementRef<typeof ScrollArea>;
-type ViewportElement = React.ElementRef<typeof Viewport>;
-type ScrollbarElement = React.ElementRef<typeof ScrollAreaScrollbarImpl>;
+type ViewportElement = React.ElementRef<typeof ScrollAreaViewport>;
+type ScrollbarElement = React.ElementRef<typeof ScrollAreaScrollbar>;
 type ThumbElement = React.ElementRef<typeof ScrollAreaThumb>;
 
 type Sizes = {
@@ -193,12 +193,16 @@ ScrollAreaViewport.displayName = VIEWPORT_NAME;
 const SCROLLBAR_NAME = 'ScrollAreaScrollbar';
 
 type ScrollAreaScrollbarOwnProps =
-  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarVisible>
-  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarScroll>;
+  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarAuto>
+  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarHover>
+  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarScroll>
+  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarVisible>;
 
 type ScrollAreaScrollbarPrimitive = Polymorphic.ForwardRefComponent<
-  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarVisible>
-  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarScroll>,
+  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarAuto>
+  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarHover>
+  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarScroll>
+  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarVisible>,
   ScrollAreaScrollbarOwnProps
 >;
 
@@ -622,15 +626,13 @@ const ScrollAreaScrollbarY = React.forwardRef((props, forwardedRef) => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaScrollbarImplPrivateProps = {
-  onWheelScroll(event: WheelEvent): void;
-  onDragScroll(pointerPosition: { x: number; y: number }): void;
-  onResize(): void;
-};
-
 type ScrollAreaScrollbarImplOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
-  ScrollAreaScrollbarImplPrivateProps
+  {
+    onWheelScroll(event: WheelEvent): void;
+    onDragScroll(pointerPosition: { x: number; y: number }): void;
+    onResize(): void;
+  }
 >;
 
 type ScrollAreaScrollbarImplPrimitive = Polymorphic.ForwardRefComponent<
