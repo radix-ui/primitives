@@ -228,6 +228,29 @@ export const Chromatic = () => (
         <Copy key={index} style={{ width: '1000%' }} />
       ))}
     </ScrollAreaStory>
+
+    <h1>RTL</h1>
+    <h2>Prop</h2>
+    <ScrollAreaStory
+      type="always"
+      dir="rtl"
+      style={{ width: 200, height: 200 }}
+      vertical
+      horizontal
+    >
+      {Array.from({ length: 3 }).map((_, index) => (
+        <Copy key={index} />
+      ))}
+    </ScrollAreaStory>
+
+    <h2>Inherited</h2>
+    <div dir="rtl">
+      <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal>
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Copy key={index} />
+        ))}
+      </ScrollAreaStory>
+    </div>
   </>
 );
 

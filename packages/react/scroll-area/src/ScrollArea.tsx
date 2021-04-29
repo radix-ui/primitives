@@ -81,7 +81,7 @@ type ScrollAreaPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ScrollArea = React.forwardRef((props, forwardedRef) => {
-  const { type = 'hover', dir, scrollHideDelay = 600, ...scrollAreaProps } = props;
+  const { type = 'hover', scrollHideDelay = 600, ...scrollAreaProps } = props;
   const [scrollArea, setScrollArea] = React.useState<ScrollAreaElement | null>(null);
   const [viewport, setViewport] = React.useState<ViewportElement | null>(null);
   const [content, setContent] = React.useState<HTMLDivElement | null>(null);
@@ -92,7 +92,7 @@ const ScrollArea = React.forwardRef((props, forwardedRef) => {
   const [scrollbarXEnabled, setScrollbarXEnabled] = React.useState(false);
   const [scrollbarYEnabled, setScrollbarYEnabled] = React.useState(false);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setScrollArea(node));
-  const computedDirection = useDirection(scrollArea, dir);
+  const computedDirection = useDirection(scrollArea, scrollAreaProps.dir);
 
   return (
     <ScrollAreaProvider
