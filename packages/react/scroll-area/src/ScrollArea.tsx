@@ -382,11 +382,8 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
     sizes,
     onSizesChange: setSizes,
     hasThumb: thumbRatio > 0 && thumbRatio < 1,
-    onThumbPointerUp: React.useCallback(() => (pointerOffsetRef.current = 0), []),
-    onThumbPointerDown: React.useCallback(
-      (pointerPosition) => (pointerOffsetRef.current = pointerPosition),
-      []
-    ),
+    onThumbPointerUp: () => (pointerOffsetRef.current = 0),
+    onThumbPointerDown: (pointerPosition: number) => (pointerOffsetRef.current = pointerPosition),
   };
 
   function getScrollPosition(pointerPosition: number) {
