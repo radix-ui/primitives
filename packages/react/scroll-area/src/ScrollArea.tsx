@@ -17,7 +17,7 @@ type ScrollAreaElement = React.ElementRef<typeof ScrollArea>;
 type ViewportElement = React.ElementRef<typeof ScrollAreaViewport>;
 type ScrollbarElement = React.ElementRef<typeof ScrollAreaScrollbar>;
 type ThumbElement = React.ElementRef<typeof ScrollAreaThumb>;
-
+type Direction = 'ltr' | 'rtl';
 type Sizes = {
   content: number;
   viewport: number;
@@ -43,7 +43,7 @@ const SCROLL_AREA_NAME = 'ScrollArea';
 
 type ScrollAreaContextValue = {
   type: 'auto' | 'always' | 'scroll' | 'hover';
-  dir: 'ltr' | 'rtl';
+  dir: Direction;
   scrollHideDelay: number;
   scrollArea: ScrollAreaElement | null;
   viewport: ViewportElement | null;
@@ -483,7 +483,7 @@ const ScrollAreaScrollbarX = React.forwardRef((props, forwardedRef) => {
   const composeRefs = useComposedRefs(forwardedRef, ref, context.onScrollbarXChange);
   const handleThumbPositionChange = useCallbackRef((thumb) => {
     if (context.viewport) {
-      const offset = getThumbOffsetFromScroll(context.viewport.scrollLeft, sizes);
+      const offset = getThumbOffsetFromScroll(context.viewport.scrollLeft, sizes, context.dir);
       onThumbPositionChange(thumb, offset);
     }
   });
@@ -866,15 +866,16 @@ function getScrollPositionFromPointer(pointerPos: number, pointerOffset: number,
   return interpolate(pointerPos);
 }
 
-function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes) {
+function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes, dir: Direction = 'ltr') {
   const thumbSizePx = getThumbSize(sizes);
   const scrollbarPadding = sizes.scrollbar.paddingStart + sizes.scrollbar.paddingEnd;
   const scrollbar = sizes.scrollbar.size - scrollbarPadding;
   const maxScrollPos = sizes.content - sizes.viewport;
   const maxThumbPos = scrollbar - thumbSizePx;
+  const scrollClampRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
+  const scrollWithoutMomentum = clamp(scrollPos, scrollClampRange as [number, number]);
   const interpolate = linearScale([0, maxScrollPos], [0, maxThumbPos]);
-  const scrollPosWithoutMomentum = clamp(scrollPos, [0, maxScrollPos]);
-  return interpolate(scrollPosWithoutMomentum);
+  return interpolate(scrollWithoutMomentum);
 }
 
 function scrollingWithinScrollbarBounds(scrollPos: number, maxScrollPos: number) {
