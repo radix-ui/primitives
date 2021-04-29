@@ -833,7 +833,9 @@ function getThumbRatio(viewportSize: number, contentSize: number) {
 function getThumbSize(sizes: Sizes) {
   const ratio = getThumbRatio(sizes.viewport, sizes.content);
   const scrollbarPadding = sizes.scrollbar.paddingStart + sizes.scrollbar.paddingEnd;
-  return (sizes.scrollbar.size - scrollbarPadding) * ratio;
+  const thumbSize = (sizes.scrollbar.size - scrollbarPadding) * ratio;
+  // minimum of 18 matches macOS minimum
+  return Math.max(thumbSize, 18);
 }
 
 function getScrollPositionFromPointer(pointerPos: number, pointerOffset: number, sizes: Sizes) {

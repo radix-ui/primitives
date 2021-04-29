@@ -77,149 +77,156 @@ export const Chromatic = () => (
   <>
     <h1>Vertical</h1>
     <h2>Auto with overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 400, height: 400 }} vertical horizontal={false}>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Auto without overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 400, height: 400 }} vertical horizontal={false}>
+    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal={false}>
       <Copy style={{ height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Always with overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 400, height: 400 }} vertical horizontal={false}>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Always without overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 400, height: 400 }} vertical horizontal={false}>
+    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal={false}>
       <Copy style={{ height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Scroll with overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 400, height: 400 }} vertical horizontal={false}>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Scroll without overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 400, height: 400 }} vertical horizontal={false}>
+    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical horizontal={false}>
       <Copy style={{ height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Hover with overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 400, height: 400 }} vertical horizontal={false}>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Hover without overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 400, height: 400 }} vertical horizontal={false}>
+    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal={false}>
       <Copy style={{ height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h1>Horizontal</h1>
     <h2>Auto with overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 400, height: 400 }} vertical={false} horizontal>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Auto without overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 400, height: 400 }} vertical={false} horizontal>
+    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical={false} horizontal>
       <Copy style={{ width: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Always with overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 400, height: 400 }} vertical={false} horizontal>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Always without overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 400, height: 400 }} vertical={false} horizontal>
+    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical={false} horizontal>
       <Copy style={{ width: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Scroll with overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 400, height: 400 }} vertical={false} horizontal>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Scroll without overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 400, height: 400 }} vertical={false} horizontal>
+    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical={false} horizontal>
       <Copy style={{ width: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Hover with overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 400, height: 400 }} vertical={false} horizontal>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Hover without overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 400, height: 400 }} vertical={false} horizontal>
+    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical={false} horizontal>
       <Copy style={{ width: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h1>Both</h1>
     <h2>Auto with overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 400, height: 400 }} vertical horizontal>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Auto without overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 400, height: 400 }} vertical horizontal>
+    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal>
       <Copy style={{ width: 50, height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Always with overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 400, height: 400 }} vertical horizontal>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Always without overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 400, height: 400 }} vertical horizontal>
+    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal>
       <Copy style={{ width: 50, height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Scroll with overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 400, height: 400 }} vertical horizontal>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical horizontal>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Scroll without overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 400, height: 400 }} vertical horizontal>
+    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical horizontal>
       <Copy style={{ width: 50, height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Hover with overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 400, height: 400 }} vertical horizontal>
-      {Array.from({ length: 30 }).map((_, index) => (
+    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal>
+      {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Hover without overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 400, height: 400 }} vertical horizontal>
+    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal>
       <Copy style={{ width: 50, height: 50, overflow: 'hidden' }} />
+    </ScrollAreaStory>
+
+    <h1>Min thumb size</h1>
+    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal>
+      {Array.from({ length: 30 }).map((_, index) => (
+        <Copy key={index} style={{ width: '1000%' }} />
+      ))}
     </ScrollAreaStory>
   </>
 );
