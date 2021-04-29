@@ -185,6 +185,20 @@ export const Chromatic = () => (
       ))}
     </ScrollAreaStory>
 
+    <h2>Auto with horizontal overflow</h2>
+    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal>
+      {Array.from({ length: 1 }).map((_, index) => (
+        <Copy key={index} />
+      ))}
+    </ScrollAreaStory>
+
+    <h2>Auto with vertical overflow</h2>
+    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal>
+      {Array.from({ length: 3 }).map((_, index) => (
+        <Copy key={index} style={{ width: 50, overflow: 'hidden' }} />
+      ))}
+    </ScrollAreaStory>
+
     <h2>Auto without overflow</h2>
     <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal>
       <Copy style={{ width: 50, height: 50, overflow: 'hidden' }} />
