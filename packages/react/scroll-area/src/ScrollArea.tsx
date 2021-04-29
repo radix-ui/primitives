@@ -405,7 +405,9 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
           if (context.viewport) context.viewport.scrollLeft = scrollPos;
         }}
         onDragScroll={(pointerPosition) => {
-          if (context.viewport) context.viewport.scrollLeft = getScrollPosition(pointerPosition);
+          if (context.viewport) {
+            context.viewport.scrollLeft = getScrollPosition(pointerPosition);
+          }
         }}
       />
     );
@@ -721,17 +723,31 @@ const ScrollAreaThumb = React.forwardRef((props, forwardedRef) => {
   const { onThumbPositionChange } = scrollbarContext;
   const [thumb, setThumb] = React.useState<React.ElementRef<typeof Primitive> | null>(null);
   const composedRef = useComposedRefs(forwardedRef, (node) => setThumb(node));
+  const removeUnlinkedScrollListenerRef = React.useRef<() => void>();
+  const debounceScrollEnd = useDebounceCallback(() => {
+    if (removeUnlinkedScrollListenerRef.current) {
+      removeUnlinkedScrollListenerRef.current();
+      removeUnlinkedScrollListenerRef.current = undefined;
+    }
+  }, 100);
 
   React.useEffect(() => {
     const viewport = scrollAreaContext.viewport;
     if (viewport && thumb) {
-      const handleScroll = () => onThumbPositionChange(thumb);
-      // position thumb on mount
-      onThumbPositionChange(thumb);
+      const handleThumbPositionChange = () => onThumbPositionChange(thumb);
+      const handleScroll = () => {
+        debounceScrollEnd();
+        if (!removeUnlinkedScrollListenerRef.current) {
+          const listener = addUnlinkedScrollListener(viewport, handleThumbPositionChange);
+          removeUnlinkedScrollListenerRef.current = listener;
+          handleThumbPositionChange();
+        }
+      };
+      handleThumbPositionChange();
       viewport.addEventListener('scroll', handleScroll);
       return () => viewport.removeEventListener('scroll', handleScroll);
     }
-  }, [scrollAreaContext.viewport, thumb, onThumbPositionChange]);
+  }, [scrollAreaContext.viewport, thumb, debounceScrollEnd, onThumbPositionChange]);
 
   useResizeObserver(scrollAreaContext.viewport, () => {
     if (thumb) onThumbPositionChange(thumb);
@@ -863,6 +879,22 @@ function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes) {
 function scrollingWithinScrollbarBounds(scrollPos: number, maxScrollPos: number) {
   return scrollPos > 0 && scrollPos < maxScrollPos;
 }
+
+// Custom scroll handler to avoid scroll-linked effects
+// https://developer.mozilla.org/en-US/docs/Mozilla/Performance/Scroll-linked_effects
+const addUnlinkedScrollListener = (node: HTMLElement, handler = () => {}) => {
+  let prevPosition = { left: node.scrollLeft, top: node.scrollTop };
+  let rAF = 0;
+  (function loop() {
+    const position = { left: node.scrollLeft, top: node.scrollTop };
+    const isHorizontalScroll = prevPosition.left !== position.left;
+    const isVerticalScroll = prevPosition.top !== position.top;
+    if (isHorizontalScroll || isVerticalScroll) handler();
+    prevPosition = position;
+    rAF = window.requestAnimationFrame(loop);
+  })();
+  return () => window.cancelAnimationFrame(rAF);
+};
 
 function useDebounceCallback(callback: () => void, delay: number) {
   const handleCallback = useCallbackRef(callback);

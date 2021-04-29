@@ -44,7 +44,11 @@ export const Basic = () => {
         <button onClick={() => setCount((count) => count + 1)}>Add content</button>
       </div>
 
-      <ScrollAreaStory {...props} style={{ width: '800px', height: '800px', margin: '30px auto' }}>
+      <ScrollAreaStory
+        {...props}
+        key={props.type}
+        style={{ width: '800px', height: '800px', margin: '30px auto' }}
+      >
         {Array.from({ length: count }).map((_, index) => (
           <Copy key={index} />
         ))}
