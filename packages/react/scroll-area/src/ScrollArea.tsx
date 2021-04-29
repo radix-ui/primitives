@@ -7,7 +7,7 @@ import { createContext } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useDirection } from '@radix-ui/react-use-direction';
-import { linearScale } from '@radix-ui/number';
+import { clamp, linearScale } from '@radix-ui/number';
 import { useStateMachine } from './useStateMachine';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -873,7 +873,8 @@ function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes) {
   const maxScrollPos = sizes.content - sizes.viewport;
   const maxThumbPos = scrollbar - thumbSizePx;
   const interpolate = linearScale([0, maxScrollPos], [0, maxThumbPos]);
-  return interpolate(scrollPos);
+  const scrollPosWithoutMomentum = clamp(scrollPos, [0, maxScrollPos]);
+  return interpolate(scrollPosWithoutMomentum);
 }
 
 function scrollingWithinScrollbarBounds(scrollPos: number, maxScrollPos: number) {
