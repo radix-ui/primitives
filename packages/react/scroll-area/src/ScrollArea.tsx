@@ -907,7 +907,8 @@ function useDebounceCallback(callback: () => void, delay: number) {
 }
 
 function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
-  const handleResize = useCallbackRef(onResize);
+  // debounce to prevent error `ResizeObserver loop completed with undelivered notifications`
+  const handleResize = useDebounceCallback(onResize, 10);
   React.useEffect(() => {
     if (element) {
       const resizeObserver = new ResizeObserver(handleResize);
