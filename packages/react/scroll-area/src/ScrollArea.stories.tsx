@@ -62,7 +62,7 @@ export const Resizable = () => (
       padding: 20,
       resize: 'both',
       border: '1px solid gray',
-      overflow: 'auto',
+      overflow: 'hidden',
     }}
   >
     <ScrollAreaStory>
