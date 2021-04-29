@@ -726,14 +726,16 @@ const ScrollAreaThumb = React.forwardRef((props, forwardedRef) => {
     const viewport = scrollAreaContext.viewport;
     if (viewport && thumb) {
       const handleScroll = () => onThumbPositionChange(thumb);
+      // position thumb on mount
+      onThumbPositionChange(thumb);
       viewport.addEventListener('scroll', handleScroll);
       return () => viewport.removeEventListener('scroll', handleScroll);
     }
   }, [scrollAreaContext.viewport, thumb, onThumbPositionChange]);
 
-  React.useEffect(() => {
+  useResizeObserver(scrollAreaContext.viewport, () => {
     if (thumb) onThumbPositionChange(thumb);
-  }, [thumb, onThumbPositionChange]);
+  });
 
   return scrollbarContext.hasThumb ? (
     <Primitive
