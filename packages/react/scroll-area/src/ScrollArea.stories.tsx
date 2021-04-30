@@ -277,12 +277,12 @@ const ScrollAreaStory = ({ children, vertical = true, horizontal = true, ...prop
     <ScrollArea.Viewport className={scrollAreaViewportClass}>{children}</ScrollArea.Viewport>
     {vertical && (
       <ScrollArea.Scrollbar className={scrollbarVerticalClass} orientation="vertical">
-        <ScrollArea.Thumb className={thumbVerticalClass} />
+        <ScrollArea.Thumb className={thumbClass} />
       </ScrollArea.Scrollbar>
     )}
     {horizontal && (
       <ScrollArea.Scrollbar className={scrollbarHorizontalClass} orientation="horizontal">
-        <ScrollArea.Thumb className={thumbHorizontalClass} />
+        <ScrollArea.Thumb className={thumbClass} />
       </ScrollArea.Scrollbar>
     )}
     <ScrollArea.Corner className={cornerClass} />
@@ -377,14 +377,6 @@ const thumbClass = css({
   ...RECOMMENDED_CSS__SCROLLBAR__THUMB,
   background: 'black',
   borderRadius: SCROLLBAR_SIZE,
-});
-
-const thumbHorizontalClass = css(thumbClass, {
-  // minWidth: 40,
-});
-
-const thumbVerticalClass = css(thumbClass, {
-  // minHeight: 40,
 });
 
 const cornerClass = css({
