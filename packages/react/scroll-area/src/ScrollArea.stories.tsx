@@ -385,5 +385,17 @@ const thumbClass = css({
 });
 
 const cornerClass = css({
-  background: 'black',
+  background: 'rgba(0, 0, 0, 0.3)',
+  position: 'relative',
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    background: 'black',
+    width: SCROLLBAR_SIZE,
+    height: SCROLLBAR_SIZE,
+    borderRadius: SCROLLBAR_SIZE,
+  },
 });
