@@ -10,4 +10,4 @@ $ npm install @radix-ui/react-polymorphic
 
 ## Usage
 
-This is an internal utility, not intended for public usage.
+View docs [here](https://radix-ui.com/primitives/docs/utilities/polymorphic).
