@@ -324,7 +324,6 @@ const Copy = (props: any) => (
 );
 
 const SCROLLBAR_SIZE = 8;
-const SCROLLBAR_HOVER_SIZE = 12;
 
 const RECOMMENDED_CSS__SCROLLAREA__ROOT: any = {
   width: '100%',
@@ -355,8 +354,7 @@ const RECOMMENDED_CSS__SCROLLBAR__ROOT: any = {
 
 const scrollbarClass = css({
   ...RECOMMENDED_CSS__SCROLLBAR__ROOT,
-  transition: '160ms ease-out',
-  transitionProperty: 'background, opacity, width, height',
+  transition: 'background 160ms ease-out',
   padding: 2,
   background: 'rgba(0, 0, 0, 0.3)',
   '&:hover': {
@@ -366,9 +364,6 @@ const scrollbarClass = css({
 
 const scrollbarVerticalClass = css(scrollbarClass, {
   width: SCROLLBAR_SIZE,
-  '&:hover': {
-    width: SCROLLBAR_HOVER_SIZE,
-  },
 });
 
 const RECOMMENDED_CSS__SCROLLBAR__HORIZONTAL: any = {
@@ -378,9 +373,6 @@ const RECOMMENDED_CSS__SCROLLBAR__HORIZONTAL: any = {
 const scrollbarHorizontalClass = css(scrollbarClass, {
   ...RECOMMENDED_CSS__SCROLLBAR__HORIZONTAL,
   height: SCROLLBAR_SIZE,
-  '&:hover': {
-    height: SCROLLBAR_HOVER_SIZE,
-  },
 });
 
 const RECOMMENDED_CSS__SCROLLBAR__THUMB: any = {
