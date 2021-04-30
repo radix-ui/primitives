@@ -279,6 +279,7 @@ export const Chromatic = () => (
     </div>
   </>
 );
+Chromatic.parameters = { chromatic: { disable: false } };
 
 const ScrollAreaStory = ({ children, vertical = true, horizontal = true, ...props }: any) => (
   <ScrollArea.Root
