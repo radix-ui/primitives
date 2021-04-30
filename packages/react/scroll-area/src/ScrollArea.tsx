@@ -252,7 +252,7 @@ const ScrollAreaScrollbarHover = React.forwardRef((props, forwardedRef) => {
     let hideTimer = 0;
     if (scrollArea) {
       const handlePointerEnter = () => {
-        clearTimeout(hideTimer);
+        window.clearTimeout(hideTimer);
         setVisible(true);
       };
       const handlePointerLeave = () => {
@@ -280,29 +280,28 @@ const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
   const isHorizontal = props.orientation === 'horizontal';
   const debounceScrollEnd = useDebounceCallback(() => send('SCROLL_END'), 100);
   const [state, send] = useStateMachine('hidden', {
-    idle: {
-      HIDE: 'hidden',
-      SCROLL: 'scrolling',
-      SCROLLBAR_POINTER_ENTER: 'interacting',
-    },
     hidden: {
       SCROLL: 'scrolling',
-      SCROLLBAR_POINTER_ENTER: 'interacting',
     },
     scrolling: {
       SCROLL_END: 'idle',
-      SCROLLBAR_POINTER_ENTER: 'interacting',
+      POINTER_ENTER: 'interacting',
     },
     interacting: {
       SCROLL: 'interacting',
-      SCROLLBAR_POINTER_LEAVE: 'idle',
+      POINTER_LEAVE: 'idle',
+    },
+    idle: {
+      HIDE: 'hidden',
+      SCROLL: 'scrolling',
+      POINTER_ENTER: 'interacting',
     },
   });
 
   React.useEffect(() => {
     if (state === 'idle') {
       const hideTimer = window.setTimeout(() => send('HIDE'), context.scrollHideDelay);
-      return () => clearTimeout(hideTimer);
+      return () => window.clearTimeout(hideTimer);
     }
   }, [state, context.scrollHideDelay, send]);
 
@@ -314,7 +313,8 @@ const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
       let prevScrollPos = viewport[scrollDirection];
       const handleScroll = () => {
         const scrollPos = viewport[scrollDirection];
-        if (prevScrollPos !== scrollPos) {
+        const hasScrollInDirectionChanged = prevScrollPos !== scrollPos;
+        if (hasScrollInDirectionChanged) {
           send('SCROLL');
           debounceScrollEnd();
         }
@@ -330,12 +330,8 @@ const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
       <ScrollAreaScrollbarVisible
         {...scrollbarProps}
         ref={forwardedRef}
-        onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
-          send('SCROLLBAR_POINTER_ENTER');
-        })}
-        onPointerLeave={composeEventHandlers(props.onPointerLeave, () => {
-          send('SCROLLBAR_POINTER_LEAVE');
-        })}
+        onPointerEnter={composeEventHandlers(props.onPointerEnter, () => send('POINTER_ENTER'))}
+        onPointerLeave={composeEventHandlers(props.onPointerLeave, () => send('POINTER_LEAVE'))}
       />
     </Presence>
   );
@@ -411,9 +407,7 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
           if (context.viewport) context.viewport.scrollLeft = scrollPos;
         }}
         onDragScroll={(pointerPosition) => {
-          if (context.viewport) {
-            context.viewport.scrollLeft = getScrollPosition(pointerPosition);
-          }
+          if (context.viewport) context.viewport.scrollLeft = getScrollPosition(pointerPosition);
         }}
       />
     );

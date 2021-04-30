@@ -69,7 +69,7 @@ export const Resizable = () => (
       overflow: 'hidden',
     }}
   >
-    <ScrollAreaStory>
+    <ScrollAreaStory style={{ width: '100%', height: '100%' }}>
       {Array.from({ length: 30 }).map((_, index) => (
         <Copy key={index} />
       ))}
@@ -81,181 +81,181 @@ export const Chromatic = () => (
   <>
     <h1>Vertical</h1>
     <h2>Auto with overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+    <ScrollAreaStory type="auto" vertical horizontal={false}>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Auto without overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+    <ScrollAreaStory type="auto" vertical horizontal={false}>
       <Copy style={{ height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Always with overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+    <ScrollAreaStory type="always" vertical horizontal={false}>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Always without overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+    <ScrollAreaStory type="always" vertical horizontal={false}>
       <Copy style={{ height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Scroll with overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+    <ScrollAreaStory type="scroll" vertical horizontal={false}>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Scroll without overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+    <ScrollAreaStory type="scroll" vertical horizontal={false}>
       <Copy style={{ height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Hover with overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+    <ScrollAreaStory type="hover" vertical horizontal={false}>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Hover without overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal={false}>
+    <ScrollAreaStory type="hover" vertical horizontal={false}>
       <Copy style={{ height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h1>Horizontal</h1>
     <h2>Auto with overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+    <ScrollAreaStory type="auto" vertical={false} horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Auto without overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+    <ScrollAreaStory type="auto" vertical={false} horizontal>
       <Copy style={{ width: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Always with overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+    <ScrollAreaStory type="always" vertical={false} horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Always without overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+    <ScrollAreaStory type="always" vertical={false} horizontal>
       <Copy style={{ width: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Scroll with overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+    <ScrollAreaStory type="scroll" vertical={false} horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Scroll without overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+    <ScrollAreaStory type="scroll" vertical={false} horizontal>
       <Copy style={{ width: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Hover with overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+    <ScrollAreaStory type="hover" vertical={false} horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Hover without overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical={false} horizontal>
+    <ScrollAreaStory type="hover" vertical={false} horizontal>
       <Copy style={{ width: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h1>Both</h1>
     <h2>Auto with overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="auto" vertical horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Auto with horizontal overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="auto" vertical horizontal>
       {Array.from({ length: 1 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Auto with vertical overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="auto" vertical horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} style={{ width: 50, overflow: 'hidden' }} />
       ))}
     </ScrollAreaStory>
 
     <h2>Auto without overflow</h2>
-    <ScrollAreaStory type="auto" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="auto" vertical horizontal>
       <Copy style={{ width: 50, height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Always with overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="always" vertical horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Always without overflow</h2>
-    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="always" vertical horizontal>
       <Copy style={{ width: 50, height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Scroll with overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="scroll" vertical horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Scroll without overflow</h2>
-    <ScrollAreaStory type="scroll" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="scroll" vertical horizontal>
       <Copy style={{ width: 50, height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Hover with overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="hover" vertical horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Hover without overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="hover" vertical horizontal>
       <Copy style={{ width: 50, height: 50, overflow: 'hidden' }} />
     </ScrollAreaStory>
 
     <h2>Hover with horizontal overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="hover" vertical horizontal>
       {Array.from({ length: 1 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
 
     <h2>Hover with vertical overflow</h2>
-    <ScrollAreaStory type="hover" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="hover" vertical horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} style={{ width: 50, overflow: 'hidden' }} />
       ))}
     </ScrollAreaStory>
 
     <h1>Min thumb size</h1>
-    <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal>
+    <ScrollAreaStory type="always" vertical horizontal>
       {Array.from({ length: 30 }).map((_, index) => (
         <Copy key={index} style={{ width: '1000%' }} />
       ))}
@@ -263,13 +263,7 @@ export const Chromatic = () => (
 
     <h1>RTL</h1>
     <h2>Prop</h2>
-    <ScrollAreaStory
-      type="always"
-      dir="rtl"
-      style={{ width: 200, height: 200 }}
-      vertical
-      horizontal
-    >
+    <ScrollAreaStory type="always" dir="rtl" vertical horizontal>
       {Array.from({ length: 3 }).map((_, index) => (
         <Copy key={index} />
       ))}
@@ -277,7 +271,7 @@ export const Chromatic = () => (
 
     <h2>Inherited</h2>
     <div dir="rtl">
-      <ScrollAreaStory type="always" style={{ width: 200, height: 200 }} vertical horizontal>
+      <ScrollAreaStory type="always" vertical horizontal>
         {Array.from({ length: 3 }).map((_, index) => (
           <Copy key={index} />
         ))}
@@ -287,7 +281,11 @@ export const Chromatic = () => (
 );
 
 const ScrollAreaStory = ({ children, vertical = true, horizontal = true, ...props }: any) => (
-  <ScrollArea.Root {...props} className={scrollAreaClass}>
+  <ScrollArea.Root
+    {...props}
+    className={scrollAreaClass}
+    style={{ width: 200, height: 200, ...props.style }}
+  >
     <ScrollArea.Viewport className={scrollAreaViewportClass}>{children}</ScrollArea.Viewport>
     {vertical && (
       <ScrollArea.Scrollbar className={scrollbarVerticalClass} orientation="vertical">
