@@ -67,7 +67,7 @@ const CONTENT_NAME = 'MenuContent';
 
 type ItemData = { disabled: boolean };
 const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
-  HTMLSpanElement,
+  React.ElementRef<typeof MenuItem>,
   ItemData
 >();
 
