@@ -3727,7 +3727,6 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-direction": "workspace:*"
     "@stitches/react": canary
-    "@types/lodash.debounce": ^4
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -4956,22 +4955,6 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 66e9ac0143ec521522c7bb670301e9836ee886207eeed1aab6d4854a1b19b404ab3a54cd8d449f9b1f13acc357f540be96f8ac2d1e86e301eab52ae0f9a4066f
-  languageName: node
-  linkType: hard
-
-"@types/lodash.debounce@npm:^4":
-  version: 4.0.6
-  resolution: "@types/lodash.debounce@npm:4.0.6"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: 64952797f594f4068d2edd1e178a553647ca4ed5716c9b7673f9187d012fe5b5a0141c15ffc82c8f4d29bf13040c53001634a5b43b51a9efdfb6d4fa77ae24aa
-  languageName: node
-  linkType: hard
-
-"@types/lodash@npm:*":
-  version: 4.14.168
-  resolution: "@types/lodash@npm:4.14.168"
-  checksum: 9a4e25f89fc035b9f0388f1f7be85e5eff49f9e6db0d93432c9a89fce0916f8a89db4e8290415f7ea02de6b00d3573826378dcb655b7b2d20530a6e8d6dd6fd0
   languageName: node
   linkType: hard
 

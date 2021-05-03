@@ -29,7 +29,6 @@
   },
   "devDependencies": {
     "@stitches/react": "canary",
-    "@types/lodash.debounce": "^4",
     "@types/resize-observer-browser": "^0.1.4"
   },
   "peerDependencies": {
