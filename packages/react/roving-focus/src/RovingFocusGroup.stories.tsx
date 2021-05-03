@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { RovingFocusGroup, useRovingFocus } from './RovingFocusGroup';
+import { RovingFocusGroup, RovingFocusItem } from './RovingFocusGroup';
 
 type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
 
@@ -30,6 +30,9 @@ export const Basic = () => {
 
       <h2>no orientation (both) + looping</h2>
       <ButtonGroup dir={dir} loop>
+        <Button value="hidden" style={{ display: 'none' }}>
+          Hidden
+        </Button>
         <Button value="one">One</Button>
         <Button value="two">Two</Button>
         <Button disabled value="three">
@@ -107,33 +110,33 @@ export const Nested = () => (
   </ButtonGroup>
 );
 
-export const Reachable = () => {
-  const [reachable, setReachable] = React.useState(true);
+export const EdgeCases = () => {
+  const [extra, setExtra] = React.useState(false);
+  const [disabled, setDisabled] = React.useState(false);
+  const [hidden, setHidden] = React.useState(false);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 20 }}>
-      <label>
-        <input
-          type="checkbox"
-          checked={reachable}
-          onChange={(event) => setReachable(event.target.checked)}
-        />{' '}
-        Reachable?
-      </label>
+    <>
+      <button onClick={() => setExtra((x) => !x)}>Add/remove extra</button>
+      <button onClick={() => setDisabled((x) => !x)}>Disable/Enable "One"</button>
+      <button onClick={() => setHidden((x) => !x)}>Hide/show "One"</button>
+      <hr />
 
-      <div>
-        <ButtonGroup reachable={reachable}>
-          <Button value="one">One</Button>
-          <Button value="two">Two</Button>
-          <Button disabled value="three">
-            Three
-          </Button>
-          <Button value="four">Four</Button>
-        </ButtonGroup>
-      </div>
-
-      <input />
-    </div>
+      <ButtonGroup>
+        {extra ? <Button value="extra">Extra</Button> : null}
+        <Button value="one" disabled={disabled} style={{ display: hidden ? 'none' : undefined }}>
+          One
+        </Button>
+        <Button value="two" disabled>
+          Two
+        </Button>
+        <Button value="three">Three</Button>
+        <Button value="four" style={{ display: 'none' }}>
+          Four
+        </Button>
+        <Button value="five">Five</Button>
+      </ButtonGroup>
+    </>
   );
 };
 
@@ -145,44 +148,35 @@ const ButtonGroupContext = React.createContext<{
 type ButtonGroupProps = Omit<React.ComponentPropsWithRef<'div'>, 'defaultValue'> &
   RovingFocusGroupProps & { defaultValue?: string };
 
-const ButtonGroup = ({
-  reachable,
-  orientation,
-  dir,
-  loop,
-  defaultValue,
-  ...props
-}: ButtonGroupProps) => {
+const ButtonGroup = ({ defaultValue, ...props }: ButtonGroupProps) => {
   const [value, setValue] = React.useState(defaultValue);
   return (
     <ButtonGroupContext.Provider value={{ value, setValue }}>
-      <RovingFocusGroup reachable={reachable} orientation={orientation} dir={dir} loop={loop}>
-        <div
-          {...props}
-          style={{
-            ...props.style,
-            display: 'inline-flex',
-            flexDirection: orientation === 'vertical' ? 'column' : 'row',
-            gap: 10,
-          }}
-        />
-      </RovingFocusGroup>
+      <RovingFocusGroup
+        {...props}
+        style={{
+          ...props.style,
+          display: 'inline-flex',
+          flexDirection: props.orientation === 'vertical' ? 'column' : 'row',
+          gap: 10,
+        }}
+      />
     </ButtonGroupContext.Provider>
   );
 };
 
 type ButtonProps = Omit<React.ComponentPropsWithRef<'button'>, 'value'> & { value?: string };
 
-const Button = ({ disabled, tabIndex, value, ...props }: ButtonProps) => {
+const Button = (props: ButtonProps) => {
   const { value: contextValue, setValue } = React.useContext(ButtonGroupContext);
-  const isSelected = contextValue !== undefined && value !== undefined && contextValue === value;
-  const rovingFocusProps = useRovingFocus({ disabled, active: isSelected });
+  const isSelected =
+    contextValue !== undefined && props.value !== undefined && contextValue === props.value;
 
   return (
-    <button
-      disabled={disabled}
+    <RovingFocusItem
       {...props}
-      {...rovingFocusProps}
+      as="button"
+      active={isSelected}
       style={{
         ...props.style,
         border: '1px solid',
@@ -197,8 +191,8 @@ const Button = ({ disabled, tabIndex, value, ...props }: ButtonProps) => {
             }
           : {}),
       }}
-      onClick={disabled ? undefined : () => setValue(value)}
-      onFocus={composeEventHandlers(rovingFocusProps.onFocus, (event) => {
+      onClick={props.disabled ? undefined : () => setValue(props.value)}
+      onFocus={composeEventHandlers(props.onFocus, (event) => {
         if (contextValue !== undefined) {
           event.target.click();
         }

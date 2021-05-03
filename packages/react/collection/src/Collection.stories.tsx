@@ -5,9 +5,9 @@ export default { title: 'Components/Collection' };
 
 export const Basic = () => (
   <List>
-    <ListItem>Red</ListItem>
-    <ListItem disabled>Green</ListItem>
-    <ListItem>Blue</ListItem>
+    <Item>Red</Item>
+    <Item disabled>Green</Item>
+    <Item>Blue</Item>
     <LogItems />
   </List>
 );
@@ -15,23 +15,23 @@ export const Basic = () => (
 export const WithElementInBetween = () => (
   <List>
     <div style={{ fontVariant: 'small-caps' }}>Colors</div>
-    <ListItem>Red</ListItem>
-    <ListItem disabled>Green</ListItem>
-    <ListItem>Blue</ListItem>
+    <Item>Red</Item>
+    <Item disabled>Green</Item>
+    <Item>Blue</Item>
     <div style={{ fontVariant: 'small-caps' }}>Words</div>
-    <ListItem>Hello</ListItem>
-    <ListItem>World</ListItem>
+    <Item>Hello</Item>
+    <Item>World</Item>
     <LogItems />
   </List>
 );
 
-const Tomato = () => <ListItem style={{ color: 'tomato' }}>Tomato</ListItem>;
+const Tomato = () => <Item style={{ color: 'tomato' }}>Tomato</Item>;
 
 export const WithWrappedItem = () => (
   <List>
-    <ListItem>Red</ListItem>
-    <ListItem disabled>Green</ListItem>
-    <ListItem>Blue</ListItem>
+    <Item>Red</Item>
+    <Item disabled>Green</Item>
+    <Item>Blue</Item>
     <Tomato />
     <LogItems />
   </List>
@@ -40,9 +40,9 @@ export const WithWrappedItem = () => (
 export const WithFragment = () => {
   const countries = (
     <>
-      <ListItem>France</ListItem>
-      <ListItem disabled>UK</ListItem>
-      <ListItem>Spain</ListItem>
+      <Item>France</Item>
+      <Item disabled>UK</Item>
+      <Item>Spain</Item>
     </>
   );
   return (
@@ -93,9 +93,9 @@ export const WithChangingItem = () => {
       </button>
 
       <List>
-        <ListItem>Red</ListItem>
-        <ListItem disabled={isDisabled}>Green</ListItem>
-        <ListItem>Blue</ListItem>
+        <Item>Red</Item>
+        <Item disabled={isDisabled}>Green</Item>
+        <Item>Blue</Item>
         <LogItems />
       </List>
     </>
@@ -104,17 +104,17 @@ export const WithChangingItem = () => {
 
 export const Nested = () => (
   <List>
-    <ListItem>1</ListItem>
-    <ListItem>
+    <Item>1</Item>
+    <Item>
       2
       <List>
-        <ListItem>2.1</ListItem>
-        <ListItem>2.2</ListItem>
-        <ListItem>2.3</ListItem>
+        <Item>2.1</Item>
+        <Item>2.2</Item>
+        <Item>2.3</Item>
         <LogItems name="items inside 2" />
       </List>
-    </ListItem>
-    <ListItem>3</ListItem>
+    </Item>
+    <Item>3</Item>
     <LogItems name="top-level items" />
   </List>
 );
@@ -123,14 +123,36 @@ export const Nested = () => (
  * List implementation
  * -----------------------------------------------------------------------------------------------*/
 
-type ListItemOwnProps = { disabled?: boolean };
+type ItemData = { disabled: boolean };
 
-const [List, ListItem, useItems] = createCollection<ListItemOwnProps>();
-List.displayName = 'List';
-ListItem.displayName = 'ListItem';
+const [ListSlot, ListItemSlot, useItems] = createCollection<
+  React.ElementRef<typeof Item>,
+  ItemData
+>();
+
+const List: React.FC = (props) => {
+  return (
+    <ListSlot>
+      <ul style={{ width: 200 }} {...props} />
+    </ListSlot>
+  );
+};
+
+type ItemProps = React.ComponentPropsWithRef<'li'> & {
+  children: React.ReactNode;
+  disabled?: boolean;
+};
+
+function Item({ disabled = false, ...props }: ItemProps) {
+  return (
+    <ListItemSlot disabled={disabled}>
+      <li {...props} style={{ ...props.style, opacity: disabled ? 0.3 : undefined }} />
+    </ListItemSlot>
+  );
+}
 
 // Ensure that our implementation doesn't break if the item list/item is memoized
-const MemoItem = React.memo(ListItem);
+const MemoItem = React.memo(Item);
 const MemoItems = React.memo(WrappedItems);
 
 function LogItems({ name = 'items' }: { name?: string }) {

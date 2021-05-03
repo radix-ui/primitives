@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
+import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
 
 type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
 
@@ -115,44 +115,35 @@ const ButtonGroupContext = React.createContext<{
 type ButtonGroupProps = Omit<React.ComponentPropsWithRef<'div'>, 'defaultValue'> &
   RovingFocusGroupProps & { defaultValue?: string };
 
-const ButtonGroup = ({
-  reachable,
-  orientation,
-  dir,
-  loop,
-  defaultValue,
-  ...props
-}: ButtonGroupProps) => {
+const ButtonGroup = ({ defaultValue, ...props }: ButtonGroupProps) => {
   const [value, setValue] = React.useState(defaultValue);
   return (
     <ButtonGroupContext.Provider value={{ value, setValue }}>
-      <RovingFocusGroup reachable={reachable} orientation={orientation} dir={dir} loop={loop}>
-        <div
-          {...props}
-          style={{
-            ...props.style,
-            display: 'inline-flex',
-            flexDirection: orientation === 'vertical' ? 'column' : 'row',
-            gap: 10,
-          }}
-        />
-      </RovingFocusGroup>
+      <RovingFocusGroup
+        {...props}
+        style={{
+          ...props.style,
+          display: 'inline-flex',
+          flexDirection: props.orientation === 'vertical' ? 'column' : 'row',
+          gap: 10,
+        }}
+      />
     </ButtonGroupContext.Provider>
   );
 };
 
 type ButtonProps = Omit<React.ComponentPropsWithRef<'button'>, 'value'> & { value?: string };
 
-const Button = ({ disabled, tabIndex, value, ...props }: ButtonProps) => {
+const Button = (props: ButtonProps) => {
   const { value: contextValue, setValue } = React.useContext(ButtonGroupContext);
-  const isSelected = contextValue !== undefined && value !== undefined && contextValue === value;
-  const rovingFocusProps = useRovingFocus({ disabled, active: isSelected });
+  const isSelected =
+    contextValue !== undefined && props.value !== undefined && contextValue === props.value;
 
   return (
-    <button
-      disabled={disabled}
+    <RovingFocusItem
       {...props}
-      {...rovingFocusProps}
+      as="button"
+      active={isSelected}
       style={{
         ...props.style,
         border: '1px solid',
@@ -167,8 +158,8 @@ const Button = ({ disabled, tabIndex, value, ...props }: ButtonProps) => {
             }
           : {}),
       }}
-      onClick={disabled ? undefined : () => setValue(value)}
-      onFocus={composeEventHandlers(rovingFocusProps.onFocus, (event) => {
+      onClick={props.disabled ? undefined : () => setValue(props.value)}
+      onFocus={composeEventHandlers(props.onFocus, (event) => {
         if (contextValue !== undefined) {
           event.target.click();
         }

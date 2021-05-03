@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContext } from '@radix-ui/react-context';
-import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
-import { Primitive } from '@radix-ui/react-primitive';
+import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
 import { Slot } from '@radix-ui/react-slot';
 import * as SeparatorPrimitive from '@radix-ui/react-separator';
 import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group';
@@ -14,57 +13,40 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
  * -----------------------------------------------------------------------------------------------*/
 
 const TOOLBAR_NAME = 'Toolbar';
+const TOOLBAR_DEFAULT_TAG = 'div';
 
-type Orientation = React.AriaAttributes['aria-orientation'];
-type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
-
-type ToolbarOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
-  {
-    /**
-     * The orientation of the toolbar.
-     * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
-     *
-     * @defaultValue horizontal
-     */
-    orientation?: RovingFocusGroupProps['orientation'];
-    /**
-     * The direction of navigation between toolbar items.
-     *
-     * @defaultValue ltr
-     */
-    dir?: RovingFocusGroupProps['dir'];
-    /**
-     * Whether keyboard navigation should loop focus
-     *
-     * @defaultValue true
-     */
-    loop?: RovingFocusGroupProps['loop'];
-  }
+type ToolbarOwnProps = Omit<
+  Polymorphic.OwnProps<typeof RovingFocusGroup>,
+  'currentTabStopId' | 'defaultCurrentTabStopId' | 'onCurrentTabStopIdChange' | 'onEntryFocus'
 >;
-
 type ToolbarPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
+  typeof TOOLBAR_DEFAULT_TAG,
   ToolbarOwnProps
 >;
 
-type ToolbarContextValue = { orientation: Orientation };
+type ToolbarContextValue = { orientation: ToolbarOwnProps['orientation'] };
 const [ToolbarProvider, useToolbarContext] = createContext<ToolbarContextValue>(TOOLBAR_NAME);
 
 const Toolbar = React.forwardRef((props, forwardedRef) => {
-  const { orientation = 'horizontal', dir = 'ltr', loop = true, ...toolbarProps } = props;
+  const {
+    as = TOOLBAR_DEFAULT_TAG,
+    orientation = 'horizontal',
+    dir = 'ltr',
+    loop = true,
+    ...toolbarProps
+  } = props;
 
   return (
     <ToolbarProvider orientation={orientation}>
-      <RovingFocusGroup orientation={orientation} dir={dir} loop={loop}>
-        <Primitive
-          role="toolbar"
-          aria-orientation={orientation}
-          data-orientation={orientation}
-          {...toolbarProps}
-          ref={forwardedRef}
-        />
-      </RovingFocusGroup>
+      <RovingFocusGroup
+        role="toolbar"
+        orientation={orientation}
+        dir={dir}
+        loop={loop}
+        {...toolbarProps}
+        as={as}
+        ref={forwardedRef}
+      />
     </ToolbarProvider>
   );
 }) as ToolbarPrimitive;
@@ -102,31 +84,25 @@ ToolbarSeparator.displayName = SEPARATOR_NAME;
 const BUTTON_NAME = 'ToolbarButton';
 const BUTTON_DEFAULT_TAG = 'button';
 
-type ToolbarButtonOwnProps = Polymorphic.Merge<Polymorphic.OwnProps<typeof Primitive>>;
+type ToolbarButtonOwnProps = Omit<
+  Polymorphic.OwnProps<typeof RovingFocusItem>,
+  'focusable' | 'active'
+>;
+
 type ToolbarButtonPrimitive = Polymorphic.ForwardRefComponent<
   typeof BUTTON_DEFAULT_TAG,
   ToolbarButtonOwnProps
 >;
 
 const ToolbarButton = React.forwardRef((props, forwardedRef) => {
-  const { as = BUTTON_DEFAULT_TAG, disabled, ...buttonProps } = props;
-
-  const rovingFocusProps = useRovingFocus({
-    disabled,
-    active: false,
-  });
-
+  const { as = BUTTON_DEFAULT_TAG, ...buttonProps } = props;
   return (
-    <Primitive
+    <RovingFocusItem
       role="toolbaritem"
-      disabled={disabled}
+      focusable={!props.disabled}
       {...buttonProps}
       as={as}
       ref={forwardedRef}
-      {...rovingFocusProps}
-      onFocus={composeEventHandlers(buttonProps.onFocus, rovingFocusProps.onFocus)}
-      onKeyDown={composeEventHandlers(buttonProps.onKeyDown, rovingFocusProps.onKeyDown)}
-      onMouseDown={composeEventHandlers(buttonProps.onMouseDown, rovingFocusProps.onMouseDown)}
     />
   );
 }) as ToolbarButtonPrimitive;

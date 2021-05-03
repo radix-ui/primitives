@@ -1,62 +1,68 @@
 import React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Slot } from '@radix-ui/react-slot';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+type SlotProps = React.ComponentProps<typeof Slot>;
 
-function createCollection<ItemProps>() {
+function createCollection<ItemElement extends HTMLElement, ItemData>() {
   /* -----------------------------------------------------------------------------------------------
    * Collection
    * ---------------------------------------------------------------------------------------------*/
 
-  type Ref = React.RefObject<HTMLElement>;
-  type ContextValue = { collectionRef: Ref; itemMap: Map<Ref, ItemProps & { ref: Ref }> };
+  type CollectionElement = HTMLElement;
+
+  type ContextValue = {
+    collectionRef: React.RefObject<CollectionElement>;
+    itemMap: Map<React.RefObject<ItemElement>, { ref: React.RefObject<ItemElement> } & ItemData>;
+  };
   const Context = React.createContext<ContextValue>({} as any);
 
-  type CollectionOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-  type CollectionPrimitive = Polymorphic.ForwardRefComponent<
-    Polymorphic.IntrinsicElement<typeof Primitive>,
-    CollectionOwnProps
-  >;
+  const COLLECTION_SLOT_NAME = 'CollectionSlot';
 
-  const Collection = React.forwardRef((props, forwardedRef) => {
-    const ref = React.useRef<React.ElementRef<typeof Primitive>>(null);
+  const CollectionSlot = React.forwardRef<CollectionElement, SlotProps>((props, forwardedRef) => {
+    const { children } = props;
+    const ref = React.useRef<CollectionElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const itemMap = React.useRef<ContextValue['itemMap']>(new Map()).current;
     return (
       <Context.Provider value={React.useMemo(() => ({ itemMap, collectionRef: ref }), [itemMap])}>
-        <Primitive {...props} ref={composedRefs} />
+        <Slot ref={composedRefs}>{children}</Slot>
       </Context.Provider>
     );
-  }) as CollectionPrimitive;
+  });
+
+  CollectionSlot.displayName = COLLECTION_SLOT_NAME;
 
   /* -----------------------------------------------------------------------------------------------
    * CollectionItem
    * ---------------------------------------------------------------------------------------------*/
 
-  type CollectionItemOwnProps = Polymorphic.Merge<
-    Polymorphic.OwnProps<typeof Primitive>,
-    ItemProps
-  >;
-  type CollectionItemPrimitive = Polymorphic.ForwardRefComponent<
-    Polymorphic.IntrinsicElement<typeof Primitive>,
-    CollectionItemOwnProps
-  >;
-
+  const ITEM_SLOT_NAME = 'CollectionItemSlot';
   const ITEM_DATA_ATTR = 'data-radix-collection-item';
 
-  const CollectionItem = React.forwardRef((props, forwardedRef) => {
-    const ref = React.useRef<HTMLElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref);
-    const context = React.useContext(Context);
+  type CollectionItemSlotProps = { children: React.ReactNode } & ItemData;
 
-    React.useEffect(() => {
-      context.itemMap.set(ref, { ref, ...props });
-      return () => void context.itemMap.delete(ref);
-    });
+  const CollectionItemSlot = React.forwardRef<ItemElement, CollectionItemSlotProps>(
+    (props, forwardedRef) => {
+      const { children, ...itemData } = props;
+      const ref = React.useRef<ItemElement>(null);
+      const composedRefs = useComposedRefs(forwardedRef, ref);
+      const context = React.useContext(Context);
 
-    return <Primitive {...{ [ITEM_DATA_ATTR]: '' }} {...props} ref={composedRefs} />;
-  }) as CollectionItemPrimitive;
+      React.useEffect(() => {
+        context.itemMap.set(ref, { ref, ...((itemData as unknown) as ItemData) });
+        return () => void context.itemMap.delete(ref);
+      });
+
+      return (
+        <Slot {...{ [ITEM_DATA_ATTR]: '' }} ref={composedRefs}>
+          {children}
+        </Slot>
+      );
+    }
+  );
+
+  CollectionItemSlot.displayName = ITEM_SLOT_NAME;
 
   /* -----------------------------------------------------------------------------------------------
    * useCollection
@@ -78,7 +84,7 @@ function createCollection<ItemProps>() {
     };
   }
 
-  return [Collection, CollectionItem, useCollection] as const;
+  return [CollectionSlot, CollectionItemSlot, useCollection] as const;
 }
 
 export { createCollection };

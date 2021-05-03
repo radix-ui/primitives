@@ -4,7 +4,7 @@ import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
-import { RovingFocusGroup, useRovingFocus } from '@radix-ui/react-roving-focus';
+import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
 import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
@@ -40,12 +40,11 @@ type TabsOwnProps = Polymorphic.Merge<
     /**
      * The orientation the tabs are layed out.
      * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
-     * (default: horizontal)
+     * @defaultValue horizontal
      */
-    orientation?: React.AriaAttributes['aria-orientation'];
+    orientation?: RovingFocusGroupProps['orientation'];
     /**
      * The direction of navigation between toolbar items.
-     *
      * @defaultValue ltr
      */
     dir?: RovingFocusGroupProps['dir'];
@@ -70,8 +69,6 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
     ...tabsProps
   } = props;
 
-  const baseId = useId();
-
   const [value, setValue] = useControllableState({
     prop: valueProp,
     onChange: onValueChange,
@@ -80,7 +77,7 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
 
   return (
     <TabsProvider
-      baseId={baseId}
+      baseId={useId()}
       value={value}
       onValueChange={setValue}
       orientation={orientation}
@@ -99,37 +96,35 @@ Tabs.displayName = TABS_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TAB_LIST_NAME = 'TabsList';
+const TAB_LIST_DEFAULT_TAG = 'div';
 
-type TabsListOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
-  {
-    /**
-     * Whether keyboard navigation should loop focus
-     * @defaultValue true
-     */
-    loop?: boolean;
-  }
+type TabsListOwnProps = Omit<
+  Polymorphic.OwnProps<typeof RovingFocusGroup>,
+  | 'orientation'
+  | 'currentTabStopId'
+  | 'defaultCurrentTabStopId'
+  | 'onCurrentTabStopIdChange'
+  | 'onEntryFocus'
 >;
-
 type TabsListPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
+  typeof TAB_LIST_DEFAULT_TAG,
   TabsListOwnProps
 >;
 
 const TabsList = React.forwardRef((props, forwardedRef) => {
-  const { loop = true, ...otherProps } = props;
+  const { as = TAB_LIST_DEFAULT_TAG, loop = true, ...otherProps } = props;
   const context = useTabsContext(TAB_LIST_NAME);
 
   return (
-    <RovingFocusGroup orientation={context.orientation} loop={loop} dir={context.dir}>
-      <Primitive
-        role="tablist"
-        aria-orientation={context.orientation}
-        data-orientation={context.orientation}
-        {...otherProps}
-        ref={forwardedRef}
-      />
-    </RovingFocusGroup>
+    <RovingFocusGroup
+      role="tablist"
+      orientation={context.orientation}
+      dir={context.dir}
+      loop={loop}
+      {...otherProps}
+      as={as}
+      ref={forwardedRef}
+    />
   );
 }) as TabsListPrimitive;
 
@@ -140,77 +135,60 @@ TabsList.displayName = TAB_LIST_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TAB_NAME = 'TabsTab';
+const TAB_DEFAULT_TAG = 'div';
 
 type TabsTabOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+  Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
   {
     value: string;
     disabled?: boolean;
   }
 >;
 
-type TabsTabPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  TabsTabOwnProps
->;
+type TabsTabPrimitive = Polymorphic.ForwardRefComponent<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>;
 
 const TabsTab = React.forwardRef((props, forwardedRef) => {
-  const { value, disabled, ...tabProps } = props;
+  const { as = TAB_DEFAULT_TAG, value, disabled = false, ...tabProps } = props;
   const context = useTabsContext(TAB_NAME);
   const tabId = makeTabId(context.baseId, value);
   const tabPanelId = makeTabsPanelId(context.baseId, value);
   const isSelected = value === context.value;
-  const rovingFocusProps = useRovingFocus({ disabled, active: isSelected });
   const handleTabChange = useCallbackRef(() => context.onValueChange(value));
 
-  const handleKeyDown = composeEventHandlers(
-    tabProps.onKeyDown,
-    composeEventHandlers(rovingFocusProps.onKeyDown, (event) => {
-      if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
-        handleTabChange();
-      }
-    })
-  );
-
-  const handleMouseDown = composeEventHandlers(
-    tabProps.onMouseDown,
-    composeEventHandlers(rovingFocusProps.onMouseDown, (event) => {
-      // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-      // but not when the control key is pressed (avoiding MacOS right click)
-      if (!disabled && event.button === 0 && event.ctrlKey === false) {
-        handleTabChange();
-      }
-    })
-  );
-
-  const handleFocus = composeEventHandlers(
-    tabProps.onFocus,
-    composeEventHandlers(rovingFocusProps.onFocus, () => {
-      // handle "automatic" activation if necessary
-      // ie. activate tab following focus
-      const isAutomaticActivation = context.activationMode !== 'manual';
-      if (!isSelected && !disabled && isAutomaticActivation) {
-        handleTabChange();
-      }
-    })
-  );
-
   return (
-    <Primitive
+    <RovingFocusItem
       role="tab"
       aria-selected={isSelected}
       aria-controls={tabPanelId}
       aria-disabled={disabled || undefined}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
-      data-orientation={context.orientation}
       id={tabId}
       {...tabProps}
-      {...rovingFocusProps}
+      focusable={!disabled}
+      active={isSelected}
+      as={as}
       ref={forwardedRef}
-      onKeyDown={handleKeyDown}
-      onMouseDown={handleMouseDown}
-      onFocus={handleFocus}
+      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
+          handleTabChange();
+        }
+      })}
+      onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
+        // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
+        // but not when the control key is pressed (avoiding MacOS right click)
+        if (!disabled && event.button === 0 && event.ctrlKey === false) {
+          handleTabChange();
+        }
+      })}
+      onFocus={composeEventHandlers(props.onFocus, () => {
+        // handle "automatic" activation if necessary
+        // ie. activate tab following focus
+        const isAutomaticActivation = context.activationMode !== 'manual';
+        if (!isSelected && !disabled && isAutomaticActivation) {
+          handleTabChange();
+        }
+      })}
     />
   );
 }) as TabsTabPrimitive;
