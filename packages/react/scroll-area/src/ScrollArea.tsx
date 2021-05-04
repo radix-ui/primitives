@@ -392,8 +392,8 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
     onThumbPointerDown: (pointerPosition: number) => (pointerOffsetRef.current = pointerPosition),
   };
 
-  function getScrollPosition(pointerPosition: number) {
-    return getScrollPositionFromPointer(pointerPosition, pointerOffsetRef.current, sizes);
+  function getScrollPosition(pointerPosition: number, dir?: Direction) {
+    return getScrollPositionFromPointer(pointerPosition, pointerOffsetRef.current, sizes, dir);
   }
 
   if (orientation === 'horizontal') {
@@ -407,7 +407,9 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
           if (context.viewport) context.viewport.scrollLeft = scrollPos;
         }}
         onDragScroll={(pointerPosition) => {
-          if (context.viewport) context.viewport.scrollLeft = getScrollPosition(pointerPosition);
+          if (context.viewport) {
+            context.viewport.scrollLeft = getScrollPosition(pointerPosition, context.dir);
+          }
         }}
       />
     );
@@ -813,24 +815,29 @@ type ScrollAreaCornerImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const ScrollAreaCornerImpl = React.forwardRef((props, forwardedRef) => {
   const context = useScrollAreaContext(CORNER_NAME);
+  const [width, setWidth] = React.useState<number>();
+  const [height, setHeight] = React.useState<number>();
+  const hasSize = Boolean(width && height);
 
   useResizeObserver(context.scrollbarX, () => {
     const height = context.scrollbarX?.offsetHeight;
-    if (height) context.onCornerHeightChange(height);
+    context.onCornerHeightChange(height || 0);
+    setHeight(height);
   });
 
   useResizeObserver(context.scrollbarY, () => {
     const width = context.scrollbarY?.offsetWidth;
-    if (width) context.onCornerWidthChange(width);
+    context.onCornerWidthChange(width || 0);
+    setWidth(width);
   });
 
-  return (
+  return hasSize ? (
     <Primitive
       {...props}
       ref={forwardedRef}
       style={{
-        width: 'var(--radix-scroll-area-corner-width)',
-        height: 'var(--radix-scroll-area-corner-height)',
+        width,
+        height,
         position: 'absolute',
         right: context.dir === 'ltr' ? 0 : undefined,
         left: context.dir === 'rtl' ? 0 : undefined,
@@ -838,7 +845,7 @@ const ScrollAreaCornerImpl = React.forwardRef((props, forwardedRef) => {
         ...props.style,
       }}
     />
-  );
+  ) : null;
 }) as ScrollAreaCornerImplPrimitive;
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -860,7 +867,12 @@ function getThumbSize(sizes: Sizes) {
   return Math.max(thumbSize, 18);
 }
 
-function getScrollPositionFromPointer(pointerPos: number, pointerOffset: number, sizes: Sizes) {
+function getScrollPositionFromPointer(
+  pointerPos: number,
+  pointerOffset: number,
+  sizes: Sizes,
+  dir: Direction = 'ltr'
+) {
   const thumbSizePx = getThumbSize(sizes);
   const thumbCenter = thumbSizePx / 2;
   const offset = pointerOffset || thumbCenter;
@@ -868,7 +880,8 @@ function getScrollPositionFromPointer(pointerPos: number, pointerOffset: number,
   const minPointerPos = sizes.scrollbar.paddingStart + offset;
   const maxPointerPos = sizes.scrollbar.size - sizes.scrollbar.paddingEnd - thumbOffsetFromEnd;
   const maxScrollPos = sizes.content - sizes.viewport;
-  const interpolate = linearScale([minPointerPos, maxPointerPos], [0, maxScrollPos]);
+  const scrollRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
+  const interpolate = linearScale([minPointerPos, maxPointerPos], scrollRange as [number, number]);
   return interpolate(pointerPos);
 }
 
