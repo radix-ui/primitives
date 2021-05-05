@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { clamp, linearScale } from '@radix-ui/number';
+import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
@@ -769,6 +769,15 @@ function hasMinStepsBetweenValues(values: number[], minStepsBetweenValues: numbe
     return actualMinStepsBetweenValues >= minStepsBetweenValues;
   }
   return true;
+}
+
+// https://github.com/tmcw-up-for-adoption/simple-linear-scale/blob/master/index.js
+function linearScale(input: readonly [number, number], output: readonly [number, number]) {
+  return (value: number) => {
+    if (input[0] === input[1] || output[0] === output[1]) return output[0];
+    const ratio = (output[1] - output[0]) / (input[1] - input[0]);
+    return output[0] + ratio * (value - input[0]);
+  };
 }
 
 function getDecimalCount(value: number) {

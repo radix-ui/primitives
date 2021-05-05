@@ -7,7 +7,7 @@ import { createContext } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useDirection } from '@radix-ui/react-use-direction';
-import { clamp, linearScale } from '@radix-ui/number';
+import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useStateMachine } from './useStateMachine';
 
@@ -902,6 +902,15 @@ function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes, dir: Directio
   const scrollWithoutMomentum = clamp(scrollPos, scrollClampRange as [number, number]);
   const interpolate = linearScale([0, maxScrollPos], [0, maxThumbPos]);
   return interpolate(scrollWithoutMomentum);
+}
+
+// https://github.com/tmcw-up-for-adoption/simple-linear-scale/blob/master/index.js
+function linearScale(input: readonly [number, number], output: readonly [number, number]) {
+  return (value: number) => {
+    if (input[0] === input[1] || output[0] === output[1]) return output[0];
+    const ratio = (output[1] - output[0]) / (input[1] - input[0]);
+    return output[0] + ratio * (value - input[0]);
+  };
 }
 
 function isScrollingWithinScrollbarBounds(scrollPos: number, maxScrollPos: number) {

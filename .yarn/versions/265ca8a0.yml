@@ -1,5 +1,4 @@
 releases:
-  "@radix-ui/number": patch
   "@radix-ui/react-scroll-area": patch
   "@radix-ui/react-slider": patch
   "@radix-ui/react-use-direction": patch
