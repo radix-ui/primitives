@@ -113,6 +113,7 @@ const ScrollArea = React.forwardRef((props, forwardedRef) => {
         ref={composedRefs}
         style={{
           position: 'relative',
+          // Pass corner sizes as CSS vars to reduce re-renders of context consumers
           ['--radix-scroll-area-corner-width' as any]: cornerWidth + 'px',
           ['--radix-scroll-area-corner-height' as any]: cornerHeight + 'px',
           ...props.style,
@@ -144,10 +145,10 @@ const ScrollAreaViewport = React.forwardRef((props, forwardedRef) => {
   const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
   return (
     <>
-      {/* Hide scrollbars in Edge, Chrome, Safari, Brave and include momentum scroll for touch devices */}
+      {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
       <style
         dangerouslySetInnerHTML={{
-          __html: `[data-radix-scroll-area-viewport]{-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
+          __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
         }}
       />
       <Primitive
@@ -168,8 +169,6 @@ const ScrollAreaViewport = React.forwardRef((props, forwardedRef) => {
            */
           overflowX: context.scrollbarXEnabled ? 'scroll' : 'hidden',
           overflowY: context.scrollbarYEnabled ? 'scroll' : 'hidden',
-          // hide scrollbars in Firefox
-          scrollbarWidth: 'none',
           ...props.style,
         }}
       >
@@ -661,14 +660,13 @@ const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
    * mode for document wheel event to allow it to be prevented
    */
   React.useEffect(() => {
-    const opts: AddEventListenerOptions = { passive: false };
     const handleWheel = (event: WheelEvent) => {
       const element = event.target as HTMLElement;
       const isScrollbarWheel = scrollbar?.contains(element);
       if (isScrollbarWheel) handleWheelScroll(event);
     };
-    document.addEventListener('wheel', handleWheel, opts);
-    return () => document.removeEventListener('wheel', handleWheel, opts);
+    document.addEventListener('wheel', handleWheel, { passive: false });
+    return () => document.removeEventListener('wheel', handleWheel, { passive: false } as any);
   }, [viewport, scrollbar, handleWheelScroll]);
 
   function handleDragScroll(event: React.PointerEvent<HTMLElement>) {
