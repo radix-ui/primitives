@@ -77,57 +77,6 @@ export const Resizable = () => (
   </div>
 );
 
-export const ChromaticDynamicContent = () => {
-  const [showContent, setShowContent] = React.useState(false);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      setShowContent(true);
-    }, 2000);
-  }, []);
-
-  return (
-    <>
-      <h1>Always</h1>
-      <ScrollAreaStory type="always" style={{ width: 500, height: 250 }}>
-        {showContent ? (
-          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
-        ) : (
-          <h1>Loading...</h1>
-        )}
-      </ScrollAreaStory>
-
-      <h1>Hover</h1>
-      <ScrollAreaStory type="hover" style={{ width: 500, height: 250 }}>
-        {showContent ? (
-          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
-        ) : (
-          <h1>Loading...</h1>
-        )}
-      </ScrollAreaStory>
-
-      <h1>Scroll</h1>
-      <ScrollAreaStory type="scroll" style={{ width: 500, height: 250 }}>
-        {showContent ? (
-          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
-        ) : (
-          <h1>Loading...</h1>
-        )}
-      </ScrollAreaStory>
-
-      <h1>Auto</h1>
-      <ScrollAreaStory type="auto" style={{ width: 500, height: 250 }}>
-        {showContent ? (
-          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
-        ) : (
-          <h1>Loading...</h1>
-        )}
-      </ScrollAreaStory>
-    </>
-  );
-};
-ChromaticDynamicContent.parameters = { chromatic: { disable: false, delay: 2000 } };
-
 export const Chromatic = () => (
   <>
     <h1>Vertical</h1>
@@ -331,6 +280,64 @@ export const Chromatic = () => (
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
+
+const DYNAMIC_CONTENT_DELAY = 2000;
+
+export const ChromaticDynamicContentBeforeLoaded = () => {
+  const [showContent, setShowContent] = React.useState(false);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setShowContent(true);
+    }, DYNAMIC_CONTENT_DELAY);
+  }, []);
+
+  return (
+    <>
+      <h1>Always</h1>
+      <ScrollAreaStory type="always" style={{ width: 500, height: 250 }}>
+        {showContent ? (
+          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
+        ) : (
+          <h1>Loading...</h1>
+        )}
+      </ScrollAreaStory>
+
+      <h1>Hover</h1>
+      <ScrollAreaStory type="hover" style={{ width: 500, height: 250 }}>
+        {showContent ? (
+          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
+        ) : (
+          <h1>Loading...</h1>
+        )}
+      </ScrollAreaStory>
+
+      <h1>Scroll</h1>
+      <ScrollAreaStory type="scroll" style={{ width: 500, height: 250 }}>
+        {showContent ? (
+          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
+        ) : (
+          <h1>Loading...</h1>
+        )}
+      </ScrollAreaStory>
+
+      <h1>Auto</h1>
+      <ScrollAreaStory type="auto" style={{ width: 500, height: 250 }}>
+        {showContent ? (
+          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
+        ) : (
+          <h1>Loading...</h1>
+        )}
+      </ScrollAreaStory>
+    </>
+  );
+};
+ChromaticDynamicContentBeforeLoaded.parameters = { chromatic: { disable: false } };
+
+export const ChromaticDynamicContentAfterLoaded = () => <ChromaticDynamicContentBeforeLoaded />;
+ChromaticDynamicContentAfterLoaded.parameters = {
+  chromatic: { disable: false, delay: DYNAMIC_CONTENT_DELAY },
+};
 
 const ScrollAreaStory = ({ children, vertical = true, horizontal = true, ...props }: any) => (
   <ScrollArea.Root
