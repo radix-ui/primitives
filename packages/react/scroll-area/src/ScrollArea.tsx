@@ -344,14 +344,16 @@ const ScrollAreaScrollbarAuto = React.forwardRef((props, forwardedRef) => {
   const { forceMount, ...scrollbarProps } = props;
   const [visible, setVisible] = React.useState(false);
   const isHorizontal = props.orientation === 'horizontal';
-
-  useResizeObserver(context.viewport, () => {
+  const handleResize = useDebounceCallback(() => {
     if (context.viewport) {
       const isOverflowX = context.viewport.offsetWidth < context.viewport.scrollWidth;
       const isOverflowY = context.viewport.offsetHeight < context.viewport.scrollHeight;
       setVisible(isHorizontal ? isOverflowX : isOverflowY);
     }
-  });
+  }, 10);
+
+  useResizeObserver(context.viewport, handleResize);
+  useResizeObserver(context.content, handleResize);
 
   return (
     <Presence present={forceMount || visible}>

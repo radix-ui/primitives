@@ -77,6 +77,57 @@ export const Resizable = () => (
   </div>
 );
 
+export const ChromaticDynamicContent = () => {
+  const [showContent, setShowContent] = React.useState(false);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setShowContent(true);
+    }, 2000);
+  }, []);
+
+  return (
+    <>
+      <h1>Always</h1>
+      <ScrollAreaStory type="always" style={{ width: 500, height: 250 }}>
+        {showContent ? (
+          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
+        ) : (
+          <h1>Loading...</h1>
+        )}
+      </ScrollAreaStory>
+
+      <h1>Hover</h1>
+      <ScrollAreaStory type="hover" style={{ width: 500, height: 250 }}>
+        {showContent ? (
+          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
+        ) : (
+          <h1>Loading...</h1>
+        )}
+      </ScrollAreaStory>
+
+      <h1>Scroll</h1>
+      <ScrollAreaStory type="scroll" style={{ width: 500, height: 250 }}>
+        {showContent ? (
+          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
+        ) : (
+          <h1>Loading...</h1>
+        )}
+      </ScrollAreaStory>
+
+      <h1>Auto</h1>
+      <ScrollAreaStory type="auto" style={{ width: 500, height: 250 }}>
+        {showContent ? (
+          Array.from({ length: 30 }).map((_, index) => <Copy key={index} />)
+        ) : (
+          <h1>Loading...</h1>
+        )}
+      </ScrollAreaStory>
+    </>
+  );
+};
+ChromaticDynamicContent.parameters = { chromatic: { disable: false, delay: 2000 } };
+
 export const Chromatic = () => (
   <>
     <h1>Vertical</h1>
