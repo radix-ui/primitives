@@ -255,15 +255,15 @@ function focus(element?: FocusableTarget | null, { select = false } = {}) {
  * FocusScope stack
  * -----------------------------------------------------------------------------------------------*/
 
-type FocusScope = { paused: boolean; pause(): void; resume(): void };
+type FocusScopeAPI = { paused: boolean; pause(): void; resume(): void };
 const focusScopesStack = createFocusScopesStack();
 
 function createFocusScopesStack() {
   /** A stack of focus scopes, with the active one at the top */
-  let stack: FocusScope[] = [];
+  let stack: FocusScopeAPI[] = [];
 
   return {
-    add(focusScope: FocusScope) {
+    add(focusScope: FocusScopeAPI) {
       // pause the currently active focus scope (at the top of the stack)
       const activeFocusScope = stack[0];
       if (focusScope !== activeFocusScope) {
@@ -274,7 +274,7 @@ function createFocusScopesStack() {
       stack.unshift(focusScope);
     },
 
-    remove(focusScope: FocusScope) {
+    remove(focusScope: FocusScopeAPI) {
       stack = arrayRemove(stack, focusScope);
       stack[0]?.resume();
     },
