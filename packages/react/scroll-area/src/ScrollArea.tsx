@@ -641,6 +641,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
   const maxScrollPos = sizes.content - sizes.viewport;
   const handleWheelScroll = useCallbackRef(onWheelScroll);
   const handleThumbPositionChange = useCallbackRef(onThumbPositionChange);
+  const handleResize = useDebounceCallback(onResize, 10);
 
   function handleDragScroll(event: React.PointerEvent<HTMLElement>) {
     if (rectRef.current) {
@@ -669,8 +670,8 @@ const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
    */
   React.useEffect(handleThumbPositionChange, [sizes, handleThumbPositionChange]);
 
-  useResizeObserver(scrollbar, onResize);
-  useResizeObserver(context.content, onResize);
+  useResizeObserver(scrollbar, handleResize);
+  useResizeObserver(context.content, handleResize);
 
   return (
     <ScrollbarProvider
@@ -936,15 +937,24 @@ function useDebounceCallback(callback: () => void, delay: number) {
 }
 
 function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
-  // debounce resize handler to ensure resizes in quick succession do not throw error:
-  // `ResizeObserver loop completed with undelivered notifications`
-  const handleResize = useDebounceCallback(onResize, 10);
+  const handleResize = useCallbackRef(onResize);
   useLayoutEffect(() => {
+    let rAF = 0;
     if (element) {
-      const resizeObserver = new ResizeObserver(handleResize);
+      /**
+       * Resize Observer will throw an often benign error that says `ResizeObserver loop
+       * completed with undelivered notifications`. This means that ResizeObserver was not
+       * able to deliver all observations within a single animation frame, so we use
+       * `requestAnimationFrame` to ensure we don't deliver unnecessary observations.
+       * Further reading: https://github.com/WICG/resize-observer/issues/38
+       */
+      const resizeObserver = new ResizeObserver(() => {
+        cancelAnimationFrame(rAF);
+        rAF = window.requestAnimationFrame(handleResize);
+      });
       resizeObserver.observe(element);
       return () => {
-        handleResize();
+        window.cancelAnimationFrame(rAF);
         resizeObserver.unobserve(element);
       };
     }
