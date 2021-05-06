@@ -1,10 +1,10 @@
 function composeEventHandlers<E>(
-  originalEventHandler?: (event: E) => void,
+  originalEventHandler?: (...args: any[]) => void,
   ourEventHandler?: (event: E) => void,
   { checkForDefaultPrevented = true } = {}
 ) {
   return function handleEvent(event: E) {
-    originalEventHandler?.(event);
+    originalEventHandler?.(...arguments);
 
     if (checkForDefaultPrevented === false || !((event as unknown) as Event).defaultPrevented) {
       return ourEventHandler?.(event);
