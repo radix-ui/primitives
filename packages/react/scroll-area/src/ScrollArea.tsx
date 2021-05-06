@@ -7,6 +7,7 @@ import { createContext } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useDirection } from '@radix-ui/react-use-direction';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useStateMachine } from './useStateMachine';
@@ -227,13 +228,11 @@ ScrollAreaScrollbar.displayName = SCROLLBAR_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaScrollbarTypeOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof ScrollAreaScrollbarVisible>,
-  { forceMount?: true }
->;
-type ScrollAreaScrollbarTypePrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarVisible>,
-  ScrollAreaScrollbarTypeOwnProps
+type ScrollAreaScrollbarHoverTypeOwnProps = Polymorphic.OwnProps<typeof ScrollAreaScrollbarAuto>;
+
+type ScrollAreaScrollbarHoverTypePrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarAuto>,
+  ScrollAreaScrollbarHoverTypeOwnProps
 >;
 
 const ScrollAreaScrollbarHover = React.forwardRef((props, forwardedRef) => {
@@ -266,7 +265,16 @@ const ScrollAreaScrollbarHover = React.forwardRef((props, forwardedRef) => {
       <ScrollAreaScrollbarAuto {...scrollbarProps} ref={forwardedRef} />
     </Presence>
   );
-}) as ScrollAreaScrollbarTypePrimitive;
+}) as ScrollAreaScrollbarHoverTypePrimitive;
+
+type ScrollAreaScrollbarTypeOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof ScrollAreaScrollbarVisible>,
+  { forceMount?: true }
+>;
+type ScrollAreaScrollbarTypePrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarVisible>,
+  ScrollAreaScrollbarTypeOwnProps
+>;
 
 const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
   const { forceMount, ...scrollbarProps } = props;
@@ -372,6 +380,7 @@ type ScrollAreaScrollbarVisiblePrimitive = Polymorphic.ForwardRefComponent<
 const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
   const { orientation = 'vertical', ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
+  const thumbRef = React.useRef<ThumbElement | null>(null);
   const pointerOffsetRef = React.useRef(0);
   const [sizes, setSizes] = React.useState<Sizes>({
     content: 0,
@@ -386,12 +395,13 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
     sizes,
     onSizesChange: setSizes,
     hasThumb: Boolean(thumbRatio > 0 && thumbRatio < 1),
+    onThumbChange: (thumb) => (thumbRef.current = thumb),
     onThumbPointerUp: () => (pointerOffsetRef.current = 0),
-    onThumbPointerDown: (pointerPosition) => (pointerOffsetRef.current = pointerPosition),
+    onThumbPointerDown: (pointerPos) => (pointerOffsetRef.current = pointerPos),
   };
 
-  function getScrollPosition(pointerPosition: number, dir?: Direction) {
-    return getScrollPositionFromPointer(pointerPosition, pointerOffsetRef.current, sizes, dir);
+  function getScrollPosition(pointerPos: number, dir?: Direction) {
+    return getScrollPositionFromPointer(pointerPos, pointerOffsetRef.current, sizes, dir);
   }
 
   if (orientation === 'horizontal') {
@@ -399,15 +409,19 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
       <ScrollAreaScrollbarX
         {...commonProps}
         ref={forwardedRef}
-        onThumbPositionChange={(thumb, offset) => {
-          if (thumb) thumb.style.transform = `translate3d(${offset}px, 0, 0)`;
+        onThumbPositionChange={() => {
+          if (context.viewport && thumbRef.current) {
+            const scrollPos = context.viewport.scrollLeft;
+            const offset = getThumbOffsetFromScroll(scrollPos, sizes, context.dir);
+            thumbRef.current.style.transform = `translate3d(${offset}px, 0, 0)`;
+          }
         }}
         onWheelScroll={(scrollPos) => {
           if (context.viewport) context.viewport.scrollLeft = scrollPos;
         }}
-        onDragScroll={(pointerPosition) => {
+        onDragScroll={(pointerPos) => {
           if (context.viewport) {
-            context.viewport.scrollLeft = getScrollPosition(pointerPosition, context.dir);
+            context.viewport.scrollLeft = getScrollPosition(pointerPos, context.dir);
           }
         }}
       />
@@ -419,14 +433,18 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
       <ScrollAreaScrollbarY
         {...commonProps}
         ref={forwardedRef}
-        onThumbPositionChange={(thumb, offset) => {
-          if (thumb) thumb.style.transform = `translate3d(0, ${offset}px, 0)`;
+        onThumbPositionChange={() => {
+          if (context.viewport && thumbRef.current) {
+            const scrollPos = context.viewport.scrollTop;
+            const offset = getThumbOffsetFromScroll(scrollPos, sizes);
+            thumbRef.current.style.transform = `translate3d(0, ${offset}px, 0)`;
+          }
         }}
         onWheelScroll={(scrollPos) => {
           if (context.viewport) context.viewport.scrollTop = scrollPos;
         }}
-        onDragScroll={(pointerPosition) => {
-          if (context.viewport) context.viewport.scrollTop = getScrollPosition(pointerPosition);
+        onDragScroll={(pointerPos) => {
+          if (context.viewport) context.viewport.scrollTop = getScrollPosition(pointerPos);
         }}
       />
     );
@@ -437,237 +455,190 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollbarAxisContext = {
-  hasThumb: boolean;
-  onThumbPointerDown(pointerPosition: { x: number; y: number }): void;
-  onThumbPointerUp(): void;
-  onThumbPositionChange(thumb: ThumbElement): void;
-};
-
-const [ScrollbarAxisProvider, useScrollbarAxisContext] = createContext<ScrollbarAxisContext>(
-  SCROLLBAR_NAME
-);
-
 type ScrollAreaScrollbarAxisPrivateProps = {
   hasThumb: boolean;
   sizes: Sizes;
   onSizesChange(sizes: Sizes): void;
+  onThumbChange(thumb: ThumbElement | null): void;
   onThumbPointerDown(pointerPos: number): void;
   onThumbPointerUp(): void;
-  onThumbPositionChange(thumb: ThumbElement, offset: number): void;
+  onThumbPositionChange(): void;
   onWheelScroll(scrollPos: number): void;
   onDragScroll(pointerPos: number): void;
 };
 
-type ScrollAreaScrollbarXOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof ScrollAreaScrollbarImpl>, 'onResize'>,
+type ScrollAreaScrollbarAxisOwnProps = Polymorphic.Merge<
+  ScrollAreaScrollbarImplPublicProps,
   ScrollAreaScrollbarAxisPrivateProps
 >;
 
-type ScrollAreaScrollbarXPrimitive = Polymorphic.ForwardRefComponent<
+type ScrollAreaScrollbarAxisPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarImpl>,
-  ScrollAreaScrollbarXOwnProps
+  ScrollAreaScrollbarAxisOwnProps
 >;
 
 const ScrollAreaScrollbarX = React.forwardRef((props, forwardedRef) => {
-  const {
-    sizes,
-    onSizesChange,
-    hasThumb,
-    onThumbPointerDown,
-    onThumbPointerUp,
-    onThumbPositionChange,
-    ...scrollbarProps
-  } = props;
+  const { sizes, onSizesChange, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
   const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
   const ref = React.useRef<ScrollbarElement>(null);
   const composeRefs = useComposedRefs(forwardedRef, ref, context.onScrollbarXChange);
-  const handleThumbPositionChange = useCallbackRef((thumb) => {
-    if (context.viewport) {
-      const offset = getThumbOffsetFromScroll(context.viewport.scrollLeft, sizes, context.dir);
-      onThumbPositionChange(thumb, offset);
-    }
-  });
 
   React.useEffect(() => {
     if (ref.current) setComputedStyle(getComputedStyle(ref.current));
   }, [ref]);
 
   return (
-    <ScrollbarAxisProvider
-      hasThumb={hasThumb}
-      onThumbPointerUp={useCallbackRef(onThumbPointerUp)}
-      onThumbPositionChange={handleThumbPositionChange}
-      onThumbPointerDown={useCallbackRef((pointerPosition) => {
-        onThumbPointerDown(pointerPosition.x);
-      })}
-    >
-      <ScrollAreaScrollbarImpl
-        {...scrollbarProps}
-        ref={composeRefs}
-        style={{
-          bottom: 0,
-          left: context.dir === 'rtl' ? 'var(--radix-scroll-area-corner-width)' : 0,
-          right: context.dir === 'ltr' ? 'var(--radix-scroll-area-corner-width)' : 0,
-          ['--radix-scroll-area-thumb-width' as any]: getThumbSize(sizes) + 'px',
-          ...scrollbarProps.style,
-        }}
-        onDragScroll={(pointerPosition) => scrollbarProps.onDragScroll(pointerPosition.x)}
-        onWheelScroll={(event) => {
-          if (context.viewport) {
-            const scrollPos = context.viewport.scrollLeft + event.deltaX;
-            const maxScrollPos = sizes.content - sizes.viewport;
-            scrollbarProps.onWheelScroll(scrollPos);
-            // prevent window scroll when wheeling on scrollbar
-            if (isScrollingWithinScrollbarBounds(scrollPos, maxScrollPos)) {
-              event.preventDefault();
-            }
+    <ScrollAreaScrollbarImpl
+      {...scrollbarProps}
+      ref={composeRefs}
+      sizes={sizes}
+      style={{
+        bottom: 0,
+        left: context.dir === 'rtl' ? 'var(--radix-scroll-area-corner-width)' : 0,
+        right: context.dir === 'ltr' ? 'var(--radix-scroll-area-corner-width)' : 0,
+        ['--radix-scroll-area-thumb-width' as any]: getThumbSize(sizes) + 'px',
+        ...props.style,
+      }}
+      onThumbPointerDown={(pointerPos) => props.onThumbPointerDown(pointerPos.x)}
+      onDragScroll={(pointerPos) => props.onDragScroll(pointerPos.x)}
+      onWheelScroll={(event, maxScrollPos) => {
+        if (context.viewport) {
+          const scrollPos = context.viewport.scrollLeft + event.deltaX;
+          props.onWheelScroll(scrollPos);
+          // prevent window scroll when wheeling on scrollbar
+          if (isScrollingWithinScrollbarBounds(scrollPos, maxScrollPos)) {
+            event.preventDefault();
           }
-        }}
-        onResize={() => {
-          if (ref.current && context.viewport && computedStyle) {
-            onSizesChange({
-              content: context.viewport.scrollWidth,
-              viewport: context.viewport.offsetWidth,
-              scrollbar: {
-                size: ref.current.clientWidth,
-                paddingStart: toInt(computedStyle.paddingLeft),
-                paddingEnd: toInt(computedStyle.paddingRight),
-              },
-            });
-          }
-        }}
-      />
-    </ScrollbarAxisProvider>
+        }
+      }}
+      onResize={() => {
+        if (ref.current && context.viewport && computedStyle) {
+          onSizesChange({
+            content: context.viewport.scrollWidth,
+            viewport: context.viewport.offsetWidth,
+            scrollbar: {
+              size: ref.current.clientWidth,
+              paddingStart: toInt(computedStyle.paddingLeft),
+              paddingEnd: toInt(computedStyle.paddingRight),
+            },
+          });
+        }
+      }}
+    />
   );
-}) as ScrollAreaScrollbarXPrimitive;
-
-type ScrollAreaScrollbarYOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof ScrollAreaScrollbarImpl>, 'onResize'>,
-  ScrollAreaScrollbarAxisPrivateProps
->;
-
-type ScrollAreaScrollbarYPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarImpl>,
-  ScrollAreaScrollbarYOwnProps
->;
+}) as ScrollAreaScrollbarAxisPrimitive;
 
 const ScrollAreaScrollbarY = React.forwardRef((props, forwardedRef) => {
-  const {
-    sizes,
-    onSizesChange,
-    hasThumb,
-    onThumbPointerDown,
-    onThumbPointerUp,
-    onThumbPositionChange,
-    ...scrollbarProps
-  } = props;
+  const { sizes, onSizesChange, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
   const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
   const ref = React.useRef<ScrollbarElement>(null);
   const composeRefs = useComposedRefs(forwardedRef, ref, context.onScrollbarYChange);
-  const handleThumbPositionChange = useCallbackRef((thumb) => {
-    if (context.viewport) {
-      const offset = getThumbOffsetFromScroll(context.viewport.scrollTop, sizes);
-      onThumbPositionChange(thumb, offset);
-    }
-  });
 
   React.useEffect(() => {
     if (ref.current) setComputedStyle(getComputedStyle(ref.current));
   }, [ref]);
 
   return (
-    <ScrollbarAxisProvider
-      hasThumb={hasThumb}
-      onThumbPointerUp={useCallbackRef(onThumbPointerUp)}
-      onThumbPositionChange={handleThumbPositionChange}
-      onThumbPointerDown={useCallbackRef((pointerPosition) => {
-        onThumbPointerDown(pointerPosition.y);
-      })}
-    >
-      <ScrollAreaScrollbarImpl
-        {...scrollbarProps}
-        ref={composeRefs}
-        style={{
-          top: 0,
-          right: context.dir === 'ltr' ? 0 : undefined,
-          left: context.dir === 'rtl' ? 0 : undefined,
-          bottom: 'var(--radix-scroll-area-corner-height)',
-          ['--radix-scroll-area-thumb-height' as any]: getThumbSize(sizes) + 'px',
-          ...scrollbarProps.style,
-        }}
-        onDragScroll={(pointerPosition) => scrollbarProps.onDragScroll(pointerPosition.y)}
-        onWheelScroll={(event) => {
-          if (context.viewport) {
-            const scrollPos = context.viewport.scrollTop + event.deltaY;
-            const maxScrollPos = sizes.content - sizes.viewport;
-            scrollbarProps.onWheelScroll(scrollPos);
-            // prevent window scroll when wheeling on scrollbar
-            if (isScrollingWithinScrollbarBounds(scrollPos, maxScrollPos)) {
-              event.preventDefault();
-            }
+    <ScrollAreaScrollbarImpl
+      {...scrollbarProps}
+      ref={composeRefs}
+      sizes={sizes}
+      style={{
+        top: 0,
+        right: context.dir === 'ltr' ? 0 : undefined,
+        left: context.dir === 'rtl' ? 0 : undefined,
+        bottom: 'var(--radix-scroll-area-corner-height)',
+        ['--radix-scroll-area-thumb-height' as any]: getThumbSize(sizes) + 'px',
+        ...props.style,
+      }}
+      onThumbPointerDown={(pointerPos) => props.onThumbPointerDown(pointerPos.y)}
+      onDragScroll={(pointerPos) => props.onDragScroll(pointerPos.y)}
+      onWheelScroll={(event, maxScrollPos) => {
+        if (context.viewport) {
+          const scrollPos = context.viewport.scrollTop + event.deltaY;
+          props.onWheelScroll(scrollPos);
+          // prevent window scroll when wheeling on scrollbar
+          if (isScrollingWithinScrollbarBounds(scrollPos, maxScrollPos)) {
+            event.preventDefault();
           }
-        }}
-        onResize={() => {
-          if (ref.current && context.viewport && computedStyle) {
-            onSizesChange({
-              content: context.viewport.scrollHeight,
-              viewport: context.viewport.offsetHeight,
-              scrollbar: {
-                size: ref.current.clientHeight,
-                paddingStart: toInt(computedStyle.paddingTop),
-                paddingEnd: toInt(computedStyle.paddingBottom),
-              },
-            });
-          }
-        }}
-      />
-    </ScrollbarAxisProvider>
+        }
+      }}
+      onResize={() => {
+        if (ref.current && context.viewport && computedStyle) {
+          onSizesChange({
+            content: context.viewport.scrollHeight,
+            viewport: context.viewport.offsetHeight,
+            scrollbar: {
+              size: ref.current.clientHeight,
+              paddingStart: toInt(computedStyle.paddingTop),
+              paddingEnd: toInt(computedStyle.paddingBottom),
+            },
+          });
+        }
+      }}
+    />
   );
-}) as ScrollAreaScrollbarYPrimitive;
+}) as ScrollAreaScrollbarAxisPrimitive;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaScrollbarImplOwnProps = Polymorphic.Merge<
+type ScrollbarContext = {
+  hasThumb: boolean;
+  scrollbar: ScrollbarElement | null;
+  onThumbChange(thumb: ThumbElement | null): void;
+  onThumbPointerUp(): void;
+  onThumbPointerDown(pointerPos: { x: number; y: number }): void;
+  onThumbPositionChange(): void;
+};
+
+const [ScrollbarProvider, useScrollbarContext] = createContext<ScrollbarContext>(SCROLLBAR_NAME);
+
+type ScrollAreaScrollbarImplPrivateProps = {
+  sizes: Sizes;
+  hasThumb: boolean;
+  onThumbChange: ScrollbarContext['onThumbChange'];
+  onThumbPointerUp: ScrollbarContext['onThumbPointerUp'];
+  onThumbPointerDown: ScrollbarContext['onThumbPointerDown'];
+  onThumbPositionChange: ScrollbarContext['onThumbPositionChange'];
+  onWheelScroll(event: WheelEvent, maxScrollPos: number): void;
+  onDragScroll(pointerPos: { x: number; y: number }): void;
+  onResize(): void;
+};
+
+type ScrollAreaScrollbarImplPublicProps = Omit<
   Polymorphic.OwnProps<typeof Primitive>,
-  {
-    onWheelScroll(event: WheelEvent): void;
-    onDragScroll(pointerPosition: { x: number; y: number }): void;
-    onResize(): void;
-  }
+  keyof ScrollAreaScrollbarImplPrivateProps
 >;
 
 type ScrollAreaScrollbarImplPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof Primitive>,
-  ScrollAreaScrollbarImplOwnProps
+  ScrollAreaScrollbarImplPublicProps & ScrollAreaScrollbarImplPrivateProps
 >;
 
 const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
-  const { onDragScroll, onWheelScroll, onResize, ...scrollbarProps } = props;
+  const {
+    sizes,
+    hasThumb,
+    onThumbChange,
+    onThumbPointerUp,
+    onThumbPointerDown,
+    onThumbPositionChange,
+    onDragScroll,
+    onWheelScroll,
+    onResize,
+    ...scrollbarProps
+  } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
   const [scrollbar, setScrollbar] = React.useState<ScrollbarElement | null>(null);
   const composeRefs = useComposedRefs(forwardedRef, (node) => setScrollbar(node));
   const rectRef = React.useRef<ClientRect | null>(null);
   const prevWebkitUserSelectRef = React.useRef<string>('');
   const viewport = context.viewport;
+  const maxScrollPos = sizes.content - sizes.viewport;
   const handleWheelScroll = useCallbackRef(onWheelScroll);
-  const handleResize = useDebounceCallback(onResize, 10);
-
-  /**
-   * We bind wheel event imperatively so we can switch off passive
-   * mode for document wheel event to allow it to be prevented
-   */
-  React.useEffect(() => {
-    const handleWheel = (event: WheelEvent) => {
-      const element = event.target as HTMLElement;
-      const isScrollbarWheel = scrollbar?.contains(element);
-      if (isScrollbarWheel) handleWheelScroll(event);
-    };
-    document.addEventListener('wheel', handleWheel, { passive: false });
-    return () => document.removeEventListener('wheel', handleWheel, { passive: false } as any);
-  }, [viewport, scrollbar, handleWheelScroll]);
+  const handleThumbPositionChange = useCallbackRef(onThumbPositionChange);
 
   function handleDragScroll(event: React.PointerEvent<HTMLElement>) {
     if (rectRef.current) {
@@ -677,38 +648,63 @@ const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
     }
   }
 
-  useResizeObserver(context.viewport, handleResize);
-  useResizeObserver(context.content, handleResize);
+  /**
+   * We bind wheel event imperatively so we can switch off passive
+   * mode for document wheel event to allow it to be prevented
+   */
+  React.useEffect(() => {
+    const handleWheel = (event: WheelEvent) => {
+      const element = event.target as HTMLElement;
+      const isScrollbarWheel = scrollbar?.contains(element);
+      if (isScrollbarWheel) handleWheelScroll(event, maxScrollPos);
+    };
+    document.addEventListener('wheel', handleWheel, { passive: false });
+    return () => document.removeEventListener('wheel', handleWheel, { passive: false } as any);
+  }, [viewport, scrollbar, maxScrollPos, handleWheelScroll]);
+
+  /**
+   * Update thumb position on sizes change
+   */
+  React.useEffect(handleThumbPositionChange, [sizes, handleThumbPositionChange]);
+
+  useResizeObserver(scrollbar, onResize);
+  useResizeObserver(context.content, onResize);
 
   return (
-    <Primitive
-      {...scrollbarProps}
-      ref={composeRefs}
-      style={{
-        position: 'absolute',
-        ...scrollbarProps.style,
-      }}
-      onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-        const mainPointer = 0;
-        if (event.button === mainPointer) {
+    <ScrollbarProvider
+      scrollbar={scrollbar}
+      hasThumb={hasThumb}
+      onThumbChange={useCallbackRef(onThumbChange)}
+      onThumbPointerUp={useCallbackRef(onThumbPointerUp)}
+      onThumbPositionChange={useCallbackRef(onThumbPositionChange)}
+      onThumbPointerDown={useCallbackRef(onThumbPointerDown)}
+    >
+      <Primitive
+        {...scrollbarProps}
+        ref={composeRefs}
+        style={{ position: 'absolute', ...scrollbarProps.style }}
+        onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+          const mainPointer = 0;
+          if (event.button === mainPointer) {
+            const element = event.target as HTMLElement;
+            element.setPointerCapture(event.pointerId);
+            rectRef.current = scrollbar!.getBoundingClientRect();
+            // pointer capture doesn't prevent text selection in Safari
+            // so we remove text selection manually when scrolling
+            prevWebkitUserSelectRef.current = document.body.style.webkitUserSelect;
+            document.body.style.webkitUserSelect = 'none';
+            handleDragScroll(event);
+          }
+        })}
+        onPointerMove={composeEventHandlers(props.onPointerMove, handleDragScroll)}
+        onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
           const element = event.target as HTMLElement;
-          element.setPointerCapture(event.pointerId);
-          rectRef.current = scrollbar!.getBoundingClientRect();
-          // pointer capture doesn't prevent text selection in Safari
-          // so we remove text selection manually when scrolling
-          prevWebkitUserSelectRef.current = document.body.style.webkitUserSelect;
-          document.body.style.webkitUserSelect = 'none';
-          handleDragScroll(event);
-        }
-      })}
-      onPointerMove={composeEventHandlers(props.onPointerMove, handleDragScroll)}
-      onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
-        const element = event.target as HTMLElement;
-        element.releasePointerCapture(event.pointerId);
-        document.body.style.webkitUserSelect = prevWebkitUserSelectRef.current;
-        rectRef.current = null;
-      })}
-    />
+          element.releasePointerCapture(event.pointerId);
+          document.body.style.webkitUserSelect = prevWebkitUserSelectRef.current;
+          rectRef.current = null;
+        })}
+      />
+    </ScrollbarProvider>
   );
 }) as ScrollAreaScrollbarImplPrimitive;
 
@@ -727,10 +723,9 @@ type ScrollAreaThumbPrimitive = Polymorphic.ForwardRefComponent<
 const ScrollAreaThumb = React.forwardRef((props, forwardedRef) => {
   const { style, ...thumbProps } = props;
   const scrollAreaContext = useScrollAreaContext(THUMB_NAME);
-  const scrollbarContext = useScrollbarAxisContext(THUMB_NAME);
+  const scrollbarContext = useScrollbarContext(THUMB_NAME);
   const { onThumbPositionChange } = scrollbarContext;
-  const [thumb, setThumb] = React.useState<React.ElementRef<typeof Primitive> | null>(null);
-  const composedRef = useComposedRefs(forwardedRef, (node) => setThumb(node));
+  const composedRef = useComposedRefs(forwardedRef, (node) => scrollbarContext.onThumbChange(node));
   const removeUnlinkedScrollListenerRef = React.useRef<() => void>();
   const debounceScrollEnd = useDebounceCallback(() => {
     if (removeUnlinkedScrollListenerRef.current) {
@@ -741,8 +736,7 @@ const ScrollAreaThumb = React.forwardRef((props, forwardedRef) => {
 
   React.useEffect(() => {
     const viewport = scrollAreaContext.viewport;
-    if (viewport && thumb) {
-      const handleThumbPositionChange = () => onThumbPositionChange(thumb);
+    if (viewport) {
       /**
        * We only bind to native scroll event so we know when scroll starts and ends.
        * When scroll starts we start a requestAnimationFrame loop that checks for
@@ -753,20 +747,16 @@ const ScrollAreaThumb = React.forwardRef((props, forwardedRef) => {
       const handleScroll = () => {
         debounceScrollEnd();
         if (!removeUnlinkedScrollListenerRef.current) {
-          const listener = addUnlinkedScrollListener(viewport, handleThumbPositionChange);
+          const listener = addUnlinkedScrollListener(viewport, onThumbPositionChange);
           removeUnlinkedScrollListenerRef.current = listener;
-          handleThumbPositionChange();
+          onThumbPositionChange();
         }
       };
-      handleThumbPositionChange();
+      onThumbPositionChange();
       viewport.addEventListener('scroll', handleScroll);
       return () => viewport.removeEventListener('scroll', handleScroll);
     }
-  }, [scrollAreaContext.viewport, thumb, debounceScrollEnd, onThumbPositionChange]);
-
-  useResizeObserver(scrollAreaContext.viewport, () => {
-    if (thumb) onThumbPositionChange(thumb);
-  });
+  }, [scrollAreaContext.viewport, debounceScrollEnd, onThumbPositionChange]);
 
   return scrollbarContext.hasThumb ? (
     <Primitive
@@ -822,19 +812,19 @@ type ScrollAreaCornerImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const ScrollAreaCornerImpl = React.forwardRef((props, forwardedRef) => {
   const context = useScrollAreaContext(CORNER_NAME);
-  const [width, setWidth] = React.useState<number>();
-  const [height, setHeight] = React.useState<number>();
+  const [width, setWidth] = React.useState(0);
+  const [height, setHeight] = React.useState(0);
   const hasSize = Boolean(width && height);
 
   useResizeObserver(context.scrollbarX, () => {
-    const height = context.scrollbarX?.offsetHeight;
-    context.onCornerHeightChange(height || 0);
+    const height = context.scrollbarX?.offsetHeight || 0;
+    context.onCornerHeightChange(height);
     setHeight(height);
   });
 
   useResizeObserver(context.scrollbarY, () => {
-    const width = context.scrollbarY?.offsetWidth;
-    context.onCornerWidthChange(width || 0);
+    const width = context.scrollbarY?.offsetWidth || 0;
+    context.onCornerWidthChange(width);
     setWidth(width);
   });
 
@@ -944,9 +934,10 @@ function useDebounceCallback(callback: () => void, delay: number) {
 }
 
 function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
-  // debounce to prevent error `ResizeObserver loop completed with undelivered notifications`
+  // debounce resize handler to ensure resizes in quick succession do not throw error:
+  // `ResizeObserver loop completed with undelivered notifications`
   const handleResize = useDebounceCallback(onResize, 10);
-  React.useEffect(() => {
+  useLayoutEffect(() => {
     if (element) {
       const resizeObserver = new ResizeObserver(handleResize);
       resizeObserver.observe(element);

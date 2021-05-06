@@ -26,7 +26,8 @@
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-direction": "workspace:*"
+    "@radix-ui/react-use-direction": "workspace:*",
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
     "@types/resize-observer-browser": "^0.1.4"
