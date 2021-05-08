@@ -15,16 +15,13 @@
     "storybook": "start-storybook -p 9009 --ci",
     "dev": "yarn storybook",
     "build-storybook": "build-storybook",
-    "// build": "For context on tsconfig replacements in build scripts, see https://github.com/radix-ui/primitives/pull/361#discussion_r555004944",
-    "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
-    "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
-    "build:packages": "parcel build 'packages/*/*/' --no-cache",
-    "build:cleanup": "mv tsconfig.json tsconfig.production.json && mv tsconfig.tmp.json tsconfig.json",
+    "build": "preconstruct build",
     "publish": "yarn bump && yarn build && yarn workspaces foreach -pv --exclude primitives --exclude ssr-testing npm publish --tolerate-republish --access public",
     "clean": "yarn workspaces foreach -pv --exclude primitives --exclude ssr-testing run clean",
     "reset": "yarn clean && rm -rf node_modules .yarn/cache .parcel-cache",
     "bump": "yarn version apply --all",
-    "bump:check": "yarn version check"
+    "bump:check": "yarn version check",
+    "_postinstall": "preconstruct dev"
   },
   "dependencies": {
     "react": "^17.0.1",
@@ -37,6 +34,7 @@
     "@babel/template": "^7.12.13",
     "@parcel/babel-plugin-transform-runtime": "^2.0.0-nightly.1823",
     "@parcel/babel-preset-env": "^2.0.0-alpha.3",
+    "@preconstruct/cli": "^2.1.0",
     "@stitches/react": "0.0.3-canary.4",
     "@storybook/addon-storysource": "6.1.0-beta.4",
     "@storybook/react": "6.1.0-beta.4",
@@ -150,5 +148,11 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
+  },
+  "preconstruct": {
+    "packages": [
+      "packages/core/*",
+      "packages/react/*"
+    ]
   }
 }

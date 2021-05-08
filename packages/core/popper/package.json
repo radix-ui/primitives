@@ -3,9 +3,9 @@
   "version": "0.0.10",
   "license": "MIT",
   "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/radix-ui-popper.cjs.js",
+  "module": "dist/radix-ui-popper.esm.js",
+  "types": "dist/radix-ui-popper.cjs.d.ts",
   "files": [
     "dist",
     "README.md"

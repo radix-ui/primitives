@@ -3,9 +3,9 @@
   "version": "0.0.14",
   "license": "MIT",
   "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/radix-ui-react-collapsible.cjs.js",
+  "module": "dist/radix-ui-react-collapsible.esm.js",
+  "types": "dist/radix-ui-react-collapsible.cjs.d.ts",
   "files": [
     "dist",
     "README.md"

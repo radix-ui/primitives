@@ -3,9 +3,9 @@
   "version": "0.0.6",
   "license": "MIT",
   "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/radix-ui-react-use-controllable-state.cjs.js",
+  "module": "dist/radix-ui-react-use-controllable-state.esm.js",
+  "types": "dist/radix-ui-react-use-controllable-state.cjs.d.ts",
   "files": [
     "dist",
     "README.md"

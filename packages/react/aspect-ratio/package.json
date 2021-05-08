@@ -3,9 +3,9 @@
   "version": "0.0.12",
   "license": "MIT",
   "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/radix-ui-react-aspect-ratio.cjs.js",
+  "module": "dist/radix-ui-react-aspect-ratio.esm.js",
+  "types": "dist/radix-ui-react-aspect-ratio.cjs.d.ts",
   "files": [
     "dist",
     "README.md"
