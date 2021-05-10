@@ -2,7 +2,7 @@ import React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Slot } from '@radix-ui/react-slot';
 
-interface SlotProps extends React.ComponentProps<typeof Slot> {}
+type SlotProps = React.ComponentProps<typeof Slot>;
 
 function createCollection<ItemElement extends HTMLElement, ItemData>() {
   /* -----------------------------------------------------------------------------------------------
