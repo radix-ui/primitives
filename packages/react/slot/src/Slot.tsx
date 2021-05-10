@@ -96,16 +96,12 @@ function composeHandlers(
   return function (...args: unknown[]) {
     originalEventHandler?.(...args);
 
-    if (checkForDefaultPrevented && isEvent(args[0]) && args[0].defaultPrevented) {
+    if (checkForDefaultPrevented && args[0] instanceof Event && args[0].defaultPrevented) {
       return;
     }
 
     return ourEventHandler?.(...args);
   };
-}
-
-function isEvent(value: unknown): value is Event {
-  return value != null && typeof value === 'object' && value instanceof Event;
 }
 
 const Root = Slot;
