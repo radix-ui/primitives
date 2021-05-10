@@ -8,7 +8,6 @@ releases:
   "@radix-ui/react-avatar": patch
   "@radix-ui/react-checkbox": patch
   "@radix-ui/react-collapsible": patch
-  "@radix-ui/react-collection": patch
   "@radix-ui/react-context-menu": patch
   "@radix-ui/react-dialog": patch
   "@radix-ui/react-dropdown-menu": patch
