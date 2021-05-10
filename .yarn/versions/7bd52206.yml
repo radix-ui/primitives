@@ -17,6 +17,7 @@ releases:
   "@radix-ui/react-popover": patch
   "@radix-ui/react-popper": patch
   "@radix-ui/react-portal": patch
+  "@radix-ui/react-presence": patch
   "@radix-ui/react-primitive": patch
   "@radix-ui/react-progress": patch
   "@radix-ui/react-radio-group": patch
