@@ -4,20 +4,12 @@ function composeEventHandlers<E>(
   { checkForDefaultPrevented = true } = {}
 ) {
   return function handleEvent(event: E) {
-    originalEventHandler?.(...((arguments as unknown) as [E]));
+    originalEventHandler?.(event);
 
-    if (
-      !isObject(event) ||
-      checkForDefaultPrevented === false ||
-      !((event as unknown) as Event).defaultPrevented
-    ) {
-      return ourEventHandler?.(...((arguments as unknown) as [E]));
+    if (checkForDefaultPrevented === false || !((event as unknown) as Event).defaultPrevented) {
+      return ourEventHandler?.(event);
     }
   };
-}
-
-function isObject(value: unknown): boolean {
-  return value !== undefined && value !== null && typeof value === 'object';
 }
 
 export { composeEventHandlers };
