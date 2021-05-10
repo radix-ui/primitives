@@ -838,3 +838,4 @@ export {
   Range,
   Thumb,
 };
+export type { SliderPrimitive, SliderTrackPrimitive, SliderRangePrimitive, SliderThumbPrimitive };

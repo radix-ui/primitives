@@ -57,3 +57,4 @@ export {
   //
   Root,
 };
+export type { AspectRatioPrimitive };

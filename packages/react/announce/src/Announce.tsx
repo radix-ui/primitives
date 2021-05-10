@@ -240,3 +240,4 @@ export {
   //
   Root,
 };
+export type { AnnouncePrimitive };

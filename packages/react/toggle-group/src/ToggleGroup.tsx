@@ -334,3 +334,4 @@ export {
   Root,
   Item,
 };
+export type { ToggleGroupPrimitive, ToggleGroupItemPrimitive };

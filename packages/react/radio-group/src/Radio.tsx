@@ -152,3 +152,4 @@ function getState(checked: boolean) {
 }
 
 export { Radio, RadioIndicator };
+export type { RadioPrimitive, RadioIndicatorPrimitive };

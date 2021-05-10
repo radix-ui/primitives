@@ -131,7 +131,9 @@ const CollapsibleContent = React.forwardRef((props, forwardedRef) => {
   const context = useCollapsibleContext(CONTENT_NAME);
   return (
     <Presence present={forceMount || context.open}>
-      {({ present }) => <CollapsibleContentImpl {...contentProps} present={present} />}
+      {({ present }) => (
+        <CollapsibleContentImpl {...contentProps} ref={forwardedRef} present={present} />
+      )}
     </Presence>
   );
 }) as CollapsibleContentPrimitive;

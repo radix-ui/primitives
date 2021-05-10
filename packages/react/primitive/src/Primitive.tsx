@@ -10,11 +10,12 @@ const NAME = 'Primitive';
 const DEFAULT_TAG = 'div';
 
 type PrimitiveOwnProps = {};
+type PrimitivePrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, PrimitiveOwnProps>;
 
 const Primitive = React.forwardRef((props, forwardedRef) => {
   const { as: Comp = DEFAULT_TAG, ...primitiveProps } = props;
   return <Comp {...primitiveProps} ref={forwardedRef} />;
-}) as Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, PrimitiveOwnProps>;
+}) as PrimitivePrimitive;
 
 Primitive.displayName = NAME;
 
@@ -27,3 +28,4 @@ export {
   //
   Root,
 };
+export type { PrimitivePrimitive };

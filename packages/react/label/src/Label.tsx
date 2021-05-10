@@ -120,3 +120,4 @@ export {
   //
   useLabelContext,
 };
+export type { LabelPrimitive };

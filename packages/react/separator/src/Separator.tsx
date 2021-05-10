@@ -77,3 +77,4 @@ export {
   //
   Root,
 };
+export type { SeparatorPrimitive };

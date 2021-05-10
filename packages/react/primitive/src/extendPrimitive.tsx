@@ -23,3 +23,4 @@ function extendPrimitive<
 }
 
 export { extendPrimitive };
+export type { ExtendedPrimitive };
