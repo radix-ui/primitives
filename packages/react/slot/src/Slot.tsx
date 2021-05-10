@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
 import { composeRefs } from '@radix-ui/react-compose-refs';
 
 /* -------------------------------------------------------------------------------------------------
@@ -82,11 +81,31 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
     const isHandler = /^on[A-Z]/.test(propName);
 
     if (isHandler) {
-      overrideProps[propName] = composeEventHandlers(childPropValue, slotPropValue);
+      overrideProps[propName] = composeHandlers(childPropValue, slotPropValue);
     }
   }
 
   return { ...slotProps, ...overrideProps };
+}
+
+function composeHandlers(
+  originalEventHandler?: (...args: unknown[]) => unknown,
+  ourEventHandler?: (...args: unknown[]) => unknown,
+  { checkForDefaultPrevented = true } = {}
+) {
+  return function (...args: unknown[]) {
+    originalEventHandler?.(...args);
+
+    if (checkForDefaultPrevented && isEvent(args[0]) && args[0].defaultPrevented) {
+      return;
+    }
+
+    return ourEventHandler?.(...args);
+  };
+}
+
+function isEvent(value: unknown): value is Event {
+  return value != null && typeof value === 'object' && value instanceof Event;
 }
 
 const Root = Slot;
