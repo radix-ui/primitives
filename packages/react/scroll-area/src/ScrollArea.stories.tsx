@@ -5,7 +5,8 @@ import { css } from '../../../../stitches.config';
 export default { title: 'Components/ScrollArea' };
 
 export const Basic = () => {
-  const [count, setCount] = React.useState(30);
+  const [verticalCount, setVerticalCount] = React.useState(1);
+  const [horizontalCount, setHorizontalCount] = React.useState(1);
   const [props, setProps] = React.useState({} as any);
   return (
     <>
@@ -41,18 +42,16 @@ export const Basic = () => {
             scrollHideDelay: <input type="number" name="scrollHideDelay" />
           </label>
         </form>
-        <button onClick={() => setCount((count) => count + 1)}>Add content</button>
       </div>
 
       <ScrollAreaStory
         {...props}
         key={props.type}
-        style={{ width: '800px', height: '800px', margin: '30px auto' }}
+        style={{ width: 800, height: 800, margin: '30px auto' }}
       >
-        {Array.from({ length: count }).map((_, index) => (
+        {Array.from({ length: 30 }).map((_, index) => (
           <Copy key={index} />
         ))}
-        {count > 30 && <p style={{ width: '1500%', marginTop: 0 }}>Really wide content</p>}
       </ScrollAreaStory>
     </>
   );
@@ -77,12 +76,30 @@ export const Resizable = () => (
   </div>
 );
 
+export const ContentChange = () => {
+  const [verticalCount, setVerticalCount] = React.useState(1);
+  const [horizontalCount, setHorizontalCount] = React.useState(1);
+  return (
+    <>
+      <button onClick={() => setVerticalCount((count) => count + 1)}>Add vertical content</button>
+      <button onClick={() => setHorizontalCount((count) => count + 1)}>
+        Increase horizontal size
+      </button>
+      <ScrollAreaStory type="always" style={{ width: 800, height: 800 }}>
+        {Array.from({ length: verticalCount }).map((_, index) => (
+          <Copy key={index} style={{ width: 300 * horizontalCount + 'px' }} />
+        ))}
+      </ScrollAreaStory>
+    </>
+  );
+};
+
 export const Chromatic = () => (
   <>
     <h1>Vertical</h1>
     <h2>Auto with overflow</h2>
     <ScrollAreaStory type="auto" vertical horizontal={false}>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -94,7 +111,7 @@ export const Chromatic = () => (
 
     <h2>Always with overflow</h2>
     <ScrollAreaStory type="always" vertical horizontal={false}>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -106,7 +123,7 @@ export const Chromatic = () => (
 
     <h2>Scroll with overflow</h2>
     <ScrollAreaStory type="scroll" vertical horizontal={false}>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -118,7 +135,7 @@ export const Chromatic = () => (
 
     <h2>Hover with overflow</h2>
     <ScrollAreaStory type="hover" vertical horizontal={false}>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -131,7 +148,7 @@ export const Chromatic = () => (
     <h1>Horizontal</h1>
     <h2>Auto with overflow</h2>
     <ScrollAreaStory type="auto" vertical={false} horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -143,7 +160,7 @@ export const Chromatic = () => (
 
     <h2>Always with overflow</h2>
     <ScrollAreaStory type="always" vertical={false} horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -155,7 +172,7 @@ export const Chromatic = () => (
 
     <h2>Scroll with overflow</h2>
     <ScrollAreaStory type="scroll" vertical={false} horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -167,7 +184,7 @@ export const Chromatic = () => (
 
     <h2>Hover with overflow</h2>
     <ScrollAreaStory type="hover" vertical={false} horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -180,7 +197,7 @@ export const Chromatic = () => (
     <h1>Both</h1>
     <h2>Auto with overflow</h2>
     <ScrollAreaStory type="auto" vertical horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -194,7 +211,7 @@ export const Chromatic = () => (
 
     <h2>Auto with vertical overflow</h2>
     <ScrollAreaStory type="auto" vertical horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} style={{ width: 50, overflow: 'hidden' }} />
       ))}
     </ScrollAreaStory>
@@ -206,7 +223,7 @@ export const Chromatic = () => (
 
     <h2>Always with overflow</h2>
     <ScrollAreaStory type="always" vertical horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -218,7 +235,7 @@ export const Chromatic = () => (
 
     <h2>Scroll with overflow</h2>
     <ScrollAreaStory type="scroll" vertical horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -230,7 +247,7 @@ export const Chromatic = () => (
 
     <h2>Hover with overflow</h2>
     <ScrollAreaStory type="hover" vertical horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -249,22 +266,22 @@ export const Chromatic = () => (
 
     <h2>Hover with vertical overflow</h2>
     <ScrollAreaStory type="hover" vertical horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} style={{ width: 50, overflow: 'hidden' }} />
       ))}
     </ScrollAreaStory>
 
     <h1>Min thumb size</h1>
     <ScrollAreaStory type="always" vertical horizontal>
-      {Array.from({ length: 30 }).map((_, index) => (
-        <Copy key={index} style={{ width: '1000%' }} />
+      {Array.from({ length: 100 }).map((_, index) => (
+        <Copy key={index} style={{ width: 10000 }} />
       ))}
     </ScrollAreaStory>
 
     <h1>RTL</h1>
     <h2>Prop</h2>
     <ScrollAreaStory type="always" dir="rtl" vertical horizontal>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Copy key={index} />
       ))}
     </ScrollAreaStory>
@@ -272,7 +289,7 @@ export const Chromatic = () => (
     <h2>Inherited</h2>
     <div dir="rtl">
       <ScrollAreaStory type="always" vertical horizontal>
-        {Array.from({ length: 3 }).map((_, index) => (
+        {Array.from({ length: 10 }).map((_, index) => (
           <Copy key={index} />
         ))}
       </ScrollAreaStory>
@@ -361,7 +378,7 @@ const ScrollAreaStory = ({ children, vertical = true, horizontal = true, ...prop
 );
 
 const Copy = (props: any) => (
-  <p style={{ width: '500%', marginTop: 0, ...props.style }}>
+  <p style={{ width: 4000, marginTop: 0, ...props.style }}>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sit amet eros iaculis, bibendum
     tellus ac, lobortis odio. Aliquam bibendum elit est, in iaculis est commodo id. Donec pulvinar
     est libero. Proin consectetur pellentesque molestie. Fusce mi ante, ullamcorper eu ante finibus,
