@@ -44,11 +44,11 @@ interface ForwardRefComponent<
   <
     As extends
       | keyof JSX.IntrinsicElements
-      | React.JSXElementConstructor<any> = NarrowIntrinsic<IntrinsicElementString>
+      | React.ComponentType<any> = NarrowIntrinsic<IntrinsicElementString>
   >(
     props: As extends keyof JSX.IntrinsicElements
       ? Merge<JSX.IntrinsicElements[As], OwnProps & { as: As }>
-      : As extends React.JSXElementConstructor<infer P>
+      : As extends React.ComponentType<infer P>
       ? Merge<P, OwnProps & { as: As }>
       : never
   ): React.ReactElement | null;
