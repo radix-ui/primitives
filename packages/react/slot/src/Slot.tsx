@@ -88,20 +88,16 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
   return { ...slotProps, ...overrideProps };
 }
 
-function composeHandlers(
-  originalEventHandler?: (...args: unknown[]) => unknown,
-  ourEventHandler?: (...args: unknown[]) => unknown,
-  { checkForDefaultPrevented = true } = {}
-) {
-  return function (...args: unknown[]) {
-    originalEventHandler?.(...args);
+type EventHandler = (...args: unknown[]) => unknown;
 
-    if (checkForDefaultPrevented && args[0] instanceof Event && args[0].defaultPrevented) {
-      return;
+function composeHandlers(childHandler?: EventHandler, slotHandler?: EventHandler) {
+  return function handleEvent(...args) {
+    childHandler?.(...args);
+    const isDefaultPreventedEvent = args[0] instanceof Event && args[0].defaultPrevented;
+    if (!isDefaultPreventedEvent) {
+      slotHandler?.(...args);
     }
-
-    return ourEventHandler?.(...args);
-  };
+  } as EventHandler;
 }
 
 const Root = Slot;
