@@ -22,12 +22,13 @@ Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 
 - Benoit Grelard ([@benoitgrelard](https://twitter.com/benoitgrelard)) - [Modulz](https://modulz.app)
 - Jenna Smith ([@jjenzz](https://twitter.com/jjenzz)) - [Modulz](https://modulz.app)
-- Chance Strickland ([@chancethedev](https://twitter.com/chancethedev)) - [Modulz](https://modulz.app)
 - Pedro Duarte ([@peduarte](https://twitter.com/peduarte)) - [Modulz](https://modulz.app)
+- Chance Strickland ([@chancethedev](https://twitter.com/chancethedev))
 
 ## Contributors
 
-- Ar Nazeh ([@Nazeh](https://twitter.com/arnazeh))
+- Ar Nazeh ([@Nazeh](https://github.com/Nazeh))
+- Fabio Capucci ([@cappuc](https://github.com/cappuc))
 
 ---
 
