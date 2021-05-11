@@ -149,3 +149,4 @@ export {
   Root,
   Thumb,
 };
+export type { SwitchPrimitive, SwitchThumbPrimitive };

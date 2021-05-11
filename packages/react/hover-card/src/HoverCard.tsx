@@ -214,3 +214,4 @@ export {
   Content,
   Arrow,
 };
+export type { HoverCardTriggerPrimitive, HoverCardContentPrimitive };

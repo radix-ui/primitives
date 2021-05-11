@@ -172,3 +172,4 @@ export {
   //
   useProgressState,
 };
+export type { ProgressPrimitive, ProgressIndicatorPrimitive };

@@ -45,3 +45,4 @@ export {
   //
   Root,
 };
+export type { ArrowPrimitive };

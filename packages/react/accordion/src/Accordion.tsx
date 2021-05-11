@@ -461,3 +461,10 @@ export {
   Button,
   Panel,
 };
+export type {
+  AccordionPrimitive,
+  AccordionItemPrimitive,
+  AccordionHeaderPrimitive,
+  AccordionButtonPrimitive,
+  AccordionPanelPrimitive,
+};

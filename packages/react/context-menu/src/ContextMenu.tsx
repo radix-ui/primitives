@@ -193,3 +193,4 @@ export {
   ItemIndicator,
   Separator,
 };
+export type { ContextMenuTriggerPrimitive, ContextMenuContentPrimitive };

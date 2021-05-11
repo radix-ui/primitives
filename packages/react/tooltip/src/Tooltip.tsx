@@ -331,3 +331,4 @@ export {
   Content,
   Arrow,
 };
+export type { TooltipTriggerPrimitive, TooltipContentPrimitive };

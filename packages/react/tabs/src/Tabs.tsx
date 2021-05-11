@@ -260,3 +260,4 @@ export {
   Tab,
   Panel,
 };
+export type { TabsPrimitive, TabsListPrimitive, TabsTabPrimitive, TabsPanelPrimitive };

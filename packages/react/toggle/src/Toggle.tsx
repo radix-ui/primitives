@@ -73,3 +73,4 @@ export {
   //
   Root,
 };
+export type { TogglePrimitive };

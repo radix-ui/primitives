@@ -357,3 +357,9 @@ export {
   Content,
   Close,
 };
+export type {
+  DialogTriggerPrimitive,
+  DialogOverlayPrimitive,
+  DialogContentPrimitive,
+  DialogClosePrimitive,
+};

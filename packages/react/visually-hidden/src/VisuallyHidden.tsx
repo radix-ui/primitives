@@ -46,3 +46,4 @@ export {
   //
   Root,
 };
+export type { VisuallyHiddenPrimitive };

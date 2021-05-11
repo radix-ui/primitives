@@ -268,3 +268,9 @@ export {
   Overlay,
   Trigger,
 };
+export type {
+  AlertDialogTitlePrimitive,
+  AlertDialogCancelPrimitive,
+  AlertDialogContentPrimitive,
+  AlertDialogDescriptionPrimitive,
+};

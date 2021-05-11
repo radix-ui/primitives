@@ -1606,6 +1606,17 @@ export {
   //
   SCROLL_AREA_CSS_PROPS,
 };
+export type {
+  ScrollAreaPrimitive,
+  ScrollAreaViewportPrimitive,
+  ScrollAreaScrollbarXPrimitive,
+  ScrollAreaScrollbarYPrimitive,
+  ScrollAreaButtonStartPrimitive,
+  ScrollAreaButtonEndPrimitive,
+  ScrollAreaTrackPrimitive,
+  ScrollAreaThumbPrimitive,
+  ScrollAreaCornerPrimitive,
+};
 
 /* -------------------------------------------------------------------------------------------------
    Utils

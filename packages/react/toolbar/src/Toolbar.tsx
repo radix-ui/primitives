@@ -172,20 +172,20 @@ ToolbarToggleGroup.displayName = TOGGLE_GROUP_NAME;
 
 const TOGGLE_ITEM_NAME = 'ToolbarToggleItem';
 
-type ToolbarRadioOwnProps = Polymorphic.Merge<
+type ToolbarToggleItemOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof ToolbarButton>,
   Polymorphic.OwnProps<typeof ToggleGroupPrimitive.Item>
 >;
-type ToolbarRadioPrimitive = Polymorphic.ForwardRefComponent<
+type ToolbarToggleItemPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof ToggleGroupPrimitive.Item>,
-  ToolbarRadioOwnProps
+  ToolbarToggleItemOwnProps
 >;
 
 const ToolbarToggleItem = React.forwardRef((props, forwardedRef) => (
   <ToolbarButton as={Slot}>
     <ToggleGroupPrimitive.Item {...props} ref={forwardedRef} />
   </ToolbarButton>
-)) as ToolbarRadioPrimitive;
+)) as ToolbarToggleItemPrimitive;
 
 ToolbarToggleItem.displayName = TOGGLE_ITEM_NAME;
 
@@ -212,4 +212,12 @@ export {
   Link,
   ToggleGroup,
   ToggleItem,
+};
+export type {
+  ToolbarPrimitive,
+  ToolbarSeparatorPrimitive,
+  ToolbarButtonPrimitive,
+  ToolbarLinkPrimitive,
+  ToolbarToggleGroupPrimitive,
+  ToolbarToggleItemPrimitive,
 };

@@ -241,3 +241,4 @@ export {
   Separator,
   Arrow,
 };
+export type { DropdownMenuTriggerPrimitive, DropdownMenuContentPrimitive };

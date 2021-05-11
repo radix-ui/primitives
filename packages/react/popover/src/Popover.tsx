@@ -452,3 +452,9 @@ export {
   Close,
   Arrow,
 };
+export type {
+  PopoverAnchorPrimitive,
+  PopoverTriggerPrimitive,
+  PopoverContentPrimitive,
+  PopoverClosePrimitive,
+};

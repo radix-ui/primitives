@@ -8754,6 +8754,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dir-glob@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "dir-glob@npm:3.0.1"
+  dependencies:
+    path-type: ^4.0.0
+  checksum: 687fa3bd604f264042f325d9460e1298447fb32782f30cddc47cb302b742684d13e8ffce4c6f455e0ae92099d71e29f72387379c10b8fd3f6f1bf8992d7c0997
+  languageName: node
+  linkType: hard
+
 "doctrine@npm:1.5.0":
   version: 1.5.0
   resolution: "doctrine@npm:1.5.0"
@@ -9337,6 +9346,13 @@ __metadata:
   version: 1.1.0
   resolution: "es6-object-assign@npm:1.1.0"
   checksum: 18f01190b46b15a5fd6275dfc37c1c10bb331be4e392362785f63a141aa33edd0d8fbd2d5150c4b0a524aa14b8c4f825a559274cbc765bce59331e015923b4d8
+  languageName: node
+  linkType: hard
+
+"es6-promisify@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "es6-promisify@npm:6.1.1"
+  checksum: 03654617c47d261c7cb97a0477a42999f06c638b8ae8d944ce7232a5c5f3add307abe5a4fe93fd7174725e77131ab1a2f9b534bd09a2fe11993f671b46ad75f0
   languageName: node
   linkType: hard
 
@@ -9950,6 +9966,20 @@ __metadata:
     merge2: ^1.2.3
     micromatch: ^3.1.10
   checksum: 9dc5c93807e43257b39fc53aa8ed10ffa253e997dd1d473377a7e9daa4b6c675c730b72f1aa132b80f068c4ece012ff9236a88085fc0229b180fe7c85afcae84
+  languageName: node
+  linkType: hard
+
+"fast-glob@npm:^3.1.1":
+  version: 3.2.5
+  resolution: "fast-glob@npm:3.2.5"
+  dependencies:
+    "@nodelib/fs.stat": ^2.0.2
+    "@nodelib/fs.walk": ^1.2.3
+    glob-parent: ^5.1.0
+    merge2: ^1.3.0
+    micromatch: ^4.0.2
+    picomatch: ^2.2.1
+  checksum: 1a33c4a68d14cb2314c07a451689bc311bde87b09c525dd2064321165127a38a553457d121e2d3ecdd022374e3d53afb82cbb57f5694414d3406ce14ed6c0a1f
   languageName: node
   linkType: hard
 
@@ -10733,6 +10763,20 @@ __metadata:
     pify: ^3.0.0
     slash: ^1.0.0
   checksum: de3e13ccbb64f63bb0a3c8ddb3d5bd91f1f73665e2b325f8b47f1721c670e062d0a921abaa2d77c803d8ec793c3888a5503177751d372fb62fab1d47f4166f3e
+  languageName: node
+  linkType: hard
+
+"globby@npm:^11.0.1":
+  version: 11.0.3
+  resolution: "globby@npm:11.0.3"
+  dependencies:
+    array-union: ^2.1.0
+    dir-glob: ^3.0.1
+    fast-glob: ^3.1.1
+    ignore: ^5.1.4
+    merge2: ^1.3.0
+    slash: ^3.0.0
+  checksum: f17da0f869918656ec8c16c15ad100f025fbd13e4c157286cf340811eb1355a7d06dde77be1685a7a051970ec6abeff96a9b2a1a97525f84bc94fbd518c1d1db
   languageName: node
   linkType: hard
 
@@ -11633,6 +11677,13 @@ __metadata:
   dependencies:
     binary-extensions: ^2.0.0
   checksum: 49a1446a3cf3719e91a061f0e52add18fd065325c652c277519a2ad333440dc8b449076a893277a46940ef16f05a908716667ca8f986b28c677b9acb11e10a36
+  languageName: node
+  linkType: hard
+
+"is-binary@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "is-binary@npm:0.1.0"
+  checksum: 1dfa67a08a03b249bec532ad929312a05dff960513d5e1479c4aa6c678dad98094919a41fd714b8946da3c3e5f0af068053c3c066b8af8110f2310c4c75a171e
   languageName: node
   linkType: hard
 
@@ -15900,6 +15951,7 @@ __metadata:
     react: ^17.0.1
     react-dom: ^17.0.1
     react-test-renderer: ^17.0.1
+    replace-in-files: ^3.0.0
     ts-jest: ^26.2.0
     typescript: ^3.9.7
   languageName: unknown
@@ -16868,6 +16920,19 @@ __metadata:
   version: 1.6.1
   resolution: "repeat-string@npm:1.6.1"
   checksum: 99c431ba7bef7a5d39819d562ebca89206368b45f73213677a3b562e25b5dd272d9e6a2ca8105001df14b6fc8cc71f0b10258c86e16cf8a256318fac1ddc8a77
+  languageName: node
+  linkType: hard
+
+"replace-in-files@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "replace-in-files@npm:3.0.0"
+  dependencies:
+    co: ^4.6.0
+    es6-promisify: ^6.1.1
+    globby: ^11.0.1
+    is-binary: ^0.1.0
+    lodash: ^4.17.20
+  checksum: 8dd3e9c2d47ff79aa9c4804c7e4f70e237daa8f86abcedf1bf6543ef3ac4980d730a8d6a9c45ba239c9bc84364ea14bd85f52b2adf69e23d1773e926c5760aa6
   languageName: node
   linkType: hard
 

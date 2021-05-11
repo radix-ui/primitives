@@ -156,3 +156,4 @@ export {
   Image,
   Fallback,
 };
+export type { AvatarPrimitive, AvatarImagePrimitive, AvatarFallbackPrimitive };

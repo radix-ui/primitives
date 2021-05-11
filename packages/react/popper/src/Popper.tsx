@@ -271,3 +271,4 @@ export {
   Content,
   Arrow,
 };
+export type { PopperAnchorPrimitive, PopperContentPrimitive, PopperArrowPrimitive };

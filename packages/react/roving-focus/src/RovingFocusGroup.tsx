@@ -290,3 +290,4 @@ export {
   Root,
   Item,
 };
+export type { RovingFocusGroupPrimitive, RovingFocusItemPrimitive };

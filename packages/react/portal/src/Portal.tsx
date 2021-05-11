@@ -79,3 +79,4 @@ export {
   //
   Root,
 };
+export type { PortalPrimitive };

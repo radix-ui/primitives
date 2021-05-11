@@ -174,3 +174,4 @@ export {
   Root,
   Indicator,
 };
+export type { CheckboxPrimitive, CheckboxIndicatorPrimitive };

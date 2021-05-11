@@ -164,3 +164,4 @@ export {
   Item,
   Indicator,
 };
+export type { RadioGroupPrimitive, RadioGroupItemPrimitive };
