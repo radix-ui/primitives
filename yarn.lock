@@ -3770,7 +3770,6 @@ __metadata:
   resolution: "@radix-ui/react-slot@workspace:packages/react/slot"
   dependencies:
     "@babel/runtime": ^7.13.10
-    "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
