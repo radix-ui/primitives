@@ -5,6 +5,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useDirection } from '@radix-ui/react-use-direction';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from './collection';
@@ -232,7 +233,7 @@ const SliderHorizontal = React.forwardRef((props, forwardedRef) => {
   const [slider, setSlider] = React.useState<React.ElementRef<typeof SliderPart> | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
   const rectRef = React.useRef<ClientRect>();
-  const direction = useDirection({ element: slider, directionProp: dir });
+  const direction = useDirection(slider, dir);
   const isDirectionLTR = direction === 'ltr';
 
   function getValueFromPointer(pointerPosition: number) {
@@ -678,40 +679,6 @@ const BubbleInput = (props: React.ComponentProps<'input'>) => {
   return <input style={{ display: 'none' }} {...inputProps} ref={ref} />;
 };
 
-function useDirection({
-  element,
-  directionProp,
-}: {
-  element: HTMLElement | null;
-  directionProp?: Direction;
-}) {
-  const [direction, setDirection] = React.useState<Direction>('ltr');
-  const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
-  const rAFRef = React.useRef<number>(0);
-
-  React.useEffect(() => {
-    if (element && directionProp === undefined) {
-      const computedStyle = getComputedStyle(element);
-      setComputedStyle(computedStyle);
-    }
-  }, [element, directionProp]);
-
-  React.useEffect(() => {
-    function getDirection() {
-      rAFRef.current = requestAnimationFrame(() => {
-        const dir = computedStyle?.direction as Direction | '' | undefined;
-        if (dir) setDirection(dir);
-        getDirection();
-      });
-    }
-
-    if (directionProp === undefined) getDirection();
-    return () => cancelAnimationFrame(rAFRef.current);
-  }, [computedStyle, directionProp, setDirection]);
-
-  return directionProp || direction;
-}
-
 function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number) {
   const nextValues = [...prevValues];
   nextValues[atIndex] = nextValue;
@@ -805,11 +772,11 @@ function hasMinStepsBetweenValues(values: number[], minStepsBetweenValues: numbe
 }
 
 // https://github.com/tmcw-up-for-adoption/simple-linear-scale/blob/master/index.js
-function linearScale(domain: [number, number], range: [number, number]) {
+function linearScale(input: readonly [number, number], output: readonly [number, number]) {
   return (value: number) => {
-    if (domain[0] === domain[1] || range[0] === range[1]) return range[0];
-    const ratio = (range[1] - range[0]) / (domain[1] - domain[0]);
-    return range[0] + ratio * (value - domain[0]);
+    if (input[0] === input[1] || output[0] === output[1]) return output[0];
+    const ratio = (output[1] - output[0]) / (input[1] - input[0]);
+    return output[0] + ratio * (value - input[0]);
   };
 }
 

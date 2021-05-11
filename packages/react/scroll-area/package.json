@@ -23,12 +23,13 @@
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-polymorphic": "workspace:*",
+    "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
+    "@radix-ui/react-use-direction": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
-    "@stitches/react": "canary",
     "@types/resize-observer-browser": "^0.1.4"
   },
   "peerDependencies": {

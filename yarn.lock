@@ -3723,10 +3723,11 @@ __metadata:
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
+    "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@radix-ui/react-use-direction": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
-    "@stitches/react": canary
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3758,7 +3759,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
-    "@radix-ui/react-use-layout-effect": "workspace:*"
+    "@radix-ui/react-use-direction": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3919,6 +3920,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@radix-ui/react-use-direction@workspace:*, @radix-ui/react-use-direction@workspace:packages/react/use-direction":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-use-direction@workspace:packages/react/use-direction"
+  dependencies:
+    "@babel/runtime": ^7.13.10
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@radix-ui/react-use-escape-keydown@workspace:*, @radix-ui/react-use-escape-keydown@workspace:packages/react/use-escape-keydown":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-escape-keydown@workspace:packages/react/use-escape-keydown"
@@ -4048,13 +4059,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stitches/core@npm:^0.1.0-canary.6":
-  version: 0.1.0-canary.6
-  resolution: "@stitches/core@npm:0.1.0-canary.6"
-  checksum: 4ea7d6f923dfff0bb79d317b6c0b024f3c8d646f68f7f0deafa6367af5763595ee128b7159a739e41c50dbdcec1cb53ce75fcf39fbad90a15a2df3f0bc4b0fc9
-  languageName: node
-  linkType: hard
-
 "@stitches/react@npm:0.0.3-canary.4":
   version: 0.0.3-canary.4
   resolution: "@stitches/react@npm:0.0.3-canary.4"
@@ -4063,17 +4067,6 @@ __metadata:
   peerDependencies:
     react: ^16.13.1
   checksum: 095b01622a2781d543242d5fa48a1acb8c80521d6c6d00c457afd522a22e9f5e1bfb5613c5096dd73eefdfbc4027bb5f64e174cd1493b4e81eb3e64608f201d7
-  languageName: node
-  linkType: hard
-
-"@stitches/react@npm:canary":
-  version: 0.1.0-canary.6
-  resolution: "@stitches/react@npm:0.1.0-canary.6"
-  dependencies:
-    "@stitches/core": ^0.1.0-canary.6
-  peerDependencies:
-    react: ">=17.0.0 <19.0.0"
-  checksum: 1eae9b72a2c3d8d1c5c5fc162e6cb575cfe311708c9de604ecad09e299a31436fb8919badce61abeee75f139f3e2da802e7f701fdd28e03a2f0d0612edb0b8e6
   languageName: node
   linkType: hard
 

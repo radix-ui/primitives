@@ -1,0 +1,7 @@
+releases:
+  "@radix-ui/react-scroll-area": patch
+  "@radix-ui/react-slider": patch
+  "@radix-ui/react-use-direction": patch
+
+declined:
+  - primitives
