@@ -7,6 +7,18 @@ import { Checkbox, CheckboxIndicator } from './Checkbox';
 const CHECKBOX_ROLE = 'checkbox';
 const INDICATOR_TEST_ID = 'checkbox-indicator';
 
+global.ResizeObserver = class ResizeObserver {
+  cb: any;
+  constructor(cb: any) {
+    this.cb = cb;
+  }
+  observe() {
+    this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }]);
+  }
+  unobserve() {}
+  disconnect() {}
+};
+
 describe('given a default Checkbox', () => {
   let rendered: RenderResult;
   let checkbox: HTMLElement;
