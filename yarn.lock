@@ -3343,6 +3343,7 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3689,6 +3690,7 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3789,6 +3791,7 @@ __metadata:
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown

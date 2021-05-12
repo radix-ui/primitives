@@ -38,20 +38,30 @@ export const Controlled = () => {
 };
 
 export const WithinForm = () => {
-  const [checked, setChecked] = React.useState(false);
+  const [data, setData] = React.useState({ optional: false, required: false });
 
   return (
     <form
+      onSubmit={(event) => event.preventDefault()}
       onChange={(event) => {
         const input = event.target as HTMLInputElement;
-        setChecked(input.checked);
+        setData((prevData) => ({ ...prevData, [input.name]: input.checked }));
       }}
     >
-      <p>checked: {String(checked)}</p>
-
-      <Switch className={rootClass}>
+      <p>optional checked: {String(data.optional)}</p>
+      <Switch className={rootClass} name="optional">
         <SwitchThumb className={thumbClass} />
       </Switch>
+
+      <p>required checked: {String(data.required)}</p>
+      <Switch className={rootClass} name="required" required>
+        <SwitchThumb className={thumbClass} />
+      </Switch>
+
+      <br />
+      <br />
+
+      <button>Submit</button>
     </form>
   );
 };
