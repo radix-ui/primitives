@@ -61,11 +61,11 @@ type AccordionSingleOwnProps = Polymorphic.Merge<
      */
     type: 'single';
     /**
-     * The controlled stateful value of the accordion item whose panel is expanded.
+     * The controlled stateful value of the accordion item whose content is expanded.
      */
     value?: string;
     /**
-     * The value of the item whose panel is expanded when the accordion is initially rendered. Use
+     * The value of the item whose content is expanded when the accordion is initially rendered. Use
      * `defaultValue` if you do not need to control the state of an accordion.
      */
     defaultValue?: string;
@@ -114,11 +114,11 @@ type AccordionMultipleOwnProps = Polymorphic.Merge<
      */
     type: 'multiple';
     /**
-     * The controlled stateful value of the accordion items whose panels are expanded.
+     * The controlled stateful value of the accordion items whose contents are expanded.
      */
     value?: string[];
     /**
-     * The value of the items whose panels are expanded when the accordion is initially rendered. Use
+     * The value of the items whose contents are expanded when the accordion is initially rendered. Use
      * `defaultValue` if you do not need to control the state of an accordion.
      */
     defaultValue?: string[];
@@ -401,36 +401,36 @@ const AccordionTrigger = React.forwardRef((props, forwardedRef) => {
 AccordionTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * AccordionPanel
+ * AccordionContent
  * -----------------------------------------------------------------------------------------------*/
 
-const PANEL_NAME = 'AccordionPanel';
+const CONTENT_NAME = 'AccordionContent';
 
-type AccordionPanelOwnProps = Polymorphic.OwnProps<typeof CollapsiblePrimitive.Content>;
-type AccordionPanelPrimitive = Polymorphic.ForwardRefComponent<
+type AccordionContentOwnProps = Polymorphic.OwnProps<typeof CollapsiblePrimitive.Content>;
+type AccordionContentPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof CollapsiblePrimitive.Content>,
-  AccordionPanelOwnProps
+  AccordionContentOwnProps
 >;
 /**
- * `AccordionPanel` contains the collapsible content for an `AccordionItem`.
+ * `AccordionContent` contains the collapsible content for an `AccordionItem`.
  */
-const AccordionPanel = React.forwardRef((props, forwardedRef) => {
-  const itemContext = useAccordionItemContext(PANEL_NAME);
+const AccordionContent = React.forwardRef((props, forwardedRef) => {
+  const itemContext = useAccordionItemContext(CONTENT_NAME);
   return (
     <CollapsiblePrimitive.Content
       role="region"
       aria-labelledby={itemContext.triggerId}
       {...props}
       style={{
-        ['--radix-accordion-panel-height' as any]: 'var(--radix-collapsible-content-height)',
+        ['--radix-accordion-content-height' as any]: 'var(--radix-collapsible-content-height)',
         ...props.style,
       }}
       ref={forwardedRef}
     />
   );
-}) as AccordionPanelPrimitive;
+}) as AccordionContentPrimitive;
 
-AccordionPanel.displayName = PANEL_NAME;
+AccordionContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -446,25 +446,25 @@ const Root = Accordion;
 const Item = AccordionItem;
 const Header = AccordionHeader;
 const Trigger = AccordionTrigger;
-const Panel = AccordionPanel;
+const Content = AccordionContent;
 
 export {
   Accordion,
   AccordionItem,
   AccordionHeader,
   AccordionTrigger,
-  AccordionPanel,
+  AccordionContent,
   //
   Root,
   Item,
   Header,
   Trigger,
-  Panel,
+  Content,
 };
 export type {
   AccordionPrimitive,
   AccordionItemPrimitive,
   AccordionHeaderPrimitive,
   AccordionTriggerPrimitive,
-  AccordionPanelPrimitive,
+  AccordionContentPrimitive,
 };

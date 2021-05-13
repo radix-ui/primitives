@@ -55,16 +55,16 @@ describe('given a single Accordion', () => {
 
   describe('when clicking a trigger', () => {
     let trigger: HTMLElement;
-    let panelOne: HTMLElement | null;
+    let contentOne: HTMLElement | null;
 
     beforeEach(() => {
       trigger = rendered.getByText('Trigger One');
       fireEvent.click(trigger);
-      panelOne = rendered.getByText('Panel One');
+      contentOne = rendered.getByText('Content One');
     });
 
-    it('should show the panel', () => {
-      expect(panelOne).toBeVisible();
+    it('should show the content', () => {
+      expect(contentOne).toBeVisible();
     });
 
     it('should have no accessibility violations', async () => {
@@ -80,8 +80,8 @@ describe('given a single Accordion', () => {
         fireEvent.click(trigger);
       });
 
-      it('should close the panel', () => {
-        expect(panelOne).not.toBeVisible();
+      it('should close the content', () => {
+        expect(contentOne).not.toBeVisible();
       });
 
       it('should call onValueChange', () => {
@@ -95,17 +95,17 @@ describe('given a single Accordion', () => {
         fireEvent.click(trigger);
       });
 
-      it('should show the new panel', () => {
-        const panelTwo = rendered.getByText('Panel Two');
-        expect(panelTwo).toBeVisible();
+      it('should show the new content', () => {
+        const contentTwo = rendered.getByText('Content Two');
+        expect(contentTwo).toBeVisible();
       });
 
       it('should call onValueChange', () => {
         expect(handleValueChange).toHaveBeenCalledWith('Two');
       });
 
-      it('should hide the previous panel', () => {
-        expect(panelOne).not.toBeVisible();
+      it('should hide the previous content', () => {
+        expect(contentOne).not.toBeVisible();
       });
     });
   });
@@ -160,16 +160,16 @@ describe('given a multiple Accordion', () => {
 
   describe('when clicking a trigger', () => {
     let trigger: HTMLElement;
-    let panelOne: HTMLElement | null;
+    let contentOne: HTMLElement | null;
 
     beforeEach(() => {
       trigger = rendered.getByText('Trigger One');
       fireEvent.click(trigger);
-      panelOne = rendered.getByText('Panel One');
+      contentOne = rendered.getByText('Content One');
     });
 
-    it('should show the panel', () => {
-      expect(panelOne).toBeVisible();
+    it('should show the content', () => {
+      expect(contentOne).toBeVisible();
     });
 
     it('should have no accessibility violations', async () => {
@@ -185,8 +185,8 @@ describe('given a multiple Accordion', () => {
         fireEvent.click(trigger);
       });
 
-      it('should hide the panel', () => {
-        expect(panelOne).not.toBeVisible();
+      it('should hide the content', () => {
+        expect(contentOne).not.toBeVisible();
       });
 
       it('should call onValueChange', () => {
@@ -200,17 +200,17 @@ describe('given a multiple Accordion', () => {
         fireEvent.click(trigger);
       });
 
-      it('should show the new panel', () => {
-        const panelTwo = rendered.getByText('Panel Two');
-        expect(panelTwo).toBeVisible();
+      it('should show the new content', () => {
+        const contentTwo = rendered.getByText('Content Two');
+        expect(contentTwo).toBeVisible();
       });
 
       it('should call onValueChange', () => {
         expect(handleValueChange).toHaveBeenCalledWith(['One', 'Two']);
       });
 
-      it('should not hide the previous panel', () => {
-        expect(panelOne).toBeVisible();
+      it('should not hide the previous content', () => {
+        expect(contentOne).toBeVisible();
       });
     });
   });
@@ -224,7 +224,7 @@ function AccordionTest(props: React.ComponentProps<typeof Accordion.Root>) {
           <Accordion.Header data-testid={`header-${val.toLowerCase()}`}>
             <Accordion.Trigger>Trigger {val}</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Panel>Panel {val}</Accordion.Panel>
+          <Accordion.Content>Content {val}</Accordion.Content>
         </Accordion.Item>
       ))}
     </Accordion.Root>
