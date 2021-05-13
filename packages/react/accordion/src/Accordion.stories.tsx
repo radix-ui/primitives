@@ -5,7 +5,7 @@ import {
   Accordion,
   AccordionItem,
   AccordionHeader,
-  AccordionButton,
+  AccordionTrigger,
   AccordionPanel,
 } from './Accordion';
 
@@ -21,7 +21,7 @@ export const Single = () => {
       <Accordion type="single" className={rootClass}>
         <AccordionItem className={itemClass} value="one">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>One</AccordionButton>
+            <AccordionTrigger className={triggerClass}>One</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
@@ -31,7 +31,7 @@ export const Single = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="two">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Two</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Two</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
@@ -40,7 +40,7 @@ export const Single = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="three" disabled>
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Three (disabled)</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Three (disabled)</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
@@ -49,7 +49,7 @@ export const Single = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="four">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Four</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Four</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
@@ -63,7 +63,7 @@ export const Single = () => {
       <Accordion type="single" value={valueOne} onValueChange={setValueOne} className={rootClass}>
         <AccordionItem className={itemClass} value="one">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>One</AccordionButton>
+            <AccordionTrigger className={triggerClass}>One</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
@@ -73,7 +73,7 @@ export const Single = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="two">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Two</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Two</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
@@ -82,7 +82,7 @@ export const Single = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="three" disabled>
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Three (disabled)</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Three (disabled)</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
@@ -91,7 +91,7 @@ export const Single = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="four">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Four</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Four</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
@@ -110,7 +110,7 @@ export const Single = () => {
       >
         <AccordionItem className={itemClass} value="one">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>One</AccordionButton>
+            <AccordionTrigger className={triggerClass}>One</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
@@ -120,7 +120,7 @@ export const Single = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="two">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Two</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Two</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
@@ -129,7 +129,7 @@ export const Single = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="three" disabled>
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Three (disabled)</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Three (disabled)</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
@@ -138,7 +138,7 @@ export const Single = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="four">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Four</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Four</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
@@ -160,7 +160,7 @@ export const Multiple = () => {
       <Accordion type="multiple" className={rootClass}>
         <AccordionItem className={itemClass} value="one">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>One</AccordionButton>
+            <AccordionTrigger className={triggerClass}>One</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
@@ -170,7 +170,7 @@ export const Multiple = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="two">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Two</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Two</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
@@ -179,7 +179,7 @@ export const Multiple = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="three" disabled>
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Three (disabled)</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Three (disabled)</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
@@ -188,7 +188,7 @@ export const Multiple = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="four">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Four</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Four</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
@@ -202,7 +202,7 @@ export const Multiple = () => {
       <Accordion type="multiple" value={value} onValueChange={setValue} className={rootClass}>
         <AccordionItem className={itemClass} value="one">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>One</AccordionButton>
+            <AccordionTrigger className={triggerClass}>One</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
@@ -212,7 +212,7 @@ export const Multiple = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="two">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Two</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Two</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
@@ -221,7 +221,7 @@ export const Multiple = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="three" disabled>
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Three (disabled)</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Three (disabled)</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
@@ -230,7 +230,7 @@ export const Multiple = () => {
         </AccordionItem>
         <AccordionItem className={itemClass} value="four">
           <AccordionHeader className={headerClass}>
-            <AccordionButton className={buttonClass}>Four</AccordionButton>
+            <AccordionTrigger className={triggerClass}>Four</AccordionTrigger>
           </AccordionHeader>
           <AccordionPanel className={panelClass}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
@@ -284,7 +284,7 @@ export const Animated = () => {
         {values.map((value) => (
           <AccordionItem key={value} value={value} className={itemClass}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{value}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{value}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={animatedPanelClass}>
               {[...Array(count)].map((_, index) => (
@@ -313,7 +313,7 @@ export const OutsideViewport = () => (
     <Accordion type="single" className={rootClass}>
       <AccordionItem className={itemClass} value="one">
         <AccordionHeader className={headerClass}>
-          <AccordionButton className={buttonClass}>One</AccordionButton>
+          <AccordionTrigger className={triggerClass}>One</AccordionTrigger>
         </AccordionHeader>
         <AccordionPanel className={panelClass}>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
@@ -323,7 +323,7 @@ export const OutsideViewport = () => (
       </AccordionItem>
       <AccordionItem className={itemClass} value="two">
         <AccordionHeader className={headerClass}>
-          <AccordionButton className={buttonClass}>Two</AccordionButton>
+          <AccordionTrigger className={triggerClass}>Two</AccordionTrigger>
         </AccordionHeader>
         <AccordionPanel className={panelClass}>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
@@ -332,7 +332,7 @@ export const OutsideViewport = () => (
       </AccordionItem>
       <AccordionItem className={itemClass} value="three" disabled>
         <AccordionHeader className={headerClass}>
-          <AccordionButton className={buttonClass}>Three (disabled)</AccordionButton>
+          <AccordionTrigger className={triggerClass}>Three (disabled)</AccordionTrigger>
         </AccordionHeader>
         <AccordionPanel className={panelClass}>
           Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
@@ -341,7 +341,7 @@ export const OutsideViewport = () => (
       </AccordionItem>
       <AccordionItem className={itemClass} value="four">
         <AccordionHeader className={headerClass}>
-          <AccordionButton className={buttonClass}>Four</AccordionButton>
+          <AccordionTrigger className={triggerClass}>Four</AccordionTrigger>
         </AccordionHeader>
         <AccordionPanel className={panelClass}>
           Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
@@ -364,7 +364,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -380,7 +380,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -396,7 +396,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -412,7 +412,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -429,7 +429,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -445,7 +445,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -461,7 +461,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -478,7 +478,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item} disabled={item === 'Two'}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -494,7 +494,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item} disabled={item === 'Two'}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -510,7 +510,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemClass} value={item}>
             <AccordionHeader className={headerClass}>
-              <AccordionButton className={buttonClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelClass} forceMount>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -527,7 +527,7 @@ export const Chromatic = () => {
         {items.map((item) => (
           <AccordionItem key={item} className={itemAttrClass} value={item}>
             <AccordionHeader className={headerAttrClass}>
-              <AccordionButton className={buttonAttrClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerAttrClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelAttrClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -548,7 +548,7 @@ export const Chromatic = () => {
             disabled={['Two', 'Four'].includes(item)}
           >
             <AccordionHeader className={headerAttrClass}>
-              <AccordionButton className={buttonAttrClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerAttrClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelAttrClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -569,7 +569,7 @@ export const Chromatic = () => {
             disabled={['Two', 'Four'].includes(item) ? false : undefined}
           >
             <AccordionHeader className={headerAttrClass}>
-              <AccordionButton className={buttonAttrClass}>{item}</AccordionButton>
+              <AccordionTrigger className={triggerAttrClass}>{item}</AccordionTrigger>
             </AccordionHeader>
             <AccordionPanel className={panelAttrClass}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -597,15 +597,15 @@ const headerClass = css({
   margin: 0,
 });
 
-const RECOMMENDED_CSS__ACCORDION__BUTTON: any = {
+const RECOMMENDED_CSS__ACCORDION__TRIGGER: any = {
   // because it's a button, we want to stretch it
   width: '100%',
   // and remove center text alignment in favour of inheriting
   textAlign: 'inherit',
 };
 
-const buttonClass = css({
-  ...RECOMMENDED_CSS__ACCORDION__BUTTON,
+const triggerClass = css({
+  ...RECOMMENDED_CSS__ACCORDION__TRIGGER,
   boxSizing: 'border-box',
   appearance: 'none',
   border: 'none',
@@ -676,7 +676,7 @@ const styles = {
 const rootAttrClass = css(styles);
 const itemAttrClass = css(styles);
 const headerAttrClass = css(styles);
-const buttonAttrClass = css(styles);
+const triggerAttrClass = css(styles);
 const panelAttrClass = css({
   // ensure we can see the content (because it has `hidden` attribute)
   display: 'block',

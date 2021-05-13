@@ -168,7 +168,7 @@ const AccordionMultiple = React.forwardRef((props, forwardedRef) => {
 /* -----------------------------------------------------------------------------------------------*/
 
 type AccordionImplContextValue = {
-  buttonNodesRef: React.MutableRefObject<Set<HTMLElement | null>>;
+  triggerNodesRef: React.MutableRefObject<Set<HTMLElement | null>>;
   disabled?: boolean;
 };
 
@@ -195,7 +195,7 @@ type AccordionImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const AccordionImpl = React.forwardRef((props, forwardedRef) => {
   const { disabled, ...accordionProps } = props;
-  const buttonNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionButton>>>(new Set());
+  const triggerNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionTrigger>>>(new Set());
   const accordionRef = React.useRef<React.ElementRef<typeof AccordionImpl>>(null);
   const composedRefs = useComposedRefs(accordionRef, forwardedRef);
 
@@ -207,40 +207,40 @@ const AccordionImpl = React.forwardRef((props, forwardedRef) => {
       return;
     }
 
-    const buttonNodes = [...buttonNodesRef.current].filter((node) => !node?.disabled);
-    const buttonCount = buttonNodes.length;
-    const buttonIndex = buttonNodes.indexOf(target);
+    const triggerNodes = [...triggerNodesRef.current].filter((node) => !node?.disabled);
+    const triggerCount = triggerNodes.length;
+    const triggerIndex = triggerNodes.indexOf(target);
 
-    if (buttonIndex === -1) return;
+    if (triggerIndex === -1) return;
 
     // Prevents page scroll while user is navigating
     event.preventDefault();
 
-    let nextIndex = buttonIndex;
+    let nextIndex = triggerIndex;
     switch (event.key) {
       case 'Home':
         nextIndex = 0;
         break;
       case 'End':
-        nextIndex = buttonCount - 1;
+        nextIndex = triggerCount - 1;
         break;
       case 'ArrowDown':
-        nextIndex = buttonIndex + 1;
+        nextIndex = triggerIndex + 1;
         break;
       case 'ArrowUp':
-        nextIndex = buttonIndex - 1;
+        nextIndex = triggerIndex - 1;
         if (nextIndex < 0) {
-          nextIndex = buttonCount - 1;
+          nextIndex = triggerCount - 1;
         }
         break;
     }
 
-    const clampedIndex = nextIndex % buttonCount;
-    buttonNodes[clampedIndex]?.focus();
+    const clampedIndex = nextIndex % triggerCount;
+    triggerNodes[clampedIndex]?.focus();
   });
 
   return (
-    <AccordionImplProvider disabled={disabled} buttonNodesRef={buttonNodesRef}>
+    <AccordionImplProvider disabled={disabled} triggerNodesRef={triggerNodesRef}>
       <Primitive
         {...accordionProps}
         ref={composedRefs}
@@ -280,7 +280,7 @@ type AccordionItemPrimitive = Polymorphic.ForwardRefComponent<
   AccordionItemOwnProps
 >;
 
-type AccordionItemContextValue = { open?: boolean; disabled?: boolean; buttonId: string };
+type AccordionItemContextValue = { open?: boolean; disabled?: boolean; triggerId: string };
 
 const [AccordionItemProvider, useAccordionItemContext] = createContext<AccordionItemContextValue>(
   ITEM_NAME
@@ -293,12 +293,12 @@ const AccordionItem = React.forwardRef((props, forwardedRef) => {
   const { value, ...accordionItemProps } = props;
   const accordionContext = useAccordionContext(ITEM_NAME);
   const valueContext = useAccordionValueContext(ITEM_NAME);
-  const buttonId = useId();
+  const triggerId = useId();
   const open = (value && valueContext.value.includes(value)) || false;
   const disabled = accordionContext.disabled || props.disabled;
 
   return (
-    <AccordionItemProvider open={open} disabled={disabled} buttonId={buttonId}>
+    <AccordionItemProvider open={open} disabled={disabled} triggerId={triggerId}>
       <CollapsiblePrimitive.Root
         data-state={open ? 'open' : 'closed'}
         {...accordionItemProps}
@@ -338,7 +338,7 @@ type AccordionHeaderPrimitive = Polymorphic.ForwardRefComponent<
  */
 const AccordionHeader = React.forwardRef((props, forwardedRef) => {
   const { as = HEADER_DEFAULT_TAG, ...headerProps } = props;
-  const itemContext = useAccordionItemContext(BUTTON_NAME);
+  const itemContext = useAccordionItemContext(HEADER_NAME);
   return (
     <Primitive
       data-state={getState(itemContext.open)}
@@ -353,52 +353,52 @@ const AccordionHeader = React.forwardRef((props, forwardedRef) => {
 AccordionHeader.displayName = HEADER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * AccordionButton
+ * AccordionTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const BUTTON_NAME = 'AccordionButton';
+const TRIGGER_NAME = 'AccordionTrigger';
 
-type AccordionButtonOwnProps = Polymorphic.OwnProps<typeof CollapsiblePrimitive.Button>;
-type AccordionButtonPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof CollapsiblePrimitive.Button>,
-  AccordionButtonOwnProps
+type AccordionTriggerOwnProps = Polymorphic.OwnProps<typeof CollapsiblePrimitive.Trigger>;
+type AccordionTriggerPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof CollapsiblePrimitive.Trigger>,
+  AccordionTriggerOwnProps
 >;
 
 /**
- * `AccordionButton` is the trigger that toggles the collapsed state of an `AccordionItem`. It
+ * `AccordionTrigger` is the trigger that toggles the collapsed state of an `AccordionItem`. It
  * should always be nested inside of an `AccordionHeader`.
  */
-const AccordionButton = React.forwardRef((props, forwardedRef) => {
-  const { buttonNodesRef } = useAccordionContext(BUTTON_NAME);
-  const itemContext = useAccordionItemContext(BUTTON_NAME);
+const AccordionTrigger = React.forwardRef((props, forwardedRef) => {
+  const { triggerNodesRef } = useAccordionContext(TRIGGER_NAME);
+  const itemContext = useAccordionItemContext(TRIGGER_NAME);
 
-  const ref = React.useRef<React.ElementRef<typeof CollapsiblePrimitive.Button>>(null);
+  const ref = React.useRef<React.ElementRef<typeof CollapsiblePrimitive.Trigger>>(null);
   const composedRefs = useComposedRefs(ref, forwardedRef);
 
   React.useEffect(() => {
-    const buttonNodes = buttonNodesRef.current;
-    const buttonNode = ref.current;
+    const triggerNodes = triggerNodesRef.current;
+    const triggerNode = ref.current;
 
-    if (buttonNode) {
-      buttonNodes.add(buttonNode);
+    if (triggerNode) {
+      triggerNodes.add(triggerNode);
       return () => {
-        buttonNodes.delete(buttonNode);
+        triggerNodes.delete(triggerNode);
       };
     }
     return;
-  }, [buttonNodesRef]);
+  }, [triggerNodesRef]);
 
   return (
-    <CollapsiblePrimitive.Button
+    <CollapsiblePrimitive.Trigger
       aria-disabled={itemContext.open || undefined}
-      id={itemContext.buttonId}
+      id={itemContext.triggerId}
       {...props}
       ref={composedRefs}
     />
   );
-}) as AccordionButtonPrimitive;
+}) as AccordionTriggerPrimitive;
 
-AccordionButton.displayName = BUTTON_NAME;
+AccordionTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AccordionPanel
@@ -419,7 +419,7 @@ const AccordionPanel = React.forwardRef((props, forwardedRef) => {
   return (
     <CollapsiblePrimitive.Content
       role="region"
-      aria-labelledby={itemContext.buttonId}
+      aria-labelledby={itemContext.triggerId}
       {...props}
       style={{
         ['--radix-accordion-panel-height' as any]: 'var(--radix-collapsible-content-height)',
@@ -445,26 +445,26 @@ function isButton(element: HTMLElement): element is HTMLButtonElement {
 const Root = Accordion;
 const Item = AccordionItem;
 const Header = AccordionHeader;
-const Button = AccordionButton;
+const Trigger = AccordionTrigger;
 const Panel = AccordionPanel;
 
 export {
   Accordion,
   AccordionItem,
   AccordionHeader,
-  AccordionButton,
+  AccordionTrigger,
   AccordionPanel,
   //
   Root,
   Item,
   Header,
-  Button,
+  Trigger,
   Panel,
 };
 export type {
   AccordionPrimitive,
   AccordionItemPrimitive,
   AccordionHeaderPrimitive,
-  AccordionButtonPrimitive,
+  AccordionTriggerPrimitive,
   AccordionPanelPrimitive,
 };
