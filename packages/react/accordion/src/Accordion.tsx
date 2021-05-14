@@ -27,12 +27,16 @@ type AccordionPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const Accordion = React.forwardRef((props, forwardedRef) => {
-  if (props.type === 'single') {
-    return <AccordionSingle {...props} ref={forwardedRef} />;
+  const { type, ...accordionProps } = props;
+  const singleProps = accordionProps as React.ComponentProps<typeof AccordionSingle>;
+  const multipleProps = accordionProps as React.ComponentProps<typeof AccordionMultiple>;
+
+  if (type === 'single') {
+    return <AccordionSingle {...singleProps} ref={forwardedRef} />;
   }
 
-  if (props.type === 'multiple') {
-    return <AccordionMultiple {...props} ref={forwardedRef} />;
+  if (type === 'multiple') {
+    return <AccordionMultiple {...multipleProps} ref={forwardedRef} />;
   }
 
   throw new Error(`Missing prop \`type\` expected on \`${ACCORDION_NAME}\``);
@@ -94,7 +98,6 @@ const AccordionSingle = React.forwardRef((props, forwardedRef) => {
     defaultValue,
     onValueChange = () => {},
     collapsible = false,
-    type, // pulling it out as we don't need it and don't want it to end up on the DOM element
     ...accordionSingleProps
   } = props;
 
@@ -150,7 +153,6 @@ const AccordionMultiple = React.forwardRef((props, forwardedRef) => {
     value: valueProp,
     defaultValue,
     onValueChange = () => {},
-    type, // pulling it out as we don't need it and don't want it to end up on the DOM element
     ...accordionMultipleProps
   } = props;
 
