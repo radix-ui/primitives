@@ -3,6 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useSize } from '@radix-ui/react-use-size';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
@@ -49,6 +50,7 @@ const Radio = React.forwardRef((props, forwardedRef) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
+  const buttonSize = useSize(button);
   const labelId = useLabelContext(button);
   const labelledBy = ariaLabelledby || labelId;
   const [checked = false, setChecked] = useControllableState({
@@ -71,7 +73,13 @@ const Radio = React.forwardRef((props, forwardedRef) => {
         required={required}
         disabled={disabled}
         value={value}
-        style={{ display: 'none' }}
+        style={{
+          position: 'absolute',
+          pointerEvents: 'none',
+          opacity: 0,
+          margin: 0,
+          ...buttonSize,
+        }}
         onChange={composeEventHandlers(onCheckedChange, (event) => {
           setChecked(event.target.checked);
         })}

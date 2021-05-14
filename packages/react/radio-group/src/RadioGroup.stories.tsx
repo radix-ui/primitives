@@ -39,7 +39,7 @@ export const Controlled = () => {
     <RadioGroup
       className={rootClass}
       value={value}
-      onValueChange={(event: React.ChangeEvent<HTMLInputElement>) => setValue(event.target.value)}
+      onValueChange={(event) => setValue(event.target.value)}
     >
       <RadioGroupItem className={itemClass} value="1">
         <RadioGroupIndicator className={indicatorClass} />
@@ -79,6 +79,52 @@ export const Unset = () => (
     </RadioGroup>
   </Label>
 );
+
+export const WithinForm = () => {
+  const [data, setData] = React.useState({ optional: '', required: '' });
+
+  return (
+    <form
+      onSubmit={(event) => event.preventDefault()}
+      onChange={(event) => {
+        const radio = event.target as HTMLInputElement;
+        setData((prevData) => ({ ...prevData, [radio.name]: radio.value }));
+      }}
+    >
+      <p>optional value: {data.optional}</p>
+
+      <RadioGroup className={rootClass} name="optional">
+        <RadioGroupItem className={itemClass} value="1">
+          <RadioGroupIndicator className={indicatorClass} />
+        </RadioGroupItem>
+        <RadioGroupItem className={itemClass} value="2">
+          <RadioGroupIndicator className={indicatorClass} />
+        </RadioGroupItem>
+        <RadioGroupItem className={itemClass} value="3">
+          <RadioGroupIndicator className={indicatorClass} />
+        </RadioGroupItem>
+      </RadioGroup>
+
+      <p>required value: {data.required}</p>
+      <RadioGroup className={rootClass} name="required" required>
+        <RadioGroupItem className={itemClass} value="1">
+          <RadioGroupIndicator className={indicatorClass} />
+        </RadioGroupItem>
+        <RadioGroupItem className={itemClass} value="2">
+          <RadioGroupIndicator className={indicatorClass} />
+        </RadioGroupItem>
+        <RadioGroupItem className={itemClass} value="3">
+          <RadioGroupIndicator className={indicatorClass} />
+        </RadioGroupItem>
+      </RadioGroup>
+
+      <br />
+      <br />
+
+      <button>Submit</button>
+    </form>
+  );
+};
 
 export const Animated = () => (
   <Label>
