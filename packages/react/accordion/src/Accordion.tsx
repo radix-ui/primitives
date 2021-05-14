@@ -382,7 +382,6 @@ type AccordionTriggerPrimitive = Polymorphic.ForwardRefComponent<
  */
 const AccordionTrigger = React.forwardRef((props, forwardedRef) => {
   const { triggerNodesRef } = useAccordionContext(TRIGGER_NAME);
-  const valueContext = useAccordionValueContext(TRIGGER_NAME);
   const itemContext = useAccordionItemContext(TRIGGER_NAME);
   const collapsible = React.useContext(AccordionCollapsibleContext);
 
@@ -404,9 +403,7 @@ const AccordionTrigger = React.forwardRef((props, forwardedRef) => {
 
   return (
     <CollapsiblePrimitive.Trigger
-      aria-disabled={
-        (itemContext.open && valueContext.value.length === 1 && !collapsible) || undefined
-      }
+      aria-disabled={(itemContext.open && !collapsible) || undefined}
       id={itemContext.triggerId}
       {...props}
       ref={composedRefs}
