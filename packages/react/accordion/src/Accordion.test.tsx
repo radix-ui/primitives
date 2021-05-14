@@ -20,51 +20,51 @@ describe('given a single Accordion', () => {
 
   describe('when navigating by keyboard', () => {
     beforeEach(() => {
-      const button = rendered.getByText('Button One');
-      button.focus();
+      const trigger = rendered.getByText('Trigger One');
+      trigger.focus();
     });
 
     describe('on `ArrowDown`', () => {
-      it('should move focus to the next button', () => {
+      it('should move focus to the next trigger', () => {
         fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
-        expect(rendered.getByText('Button Two')).toHaveFocus();
+        expect(rendered.getByText('Trigger Two')).toHaveFocus();
       });
     });
 
     describe('on `ArrowUp`', () => {
-      it('should move focus to the previous button', () => {
+      it('should move focus to the previous trigger', () => {
         fireEvent.keyDown(document.activeElement!, { key: 'ArrowUp' });
-        expect(rendered.getByText('Button Three')).toHaveFocus();
+        expect(rendered.getByText('Trigger Three')).toHaveFocus();
       });
     });
 
     describe('on `Home`', () => {
-      it('should move focus to the first button', () => {
+      it('should move focus to the first trigger', () => {
         fireEvent.keyDown(document.activeElement!, { key: 'Home' });
-        expect(rendered.getByText('Button One')).toHaveFocus();
+        expect(rendered.getByText('Trigger One')).toHaveFocus();
       });
     });
 
     describe('on `End`', () => {
-      it('should move focus to the last button', () => {
+      it('should move focus to the last trigger', () => {
         fireEvent.keyDown(document.activeElement!, { key: 'End' });
-        expect(rendered.getByText('Button Three')).toHaveFocus();
+        expect(rendered.getByText('Trigger Three')).toHaveFocus();
       });
     });
   });
 
-  describe('when clicking a button', () => {
-    let button: HTMLElement;
-    let panelOne: HTMLElement | null;
+  describe('when clicking a trigger', () => {
+    let trigger: HTMLElement;
+    let contentOne: HTMLElement | null;
 
     beforeEach(() => {
-      button = rendered.getByText('Button One');
-      fireEvent.click(button);
-      panelOne = rendered.getByText('Panel One');
+      trigger = rendered.getByText('Trigger One');
+      fireEvent.click(trigger);
+      contentOne = rendered.getByText('Content One');
     });
 
-    it('should show the panel', () => {
-      expect(panelOne).toBeVisible();
+    it('should show the content', () => {
+      expect(contentOne).toBeVisible();
     });
 
     it('should have no accessibility violations', async () => {
@@ -75,37 +75,37 @@ describe('given a single Accordion', () => {
       expect(handleValueChange).toHaveBeenCalledWith('One');
     });
 
-    describe('then clicking the button again', () => {
+    describe('then clicking the trigger again', () => {
       beforeEach(() => {
-        fireEvent.click(button);
+        fireEvent.click(trigger);
       });
 
-      it('should close the panel', () => {
-        expect(panelOne).not.toBeVisible();
+      it('should not close the content', () => {
+        expect(contentOne).toBeVisible();
       });
 
-      it('should call onValueChange', () => {
-        expect(handleValueChange).toHaveBeenCalledWith('');
+      it('should not call onValueChange', () => {
+        expect(handleValueChange).toHaveBeenCalledTimes(1);
       });
     });
 
-    describe('then clicking another button', () => {
+    describe('then clicking another trigger', () => {
       beforeEach(() => {
-        const button = rendered.getByText('Button Two');
-        fireEvent.click(button);
+        const trigger = rendered.getByText('Trigger Two');
+        fireEvent.click(trigger);
       });
 
-      it('should show the new panel', () => {
-        const panelTwo = rendered.getByText('Panel Two');
-        expect(panelTwo).toBeVisible();
+      it('should show the new content', () => {
+        const contentTwo = rendered.getByText('Content Two');
+        expect(contentTwo).toBeVisible();
       });
 
       it('should call onValueChange', () => {
         expect(handleValueChange).toHaveBeenCalledWith('Two');
       });
 
-      it('should hide the previous panel', () => {
-        expect(panelOne).not.toBeVisible();
+      it('should hide the previous content', () => {
+        expect(contentOne).not.toBeVisible();
       });
     });
   });
@@ -126,50 +126,50 @@ describe('given a multiple Accordion', () => {
 
   describe('when navigating by keyboard', () => {
     beforeEach(() => {
-      rendered.getByText('Button One').focus();
+      rendered.getByText('Trigger One').focus();
     });
 
     describe('on `ArrowDown`', () => {
-      it('should move focus to the next button', () => {
+      it('should move focus to the next trigger', () => {
         fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
-        expect(rendered.getByText('Button Two')).toHaveFocus();
+        expect(rendered.getByText('Trigger Two')).toHaveFocus();
       });
     });
 
     describe('on `ArrowUp`', () => {
-      it('should move focus to the previous button', () => {
+      it('should move focus to the previous trigger', () => {
         fireEvent.keyDown(document.activeElement!, { key: 'ArrowUp' });
-        expect(rendered.getByText('Button Three')).toHaveFocus();
+        expect(rendered.getByText('Trigger Three')).toHaveFocus();
       });
     });
 
     describe('on `Home`', () => {
-      it('should move focus to the first button', () => {
+      it('should move focus to the first trigger', () => {
         fireEvent.keyDown(document.activeElement!, { key: 'Home' });
-        expect(rendered.getByText('Button One')).toHaveFocus();
+        expect(rendered.getByText('Trigger One')).toHaveFocus();
       });
     });
 
     describe('on `End`', () => {
-      it('should move focus to the last button', () => {
+      it('should move focus to the last trigger', () => {
         fireEvent.keyDown(document.activeElement!, { key: 'End' });
-        expect(rendered.getByText('Button Three')).toHaveFocus();
+        expect(rendered.getByText('Trigger Three')).toHaveFocus();
       });
     });
   });
 
-  describe('when clicking a button', () => {
-    let button: HTMLElement;
-    let panelOne: HTMLElement | null;
+  describe('when clicking a trigger', () => {
+    let trigger: HTMLElement;
+    let contentOne: HTMLElement | null;
 
     beforeEach(() => {
-      button = rendered.getByText('Button One');
-      fireEvent.click(button);
-      panelOne = rendered.getByText('Panel One');
+      trigger = rendered.getByText('Trigger One');
+      fireEvent.click(trigger);
+      contentOne = rendered.getByText('Content One');
     });
 
-    it('should show the panel', () => {
-      expect(panelOne).toBeVisible();
+    it('should show the content', () => {
+      expect(contentOne).toBeVisible();
     });
 
     it('should have no accessibility violations', async () => {
@@ -180,13 +180,13 @@ describe('given a multiple Accordion', () => {
       expect(handleValueChange).toHaveBeenCalledWith(['One']);
     });
 
-    describe('then clicking the button again', () => {
+    describe('then clicking the trigger again', () => {
       beforeEach(() => {
-        fireEvent.click(button);
+        fireEvent.click(trigger);
       });
 
-      it('should hide the panel', () => {
-        expect(panelOne).not.toBeVisible();
+      it('should hide the content', () => {
+        expect(contentOne).not.toBeVisible();
       });
 
       it('should call onValueChange', () => {
@@ -194,23 +194,23 @@ describe('given a multiple Accordion', () => {
       });
     });
 
-    describe('then clicking another button', () => {
+    describe('then clicking another trigger', () => {
       beforeEach(() => {
-        const button = rendered.getByText('Button Two');
-        fireEvent.click(button);
+        const trigger = rendered.getByText('Trigger Two');
+        fireEvent.click(trigger);
       });
 
-      it('should show the new panel', () => {
-        const panelTwo = rendered.getByText('Panel Two');
-        expect(panelTwo).toBeVisible();
+      it('should show the new content', () => {
+        const contentTwo = rendered.getByText('Content Two');
+        expect(contentTwo).toBeVisible();
       });
 
       it('should call onValueChange', () => {
         expect(handleValueChange).toHaveBeenCalledWith(['One', 'Two']);
       });
 
-      it('should not hide the previous panel', () => {
-        expect(panelOne).toBeVisible();
+      it('should not hide the previous content', () => {
+        expect(contentOne).toBeVisible();
       });
     });
   });
@@ -222,9 +222,9 @@ function AccordionTest(props: React.ComponentProps<typeof Accordion.Root>) {
       {ITEMS.map((val) => (
         <Accordion.Item value={val} key={val} data-testid={`item-${val.toLowerCase()}`}>
           <Accordion.Header data-testid={`header-${val.toLowerCase()}`}>
-            <Accordion.Button>Button {val}</Accordion.Button>
+            <Accordion.Trigger>Trigger {val}</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Panel>Panel {val}</Accordion.Panel>
+          <Accordion.Content>Content {val}</Accordion.Content>
         </Accordion.Item>
       ))}
     </Accordion.Root>

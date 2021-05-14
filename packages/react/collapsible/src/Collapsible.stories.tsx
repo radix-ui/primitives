@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { css } from '../../../../stitches.config';
-import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './Collapsible';
 
 export default { title: 'Components/Collapsible' };
 
 export const Styled = () => (
   <Collapsible className={rootClass}>
-    <CollapsibleButton className={buttonClass}>Button</CollapsibleButton>
+    <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
     <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
   </Collapsible>
 );
@@ -14,7 +14,7 @@ export const Styled = () => (
 export const Animated = () => {
   return (
     <Collapsible className={rootClass}>
-      <CollapsibleButton className={buttonClass}>Button</CollapsibleButton>
+      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
       <CollapsibleContent className={animatedContentClass}>
         <div style={{ padding: 10 }}>Content 1</div>
       </CollapsibleContent>
@@ -27,51 +27,51 @@ export const Chromatic = () => (
     <h1>Uncontrolled</h1>
     <h2>Closed</h2>
     <Collapsible className={rootClass}>
-      <CollapsibleButton className={buttonClass}>Button</CollapsibleButton>
+      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
       <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
     </Collapsible>
 
     <h2>Open</h2>
     <Collapsible className={rootClass} defaultOpen>
-      <CollapsibleButton className={buttonClass}>Button</CollapsibleButton>
+      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
       <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
     </Collapsible>
 
     <h1>Controlled</h1>
     <h2>Closed</h2>
     <Collapsible className={rootClass} open={false}>
-      <CollapsibleButton className={buttonClass}>Button</CollapsibleButton>
+      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
       <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
     </Collapsible>
 
     <h2>Open</h2>
     <Collapsible className={rootClass} open>
-      <CollapsibleButton className={buttonClass}>Button</CollapsibleButton>
+      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
       <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
     </Collapsible>
 
     <h1>Disabled</h1>
     <Collapsible className={rootClass} disabled>
-      <CollapsibleButton className={buttonClass}>Button</CollapsibleButton>
+      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
       <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
     </Collapsible>
 
     <h1>State attributes</h1>
     <h2>Closed</h2>
     <Collapsible className={rootAttrClass}>
-      <CollapsibleButton className={buttonAttrClass}>Button</CollapsibleButton>
+      <CollapsibleTrigger className={triggerAttrClass}>Trigger</CollapsibleTrigger>
       <CollapsibleContent className={contentAttrClass}>Content 1</CollapsibleContent>
     </Collapsible>
 
     <h2>Open</h2>
     <Collapsible className={rootAttrClass} defaultOpen>
-      <CollapsibleButton className={buttonAttrClass}>Button</CollapsibleButton>
+      <CollapsibleTrigger className={triggerAttrClass}>Trigger</CollapsibleTrigger>
       <CollapsibleContent className={contentAttrClass}>Content 1</CollapsibleContent>
     </Collapsible>
 
     <h2>Disabled</h2>
     <Collapsible className={rootAttrClass} defaultOpen disabled>
-      <CollapsibleButton className={buttonAttrClass}>Button</CollapsibleButton>
+      <CollapsibleTrigger className={triggerAttrClass}>Trigger</CollapsibleTrigger>
       <CollapsibleContent className={contentAttrClass}>Content 1</CollapsibleContent>
     </Collapsible>
   </>
@@ -83,15 +83,15 @@ const rootClass = css({
   fontFamily: 'sans-serif',
 });
 
-const RECOMMENDED_CSS__COLLAPSIBLE__BUTTON: any = {
+const RECOMMENDED_CSS__COLLAPSIBLE__TRIGGER: any = {
   // because it's a button, we want to stretch it
   width: '100%',
   // and remove center text alignment in favour of inheriting
   textAlign: 'inherit',
 };
 
-const buttonClass = css({
-  ...RECOMMENDED_CSS__COLLAPSIBLE__BUTTON,
+const triggerClass = css({
+  ...RECOMMENDED_CSS__COLLAPSIBLE__TRIGGER,
   boxSizing: 'border-box',
   appearance: 'none',
   border: 'none',
@@ -160,7 +160,7 @@ const styles = {
   '&:disabled': { opacity: 0.5 },
 };
 const rootAttrClass = css(styles);
-const buttonAttrClass = css(styles);
+const triggerAttrClass = css(styles);
 const contentAttrClass = css({
   // ensure we can see the content (because it has `hidden` attribute)
   display: 'block',

@@ -71,21 +71,21 @@ const Collapsible = React.forwardRef((props, forwardedRef) => {
 Collapsible.displayName = COLLAPSIBLE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * CollapsibleButton
+ * CollapsibleTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const BUTTON_NAME = 'CollapsibleButton';
-const BUTTON_DEFAULT_TAG = 'button';
+const TRIGGER_NAME = 'CollapsibleTrigger';
+const TRIGGER_DEFAULT_TAG = 'button';
 
-type CollapsibleButtonOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type CollapsibleButtonPrimitive = Polymorphic.ForwardRefComponent<
-  typeof BUTTON_DEFAULT_TAG,
-  CollapsibleButtonOwnProps
+type CollapsibleTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type CollapsibleTriggerPrimitive = Polymorphic.ForwardRefComponent<
+  typeof TRIGGER_DEFAULT_TAG,
+  CollapsibleTriggerOwnProps
 >;
 
-const CollapsibleButton = React.forwardRef((props, forwardedRef) => {
-  const { as = BUTTON_DEFAULT_TAG, onClick, ...buttonProps } = props;
-  const context = useCollapsibleContext(BUTTON_NAME);
+const CollapsibleTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, onClick, ...triggerProps } = props;
+  const context = useCollapsibleContext(TRIGGER_NAME);
 
   return (
     <Primitive
@@ -94,15 +94,15 @@ const CollapsibleButton = React.forwardRef((props, forwardedRef) => {
       data-state={getState(context.open)}
       data-disabled={context.disabled ? '' : undefined}
       disabled={context.disabled}
-      {...buttonProps}
+      {...triggerProps}
       as={as}
       ref={forwardedRef}
       onClick={composeEventHandlers(onClick, context.onOpenToggle)}
     />
   );
-}) as CollapsibleButtonPrimitive;
+}) as CollapsibleTriggerPrimitive;
 
-CollapsibleButton.displayName = BUTTON_NAME;
+CollapsibleTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * CollapsibleContent
@@ -213,15 +213,15 @@ function getState(open?: boolean) {
 }
 
 const Root = Collapsible;
-const Button = CollapsibleButton;
+const Trigger = CollapsibleTrigger;
 const Content = CollapsibleContent;
 
 export {
   Collapsible,
-  CollapsibleButton,
+  CollapsibleTrigger,
   CollapsibleContent,
   //
   Root,
-  Button,
+  Trigger,
   Content,
 };

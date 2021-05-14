@@ -2,35 +2,35 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent } from '@testing-library/react';
-import { Collapsible, CollapsibleButton, CollapsibleContent } from './Collapsible';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './Collapsible';
 
-const BUTTON_TEXT = 'Button';
+const TRIGGER_TEXT = 'Trigger';
 const CONTENT_TEXT = 'Content';
 
 const CollapsibleTest = (props: React.ComponentProps<typeof Collapsible>) => (
   <Collapsible {...props}>
-    <CollapsibleButton>{BUTTON_TEXT}</CollapsibleButton>
+    <CollapsibleTrigger>{TRIGGER_TEXT}</CollapsibleTrigger>
     <CollapsibleContent>{CONTENT_TEXT}</CollapsibleContent>
   </Collapsible>
 );
 
 describe('given a default Collapsible', () => {
   let rendered: RenderResult;
-  let button: HTMLElement;
+  let trigger: HTMLElement;
   let content: HTMLElement | null;
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest />);
-    button = rendered.getByText(BUTTON_TEXT);
+    trigger = rendered.getByText(TRIGGER_TEXT);
   });
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
-  describe('when clicking the button', () => {
+  describe('when clicking the trigger', () => {
     beforeEach(async () => {
-      fireEvent.click(button);
+      fireEvent.click(trigger);
       content = rendered.queryByText(CONTENT_TEXT);
     });
 
@@ -38,9 +38,9 @@ describe('given a default Collapsible', () => {
       expect(content).toBeVisible();
     });
 
-    describe('and clicking the button again', () => {
+    describe('and clicking the trigger again', () => {
       beforeEach(() => {
-        fireEvent.click(button);
+        fireEvent.click(trigger);
       });
 
       it('should close the content', () => {
@@ -59,11 +59,11 @@ describe('given an open uncontrolled Collapsible', () => {
     rendered = render(<CollapsibleTest defaultOpen onOpenChange={onOpenChange} />);
   });
 
-  describe('when clicking the button', () => {
+  describe('when clicking the trigger', () => {
     beforeEach(async () => {
-      const button = rendered.getByText(BUTTON_TEXT);
+      const trigger = rendered.getByText(TRIGGER_TEXT);
       content = rendered.getByText(CONTENT_TEXT);
-      fireEvent.click(button);
+      fireEvent.click(trigger);
     });
 
     it('should close the content', () => {
@@ -86,10 +86,10 @@ describe('given an open controlled Collapsible', () => {
     content = rendered.getByText(CONTENT_TEXT);
   });
 
-  describe('when clicking the button', () => {
+  describe('when clicking the trigger', () => {
     beforeEach(() => {
-      const button = rendered.getByText(BUTTON_TEXT);
-      fireEvent.click(button);
+      const trigger = rendered.getByText(TRIGGER_TEXT);
+      fireEvent.click(trigger);
     });
 
     it('should call `onOpenChange` prop with `false` value', () => {
