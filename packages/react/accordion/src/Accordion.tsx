@@ -17,8 +17,8 @@ const ACCORDION_NAME = 'Accordion';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
 
 type AccordionOwnProps =
-  | Polymorphic.OwnProps<typeof AccordionSingle>
-  | Polymorphic.OwnProps<typeof AccordionMultiple>;
+  | ({ type: 'single' } & Polymorphic.OwnProps<typeof AccordionSingle>)
+  | ({ type: 'multiple' } & Polymorphic.OwnProps<typeof AccordionMultiple>);
 
 type AccordionPrimitive = Polymorphic.ForwardRefComponent<
   | Polymorphic.IntrinsicElement<typeof AccordionSingle>
@@ -28,14 +28,14 @@ type AccordionPrimitive = Polymorphic.ForwardRefComponent<
 
 const Accordion = React.forwardRef((props, forwardedRef) => {
   const { type, ...accordionProps } = props;
-  const singleProps = accordionProps as React.ComponentProps<typeof AccordionSingle>;
-  const multipleProps = accordionProps as React.ComponentProps<typeof AccordionMultiple>;
 
   if (type === 'single') {
+    const singleProps = accordionProps as React.ComponentProps<typeof AccordionSingle>;
     return <AccordionSingle {...singleProps} ref={forwardedRef} />;
   }
 
   if (type === 'multiple') {
+    const multipleProps = accordionProps as React.ComponentProps<typeof AccordionMultiple>;
     return <AccordionMultiple {...multipleProps} ref={forwardedRef} />;
   }
 
@@ -62,10 +62,6 @@ const AccordionCollapsibleContext = React.createContext(false);
 type AccordionSingleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof AccordionImpl>,
   {
-    /**
-     * Allow only one item to be open at a time.
-     */
-    type: 'single';
     /**
      * The controlled stateful value of the accordion item whose content is expanded.
      */
@@ -123,10 +119,6 @@ const AccordionSingle = React.forwardRef((props, forwardedRef) => {
 type AccordionMultipleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof AccordionImpl>,
   {
-    /**
-     * Allow mutltiple items to be open at the same time.
-     */
-    type: 'multiple';
     /**
      * The controlled stateful value of the accordion items whose contents are expanded.
      */
