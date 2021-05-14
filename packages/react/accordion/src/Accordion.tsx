@@ -76,7 +76,7 @@ type AccordionSingleOwnProps = Polymorphic.Merge<
      */
     onValueChange?(value: string): void;
     /**
-     * Whether the accordion can be completely collapsed.
+     * Whether an accordion item can be collapsed after it has been opened.
      * @default false
      */
     collapsible?: boolean;
