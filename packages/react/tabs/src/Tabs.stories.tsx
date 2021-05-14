@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tabs, TabsList, TabsTab, TabsPanel } from './Tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Tabs' };
@@ -9,55 +9,55 @@ export const Styled = () => (
     <h1>Horizontal (automatic activation)</h1>
     <Tabs defaultValue="tab1" className={rootClass}>
       <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTab value="tab1" className={tabClass}>
+        <TabsTrigger value="tab1" className={triggerClass}>
           Tab 1
-        </TabsTab>
-        <TabsTab value="tab2" disabled className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab2" disabled className={triggerClass}>
           Tab 2
-        </TabsTab>
-        <TabsTab value="tab3" className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab3" className={triggerClass}>
           Tab 3
-        </TabsTab>
+        </TabsTrigger>
       </TabsList>
-      <TabsPanel value="tab1" className={panelClass}>
+      <TabsContent value="tab1" className={contentClass}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsPanel>
-      <TabsPanel value="tab2" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab2" className={contentClass}>
         You'll never find me!
-      </TabsPanel>
-      <TabsPanel value="tab3" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab3" className={contentClass}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsPanel>
+      </TabsContent>
     </Tabs>
 
     <h1>Vertical (manual activation)</h1>
     <Tabs defaultValue="tab1" className={rootClass} orientation="vertical" activationMode="manual">
       <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTab value="tab1" className={tabClass}>
+        <TabsTrigger value="tab1" className={triggerClass}>
           Tab 1
-        </TabsTab>
-        <TabsTab value="tab2" disabled className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab2" disabled className={triggerClass}>
           Tab 2
-        </TabsTab>
-        <TabsTab value="tab3" className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab3" className={triggerClass}>
           Tab 3
-        </TabsTab>
+        </TabsTrigger>
       </TabsList>
-      <TabsPanel value="tab1" className={panelClass}>
+      <TabsContent value="tab1" className={contentClass}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsPanel>
-      <TabsPanel value="tab2" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab2" className={contentClass}>
         You'll never find me!
-      </TabsPanel>
-      <TabsPanel value="tab3" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab3" className={contentClass}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsPanel>
+      </TabsContent>
     </Tabs>
   </>
 );
@@ -67,109 +67,109 @@ export const Chromatic = () => (
     <h1>Uncontrolled</h1>
     <Tabs defaultValue="tab3" className={rootClass}>
       <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTab value="tab1" className={tabClass}>
+        <TabsTrigger value="tab1" className={triggerClass}>
           Tab 1
-        </TabsTab>
-        <TabsTab value="tab2" disabled className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab2" disabled className={triggerClass}>
           Tab 2
-        </TabsTab>
-        <TabsTab value="tab3" className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab3" className={triggerClass}>
           Tab 3
-        </TabsTab>
+        </TabsTrigger>
       </TabsList>
-      <TabsPanel value="tab1" className={panelClass}>
+      <TabsContent value="tab1" className={contentClass}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsPanel>
-      <TabsPanel value="tab2" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab2" className={contentClass}>
         You'll never find me!
-      </TabsPanel>
-      <TabsPanel value="tab3" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab3" className={contentClass}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsPanel>
+      </TabsContent>
     </Tabs>
 
     <h1>Controlled</h1>
     <Tabs value="tab3" className={rootClass}>
       <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTab value="tab1" className={tabClass}>
+        <TabsTrigger value="tab1" className={triggerClass}>
           Tab 1
-        </TabsTab>
-        <TabsTab value="tab2" disabled className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab2" disabled className={triggerClass}>
           Tab 2
-        </TabsTab>
-        <TabsTab value="tab3" className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab3" className={triggerClass}>
           Tab 3
-        </TabsTab>
+        </TabsTrigger>
       </TabsList>
-      <TabsPanel value="tab1" className={panelClass}>
+      <TabsContent value="tab1" className={contentClass}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsPanel>
-      <TabsPanel value="tab2" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab2" className={contentClass}>
         You'll never find me!
-      </TabsPanel>
-      <TabsPanel value="tab3" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab3" className={contentClass}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsPanel>
+      </TabsContent>
     </Tabs>
 
     <h1>Vertical</h1>
     <Tabs defaultValue="tab3" className={rootClass} orientation="vertical" activationMode="manual">
       <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTab value="tab1" className={tabClass}>
+        <TabsTrigger value="tab1" className={triggerClass}>
           Tab 1
-        </TabsTab>
-        <TabsTab value="tab2" disabled className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab2" disabled className={triggerClass}>
           Tab 2
-        </TabsTab>
-        <TabsTab value="tab3" className={tabClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab3" className={triggerClass}>
           Tab 3
-        </TabsTab>
+        </TabsTrigger>
       </TabsList>
-      <TabsPanel value="tab1" className={panelClass}>
+      <TabsContent value="tab1" className={contentClass}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsPanel>
-      <TabsPanel value="tab2" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab2" className={contentClass}>
         You'll never find me!
-      </TabsPanel>
-      <TabsPanel value="tab3" className={panelClass}>
+      </TabsContent>
+      <TabsContent value="tab3" className={contentClass}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsPanel>
+      </TabsContent>
     </Tabs>
 
     <h1>State attributes</h1>
     <Tabs defaultValue="tab3" className={rootAttrClass}>
       <TabsList aria-label="tabs example" className={listAttrClass}>
-        <TabsTab value="tab1" className={tabAttrClass}>
+        <TabsTrigger value="tab1" className={triggerAttrClass}>
           Tab 1
-        </TabsTab>
-        <TabsTab value="tab2" disabled className={tabAttrClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab2" disabled className={triggerAttrClass}>
           Tab 2
-        </TabsTab>
-        <TabsTab value="tab3" className={tabAttrClass}>
+        </TabsTrigger>
+        <TabsTrigger value="tab3" className={triggerAttrClass}>
           Tab 3
-        </TabsTab>
+        </TabsTrigger>
       </TabsList>
-      <TabsPanel value="tab1" className={panelAttrClass}>
+      <TabsContent value="tab1" className={contentAttrClass}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsPanel>
-      <TabsPanel value="tab2" className={panelAttrClass}>
+      </TabsContent>
+      <TabsContent value="tab2" className={contentAttrClass}>
         You'll never find me!
-      </TabsPanel>
-      <TabsPanel value="tab3" className={panelAttrClass}>
+      </TabsContent>
+      <TabsContent value="tab3" className={contentAttrClass}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsPanel>
+      </TabsContent>
     </Tabs>
   </>
 );
@@ -204,12 +204,12 @@ const listClass = css({
   backgroundColor: '#eee',
 });
 
-const RECOMMENDED_CSS__TABS__TAB = {
+const RECOMMENDED_CSS__TABS__TRIGGER = {
   flexShrink: 0,
 };
 
-const tabClass = css({
-  ...RECOMMENDED_CSS__TABS__TAB,
+const triggerClass = css({
+  ...RECOMMENDED_CSS__TABS__TRIGGER,
 
   padding: '0.4em 0.6em',
   fontWeight: '500',
@@ -237,12 +237,12 @@ const tabClass = css({
   },
 });
 
-const RECOMMENDED_CSS__TABS__TAB_PANEL = {
+const RECOMMENDED_CSS__TABS__CONTENT = {
   flexGrow: 1,
 };
 
-const panelClass = css({
-  ...RECOMMENDED_CSS__TABS__TAB_PANEL,
+const contentClass = css({
+  ...RECOMMENDED_CSS__TABS__CONTENT,
 
   padding: '1em',
   border: '1px solid #eee',
@@ -267,8 +267,8 @@ const styles = {
 };
 const rootAttrClass = css(styles);
 const listAttrClass = css(styles);
-const tabAttrClass = css(styles);
-const panelAttrClass = css({
+const triggerAttrClass = css(styles);
+const contentAttrClass = css({
   // ensure we can see the content (because it has `hidden` attribute)
   display: 'block',
   ...styles,
