@@ -131,13 +131,13 @@ const TabsList = React.forwardRef((props, forwardedRef) => {
 TabsList.displayName = TAB_LIST_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * TabsTab
+ * TabsTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const TAB_NAME = 'TabsTab';
-const TAB_DEFAULT_TAG = 'div';
+const TRIGGER_NAME = 'TabsTrigger';
+const TRIGGER_DEFAULT_TAG = 'div';
 
-type TabsTabOwnProps = Polymorphic.Merge<
+type TabsTriggerOwnProps = Polymorphic.Merge<
   Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
   {
     value: string;
@@ -145,13 +145,16 @@ type TabsTabOwnProps = Polymorphic.Merge<
   }
 >;
 
-type TabsTabPrimitive = Polymorphic.ForwardRefComponent<typeof TAB_DEFAULT_TAG, TabsTabOwnProps>;
+type TabsTriggerPrimitive = Polymorphic.ForwardRefComponent<
+  typeof TRIGGER_DEFAULT_TAG,
+  TabsTriggerOwnProps
+>;
 
-const TabsTab = React.forwardRef((props, forwardedRef) => {
-  const { as = TAB_DEFAULT_TAG, value, disabled = false, ...tabProps } = props;
-  const context = useTabsContext(TAB_NAME);
-  const tabId = makeTabId(context.baseId, value);
-  const tabPanelId = makeTabsPanelId(context.baseId, value);
+const TabsTrigger = React.forwardRef((props, forwardedRef) => {
+  const { as = TRIGGER_DEFAULT_TAG, value, disabled = false, ...triggerProps } = props;
+  const context = useTabsContext(TRIGGER_NAME);
+  const triggerId = makeTriggerId(context.baseId, value);
+  const contentId = makeContentId(context.baseId, value);
   const isSelected = value === context.value;
   const handleTabChange = useCallbackRef(() => context.onValueChange(value));
 
@@ -159,12 +162,12 @@ const TabsTab = React.forwardRef((props, forwardedRef) => {
     <RovingFocusItem
       role="tab"
       aria-selected={isSelected}
-      aria-controls={tabPanelId}
+      aria-controls={contentId}
       aria-disabled={disabled || undefined}
       data-state={isSelected ? 'active' : 'inactive'}
       data-disabled={disabled ? '' : undefined}
-      id={tabId}
-      {...tabProps}
+      id={triggerId}
+      {...triggerProps}
       focusable={!disabled}
       active={isSelected}
       as={as}
@@ -191,30 +194,30 @@ const TabsTab = React.forwardRef((props, forwardedRef) => {
       })}
     />
   );
-}) as TabsTabPrimitive;
+}) as TabsTriggerPrimitive;
 
-TabsTab.displayName = TAB_NAME;
+TabsTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * TabsPanel
+ * TabsContent
  * -----------------------------------------------------------------------------------------------*/
 
-const TAB_PANEL_NAME = 'TabsPanel';
+const CONTENT_NAME = 'TabsContent';
 
-type TabsPanelPropsOwnProps = Polymorphic.Merge<
+type TabsContentPropsOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   { value: string }
 >;
-type TabsPanelPrimitive = Polymorphic.ForwardRefComponent<
+type TabsContentPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof Primitive>,
-  TabsPanelPropsOwnProps
+  TabsContentPropsOwnProps
 >;
 
-const TabsPanel = React.forwardRef((props, forwardedRef) => {
-  const { value, ...tabPanelProps } = props;
-  const context = useTabsContext(TAB_PANEL_NAME);
-  const tabId = makeTabId(context.baseId, value);
-  const tabPanelId = makeTabsPanelId(context.baseId, value);
+const TabsContent = React.forwardRef((props, forwardedRef) => {
+  const { value, ...contentProps } = props;
+  const context = useTabsContext(CONTENT_NAME);
+  const triggerId = makeTriggerId(context.baseId, value);
+  const contentId = makeContentId(context.baseId, value);
   const isSelected = value === context.value;
 
   return (
@@ -222,42 +225,42 @@ const TabsPanel = React.forwardRef((props, forwardedRef) => {
       data-state={isSelected ? 'active' : 'inactive'}
       data-orientation={context.orientation}
       role="tabpanel"
-      aria-labelledby={tabId}
+      aria-labelledby={triggerId}
       hidden={!isSelected}
-      id={tabPanelId}
+      id={contentId}
       tabIndex={0}
-      {...tabPanelProps}
+      {...contentProps}
       ref={forwardedRef}
     />
   );
-}) as TabsPanelPrimitive;
+}) as TabsContentPrimitive;
 
-TabsPanel.displayName = TAB_PANEL_NAME;
+TabsContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function makeTabId(baseId: string, value: string) {
-  return `${baseId}-tab-${value}`;
+function makeTriggerId(baseId: string, value: string) {
+  return `${baseId}-trigger-${value}`;
 }
 
-function makeTabsPanelId(baseId: string, value: string) {
-  return `${baseId}-panel-${value}`;
+function makeContentId(baseId: string, value: string) {
+  return `${baseId}-content-${value}`;
 }
 
 const Root = Tabs;
 const List = TabsList;
-const Tab = TabsTab;
-const Panel = TabsPanel;
+const Trigger = TabsTrigger;
+const Content = TabsContent;
 
 export {
   Tabs,
   TabsList,
-  TabsTab,
-  TabsPanel,
+  TabsTrigger,
+  TabsContent,
   //
   Root,
   List,
-  Tab,
-  Panel,
+  Trigger,
+  Content,
 };
-export type { TabsPrimitive, TabsListPrimitive, TabsTabPrimitive, TabsPanelPrimitive };
+export type { TabsPrimitive, TabsListPrimitive, TabsTriggerPrimitive, TabsContentPrimitive };
