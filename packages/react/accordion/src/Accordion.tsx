@@ -53,6 +53,8 @@ const [
   useAccordionValueContext,
 ] = createContext<AccordionValueContextValue>(ACCORDION_NAME);
 
+const AccordionCollapsibleContext = React.createContext<boolean>(false);
+
 type AccordionSingleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof AccordionImpl>,
   {
@@ -73,6 +75,11 @@ type AccordionSingleOwnProps = Polymorphic.Merge<
      * The callback that fires when the state of the accordion changes.
      */
     onValueChange?(value: string): void;
+    /**
+     * Whether the accordion can be completely collapsed.
+     * @default false
+     */
+    collapsible?: boolean;
   }
 >;
 
@@ -86,7 +93,7 @@ const AccordionSingle = React.forwardRef((props, forwardedRef) => {
     value: valueProp,
     defaultValue,
     onValueChange = () => {},
-    preventAllClosed = false,
+    collapsible = false,
     type, // pulling it out as we don't need it and don't want it to end up on the DOM element
     ...accordionSingleProps
   } = props;
@@ -101,13 +108,11 @@ const AccordionSingle = React.forwardRef((props, forwardedRef) => {
     <AccordionValueProvider
       value={value ? [value] : []}
       onItemOpen={setValue}
-      onItemClose={() => !preventAllClosed && setValue('')}
+      onItemClose={() => collapsible && setValue('')}
     >
-      <AccordionImpl
-        {...accordionSingleProps}
-        preventAllClosed={preventAllClosed}
-        ref={forwardedRef}
-      />
+      <AccordionCollapsibleContext.Provider value={collapsible}>
+        <AccordionImpl {...accordionSingleProps} ref={forwardedRef} />
+      </AccordionCollapsibleContext.Provider>
     </AccordionValueProvider>
   );
 }) as AccordionSinglePrimitive;
@@ -145,7 +150,6 @@ const AccordionMultiple = React.forwardRef((props, forwardedRef) => {
     value: valueProp,
     defaultValue,
     onValueChange = () => {},
-    preventAllClosed = false,
     type, // pulling it out as we don't need it and don't want it to end up on the DOM element
     ...accordionMultipleProps
   } = props;
@@ -162,22 +166,13 @@ const AccordionMultiple = React.forwardRef((props, forwardedRef) => {
   );
 
   const handleItemClose = React.useCallback(
-    (itemValue) =>
-      setValue((prevValue = []) => {
-        if (preventAllClosed && prevValue.length === 1 && prevValue[0] === itemValue)
-          return prevValue;
-        return prevValue.filter((value) => value !== itemValue);
-      }),
-    [preventAllClosed, setValue]
+    (itemValue) => setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
+    [setValue]
   );
 
   return (
     <AccordionValueProvider value={value} onItemOpen={handleItemOpen} onItemClose={handleItemClose}>
-      <AccordionImpl
-        {...accordionMultipleProps}
-        preventAllClosed={preventAllClosed}
-        ref={forwardedRef}
-      />
+      <AccordionImpl {...accordionMultipleProps} ref={forwardedRef} />
     </AccordionValueProvider>
   );
 }) as AccordionMultiplePrimitive;
@@ -187,7 +182,6 @@ const AccordionMultiple = React.forwardRef((props, forwardedRef) => {
 type AccordionImplContextValue = {
   triggerNodesRef: React.MutableRefObject<Set<HTMLElement | null>>;
   disabled?: boolean;
-  preventAllClosed?: boolean;
 };
 
 const [AccordionImplProvider, useAccordionContext] = createContext<AccordionImplContextValue>(
@@ -203,11 +197,6 @@ type AccordionImplOwnProps = Polymorphic.Merge<
      * @defaultValue false
      */
     disabled?: boolean;
-    /**
-     * Whether closing all items is prevented.
-     * @default false
-     */
-    preventAllClosed?: boolean;
   }
 >;
 
@@ -217,7 +206,7 @@ type AccordionImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const AccordionImpl = React.forwardRef((props, forwardedRef) => {
-  const { disabled, preventAllClosed, ...accordionProps } = props;
+  const { disabled, ...accordionProps } = props;
   const triggerNodesRef = React.useRef<Set<React.ElementRef<typeof AccordionTrigger>>>(new Set());
   const accordionRef = React.useRef<React.ElementRef<typeof AccordionImpl>>(null);
   const composedRefs = useComposedRefs(accordionRef, forwardedRef);
@@ -263,11 +252,7 @@ const AccordionImpl = React.forwardRef((props, forwardedRef) => {
   });
 
   return (
-    <AccordionImplProvider
-      triggerNodesRef={triggerNodesRef}
-      disabled={disabled}
-      preventAllClosed={preventAllClosed}
-    >
+    <AccordionImplProvider triggerNodesRef={triggerNodesRef} disabled={disabled}>
       <Primitive
         {...accordionProps}
         ref={composedRefs}
@@ -396,10 +381,10 @@ type AccordionTriggerPrimitive = Polymorphic.ForwardRefComponent<
  * should always be nested inside of an `AccordionHeader`.
  */
 const AccordionTrigger = React.forwardRef((props, forwardedRef) => {
+  const { triggerNodesRef } = useAccordionContext(TRIGGER_NAME);
   const valueContext = useAccordionValueContext(TRIGGER_NAME);
-  const accordionContext = useAccordionContext(TRIGGER_NAME);
   const itemContext = useAccordionItemContext(TRIGGER_NAME);
-  const { triggerNodesRef } = accordionContext;
+  const collapsible = React.useContext(AccordionCollapsibleContext);
 
   const ref = React.useRef<React.ElementRef<typeof CollapsiblePrimitive.Trigger>>(null);
   const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -417,12 +402,11 @@ const AccordionTrigger = React.forwardRef((props, forwardedRef) => {
     return;
   }, [triggerNodesRef]);
 
-  const ariaDisabled =
-    itemContext.open && valueContext.value.length === 1 && accordionContext.preventAllClosed;
-
   return (
     <CollapsiblePrimitive.Trigger
-      aria-disabled={ariaDisabled || undefined}
+      aria-disabled={
+        (itemContext.open && valueContext.value.length === 1 && !collapsible) || undefined
+      }
       id={itemContext.triggerId}
       {...props}
       ref={composedRefs}

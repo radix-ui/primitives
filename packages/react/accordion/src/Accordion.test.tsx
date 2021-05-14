@@ -80,12 +80,12 @@ describe('given a single Accordion', () => {
         fireEvent.click(trigger);
       });
 
-      it('should close the content', () => {
-        expect(contentOne).not.toBeVisible();
+      it('should not close the content', () => {
+        expect(contentOne).toBeVisible();
       });
 
-      it('should call onValueChange', () => {
-        expect(handleValueChange).toHaveBeenCalledWith('');
+      it('should not call onValueChange', () => {
+        expect(handleValueChange).toHaveBeenCalledTimes(1);
       });
     });
 
