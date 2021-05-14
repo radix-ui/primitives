@@ -53,7 +53,7 @@ const [
   useAccordionValueContext,
 ] = createContext<AccordionValueContextValue>(ACCORDION_NAME);
 
-const AccordionCollapsibleContext = React.createContext<boolean>(false);
+const AccordionCollapsibleContext = React.createContext(false);
 
 type AccordionSingleOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof AccordionImpl>,
