@@ -172,7 +172,9 @@ const AccordionMultiple = React.forwardRef((props, forwardedRef) => {
 
   return (
     <AccordionValueProvider value={value} onItemOpen={handleItemOpen} onItemClose={handleItemClose}>
-      <AccordionImpl {...accordionMultipleProps} ref={forwardedRef} />
+      <AccordionCollapsibleContext.Provider value={true}>
+        <AccordionImpl {...accordionMultipleProps} ref={forwardedRef} />
+      </AccordionCollapsibleContext.Provider>
     </AccordionValueProvider>
   );
 }) as AccordionMultiplePrimitive;
