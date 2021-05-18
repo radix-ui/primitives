@@ -53,6 +53,35 @@ function FocusScope(props: FocusScopeProps) {
     },
   }).current;
 
+  // Takes care of containing focus if focus is moved outside programmatically for example
+  React.useEffect(() => {
+    if (contained) {
+      function handleFocusIn(event: FocusEvent) {
+        if (focusScope.paused || !container) return;
+        const target = event.target as HTMLElement | null;
+        if (container.contains(target)) {
+          lastFocusedElementRef.current = target;
+        } else {
+          focus(lastFocusedElementRef.current, { select: true });
+        }
+      }
+
+      function handleFocusOut(event: FocusEvent) {
+        if (focusScope.paused || !container) return;
+        if (!container.contains(event.relatedTarget as HTMLElement | null)) {
+          focus(lastFocusedElementRef.current, { select: true });
+        }
+      }
+
+      document.addEventListener('focusin', handleFocusIn);
+      document.addEventListener('focusout', handleFocusOut);
+      return () => {
+        document.removeEventListener('focusin', handleFocusIn);
+        document.removeEventListener('focusout', handleFocusOut);
+      };
+    }
+  }, [contained, container, focusScope.paused]);
+
   React.useEffect(() => {
     if (container) {
       focusScopesStack.add(focusScope);
@@ -122,35 +151,6 @@ function FocusScope(props: FocusScopeProps) {
     },
     [wrapped, contained, focusScope.paused]
   );
-
-  // Takes care of containing focus if focus is moved outside programmatically for example
-  React.useEffect(() => {
-    if (contained) {
-      function handleFocusIn(event: FocusEvent) {
-        if (focusScope.paused || !container) return;
-        const target = event.target as HTMLElement | null;
-        if (container.contains(target)) {
-          lastFocusedElementRef.current = target;
-        } else {
-          focus(lastFocusedElementRef.current, { select: true });
-        }
-      }
-
-      function handleFocusOut(event: FocusEvent) {
-        if (focusScope.paused || !container) return;
-        if (!container.contains(event.relatedTarget as HTMLElement | null)) {
-          focus(lastFocusedElementRef.current, { select: true });
-        }
-      }
-
-      document.addEventListener('focusin', handleFocusIn);
-      document.addEventListener('focusout', handleFocusOut);
-      return () => {
-        document.removeEventListener('focusin', handleFocusIn);
-        document.removeEventListener('focusout', handleFocusOut);
-      };
-    }
-  }, [contained, container, focusScope.paused]);
 
   return children({
     ref: React.useCallback((node) => setContainer(node), []),

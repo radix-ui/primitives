@@ -104,7 +104,7 @@ export const NoEscapeDismiss = () => (
   </Dialog>
 );
 
-export const NoInteractOutsideDismiss = () => (
+export const NoPointerDownOutsideDismiss = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
     <DialogOverlay className={overlayClass} />

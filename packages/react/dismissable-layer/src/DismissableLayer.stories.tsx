@@ -618,10 +618,6 @@ function DummyPopover({
                   } else {
                     onPointerDownOutside?.(event);
                   }
-
-                  if (event.defaultPrevented) {
-                    setSkipUnmountAutoFocus(false);
-                  }
                 }}
                 onFocusOutside={onFocusOutside}
                 onInteractOutside={onInteractOutside}
