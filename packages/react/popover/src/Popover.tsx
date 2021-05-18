@@ -309,8 +309,9 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                 onPointerDownOutside,
                 (event) => {
                   const originalEvent = event.detail.originalEvent as MouseEvent;
-                  const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
-                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && isLeftClick);
+                  const wasLeftClick =
+                    originalEvent.button === 0 && originalEvent.ctrlKey === false;
+                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && wasLeftClick);
 
                   const targetWasTrigger = context.triggerRef.current?.contains(
                     event.target as HTMLElement

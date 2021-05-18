@@ -262,9 +262,9 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                   onPointerDownOutside,
                   (event) => {
                     const originalEvent = event.detail.originalEvent as MouseEvent;
-                    const isLeftClick =
+                    const wasLeftClick =
                       originalEvent.button === 0 && originalEvent.ctrlKey === false;
-                    setSkipCloseAutoFocus(!disableOutsidePointerEvents && isLeftClick);
+                    setSkipCloseAutoFocus(!disableOutsidePointerEvents && wasLeftClick);
                   },
                   { checkForDefaultPrevented: false }
                 )}
