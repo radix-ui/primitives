@@ -242,13 +242,13 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
               onEscapeKeyDown={onEscapeKeyDown}
               onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
                 const originalEvent = event.detail.originalEvent as MouseEvent;
-                const wasRightClick =
+                const isRightClick =
                   originalEvent.button === 2 ||
                   (originalEvent.button === 0 && originalEvent.ctrlKey === true);
 
-                // If the event was a right-click, we shouldn't close because
+                // If the event is a right-click, we shouldn't close because
                 // it is effectively as if we right-clicked the `Overlay`.
-                if (wasRightClick) event.preventDefault();
+                if (isRightClick) event.preventDefault();
               })}
               // When focus is trapped, a focusout event may still happen.
               // We make sure we don't trigger our `onDismiss` in such case.

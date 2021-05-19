@@ -309,16 +309,15 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                 onPointerDownOutside,
                 (event) => {
                   const originalEvent = event.detail.originalEvent as MouseEvent;
-                  const wasLeftClick =
-                    originalEvent.button === 0 && originalEvent.ctrlKey === false;
-                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && wasLeftClick);
+                  const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
+                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && isLeftClick);
 
-                  const targetWasTrigger = context.triggerRef.current?.contains(
+                  const targetIsTrigger = context.triggerRef.current?.contains(
                     event.target as HTMLElement
                   );
                   // prevent dismissing when clicking the trigger
                   // as it's already setup to close, otherwise it would close and immediately open.
-                  if (targetWasTrigger) event.preventDefault();
+                  if (targetIsTrigger) event.preventDefault();
                 },
                 { checkForDefaultPrevented: false }
               )}
