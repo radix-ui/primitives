@@ -182,10 +182,7 @@ function DismissableLayerImpl(props: React.ComponentProps<typeof DismissableLaye
  * -----------------------------------------------------------------------------------------------*/
 
 const POINTER_DOWN_OUTSIDE = 'dismissableLayer.pointerDownOutside';
-type PointerDownOutsideEvent = CustomEvent<{
-  relatedTarget: EventTarget | null;
-  originalEvent: MouseEvent | TouchEvent;
-}>;
+type PointerDownOutsideEvent = CustomEvent<{ originalEvent: MouseEvent | TouchEvent }>;
 
 /**
  * Sets up `pointerdown` listener which listens for events outside a react subtree.
