@@ -241,14 +241,14 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
               disableOutsidePointerEvents
               onEscapeKeyDown={onEscapeKeyDown}
               onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
-                // If the pointer down outside event was a right-click, we shouldn't close
-                // because it is effectively as if we right-clicked the `Overlay`.
+                const originalEvent = event.detail.originalEvent as MouseEvent;
                 const isRightClick =
-                  (event as MouseEvent).button === 2 ||
-                  ((event as MouseEvent).button === 0 && event.ctrlKey === true);
-                if (isRightClick) {
-                  event.preventDefault();
-                }
+                  originalEvent.button === 2 ||
+                  (originalEvent.button === 0 && originalEvent.ctrlKey === true);
+
+                // If the event is a right-click, we shouldn't close because
+                // it is effectively as if we right-clicked the `Overlay`.
+                if (isRightClick) event.preventDefault();
               })}
               // When focus is trapped, a focusout event may still happen.
               // We make sure we don't trigger our `onDismiss` in such case.
@@ -281,14 +281,9 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
                     dismissableLayerProps.onFocusCapture,
                     { checkForDefaultPrevented: false }
                   )}
-                  onMouseDownCapture={composeEventHandlers(
-                    contentProps.onMouseDownCapture,
-                    dismissableLayerProps.onMouseDownCapture,
-                    { checkForDefaultPrevented: false }
-                  )}
-                  onTouchStartCapture={composeEventHandlers(
-                    contentProps.onTouchStartCapture,
-                    dismissableLayerProps.onTouchStartCapture,
+                  onPointerDownCapture={composeEventHandlers(
+                    contentProps.onPointerDownCapture,
+                    dismissableLayerProps.onPointerDownCapture,
                     { checkForDefaultPrevented: false }
                   )}
                 />

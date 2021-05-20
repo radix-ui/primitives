@@ -267,10 +267,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
     ...contentProps
   } = props;
   const context = usePopoverContext(CONTENT_NAME);
-  const [
-    isPermittedPointerDownOutsideEvent,
-    setIsPermittedPointerDownOutsideEvent,
-  ] = React.useState(false);
+  const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -290,15 +287,12 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
     <PortalWrapper>
       <ScrollLockWrapper>
         <FocusScope
-          // clicking outside may raise a focusout event, which may get trapped.
-          // in cases where outside pointer events are permitted, we stop trapping.
-          // we also make sure we're not trapping once it's been closed
+          // we make sure we're not trapping once it's been closed
           // (closed !== unmounted when animating out)
-          trapped={isPermittedPointerDownOutsideEvent ? false : trapFocus && context.open}
+          trapped={trapFocus && context.open}
           onMountAutoFocus={onOpenAutoFocus}
           onUnmountAutoFocus={(event) => {
-            // skip autofocus on close if clicking outside is permitted and it happened
-            if (isPermittedPointerDownOutsideEvent) {
+            if (skipCloseAutoFocus) {
               event.preventDefault();
             } else {
               onCloseAutoFocus?.(event);
@@ -308,28 +302,22 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
           {(focusScopeProps) => (
             <DismissableLayer
               disableOutsidePointerEvents={disableOutsidePointerEvents}
-              onEscapeKeyDown={onEscapeKeyDown}
+              onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
+                setSkipCloseAutoFocus(false);
+              })}
               onPointerDownOutside={composeEventHandlers(
                 onPointerDownOutside,
                 (event) => {
-                  const wasTrigger = context.triggerRef.current?.contains(
+                  const originalEvent = event.detail.originalEvent as MouseEvent;
+                  const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
+                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && isLeftClick);
+
+                  const targetIsTrigger = context.triggerRef.current?.contains(
                     event.target as HTMLElement
                   );
-
-                  const isLeftClick = (event as MouseEvent).button === 0 && event.ctrlKey === false;
-                  const isPermitted = !disableOutsidePointerEvents && isLeftClick;
-                  setIsPermittedPointerDownOutsideEvent(isPermitted);
-
                   // prevent dismissing when clicking the trigger
                   // as it's already setup to close, otherwise it would close and immediately open.
-                  if (wasTrigger) {
-                    event.preventDefault();
-                  }
-
-                  if (event.defaultPrevented) {
-                    // reset this because the event was prevented
-                    setIsPermittedPointerDownOutsideEvent(false);
-                  }
+                  if (targetIsTrigger) event.preventDefault();
                 },
                 { checkForDefaultPrevented: false }
               )}
@@ -373,14 +361,9 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
                     dismissableLayerProps.onFocusCapture,
                     { checkForDefaultPrevented: false }
                   )}
-                  onMouseDownCapture={composeEventHandlers(
-                    contentProps.onMouseDownCapture,
-                    dismissableLayerProps.onMouseDownCapture,
-                    { checkForDefaultPrevented: false }
-                  )}
-                  onTouchStartCapture={composeEventHandlers(
-                    contentProps.onTouchStartCapture,
-                    dismissableLayerProps.onTouchStartCapture,
+                  onPointerDownCapture={composeEventHandlers(
+                    contentProps.onPointerDownCapture,
+                    dismissableLayerProps.onPointerDownCapture,
                     { checkForDefaultPrevented: false }
                   )}
                 />

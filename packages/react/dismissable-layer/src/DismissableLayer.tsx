@@ -52,7 +52,7 @@ type DismissableLayerProps = {
    * Event handler called when the a pointer event happens outside of the `DismissableLayer`.
    * Can be prevented.
    */
-  onPointerDownOutside?: (event: MouseEvent | TouchEvent) => void;
+  onPointerDownOutside?: (event: PointerDownOutsideEvent) => void;
 
   /**
    * Event handler called when the focus moves outside of the `DismissableLayer`.
@@ -65,7 +65,7 @@ type DismissableLayerProps = {
    * Specifically, when a pointer event happens outside of the `DismissableLayer` or focus moves outside of it.
    * Can be prevented.
    */
-  onInteractOutside?: (event: MouseEvent | TouchEvent | React.FocusEvent) => void;
+  onInteractOutside?: (event: PointerDownOutsideEvent | React.FocusEvent) => void;
 
   /** Callback called when the `DismissableLayer` should be dismissed */
   onDismiss?: () => void;
@@ -181,36 +181,41 @@ function DismissableLayerImpl(props: React.ComponentProps<typeof DismissableLaye
  * Utility hooks
  * -----------------------------------------------------------------------------------------------*/
 
+const POINTER_DOWN_OUTSIDE = 'dismissableLayer.pointerDownOutside';
+type PointerDownOutsideEvent = CustomEvent<{ originalEvent: MouseEvent | TouchEvent }>;
+
 /**
- * Sets up mousedown/touchstart listeners which listens for pointer down events outside a react subtree.
+ * Sets up `pointerdown` listener which listens for events outside a react subtree.
  *
- * We use `mousedown` rather than click` for 2 reasons:
- * - to mimic layer dismissing behaviour present in OS which usually happens on mousedown
- * - to enable to us call `event.preventDefault()` and prevent focus from happening.
+ * We use `pointerdown` rather than `pointerup` to mimic layer dismissing behaviour
+ * present in OS which usually happens on `pointerdown`.
  *
  * Returns props to pass to the node we want to check for outside events.
  */
 function usePointerDownOutside(
-  onPointerDownOutsideProp?: (event: MouseEvent | TouchEvent) => void
+  onPointerDownOutsideProp?: (event: PointerDownOutsideEvent) => void
 ) {
   const onPointerDownOutside = useCallbackRef(onPointerDownOutsideProp);
   const isEventInside = React.useRef(false);
 
   React.useEffect(() => {
     const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      if (!isEventInside.current) {
-        onPointerDownOutside(event);
+      const target = event.target as HTMLElement | null;
+      if (target && !isEventInside.current) {
+        const pointerDownOutsideEvent: PointerDownOutsideEvent = new CustomEvent(
+          POINTER_DOWN_OUTSIDE,
+          { bubbles: false, cancelable: true, detail: { originalEvent: event } }
+        );
+        target.addEventListener(POINTER_DOWN_OUTSIDE, onPointerDownOutside as EventListener, {
+          once: true,
+        });
+        target.dispatchEvent(pointerDownOutsideEvent);
       }
       isEventInside.current = false;
     };
 
-    document.addEventListener('mousedown', handlePointerDown);
-    document.addEventListener('touchstart', handlePointerDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-      document.removeEventListener('touchstart', handlePointerDown);
-    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
   }, [onPointerDownOutside]);
 
   const markEventAsInside = () => {
@@ -219,8 +224,7 @@ function usePointerDownOutside(
 
   return {
     // ensures we check React component tree (not just DOM tree)
-    onMouseDownCapture: markEventAsInside as React.MouseEventHandler,
-    onTouchStartCapture: markEventAsInside as React.TouchEventHandler,
+    onPointerDownCapture: markEventAsInside as React.PointerEventHandler,
   };
 }
 

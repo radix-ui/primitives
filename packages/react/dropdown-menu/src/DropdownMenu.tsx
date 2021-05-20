@@ -155,13 +155,10 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
       onPointerDownOutside={composeEventHandlers(
         props.onPointerDownOutside,
         (event) => {
-          const wasTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
-
+          const targetIsTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
           // prevent dismissing when clicking the trigger
           // as it's already setup to close, otherwise it would close and immediately open.
-          if (wasTrigger) {
-            event.preventDefault();
-          }
+          if (targetIsTrigger) event.preventDefault();
         },
         { checkForDefaultPrevented: false }
       )}
