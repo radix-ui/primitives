@@ -202,11 +202,10 @@ function usePointerDownOutside(
     const handlePointerDown = (event: MouseEvent | TouchEvent) => {
       const target = event.target as HTMLElement | null;
       if (target && !isEventInside.current) {
-        const pointerDownOutsideEvent = new CustomEvent(POINTER_DOWN_OUTSIDE, {
-          bubbles: false,
-          cancelable: true,
-          detail: { originalEvent: event },
-        });
+        const pointerDownOutsideEvent: PointerDownOutsideEvent = new CustomEvent(
+          POINTER_DOWN_OUTSIDE,
+          { bubbles: false, cancelable: true, detail: { originalEvent: event } }
+        );
         target.addEventListener(POINTER_DOWN_OUTSIDE, onPointerDownOutside as EventListener, {
           once: true,
         });
