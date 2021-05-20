@@ -207,7 +207,9 @@ function usePointerDownOutside(
           cancelable: true,
           detail: { originalEvent: event },
         });
-        target.addEventListener(POINTER_DOWN_OUTSIDE, onPointerDownOutside, { once: true });
+        target.addEventListener(POINTER_DOWN_OUTSIDE, onPointerDownOutside as EventListener, {
+          once: true,
+        });
         target.dispatchEvent(pointerDownOutsideEvent);
       }
       isEventInside.current = false;
@@ -317,7 +319,4 @@ export {
   DismissableLayer,
   //
   Root,
-  //
-  POINTER_DOWN_OUTSIDE,
 };
-export type { PointerDownOutsideEvent };
