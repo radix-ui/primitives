@@ -94,16 +94,19 @@ ContextMenuTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'ContextMenuContent';
 
-type ContextMenuContentOwnProps = Omit<
-  Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
-  | 'trapFocus'
-  | 'disableOutsideScroll'
-  | 'portalled'
-  | 'onOpenAutoFocus'
-  | 'side'
-  | 'sideOffset'
-  | 'align'
-  | 'alignOffset'
+type ContextMenuContentOwnProps = Polymorphic.Merge<
+  Omit<
+    Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
+    | 'trapFocus'
+    | 'disableOutsideScroll'
+    | 'portalled'
+    | 'onOpenAutoFocus'
+    | 'side'
+    | 'sideOffset'
+    | 'align'
+    | 'alignOffset'
+  >,
+  { offset?: number }
 >;
 
 type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
@@ -112,7 +115,7 @@ type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
-  const { disableOutsidePointerEvents = true, ...contentProps } = props;
+  const { disableOutsidePointerEvents = true, offset, ...contentProps } = props;
   const context = useContextMenuContext(CONTENT_NAME);
   return (
     <MenuPrimitive.Content
@@ -128,7 +131,7 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
       disableOutsideScroll
       portalled
       side="bottom"
-      sideOffset={0}
+      sideOffset={offset}
       align="start"
       alignOffset={2}
     />
