@@ -177,12 +177,11 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     ...contentProps
   } = props;
   const context = useMenuContext(CONTENT_NAME);
-  const contentRef = React.useRef<HTMLDivElement>(null);
   const typeaheadProps = useMenuTypeahead();
   const { getItems } = useCollection();
-
   const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
   const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
+  const contentRef = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
