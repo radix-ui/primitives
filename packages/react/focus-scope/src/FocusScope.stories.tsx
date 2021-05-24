@@ -15,28 +15,25 @@ export const Basic = () => {
         <input /> <input />
       </div>
       {trapped ? (
-        <FocusScope trapped={trapped}>
-          {(props) => (
-            <form
-              {...props}
-              style={{
-                display: 'inline-flex',
-                flexDirection: 'column',
-                gap: 20,
-                padding: 20,
-                margin: 50,
-                maxWidth: 500,
-                border: '2px solid',
-              }}
-            >
-              <input type="text" placeholder="First name" />
-              <input type="text" placeholder="Last name" />
-              <input type="number" placeholder="Age" />
-              <button type="button" onClick={() => setTrapped(false)}>
-                Close
-              </button>
-            </form>
-          )}
+        <FocusScope
+          as="form"
+          trapped={trapped}
+          style={{
+            display: 'inline-flex',
+            flexDirection: 'column',
+            gap: 20,
+            padding: 20,
+            margin: 50,
+            maxWidth: 500,
+            border: '2px solid',
+          }}
+        >
+          <input type="text" placeholder="First name" />
+          <input type="text" placeholder="Last name" />
+          <input type="number" placeholder="Age" />
+          <button type="button" onClick={() => setTrapped(false)}>
+            Close
+          </button>
         </FocusScope>
       ) : null}
       <div>
@@ -58,28 +55,25 @@ export const Multiple = () => {
         </button>
       </div>
       {trapped1 ? (
-        <FocusScope trapped={trapped1}>
-          {(props) => (
-            <form
-              {...props}
-              style={{
-                display: 'inline-flex',
-                flexDirection: 'column',
-                gap: 20,
-                padding: 20,
-                maxWidth: 500,
-                border: '2px solid',
-              }}
-            >
-              <h1>One</h1>
-              <input type="text" placeholder="First name" />
-              <input type="text" placeholder="Last name" />
-              <input type="number" placeholder="Age" />
-              <button type="button" onClick={() => setTrapped1(false)}>
-                Close
-              </button>
-            </form>
-          )}
+        <FocusScope
+          as="form"
+          trapped={trapped1}
+          style={{
+            display: 'inline-flex',
+            flexDirection: 'column',
+            gap: 20,
+            padding: 20,
+            maxWidth: 500,
+            border: '2px solid',
+          }}
+        >
+          <h1>One</h1>
+          <input type="text" placeholder="First name" />
+          <input type="text" placeholder="Last name" />
+          <input type="number" placeholder="Age" />
+          <button type="button" onClick={() => setTrapped1(false)}>
+            Close
+          </button>
         </FocusScope>
       ) : null}
 
@@ -89,28 +83,25 @@ export const Multiple = () => {
         </button>
       </div>
       {trapped2 ? (
-        <FocusScope trapped={trapped2}>
-          {(props) => (
-            <form
-              {...props}
-              style={{
-                display: 'inline-flex',
-                flexDirection: 'column',
-                gap: 20,
-                padding: 20,
-                maxWidth: 500,
-                border: '2px solid',
-              }}
-            >
-              <h1>Two</h1>
-              <input type="text" placeholder="First name" />
-              <input type="text" placeholder="Last name" />
-              <input type="number" placeholder="Age" />
-              <button type="button" onClick={() => setTrapped2(false)}>
-                Close
-              </button>
-            </form>
-          )}
+        <FocusScope
+          as="form"
+          trapped={trapped2}
+          style={{
+            display: 'inline-flex',
+            flexDirection: 'column',
+            gap: 20,
+            padding: 20,
+            maxWidth: 500,
+            border: '2px solid',
+          }}
+        >
+          <h1>Two</h1>
+          <input type="text" placeholder="First name" />
+          <input type="text" placeholder="Last name" />
+          <input type="number" placeholder="Age" />
+          <button type="button" onClick={() => setTrapped2(false)}>
+            Close
+          </button>
         </FocusScope>
       ) : null}
       <div>
@@ -215,6 +206,8 @@ export const WithOptions = () => {
 
       {open ? (
         <FocusScope
+          key="form"
+          as="form"
           trapped={trapFocus}
           onMountAutoFocus={(event) => {
             if (focusOnMount !== true) {
@@ -228,32 +221,25 @@ export const WithOptions = () => {
               if (focusOnUnmount) focusOnUnmount.current?.focus();
             }
           }}
+          style={{
+            display: 'inline-flex',
+            flexDirection: 'column',
+            gap: 20,
+            padding: 20,
+            margin: 50,
+            maxWidth: 500,
+            border: '2px solid',
+          }}
         >
-          {(props) => (
-            <form
-              {...props}
-              key="form"
-              style={{
-                display: 'inline-flex',
-                flexDirection: 'column',
-                gap: 20,
-                padding: 20,
-                margin: 50,
-                maxWidth: 500,
-                border: '2px solid',
-              }}
-            >
-              {!isEmptyForm && (
-                <>
-                  <input type="text" placeholder="First name" />
-                  <input type="text" placeholder="Last name" />
-                  <input ref={ageFieldRef} type="number" placeholder="Age" />
-                  <button type="button" onClick={() => setOpen(false)}>
-                    Close
-                  </button>
-                </>
-              )}
-            </form>
+          {!isEmptyForm && (
+            <>
+              <input type="text" placeholder="First name" />
+              <input type="text" placeholder="Last name" />
+              <input ref={ageFieldRef} type="number" placeholder="Age" />
+              <button type="button" onClick={() => setOpen(false)}>
+                Close
+              </button>
+            </>
           )}
         </FocusScope>
       ) : null}
