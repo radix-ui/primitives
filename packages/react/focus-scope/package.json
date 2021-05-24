@@ -18,6 +18,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
+    "@radix-ui/react-compose-refs": "workspace:*",
+    "@radix-ui/react-polymorphic": "workspace:*",
+    "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*"
   },
   "peerDependencies": {

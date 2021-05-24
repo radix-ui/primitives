@@ -1,5 +1,9 @@
 import * as React from 'react';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+
+import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 const AUTOFOCUS_ON_MOUNT = 'focusScope.autoFocusOnMount';
 const AUTOFOCUS_ON_UNMOUNT = 'focusScope.autoFocusOnUnmount';
@@ -7,38 +11,52 @@ const EVENT_OPTIONS = { bubbles: false, cancelable: true };
 
 type FocusableTarget = HTMLElement | { focus(): void };
 
-type FocusScopeProps = {
-  children: (args: {
-    ref: React.RefCallback<any>;
-    tabIndex: number;
-    onKeyDown: React.KeyboardEventHandler;
-  }) => React.ReactElement;
+/* -------------------------------------------------------------------------------------------------
+ * FocusScope
+ * -----------------------------------------------------------------------------------------------*/
 
-  /**
-   * Whether focus should be trapped within the FocusScope
-   * (default: false)
-   */
-  trapped?: boolean;
+const FOCUS_SCOPE_NAME = 'FocusScope';
 
-  /**
-   * Event handler called when auto-focusing on mount.
-   * Can be prevented.
-   */
-  onMountAutoFocus?: (event: Event) => void;
+type FocusScopeOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof Primitive>,
+  {
+    /**
+     * Whether focus should be trapped within the FocusScope
+     * (default: false)
+     */
+    trapped?: boolean;
 
-  /**
-   * Event handler called when auto-focusing on unmount.
-   * Can be prevented.
-   */
-  onUnmountAutoFocus?: (event: Event) => void;
-};
+    /**
+     * Event handler called when auto-focusing on mount.
+     * Can be prevented.
+     */
+    onMountAutoFocus?: (event: Event) => void;
 
-function FocusScope(props: FocusScopeProps) {
-  const { children, trapped = false } = props;
+    /**
+     * Event handler called when auto-focusing on unmount.
+     * Can be prevented.
+     */
+    onUnmountAutoFocus?: (event: Event) => void;
+  }
+>;
+
+type FocusScopePrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof Primitive>,
+  FocusScopeOwnProps
+>;
+
+const FocusScope = React.forwardRef((props, forwardedRef) => {
+  const {
+    trapped = false,
+    onMountAutoFocus: onMountAutoFocusProp,
+    onUnmountAutoFocus: onUnmountAutoFocusProp,
+    ...scopeProps
+  } = props;
   const [container, setContainer] = React.useState<HTMLElement | null>(null);
-  const onMountAutoFocus = useCallbackRef(props.onMountAutoFocus);
-  const onUnmountAutoFocus = useCallbackRef(props.onUnmountAutoFocus);
+  const onMountAutoFocus = useCallbackRef(onMountAutoFocusProp);
+  const onUnmountAutoFocus = useCallbackRef(onUnmountAutoFocusProp);
   const lastFocusedElementRef = React.useRef<HTMLElement | null>(null);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setContainer(node));
 
   const wrapped = trapped;
   const contained = trapped;
@@ -152,12 +170,10 @@ function FocusScope(props: FocusScopeProps) {
     [wrapped, contained, focusScope.paused]
   );
 
-  return children({
-    ref: React.useCallback((node) => setContainer(node), []),
-    tabIndex: -1,
-    onKeyDown: handleKeyDown,
-  });
-}
+  return <Primitive tabIndex={-1} {...scopeProps} ref={composedRefs} onKeyDown={handleKeyDown} />;
+}) as FocusScopePrimitive;
+
+FocusScope.displayName = FOCUS_SCOPE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * Utils

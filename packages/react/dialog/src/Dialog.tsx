@@ -1,22 +1,20 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
+import { useId } from '@radix-ui/react-id';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
+import { Slot } from '@radix-ui/react-slot';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
-import { useId } from '@radix-ui/react-id';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-
-type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
-type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 
 /* -------------------------------------------------------------------------------------------------
  * Dialog
@@ -171,37 +169,30 @@ const DialogContent = React.forwardRef((props, forwardedRef) => {
   );
 }) as DialogContentPrimitive;
 
+type FocusScopeOwnProps = Polymorphic.OwnProps<typeof FocusScope>;
+
 type DialogContentImplOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+  Omit<
+    Polymorphic.OwnProps<typeof DismissableLayer>,
+    'disableOutsidePointerEvents' | 'onFocusOutside' | 'onInteractOutside' | 'onDismiss'
+  >,
   {
     /**
      * Event handler called when auto-focusing on open.
      * Can be prevented.
      */
-    onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
+    onOpenAutoFocus?: FocusScopeOwnProps['onMountAutoFocus'];
 
     /**
      * Event handler called when auto-focusing on close.
      * Can be prevented.
      */
-    onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
-
-    /**
-     * Event handler called when the escape key is down.
-     * Can be prevented.
-     */
-    onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
-
-    /**
-     * Event handler called when the a pointer event happens outside of the `Dialog`.
-     * Can be prevented.
-     */
-    onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
+    onCloseAutoFocus?: FocusScopeOwnProps['onUnmountAutoFocus'];
   }
 >;
 
 type DialogContentImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
+  Polymorphic.IntrinsicElement<typeof DismissableLayer>,
   DialogContentImplOwnProps
 >;
 
@@ -215,12 +206,14 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   } = props;
   const context = useDialogContext(CONTENT_NAME);
 
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
+
   // Make sure the whole tree has focus guards as our `Dialog` will be
   // the last element in the DOM (beacuse of the `Portal`)
   useFocusGuards();
 
   // Hide everything from ARIA except the content
-  const contentRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const content = contentRef.current;
     if (content) return hideOthers(content);
@@ -230,66 +223,36 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
     <Portal>
       <RemoveScroll>
         <FocusScope
+          as={Slot}
           // we make sure we're not trapping once it's been closed
           // (closed !== unmounted when animating out)
           trapped={context.open}
           onMountAutoFocus={onOpenAutoFocus}
           onUnmountAutoFocus={onCloseAutoFocus}
         >
-          {(focusScopeProps) => (
-            <DismissableLayer
-              disableOutsidePointerEvents
-              onEscapeKeyDown={onEscapeKeyDown}
-              onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
-                const originalEvent = event.detail.originalEvent as MouseEvent;
-                const isRightClick =
-                  originalEvent.button === 2 ||
-                  (originalEvent.button === 0 && originalEvent.ctrlKey === true);
+          <DismissableLayer
+            role="dialog"
+            aria-modal
+            id={context.contentId}
+            {...contentProps}
+            ref={composedRefs}
+            disableOutsidePointerEvents
+            onEscapeKeyDown={onEscapeKeyDown}
+            onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
+              const originalEvent = event.detail.originalEvent as MouseEvent;
+              const isRightClick =
+                originalEvent.button === 2 ||
+                (originalEvent.button === 0 && originalEvent.ctrlKey === true);
 
-                // If the event is a right-click, we shouldn't close because
-                // it is effectively as if we right-clicked the `Overlay`.
-                if (isRightClick) event.preventDefault();
-              })}
-              // When focus is trapped, a focusout event may still happen.
-              // We make sure we don't trigger our `onDismiss` in such case.
-              onFocusOutside={(event) => event.preventDefault()}
-              onDismiss={() => context.onOpenChange(false)}
-            >
-              {(dismissableLayerProps) => (
-                <Primitive
-                  role="dialog"
-                  aria-modal
-                  id={context.contentId}
-                  {...focusScopeProps}
-                  {...contentProps}
-                  ref={composeRefs(forwardedRef, contentRef, focusScopeProps.ref)}
-                  onKeyDown={composeEventHandlers(
-                    contentProps.onKeyDown,
-                    focusScopeProps.onKeyDown
-                  )}
-                  style={{
-                    ...dismissableLayerProps.style,
-                    ...contentProps.style,
-                  }}
-                  onBlurCapture={composeEventHandlers(
-                    contentProps.onBlurCapture,
-                    dismissableLayerProps.onBlurCapture,
-                    { checkForDefaultPrevented: false }
-                  )}
-                  onFocusCapture={composeEventHandlers(
-                    contentProps.onFocusCapture,
-                    dismissableLayerProps.onFocusCapture,
-                    { checkForDefaultPrevented: false }
-                  )}
-                  onPointerDownCapture={composeEventHandlers(
-                    contentProps.onPointerDownCapture,
-                    dismissableLayerProps.onPointerDownCapture,
-                    { checkForDefaultPrevented: false }
-                  )}
-                />
-              )}
-            </DismissableLayer>
-          )}
+              // If the event is a right-click, we shouldn't close because
+              // it is effectively as if we right-clicked the `Overlay`.
+              if (isRightClick) event.preventDefault();
+            })}
+            // When focus is trapped, a focusout event may still happen.
+            // We make sure we don't trigger our `onDismiss` in such case.
+            onFocusOutside={(event) => event.preventDefault()}
+            onDismiss={() => context.onOpenChange(false)}
+          />
         </FocusScope>
       </RemoveScroll>
     </Portal>

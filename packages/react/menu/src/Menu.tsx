@@ -3,7 +3,7 @@ import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
-import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
@@ -18,10 +18,6 @@ import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
-
-type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
-type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
-type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
 
 const FIRST_KEYS = ['ArrowDown', 'PageUp', 'Home'];
 const LAST_KEYS = ['ArrowUp', 'PageDown', 'End'];
@@ -108,58 +104,30 @@ const MenuContent = React.forwardRef((props, forwardedRef) => {
   );
 }) as MenuContentPrimitive;
 
+type FocusScopeOwnProps = Polymorphic.OwnProps<typeof FocusScope>;
+type DismissableLayerOwnProps = Polymorphic.OwnProps<typeof DismissableLayer>;
+type RovingFocusGroupOwnProps = Polymorphic.OwnProps<typeof RovingFocusGroup>;
+
 type MenuContentImplOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof PopperPrimitive.Content>,
-  {
+  Omit<DismissableLayerOwnProps, 'onDismiss'> & {
     /**
      * Whether focus should be trapped within the `MenuContent`
      * (default: false)
      */
-    trapFocus?: FocusScopeProps['trapped'];
+    trapFocus?: FocusScopeOwnProps['trapped'];
 
     /**
      * Event handler called when auto-focusing on open.
      * Can be prevented.
      */
-    onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
+    onOpenAutoFocus?: FocusScopeOwnProps['onMountAutoFocus'];
 
     /**
      * Event handler called when auto-focusing on close.
      * Can be prevented.
      */
-    onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
-
-    /**
-     * When `true`, hover/focus/click interactions will be disabled on elements outside the `MenuContent`.
-     * Users will need to click twice on outside elements to interact with them:
-     * Once to close the `MenuContent`, and again to trigger the element.
-     */
-    disableOutsidePointerEvents?: DismissableLayerProps['disableOutsidePointerEvents'];
-
-    /**
-     * Event handler called when the escape key is down.
-     * Can be prevented.
-     */
-    onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
-
-    /**
-     * Event handler called when the a pointer event happens outside of the `MenuContent`.
-     * Can be prevented.
-     */
-    onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
-
-    /**
-     * Event handler called when the focus moves outside of the `MenuContent`.
-     * Can be prevented.
-     */
-    onFocusOutside?: DismissableLayerProps['onFocusOutside'];
-
-    /**
-     * Event handler called when an interaction happens outside the `MenuContent`.
-     * Specifically, when a pointer event happens outside of the `MenuContent` or focus moves outside of it.
-     * Can be prevented.
-     */
-    onInteractOutside?: DismissableLayerProps['onInteractOutside'];
+    onCloseAutoFocus?: FocusScopeOwnProps['onUnmountAutoFocus'];
 
     /**
      * Whether scrolling outside the `MenuContent` should be prevented
@@ -171,13 +139,13 @@ type MenuContentImplOwnProps = Polymorphic.Merge<
      * The direction of navigation between menu items.
      * @defaultValue ltr
      */
-    dir?: RovingFocusGroupProps['dir'];
+    dir?: RovingFocusGroupOwnProps['dir'];
 
     /**
      * Whether keyboard navigation should loop around
      * @defaultValue false
      */
-    loop?: RovingFocusGroupProps['loop'];
+    loop?: RovingFocusGroupOwnProps['loop'];
 
     /**
      * Whether the `MenuContent` should render in a `Portal`
@@ -209,12 +177,12 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     ...contentProps
   } = props;
   const context = useMenuContext(CONTENT_NAME);
-  const contentRef = React.useRef<HTMLDivElement>(null);
   const typeaheadProps = useMenuTypeahead();
   const { getItems } = useCollection();
-
   const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
   const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -239,6 +207,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
           }, [])}
         >
           <FocusScope
+            as={Slot}
             // we make sure we're not trapping once it's been closed
             // (closed !== unmounted when animating out)
             trapped={trapFocus && context.open}
@@ -252,93 +221,66 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
               }
             }}
           >
-            {(focusScopeProps) => (
-              <DismissableLayer
-                disableOutsidePointerEvents={disableOutsidePointerEvents}
-                onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
-                  setSkipCloseAutoFocus(false);
-                })}
-                onPointerDownOutside={composeEventHandlers(
-                  onPointerDownOutside,
-                  (event) => {
-                    const originalEvent = event.detail.originalEvent as MouseEvent;
-                    const isLeftClick =
-                      originalEvent.button === 0 && originalEvent.ctrlKey === false;
-                    setSkipCloseAutoFocus(!disableOutsidePointerEvents && isLeftClick);
-                  },
-                  { checkForDefaultPrevented: false }
-                )}
-                onFocusOutside={composeEventHandlers(
-                  onFocusOutside,
-                  (event) => {
-                    // When focus is trapped, a focusout event may still happen.
-                    // We make sure we don't trigger our `onDismiss` in such case.
-                    if (trapFocus) event.preventDefault();
-                  },
-                  { checkForDefaultPrevented: false }
-                )}
-                onInteractOutside={onInteractOutside}
-                onDismiss={() => context.onOpenChange(false)}
+            <DismissableLayer
+              as={Slot}
+              disableOutsidePointerEvents={disableOutsidePointerEvents}
+              onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
+                setSkipCloseAutoFocus(false);
+              })}
+              onPointerDownOutside={composeEventHandlers(
+                onPointerDownOutside,
+                (event) => {
+                  const originalEvent = event.detail.originalEvent as MouseEvent;
+                  const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
+                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && isLeftClick);
+                },
+                { checkForDefaultPrevented: false }
+              )}
+              onFocusOutside={composeEventHandlers(
+                onFocusOutside,
+                (event) => {
+                  // When focus is trapped, a focusout event may still happen.
+                  // We make sure we don't trigger our `onDismiss` in such case.
+                  if (trapFocus) event.preventDefault();
+                },
+                { checkForDefaultPrevented: false }
+              )}
+              onInteractOutside={onInteractOutside}
+              onDismiss={() => context.onOpenChange(false)}
+            >
+              <RovingFocusGroup
+                as={Slot}
+                dir={dir}
+                orientation="vertical"
+                loop={loop}
+                currentTabStopId={currentItemId}
+                onCurrentTabStopIdChange={setCurrentItemId}
+                // we override the default behaviour which automatically focuses the first item
+                onEntryFocus={(event) => event.preventDefault()}
               >
-                {(dismissableLayerProps) => (
-                  <RovingFocusGroup
-                    as={Slot}
-                    dir={dir}
-                    orientation="vertical"
-                    loop={loop}
-                    currentTabStopId={currentItemId}
-                    onCurrentTabStopIdChange={setCurrentItemId}
-                    // we override the default behaviour which automatically focuses the first item
-                    onEntryFocus={(event) => event.preventDefault()}
-                  >
-                    <PopperPrimitive.Content
-                      role="menu"
-                      {...focusScopeProps}
-                      {...contentProps}
-                      ref={composeRefs(forwardedRef, contentRef, focusScopeProps.ref)}
-                      style={{
-                        ...dismissableLayerProps.style,
-                        outline: 'none',
-                        ...contentProps.style,
-                      }}
-                      onBlurCapture={composeEventHandlers(
-                        contentProps.onBlurCapture,
-                        dismissableLayerProps.onBlurCapture,
-                        { checkForDefaultPrevented: false }
-                      )}
-                      onFocusCapture={composeEventHandlers(
-                        contentProps.onFocusCapture,
-                        dismissableLayerProps.onFocusCapture,
-                        { checkForDefaultPrevented: false }
-                      )}
-                      onPointerDownCapture={composeEventHandlers(
-                        contentProps.onPointerDownCapture,
-                        dismissableLayerProps.onPointerDownCapture,
-                        { checkForDefaultPrevented: false }
-                      )}
-                      onKeyDownCapture={composeEventHandlers(
-                        contentProps.onKeyDownCapture,
-                        typeaheadProps.onKeyDownCapture
-                      )}
-                      // focus first/last item based on key pressed
-                      onKeyDown={composeEventHandlers(
-                        contentProps.onKeyDown,
-                        composeEventHandlers(focusScopeProps.onKeyDown, (event) => {
-                          const content = contentRef.current;
-                          if (event.target !== content) return;
-                          if (!ALL_KEYS.includes(event.key)) return;
-                          event.preventDefault();
-                          const items = getItems().filter((item) => !item.disabled);
-                          const candidateNodes = items.map((item) => item.ref.current!);
-                          if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
-                          focusFirst(candidateNodes);
-                        })
-                      )}
-                    />
-                  </RovingFocusGroup>
-                )}
-              </DismissableLayer>
-            )}
+                <PopperPrimitive.Content
+                  role="menu"
+                  {...contentProps}
+                  ref={composedRefs}
+                  style={{ outline: 'none', ...contentProps.style }}
+                  onKeyDownCapture={composeEventHandlers(
+                    contentProps.onKeyDownCapture,
+                    typeaheadProps.onKeyDownCapture
+                  )}
+                  // focus first/last item based on key pressed
+                  onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+                    const content = contentRef.current;
+                    if (event.target !== content) return;
+                    if (!ALL_KEYS.includes(event.key)) return;
+                    event.preventDefault();
+                    const items = getItems().filter((item) => !item.disabled);
+                    const candidateNodes = items.map((item) => item.ref.current!);
+                    if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
+                    focusFirst(candidateNodes);
+                  })}
+                />
+              </RovingFocusGroup>
+            </DismissableLayer>
           </FocusScope>
         </MenuContentProvider>
       </ScrollLockWrapper>

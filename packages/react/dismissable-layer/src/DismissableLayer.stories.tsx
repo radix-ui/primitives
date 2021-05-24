@@ -5,6 +5,7 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Popper, PopperAnchor, PopperContent, PopperArrow } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
+import { Slot } from '@radix-ui/react-slot';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from './DismissableLayer';
 
@@ -94,26 +95,19 @@ export const Basic = () => {
           }}
           disableOutsidePointerEvents={disabledOutsidePointerEvents}
           onDismiss={() => setOpen(false)}
+          style={{
+            display: 'inline-flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            verticalAlign: 'middle',
+            width: 400,
+            height: 300,
+            backgroundColor: 'black',
+            borderRadius: 10,
+            marginBottom: 20,
+          }}
         >
-          {(props) => (
-            <div
-              {...props}
-              style={{
-                display: 'inline-flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                verticalAlign: 'middle',
-                width: 400,
-                height: 300,
-                backgroundColor: 'black',
-                borderRadius: 10,
-                marginBottom: 20,
-                ...props.style,
-              }}
-            >
-              <input type="text" />
-            </div>
-          )}
+          <input type="text" />
         </DismissableLayer>
       ) : null}
 
@@ -151,6 +145,7 @@ export const WithFocusScope = () => {
 
       {open ? (
         <DismissableLayer
+          as={Slot}
           onPointerDownOutside={(event) => {
             if (event.target === openButtonRef.current) {
               event.preventDefault();
@@ -159,30 +154,22 @@ export const WithFocusScope = () => {
           disableOutsidePointerEvents
           onDismiss={() => setOpen(false)}
         >
-          {(dismissableLayerProps) => (
-            <FocusScope trapped>
-              {(focusScopeProps) => (
-                <div
-                  {...dismissableLayerProps}
-                  {...focusScopeProps}
-                  style={{
-                    display: 'inline-flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    verticalAlign: 'middle',
-                    width: 400,
-                    height: 300,
-                    backgroundColor: 'black',
-                    borderRadius: 10,
-                    marginBottom: 20,
-                    ...dismissableLayerProps.style,
-                  }}
-                >
-                  <input type="text" />
-                </div>
-              )}
-            </FocusScope>
-          )}
+          <FocusScope
+            trapped
+            style={{
+              display: 'inline-flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              verticalAlign: 'middle',
+              width: 400,
+              height: 300,
+              backgroundColor: 'black',
+              borderRadius: 10,
+              marginBottom: 20,
+            }}
+          >
+            <input type="text" />
+          </FocusScope>
         </DismissableLayer>
       ) : null}
 
@@ -203,39 +190,35 @@ function DismissableBox(props: DismissableBoxProps) {
   const openButtonRef = React.useRef(null);
 
   return (
-    <DismissableLayer {...props}>
-      {(props) => (
-        <div
-          {...props}
-          style={{
-            display: 'inline-block',
-            verticalAlign: 'middle',
-            padding: 20,
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            borderRadius: 10,
-            marginTop: 20,
-            ...props.style,
-          }}
-        >
-          <div>
-            <button ref={openButtonRef} type="button" onClick={() => setOpen((open) => !open)}>
-              {open ? 'Close' : 'Open'} new layer
-            </button>
-          </div>
+    <DismissableLayer
+      {...props}
+      style={{
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        padding: 20,
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        borderRadius: 10,
+        marginTop: 20,
+        ...props.style,
+      }}
+    >
+      <div>
+        <button ref={openButtonRef} type="button" onClick={() => setOpen((open) => !open)}>
+          {open ? 'Close' : 'Open'} new layer
+        </button>
+      </div>
 
-          {open ? (
-            <DismissableBox
-              onPointerDownOutside={(event) => {
-                if (event.target === openButtonRef.current) {
-                  event.preventDefault();
-                }
-              }}
-              onFocusOutside={(event) => event.preventDefault()}
-              onDismiss={() => setOpen(false)}
-            />
-          ) : null}
-        </div>
-      )}
+      {open ? (
+        <DismissableBox
+          onPointerDownOutside={(event) => {
+            if (event.target === openButtonRef.current) {
+              event.preventDefault();
+            }
+          }}
+          onFocusOutside={(event) => event.preventDefault()}
+          onDismiss={() => setOpen(false)}
+        />
+      ) : null}
     </DismissableLayer>
   );
 }
@@ -522,41 +505,37 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
           </Portal>
           <Portal>
             <RemoveScroll>
-              <DismissableLayer disableOutsidePointerEvents onDismiss={() => setOpen(false)}>
-                {(dismissableLayerProps) => (
-                  <FocusScope trapped>
-                    {(focusScopeProps) => (
-                      <div
-                        {...dismissableLayerProps}
-                        {...focusScopeProps}
-                        style={{
-                          boxSizing: 'border-box',
-                          display: 'flex',
-                          alignItems: 'start',
-                          gap: 10,
-                          position: 'fixed',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          background: 'white',
-                          minWidth: 300,
-                          minHeight: 200,
-                          padding: 40,
-                          borderRadius: 10,
-                          backgroundColor: 'white',
-                          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
-                          ...dismissableLayerProps.style,
-                        }}
-                      >
-                        {children}
-                        <button type="button" onClick={() => setOpen(false)}>
-                          {closeLabel}
-                        </button>
-                        <input type="text" defaultValue="hello world" />
-                      </div>
-                    )}
-                  </FocusScope>
-                )}
+              <DismissableLayer
+                as={Slot}
+                disableOutsidePointerEvents
+                onDismiss={() => setOpen(false)}
+              >
+                <FocusScope
+                  trapped
+                  style={{
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'start',
+                    gap: 10,
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    background: 'white',
+                    minWidth: 300,
+                    minHeight: 200,
+                    padding: 40,
+                    borderRadius: 10,
+                    backgroundColor: 'white',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
+                  }}
+                >
+                  {children}
+                  <button type="button" onClick={() => setOpen(false)}>
+                    {closeLabel}
+                  </button>
+                  <input type="text" defaultValue="hello world" />
+                </FocusScope>
               </DismissableLayer>
             </RemoveScroll>
           </Portal>
@@ -609,6 +588,7 @@ function DummyPopover({
           <Portal>
             <ScrollContainer>
               <DismissableLayer
+                as={Slot}
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onEscapeKeyDown={onEscapeKeyDown}
                 onPointerDownOutside={(event) => {
@@ -623,46 +603,40 @@ function DummyPopover({
                 onInteractOutside={onInteractOutside}
                 onDismiss={() => setOpen(false)}
               >
-                {(dismissableLayerProps) => (
-                  <FocusScope
-                    trapped={trapped}
-                    onUnmountAutoFocus={(event) => {
-                      if (skipUnmountAutoFocus) {
-                        event.preventDefault();
-                      }
-                      setSkipUnmountAutoFocus(false);
+                <FocusScope
+                  as={Slot}
+                  trapped={trapped}
+                  onUnmountAutoFocus={(event) => {
+                    if (skipUnmountAutoFocus) {
+                      event.preventDefault();
+                    }
+                    setSkipUnmountAutoFocus(false);
+                  }}
+                >
+                  <PopperContent
+                    style={{
+                      filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.12))',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                      background: 'white',
+                      minWidth: 200,
+                      minHeight: 150,
+                      padding: 20,
+                      borderRadius: 4,
+                      backgroundColor: color,
                     }}
+                    side="bottom"
+                    sideOffset={10}
                   >
-                    {(focusScopeProps) => (
-                      <PopperContent
-                        {...dismissableLayerProps}
-                        {...focusScopeProps}
-                        style={{
-                          filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.12))',
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: 10,
-                          background: 'white',
-                          minWidth: 200,
-                          minHeight: 150,
-                          padding: 20,
-                          borderRadius: 4,
-                          backgroundColor: color,
-                          ...dismissableLayerProps.style,
-                        }}
-                        side="bottom"
-                        sideOffset={10}
-                      >
-                        {children}
-                        <button type="button" onClick={() => setOpen(false)}>
-                          {closeLabel}
-                        </button>
-                        <input type="text" defaultValue="hello world" />
-                        <PopperArrow width={10} height={4} style={{ fill: color }} offset={20} />
-                      </PopperContent>
-                    )}
-                  </FocusScope>
-                )}
+                    {children}
+                    <button type="button" onClick={() => setOpen(false)}>
+                      {closeLabel}
+                    </button>
+                    <input type="text" defaultValue="hello world" />
+                    <PopperArrow width={10} height={4} style={{ fill: color }} offset={20} />
+                  </PopperContent>
+                </FocusScope>
               </DismissableLayer>
             </ScrollContainer>
           </Portal>
