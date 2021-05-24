@@ -170,7 +170,7 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
     [wrapped, contained, focusScope.paused]
   );
 
-  return <Primitive tabIndex={-1} onKeyDown={handleKeyDown} {...scopeProps} ref={composedRefs} />;
+  return <Primitive tabIndex={-1} {...scopeProps} ref={composedRefs} onKeyDown={handleKeyDown} />;
 }) as FocusScopePrimitive;
 
 FocusScope.displayName = FOCUS_SCOPE_NAME;
