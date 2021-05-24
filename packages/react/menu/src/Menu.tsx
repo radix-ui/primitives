@@ -3,7 +3,7 @@ import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
-import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
@@ -183,6 +183,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
 
   const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
   const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -261,7 +262,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                 <PopperPrimitive.Content
                   role="menu"
                   {...contentProps}
-                  ref={composeRefs(forwardedRef, contentRef)}
+                  ref={composedRefs}
                   style={{ outline: 'none', ...contentProps.style }}
                   onKeyDownCapture={composeEventHandlers(
                     contentProps.onKeyDownCapture,

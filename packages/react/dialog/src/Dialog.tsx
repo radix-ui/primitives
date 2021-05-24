@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
@@ -206,12 +206,14 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   } = props;
   const context = useDialogContext(CONTENT_NAME);
 
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
+
   // Make sure the whole tree has focus guards as our `Dialog` will be
   // the last element in the DOM (beacuse of the `Portal`)
   useFocusGuards();
 
   // Hide everything from ARIA except the content
-  const contentRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const content = contentRef.current;
     if (content) return hideOthers(content);
@@ -233,7 +235,7 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
             aria-modal
             id={context.contentId}
             {...contentProps}
-            ref={composeRefs(forwardedRef, contentRef)}
+            ref={composedRefs}
             disableOutsidePointerEvents
             onEscapeKeyDown={onEscapeKeyDown}
             onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {

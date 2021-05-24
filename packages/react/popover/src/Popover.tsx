@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as PopperPrimitive from '@radix-ui/react-popper';
@@ -236,6 +236,8 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
   } = props;
   const context = usePopoverContext(CONTENT_NAME);
   const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -245,7 +247,6 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
   useFocusGuards();
 
   // Hide everything from ARIA except the content
-  const contentRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const content = contentRef.current;
     if (content) return hideOthers(content);
@@ -307,7 +308,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
               aria-modal
               id={context.contentId}
               {...contentProps}
-              ref={composeRefs(forwardedRef, contentRef)}
+              ref={composedRefs}
               style={{
                 ...contentProps.style,
                 // re-namespace exposed content custom property
