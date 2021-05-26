@@ -68,7 +68,7 @@ export const Submenus = () => {
             checked={rtl}
             onChange={(event) => setRtl(event.currentTarget.checked)}
           />
-          rtl
+          Right-to-left
         </label>
         <label>
           <input

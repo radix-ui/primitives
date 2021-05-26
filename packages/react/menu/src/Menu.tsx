@@ -349,11 +349,15 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
       disableOutsidePointerEvents={false}
       disableOutsideScroll={false}
       trapFocus={false}
+      onEntryFocus={context.onEntryFocus}
       onOpenAutoFocus={(event) => event.preventDefault()}
       // The menu might close because of focusing another menu item in the parent menu. We
       // don't want it to refocus the trigger in that case so we handle trigger focus ourselves.
       onCloseAutoFocus={(event) => event.preventDefault()}
-      onEntryFocus={context.onEntryFocus}
+      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
+        context.onOpenChange(false);
+        context.trigger?.focus();
+      })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         const element = event.target as HTMLElement;
         // Submenu key events bubble through portals. We only care about keys in this menu.
@@ -364,9 +368,8 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
           context.trigger?.focus();
         }
       })}
-      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
+      onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, () => {
         context.onOpenChange(false);
-        context.trigger?.focus();
       })}
     />
   ) : null;
@@ -537,13 +540,13 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                   style={{ outline: 'none', ...contentProps.style }}
                   onKeyDownCapture={composeEventHandlers(
                     contentProps.onKeyDownCapture,
-                    composeEventHandlers(typeaheadProps.onKeyDownCapture, (event) => {
-                      if (event.key === 'Tab') event.preventDefault();
-                    })
+                    typeaheadProps.onKeyDownCapture
                   )}
                   // focus first/last item based on key pressed
                   onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
                     const content = contentRef.current;
+                    // menus should not be navigated using tab key so we prevent it
+                    if (event.key === 'Tab') event.preventDefault();
                     if (event.target !== content) return;
                     if (!FIRST_LAST_KEYS.includes(event.key)) return;
                     event.preventDefault();
