@@ -235,7 +235,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
     ...contentProps
   } = props;
   const context = usePopoverContext(CONTENT_NAME);
-  const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
+  const isPointerDownOutsideRef = React.useRef(false);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
@@ -262,7 +262,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
           trapped={trapFocus && context.open}
           onMountAutoFocus={onOpenAutoFocus}
           onUnmountAutoFocus={(event) => {
-            if (skipCloseAutoFocus) {
+            if (!disableOutsidePointerEvents && isPointerDownOutsideRef.current) {
               event.preventDefault();
             } else {
               onCloseAutoFocus?.(event);
@@ -273,14 +273,14 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
             as={Slot}
             disableOutsidePointerEvents={disableOutsidePointerEvents}
             onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
-              setSkipCloseAutoFocus(false);
+              isPointerDownOutsideRef.current = false;
             })}
             onPointerDownOutside={composeEventHandlers(
               onPointerDownOutside,
               (event) => {
                 const originalEvent = event.detail.originalEvent as MouseEvent;
                 const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
-                setSkipCloseAutoFocus(!disableOutsidePointerEvents && isLeftClick);
+                isPointerDownOutsideRef.current = isLeftClick;
 
                 const targetIsTrigger = context.triggerRef.current?.contains(
                   event.target as HTMLElement

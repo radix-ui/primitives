@@ -1,7 +1,9 @@
 import * as React from 'react';
 import {
-  Menu as MenuPrimitive,
+  Menu,
+  MenuSub,
   MenuAnchor,
+  MenuSubTrigger,
   MenuContent,
   MenuGroup,
   MenuLabel,
@@ -11,6 +13,7 @@ import {
   MenuRadioItem,
   MenuItemIndicator,
   MenuSeparator,
+  MenuArrow,
 } from './Menu';
 import { css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
@@ -21,7 +24,7 @@ export default {
 };
 
 export const Styled = () => (
-  <Menu>
+  <MenuWithAnchor>
     <MenuItem className={itemClass} onSelect={() => window.alert('undo')}>
       Undo
     </MenuItem>
@@ -38,11 +41,113 @@ export const Styled = () => (
     <MenuItem className={itemClass} onSelect={() => window.alert('paste')}>
       Paste
     </MenuItem>
-  </Menu>
+  </MenuWithAnchor>
 );
 
+export const Submenus = () => {
+  const [open1, setOpen1] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
+  const [open4, setOpen4] = React.useState(false);
+  const [rtl, setRtl] = React.useState(false);
+  const [animated, setAnimated] = React.useState(false);
+
+  React.useEffect(() => {
+    if (rtl) {
+      document.documentElement.setAttribute('dir', 'rtl');
+      return () => document.documentElement.removeAttribute('dir');
+    }
+  }, [rtl]);
+
+  return (
+    <>
+      <div style={{ marginBottom: 8, display: 'grid', gridAutoFlow: 'row', gridGap: 4 }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={rtl}
+            onChange={(event) => setRtl(event.currentTarget.checked)}
+          />
+          rtl
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={animated}
+            onChange={(event) => setAnimated(event.currentTarget.checked)}
+          />
+          Animated
+        </label>
+      </div>
+      <MenuWithAnchor>
+        <MenuItem className={itemClass} onSelect={() => window.alert('undo')}>
+          Undo
+        </MenuItem>
+        <Submenu open={open1} onOpenChange={setOpen1} animated={animated}>
+          <MenuItem className={itemClass} disabled>
+            Disabled
+          </MenuItem>
+          <MenuItem className={itemClass} onSelect={() => window.alert('one')}>
+            One
+          </MenuItem>
+          <Submenu open={open2} onOpenChange={setOpen2} animated={animated}>
+            <MenuItem className={itemClass} onSelect={() => window.alert('one')}>
+              One
+            </MenuItem>
+            <MenuItem className={itemClass} onSelect={() => window.alert('two')}>
+              Two
+            </MenuItem>
+            <MenuItem className={itemClass} onSelect={() => window.alert('three')}>
+              Three
+            </MenuItem>
+          </Submenu>
+          <Submenu open={open3} onOpenChange={setOpen3} animated={animated}>
+            <MenuItem className={itemClass} onSelect={() => window.alert('one')}>
+              One
+            </MenuItem>
+            <MenuItem className={itemClass} onSelect={() => window.alert('two')}>
+              Two
+            </MenuItem>
+            <MenuItem className={itemClass} onSelect={() => window.alert('three')}>
+              Three
+            </MenuItem>
+          </Submenu>
+          <MenuItem className={itemClass} onSelect={() => window.alert('two')}>
+            Two
+          </MenuItem>
+          <Submenu open={open4} onOpenChange={setOpen4} animated={animated} disabled>
+            <MenuItem className={itemClass} onSelect={() => window.alert('one')}>
+              One
+            </MenuItem>
+            <MenuItem className={itemClass} onSelect={() => window.alert('two')}>
+              Two
+            </MenuItem>
+            <MenuItem className={itemClass} onSelect={() => window.alert('three')}>
+              Three
+            </MenuItem>
+          </Submenu>
+          <MenuItem className={itemClass} onSelect={() => window.alert('three')}>
+            Three
+          </MenuItem>
+        </Submenu>
+
+        <MenuSeparator className={separatorClass} />
+        <MenuItem className={itemClass} disabled onSelect={() => window.alert('cut')}>
+          Cut
+        </MenuItem>
+        <MenuItem className={itemClass} onSelect={() => window.alert('copy')}>
+          Copy
+        </MenuItem>
+        <MenuItem className={itemClass} onSelect={() => window.alert('paste')}>
+          Paste
+        </MenuItem>
+      </MenuWithAnchor>
+    </>
+  );
+};
+
 export const WithLabels = () => (
-  <Menu>
+  <MenuWithAnchor>
     {foodGroups.map((foodGroup, index) => (
       <MenuGroup key={index}>
         {foodGroup.label && (
@@ -63,7 +168,7 @@ export const WithLabels = () => (
         {index < foodGroups.length - 1 && <MenuSeparator className={separatorClass} />}
       </MenuGroup>
     ))}
-  </Menu>
+  </MenuWithAnchor>
 );
 
 const suits = [
@@ -104,7 +209,7 @@ export const Typeahead = () => (
       <div>
         <h2>Complex children</h2>
         <p>(relying on `.textContent` — default)</p>
-        <Menu>
+        <MenuWithAnchor>
           {suits.map((suit) => (
             <MenuItem key={suit.emoji} className={itemClass}>
               {suit.label}
@@ -113,13 +218,13 @@ export const Typeahead = () => (
               </span>
             </MenuItem>
           ))}
-        </Menu>
+        </MenuWithAnchor>
       </div>
 
       <div>
         <h2>Complex children</h2>
         <p>(with explicit `textValue` prop)</p>
-        <Menu>
+        <MenuWithAnchor>
           {suits.map((suit) => (
             <MenuItem key={suit.emoji} className={itemClass} textValue={suit.label}>
               <span role="img" aria-label={suit.label}>
@@ -128,7 +233,7 @@ export const Typeahead = () => (
               {suit.label}
             </MenuItem>
           ))}
-        </Menu>
+        </MenuWithAnchor>
       </div>
     </div>
   </>
@@ -143,7 +248,7 @@ export const CheckboxItems = () => {
   ];
 
   return (
-    <Menu>
+    <MenuWithAnchor>
       <MenuItem className={itemClass} onSelect={() => window.alert('show')}>
         Show fonts
       </MenuItem>
@@ -168,7 +273,7 @@ export const CheckboxItems = () => {
           </MenuItemIndicator>
         </MenuCheckboxItem>
       ))}
-    </Menu>
+    </MenuWithAnchor>
   );
 };
 
@@ -177,7 +282,7 @@ export const RadioItems = () => {
   const [file, setFile] = React.useState(files[1]);
 
   return (
-    <Menu>
+    <MenuWithAnchor>
       <MenuItem className={itemClass} onSelect={() => window.alert('minimize')}>
         Minimize window
       </MenuItem>
@@ -198,7 +303,7 @@ export const RadioItems = () => {
           </MenuRadioItem>
         ))}
       </MenuRadioGroup>
-    </Menu>
+    </MenuWithAnchor>
   );
 };
 
@@ -221,7 +326,7 @@ export const Animated = () => {
       </label>
       <br />
       <br />
-      <Menu className={animatedRootClass} open={open}>
+      <MenuWithAnchor className={animatedContentClass} open={open}>
         {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
           <MenuCheckboxItem
             key={label}
@@ -246,14 +351,13 @@ export const Animated = () => {
             </MenuRadioItem>
           ))}
         </MenuRadioGroup>
-      </Menu>
+      </MenuWithAnchor>
     </>
   );
 };
 
 type MenuOwnProps = Omit<
-  React.ComponentProps<typeof MenuPrimitive> & React.ComponentProps<typeof MenuContent>,
-  | 'onOpenChange'
+  React.ComponentProps<typeof Menu> & React.ComponentProps<typeof MenuContent>,
   | 'portalled'
   | 'trapFocus'
   | 'onOpenAutoFocus'
@@ -262,11 +366,12 @@ type MenuOwnProps = Omit<
   | 'disableOutsideScroll'
 >;
 
-const Menu: React.FC<MenuOwnProps> = (props) => {
+const MenuWithAnchor: React.FC<MenuOwnProps> = (props) => {
   const { open = true, children, ...contentProps } = props;
   return (
-    <MenuPrimitive open={open} onOpenChange={() => {}}>
-      <MenuAnchor />
+    <Menu open={open} onOpenChange={() => {}}>
+      {/* inline-block allows anchor to move when rtl changes on document */}
+      <MenuAnchor style={{ display: 'inline-block' }} />
       <MenuContent
         className={contentClass}
         portalled
@@ -280,7 +385,26 @@ const Menu: React.FC<MenuOwnProps> = (props) => {
       >
         {children}
       </MenuContent>
-    </MenuPrimitive>
+    </Menu>
+  );
+};
+
+const Submenu: React.FC<MenuOwnProps & { animated: boolean; disabled?: boolean }> = (props) => {
+  const { open = true, onOpenChange, children, animated, disabled, ...contentProps } = props;
+  return (
+    <MenuSub open={open} onOpenChange={onOpenChange}>
+      <MenuSubTrigger className={subTriggerClass} disabled={disabled}>
+        Submenu →
+      </MenuSubTrigger>
+      <MenuContent
+        className={animated ? animatedContentClass : contentClass}
+        sideOffset={12}
+        {...contentProps}
+      >
+        {children}
+        <MenuArrow offset={8} />
+      </MenuContent>
+    </MenuSub>
   );
 };
 
@@ -333,37 +457,44 @@ const itemClass = css({
   },
 });
 
+const subTriggerClass = css(itemClass, {
+  '&[data-state="open"]': {
+    backgroundColor: '$gray100',
+    color: '$black',
+  },
+});
+
 const separatorClass = css({
   height: 1,
   margin: '5px 10px',
   backgroundColor: '$gray100',
 });
 
-const fadeIn = css.keyframes({
-  from: { opacity: 0 },
-  to: { opacity: 1 },
+const animateIn = css.keyframes({
+  from: { transform: 'scale(0.95)', opacity: 0 },
+  to: { transform: 'scale(1)', opacity: 1 },
 });
 
-const fadeOut = css.keyframes({
-  from: { opacity: 1 },
-  to: { opacity: 0 },
+const animateOut = css.keyframes({
+  from: { transform: 'scale(1)', opacity: 1 },
+  to: { transform: 'scale(0.95)', opacity: 0 },
 });
 
-const animatedRootClass = css(contentClass, {
+const animatedContentClass = css(contentClass, {
   '&[data-state="open"]': {
-    animation: `${fadeIn} 300ms ease-out`,
+    animation: `${animateIn} 300ms ease`,
   },
   '&[data-state="closed"]': {
-    animation: `${fadeOut} 300ms ease-in`,
+    animation: `${animateOut} 300ms ease`,
   },
 });
 
 const animatedItemIndicatorClass = css({
   '&[data-state="checked"]': {
-    animation: `${fadeIn} 300ms ease-out`,
+    animation: `${animateIn} 300ms ease`,
   },
   '&[data-state="unchecked"]': {
-    animation: `${fadeOut} 300ms ease-in`,
+    animation: `${animateOut} 300ms ease`,
   },
 });
 

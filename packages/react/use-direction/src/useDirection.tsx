@@ -8,8 +8,8 @@ export function useDirection(element: HTMLElement | null, directionProp?: Direct
   const rAFRef = React.useRef<number>(0);
 
   React.useEffect(() => {
-    if (element && directionProp === undefined) {
-      const computedStyle = getComputedStyle(element);
+    if (directionProp === undefined && element?.parentElement) {
+      const computedStyle = getComputedStyle(element.parentElement);
       setComputedStyle(computedStyle);
     }
   }, [element, directionProp]);
