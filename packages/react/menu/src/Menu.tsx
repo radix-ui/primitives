@@ -132,9 +132,7 @@ const MenuSub: React.FC<MenuOwnProps> = (props) => {
   React.useEffect(() => {
     const parentMenuContent = context.content;
     const handleParentMenuItemEnter = (event: Event) => {
-      const isItemSubMenuTrigger = event.target === trigger;
-      if (!isItemSubMenuTrigger) handleOpenChange(false);
-      event.stopPropagation();
+      if (event.target !== trigger) handleOpenChange(false);
     };
     if (parentMenuContent) {
       parentMenuContent.addEventListener(ITEM_ENTER, handleParentMenuItemEnter);
@@ -347,13 +345,22 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
       // don't want it to refocus the trigger in that case so we handle trigger focus ourselves.
       onCloseAutoFocus={(event) => event.preventDefault()}
       onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => context.trigger?.focus())}
-      onFocusLeave={composeEventHandlers(props.onFocusLeave, () => context.onOpenChange(false))}
+      onFocusLeave={composeEventHandlers(props.onFocusLeave, (event) => {
+        // We prevent closing when the trigger is focused to avoid triggering a re-open animation
+        // on pointer interaction.
+        if (event.relatedTarget !== context.trigger) context.onOpenChange(false);
+      })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         const element = event.target as HTMLElement;
         // Submenu key events bubble through portals. We only care about keys in this menu.
         const isKeyDownInside = event.currentTarget.contains(element);
         const isCloseKey = SUB_CLOSE_KEYS[context.dir].includes(event.key);
-        if (isKeyDownInside && isCloseKey) context.trigger?.focus();
+        if (isKeyDownInside && isCloseKey) {
+          // We need to explicitly close when keyboard focuses trigger because we prevented this
+          // in onFocusLeave for pointers.
+          context.onOpenChange(false);
+          context.trigger?.focus();
+        }
       })}
     />
   ) : null;
