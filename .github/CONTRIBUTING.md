@@ -6,6 +6,20 @@ Radix has adopted the [Contributor Covenant](https://www.contributor-covenant.or
 
 Please read [the full text](/CODE_OF_CONDUCT.md) so that you can understand what actions will and will not be tolerated.
 
+## Heuristics
+
+[heuristic](<https://en.wikipedia.org/wiki/Heuristic_(computer_science)>)
+/ˌhjʊ(ə)ˈrɪstɪk/
+
+> A technique designed for solving a problem more quickly when classic methods are too slow, or for finding an approximate solution when classic methods fail to find any exact solution
+
+- Priority is the best User Experience
+- Complexity should be introduced when it’s inevitable
+- Code should be easy to reason about
+- Code should be easy to delete
+- Avoid abstracting too early
+- Avoid thinking too far in the future
+
 ## Questions
 
 If you have questions about Radix Primitives, be sure to check out the docs where we have several examples and detailed API references that may help you solve your problem. You can also share your questions on [GitHub Discussions](https://github.com/radix-ui/primitives/discussions).
