@@ -126,6 +126,10 @@ const MenuSub: React.FC<MenuOwnProps> = (props) => {
   }, [context.open, handleOpenChange]);
 
   React.useEffect(() => {
+    if (focusFirst) content?.focus();
+  }, [content, focusFirst]);
+
+  React.useEffect(() => {
     const parentMenuContent = context.content;
     const handleParentMenuItemEnter = (event: Event) => {
       const isItemSubMenuTrigger = event.target === trigger;
@@ -137,10 +141,6 @@ const MenuSub: React.FC<MenuOwnProps> = (props) => {
       return () => parentMenuContent.removeEventListener(ITEM_ENTER, handleParentMenuItemEnter);
     }
   }, [trigger, context.content, handleOpenChange]);
-
-  React.useEffect(() => {
-    if (focusFirst) content?.focus();
-  }, [content, focusFirst]);
 
   return (
     <PopperPrimitive.Root>
@@ -328,22 +328,14 @@ type MenuSubContentPrimitive = Polymorphic.ForwardRefComponent<
 
 const MenuSubContent = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(CONTENT_NAME);
-  const [ready, setReady] = React.useState(false);
-
-  React.useEffect(() => {
-    // Wait till next tick before rendering to ensure parent menu has been "placed" by popper.
-    // Without this, each submenu will flicker in the wrong position as its trigger hasn't
-    // been placed yet.
-    const timer = window.setTimeout(() => setReady(true));
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  return context.isSubmenu && ready ? (
+  const ref = React.useRef<MenuContentElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+  return context.isSubmenu ? (
     <MenuContentImpl
       align="start"
       id={context.contentId}
       {...props}
-      ref={forwardedRef}
+      ref={composedRefs}
       side={context.dir === 'rtl' ? 'left' : 'right'}
       portalled
       disableOutsidePointerEvents={false}
@@ -354,22 +346,14 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
       // The menu might close because of focusing another menu item in the parent menu. We
       // don't want it to refocus the trigger in that case so we handle trigger focus ourselves.
       onCloseAutoFocus={(event) => event.preventDefault()}
-      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-        context.onOpenChange(false);
-        context.trigger?.focus();
-      })}
+      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => context.trigger?.focus())}
+      onFocusLeave={composeEventHandlers(props.onFocusLeave, () => context.onOpenChange(false))}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         const element = event.target as HTMLElement;
         // Submenu key events bubble through portals. We only care about keys in this menu.
         const isKeyDownInside = event.currentTarget.contains(element);
         const isCloseKey = SUB_CLOSE_KEYS[context.dir].includes(event.key);
-        if (isKeyDownInside && isCloseKey) {
-          context.onOpenChange(false);
-          context.trigger?.focus();
-        }
-      })}
-      onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, () => {
-        context.onOpenChange(false);
+        if (isKeyDownInside && isCloseKey) context.trigger?.focus();
       })}
     />
   ) : null;
@@ -685,8 +669,6 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
         as={as}
         ref={composedRefs}
         onFocus={composeEventHandlers(props.onFocus, handleItemEnter)}
-        // Trigger ITEM_ENTER on mouse enter as well to ensure event fires for disabled items
-        onMouseEnter={composeEventHandlers(props.onMouseEnter, handleItemEnter)}
         /**
          * We focus items on `mouseMove` to achieve the following:
          *
@@ -699,6 +681,7 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
          * wiggles. This is to match native menu implementation.
          */
         onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
+          handleItemEnter(event);
           if (!disabled) {
             const item = event.currentTarget;
             item.focus();
