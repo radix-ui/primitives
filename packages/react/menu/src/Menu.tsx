@@ -344,11 +344,16 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
       // The menu might close because of focusing another menu item in the parent menu. We
       // don't want it to refocus the trigger in that case so we handle trigger focus ourselves.
       onCloseAutoFocus={(event) => event.preventDefault()}
-      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => context.trigger?.focus())}
       onFocusLeave={composeEventHandlers(props.onFocusLeave, (event) => {
         // We prevent closing when the trigger is focused to avoid triggering a re-open animation
         // on pointer interaction.
         if (event.relatedTarget !== context.trigger) context.onOpenChange(false);
+      })}
+      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
+        // We need to explicitly close when escape key focuses trigger because we prevented this
+        // in onFocusLeave for pointers.
+        context.onOpenChange(false);
+        context.trigger?.focus();
       })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         const element = event.target as HTMLElement;
