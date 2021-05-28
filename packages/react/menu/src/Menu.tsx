@@ -129,17 +129,6 @@ const MenuSub: React.FC<MenuOwnProps> = (props) => {
     if (focusFirst) content?.focus();
   }, [content, focusFirst]);
 
-  React.useEffect(() => {
-    const parentMenuContent = context.content;
-    const handleParentMenuItemEnter = (event: Event) => {
-      if (event.target !== trigger) handleOpenChange(false);
-    };
-    if (parentMenuContent) {
-      parentMenuContent.addEventListener(ITEM_ENTER, handleParentMenuItemEnter);
-      return () => parentMenuContent.removeEventListener(ITEM_ENTER, handleParentMenuItemEnter);
-    }
-  }, [trigger, context.content, handleOpenChange]);
-
   return (
     <PopperPrimitive.Root>
       <MenuProvider
@@ -161,8 +150,8 @@ const MenuSub: React.FC<MenuOwnProps> = (props) => {
           [focusFirst]
         )}
         onKeyOpen={React.useCallback(() => {
-          handleOpenChange(true);
           setFocusFirst(true);
+          handleOpenChange(true);
         }, [handleOpenChange])}
         onPointerOpen={React.useCallback(() => handleOpenChange(true), [handleOpenChange])}
       >
@@ -344,14 +333,14 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
       // The menu might close because of focusing another menu item in the parent menu. We
       // don't want it to refocus the trigger in that case so we handle trigger focus ourselves.
       onCloseAutoFocus={(event) => event.preventDefault()}
-      onFocusLeave={composeEventHandlers(props.onFocusLeave, (event) => {
+      onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
         // We prevent closing when the trigger is focused to avoid triggering a re-open animation
         // on pointer interaction.
-        if (event.relatedTarget !== context.trigger) context.onOpenChange(false);
+        if (event.target !== context.trigger) context.onOpenChange(false);
       })}
       onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
         // We need to explicitly close when escape key focuses trigger because we prevented this
-        // in onFocusLeave for pointers.
+        // in on focus outside for pointers.
         context.onOpenChange(false);
         context.trigger?.focus();
       })}
@@ -362,10 +351,13 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
         const isCloseKey = SUB_CLOSE_KEYS[context.dir].includes(event.key);
         if (isKeyDownInside && isCloseKey) {
           // We need to explicitly close when keyboard focuses trigger because we prevented this
-          // in onFocusLeave for pointers.
+          // in on focus outside for pointers.
           context.onOpenChange(false);
           context.trigger?.focus();
         }
+      })}
+      onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, () => {
+        context.onOpenChange(false);
       })}
     />
   ) : null;
@@ -570,7 +562,6 @@ MenuContent.displayName = CONTENT_NAME;
 const ITEM_NAME = 'MenuItem';
 const ITEM_DEFAULT_TAG = 'div';
 const ITEM_SELECT = 'menu.itemSelect';
-const ITEM_ENTER = 'menu.itemEnter';
 
 type MenuItemOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof MenuItemImpl>,
@@ -664,11 +655,6 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
     disabled,
   });
 
-  const handleItemEnter = (event: React.MouseEvent | React.FocusEvent) => {
-    const itemEnterEvent = new Event(ITEM_ENTER, { bubbles: true, cancelable: true });
-    event.currentTarget.dispatchEvent(itemEnterEvent);
-  };
-
   return (
     <CollectionItemSlot disabled={disabled}>
       <RovingFocusItem
@@ -680,7 +666,6 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
         {...menuTypeaheadItemProps}
         as={as}
         ref={composedRefs}
-        onFocus={composeEventHandlers(props.onFocus, handleItemEnter)}
         /**
          * We focus items on `mouseMove` to achieve the following:
          *
@@ -693,7 +678,6 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
          * wiggles. This is to match native menu implementation.
          */
         onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
-          handleItemEnter(event);
           if (!disabled) {
             const item = event.currentTarget;
             item.focus();
