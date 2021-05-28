@@ -84,14 +84,14 @@ type DismissableLayerImplOwnProps = Polymorphic.Merge<
      * Event handler called when the focus moves outside of the `DismissableLayer`.
      * Can be prevented.
      */
-    onFocusOutside?: (event: React.FocusEvent) => void;
+    onFocusOutside?: (event: FocusOutsideEvent) => void;
 
     /**
      * Event handler called when an interaction happens outside the `DismissableLayer`.
      * Specifically, when a pointer event happens outside of the `DismissableLayer` or focus moves outside of it.
      * Can be prevented.
      */
-    onInteractOutside?: (event: PointerDownOutsideEvent | React.FocusEvent) => void;
+    onInteractOutside?: (event: PointerDownOutsideEvent | FocusOutsideEvent) => void;
 
     /** Callback called when the `DismissableLayer` should be dismissed */
     onDismiss?: () => void;
@@ -207,7 +207,9 @@ const DismissableLayerImpl = React.forwardRef((props, forwardedRef) => {
  * -----------------------------------------------------------------------------------------------*/
 
 const POINTER_DOWN_OUTSIDE = 'dismissableLayer.pointerDownOutside';
-type PointerDownOutsideEvent = CustomEvent<{ originalEvent: MouseEvent | TouchEvent }>;
+const FOCUS_OUTSIDE = 'dismissableLayer.focusOutside';
+type PointerDownOutsideEvent = CustomEvent<{ originalEvent: PointerEvent }>;
+type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
 
 /**
  * Sets up `pointerdown` listener which listens for events outside a react subtree.
@@ -217,64 +219,63 @@ type PointerDownOutsideEvent = CustomEvent<{ originalEvent: MouseEvent | TouchEv
  *
  * Returns props to pass to the node we want to check for outside events.
  */
-function usePointerDownOutside(
-  onPointerDownOutsideProp?: (event: PointerDownOutsideEvent) => void
-) {
-  const onPointerDownOutside = useCallbackRef(onPointerDownOutsideProp);
-  const isEventInside = React.useRef(false);
+
+function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutsideEvent) => void) {
+  const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
+  const isPointerInsideReactTreeRef = React.useRef(false);
 
   React.useEffect(() => {
-    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (target && !isEventInside.current) {
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (target && !isPointerInsideReactTreeRef.current) {
         const pointerDownOutsideEvent: PointerDownOutsideEvent = new CustomEvent(
           POINTER_DOWN_OUTSIDE,
           { bubbles: false, cancelable: true, detail: { originalEvent: event } }
         );
-        target.addEventListener(POINTER_DOWN_OUTSIDE, onPointerDownOutside as EventListener, {
-          once: true,
-        });
+        target.addEventListener(POINTER_DOWN_OUTSIDE, handlePointerDownOutside, { once: true });
         target.dispatchEvent(pointerDownOutsideEvent);
       }
-      isEventInside.current = false;
+      isPointerInsideReactTreeRef.current = false;
     };
-
     document.addEventListener('pointerdown', handlePointerDown);
     return () => document.removeEventListener('pointerdown', handlePointerDown);
-  }, [onPointerDownOutside]);
-
-  const markEventAsInside = () => {
-    isEventInside.current = true;
-  };
+  }, [handlePointerDownOutside]);
 
   return {
     // ensures we check React component tree (not just DOM tree)
-    onPointerDownCapture: markEventAsInside as React.PointerEventHandler,
+    onPointerDownCapture: () => (isPointerInsideReactTreeRef.current = true),
   };
 }
 
 /**
- * Listens for when focus moves outside a react subtree.
+ * Listens for when focus happens outside a react subtree.
  * Returns props to pass to the root (node) of the subtree we want to check.
  */
-function useFocusOutside(onFocusOutside?: (event: React.FocusEvent) => void) {
-  const timerRef = React.useRef<number>(0);
 
-  // Cleanup timer if an unmount occurs before onFocusCapture fires
+function useFocusOutside(onFocusOutside?: (event: FocusOutsideEvent) => void) {
+  const handleFocusOutside = useCallbackRef(onFocusOutside) as EventListener;
+  const isFocusInsideReactTreeRef = React.useRef(false);
+
   React.useEffect(() => {
-    return () => window.clearTimeout(timerRef.current);
-  }, []);
+    const handleFocus = (event: FocusEvent) => {
+      const target = event.target;
+      if (target && !isFocusInsideReactTreeRef.current) {
+        const focusOutsideEvent: FocusOutsideEvent = new CustomEvent(FOCUS_OUTSIDE, {
+          bubbles: false,
+          cancelable: true,
+          detail: { originalEvent: event },
+        });
+        target.addEventListener(FOCUS_OUTSIDE, handleFocusOutside, { once: true });
+        target.dispatchEvent(focusOutsideEvent);
+      }
+    };
+    document.addEventListener('focusin', handleFocus);
+    return () => document.removeEventListener('focusin', handleFocus);
+  }, [handleFocusOutside]);
 
   return {
-    onBlurCapture: (event: React.FocusEvent) => {
-      event.persist();
-      timerRef.current = window.setTimeout(() => {
-        onFocusOutside?.(event);
-      }, 0);
-    },
-    onFocusCapture: () => {
-      window.clearTimeout(timerRef.current);
-    },
+    onFocusCapture: () => (isFocusInsideReactTreeRef.current = true),
+    onBlurCapture: () => (isFocusInsideReactTreeRef.current = false),
   };
 }
 
