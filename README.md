@@ -22,6 +22,7 @@ Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 
 - Benoit Grelard ([@benoitgrelard](https://twitter.com/benoitgrelard)) - [Modulz](https://modulz.app)
 - Jenna Smith ([@jjenzz](https://twitter.com/jjenzz)) - [Modulz](https://modulz.app)
+- Andy Hook ([@Andy_Hook](https://twitter.com/Andy_Hook)) - [Modulz](https://modulz.app)
 - Pedro Duarte ([@peduarte](https://twitter.com/peduarte)) - [Modulz](https://modulz.app)
 - Chance Strickland ([@chancethedev](https://twitter.com/chancethedev))
 
