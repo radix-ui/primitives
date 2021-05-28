@@ -29,8 +29,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.13.10"
   }
 }
