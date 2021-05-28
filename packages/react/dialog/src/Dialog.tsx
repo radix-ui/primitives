@@ -174,7 +174,7 @@ type FocusScopeOwnProps = Polymorphic.OwnProps<typeof FocusScope>;
 type DialogContentImplOwnProps = Polymorphic.Merge<
   Omit<
     Polymorphic.OwnProps<typeof DismissableLayer>,
-    'disableOutsidePointerEvents' | 'onFocusOutside' | 'onInteractOutside' | 'onDismiss'
+    'disableOutsidePointerEvents' | 'onFocusLeave' | 'onDismiss'
   >,
   {
     /**
@@ -248,9 +248,9 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
               // it is effectively as if we right-clicked the `Overlay`.
               if (isRightClick) event.preventDefault();
             })}
-            // When focus is trapped, a focusout event may still happen.
+            // When focus is trapped, the focus may still leave temporarily.
             // We make sure we don't trigger our `onDismiss` in such case.
-            onFocusOutside={(event) => event.preventDefault()}
+            onFocusLeave={(event) => event.preventDefault()}
             onDismiss={() => context.onOpenChange(false)}
           />
         </FocusScope>
