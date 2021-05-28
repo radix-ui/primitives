@@ -88,7 +88,7 @@ export const Basic = () => {
               event.preventDefault();
             }
           }}
-          onFocusLeave={(event) => {
+          onFocusOutside={(event) => {
             if (dismissOnFocusOutside === false) {
               event.preventDefault();
             }
@@ -215,7 +215,7 @@ function DismissableBox(props: DismissableBoxProps) {
               event.preventDefault();
             }
           }}
-          onFocusLeave={(event) => event.preventDefault()}
+          onFocusOutside={(event) => event.preventDefault()}
           onDismiss={() => setOpen(false)}
         />
       ) : null}
@@ -438,8 +438,8 @@ export const PopoverNested = () => (
     <div style={{ display: 'flex', gap: 10 }}>
       <DummyPopover
         disableOutsidePointerEvents
-        onPointerDownOutside={(event) => {
-          console.log('pointerdown outside black');
+        onInteractOutside={(event) => {
+          console.log('interact outside black');
         }}
       >
         <DummyPopover
@@ -447,8 +447,8 @@ export const PopoverNested = () => (
           openLabel="Open red"
           closeLabel="Close red"
           // disableOutsidePointerEvents
-          onPointerDownOutside={(event) => {
-            console.log('pointerdown outside red');
+          onInteractOutside={(event) => {
+            console.log('interact outside red');
           }}
         >
           <DummyPopover
@@ -456,8 +456,8 @@ export const PopoverNested = () => (
             openLabel="Open blue"
             closeLabel="Close blue"
             disableOutsidePointerEvents
-            onPointerDownOutside={(event) => {
-              console.log('pointerdown outside blue');
+            onInteractOutside={(event) => {
+              console.log('interact outside blue');
             }}
           ></DummyPopover>
         </DummyPopover>
@@ -564,7 +564,8 @@ function DummyPopover({
   trapped = true,
   onEscapeKeyDown,
   onPointerDownOutside,
-  onFocusLeave,
+  onFocusOutside,
+  onInteractOutside,
   disableOutsidePointerEvents = false,
   preventScroll = false,
 }: DummyPopoverProps) {
@@ -598,7 +599,8 @@ function DummyPopover({
                     onPointerDownOutside?.(event);
                   }
                 }}
-                onFocusLeave={onFocusLeave}
+                onFocusOutside={onFocusOutside}
+                onInteractOutside={onInteractOutside}
                 onDismiss={() => setOpen(false)}
               >
                 <FocusScope
