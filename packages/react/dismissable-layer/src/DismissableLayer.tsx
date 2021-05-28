@@ -15,8 +15,8 @@ const [TotalLayerCountProvider, useTotalLayerCount] = createTotalLayerCount();
 const [RunningLayerCountProvider, usePreviousRunningLayerCount] = createRunningLayerCount();
 
 // We need to compute the total count of layers which set `disableOutsidePointerEvents` to `true` AND
-// a running count of all the layers which set `disableOutsidePointerEvents` to `true` in order to
-// determine which layers should be dismissed when interacting outside.
+// a running count of all the layers which set `disableOutsidePointerEvents` to `true` in order to determine
+// which layers should be dismissed when interacting outside.
 // (ie. all layers that do not have a child layer which sets `disableOutsidePointerEvents` to `true`)
 const [
   TotalLayerCountWithDisabledOutsidePointerEventsProvider,
@@ -75,16 +75,23 @@ type DismissableLayerImplOwnProps = Polymorphic.Merge<
     onEscapeKeyDown?: (event: KeyboardEvent) => void;
 
     /**
-     * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
+     * Event handler called when the a pointer event happens outside of the `DismissableLayer`.
      * Can be prevented.
      */
     onPointerDownOutside?: (event: PointerDownOutsideEvent) => void;
 
     /**
-     * Event handler called when the focus leaves the `DismissableLayer`'s react subtree.
+     * Event handler called when the focus moves outside of the `DismissableLayer`.
      * Can be prevented.
      */
-    onFocusLeave?: (event: React.FocusEvent) => void;
+    onFocusOutside?: (event: React.FocusEvent) => void;
+
+    /**
+     * Event handler called when an interaction happens outside the `DismissableLayer`.
+     * Specifically, when a pointer event happens outside of the `DismissableLayer` or focus moves outside of it.
+     * Can be prevented.
+     */
+    onInteractOutside?: (event: PointerDownOutsideEvent | React.FocusEvent) => void;
 
     /** Callback called when the `DismissableLayer` should be dismissed */
     onDismiss?: () => void;
@@ -101,7 +108,8 @@ const DismissableLayerImpl = React.forwardRef((props, forwardedRef) => {
     disableOutsidePointerEvents = false,
     onEscapeKeyDown,
     onPointerDownOutside,
-    onFocusLeave,
+    onFocusOutside,
+    onInteractOutside,
     onDismiss,
     ...layerProps
   } = props;
@@ -141,6 +149,7 @@ const DismissableLayerImpl = React.forwardRef((props, forwardedRef) => {
     // Only dismiss if there's no deeper layer which disabled pointer events outside itself
     if (!containsChildLayerWithDisabledOutsidePointerEvents) {
       onPointerDownOutside?.(event);
+      onInteractOutside?.(event);
       if (!event.defaultPrevented) {
         onDismiss?.();
       }
@@ -148,9 +157,10 @@ const DismissableLayerImpl = React.forwardRef((props, forwardedRef) => {
   });
 
   // Dismiss on focus outside
-  const { onBlurCapture: handleBlurCapture, onFocusCapture: handleFocusCapture } = useFocusLeave(
+  const { onBlurCapture: handleBlurCapture, onFocusCapture: handleFocusCapture } = useFocusOutside(
     (event) => {
-      onFocusLeave?.(event);
+      onFocusOutside?.(event);
+      onInteractOutside?.(event);
       if (!event.defaultPrevented) {
         onDismiss?.();
       }
@@ -244,10 +254,10 @@ function usePointerDownOutside(
 }
 
 /**
- * Listens for when focus leaves a react subtree.
+ * Listens for when focus moves outside a react subtree.
  * Returns props to pass to the root (node) of the subtree we want to check.
  */
-function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
+function useFocusOutside(onFocusOutside?: (event: React.FocusEvent) => void) {
   const timerRef = React.useRef<number>(0);
 
   // Cleanup timer if an unmount occurs before onFocusCapture fires
@@ -259,7 +269,7 @@ function useFocusLeave(onFocusLeave?: (event: React.FocusEvent) => void) {
     onBlurCapture: (event: React.FocusEvent) => {
       event.persist();
       timerRef.current = window.setTimeout(() => {
-        onFocusLeave?.(event);
+        onFocusOutside?.(event);
       }, 0);
     },
     onFocusCapture: () => {

@@ -170,7 +170,8 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     disableOutsidePointerEvents,
     onEscapeKeyDown,
     onPointerDownOutside,
-    onFocusLeave,
+    onFocusOutside,
+    onInteractOutside,
     disableOutsideScroll,
     portalled,
     ...contentProps
@@ -235,15 +236,16 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                 },
                 { checkForDefaultPrevented: false }
               )}
-              onFocusLeave={composeEventHandlers(
-                onFocusLeave,
+              onFocusOutside={composeEventHandlers(
+                onFocusOutside,
                 (event) => {
-                  // When focus is trapped, the focus may still leave temporarily.
+                  // When focus is trapped, a focusout event may still happen.
                   // We make sure we don't trigger our `onDismiss` in such case.
                   if (trapFocus) event.preventDefault();
                 },
                 { checkForDefaultPrevented: false }
               )}
+              onInteractOutside={onInteractOutside}
               onDismiss={() => context.onOpenChange(false)}
             >
               <RovingFocusGroup
