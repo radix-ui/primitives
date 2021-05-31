@@ -3343,6 +3343,7 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0

@@ -8,35 +8,61 @@ export default { title: 'Components/Checkbox' };
 
 export const Styled = () => (
   <>
-    <p>
-      This checkbox is nested inside a label. The box-shadow is styled to appear when the checkbox
-      is in focus regardless of the input modality. The state is uncontrolled.
-    </p>
+    <p>This checkbox is nested inside a label. The state is uncontrolled.</p>
+
+    <h1>Custom label</h1>
     <Label>
       Label{' '}
       <Checkbox className={rootClass}>
         <CheckboxIndicator className={indicatorClass} />
       </Checkbox>
     </Label>
+
+    <br />
+    <br />
+
+    <h1>Native label</h1>
+    <label>
+      Label{' '}
+      <Checkbox className={rootClass}>
+        <CheckboxIndicator className={indicatorClass} />
+      </Checkbox>
+    </label>
+
+    <h1>Native label + native checkbox</h1>
+    <label>
+      Label <input type="checkbox" />
+    </label>
+
+    <h1>Custom label + htmlFor</h1>
+    <Label htmlFor="one">Label</Label>
+    <Checkbox className={rootClass} id="one">
+      <CheckboxIndicator className={indicatorClass} />
+    </Checkbox>
+
+    <br />
+    <br />
+
+    <h1>Native label + htmlFor</h1>
+    <label htmlFor="two">Label</label>
+    <Checkbox className={rootClass} id="two">
+      <CheckboxIndicator className={indicatorClass} />
+    </Checkbox>
+
+    <h1>Native label + native checkbox</h1>
+    <label htmlFor="three">Label</label>
+    <input type="checkbox" id="three" />
   </>
 );
 
 export const Controlled = () => {
-  const [checked, setChecked] = React.useState(true);
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>(true);
 
   return (
     <>
-      <p>
-        This checkbox is placed adjacent to its label. The box-shadow is styled to appear when the
-        checkbox is in focus regardless of the input modality. The state is controlled.
-      </p>
+      <p>This checkbox is placed adjacent to its label. The state is controlled.</p>
       <Label htmlFor="randBox">Label</Label>{' '}
-      <Checkbox
-        className={rootClass}
-        checked={checked}
-        onCheckedChange={(event) => setChecked(event.target.checked)}
-        id="randBox"
-      >
+      <Checkbox className={rootClass} checked={checked} onCheckedChange={setChecked} id="randBox">
         <CheckboxIndicator className={indicatorClass} />
       </Checkbox>
     </>
@@ -49,11 +75,7 @@ export const Indeterminate = () => {
   return (
     <>
       <p>
-        <Checkbox
-          className={rootClass}
-          checked={checked}
-          onCheckedChange={(event) => setChecked(event.target.checked)}
-        >
+        <Checkbox className={rootClass} checked={checked} onCheckedChange={setChecked}>
           <CheckboxIndicator className={indicatorClass} />
         </Checkbox>
       </p>
@@ -73,7 +95,8 @@ export const Indeterminate = () => {
 };
 
 export const WithinForm = () => {
-  const [data, setData] = React.useState({ optional: false, required: false });
+  const [data, setData] = React.useState({ optional: false, required: false, stopprop: false });
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
 
   return (
     <form
@@ -83,15 +106,57 @@ export const WithinForm = () => {
         setData((prevData) => ({ ...prevData, [input.name]: input.checked }));
       }}
     >
-      <p>optional checked: {String(data.optional)}</p>
-      <Checkbox className={rootClass} name="optional">
-        <CheckboxIndicator className={indicatorClass} />
-      </Checkbox>
+      <fieldset>
+        <legend>optional checked: {String(data.optional)}</legend>
+        <label>
+          <Checkbox
+            className={rootClass}
+            name="optional"
+            checked={checked}
+            onCheckedChange={setChecked}
+          >
+            <CheckboxIndicator className={indicatorClass} />
+          </Checkbox>{' '}
+          with label
+        </label>
+        <br />
+        <br />
 
-      <p>required checked: {String(data.required)}</p>
-      <Checkbox className={rootClass} name="required" required>
-        <CheckboxIndicator className={indicatorClass} />
-      </Checkbox>
+        <button
+          type="button"
+          onClick={() => {
+            setChecked((prevChecked) => {
+              return prevChecked === 'indeterminate' ? false : 'indeterminate';
+            });
+          }}
+        >
+          Toggle indeterminate
+        </button>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>required checked: {String(data.required)}</legend>
+        <Checkbox className={rootClass} name="required" required>
+          <CheckboxIndicator className={indicatorClass} />
+        </Checkbox>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>stop propagation checked: {String(data.stopprop)}</legend>
+        <Checkbox
+          className={rootClass}
+          name="stopprop"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <CheckboxIndicator className={indicatorClass} />
+        </Checkbox>
+      </fieldset>
 
       <br />
       <br />
@@ -107,11 +172,7 @@ export const Animated = () => {
   return (
     <>
       <p>
-        <Checkbox
-          className={rootClass}
-          checked={checked}
-          onCheckedChange={(event) => setChecked(event.target.checked)}
-        >
+        <Checkbox className={rootClass} checked={checked} onCheckedChange={setChecked}>
           <CheckboxIndicator className={animatedIndicatorClass} />
         </Checkbox>
       </p>
