@@ -28,6 +28,30 @@ export const Styled = () => (
         <CheckboxIndicator className={indicatorClass} />
       </Checkbox>
     </label>
+
+    <h1>Native label + native checkbox</h1>
+    <label>
+      Label <input type="checkbox" />
+    </label>
+
+    <h1>Custom label + htmlFor</h1>
+    <Label htmlFor="one">Label</Label>
+    <Checkbox className={rootClass} id="one">
+      <CheckboxIndicator className={indicatorClass} />
+    </Checkbox>
+
+    <br />
+    <br />
+
+    <h1>Native label + htmlFor</h1>
+    <label htmlFor="two">Label</label>
+    <Checkbox className={rootClass} id="two">
+      <CheckboxIndicator className={indicatorClass} />
+    </Checkbox>
+
+    <h1>Native label + native checkbox</h1>
+    <label htmlFor="three">Label</label>
+    <input type="checkbox" id="three" />
   </>
 );
 
