@@ -8,16 +8,26 @@ export default { title: 'Components/Checkbox' };
 
 export const Styled = () => (
   <>
-    <p>
-      This checkbox is nested inside a label. The box-shadow is styled to appear when the checkbox
-      is in focus regardless of the input modality. The state is uncontrolled.
-    </p>
+    <p>This checkbox is nested inside a label. The state is uncontrolled.</p>
+
+    <h1>Custom label</h1>
     <Label>
       Label{' '}
       <Checkbox className={rootClass}>
         <CheckboxIndicator className={indicatorClass} />
       </Checkbox>
     </Label>
+
+    <br />
+    <br />
+
+    <h1>Native label</h1>
+    <label>
+      Label{' '}
+      <Checkbox className={rootClass}>
+        <CheckboxIndicator className={indicatorClass} />
+      </Checkbox>
+    </label>
   </>
 );
 
@@ -26,10 +36,7 @@ export const Controlled = () => {
 
   return (
     <>
-      <p>
-        This checkbox is placed adjacent to its label. The box-shadow is styled to appear when the
-        checkbox is in focus regardless of the input modality. The state is controlled.
-      </p>
+      <p>This checkbox is placed adjacent to its label. The state is controlled.</p>
       <Label htmlFor="randBox">Label</Label>{' '}
       <Checkbox className={rootClass} checked={checked} onCheckedChange={setChecked} id="randBox">
         <CheckboxIndicator className={indicatorClass} />
