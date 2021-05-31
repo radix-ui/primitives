@@ -89,7 +89,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           event.stopPropagation();
         })}
       />
-      {/* We bubble changes from an input so that form events reflect checkbox updates */}
+      {/* We propagate changes from an input so that form events reflect checkbox updates */}
       <BubbleInput
         name={name}
         value={value}
@@ -182,7 +182,7 @@ const BubbleInput = (props: BubbleCheckedProps) => {
     }
   }, [prevChecked, checked]);
 
-  return <input type="checkbox" {...inputProps} ref={ref} />;
+  return <input type="checkbox" {...inputProps} tabIndex={-1} ref={ref} />;
 };
 
 function getState(checked: CheckedState) {
