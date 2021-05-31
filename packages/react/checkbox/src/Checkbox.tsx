@@ -85,12 +85,13 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
         onClick={composeEventHandlers(props.onClick, (event) => {
           setChecked((prevChecked) => (prevChecked === 'indeterminate' ? true : !prevChecked));
           hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-          // stop propagation from the button so that we only propagate one click event (from the input)
-          event.stopPropagation();
+          // Stop propagation from the button so that we only propagate one click event (from the input).
+          // We propagate changes from an input so that form events reflect checkbox updates.
+          if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
         })}
       />
-      {/* We propagate changes from an input so that form events reflect checkbox updates */}
       <BubbleInput
+        stoppedPropagation={hasConsumerStoppedPropagationRef.current}
         name={name}
         value={value}
         checked={checked}
@@ -101,11 +102,8 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           pointerEvents: 'none',
           opacity: 0,
           margin: 0,
-          marginLeft: -(buttonSize?.width || 0),
+          transform: 'translateX(-100%)',
           ...buttonSize,
-        }}
-        onClickCapture={(event) => {
-          if (hasConsumerStoppedPropagationRef.current) event.stopPropagation();
         }}
       />
     </CheckboxProvider>
@@ -158,12 +156,13 @@ CheckboxIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type BubbleCheckedProps = Omit<React.ComponentProps<'input'>, 'checked'> & {
+type BubbleInputProps = Omit<React.ComponentProps<'input'>, 'checked'> & {
   checked: CheckedState;
+  stoppedPropagation: boolean;
 };
 
-const BubbleInput = (props: BubbleCheckedProps) => {
-  const { checked, ...inputProps } = props;
+const BubbleInput = (props: BubbleInputProps) => {
+  const { stoppedPropagation, checked, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
 
@@ -171,16 +170,16 @@ const BubbleInput = (props: BubbleCheckedProps) => {
   React.useEffect(() => {
     const input = ref.current!;
     const inputProto = window.HTMLInputElement.prototype;
-    const isIndeterminate = checked === 'indeterminate';
-    const event = new Event('click', { bubbles: true });
     const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'checked') as PropertyDescriptor;
     const setChecked = descriptor.set;
-    if (prevChecked !== checked && setChecked) {
+    const isIndeterminate = checked === 'indeterminate';
+    if (!stoppedPropagation && prevChecked !== checked && setChecked) {
+      const event = new Event('click', { bubbles: true });
       input.indeterminate = isIndeterminate;
       setChecked.call(input, isIndeterminate ? false : checked);
       input.dispatchEvent(event);
     }
-  }, [prevChecked, checked]);
+  }, [prevChecked, stoppedPropagation, checked]);
 
   return <input type="checkbox" {...inputProps} tabIndex={-1} ref={ref} />;
 };
