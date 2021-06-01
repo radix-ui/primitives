@@ -57,10 +57,11 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
   } = props;
   const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
-  const buttonSize = useSize(button);
   const labelId = useLabelContext(button);
   const labelledBy = ariaLabelledby || labelId;
   const hasConsumerStoppedPropagationRef = React.useRef(false);
+  // We set this to true by default so that events bubble to forms without JS (SSR)
+  const isFormControl = button ? Boolean(button.closest('form')) : true;
   const [checked = false, setChecked] = useControllableState({
     prop: checkedProp,
     defaultProp: defaultChecked,
@@ -84,28 +85,30 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
         ref={composedRefs}
         onClick={composeEventHandlers(props.onClick, (event) => {
           setChecked((prevChecked) => (prevChecked === 'indeterminate' ? true : !prevChecked));
-          hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-          // Stop propagation from the button so that we only propagate one click event (from the input).
-          // We propagate changes from an input so that form events reflect checkbox updates.
-          if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+          if (isFormControl) {
+            hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+            // if checkbox is in a form, stop propagation from the button so that we only propagate
+            // one click event (from the input). We propagate changes from an input so that native
+            // form validation works and form events reflect checkbox updates.
+            if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+          }
         })}
       />
-      <BubbleInput
-        stoppedPropagation={hasConsumerStoppedPropagationRef.current}
-        name={name}
-        value={value}
-        checked={checked}
-        required={required}
-        disabled={disabled}
-        style={{
-          position: 'absolute',
-          pointerEvents: 'none',
-          opacity: 0,
-          margin: 0,
-          transform: 'translateX(-100%)',
-          ...buttonSize,
-        }}
-      />
+      {isFormControl && (
+        <BubbleInput
+          control={button}
+          stoppedPropagation={hasConsumerStoppedPropagationRef.current}
+          name={name}
+          value={value}
+          checked={checked}
+          required={required}
+          disabled={disabled}
+          // We transform because the input is absolutely positioned but we have
+          // rendered it **after** the button. This pulls it back to sit on top
+          // of the button.
+          style={{ transform: 'translateX(-100%)' }}
+        />
+      )}
     </CheckboxProvider>
   );
 }) as CheckboxPrimitive;
@@ -158,13 +161,15 @@ CheckboxIndicator.displayName = INDICATOR_NAME;
 
 type BubbleInputProps = Omit<React.ComponentProps<'input'>, 'checked'> & {
   checked: CheckedState;
+  control: HTMLElement | null;
   stoppedPropagation: boolean;
 };
 
 const BubbleInput = (props: BubbleInputProps) => {
-  const { stoppedPropagation, checked, ...inputProps } = props;
+  const { control, checked, stoppedPropagation, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
+  const controlSize = useSize(control);
 
   // Bubble checked change to parents (e.g form change event)
   React.useEffect(() => {
@@ -179,9 +184,24 @@ const BubbleInput = (props: BubbleInputProps) => {
       setChecked.call(input, isIndeterminate ? false : checked);
       input.dispatchEvent(event);
     }
-  }, [prevChecked, stoppedPropagation, checked]);
+  }, [prevChecked, checked, stoppedPropagation]);
 
-  return <input type="checkbox" {...inputProps} tabIndex={-1} ref={ref} />;
+  return (
+    <input
+      type="checkbox"
+      {...inputProps}
+      tabIndex={-1}
+      ref={ref}
+      style={{
+        ...props.style,
+        ...controlSize,
+        position: 'absolute',
+        pointerEvents: 'none',
+        opacity: 0,
+        margin: 0,
+      }}
+    />
+  );
 };
 
 function getState(checked: CheckedState) {

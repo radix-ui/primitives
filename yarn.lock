@@ -3579,7 +3579,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-polymorphic@workspace:packages/react/polymorphic"
   dependencies:
-    "@babel/runtime": ^7.13.10
     "@testing-library/react": ^10.4.8
   peerDependencies:
     react: ^16.8 || ^17.0
@@ -3770,7 +3769,10 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-use-direction": "workspace:*"
+    "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
+    "@types/form-serialize": ^0
+    form-serialize: ^0.7.2
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -4831,6 +4833,13 @@ __metadata:
   version: 0.0.46
   resolution: "@types/estree@npm:0.0.46"
   checksum: 69fcf647706f5b6a475ec2f9aacf73b40866f577eef6c6f33de95cc3b4897381c2a8257646f13cd5d91fffc5debfe6289b6864ba29ad349ae68703f8b993c9f6
+  languageName: node
+  linkType: hard
+
+"@types/form-serialize@npm:^0":
+  version: 0.7.1
+  resolution: "@types/form-serialize@npm:0.7.1"
+  checksum: 82bf3b5944804caaf6759b36770a6706834bf0101d6a3f420682f0df1b6b512252dce2321551c4d757e796d53a84cd6380d7f0529c57a0f7997ba951952792fe
   languageName: node
   linkType: hard
 
@@ -10351,6 +10360,13 @@ __metadata:
     combined-stream: ^1.0.6
     mime-types: ^2.1.12
   checksum: 862e686b105634222db77138d5f5ae08ba85f88c04925de5be86b2b9d03cf671d86566ad10f1dd5217634c0f1634069dfc1a663a1cc13e8fbac0ce8f670ad070
+  languageName: node
+  linkType: hard
+
+"form-serialize@npm:^0.7.2":
+  version: 0.7.2
+  resolution: "form-serialize@npm:0.7.2"
+  checksum: 8de6b74d7f2423fe117d04a50bceea1fafa05227285580be637c7df5387d4411fdcb53b3112d25b1ccd1f0a773f358a44a262368daba4b2838e393730349363f
   languageName: node
   linkType: hard
 

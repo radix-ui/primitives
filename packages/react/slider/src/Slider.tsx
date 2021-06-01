@@ -6,6 +6,7 @@ import { createContext } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-use-direction';
+import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from './collection';
@@ -79,11 +80,13 @@ const Slider = React.forwardRef((props, forwardedRef) => {
     onValueChange = () => {},
     ...sliderProps
   } = props;
-  const sliderRef = React.useRef<HTMLSpanElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, sliderRef);
+  const [slider, setSlider] = React.useState<HTMLSpanElement | null>(null);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
   const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
   const valueIndexToChangeRef = React.useRef<number>(0);
   const isHorizontal = orientation === 'horizontal';
+  // We set this to true by default so that events bubble to forms without JS (SSR)
+  const isFormControl = slider ? Boolean(slider.closest('form')) : true;
   const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
   const [values = [], setValues] = useControllableState({
@@ -173,14 +176,13 @@ const Slider = React.forwardRef((props, forwardedRef) => {
             }
           }}
         />
-
-        {/**
-         * When consumer provides `name`, they are most likely uncontrolling so
-         * we render `input`s that will bubble the value change.
-         */}
-        {name &&
+        {isFormControl &&
           values.map((value, index) => (
-            <BubbleInput key={index} name={name + (values.length > 1 ? '[]' : '')} value={value} />
+            <BubbleInput
+              key={index}
+              name={name ? name + (values.length > 1 ? '[]' : '') : undefined}
+              value={value}
+            />
           ))}
       </SliderCollectionProvider>
     </SliderProvider>
@@ -653,19 +655,20 @@ SliderThumb.displayName = THUMB_NAME;
 const BubbleInput = (props: React.ComponentProps<'input'>) => {
   const { value, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
+  const prevValue = usePrevious(value);
 
   // Bubble value change to parents (e.g form change event)
   React.useEffect(() => {
     const input = ref.current!;
     const inputProto = window.HTMLInputElement.prototype;
-    const { set } = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
-
-    if (set) {
+    const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
+    const setValue = descriptor.set;
+    if (prevValue !== value && setValue) {
       const event = new Event('input', { bubbles: true });
-      set.call(input, value);
+      setValue.call(input, value);
       input.dispatchEvent(event);
     }
-  }, [value]);
+  }, [prevValue, value]);
 
   /**
    * We purposefully do not use `type="hidden"` here otherwise forms that
@@ -676,7 +679,7 @@ const BubbleInput = (props: React.ComponentProps<'input'>) => {
    * Adding the `value` will cause React to consider the programatic
    * dispatch a duplicate and it will get swallowed.
    */
-  return <input style={{ display: 'none' }} {...inputProps} ref={ref} />;
+  return <input style={{ display: 'none' }} {...inputProps} ref={ref} defaultValue={value} />;
 };
 
 function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number) {

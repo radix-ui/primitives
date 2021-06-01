@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-checkbox": patch
+  "@radix-ui/react-slider": patch
+
+declined:
+  - primitives
