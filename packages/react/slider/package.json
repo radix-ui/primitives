@@ -27,7 +27,12 @@
     "@radix-ui/react-use-callback-ref": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "@radix-ui/react-use-direction": "workspace:*",
+    "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-use-size": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/form-serialize": "^0",
+    "form-serialize": "^0.7.2"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

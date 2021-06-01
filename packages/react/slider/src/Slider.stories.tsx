@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Slider, SliderTrack, SliderRange, SliderThumb } from './Slider';
 import { css } from '../../../../stitches.config';
+import serialize from 'form-serialize';
 
 export default { title: 'Components/Slider' };
 
@@ -133,6 +134,45 @@ export const SmallSteps = () => {
       </Slider>
       <div>{value}</div>
     </>
+  );
+};
+
+export const WithinForm = () => {
+  const [data, setData] = React.useState({ single: [0], multiple: [10, 15, 20, 80] });
+  return (
+    <form
+      onSubmit={(event) => event.preventDefault()}
+      onChange={(event) => {
+        const formData = serialize(event.currentTarget, { hash: true });
+        setData(formData as any);
+      }}
+    >
+      <fieldset>
+        <legend>Single value: {String(data.single)}</legend>
+        <Slider name="single" defaultValue={data.single} className={rootClass}>
+          <SliderTrack className={trackClass}>
+            <SliderRange className={rangeClass} />
+          </SliderTrack>
+          <SliderThumb className={thumbClass} />
+        </Slider>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Multiple value: {String(data.multiple)}</legend>
+        <Slider name="multiple" defaultValue={data.multiple} className={rootClass}>
+          <SliderTrack className={trackClass}>
+            <SliderRange className={rangeClass} />
+          </SliderTrack>
+          <SliderThumb className={thumbClass} />
+          <SliderThumb className={thumbClass} />
+          <SliderThumb className={thumbClass} />
+          <SliderThumb className={thumbClass} />
+        </Slider>
+      </fieldset>
+    </form>
   );
 };
 
