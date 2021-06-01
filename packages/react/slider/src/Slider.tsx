@@ -86,7 +86,7 @@ const Slider = React.forwardRef((props, forwardedRef) => {
   const valueIndexToChangeRef = React.useRef<number>(0);
   const isHorizontal = orientation === 'horizontal';
   // We set this to true by default so that events bubble to forms without JS (SSR)
-  const isFormControl = slider ? slider.closest('form') : true;
+  const isFormControl = slider ? Boolean(slider.closest('form')) : true;
   const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
   const [values = [], setValues] = useControllableState({

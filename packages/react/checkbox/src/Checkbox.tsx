@@ -61,7 +61,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
   const labelledBy = ariaLabelledby || labelId;
   const hasConsumerStoppedPropagationRef = React.useRef(false);
   // We set this to true by default so that events bubble to forms without JS (SSR)
-  const isFormControl = button ? button.closest('form') : true;
+  const isFormControl = button ? Boolean(button.closest('form')) : true;
   const [checked = false, setChecked] = useControllableState({
     prop: checkedProp,
     defaultProp: defaultChecked,
@@ -87,7 +87,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           setChecked((prevChecked) => (prevChecked === 'indeterminate' ? true : !prevChecked));
           if (isFormControl) {
             hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-            // if checkxbox is in a form, stop propagation from the button so that we only propagate
+            // if checkbox is in a form, stop propagation from the button so that we only propagate
             // one click event (from the input). We propagate changes from an input so that native
             // form validation works and form events reflect checkbox updates.
             if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
@@ -103,6 +103,9 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
           checked={checked}
           required={required}
           disabled={disabled}
+          // We transform because the input is absolutely positioned but we have
+          // rendered it **after** the button. This pulls it back to sit on top
+          // of the button.
           style={{ transform: 'translateX(-100%)' }}
         />
       )}
