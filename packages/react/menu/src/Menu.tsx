@@ -21,8 +21,6 @@ import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
-type MenuContentElement = React.ElementRef<typeof MenuContent>;
-type MenuSubTriggerElement = React.ElementRef<typeof MenuSubTrigger>;
 type Direction = 'ltr' | 'rtl';
 
 const SELECTION_KEYS = ['Enter', ' '];
@@ -109,19 +107,17 @@ type MenuSubOwnProps = {
 
 const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
   const { children, open = false, onOpenChange } = props;
-  const context = useMenuContext(SUB_NAME);
+  const parentMenuContext = useMenuContext(SUB_NAME);
   const [focusFirst, setFocusFirst] = React.useState(false);
   const [trigger, setTrigger] = React.useState<MenuSubTriggerElement | null>(null);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
-  const contentId = useId();
   const handleOpenChange = useCallbackRef(onOpenChange);
 
-  // If a parent menu unmounts, we ensure its submenus reset their open state.
-  // This prevents the parent menu from reopening with open submenus.
+  // Prevent the parent menu from reopening with open submenus.
   React.useEffect(() => {
-    if (context.open === false) handleOpenChange(false);
+    if (parentMenuContext.open === false) handleOpenChange(false);
     return () => handleOpenChange(false);
-  }, [context.open, handleOpenChange]);
+  }, [parentMenuContext.open, handleOpenChange]);
 
   React.useEffect(() => {
     if (focusFirst) content?.focus();
@@ -131,15 +127,19 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
     <PopperPrimitive.Root>
       <MenuProvider
         isSubmenu={true}
-        dir={context.dir}
+        dir={parentMenuContext.dir}
         open={open}
         onOpenChange={handleOpenChange}
+        content={content}
+        onContentChange={setContent}
+        onRootClose={parentMenuContext.onRootClose}
+        contentId={useId()}
         trigger={trigger}
         onTriggerChange={setTrigger}
-        content={content}
-        contentId={contentId}
-        onContentChange={setContent}
-        onRootClose={context.onRootClose}
+        onKeyOpen={React.useCallback(() => {
+          setFocusFirst(true);
+          handleOpenChange(true);
+        }, [handleOpenChange])}
         onEntryFocus={React.useCallback(
           (event) => {
             if (!focusFirst) event.preventDefault();
@@ -147,10 +147,6 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
           },
           [focusFirst]
         )}
-        onKeyOpen={React.useCallback(() => {
-          setFocusFirst(true);
-          handleOpenChange(true);
-        }, [handleOpenChange])}
       >
         {children}
       </MenuProvider>
@@ -165,6 +161,8 @@ MenuSub.displayName = SUB_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const SUB_TRIGGER_NAME = 'MenuSubTrigger';
+
+type MenuSubTriggerElement = React.ElementRef<typeof MenuSubTrigger>;
 
 type MenuSubTriggerOwnProps = Polymorphic.OwnProps<typeof MenuItemImpl>;
 type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
@@ -204,6 +202,8 @@ MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 
 const CONTENT_NAME = 'MenuContent';
 
+type MenuContentElement = React.ElementRef<typeof MenuContent>;
+
 type ItemData = { disabled: boolean };
 const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
   React.ElementRef<typeof MenuItem>,
@@ -215,6 +215,11 @@ const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentCo
   CONTENT_NAME
 );
 
+/**
+ * We purposefully don't union MenuRootContent and MenuSubContent props here because
+ * they have conflicting prop types. We agreed that we would allow MenuSubContent to
+ * accept props that it would just ignore.
+ */
 type MenuContentOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof MenuRootContent>,
   {
@@ -289,6 +294,7 @@ const MenuRootContent = React.forwardRef((props, forwardedRef) => {
 type MenuSubContentOwnProps = Omit<
   Polymorphic.OwnProps<typeof MenuContentImpl>,
   | keyof MenuContentImplPrivateProps
+  | 'align'
   | 'side'
   | 'portalled'
   | 'disabledOutsidePointerEvents'
@@ -309,10 +315,10 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
   const composedRefs = useComposedRefs(forwardedRef, ref);
   return context.isSubmenu ? (
     <MenuContentImpl
-      align="start"
       id={context.contentId}
       {...props}
       ref={composedRefs}
+      align="start"
       side={context.dir === 'rtl' ? 'left' : 'right'}
       portalled
       disableOutsidePointerEvents={false}
@@ -329,20 +335,17 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
         if (event.target !== context.trigger) context.onOpenChange(false);
       })}
       onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-        // We need to explicitly close when escape key focuses trigger because we prevented this
-        // in on focus outside for pointers.
         context.onOpenChange(false);
+        // We focus manually because we prevented it in `onCloseAutoFocus`.
         context.trigger?.focus();
       })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        const element = event.target as HTMLElement;
         // Submenu key events bubble through portals. We only care about keys in this menu.
-        const isKeyDownInside = event.currentTarget.contains(element);
+        const isKeyDownInside = event.currentTarget.contains(event.target as HTMLElement);
         const isCloseKey = SUB_CLOSE_KEYS[context.dir].includes(event.key);
         if (isKeyDownInside && isCloseKey) {
-          // We need to explicitly close when keyboard focuses trigger because we prevented this
-          // in on focus outside for pointers.
           context.onOpenChange(false);
+          // We focus manually because we prevented it in `onCloseAutoFocus`
           context.trigger?.focus();
         }
       })}

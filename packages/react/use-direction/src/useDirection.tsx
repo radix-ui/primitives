@@ -8,9 +8,10 @@ export function useDirection(element: HTMLElement | null, directionProp?: Direct
   const rAFRef = React.useRef<number>(0);
 
   React.useEffect(() => {
-    // We check inherited direction of parent instead of `element` so that computed styles are
-    // not overridden by dir attribute on element if inherited direction changes. The `dir`
-    // attribute should always sync with direction prop OR its inherited direction.
+    // We check inherited direction of the parent instead of the `element` itself.
+    // This is because we internally set the computed `dir` on the element so wouldn't be
+    // able to react to changes to the inherited direction. The `dir` attribute we set should
+    // always sync with the direction prop OR its inherited direction.
     if (directionProp === undefined && element?.parentElement) {
       const computedStyle = getComputedStyle(element.parentElement);
       setComputedStyle(computedStyle);
