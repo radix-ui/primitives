@@ -718,7 +718,8 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
         as={as}
         ref={composedRefs}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-          if (!disabled && !contentContext.isSearching) onExclusiveKeyDown(event);
+          const typingAhead = contentContext.isSearching && event.key === ' ';
+          if (!disabled && !typingAhead) onExclusiveKeyDown(event);
         })}
         /**
          * We focus items on `mouseMove` to achieve the following:
