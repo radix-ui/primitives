@@ -25,12 +25,7 @@ export const Controlled = () => {
     <>
       <p>This switch is placed adjacent to its label. The state is controlled.</p>
       <Label htmlFor="randBox">This is the label</Label>{' '}
-      <Switch
-        className={rootClass}
-        checked={checked}
-        onCheckedChange={(event: any) => setChecked(event.target.checked)}
-        id="randBox"
-      >
+      <Switch className={rootClass} checked={checked} onCheckedChange={setChecked} id="randBox">
         <SwitchThumb className={thumbClass} />
       </Switch>
     </>
@@ -38,7 +33,8 @@ export const Controlled = () => {
 };
 
 export const WithinForm = () => {
-  const [data, setData] = React.useState({ optional: false, required: false });
+  const [data, setData] = React.useState({ optional: false, required: false, stopprop: false });
+  const [checked, setChecked] = React.useState(false);
 
   return (
     <form
@@ -48,15 +44,40 @@ export const WithinForm = () => {
         setData((prevData) => ({ ...prevData, [input.name]: input.checked }));
       }}
     >
-      <p>optional checked: {String(data.optional)}</p>
-      <Switch className={rootClass} name="optional">
-        <SwitchThumb className={thumbClass} />
-      </Switch>
+      <fieldset>
+        <legend>optional checked: {String(data.optional)}</legend>
+        <label>
+          <Switch
+            className={rootClass}
+            name="optional"
+            checked={checked}
+            onCheckedChange={setChecked}
+          >
+            <SwitchThumb className={thumbClass} />
+          </Switch>{' '}
+          with label
+        </label>
+      </fieldset>
 
-      <p>required checked: {String(data.required)}</p>
-      <Switch className={rootClass} name="required" required>
-        <SwitchThumb className={thumbClass} />
-      </Switch>
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>required checked: {String(data.required)}</legend>
+        <Switch className={rootClass} name="required" required>
+          <SwitchThumb className={thumbClass} />
+        </Switch>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>stop propagation checked: {String(data.stopprop)}</legend>
+        <Switch className={rootClass} name="stopprop" onClick={(event) => event.stopPropagation()}>
+          <SwitchThumb className={thumbClass} />
+        </Switch>
+      </fieldset>
 
       <br />
       <br />
