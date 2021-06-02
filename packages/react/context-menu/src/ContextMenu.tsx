@@ -23,7 +23,7 @@ type ContextMenuContextValue = {
 };
 
 const SubmenuContext = React.createContext<boolean | undefined>(undefined);
-const InsideContentContext = React.createContext<boolean>(false);
+const InsideContentContext = React.createContext(false);
 const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuContextValue>(
   CONTEXT_MENU_NAME
 );
@@ -84,18 +84,17 @@ type ContextMenuSubOwnProps = {
   open?: boolean;
   onOpenChange?(open: boolean): void;
   defaultOpen?: boolean;
-  dir?: Direction;
 };
 
 const ContextMenuSub: React.FC<ContextMenuSubOwnProps> = (props) => {
-  const { open: openProp, defaultOpen, onOpenChange, ...menuSubProps } = props;
+  const { open: openProp, defaultOpen, onOpenChange } = props;
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
 
-  return <MenuPrimitive.Sub {...menuSubProps} open={open} onOpenChange={setOpen} />;
+  return <MenuPrimitive.Sub open={open} onOpenChange={setOpen} />;
 };
 
 ContextMenu.displayName = CONTEXT_MENU_NAME;
@@ -105,7 +104,6 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'ContextMenuTrigger';
-const ROOT_TRIGGER_DEFAULT_TAG = 'span';
 
 type ContextMenuTriggerOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof ContextMenuRootTrigger>,
@@ -135,14 +133,16 @@ ContextMenuTrigger.displayName = TRIGGER_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
+const TRIGGER_DEFAULT_TAG = 'span';
+
 type ContextMenuRootTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
 type ContextMenuRootTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  typeof ROOT_TRIGGER_DEFAULT_TAG,
+  typeof TRIGGER_DEFAULT_TAG,
   ContextMenuRootTriggerOwnProps
 >;
 
 const ContextMenuRootTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = ROOT_TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useContextMenuContext(TRIGGER_NAME);
   const pointRef = React.useRef<Point>({ x: 0, y: 0 });
   const virtualRef = React.useRef({
@@ -175,7 +175,13 @@ const CONTENT_NAME = 'ContextMenuContent';
 type ContextMenuContentOwnProps = Polymorphic.Merge<
   Omit<
     Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
-    'trapFocus' | 'disableOutsideScroll' | 'portalled' | 'onOpenAutoFocus' | 'side' | 'sideOffset'
+    | 'trapFocus'
+    | 'disableOutsideScroll'
+    | 'portalled'
+    | 'onOpenAutoFocus'
+    | 'side'
+    | 'sideOffset'
+    | 'align'
   >,
   { offset?: number }
 >;

@@ -30,12 +30,7 @@ const [DropdownMenuProvider, useDropdownMenuContext] = createContext<DropdownMen
   DROPDOWN_MENU_NAME
 );
 
-type DropdownMenuOwnProps = {
-  open?: boolean;
-  onOpenChange?(open: boolean): void;
-  defaultOpen?: boolean;
-  dir?: Direction;
-};
+type DropdownMenuOwnProps = React.ComponentProps<typeof DropdownMenuImpl>;
 
 const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
   const parentSubmenuContext = React.useContext(SubmenuContext);
@@ -46,7 +41,14 @@ const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
   );
 };
 
-const DropdownMenuImpl: React.FC<DropdownMenuOwnProps> = (props) => {
+type DropdownMenuOwnImplProps = {
+  open?: boolean;
+  onOpenChange?(open: boolean): void;
+  defaultOpen?: boolean;
+  dir?: Direction;
+};
+
+const DropdownMenuImpl: React.FC<DropdownMenuOwnImplProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange, dir } = props;
   const isSubmenu = React.useContext(SubmenuContext);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -107,19 +109,19 @@ DropdownMenuTrigger.displayName = TRIGGER_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const ROOT_TRIGGER_DEFAULT_TAG = 'button';
+const TRIGGER_DEFAULT_TAG = 'button';
 
 type DropdownMenuRootTriggerOwnProps = Omit<
   Polymorphic.OwnProps<typeof MenuPrimitive.Anchor>,
   'virtualRef'
 >;
 type DropdownMenuRootTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  typeof ROOT_TRIGGER_DEFAULT_TAG,
+  typeof TRIGGER_DEFAULT_TAG,
   DropdownMenuRootTriggerOwnProps
 >;
 
 const DropdownMenuRootTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = ROOT_TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
+  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useDropdownMenuContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
