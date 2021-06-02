@@ -28,7 +28,7 @@ const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuCo
   CONTEXT_MENU_NAME
 );
 
-type ContextMenuOwnProps = ContextMenuRootOwnProps & ContextMenuSubOwnProps;
+type ContextMenuOwnProps = React.ComponentProps<typeof ContextMenuImpl>;
 
 const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
   const parentSubmenuContext = React.useContext(SubmenuContext);
@@ -42,11 +42,11 @@ const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
   );
 };
 
-const ContextMenuImpl: React.FC<ContextMenuOwnProps> = (props) => {
-  const isSubmenu = React.useContext(SubmenuContext);
-  const ContextMenu = isSubmenu ? ContextMenuSub : ContextMenuRoot;
+type ContextMenuImplOwnProps = ContextMenuRootOwnProps & ContextMenuSubOwnProps;
 
-  return <ContextMenu {...props} />;
+const ContextMenuImpl: React.FC<ContextMenuImplOwnProps> = (props) => {
+  const isSubmenu = React.useContext(SubmenuContext);
+  return isSubmenu ? <ContextMenuSub {...props} /> : <ContextMenuRoot {...props} />;
 };
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -87,14 +87,18 @@ type ContextMenuSubOwnProps = {
 };
 
 const ContextMenuSub: React.FC<ContextMenuSubOwnProps> = (props) => {
-  const { open: openProp, defaultOpen, onOpenChange } = props;
+  const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
 
-  return <MenuPrimitive.Sub open={open} onOpenChange={setOpen} />;
+  return (
+    <MenuPrimitive.Sub open={open} onOpenChange={setOpen}>
+      {children}
+    </MenuPrimitive.Sub>
+  );
 };
 
 ContextMenu.displayName = CONTEXT_MENU_NAME;

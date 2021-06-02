@@ -57,19 +57,25 @@ const DropdownMenuImpl: React.FC<DropdownMenuOwnImplProps> = (props) => {
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const DropdownMenu = isSubmenu ? MenuPrimitive.Sub : MenuPrimitive.Root;
+
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen} dir={dir}>
-      <DropdownMenuProvider
-        triggerRef={triggerRef}
-        contentId={useId()}
-        open={open}
-        onOpenChange={setOpen}
-        onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
-      >
-        {children}
-      </DropdownMenuProvider>
-    </DropdownMenu>
+    <DropdownMenuProvider
+      triggerRef={triggerRef}
+      contentId={useId()}
+      open={open}
+      onOpenChange={setOpen}
+      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+    >
+      {isSubmenu ? (
+        <MenuPrimitive.Sub open={open} onOpenChange={setOpen}>
+          {children}
+        </MenuPrimitive.Sub>
+      ) : (
+        <MenuPrimitive.Root open={open} onOpenChange={setOpen} dir={dir}>
+          {children}
+        </MenuPrimitive.Root>
+      )}
+    </DropdownMenuProvider>
   );
 };
 
