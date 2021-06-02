@@ -200,27 +200,33 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
   const isSubmenu = React.useContext(SubmenuContext);
   const context = useContextMenuContext(CONTENT_NAME);
 
+  const commonProps = {
+    ...contentProps,
+    sideOffset: offset,
+    style: {
+      ...props.style,
+      // re-namespace exposed content custom property
+      ['--radix-context-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
+    },
+  };
+
   return (
     <InsideContentContext.Provider value={true}>
-      <MenuPrimitive.Content
-        {...contentProps}
-        {...(!isSubmenu && {
-          disableOutsidePointerEvents: context.open ? disableOutsidePointerEvents : false,
-          trapFocus: true,
-          disableOutsideScroll: true,
-          portalled: true,
-          side: 'bottom' as const,
-          align: 'start' as const,
-          alignOffset: 2,
-        })}
-        sideOffset={offset}
-        ref={forwardedRef}
-        style={{
-          ...props.style,
-          // re-namespace exposed content custom property
-          ['--radix-context-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
-        }}
-      />
+      {isSubmenu ? (
+        <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
+      ) : (
+        <MenuPrimitive.Content
+          {...commonProps}
+          ref={forwardedRef}
+          disableOutsidePointerEvents={context.open ? disableOutsidePointerEvents : false}
+          trapFocus
+          disableOutsideScroll
+          portalled
+          side="bottom"
+          align="start"
+          alignOffset={2}
+        />
+      )}
     </InsideContentContext.Provider>
   );
 }) as ContextMenuContentPrimitive;
