@@ -462,7 +462,9 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
       searchRef.current = value;
       setIsSearching(value.length > 0);
       window.clearTimeout(timerRef.current);
-      timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
+      if (searchRef.current !== '') {
+        timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
+      }
     })(search);
 
     if (newItem) {
