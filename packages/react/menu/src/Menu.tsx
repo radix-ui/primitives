@@ -357,8 +357,6 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const TYPEAHEAD_SEARCH = 'menu.typeaheadSearch';
-
 type FocusScopeOwnProps = Polymorphic.OwnProps<typeof FocusScope>;
 type DismissableLayerOwnProps = Polymorphic.OwnProps<typeof DismissableLayer>;
 type RovingFocusGroupOwnProps = Polymorphic.OwnProps<typeof RovingFocusGroup>;
@@ -451,44 +449,34 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
 
-  // Reset `searchRef` 1 second after it was last updated
-  const handleSearchChange = React.useCallback((search: string) => {
-    searchRef.current = search;
-    setIsSearching(search.length > 0);
-    window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => handleSearchChange(''), 1000);
-  }, []);
+  const handleTypeaheadSearch = (key: string) => {
+    const search = searchRef.current + key;
+    const items = getItems().filter((item) => !item.disabled);
+    const currentItem = document.activeElement;
+    const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
+    const values = items.map((item) => item.textValue);
+    const nextMatch = getNextMatch(values, search, currentMatch);
+    const newItem = items.find((item) => item.textValue === nextMatch)?.ref.current;
+
+    (function updateSearch(value: string) {
+      searchRef.current = value;
+      setIsSearching(value.length > 0);
+      window.clearTimeout(timerRef.current);
+      timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
+    })(search);
+
+    if (newItem) {
+      /**
+       * Imperative focus during keydown is risky so we prevent React's batching updates
+       * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+       */
+      setTimeout(() => (newItem as HTMLElement).focus());
+    }
+  };
 
   React.useEffect(() => {
     return () => window.clearTimeout(timerRef.current);
   }, []);
-
-  React.useEffect(() => {
-    const handleTypeaheadSearch = ((event: CustomEvent<{ key: string }>) => {
-      event.stopPropagation();
-      handleSearchChange(searchRef.current + event.detail.key);
-      const items = getItems().filter((item) => !item.disabled);
-      const currentItem = document.activeElement;
-      const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
-      const values = items.map((item) => item.textValue);
-      const nextMatch = getNextMatch(values, searchRef.current, currentMatch);
-      const newItem = items.find((item) => item.textValue === nextMatch)?.ref.current;
-
-      if (newItem) {
-        /**
-         * Imperative focus during keydown is risky so we prevent React's batching updates
-         * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
-         */
-        setTimeout(() => (newItem as HTMLElement).focus());
-      }
-    }) as EventListener;
-
-    const content = contentRef.current;
-    if (content) {
-      content.addEventListener(TYPEAHEAD_SEARCH, handleTypeaheadSearch);
-      return () => content.removeEventListener(TYPEAHEAD_SEARCH, handleTypeaheadSearch);
-    }
-  }, [getItems, handleSearchChange]);
 
   // Make sure the whole tree has focus guards as our `MenuContent` may be
   // the last element in the DOM (beacuse of the `Portal`)
@@ -563,15 +551,12 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                   ref={composedRefs}
                   style={{ outline: 'none', ...contentProps.style }}
                   onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
-                    // perform typeahead search
-                    const modifierKey = event.ctrlKey || event.altKey || event.metaKey;
-                    if (event.key.length === 1 && !modifierKey) {
-                      const typeaheadKeyDownEvent = new CustomEvent(TYPEAHEAD_SEARCH, {
-                        bubbles: true,
-                        cancelable: true,
-                        detail: { key: event.key },
-                      });
-                      event.target.dispatchEvent(typeaheadKeyDownEvent);
+                    // Submenu key events bubble through portals. We only care about keys in this menu.
+                    const target = event.target as HTMLElement;
+                    const isKeyDownInside = event.currentTarget.contains(target);
+                    const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+                    if (isKeyDownInside && !isModifierKey && event.key.length === 1) {
+                      handleTypeaheadSearch(event.key);
                     }
                     // menus should not be navigated using tab key so we prevent it
                     if (event.key === 'Tab') event.preventDefault();
