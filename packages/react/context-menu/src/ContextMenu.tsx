@@ -22,7 +22,7 @@ type ContextMenuContextValue = {
   onOpenChange(open: boolean): void;
 };
 
-const SubmenuContext = React.createContext<boolean | undefined>(undefined);
+const SubmenuContext = React.createContext(false);
 const InsideContentContext = React.createContext(false);
 const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuContextValue>(
   CONTEXT_MENU_NAME
@@ -31,18 +31,16 @@ const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuCo
 type ContextMenuOwnProps = React.ComponentProps<typeof ContextMenuImpl>;
 
 const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
-  const parentSubmenuContext = React.useContext(SubmenuContext);
   const isInsideContent = React.useContext(InsideContentContext);
-  const isRootMenu = parentSubmenuContext === undefined;
-
   return (
-    <SubmenuContext.Provider value={!isRootMenu && isInsideContent}>
+    // if we're inside content then we can assume this is a submenu
+    <SubmenuContext.Provider value={isInsideContent}>
       <ContextMenuImpl {...props} />
     </SubmenuContext.Provider>
   );
 };
 
-type ContextMenuImplOwnProps = ContextMenuRootOwnProps & ContextMenuSubOwnProps;
+type ContextMenuImplOwnProps = ContextMenuRootOwnProps | ContextMenuSubOwnProps;
 
 const ContextMenuImpl: React.FC<ContextMenuImplOwnProps> = (props) => {
   const isSubmenu = React.useContext(SubmenuContext);

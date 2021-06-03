@@ -33,9 +33,9 @@ const [DropdownMenuProvider, useDropdownMenuContext] = createContext<DropdownMen
 type DropdownMenuOwnProps = React.ComponentProps<typeof DropdownMenuImpl>;
 
 const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
-  const parentSubmenuContext = React.useContext(SubmenuContext);
+  const parentMenuContext = React.useContext(SubmenuContext);
   return (
-    <SubmenuContext.Provider value={parentSubmenuContext === undefined ? false : true}>
+    <SubmenuContext.Provider value={parentMenuContext === undefined ? false : true}>
       <DropdownMenuImpl {...props} />
     </SubmenuContext.Provider>
   );
