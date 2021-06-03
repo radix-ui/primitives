@@ -701,6 +701,8 @@ type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(SUB_TRIGGER_NAME);
   const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
+  const mouseInteractionRef = React.useRef(false);
+
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
       <MenuItemImpl
@@ -711,7 +713,18 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         {...props}
         ref={composeRefs(forwardedRef, context.onTriggerChange)}
         onMouseMove={composeEventHandlers(props.onMouseMove, () => {
-          if (!props.disabled) context.onOpenChange(true);
+          mouseInteractionRef.current = true;
+        })}
+        onMouseLeave={composeEventHandlers(props.onMouseMove, () => {
+          mouseInteractionRef.current = false;
+        })}
+        // Handle `onOpenChange` within the focus event to prevent the open state
+        // from sticking when devtools are focused.
+        // This disables mouse interaction unless you're focused inside the window.
+        onFocus={composeEventHandlers(props.onFocus, () => {
+          if (!props.disabled && mouseInteractionRef.current) {
+            context.onOpenChange(true);
+          }
         })}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
           const isTypingAhead = contentContext.searchRef.current !== '';
