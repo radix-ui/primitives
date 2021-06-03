@@ -156,46 +156,6 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
 MenuSub.displayName = SUB_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * MenuSubTrigger
- * -----------------------------------------------------------------------------------------------*/
-
-const SUB_TRIGGER_NAME = 'MenuSubTrigger';
-
-type MenuSubTriggerElement = React.ElementRef<typeof MenuSubTrigger>;
-type MenuSubTriggerOwnProps = Polymorphic.OwnProps<typeof MenuItemImpl>;
-type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuItemImpl>,
-  MenuSubTriggerOwnProps
->;
-
-const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
-  const context = useMenuContext(SUB_TRIGGER_NAME);
-  const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
-  return context.isSubmenu ? (
-    <MenuAnchor as={Slot}>
-      <MenuItemImpl
-        aria-haspopup="menu"
-        aria-expanded={context.open || undefined}
-        aria-controls={context.contentId}
-        data-state={getOpenState(context.open)}
-        {...props}
-        ref={composeRefs(forwardedRef, context.onTriggerChange)}
-        onMouseMove={composeEventHandlers(props.onMouseMove, () => {
-          if (!props.disabled) context.onOpenChange(true);
-        })}
-        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-          const isTypingAhead = contentContext.searchRef.current !== '' && event.key === ' ';
-          if (props.disabled || isTypingAhead) return;
-          if (SUB_OPEN_KEYS[context.dir].includes(event.key)) context.onKeyOpen();
-        })}
-      />
-    </MenuAnchor>
-  ) : null;
-}) as MenuSubTriggerPrimitive;
-
-MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
-
-/* -------------------------------------------------------------------------------------------------
  * MenuContent
  * -----------------------------------------------------------------------------------------------*/
 
@@ -721,6 +681,46 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
     </CollectionItemSlot>
   );
 }) as MenuItemImplPrimitive;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuSubTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const SUB_TRIGGER_NAME = 'MenuSubTrigger';
+
+type MenuSubTriggerElement = React.ElementRef<typeof MenuSubTrigger>;
+type MenuSubTriggerOwnProps = Polymorphic.OwnProps<typeof MenuItemImpl>;
+type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuItemImpl>,
+  MenuSubTriggerOwnProps
+>;
+
+const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
+  const context = useMenuContext(SUB_TRIGGER_NAME);
+  const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
+  return context.isSubmenu ? (
+    <MenuAnchor as={Slot}>
+      <MenuItemImpl
+        aria-haspopup="menu"
+        aria-expanded={context.open || undefined}
+        aria-controls={context.contentId}
+        data-state={getOpenState(context.open)}
+        {...props}
+        ref={composeRefs(forwardedRef, context.onTriggerChange)}
+        onMouseMove={composeEventHandlers(props.onMouseMove, () => {
+          if (!props.disabled) context.onOpenChange(true);
+        })}
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          const isTypingAhead = contentContext.searchRef.current !== '' && event.key === ' ';
+          if (props.disabled || isTypingAhead) return;
+          if (SUB_OPEN_KEYS[context.dir].includes(event.key)) context.onKeyOpen();
+        })}
+      />
+    </MenuAnchor>
+  ) : null;
+}) as MenuSubTriggerPrimitive;
+
+MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuCheckboxItem
