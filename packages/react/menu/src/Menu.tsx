@@ -17,7 +17,6 @@ import { useDirection } from '@radix-ui/react-use-direction';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { useId } from '@radix-ui/react-id';
-import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -157,60 +156,23 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
 MenuSub.displayName = SUB_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * MenuSubTrigger
- * -----------------------------------------------------------------------------------------------*/
-
-const SUB_TRIGGER_NAME = 'MenuSubTrigger';
-
-type MenuSubTriggerElement = React.ElementRef<typeof MenuSubTrigger>;
-
-type MenuSubTriggerOwnProps = Polymorphic.OwnProps<typeof MenuItemImpl>;
-type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuItemImpl>,
-  MenuSubTriggerOwnProps
->;
-
-const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
-  const context = useMenuContext(SUB_TRIGGER_NAME);
-  return context.isSubmenu ? (
-    <MenuAnchor as={Slot}>
-      <MenuItemImpl
-        aria-haspopup="menu"
-        aria-expanded={context.open || undefined}
-        aria-controls={context.contentId}
-        data-state={getOpenState(context.open)}
-        {...props}
-        ref={composeRefs(forwardedRef, context.onTriggerChange)}
-        onMouseMove={composeEventHandlers(props.onMouseMove, () => {
-          if (!props.disabled) context.onOpenChange(true);
-        })}
-        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-          if (!props.disabled && SUB_OPEN_KEYS[context.dir].includes(event.key)) {
-            context.onKeyOpen();
-          }
-        })}
-      />
-    </MenuAnchor>
-  ) : null;
-}) as MenuSubTriggerPrimitive;
-
-MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
-
-/* -------------------------------------------------------------------------------------------------
  * MenuContent
  * -----------------------------------------------------------------------------------------------*/
 
 const CONTENT_NAME = 'MenuContent';
 
 type MenuContentElement = React.ElementRef<typeof MenuContent>;
+type ItemData = { disabled: boolean; textValue: string };
 
-type ItemData = { disabled: boolean };
 const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
   React.ElementRef<typeof MenuItem>,
   ItemData
 >();
 
-type MenuContentContextValue = { onItemLeave(): void };
+type MenuContentContextValue = {
+  onItemLeave(): void;
+  searchRef: React.RefObject<string>;
+};
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
 );
@@ -438,15 +400,45 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     ...contentProps
   } = props;
   const context = useMenuContext(CONTENT_NAME);
-  const typeaheadProps = useMenuTypeahead();
   const { getItems } = useCollection();
   const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, contentRef, context.onContentChange);
   const isPointerDownOutsideRef = React.useRef(false);
+  const timerRef = React.useRef(0);
+  const searchRef = React.useRef('');
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
+
+  const handleTypeaheadSearch = (key: string) => {
+    const search = searchRef.current + key;
+    const items = getItems().filter((item) => !item.disabled);
+    const currentItem = document.activeElement;
+    const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
+    const values = items.map((item) => item.textValue);
+    const nextMatch = getNextMatch(values, search, currentMatch);
+    const newItem = items.find((item) => item.textValue === nextMatch)?.ref.current;
+
+    // Reset `searchRef` 1 second after it was last updated
+    (function updateSearch(value: string) {
+      searchRef.current = value;
+      window.clearTimeout(timerRef.current);
+      if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
+    })(search);
+
+    if (newItem) {
+      /**
+       * Imperative focus during keydown is risky so we prevent React's batching updates
+       * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+       */
+      setTimeout(() => (newItem as HTMLElement).focus());
+    }
+  };
+
+  React.useEffect(() => {
+    return () => window.clearTimeout(timerRef.current);
+  }, []);
 
   // Make sure the whole tree has focus guards as our `MenuContent` may be
   // the last element in the DOM (beacuse of the `Portal`)
@@ -456,6 +448,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     <PortalWrapper>
       <ScrollLockWrapper>
         <MenuContentProvider
+          searchRef={searchRef}
           onItemLeave={React.useCallback(() => {
             contentRef.current?.focus();
             setCurrentItemId(null);
@@ -519,15 +512,18 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                   {...contentProps}
                   ref={composedRefs}
                   style={{ outline: 'none', ...contentProps.style }}
-                  onKeyDownCapture={composeEventHandlers(
-                    contentProps.onKeyDownCapture,
-                    typeaheadProps.onKeyDownCapture
-                  )}
-                  // focus first/last item based on key pressed
                   onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
-                    const content = contentRef.current;
+                    // submenu key events bubble through portals. We only care about keys in this menu.
+                    const target = event.target as HTMLElement;
+                    const isKeyDownInside = event.currentTarget.contains(target);
+                    const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+                    if (isKeyDownInside && !isModifierKey && event.key.length === 1) {
+                      handleTypeaheadSearch(event.key);
+                    }
                     // menus should not be navigated using tab key so we prevent it
                     if (event.key === 'Tab') event.preventDefault();
+                    // focus first/last item based on key pressed
+                    const content = contentRef.current;
                     if (event.target !== content) return;
                     if (!FIRST_LAST_KEYS.includes(event.key)) return;
                     event.preventDefault();
@@ -535,6 +531,13 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                     const candidateNodes = items.map((item) => item.ref.current!);
                     if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
                     focusFirst(candidateNodes);
+                  })}
+                  onBlur={composeEventHandlers(props.onBlur, (event) => {
+                    // clear search buffer when leaving the menu
+                    if (!event.currentTarget.contains(event.target)) {
+                      window.clearTimeout(timerRef.current);
+                      searchRef.current = '';
+                    }
                   })}
                 />
               </RovingFocusGroup>
@@ -601,7 +604,9 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, () => contentContext.onItemLeave())}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        if (!disabled && SELECTION_KEYS.includes(event.key)) {
+        const isTypingAhead = contentContext.searchRef.current !== '';
+        if (disabled || (isTypingAhead && event.key === ' ')) return;
+        if (SELECTION_KEYS.includes(event.key)) {
           // prevent page scroll if using the space key to select an item
           if (event.key === ' ') event.preventDefault();
           handleSelect();
@@ -629,7 +634,7 @@ type MenuItemImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
-  const { as = ITEM_DEFAULT_TAG, disabled = false, textValue, onSelect, ...itemProps } = props;
+  const { as = ITEM_DEFAULT_TAG, disabled = false, textValue, ...itemProps } = props;
   const ref = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const contentContext = useMenuContentContext(ITEM_NAME);
@@ -643,20 +648,14 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
     }
   }, [itemProps.children]);
 
-  const menuTypeaheadItemProps = useMenuTypeaheadItem({
-    textValue: textValue ?? textContent,
-    disabled,
-  });
-
   return (
-    <CollectionItemSlot disabled={disabled}>
+    <CollectionItemSlot disabled={disabled} textValue={textValue ?? textContent}>
       <RovingFocusItem
         role="menuitem"
         aria-disabled={disabled || undefined}
         data-disabled={disabled ? '' : undefined}
         focusable={!disabled}
         {...itemProps}
-        {...menuTypeaheadItemProps}
         as={as}
         ref={composedRefs}
         /**
@@ -682,6 +681,46 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
     </CollectionItemSlot>
   );
 }) as MenuItemImplPrimitive;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuSubTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const SUB_TRIGGER_NAME = 'MenuSubTrigger';
+
+type MenuSubTriggerElement = React.ElementRef<typeof MenuSubTrigger>;
+type MenuSubTriggerOwnProps = Polymorphic.OwnProps<typeof MenuItemImpl>;
+type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuItemImpl>,
+  MenuSubTriggerOwnProps
+>;
+
+const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
+  const context = useMenuContext(SUB_TRIGGER_NAME);
+  const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
+  return context.isSubmenu ? (
+    <MenuAnchor as={Slot}>
+      <MenuItemImpl
+        aria-haspopup="menu"
+        aria-expanded={context.open || undefined}
+        aria-controls={context.contentId}
+        data-state={getOpenState(context.open)}
+        {...props}
+        ref={composeRefs(forwardedRef, context.onTriggerChange)}
+        onMouseMove={composeEventHandlers(props.onMouseMove, () => {
+          if (!props.disabled) context.onOpenChange(true);
+        })}
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          const isTypingAhead = contentContext.searchRef.current !== '';
+          if (props.disabled || (isTypingAhead && event.key === ' ')) return;
+          if (SUB_OPEN_KEYS[context.dir].includes(event.key)) context.onKeyOpen();
+        })}
+      />
+    </MenuAnchor>
+  ) : null;
+}) as MenuSubTriggerPrimitive;
+
+MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuCheckboxItem
@@ -874,6 +913,44 @@ function focusFirst(candidates: HTMLElement[]) {
     candidate.focus();
     if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
+}
+
+/**
+ * Wraps an array around itself at a given start index
+ * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
+ */
+function wrapArray<T>(array: T[], startIndex: number) {
+  return array.map((_, index) => array[(startIndex + index) % array.length]);
+}
+
+/**
+ * This is the "meat" of the typeahead matching logic. It takes in all the values,
+ * the search and the current match, and returns the next match (or `undefined`).
+ *
+ * We normalize the search because if a user has repeatedly pressed a character,
+ * we want the exact same behavior as if we only had that one character
+ * (ie. cycle through options starting with that character)
+ *
+ * We also reorder the values by wrapping the array around the current match.
+ * This is so we always look forward from the current match, and picking the first
+ * match will always be the correct one.
+ *
+ * Finally, if the normalized search is exactly one character, we exclude the
+ * current match from the values because otherwise it would be the first to match always
+ * and focus would never move. This is as opposed to the regular case, where we
+ * don't want focus to move if the current match still matches.
+ */
+function getNextMatch(values: string[], search: string, currentMatch?: string) {
+  const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+  const normalizedSearch = isRepeated ? search[0] : search;
+  const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
+  let wrappedValues = wrapArray(values, Math.max(currentMatchIndex, 0));
+  const excludeCurrentMatch = normalizedSearch.length === 1;
+  if (excludeCurrentMatch) wrappedValues = wrappedValues.filter((v) => v !== currentMatch);
+  const nextMatch = wrappedValues.find((value) =>
+    value.toLowerCase().startsWith(normalizedSearch.toLowerCase())
+  );
+  return nextMatch !== currentMatch ? nextMatch : undefined;
 }
 
 const Root = Menu;
