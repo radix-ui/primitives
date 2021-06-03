@@ -162,10 +162,7 @@ MenuSub.displayName = SUB_NAME;
 const SUB_TRIGGER_NAME = 'MenuSubTrigger';
 
 type MenuSubTriggerElement = React.ElementRef<typeof MenuSubTrigger>;
-type MenuSubTriggerOwnProps = Omit<
-  Polymorphic.OwnProps<typeof MenuItemImpl>,
-  keyof MenuItemImplPrivateProps
->;
+type MenuSubTriggerOwnProps = Polymorphic.OwnProps<typeof MenuItemImpl>;
 type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof MenuItemImpl>,
   MenuSubTriggerOwnProps
@@ -173,6 +170,7 @@ type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
 
 const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(SUB_TRIGGER_NAME);
+  const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
       <MenuItemImpl
@@ -185,9 +183,11 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         onMouseMove={composeEventHandlers(props.onMouseMove, () => {
           if (!props.disabled) context.onOpenChange(true);
         })}
-        onExclusiveKeyDown={(event) => {
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          const isTypingAhead = contentContext.searchRef.current !== '' && event.key === ' ';
+          if (props.disabled || isTypingAhead) return;
           if (SUB_OPEN_KEYS[context.dir].includes(event.key)) context.onKeyOpen();
-        }}
+        })}
       />
     </MenuAnchor>
   ) : null;
@@ -209,7 +209,10 @@ const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
   ItemData
 >();
 
-type MenuContentContextValue = { onItemLeave(): void; isSearching: boolean };
+type MenuContentContextValue = {
+  onItemLeave(): void;
+  searchRef: React.RefObject<string>;
+};
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
 );
@@ -444,7 +447,6 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const isPointerDownOutsideRef = React.useRef(false);
   const timerRef = React.useRef(0);
   const searchRef = React.useRef('');
-  const [isSearching, setIsSearching] = React.useState(false);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -458,13 +460,11 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     const nextMatch = getNextMatch(values, search, currentMatch);
     const newItem = items.find((item) => item.textValue === nextMatch)?.ref.current;
 
+    // Reset `searchRef` 1 second after it was last updated
     (function updateSearch(value: string) {
       searchRef.current = value;
-      setIsSearching(value.length > 0);
       window.clearTimeout(timerRef.current);
-      if (searchRef.current !== '') {
-        timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
-      }
+      if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
     })(search);
 
     if (newItem) {
@@ -488,11 +488,11 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     <PortalWrapper>
       <ScrollLockWrapper>
         <MenuContentProvider
-          isSearching={isSearching}
           onItemLeave={React.useCallback(() => {
             contentRef.current?.focus();
             setCurrentItemId(null);
           }, [])}
+          searchRef={searchRef}
         >
           <FocusScope
             as={Slot}
@@ -593,7 +593,7 @@ const ITEM_DEFAULT_TAG = 'div';
 const ITEM_SELECT = 'menu.itemSelect';
 
 type MenuItemOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof MenuItemImpl>, keyof MenuItemImplPrivateProps>,
+  Polymorphic.OwnProps<typeof MenuItemImpl>,
   { onSelect?: (event: Event) => void }
 >;
 
@@ -636,13 +636,15 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, () => contentContext.onItemLeave())}
-      onExclusiveKeyDown={(event) => {
+      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        const isTypingAhead = contentContext.searchRef.current !== '' && event.key === ' ';
+        if (disabled || isTypingAhead) return;
         if (SELECTION_KEYS.includes(event.key)) {
           // prevent page scroll if using the space key to select an item
           if (event.key === ' ') event.preventDefault();
           handleSelect();
         }
-      }}
+      })}
     />
   );
 }) as MenuItemPrimitive;
@@ -650,15 +652,6 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
 MenuItem.displayName = ITEM_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
-
-type MenuItemImplPrivateProps = {
-  /**
-   * Handler that fires at the leading edge of a typeahead.
-   * Helpful for preventing actions from firing part way through
-   * a lookup e.g. if a search includes a character followed by a space.
-   */
-  onExclusiveKeyDown(event: React.KeyboardEvent): void;
-};
 
 type MenuItemImplOwnProps = Polymorphic.Merge<
   Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
@@ -670,17 +663,11 @@ type MenuItemImplOwnProps = Polymorphic.Merge<
 
 type MenuItemImplPrimitive = Polymorphic.ForwardRefComponent<
   typeof ITEM_DEFAULT_TAG,
-  MenuItemImplOwnProps & MenuItemImplPrivateProps
+  MenuItemImplOwnProps
 >;
 
 const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = ITEM_DEFAULT_TAG,
-    disabled = false,
-    textValue,
-    onExclusiveKeyDown,
-    ...itemProps
-  } = props;
+  const { as = ITEM_DEFAULT_TAG, disabled = false, textValue, ...itemProps } = props;
   const ref = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const contentContext = useMenuContentContext(ITEM_NAME);
@@ -704,10 +691,6 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
         {...itemProps}
         as={as}
         ref={composedRefs}
-        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-          const typingAhead = contentContext.isSearching && event.key === ' ';
-          if (!disabled && !typingAhead) onExclusiveKeyDown(event);
-        })}
         /**
          * We focus items on `mouseMove` to achieve the following:
          *
