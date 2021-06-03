@@ -101,7 +101,7 @@ export const Submenus = () => {
               Three
             </MenuItem>
           </Submenu>
-          <Submenu open={open3} onOpenChange={setOpen3} animated={animated}>
+          <Submenu heading="Sub Menu" open={open3} onOpenChange={setOpen3} animated={animated}>
             <MenuItem className={itemClass} onSelect={() => window.alert('one')}>
               One
             </MenuItem>
@@ -389,12 +389,22 @@ const MenuWithAnchor: React.FC<MenuOwnProps> = (props) => {
   );
 };
 
-const Submenu: React.FC<MenuOwnProps & { animated: boolean; disabled?: boolean }> = (props) => {
-  const { open = true, onOpenChange, children, animated, disabled, ...contentProps } = props;
+const Submenu: React.FC<
+  MenuOwnProps & { animated: boolean; disabled?: boolean; heading?: string }
+> = (props) => {
+  const {
+    heading = 'Submenu',
+    open = true,
+    onOpenChange,
+    children,
+    animated,
+    disabled,
+    ...contentProps
+  } = props;
   return (
     <MenuSub open={open} onOpenChange={onOpenChange}>
       <MenuSubTrigger className={subTriggerClass} disabled={disabled}>
-        Submenu →
+        {heading} →
       </MenuSubTrigger>
       <MenuContent
         className={animated ? animatedContentClass : contentClass}

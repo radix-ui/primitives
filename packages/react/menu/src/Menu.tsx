@@ -488,11 +488,11 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     <PortalWrapper>
       <ScrollLockWrapper>
         <MenuContentProvider
+          searchRef={searchRef}
           onItemLeave={React.useCallback(() => {
             contentRef.current?.focus();
             setCurrentItemId(null);
           }, [])}
-          searchRef={searchRef}
         >
           <FocusScope
             as={Slot}
@@ -553,7 +553,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                   ref={composedRefs}
                   style={{ outline: 'none', ...contentProps.style }}
                   onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
-                    // Submenu key events bubble through portals. We only care about keys in this menu.
+                    // submenu key events bubble through portals. We only care about keys in this menu.
                     const target = event.target as HTMLElement;
                     const isKeyDownInside = event.currentTarget.contains(target);
                     const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
@@ -571,6 +571,13 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                     const candidateNodes = items.map((item) => item.ref.current!);
                     if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
                     focusFirst(candidateNodes);
+                  })}
+                  onBlur={composeEventHandlers(props.onBlur, (event) => {
+                    // clear search buffer when leaving the menu
+                    if (!event.currentTarget.contains(event.target)) {
+                      window.clearTimeout(timerRef.current);
+                      searchRef.current = '';
+                    }
                   })}
                 />
               </RovingFocusGroup>
