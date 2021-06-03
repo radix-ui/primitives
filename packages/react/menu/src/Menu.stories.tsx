@@ -529,4 +529,5 @@ export const classes = {
   labelClass,
   itemClass,
   separatorClass,
+  subTriggerClass,
 };
