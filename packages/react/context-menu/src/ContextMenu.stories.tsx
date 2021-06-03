@@ -377,7 +377,7 @@ export const Nested = () => (
             </ContextMenuItem>
             <ContextMenuSeparator className={separatorClass} />
             <ContextMenu>
-              <ContextMenuTrigger className={subTriggerClass}>Submenu →</ContextMenuTrigger>
+              <ContextMenuTriggerItem className={subTriggerClass}>Submenu →</ContextMenuTriggerItem>
               <ContextMenuContent className={contentClass} offset={12}>
                 <ContextMenuItem
                   className={itemClass}
@@ -408,7 +408,7 @@ export const Nested = () => (
         </ContextMenuItem>
         <ContextMenuSeparator className={separatorClass} />
         <ContextMenu>
-          <ContextMenuTrigger className={subTriggerClass}>Submenu →</ContextMenuTrigger>
+          <ContextMenuTriggerItem className={subTriggerClass}>Submenu →</ContextMenuTriggerItem>
           <ContextMenuContent className={contentClass} offset={12}>
             <ContextMenuItem
               className={itemClass}
