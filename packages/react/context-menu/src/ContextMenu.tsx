@@ -122,14 +122,18 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
   const { as, ...triggerProps } = props;
   const isSubmenu = React.useContext(SubmenuContext);
 
-  return isSubmenu ? (
-    <MenuPrimitive.SubTrigger
-      {...triggerProps}
-      as={as as Polymorphic.IntrinsicElement<typeof ContextMenuRootTrigger>}
-      ref={forwardedRef}
-    />
-  ) : (
-    <ContextMenuRootTrigger {...triggerProps} as={as} ref={forwardedRef} />
+  return (
+    <InsideContentContext.Provider value={false}>
+      {isSubmenu ? (
+        <MenuPrimitive.SubTrigger
+          {...triggerProps}
+          as={as as Polymorphic.IntrinsicElement<typeof ContextMenuRootTrigger>}
+          ref={forwardedRef}
+        />
+      ) : (
+        <ContextMenuRootTrigger {...triggerProps} as={as} ref={forwardedRef} />
+      )}
+    </InsideContentContext.Provider>
   );
 }) as ContextMenuTriggerPrimitive;
 
