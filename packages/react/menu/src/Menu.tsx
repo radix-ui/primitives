@@ -604,8 +604,8 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
       onMouseLeave={composeEventHandlers(props.onMouseLeave, () => contentContext.onItemLeave())}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        const isTypingAhead = contentContext.searchRef.current !== '' && event.key === ' ';
-        if (disabled || isTypingAhead) return;
+        const isTypingAhead = contentContext.searchRef.current !== '';
+        if (disabled || (isTypingAhead && event.key === ' ')) return;
         if (SELECTION_KEYS.includes(event.key)) {
           // prevent page scroll if using the space key to select an item
           if (event.key === ' ') event.preventDefault();
@@ -711,8 +711,8 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
           if (!props.disabled) context.onOpenChange(true);
         })}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-          const isTypingAhead = contentContext.searchRef.current !== '' && event.key === ' ';
-          if (props.disabled || isTypingAhead) return;
+          const isTypingAhead = contentContext.searchRef.current !== '';
+          if (props.disabled || (isTypingAhead && event.key === ' ')) return;
           if (SUB_OPEN_KEYS[context.dir].includes(event.key)) context.onKeyOpen();
         })}
       />
