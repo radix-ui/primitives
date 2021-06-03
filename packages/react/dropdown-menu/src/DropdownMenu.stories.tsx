@@ -6,6 +6,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuItem,
+  DropdownMenuTriggerItem,
   DropdownMenuCheckboxItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -75,7 +76,9 @@ export const Submenus = () => {
             </DropdownMenuItem>
             <DropdownMenuSeparator className={separatorClass} />
             <DropdownMenu>
-              <DropdownMenuTrigger className={subTriggerClass}>Submenu →</DropdownMenuTrigger>
+              <DropdownMenuTriggerItem className={subTriggerClass}>
+                Submenu →
+              </DropdownMenuTriggerItem>
               <DropdownMenuContent className={contentClass} sideOffset={12}>
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
                   One
@@ -86,7 +89,9 @@ export const Submenus = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className={separatorClass} />
                 <DropdownMenu>
-                  <DropdownMenuTrigger className={subTriggerClass}>Submenu →</DropdownMenuTrigger>
+                  <DropdownMenuTriggerItem className={subTriggerClass}>
+                    Submenu →
+                  </DropdownMenuTriggerItem>
                   <DropdownMenuContent className={contentClass} sideOffset={12}>
                     <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
                       One

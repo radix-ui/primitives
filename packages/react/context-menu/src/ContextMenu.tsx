@@ -106,48 +106,15 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'ContextMenuTrigger';
+const TRIGGER_DEFAULT_TAG = 'span';
 
-type ContextMenuTriggerOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof ContextMenuRootTrigger>,
-  Polymorphic.OwnProps<typeof MenuPrimitive.SubTrigger>
->;
+type ContextMenuTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
 type ContextMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ContextMenuRootTrigger>,
+  typeof TRIGGER_DEFAULT_TAG,
   ContextMenuTriggerOwnProps
 >;
 
 const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as, ...triggerProps } = props;
-  const isSubmenu = React.useContext(SubmenuContext);
-
-  return (
-    <InsideContentContext.Provider value={false}>
-      {isSubmenu ? (
-        <MenuPrimitive.SubTrigger
-          {...triggerProps}
-          as={as as Polymorphic.IntrinsicElement<typeof ContextMenuRootTrigger>}
-          ref={forwardedRef}
-        />
-      ) : (
-        <ContextMenuRootTrigger {...triggerProps} as={as} ref={forwardedRef} />
-      )}
-    </InsideContentContext.Provider>
-  );
-}) as ContextMenuTriggerPrimitive;
-
-ContextMenuTrigger.displayName = TRIGGER_NAME;
-
-/* ---------------------------------------------------------------------------------------------- */
-
-const TRIGGER_DEFAULT_TAG = 'span';
-
-type ContextMenuRootTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type ContextMenuRootTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TRIGGER_DEFAULT_TAG,
-  ContextMenuRootTriggerOwnProps
->;
-
-const ContextMenuRootTrigger = React.forwardRef((props, forwardedRef) => {
   const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useContextMenuContext(TRIGGER_NAME);
   const pointRef = React.useRef<Point>({ x: 0, y: 0 });
@@ -156,7 +123,7 @@ const ContextMenuRootTrigger = React.forwardRef((props, forwardedRef) => {
   });
 
   return (
-    <>
+    <InsideContentContext.Provider value={false}>
       <MenuPrimitive.Anchor virtualRef={virtualRef} />
       <Primitive
         {...triggerProps}
@@ -168,9 +135,11 @@ const ContextMenuRootTrigger = React.forwardRef((props, forwardedRef) => {
           context.onOpenChange(true);
         })}
       />
-    </>
+    </InsideContentContext.Provider>
   );
-}) as ContextMenuRootTriggerPrimitive;
+}) as ContextMenuTriggerPrimitive;
+
+ContextMenuTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuContent
@@ -235,6 +204,25 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
 
 ContextMenuContent.displayName = CONTENT_NAME;
 
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuTriggerItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const TRIGGER_ITEM_NAME = 'ContextMenuTriggerItem';
+
+type ContextMenuTriggerItemOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.SubTrigger>;
+type ContextMenuTriggerItemPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.SubTrigger>,
+  ContextMenuTriggerItemOwnProps
+>;
+
+const ContextMenuTriggerItem = React.forwardRef((props, forwardedRef) => {
+  const isSubmenu = React.useContext(SubmenuContext);
+  return isSubmenu ? <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} /> : null;
+}) as ContextMenuTriggerItemPrimitive;
+
+ContextMenuTriggerItem.displayName = TRIGGER_ITEM_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, { displayName: 'ContextMenuGroup' });
@@ -267,6 +255,7 @@ const Content = ContextMenuContent;
 const Group = ContextMenuGroup;
 const Label = ContextMenuLabel;
 const Item = ContextMenuItem;
+const TriggerItem = ContextMenuTriggerItem;
 const CheckboxItem = ContextMenuCheckboxItem;
 const RadioGroup = ContextMenuRadioGroup;
 const RadioItem = ContextMenuRadioItem;
@@ -281,6 +270,7 @@ export {
   ContextMenuGroup,
   ContextMenuLabel,
   ContextMenuItem,
+  ContextMenuTriggerItem,
   ContextMenuCheckboxItem,
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
@@ -294,6 +284,7 @@ export {
   Group,
   Label,
   Item,
+  TriggerItem,
   CheckboxItem,
   RadioGroup,
   RadioItem,
@@ -301,4 +292,8 @@ export {
   Separator,
   Arrow,
 };
-export type { ContextMenuTriggerPrimitive, ContextMenuContentPrimitive };
+export type {
+  ContextMenuTriggerPrimitive,
+  ContextMenuContentPrimitive,
+  ContextMenuTriggerItemPrimitive,
+};
