@@ -75,47 +75,18 @@ DropdownMenu.displayName = DROPDOWN_MENU_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'DropdownMenuTrigger';
+const TRIGGER_DEFAULT_TAG = 'button';
 
-type DropdownMenuTriggerOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof DropdownMenuRootTrigger>,
-  Polymorphic.OwnProps<typeof MenuPrimitive.SubTrigger>
+type DropdownMenuTriggerOwnProps = Omit<
+  Polymorphic.OwnProps<typeof MenuPrimitive.Anchor>,
+  'virtualRef'
 >;
 type DropdownMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof DropdownMenuRootTrigger>,
+  typeof TRIGGER_DEFAULT_TAG,
   DropdownMenuTriggerOwnProps
 >;
 
 const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as, ...triggerProps } = props;
-  const isSubmenu = React.useContext(SubmenuContext);
-
-  return isSubmenu ? (
-    <MenuPrimitive.SubTrigger
-      {...triggerProps}
-      as={as as Polymorphic.IntrinsicElement<typeof DropdownMenuRootTrigger>}
-      ref={forwardedRef}
-    />
-  ) : (
-    <DropdownMenuRootTrigger {...triggerProps} as={as} ref={forwardedRef} />
-  );
-}) as DropdownMenuTriggerPrimitive;
-
-DropdownMenuTrigger.displayName = TRIGGER_NAME;
-
-/* ---------------------------------------------------------------------------------------------- */
-
-const TRIGGER_DEFAULT_TAG = 'button';
-
-type DropdownMenuRootTriggerOwnProps = Omit<
-  Polymorphic.OwnProps<typeof MenuPrimitive.Anchor>,
-  'virtualRef'
->;
-type DropdownMenuRootTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TRIGGER_DEFAULT_TAG,
-  DropdownMenuRootTriggerOwnProps
->;
-
-const DropdownMenuRootTrigger = React.forwardRef((props, forwardedRef) => {
   const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useDropdownMenuContext(TRIGGER_NAME);
   const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
@@ -145,7 +116,9 @@ const DropdownMenuRootTrigger = React.forwardRef((props, forwardedRef) => {
       })}
     />
   );
-}) as DropdownMenuRootTriggerPrimitive;
+}) as DropdownMenuTriggerPrimitive;
+
+DropdownMenuTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DropdownMenuContent
@@ -209,6 +182,25 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
 
 DropdownMenuContent.displayName = CONTENT_NAME;
 
+/* -------------------------------------------------------------------------------------------------
+ * DropdownMenuTriggerItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const TRIGGER_ITEM_NAME = 'DropdownMenuTriggerItem';
+
+type DropdownMenuTriggerItemOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.SubTrigger>;
+type DropdownMenuTriggerItemPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.SubTrigger>,
+  DropdownMenuTriggerItemOwnProps
+>;
+
+const DropdownMenuTriggerItem = React.forwardRef((props, forwardedRef) => {
+  const isSubmenu = React.useContext(SubmenuContext);
+  return isSubmenu ? <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} /> : null;
+}) as DropdownMenuTriggerItemPrimitive;
+
+DropdownMenuTriggerItem.displayName = TRIGGER_ITEM_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 const DropdownMenuGroup = extendPrimitive(MenuPrimitive.Group, {
@@ -245,6 +237,7 @@ const Content = DropdownMenuContent;
 const Group = DropdownMenuGroup;
 const Label = DropdownMenuLabel;
 const Item = DropdownMenuItem;
+const TriggerItem = DropdownMenuTriggerItem;
 const CheckboxItem = DropdownMenuCheckboxItem;
 const RadioGroup = DropdownMenuRadioGroup;
 const RadioItem = DropdownMenuRadioItem;
@@ -259,6 +252,7 @@ export {
   DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuItem,
+  DropdownMenuTriggerItem,
   DropdownMenuCheckboxItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -272,6 +266,7 @@ export {
   Group,
   Label,
   Item,
+  TriggerItem,
   CheckboxItem,
   RadioGroup,
   RadioItem,
@@ -279,4 +274,8 @@ export {
   Separator,
   Arrow,
 };
-export type { DropdownMenuTriggerPrimitive, DropdownMenuContentPrimitive };
+export type {
+  DropdownMenuTriggerPrimitive,
+  DropdownMenuContentPrimitive,
+  DropdownMenuTriggerItemPrimitive,
+};

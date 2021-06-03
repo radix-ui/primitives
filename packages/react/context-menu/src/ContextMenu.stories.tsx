@@ -6,6 +6,7 @@ import {
   ContextMenuGroup,
   ContextMenuLabel,
   ContextMenuItem,
+  ContextMenuTriggerItem,
   ContextMenuCheckboxItem,
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
@@ -100,7 +101,7 @@ export const Submenus = () => {
             </ContextMenuItem>
             <ContextMenuSeparator className={separatorClass} />
             <ContextMenu>
-              <ContextMenuTrigger className={subTriggerClass}>Submenu →</ContextMenuTrigger>
+              <ContextMenuTriggerItem className={subTriggerClass}>Submenu →</ContextMenuTriggerItem>
               <ContextMenuContent className={contentClass} offset={12}>
                 <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
                   One
@@ -110,7 +111,9 @@ export const Submenus = () => {
                 </ContextMenuItem>
                 <ContextMenuSeparator className={separatorClass} />
                 <ContextMenu>
-                  <ContextMenuTrigger className={subTriggerClass}>Submenu →</ContextMenuTrigger>
+                  <ContextMenuTriggerItem className={subTriggerClass}>
+                    Submenu →
+                  </ContextMenuTriggerItem>
                   <ContextMenuContent className={contentClass} offset={12}>
                     <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
                       One
