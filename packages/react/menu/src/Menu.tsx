@@ -735,6 +735,11 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
     };
   }, [onPointerGraceAreaChange]);
 
+  // clear content rect cache when it closes
+  React.useEffect(() => {
+    if (context.open === false) contentRectRef.current = undefined;
+  }, [context.open]);
+
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
       <MenuItemImpl
