@@ -716,7 +716,6 @@ type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(SUB_TRIGGER_NAME);
   const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
-  const contentRectRef = React.useRef<ClientRect | undefined>();
   const openTimerRef = React.useRef<number | null>(null);
   const { onPointerGraceAreaChange } = contentContext;
   const pointerGraceDurationTimer = React.useRef(0);
@@ -734,11 +733,6 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
       onPointerGraceAreaChange(null);
     };
   }, [onPointerGraceAreaChange]);
-
-  // clear content rect cache when it closes
-  React.useEffect(() => {
-    if (context.open === false) contentRectRef.current = undefined;
-  }, [context.open]);
 
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
@@ -762,17 +756,15 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         onMouseLeave={composeEventHandlers(props.onMouseLeave, (event) => {
           clearOpenTimer();
 
-          contentRectRef.current =
-            contentRectRef.current || context.content?.getBoundingClientRect();
-          if (contentRectRef.current) {
+          const contentRect = context.content?.getBoundingClientRect();
+          if (contentRect) {
             // TODO: make sure to update this when we change positioning logic
             const side = context.content?.dataset.side;
-            const { top, left, right, bottom } = contentRectRef.current;
-            const contentEdge = side === 'right' ? left : right;
+            const contentEdge = side === 'right' ? contentRect.left : contentRect.right;
             contentContext.onPointerGraceAreaChange([
               { x: event.clientX, y: event.clientY },
-              { x: contentEdge, y: top },
-              { x: contentEdge, y: bottom },
+              { x: contentEdge, y: contentRect.top },
+              { x: contentEdge, y: contentRect.bottom },
             ]);
 
             pointerGraceDurationTimer.current = window.setTimeout(
