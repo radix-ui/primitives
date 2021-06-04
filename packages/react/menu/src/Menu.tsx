@@ -170,8 +170,10 @@ const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
 >();
 
 type MenuContentContextValue = {
-  onItemLeave(): void;
+  onItemEnter(event: React.MouseEvent): void;
+  onItemLeave(event: React.MouseEvent): void;
   searchRef: React.RefObject<string>;
+  onPointerGraceAreaChange(area: Triangle | null): void;
 };
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
@@ -410,6 +412,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const isPointerDownOutsideRef = React.useRef(false);
   const timerRef = React.useRef(0);
   const searchRef = React.useRef('');
+  const pointerGraceAreaRef = React.useRef<Triangle | null>(null);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -452,10 +455,19 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
       <ScrollLockWrapper>
         <MenuContentProvider
           searchRef={searchRef}
-          onItemLeave={React.useCallback(() => {
-            contentRef.current?.focus();
-            setCurrentItemId(null);
+          onItemEnter={(event) => {
+            if (isPointerInGraceArea(event, pointerGraceAreaRef.current)) event.preventDefault();
+          }}
+          onItemLeave={React.useCallback((event) => {
+            if (!isPointerInGraceArea(event, pointerGraceAreaRef.current)) {
+              contentRef.current?.focus();
+              setCurrentItemId(null);
+            }
           }, [])}
+          onPointerGraceAreaChange={React.useCallback(
+            (area) => (pointerGraceAreaRef.current = area),
+            []
+          )}
         >
           <FocusScope
             as={Slot}
@@ -605,7 +617,7 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       disabled={disabled}
       // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
-      onMouseLeave={composeEventHandlers(props.onMouseLeave, () => contentContext.onItemLeave())}
+      onMouseLeave={composeEventHandlers(props.onMouseLeave, contentContext.onItemLeave)}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         const isTypingAhead = contentContext.searchRef.current !== '';
         if (disabled || (isTypingAhead && event.key === ' ')) return;
@@ -673,11 +685,14 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
          * wiggles. This is to match native menu implementation.
          */
         onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
-          if (!disabled) {
-            const item = event.currentTarget;
-            item.focus();
+          if (disabled) {
+            contentContext.onItemLeave(event);
           } else {
-            contentContext.onItemLeave();
+            contentContext.onItemEnter(event);
+            if (!event.defaultPrevented) {
+              const item = event.currentTarget;
+              item.focus();
+            }
           }
         })}
       />
@@ -701,6 +716,24 @@ type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(SUB_TRIGGER_NAME);
   const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
+  const openTimerRef = React.useRef<number | null>(null);
+  const { onPointerGraceAreaChange } = contentContext;
+  const pointerGraceDurationTimer = React.useRef(0);
+
+  const clearOpenTimer = React.useCallback(() => {
+    if (openTimerRef.current) window.clearTimeout(openTimerRef.current);
+    openTimerRef.current = null;
+  }, []);
+
+  React.useEffect(() => clearOpenTimer, [clearOpenTimer]);
+
+  React.useEffect(() => {
+    return () => {
+      window.clearTimeout(pointerGraceDurationTimer.current);
+      onPointerGraceAreaChange(null);
+    };
+  }, [onPointerGraceAreaChange]);
+
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
       <MenuItemImpl
@@ -710,8 +743,38 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         data-state={getOpenState(context.open)}
         {...props}
         ref={composeRefs(forwardedRef, context.onTriggerChange)}
-        onMouseMove={composeEventHandlers(props.onMouseMove, () => {
-          if (!props.disabled) context.onOpenChange(true);
+        onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
+          contentContext.onItemEnter(event);
+          if (event.defaultPrevented) return;
+          if (!props.disabled && !context.open && !openTimerRef.current) {
+            openTimerRef.current = window.setTimeout(() => {
+              context.onOpenChange(true);
+              clearOpenTimer();
+            }, 100);
+          }
+        })}
+        onMouseLeave={composeEventHandlers(props.onMouseLeave, (event) => {
+          clearOpenTimer();
+
+          const contentRect = context.content?.getBoundingClientRect();
+          if (contentRect) {
+            // TODO: make sure to update this when we change positioning logic
+            const side = context.content?.dataset.side;
+            const contentEdge = side === 'right' ? contentRect.left : contentRect.right;
+            contentContext.onPointerGraceAreaChange([
+              { x: event.clientX, y: event.clientY },
+              { x: contentEdge, y: contentRect.top },
+              { x: contentEdge, y: contentRect.bottom },
+            ]);
+
+            pointerGraceDurationTimer.current = window.setTimeout(
+              () => contentContext.onPointerGraceAreaChange(null),
+              300
+            );
+          } else {
+            // There's 100ms where the user may leave an item before the submenu was opened.
+            contentContext.onPointerGraceAreaChange(null);
+          }
         })}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
           const isTypingAhead = contentContext.searchRef.current !== '';
@@ -954,6 +1017,27 @@ function getNextMatch(values: string[], search: string, currentMatch?: string) {
     value.toLowerCase().startsWith(normalizedSearch.toLowerCase())
   );
   return nextMatch !== currentMatch ? nextMatch : undefined;
+}
+
+type Point = { x: number; y: number };
+type Triangle = [Point, Point, Point];
+
+function getTriangleArea(a: Point, b: Point, c: Point) {
+  return Math.abs((a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y)) / 2);
+}
+
+function isPointInTriangle(point: Point, a: Point, b: Point, c: Point) {
+  const A = getTriangleArea(a, b, c);
+  const A1 = getTriangleArea(point, b, c);
+  const A2 = getTriangleArea(a, point, c);
+  const A3 = getTriangleArea(a, b, point);
+  return A === A1 + A2 + A3;
+}
+
+function isPointerInGraceArea(event: React.MouseEvent, graceArea: Triangle | null) {
+  if (!graceArea) return false;
+  const cursorPos = { x: event.clientX, y: event.clientY };
+  return isPointInTriangle(cursorPos, ...graceArea);
 }
 
 const Root = Menu;

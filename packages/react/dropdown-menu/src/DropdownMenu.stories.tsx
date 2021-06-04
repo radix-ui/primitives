@@ -473,7 +473,7 @@ export const Chromatic = () => {
           </DropdownMenuItem>
           <DropdownMenuSeparator className={separatorClass} />
           <DropdownMenu open>
-            <DropdownMenuTrigger className={subTriggerClass}>Submenu →</DropdownMenuTrigger>
+            <DropdownMenuTriggerItem className={subTriggerClass}>Submenu →</DropdownMenuTriggerItem>
             <DropdownMenuContent className={contentClass} sideOffset={12} avoidCollisions={false}>
               <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
                 One
@@ -484,7 +484,9 @@ export const Chromatic = () => {
               </DropdownMenuItem>
               <DropdownMenuSeparator className={separatorClass} />
               <DropdownMenu open>
-                <DropdownMenuTrigger className={subTriggerClass}>Submenu →</DropdownMenuTrigger>
+                <DropdownMenuTriggerItem className={subTriggerClass}>
+                  Submenu →
+                </DropdownMenuTriggerItem>
                 <DropdownMenuContent
                   className={contentClass}
                   sideOffset={12}
@@ -540,7 +542,7 @@ export const Chromatic = () => {
           </DropdownMenuItem>
           <DropdownMenuSeparator className={separatorClass} />
           <DropdownMenu open>
-            <DropdownMenuTrigger className={subTriggerClass}>Submenu →</DropdownMenuTrigger>
+            <DropdownMenuTriggerItem className={subTriggerClass}>Submenu →</DropdownMenuTriggerItem>
             <DropdownMenuContent
               className={contentClass}
               sideOffset={12}
@@ -556,7 +558,9 @@ export const Chromatic = () => {
               </DropdownMenuItem>
               <DropdownMenuSeparator className={separatorClass} />
               <DropdownMenu open>
-                <DropdownMenuTrigger className={subTriggerClass}>Submenu →</DropdownMenuTrigger>
+                <DropdownMenuTriggerItem className={subTriggerClass}>
+                  Submenu →
+                </DropdownMenuTriggerItem>
                 <DropdownMenuContent
                   className={contentClass}
                   sideOffset={12}
@@ -615,7 +619,9 @@ export const Chromatic = () => {
             </DropdownMenuItem>
             <DropdownMenuSeparator className={separatorClass} />
             <DropdownMenu open>
-              <DropdownMenuTrigger className={subTriggerClass}>Submenu →</DropdownMenuTrigger>
+              <DropdownMenuTriggerItem className={subTriggerClass}>
+                Submenu →
+              </DropdownMenuTriggerItem>
               <DropdownMenuContent className={contentClass} sideOffset={12} avoidCollisions={false}>
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
                   One
@@ -626,7 +632,9 @@ export const Chromatic = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className={separatorClass} />
                 <DropdownMenu open>
-                  <DropdownMenuTrigger className={subTriggerClass}>Submenu →</DropdownMenuTrigger>
+                  <DropdownMenuTriggerItem className={subTriggerClass}>
+                    Submenu →
+                  </DropdownMenuTriggerItem>
                   <DropdownMenuContent
                     className={contentClass}
                     sideOffset={12}
