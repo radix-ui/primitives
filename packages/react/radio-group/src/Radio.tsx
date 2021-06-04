@@ -171,6 +171,7 @@ const BubbleInput = (props: BubbleInputProps) => {
   return (
     <input
       type="radio"
+      defaultChecked={checked}
       {...inputProps}
       tabIndex={-1}
       ref={ref}
