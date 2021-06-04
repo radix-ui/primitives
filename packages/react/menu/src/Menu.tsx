@@ -633,73 +633,6 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
 
 MenuItem.displayName = ITEM_NAME;
 
-/* ---------------------------------------------------------------------------------------------- */
-
-type MenuItemImplOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
-  {
-    disabled?: boolean;
-    textValue?: string;
-  }
->;
-
-type MenuItemImplPrimitive = Polymorphic.ForwardRefComponent<
-  typeof ITEM_DEFAULT_TAG,
-  MenuItemImplOwnProps
->;
-
-const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
-  const { as = ITEM_DEFAULT_TAG, disabled = false, textValue, ...itemProps } = props;
-  const ref = React.useRef<HTMLDivElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
-  const contentContext = useMenuContentContext(ITEM_NAME);
-
-  // get the item's `.textContent` as default strategy for typeahead `textValue`
-  const [textContent, setTextContent] = React.useState('');
-  React.useEffect(() => {
-    const menuItem = ref.current;
-    if (menuItem) {
-      setTextContent((menuItem.textContent ?? '').trim());
-    }
-  }, [itemProps.children]);
-
-  return (
-    <CollectionItemSlot disabled={disabled} textValue={textValue ?? textContent}>
-      <RovingFocusItem
-        role="menuitem"
-        aria-disabled={disabled || undefined}
-        data-disabled={disabled ? '' : undefined}
-        focusable={!disabled}
-        {...itemProps}
-        as={as}
-        ref={composedRefs}
-        /**
-         * We focus items on `mouseMove` to achieve the following:
-         *
-         * - Mouse over an item (it focuses)
-         * - Leave mouse where it is and use keyboard to focus a different item
-         * - Wiggle mouse without it leaving previously focused item
-         * - Previously focused item should re-focus
-         *
-         * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
-         * wiggles. This is to match native menu implementation.
-         */
-        onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
-          if (disabled) {
-            contentContext.onItemLeave(event);
-          } else {
-            contentContext.onItemEnter(event);
-            if (!event.defaultPrevented) {
-              const item = event.currentTarget;
-              item.focus();
-            }
-          }
-        })}
-      />
-    </CollectionItemSlot>
-  );
-}) as MenuItemImplPrimitive;
-
 /* -------------------------------------------------------------------------------------------------
  * MenuSubTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -787,6 +720,73 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
 }) as MenuSubTriggerPrimitive;
 
 MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
+
+type MenuItemImplOwnProps = Polymorphic.Merge<
+  Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
+  {
+    disabled?: boolean;
+    textValue?: string;
+  }
+>;
+
+type MenuItemImplPrimitive = Polymorphic.ForwardRefComponent<
+  typeof ITEM_DEFAULT_TAG,
+  MenuItemImplOwnProps
+>;
+
+const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
+  const { as = ITEM_DEFAULT_TAG, disabled = false, textValue, ...itemProps } = props;
+  const ref = React.useRef<HTMLDivElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+  const contentContext = useMenuContentContext(ITEM_NAME);
+
+  // get the item's `.textContent` as default strategy for typeahead `textValue`
+  const [textContent, setTextContent] = React.useState('');
+  React.useEffect(() => {
+    const menuItem = ref.current;
+    if (menuItem) {
+      setTextContent((menuItem.textContent ?? '').trim());
+    }
+  }, [itemProps.children]);
+
+  return (
+    <CollectionItemSlot disabled={disabled} textValue={textValue ?? textContent}>
+      <RovingFocusItem
+        role="menuitem"
+        aria-disabled={disabled || undefined}
+        data-disabled={disabled ? '' : undefined}
+        focusable={!disabled}
+        {...itemProps}
+        as={as}
+        ref={composedRefs}
+        /**
+         * We focus items on `mouseMove` to achieve the following:
+         *
+         * - Mouse over an item (it focuses)
+         * - Leave mouse where it is and use keyboard to focus a different item
+         * - Wiggle mouse without it leaving previously focused item
+         * - Previously focused item should re-focus
+         *
+         * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
+         * wiggles. This is to match native menu implementation.
+         */
+        onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
+          if (disabled) {
+            contentContext.onItemLeave(event);
+          } else {
+            contentContext.onItemEnter(event);
+            if (!event.defaultPrevented) {
+              const item = event.currentTarget;
+              item.focus();
+            }
+          }
+        })}
+      />
+    </CollectionItemSlot>
+  );
+}) as MenuItemImplPrimitive;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuCheckboxItem
