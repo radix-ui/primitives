@@ -756,7 +756,7 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
           const contentRect = context.content?.getBoundingClientRect();
           if (contentRect) {
             contentContext.onPointerGraceAreaChange([
-              { x: event.pageX, y: event.pageY },
+              { x: event.clientX, y: event.clientY },
               { x: contentRect.left, y: contentRect.top },
               { x: contentRect.left, y: contentRect.bottom },
             ]);
@@ -1029,7 +1029,7 @@ function isPointInTriangle(point: Point, a: Point, b: Point, c: Point) {
 
 function isMouseMovingToSubmenu(event: React.MouseEvent, triangle: Triangle | null) {
   if (triangle) {
-    const cursorPos = { x: event.pageX, y: event.pageY };
+    const cursorPos = { x: event.clientX, y: event.clientY };
     const isCursorInTriangle = isPointInTriangle(cursorPos, ...triangle);
     if (isCursorInTriangle) return true;
   }
