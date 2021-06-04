@@ -36,11 +36,7 @@ export const Controlled = () => {
   const [value, setValue] = React.useState('2');
 
   return (
-    <RadioGroup
-      className={rootClass}
-      value={value}
-      onValueChange={(event) => setValue(event.target.value)}
-    >
+    <RadioGroup className={rootClass} value={value} onValueChange={setValue}>
       <RadioGroupItem className={itemClass} value="1">
         <RadioGroupIndicator className={indicatorClass} />
       </RadioGroupItem>
@@ -81,7 +77,7 @@ export const Unset = () => (
 );
 
 export const WithinForm = () => {
-  const [data, setData] = React.useState({ optional: '', required: '' });
+  const [data, setData] = React.useState({ optional: '', required: '', stopprop: '' });
 
   return (
     <form
@@ -91,32 +87,68 @@ export const WithinForm = () => {
         setData((prevData) => ({ ...prevData, [radio.name]: radio.value }));
       }}
     >
-      <p>optional value: {data.optional}</p>
+      <fieldset>
+        <legend>optional value: {data.optional}</legend>
+        <RadioGroup className={rootClass} name="optional">
+          <RadioGroupItem className={itemClass} value="1">
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+          <RadioGroupItem className={itemClass} value="2">
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+          <RadioGroupItem className={itemClass} value="3">
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+        </RadioGroup>
+      </fieldset>
 
-      <RadioGroup className={rootClass} name="optional">
-        <RadioGroupItem className={itemClass} value="1">
-          <RadioGroupIndicator className={indicatorClass} />
-        </RadioGroupItem>
-        <RadioGroupItem className={itemClass} value="2">
-          <RadioGroupIndicator className={indicatorClass} />
-        </RadioGroupItem>
-        <RadioGroupItem className={itemClass} value="3">
-          <RadioGroupIndicator className={indicatorClass} />
-        </RadioGroupItem>
-      </RadioGroup>
+      <br />
+      <br />
 
-      <p>required value: {data.required}</p>
-      <RadioGroup className={rootClass} name="required" required>
-        <RadioGroupItem className={itemClass} value="1">
-          <RadioGroupIndicator className={indicatorClass} />
-        </RadioGroupItem>
-        <RadioGroupItem className={itemClass} value="2">
-          <RadioGroupIndicator className={indicatorClass} />
-        </RadioGroupItem>
-        <RadioGroupItem className={itemClass} value="3">
-          <RadioGroupIndicator className={indicatorClass} />
-        </RadioGroupItem>
-      </RadioGroup>
+      <fieldset>
+        <legend>required value: {data.required}</legend>
+        <RadioGroup className={rootClass} name="required" required>
+          <RadioGroupItem className={itemClass} value="1">
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+          <RadioGroupItem className={itemClass} value="2">
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+          <RadioGroupItem className={itemClass} value="3">
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+        </RadioGroup>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>stop propagation value: {data.stopprop}</legend>
+        <RadioGroup className={rootClass} name="stopprop">
+          <RadioGroupItem
+            className={itemClass}
+            value="1"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+          <RadioGroupItem
+            className={itemClass}
+            value="2"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+          <RadioGroupItem
+            className={itemClass}
+            value="3"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+        </RadioGroup>
+      </fieldset>
 
       <br />
       <br />

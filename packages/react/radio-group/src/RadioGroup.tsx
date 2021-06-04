@@ -28,7 +28,7 @@ type RadioGroupOwnProps = Polymorphic.Merge<
     value?: string;
     defaultValue?: string;
     required?: React.ComponentProps<typeof Radio>['required'];
-    onValueChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onValueChange?(value: string): void;
   }
 >;
 
@@ -64,22 +64,14 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
   } = props;
   const labelId = useLabelContext();
   const labelledBy = ariaLabelledby || labelId;
-  const handleValueChange = useCallbackRef(onValueChange);
   const [value, setValue] = useControllableState({
     prop: valueProp,
     defaultProp: defaultValue,
+    onChange: onValueChange,
   });
 
   return (
-    <RadioGroupProvider
-      name={name}
-      value={value}
-      required={required}
-      onValueChange={React.useCallback(
-        composeEventHandlers(handleValueChange, (event) => setValue(event.target.value)),
-        [handleValueChange]
-      )}
-    >
+    <RadioGroupProvider name={name} value={value} required={required} onValueChange={setValue}>
       <RovingFocusGroup
         role="radiogroup"
         aria-labelledby={labelledBy}
@@ -103,7 +95,7 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 const ITEM_NAME = 'RadioGroupItem';
 
 type RadioGroupItemOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Radio>,
+  Omit<Polymorphic.OwnProps<typeof Radio>, 'onCheck'>,
   { value: string; name?: never }
 >;
 type RadioGroupItemPrimitive = Polymorphic.ForwardRefComponent<
@@ -127,16 +119,14 @@ const RadioGroupItem = React.forwardRef((props, forwardedRef) => {
         {...itemProps}
         name={context.name}
         ref={composedRefs}
-        onCheckedChange={composeEventHandlers(props.onCheckedChange, context.onValueChange)}
+        onCheck={() => context.onValueChange(itemProps.value)}
         onFocus={composeEventHandlers(itemProps.onFocus, () => {
           /**
            * Roving index will focus the radio and we need to check it when this happens.
            * We do this imperatively instead of updating `context.value` because changing via
            * state would not trigger change events (e.g. when in a form).
            */
-          if (context.value !== undefined) {
-            ref.current?.click();
-          }
+          if (context.value !== undefined) ref.current?.click();
         })}
       />
     </RovingFocusItem>
