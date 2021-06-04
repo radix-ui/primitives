@@ -88,7 +88,7 @@ export const WithinForm = () => {
       }}
     >
       <fieldset>
-        <legend>ooptional value: {data.optional}</legend>
+        <legend>optional value: {data.optional}</legend>
         <RadioGroup className={rootClass} name="optional">
           <RadioGroupItem className={itemClass} value="1">
             <RadioGroupIndicator className={indicatorClass} />
@@ -125,7 +125,7 @@ export const WithinForm = () => {
 
       <fieldset>
         <legend>stop propagation value: {data.stopprop}</legend>
-        <RadioGroup className={rootClass} name="stopprop" required>
+        <RadioGroup className={rootClass} name="stopprop">
           <RadioGroupItem
             className={itemClass}
             value="1"

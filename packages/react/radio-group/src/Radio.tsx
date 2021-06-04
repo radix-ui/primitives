@@ -2,7 +2,6 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useSize } from '@radix-ui/react-use-size';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { Presence } from '@radix-ui/react-presence';
@@ -24,6 +23,7 @@ type RadioOwnProps = Polymorphic.Merge<
   {
     checked?: boolean;
     required?: InputDOMProps['required'];
+    onCheck?(): void;
   }
 >;
 
@@ -42,6 +42,7 @@ const Radio = React.forwardRef((props, forwardedRef) => {
     required,
     disabled,
     value = 'on',
+    onCheck,
     ...radioProps
   } = props;
   const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
@@ -67,6 +68,8 @@ const Radio = React.forwardRef((props, forwardedRef) => {
         as={as}
         ref={composedRefs}
         onClick={composeEventHandlers(props.onClick, (event) => {
+          // radios cannot be unchecked so we only communicate a checked state
+          if (!checked) onCheck?.();
           if (isFormControl) {
             hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
             // if radio is in a form, stop propagation from the button so that we only propagate

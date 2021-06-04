@@ -95,7 +95,7 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 const ITEM_NAME = 'RadioGroupItem';
 
 type RadioGroupItemOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Radio>,
+  Omit<Polymorphic.OwnProps<typeof Radio>, 'onCheck'>,
   { value: string; name?: never }
 >;
 type RadioGroupItemPrimitive = Polymorphic.ForwardRefComponent<
@@ -119,7 +119,7 @@ const RadioGroupItem = React.forwardRef((props, forwardedRef) => {
         {...itemProps}
         name={context.name}
         ref={composedRefs}
-        onClick={composeEventHandlers(props.onClick, () => context.onValueChange(itemProps.value))}
+        onCheck={() => context.onValueChange(itemProps.value)}
         onFocus={composeEventHandlers(itemProps.onFocus, () => {
           /**
            * Roving index will focus the radio and we need to check it when this happens.
