@@ -172,6 +172,8 @@ const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
 type MenuContentContextValue = {
   onItemLeave(): void;
   searchRef: React.RefObject<string>;
+  onPointerGraceAreaChange(area: Triangle | null): void;
+  isMouseMovingToSubmenu(event: React.MouseEvent): boolean;
 };
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
@@ -410,6 +412,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const isPointerDownOutsideRef = React.useRef(false);
   const timerRef = React.useRef(0);
   const searchRef = React.useRef('');
+  const pointerGraceAreaRef = React.useRef<Triangle | null>(null);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -456,6 +459,13 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
             contentRef.current?.focus();
             setCurrentItemId(null);
           }, [])}
+          onPointerGraceAreaChange={React.useCallback(
+            (area) => (pointerGraceAreaRef.current = area),
+            []
+          )}
+          isMouseMovingToSubmenu={(event) =>
+            isMouseMovingToSubmenu(event, pointerGraceAreaRef.current)
+          }
         >
           <FocusScope
             as={Slot}
@@ -605,7 +615,10 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       disabled={disabled}
       // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
-      onMouseLeave={composeEventHandlers(props.onMouseLeave, () => contentContext.onItemLeave())}
+      onMouseLeave={composeEventHandlers(props.onMouseLeave, (event) => {
+        if (contentContext.isMouseMovingToSubmenu(event)) return;
+        contentContext.onItemLeave();
+      })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         const isTypingAhead = contentContext.searchRef.current !== '';
         if (disabled || (isTypingAhead && event.key === ' ')) return;
@@ -673,6 +686,7 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
          * wiggles. This is to match native menu implementation.
          */
         onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
+          if (contentContext.isMouseMovingToSubmenu(event)) return;
           if (!disabled) {
             const item = event.currentTarget;
             item.focus();
@@ -702,14 +716,23 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(SUB_TRIGGER_NAME);
   const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
   const openTimersRef = React.useRef<number[]>([]);
+  const { onPointerGraceAreaChange } = contentContext;
+  const pointerGraceDurationTimer = React.useRef(0);
 
   React.useEffect(() => {
-    const timers = openTimersRef.current;
+    const openTimers = openTimersRef.current;
     return () => {
-      timers.map(window.clearTimeout);
+      openTimers.map(window.clearTimeout);
       openTimersRef.current = [];
     };
   }, []);
+
+  React.useEffect(() => {
+    return () => {
+      window.clearTimeout(pointerGraceDurationTimer.current);
+      onPointerGraceAreaChange(null);
+    };
+  }, [onPointerGraceAreaChange]);
 
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
@@ -720,14 +743,31 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         data-state={getOpenState(context.open)}
         {...props}
         ref={composeRefs(forwardedRef, context.onTriggerChange)}
-        onMouseMove={composeEventHandlers(props.onMouseMove, () => {
+        onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
+          if (contentContext.isMouseMovingToSubmenu(event)) return;
           if (!props.disabled && !context.open) {
             openTimersRef.current.push(window.setTimeout(() => context.onOpenChange(true), 100));
           }
         })}
-        onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
+        onMouseLeave={composeEventHandlers(props.onMouseLeave, (event) => {
           openTimersRef.current.map(window.clearTimeout);
           openTimersRef.current = [];
+
+          const contentRect = context.content?.getBoundingClientRect();
+          if (contentRect) {
+            contentContext.onPointerGraceAreaChange([
+              { x: event.pageX, y: event.pageY },
+              { x: contentRect.left, y: contentRect.top },
+              { x: contentRect.left, y: contentRect.bottom },
+            ]);
+
+            pointerGraceDurationTimer.current = window.setTimeout(
+              () => contentContext.onPointerGraceAreaChange(null),
+              300
+            );
+          } else {
+            contentContext.onPointerGraceAreaChange(null);
+          }
         })}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
           const isTypingAhead = contentContext.searchRef.current !== '';
@@ -970,6 +1010,30 @@ function getNextMatch(values: string[], search: string, currentMatch?: string) {
     value.toLowerCase().startsWith(normalizedSearch.toLowerCase())
   );
   return nextMatch !== currentMatch ? nextMatch : undefined;
+}
+
+type Point = { x: number; y: number };
+type Triangle = [Point, Point, Point];
+
+function getTriangleArea(a: Point, b: Point, c: Point) {
+  return Math.abs((a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y)) / 2);
+}
+
+function isPointInTriangle(point: Point, a: Point, b: Point, c: Point) {
+  const A = getTriangleArea(a, b, c);
+  const A1 = getTriangleArea(point, b, c);
+  const A2 = getTriangleArea(a, point, c);
+  const A3 = getTriangleArea(a, b, point);
+  return A === A1 + A2 + A3;
+}
+
+function isMouseMovingToSubmenu(event: React.MouseEvent, triangle: Triangle | null) {
+  if (triangle) {
+    const cursorPos = { x: event.pageX, y: event.pageY };
+    const isCursorInTriangle = isPointInTriangle(cursorPos, ...triangle);
+    if (isCursorInTriangle) return true;
+  }
+  return false;
 }
 
 const Root = Menu;
