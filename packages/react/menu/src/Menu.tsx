@@ -717,13 +717,13 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(SUB_TRIGGER_NAME);
   const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
   const contentRectRef = React.useRef<ClientRect | undefined>();
-  const openTimerRef = React.useRef<number | undefined>(undefined);
+  const openTimerRef = React.useRef<number | null>(null);
   const { onPointerGraceAreaChange } = contentContext;
   const pointerGraceDurationTimer = React.useRef(0);
 
   const clearOpenTimer = React.useCallback(() => {
-    window.clearTimeout(openTimerRef.current);
-    openTimerRef.current = undefined;
+    if (openTimerRef.current) window.clearTimeout(openTimerRef.current);
+    openTimerRef.current = null;
   }, []);
 
   React.useEffect(() => clearOpenTimer, [clearOpenTimer]);
