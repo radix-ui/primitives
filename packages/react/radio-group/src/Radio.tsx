@@ -82,7 +82,7 @@ const Radio = React.forwardRef((props, forwardedRef) => {
       {isFormControl && (
         <BubbleInput
           control={button}
-          stoppedPropagation={hasConsumerStoppedPropagationRef.current}
+          bubbles={!hasConsumerStoppedPropagationRef.current}
           name={name}
           value={value}
           checked={checked}
@@ -146,11 +146,11 @@ RadioIndicator.displayName = INDICATOR_NAME;
 type BubbleInputProps = Omit<React.ComponentProps<'input'>, 'checked'> & {
   checked: boolean;
   control: HTMLElement | null;
-  stoppedPropagation: boolean;
+  bubbles: boolean;
 };
 
 const BubbleInput = (props: BubbleInputProps) => {
-  const { control, checked, stoppedPropagation, ...inputProps } = props;
+  const { control, checked, bubbles = true, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
   const controlSize = useSize(control);
@@ -161,16 +161,17 @@ const BubbleInput = (props: BubbleInputProps) => {
     const inputProto = window.HTMLInputElement.prototype;
     const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'checked') as PropertyDescriptor;
     const setChecked = descriptor.set;
-    if (!stoppedPropagation && prevChecked !== checked && setChecked) {
-      const event = new Event('click', { bubbles: true });
+    if (prevChecked !== checked && setChecked) {
+      const event = new Event('click', { bubbles });
       setChecked.call(input, checked);
       input.dispatchEvent(event);
     }
-  }, [prevChecked, checked, stoppedPropagation]);
+  }, [prevChecked, checked, bubbles]);
 
   return (
     <input
       type="radio"
+      defaultChecked={checked}
       {...inputProps}
       tabIndex={-1}
       ref={ref}

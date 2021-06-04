@@ -73,7 +73,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
       <Primitive
         type="button"
         role="checkbox"
-        aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
+        aria-checked={isIndeterminate(checked) ? 'mixed' : checked}
         aria-labelledby={labelledBy}
         aria-required={required}
         data-state={getState(checked)}
@@ -84,7 +84,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
         as={as}
         ref={composedRefs}
         onClick={composeEventHandlers(props.onClick, (event) => {
-          setChecked((prevChecked) => (prevChecked === 'indeterminate' ? true : !prevChecked));
+          setChecked((prevChecked) => (isIndeterminate(prevChecked) ? true : !prevChecked));
           if (isFormControl) {
             hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
             // if checkbox is in a form, stop propagation from the button so that we only propagate
@@ -97,7 +97,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
       {isFormControl && (
         <BubbleInput
           control={button}
-          stoppedPropagation={hasConsumerStoppedPropagationRef.current}
+          bubbles={!hasConsumerStoppedPropagationRef.current}
           name={name}
           value={value}
           checked={checked}
@@ -142,7 +142,7 @@ const CheckboxIndicator = React.forwardRef((props, forwardedRef) => {
   const { as = INDICATOR_DEFAULT_TAG, forceMount, ...indicatorProps } = props;
   const context = useCheckboxContext(INDICATOR_NAME);
   return (
-    <Presence present={forceMount || context.state === 'indeterminate' || context.state === true}>
+    <Presence present={forceMount || isIndeterminate(context.state) || context.state === true}>
       <Primitive
         data-state={getState(context.state)}
         data-disabled={context.disabled ? '' : undefined}
@@ -162,11 +162,11 @@ CheckboxIndicator.displayName = INDICATOR_NAME;
 type BubbleInputProps = Omit<React.ComponentProps<'input'>, 'checked'> & {
   checked: CheckedState;
   control: HTMLElement | null;
-  stoppedPropagation: boolean;
+  bubbles: boolean;
 };
 
 const BubbleInput = (props: BubbleInputProps) => {
-  const { control, checked, stoppedPropagation, ...inputProps } = props;
+  const { control, checked, bubbles = true, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
   const controlSize = useSize(control);
@@ -177,18 +177,19 @@ const BubbleInput = (props: BubbleInputProps) => {
     const inputProto = window.HTMLInputElement.prototype;
     const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'checked') as PropertyDescriptor;
     const setChecked = descriptor.set;
-    const isIndeterminate = checked === 'indeterminate';
-    if (!stoppedPropagation && prevChecked !== checked && setChecked) {
-      const event = new Event('click', { bubbles: true });
-      input.indeterminate = isIndeterminate;
-      setChecked.call(input, isIndeterminate ? false : checked);
+
+    if (prevChecked !== checked && setChecked) {
+      const event = new Event('click', { bubbles });
+      input.indeterminate = isIndeterminate(checked);
+      setChecked.call(input, isIndeterminate(checked) ? false : checked);
       input.dispatchEvent(event);
     }
-  }, [prevChecked, checked, stoppedPropagation]);
+  }, [prevChecked, checked, bubbles]);
 
   return (
     <input
       type="checkbox"
+      defaultChecked={isIndeterminate(checked) ? false : checked}
       {...inputProps}
       tabIndex={-1}
       ref={ref}
@@ -204,8 +205,12 @@ const BubbleInput = (props: BubbleInputProps) => {
   );
 };
 
+function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
+  return checked === 'indeterminate';
+}
+
 function getState(checked: CheckedState) {
-  return checked === 'indeterminate' ? 'indeterminate' : checked ? 'checked' : 'unchecked';
+  return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
 const Root = Checkbox;
