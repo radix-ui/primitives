@@ -701,6 +701,16 @@ type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(SUB_TRIGGER_NAME);
   const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
+  const openTimersRef = React.useRef<number[]>([]);
+
+  React.useEffect(() => {
+    const timers = openTimersRef.current;
+    return () => {
+      timers.map(window.clearTimeout);
+      openTimersRef.current = [];
+    };
+  }, []);
+
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
       <MenuItemImpl
@@ -711,7 +721,13 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         {...props}
         ref={composeRefs(forwardedRef, context.onTriggerChange)}
         onMouseMove={composeEventHandlers(props.onMouseMove, () => {
-          if (!props.disabled) context.onOpenChange(true);
+          if (!props.disabled && !context.open) {
+            openTimersRef.current.push(window.setTimeout(() => context.onOpenChange(true), 100));
+          }
+        })}
+        onMouseLeave={composeEventHandlers(props.onMouseLeave, () => {
+          openTimersRef.current.map(window.clearTimeout);
+          openTimersRef.current = [];
         })}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
           const isTypingAhead = contentContext.searchRef.current !== '';
