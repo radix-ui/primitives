@@ -170,10 +170,10 @@ const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
 >();
 
 type MenuContentContextValue = {
-  onItemLeave(): void;
+  onItemEnter(event: React.MouseEvent): void;
+  onItemLeave(event: React.MouseEvent): void;
   searchRef: React.RefObject<string>;
   onPointerGraceAreaChange(area: Triangle | null): void;
-  isMouseMovingToSubmenu(event: React.MouseEvent): boolean;
 };
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
@@ -455,17 +455,19 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
       <ScrollLockWrapper>
         <MenuContentProvider
           searchRef={searchRef}
-          onItemLeave={React.useCallback(() => {
-            contentRef.current?.focus();
-            setCurrentItemId(null);
+          onItemEnter={(event) => {
+            if (isPointerInGraceArea(event, pointerGraceAreaRef.current)) event.preventDefault();
+          }}
+          onItemLeave={React.useCallback((event) => {
+            if (!isPointerInGraceArea(event, pointerGraceAreaRef.current)) {
+              contentRef.current?.focus();
+              setCurrentItemId(null);
+            }
           }, [])}
           onPointerGraceAreaChange={React.useCallback(
             (area) => (pointerGraceAreaRef.current = area),
             []
           )}
-          isMouseMovingToSubmenu={(event) =>
-            isPointerInGraceArea(event, pointerGraceAreaRef.current)
-          }
         >
           <FocusScope
             as={Slot}
@@ -615,10 +617,7 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       disabled={disabled}
       // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
-      onMouseLeave={composeEventHandlers(props.onMouseLeave, (event) => {
-        if (contentContext.isMouseMovingToSubmenu(event)) return;
-        contentContext.onItemLeave();
-      })}
+      onMouseLeave={composeEventHandlers(props.onMouseLeave, contentContext.onItemLeave)}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         const isTypingAhead = contentContext.searchRef.current !== '';
         if (disabled || (isTypingAhead && event.key === ' ')) return;
@@ -686,12 +685,14 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
          * wiggles. This is to match native menu implementation.
          */
         onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
-          if (contentContext.isMouseMovingToSubmenu(event)) return;
-          if (!disabled) {
-            const item = event.currentTarget;
-            item.focus();
+          if (disabled) {
+            contentContext.onItemLeave(event);
           } else {
-            contentContext.onItemLeave();
+            contentContext.onItemEnter(event);
+            if (!event.defaultPrevented) {
+              const item = event.currentTarget;
+              item.focus();
+            }
           }
         })}
       />
@@ -744,7 +745,8 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         {...props}
         ref={composeRefs(forwardedRef, context.onTriggerChange)}
         onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
-          if (contentContext.isMouseMovingToSubmenu(event)) return;
+          contentContext.onItemEnter(event);
+          if (event.defaultPrevented) return;
           if (!props.disabled && !context.open && !openTimerRef.current) {
             openTimerRef.current = window.setTimeout(() => {
               context.onOpenChange(true);
