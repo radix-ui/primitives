@@ -97,7 +97,7 @@ const Checkbox = React.forwardRef((props, forwardedRef) => {
       {isFormControl && (
         <BubbleInput
           control={button}
-          stoppedPropagation={hasConsumerStoppedPropagationRef.current}
+          bubbles={!hasConsumerStoppedPropagationRef.current}
           name={name}
           value={value}
           checked={checked}
@@ -162,11 +162,11 @@ CheckboxIndicator.displayName = INDICATOR_NAME;
 type BubbleInputProps = Omit<React.ComponentProps<'input'>, 'checked'> & {
   checked: CheckedState;
   control: HTMLElement | null;
-  stoppedPropagation: boolean;
+  bubbles: boolean;
 };
 
 const BubbleInput = (props: BubbleInputProps) => {
-  const { control, checked, stoppedPropagation, ...inputProps } = props;
+  const { control, checked, bubbles = true, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
   const controlSize = useSize(control);
@@ -178,13 +178,13 @@ const BubbleInput = (props: BubbleInputProps) => {
     const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'checked') as PropertyDescriptor;
     const setChecked = descriptor.set;
     const isIndeterminate = checked === 'indeterminate';
-    if (!stoppedPropagation && prevChecked !== checked && setChecked) {
-      const event = new Event('click', { bubbles: true });
       input.indeterminate = isIndeterminate;
       setChecked.call(input, isIndeterminate ? false : checked);
+    if (prevChecked !== checked && setChecked) {
+      const event = new Event('click', { bubbles });
       input.dispatchEvent(event);
     }
-  }, [prevChecked, checked, stoppedPropagation]);
+  }, [prevChecked, checked, bubbles]);
 
   return (
     <input
