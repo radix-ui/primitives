@@ -54,6 +54,7 @@ type MenuContextValue = {
 type MenuSubContextValue = Omit<MenuContextValue, 'isSubmenu'> & {
   isSubmenu: true;
   contentId: string;
+  parentContent: MenuContentElement | null;
   trigger: MenuSubTriggerElement | null;
   onTriggerChange(trigger: MenuSubTriggerElement | null): void;
   onKeyOpen(): void;
@@ -133,6 +134,7 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
         onContentChange={setContent}
         onRootClose={parentMenuContext.onRootClose}
         contentId={useId()}
+        parentContent={parentMenuContext.content}
         trigger={trigger}
         onTriggerChange={setTrigger}
         onKeyOpen={React.useCallback(() => {
@@ -707,6 +709,7 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
           } else {
             // There's 100ms where the user may leave an item before the submenu was opened.
             contentContext.onPointerGraceAreaChange(null);
+            context.parentContent?.focus();
           }
         })}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
