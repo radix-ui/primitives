@@ -360,7 +360,6 @@ type MenuOwnProps = Omit<
   React.ComponentProps<typeof Menu> & React.ComponentProps<typeof MenuContent>,
   | 'portalled'
   | 'trapFocus'
-  | 'onOpenAutoFocus'
   | 'onCloseAutoFocus'
   | 'disableOutsidePointerEvents'
   | 'disableOutsideScroll'
@@ -376,7 +375,6 @@ const MenuWithAnchor: React.FC<MenuOwnProps> = (props) => {
         className={contentClass}
         portalled
         trapFocus={false}
-        onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}
         disableOutsidePointerEvents={false}
         disableOutsideScroll={false}

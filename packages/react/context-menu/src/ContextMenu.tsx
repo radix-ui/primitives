@@ -150,13 +150,7 @@ const CONTENT_NAME = 'ContextMenuContent';
 type ContextMenuContentOwnProps = Polymorphic.Merge<
   Omit<
     Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
-    | 'trapFocus'
-    | 'disableOutsideScroll'
-    | 'portalled'
-    | 'onOpenAutoFocus'
-    | 'side'
-    | 'sideOffset'
-    | 'align'
+    'trapFocus' | 'disableOutsideScroll' | 'portalled' | 'side' | 'sideOffset' | 'align'
   >,
   { offset?: number }
 >;
