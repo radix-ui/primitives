@@ -173,6 +173,7 @@ type MenuContentContextValue = {
   onItemEnter(event: React.MouseEvent): void;
   onItemLeave(event: React.MouseEvent): void;
   searchRef: React.RefObject<string>;
+  pointerGraceTimerRef: React.MutableRefObject<number>;
   onPointerGraceAreaChange(area: Triangle | null): void;
 };
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
@@ -412,6 +413,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const isPointerDownOutsideRef = React.useRef(false);
   const timerRef = React.useRef(0);
   const searchRef = React.useRef('');
+  const pointerGraceTimerRef = React.useRef(0);
   const pointerGraceAreaRef = React.useRef<Triangle | null>(null);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
@@ -464,10 +466,10 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
               setCurrentItemId(null);
             }
           }, [])}
-          onPointerGraceAreaChange={React.useCallback(
-            (area) => (pointerGraceAreaRef.current = area),
-            []
-          )}
+          pointerGraceTimerRef={pointerGraceTimerRef}
+          onPointerGraceAreaChange={React.useCallback((area) => {
+            pointerGraceAreaRef.current = area;
+          }, [])}
         >
           <FocusScope
             as={Slot}
@@ -650,8 +652,7 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(SUB_TRIGGER_NAME);
   const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
   const openTimerRef = React.useRef<number | null>(null);
-  const { onPointerGraceAreaChange } = contentContext;
-  const pointerGraceDurationTimer = React.useRef(0);
+  const { pointerGraceTimerRef, onPointerGraceAreaChange } = contentContext;
 
   const clearOpenTimer = React.useCallback(() => {
     if (openTimerRef.current) window.clearTimeout(openTimerRef.current);
@@ -661,11 +662,12 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   React.useEffect(() => clearOpenTimer, [clearOpenTimer]);
 
   React.useEffect(() => {
+    const pointerGraceTimer = pointerGraceTimerRef.current;
     return () => {
-      window.clearTimeout(pointerGraceDurationTimer.current);
+      window.clearTimeout(pointerGraceTimer);
       onPointerGraceAreaChange(null);
     };
-  }, [onPointerGraceAreaChange]);
+  }, [pointerGraceTimerRef, onPointerGraceAreaChange]);
 
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
@@ -700,7 +702,8 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
               { x: contentEdge, y: contentRect.bottom },
             ]);
 
-            pointerGraceDurationTimer.current = window.setTimeout(
+            window.clearTimeout(pointerGraceTimerRef.current);
+            pointerGraceTimerRef.current = window.setTimeout(
               () => contentContext.onPointerGraceAreaChange(null),
               300
             );
