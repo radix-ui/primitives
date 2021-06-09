@@ -17,7 +17,8 @@ export const Basic = () => {
       {trapped ? (
         <FocusScope
           as="form"
-          trapped={trapped}
+          wrapped={trapped}
+          contained={trapped}
           style={{
             display: 'inline-flex',
             flexDirection: 'column',
@@ -57,7 +58,8 @@ export const Multiple = () => {
       {trapped1 ? (
         <FocusScope
           as="form"
-          trapped={trapped1}
+          wrapped={trapped1}
+          contained={trapped1}
           style={{
             display: 'inline-flex',
             flexDirection: 'column',
@@ -85,7 +87,8 @@ export const Multiple = () => {
       {trapped2 ? (
         <FocusScope
           as="form"
-          trapped={trapped2}
+          wrapped={trapped2}
+          contained={trapped2}
           style={{
             display: 'inline-flex',
             flexDirection: 'column',
@@ -208,7 +211,8 @@ export const WithOptions = () => {
         <FocusScope
           key="form"
           as="form"
-          trapped={trapFocus}
+          wrapped={trapFocus}
+          contained={trapFocus}
           onMountAutoFocus={(event) => {
             if (focusOnMount !== true) {
               event.preventDefault();

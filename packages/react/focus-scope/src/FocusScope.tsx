@@ -21,10 +21,16 @@ type FocusScopeOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
-     * Whether focus should be trapped within the FocusScope
+     * Whether focus should wrap around the `FocusScope`.
      * (default: false)
      */
-    trapped?: boolean;
+    wrapped?: boolean;
+
+    /**
+     * Whether focus should be contained inside the `FocusScope`.
+     * (default: false)
+     */
+    contained?: boolean;
 
     /**
      * Event handler called when auto-focusing on mount.
@@ -47,7 +53,8 @@ type FocusScopePrimitive = Polymorphic.ForwardRefComponent<
 
 const FocusScope = React.forwardRef((props, forwardedRef) => {
   const {
-    trapped = false,
+    wrapped = false,
+    contained = false,
     onMountAutoFocus: onMountAutoFocusProp,
     onUnmountAutoFocus: onUnmountAutoFocusProp,
     ...scopeProps
@@ -57,9 +64,6 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
   const onUnmountAutoFocus = useCallbackRef(onUnmountAutoFocusProp);
   const lastFocusedElementRef = React.useRef<HTMLElement | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setContainer(node));
-
-  const wrapped = trapped;
-  const contained = trapped;
 
   const focusScope = React.useRef({
     paused: false,
