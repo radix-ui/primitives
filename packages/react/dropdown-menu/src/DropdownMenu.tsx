@@ -183,9 +183,6 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
 
   const commonProps = {
     ...contentProps,
-    disableOutsidePointerEvents,
-    disableOutsideScroll,
-    portalled,
     style: {
       ...contentProps.style,
       // re-namespace exposed content custom property
@@ -201,6 +198,9 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
           aria-labelledby={context.triggerId}
           {...commonProps}
           ref={forwardedRef}
+          disableOutsidePointerEvents={disableOutsidePointerEvents}
+          disableOutsideScroll={disableOutsideScroll}
+          portalled={portalled}
           trapFocus
           onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
             event.preventDefault();
@@ -227,25 +227,6 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
 
 DropdownMenuContent.displayName = CONTENT_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * DropdownMenuTriggerItem
- * -----------------------------------------------------------------------------------------------*/
-
-const TRIGGER_ITEM_NAME = 'DropdownMenuTriggerItem';
-
-type DropdownMenuTriggerItemOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.SubTrigger>;
-type DropdownMenuTriggerItemPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuPrimitive.SubTrigger>,
-  DropdownMenuTriggerItemOwnProps
->;
-
-const DropdownMenuTriggerItem = React.forwardRef((props, forwardedRef) => {
-  const context = useDropdownMenuContext(TRIGGER_ITEM_NAME);
-  return context.isRootMenu ? null : <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} />;
-}) as DropdownMenuTriggerItemPrimitive;
-
-DropdownMenuTriggerItem.displayName = TRIGGER_ITEM_NAME;
-
 /* ---------------------------------------------------------------------------------------------- */
 
 const DropdownMenuGroup = extendPrimitive(MenuPrimitive.Group, {
@@ -253,6 +234,9 @@ const DropdownMenuGroup = extendPrimitive(MenuPrimitive.Group, {
 });
 const DropdownMenuLabel = extendPrimitive(MenuPrimitive.Label, {
   displayName: 'DropdownMenuLabel',
+});
+const DropdownMenuTriggerItem = extendPrimitive(MenuPrimitive.SubTrigger, {
+  displayName: 'DropdownMenuTriggerItem',
 });
 const DropdownMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'DropdownMenuItem' });
 const DropdownMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
@@ -319,8 +303,4 @@ export {
   Separator,
   Arrow,
 };
-export type {
-  DropdownMenuTriggerPrimitive,
-  DropdownMenuContentPrimitive,
-  DropdownMenuTriggerItemPrimitive,
-};
+export type { DropdownMenuTriggerPrimitive, DropdownMenuContentPrimitive };
