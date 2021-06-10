@@ -17,7 +17,7 @@ type Point = { x: number; y: number };
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
 type ContextMenuContextValue = {
-  isSubmenu: boolean;
+  isRootMenu: boolean;
   open: boolean;
   onOpenChange(open: boolean): void;
 };
@@ -46,13 +46,13 @@ const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
   );
 
   return isInsideContent ? (
-    <ContextMenuProvider isSubmenu={true} open={open} onOpenChange={handleOpenChange}>
+    <ContextMenuProvider isRootMenu={false} open={open} onOpenChange={handleOpenChange}>
       <MenuPrimitive.Sub open={open} onOpenChange={handleOpenChange}>
         {children}
       </MenuPrimitive.Sub>
     </ContextMenuProvider>
   ) : (
-    <ContextMenuProvider isSubmenu={false} open={open} onOpenChange={handleOpenChange}>
+    <ContextMenuProvider isRootMenu={true} open={open} onOpenChange={handleOpenChange}>
       <MenuPrimitive.Root dir={dir} open={open} onOpenChange={handleOpenChange}>
         {children}
       </MenuPrimitive.Root>
@@ -135,6 +135,7 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
 
   const commonProps = {
     ...contentProps,
+    disableOutsidePointerEvents,
     sideOffset: offset,
     style: {
       ...props.style,
@@ -145,9 +146,7 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
 
   return (
     <ContentContext.Provider value={true}>
-      {context.isSubmenu ? (
-        <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
-      ) : (
+      {context.isRootMenu ? (
         <MenuPrimitive.Content
           {...commonProps}
           ref={forwardedRef}
@@ -159,6 +158,8 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
           align="start"
           alignOffset={2}
         />
+      ) : (
+        <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
       )}
     </ContentContext.Provider>
   );
@@ -180,7 +181,7 @@ type ContextMenuTriggerItemPrimitive = Polymorphic.ForwardRefComponent<
 
 const ContextMenuTriggerItem = React.forwardRef((props, forwardedRef) => {
   const context = useContextMenuContext(TRIGGER_ITEM_NAME);
-  return context.isSubmenu ? <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} /> : null;
+  return context.isRootMenu ? null : <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} />;
 }) as ContextMenuTriggerItemPrimitive;
 
 ContextMenuTriggerItem.displayName = TRIGGER_ITEM_NAME;
