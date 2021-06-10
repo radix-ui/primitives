@@ -22,12 +22,17 @@ type FocusScopeOwnProps = Polymorphic.Merge<
   {
     /**
      * Whether focus should wrap around the `FocusScope`.
+     * If `true`, tabbing out of the last tabbable element inside `FocusScope`
+     * will focus the first tabbable element inside and vice-versa.
      * (default: false)
      */
     wrapped?: boolean;
 
     /**
      * Whether focus should be contained inside the `FocusScope`.
+     * If `true`, tabbing out of the last tabbable element inside `FocusScope`
+     * will do nothing. Also, when moving focus programatically outside of it, focus will
+     * be brought back in.
      * (default: false)
      */
     contained?: boolean;
