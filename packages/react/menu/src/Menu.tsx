@@ -80,13 +80,13 @@ const Menu: React.FC<MenuOwnProps> = (props) => {
   React.useEffect(() => {
     const handleKeyDown = () => (isUsingKeyboardRef.current = true);
     const handlePointer = () => (isUsingKeyboardRef.current = false);
-    document.addEventListener('keydown', handleKeyDown, { capture: true });
-    document.addEventListener('pointerdown', handlePointer, { capture: true });
-    document.addEventListener('pointermove', handlePointer, { capture: true });
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('pointerdown', handlePointer);
+    document.addEventListener('pointermove', handlePointer);
     return () => {
-      document.removeEventListener('keydown', handleKeyDown, { capture: true });
-      document.removeEventListener('pointerdown', handlePointer, { capture: true });
-      document.removeEventListener('pointermove', handlePointer, { capture: true });
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('pointerdown', handlePointer);
+      document.removeEventListener('pointermove', handlePointer);
     };
   }, []);
 
