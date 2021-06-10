@@ -135,7 +135,6 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
 
   const commonProps = {
     ...contentProps,
-    disableOutsidePointerEvents,
     sideOffset: offset,
     style: {
       ...props.style,
@@ -167,29 +166,13 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
 
 ContextMenuContent.displayName = CONTENT_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuTriggerItem
- * -----------------------------------------------------------------------------------------------*/
-
-const TRIGGER_ITEM_NAME = 'ContextMenuTriggerItem';
-
-type ContextMenuTriggerItemOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.SubTrigger>;
-type ContextMenuTriggerItemPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuPrimitive.SubTrigger>,
-  ContextMenuTriggerItemOwnProps
->;
-
-const ContextMenuTriggerItem = React.forwardRef((props, forwardedRef) => {
-  const context = useContextMenuContext(TRIGGER_ITEM_NAME);
-  return context.isRootMenu ? null : <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} />;
-}) as ContextMenuTriggerItemPrimitive;
-
-ContextMenuTriggerItem.displayName = TRIGGER_ITEM_NAME;
-
 /* ---------------------------------------------------------------------------------------------- */
 
 const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, { displayName: 'ContextMenuGroup' });
 const ContextMenuLabel = extendPrimitive(MenuPrimitive.Label, { displayName: 'ContextMenuLabel' });
+const ContextMenuTriggerItem = extendPrimitive(MenuPrimitive.SubTrigger, {
+  displayName: 'ContextMenuTriggerItem',
+});
 const ContextMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'ContextMenuItem' });
 const ContextMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
   displayName: 'ContextMenuCheckboxItem',
@@ -255,8 +238,4 @@ export {
   Separator,
   Arrow,
 };
-export type {
-  ContextMenuTriggerPrimitive,
-  ContextMenuContentPrimitive,
-  ContextMenuTriggerItemPrimitive,
-};
+export type { ContextMenuTriggerPrimitive, ContextMenuContentPrimitive };
