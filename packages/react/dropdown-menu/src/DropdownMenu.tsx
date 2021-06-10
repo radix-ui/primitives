@@ -173,21 +173,11 @@ type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
-  const {
-    disableOutsidePointerEvents = true,
-    disableOutsideScroll = true,
-    portalled = true,
-    ...contentProps
-  } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
-
   const commonProps = {
-    ...contentProps,
-    disableOutsidePointerEvents,
-    disableOutsideScroll,
-    portalled,
+    ...props,
     style: {
-      ...contentProps.style,
+      ...props.style,
       // re-namespace exposed content custom property
       ['--radix-dropdown-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
     },
@@ -196,28 +186,7 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
   return (
     <ContentContext.Provider value={true}>
       {context.isRootMenu ? (
-        <MenuPrimitive.Content
-          id={context.contentId}
-          aria-labelledby={context.triggerId}
-          {...commonProps}
-          ref={forwardedRef}
-          trapFocus
-          onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-            event.preventDefault();
-            context.triggerRef.current?.focus();
-          })}
-          onPointerDownOutside={composeEventHandlers(
-            props.onPointerDownOutside,
-            (event) => {
-              const target = event.target as HTMLElement;
-              const targetIsTrigger = context.triggerRef.current?.contains(target);
-              // prevent dismissing when clicking the trigger
-              // as it's already setup to close, otherwise it would close and immediately open.
-              if (targetIsTrigger) event.preventDefault();
-            },
-            { checkForDefaultPrevented: false }
-          )}
-        />
+        <DropdownMenuRootContent {...commonProps} ref={forwardedRef} />
       ) : (
         <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
       )}
@@ -227,24 +196,51 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
 
 DropdownMenuContent.displayName = CONTENT_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * DropdownMenuTriggerItem
- * -----------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
-const TRIGGER_ITEM_NAME = 'DropdownMenuTriggerItem';
-
-type DropdownMenuTriggerItemOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.SubTrigger>;
-type DropdownMenuTriggerItemPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuPrimitive.SubTrigger>,
-  DropdownMenuTriggerItemOwnProps
+type DropdownMenuRootContentOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Content>;
+type DropdownMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Content>,
+  DropdownMenuRootContentOwnProps
 >;
 
-const DropdownMenuTriggerItem = React.forwardRef((props, forwardedRef) => {
-  const context = useDropdownMenuContext(TRIGGER_ITEM_NAME);
-  return context.isRootMenu ? null : <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} />;
-}) as DropdownMenuTriggerItemPrimitive;
+const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
+  const {
+    disableOutsidePointerEvents = true,
+    disableOutsideScroll = true,
+    portalled = true,
+    ...contentProps
+  } = props;
+  const context = useDropdownMenuContext(CONTENT_NAME);
 
-DropdownMenuTriggerItem.displayName = TRIGGER_ITEM_NAME;
+  return context.isRootMenu ? (
+    <MenuPrimitive.Content
+      id={context.contentId}
+      aria-labelledby={context.triggerId}
+      {...contentProps}
+      ref={forwardedRef}
+      disableOutsidePointerEvents={disableOutsidePointerEvents}
+      disableOutsideScroll={disableOutsideScroll}
+      portalled={portalled}
+      trapFocus
+      onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+        event.preventDefault();
+        context.triggerRef.current?.focus();
+      })}
+      onPointerDownOutside={composeEventHandlers(
+        props.onPointerDownOutside,
+        (event) => {
+          const target = event.target as HTMLElement;
+          const targetIsTrigger = context.triggerRef.current?.contains(target);
+          // prevent dismissing when clicking the trigger
+          // as it's already setup to close, otherwise it would close and immediately open.
+          if (targetIsTrigger) event.preventDefault();
+        },
+        { checkForDefaultPrevented: false }
+      )}
+    />
+  ) : null;
+}) as DropdownMenuRootContentPrimitive;
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -253,6 +249,9 @@ const DropdownMenuGroup = extendPrimitive(MenuPrimitive.Group, {
 });
 const DropdownMenuLabel = extendPrimitive(MenuPrimitive.Label, {
   displayName: 'DropdownMenuLabel',
+});
+const DropdownMenuTriggerItem = extendPrimitive(MenuPrimitive.SubTrigger, {
+  displayName: 'DropdownMenuTriggerItem',
 });
 const DropdownMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'DropdownMenuItem' });
 const DropdownMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
@@ -319,8 +318,4 @@ export {
   Separator,
   Arrow,
 };
-export type {
-  DropdownMenuTriggerPrimitive,
-  DropdownMenuContentPrimitive,
-  DropdownMenuTriggerItemPrimitive,
-};
+export type { DropdownMenuTriggerPrimitive, DropdownMenuContentPrimitive };

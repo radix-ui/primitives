@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContext } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
@@ -18,45 +17,24 @@ type Point = { x: number; y: number };
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
 type ContextMenuContextValue = {
+  isRootMenu: boolean;
   open: boolean;
   onOpenChange(open: boolean): void;
 };
 
-const SubmenuContext = React.createContext(false);
-const InsideContentContext = React.createContext(false);
 const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuContextValue>(
   CONTEXT_MENU_NAME
 );
 
-type ContextMenuOwnProps = React.ComponentProps<typeof ContextMenuImpl>;
-
-const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
-  const isInsideContent = React.useContext(InsideContentContext);
-  return (
-    // if we're inside content then we can assume this is a submenu
-    <SubmenuContext.Provider value={isInsideContent}>
-      <ContextMenuImpl {...props} />
-    </SubmenuContext.Provider>
-  );
-};
-
-type ContextMenuImplOwnProps = ContextMenuRootOwnProps | ContextMenuSubOwnProps;
-
-const ContextMenuImpl: React.FC<ContextMenuImplOwnProps> = (props) => {
-  const isSubmenu = React.useContext(SubmenuContext);
-  return isSubmenu ? <ContextMenuSub {...props} /> : <ContextMenuRoot {...props} />;
-};
-
-/* -----------------------------------------------------------------------------------------------*/
-
-type ContextMenuRootOwnProps = {
+type ContextMenuOwnProps = {
   onOpenChange?(open: boolean): void;
   dir?: Direction;
 };
 
-const ContextMenuRoot: React.FC<ContextMenuRootOwnProps> = (props) => {
+const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
   const { children, onOpenChange, dir } = props;
   const [open, setOpen] = React.useState(false);
+  const isInsideContent = React.useContext(ContentContext);
   const handleOpenChangeProp = useCallbackRef(onOpenChange);
 
   const handleOpenChange = React.useCallback(
@@ -67,35 +45,18 @@ const ContextMenuRoot: React.FC<ContextMenuRootOwnProps> = (props) => {
     [handleOpenChangeProp]
   );
 
-  return (
-    <MenuPrimitive.Root open={open} onOpenChange={handleOpenChange} dir={dir}>
-      <ContextMenuProvider open={open} onOpenChange={handleOpenChange}>
+  return isInsideContent ? (
+    <ContextMenuProvider isRootMenu={false} open={open} onOpenChange={handleOpenChange}>
+      <MenuPrimitive.Sub open={open} onOpenChange={handleOpenChange}>
         {children}
-      </ContextMenuProvider>
-    </MenuPrimitive.Root>
-  );
-};
-
-/* -----------------------------------------------------------------------------------------------*/
-
-type ContextMenuSubOwnProps = {
-  open?: boolean;
-  onOpenChange?(open: boolean): void;
-  defaultOpen?: boolean;
-};
-
-const ContextMenuSub: React.FC<ContextMenuSubOwnProps> = (props) => {
-  const { children, open: openProp, defaultOpen, onOpenChange } = props;
-  const [open = false, setOpen] = useControllableState({
-    prop: openProp,
-    defaultProp: defaultOpen,
-    onChange: onOpenChange,
-  });
-
-  return (
-    <MenuPrimitive.Sub open={open} onOpenChange={setOpen}>
-      {children}
-    </MenuPrimitive.Sub>
+      </MenuPrimitive.Sub>
+    </ContextMenuProvider>
+  ) : (
+    <ContextMenuProvider isRootMenu={true} open={open} onOpenChange={handleOpenChange}>
+      <MenuPrimitive.Root dir={dir} open={open} onOpenChange={handleOpenChange}>
+        {children}
+      </MenuPrimitive.Root>
+    </ContextMenuProvider>
   );
 };
 
@@ -123,7 +84,7 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
   });
 
   return (
-    <InsideContentContext.Provider value={false}>
+    <ContentContext.Provider value={false}>
       <MenuPrimitive.Anchor virtualRef={virtualRef} />
       <Primitive
         {...triggerProps}
@@ -135,7 +96,7 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
           context.onOpenChange(true);
         })}
       />
-    </InsideContentContext.Provider>
+    </ContentContext.Provider>
   );
 }) as ContextMenuTriggerPrimitive;
 
@@ -146,6 +107,8 @@ ContextMenuTrigger.displayName = TRIGGER_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const CONTENT_NAME = 'ContextMenuContent';
+
+const ContentContext = React.createContext(false);
 
 type ContextMenuContentOwnProps = Polymorphic.Merge<
   Omit<
@@ -167,8 +130,7 @@ type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
-  const { disableOutsidePointerEvents = true, offset, ...contentProps } = props;
-  const isSubmenu = React.useContext(SubmenuContext);
+  const { offset, ...contentProps } = props;
   const context = useContextMenuContext(CONTENT_NAME);
 
   const commonProps = {
@@ -182,51 +144,51 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
   };
 
   return (
-    <InsideContentContext.Provider value={true}>
-      {isSubmenu ? (
-        <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
+    <ContentContext.Provider value={true}>
+      {context.isRootMenu ? (
+        <ContextMenuRootContent {...commonProps} ref={forwardedRef} />
       ) : (
-        <MenuPrimitive.Content
-          {...commonProps}
-          ref={forwardedRef}
-          disableOutsidePointerEvents={context.open ? disableOutsidePointerEvents : false}
-          trapFocus
-          disableOutsideScroll
-          portalled
-          side="bottom"
-          align="start"
-          alignOffset={2}
-        />
+        <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
       )}
-    </InsideContentContext.Provider>
+    </ContentContext.Provider>
   );
 }) as ContextMenuContentPrimitive;
 
 ContextMenuContent.displayName = CONTENT_NAME;
 
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuTriggerItem
- * -----------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- */
 
-const TRIGGER_ITEM_NAME = 'ContextMenuTriggerItem';
-
-type ContextMenuTriggerItemOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.SubTrigger>;
-type ContextMenuTriggerItemPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuPrimitive.SubTrigger>,
-  ContextMenuTriggerItemOwnProps
+type ContextMenuRootContentOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Content>;
+type ContextMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Content>,
+  ContextMenuRootContentOwnProps
 >;
 
-const ContextMenuTriggerItem = React.forwardRef((props, forwardedRef) => {
-  const isSubmenu = React.useContext(SubmenuContext);
-  return isSubmenu ? <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} /> : null;
-}) as ContextMenuTriggerItemPrimitive;
-
-ContextMenuTriggerItem.displayName = TRIGGER_ITEM_NAME;
+const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
+  const { disableOutsidePointerEvents = true, ...contentProps } = props;
+  const context = useContextMenuContext(CONTENT_NAME);
+  return (
+    <MenuPrimitive.Content
+      {...contentProps}
+      ref={forwardedRef}
+      disableOutsidePointerEvents={context.open ? disableOutsidePointerEvents : false}
+      trapFocus
+      disableOutsideScroll
+      portalled
+      side="bottom"
+      align="start"
+      alignOffset={2}
+    />
+  );
+}) as ContextMenuRootContentPrimitive;
 
 /* ---------------------------------------------------------------------------------------------- */
 
 const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, { displayName: 'ContextMenuGroup' });
 const ContextMenuLabel = extendPrimitive(MenuPrimitive.Label, { displayName: 'ContextMenuLabel' });
+const ContextMenuTriggerItem = extendPrimitive(MenuPrimitive.SubTrigger, {
+  displayName: 'ContextMenuTriggerItem',
+});
 const ContextMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'ContextMenuItem' });
 const ContextMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
   displayName: 'ContextMenuCheckboxItem',
@@ -292,8 +254,4 @@ export {
   Separator,
   Arrow,
 };
-export type {
-  ContextMenuTriggerPrimitive,
-  ContextMenuContentPrimitive,
-  ContextMenuTriggerItemPrimitive,
-};
+export type { ContextMenuTriggerPrimitive, ContextMenuContentPrimitive };
