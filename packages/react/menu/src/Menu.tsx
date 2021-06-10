@@ -43,7 +43,7 @@ const MENU_NAME = 'Menu';
 
 type MenuRootContextValue = {
   isSubmenu: false;
-  isKeyboardUser: boolean;
+  isUsingKeyboardRef: React.RefObject<boolean>;
   dir: Direction;
   open: boolean;
   onOpenChange(open: boolean): void;
@@ -73,18 +73,18 @@ type MenuOwnProps = {
 const Menu: React.FC<MenuOwnProps> = (props) => {
   const { open = false, children, onOpenChange } = props;
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
-  const [isKeyboardUser, setIsKeyboardUser] = React.useState(false);
+  const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
   const computedDirection = useDirection(content, props.dir);
 
   React.useEffect(() => {
-    const handleKeyDown = () => setIsKeyboardUser(true);
-    const handleMouseMove = () => setIsKeyboardUser(false);
+    const handleKeyDown = () => (isUsingKeyboardRef.current = true);
+    const handlePointerMove = () => (isUsingKeyboardRef.current = false);
     document.addEventListener('keydown', handleKeyDown, { capture: true });
-    document.addEventListener('mousemove', handleMouseMove, { capture: true });
+    document.addEventListener('pointermove', handlePointerMove, { capture: true });
     return () => {
       document.removeEventListener('keydown', handleKeyDown, { capture: true });
-      document.removeEventListener('mousemove', handleMouseMove, { capture: true });
+      document.removeEventListener('pointermove', handlePointerMove, { capture: true });
     };
   }, []);
 
@@ -92,7 +92,7 @@ const Menu: React.FC<MenuOwnProps> = (props) => {
     <PopperPrimitive.Root>
       <MenuProvider
         isSubmenu={false}
-        isKeyboardUser={isKeyboardUser}
+        isUsingKeyboardRef={isUsingKeyboardRef}
         dir={computedDirection}
         open={open}
         onOpenChange={handleOpenChange}
@@ -134,7 +134,7 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
     <PopperPrimitive.Root>
       <MenuProvider
         isSubmenu={true}
-        isKeyboardUser={parentMenuContext.isKeyboardUser}
+        isUsingKeyboardRef={parentMenuContext.isUsingKeyboardRef}
         dir={parentMenuContext.dir}
         open={open}
         onOpenChange={handleOpenChange}
@@ -279,7 +279,7 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
       trapFocus={false}
       onOpenAutoFocus={(event) => {
         // when opening a submenu, focus content for keyboard users only
-        if (context.isKeyboardUser) ref.current?.focus();
+        if (context.isUsingKeyboardRef.current) ref.current?.focus();
         event.preventDefault();
       }}
       // The menu might close because of focusing another menu item in the parent menu. We
@@ -510,7 +510,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                 onCurrentTabStopIdChange={setCurrentItemId}
                 onEntryFocus={(event) => {
                   // only focus first item when using keyboard
-                  if (!context.isKeyboardUser) event.preventDefault();
+                  if (!context.isUsingKeyboardRef.current) event.preventDefault();
                 }}
               >
                 <PopperPrimitive.Content
