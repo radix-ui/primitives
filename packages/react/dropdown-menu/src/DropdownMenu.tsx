@@ -18,7 +18,7 @@ type Direction = 'ltr' | 'rtl';
 const DROPDOWN_MENU_NAME = 'DropdownMenu';
 
 type DropdownMenuContextValue = {
-  isSubmenu: false;
+  isRootMenu: true;
   triggerId: string;
   triggerRef: React.RefObject<HTMLButtonElement>;
   contentId: string;
@@ -28,7 +28,7 @@ type DropdownMenuContextValue = {
 };
 
 type DropdownMenuSubContextValue = {
-  isSubmenu: true;
+  isRootMenu: false;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
@@ -58,7 +58,7 @@ const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
 
   return isInsideContent ? (
     <DropdownMenuProvider
-      isSubmenu={true}
+      isRootMenu={false}
       open={open}
       onOpenChange={setOpen}
       onOpenToggle={handleOpenToggle}
@@ -90,7 +90,7 @@ const DropdownMenuRoot: React.FC<DropdownMenuRootOwnProps> = (props) => {
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   return (
     <DropdownMenuProvider
-      isSubmenu={false}
+      isRootMenu={true}
       triggerId={useId()}
       triggerRef={triggerRef}
       contentId={useId()}
@@ -124,7 +124,7 @@ type DropdownMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
 const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
   const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
   const context = useDropdownMenuContext(TRIGGER_NAME);
-  return context.isSubmenu ? null : (
+  return context.isRootMenu ? (
     <MenuPrimitive.Anchor
       type="button"
       id={context.triggerId}
@@ -149,7 +149,7 @@ const DropdownMenuTrigger = React.forwardRef((props, forwardedRef) => {
         }
       })}
     />
-  );
+  ) : null;
 }) as DropdownMenuTriggerPrimitive;
 
 DropdownMenuTrigger.displayName = TRIGGER_NAME;
@@ -174,40 +174,35 @@ type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 
 const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
   const {
-    onCloseAutoFocus,
     disableOutsidePointerEvents = true,
     disableOutsideScroll = true,
     portalled = true,
     ...contentProps
   } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
+
+  const commonProps = {
+    ...contentProps,
+    disableOutsidePointerEvents,
+    disableOutsideScroll,
+    portalled,
+    style: {
+      ...contentProps.style,
+      // re-namespace exposed content custom property
+      ['--radix-dropdown-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
+    },
+  };
+
   return (
     <ContentContext.Provider value={true}>
-      {context.isSubmenu ? (
-        <MenuPrimitive.Content
-          {...contentProps}
-          ref={forwardedRef}
-          disableOutsidePointerEvents={disableOutsidePointerEvents}
-          disableOutsideScroll={disableOutsideScroll}
-          portalled={portalled}
-          onCloseAutoFocus={onCloseAutoFocus}
-        />
-      ) : (
+      {context.isRootMenu ? (
         <MenuPrimitive.Content
           id={context.contentId}
           aria-labelledby={context.triggerId}
-          {...contentProps}
+          {...commonProps}
           ref={forwardedRef}
-          disableOutsidePointerEvents={disableOutsidePointerEvents}
-          disableOutsideScroll={disableOutsideScroll}
-          portalled={portalled}
-          style={{
-            ...props.style,
-            // re-namespace exposed content custom property
-            ['--radix-dropdown-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
-          }}
           trapFocus
-          onCloseAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+          onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
             event.preventDefault();
             context.triggerRef.current?.focus();
           })}
@@ -223,6 +218,8 @@ const DropdownMenuContent = React.forwardRef((props, forwardedRef) => {
             { checkForDefaultPrevented: false }
           )}
         />
+      ) : (
+        <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
       )}
     </ContentContext.Provider>
   );
@@ -244,7 +241,7 @@ type DropdownMenuTriggerItemPrimitive = Polymorphic.ForwardRefComponent<
 
 const DropdownMenuTriggerItem = React.forwardRef((props, forwardedRef) => {
   const context = useDropdownMenuContext(TRIGGER_ITEM_NAME);
-  return context.isSubmenu ? <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} /> : null;
+  return context.isRootMenu ? null : <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} />;
 }) as DropdownMenuTriggerItemPrimitive;
 
 DropdownMenuTriggerItem.displayName = TRIGGER_ITEM_NAME;
