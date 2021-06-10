@@ -13,7 +13,6 @@ import {
   MenuRadioItem,
   MenuItemIndicator,
   MenuSeparator,
-  MenuArrow,
 } from './Menu';
 import { css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
@@ -99,6 +98,15 @@ export const Submenus = () => {
             </MenuItem>
             <MenuItem className={itemClass} onSelect={() => window.alert('three')}>
               Three
+            </MenuItem>
+            <MenuItem className={itemClass} onSelect={() => window.alert('four')}>
+              Four
+            </MenuItem>
+            <MenuItem className={itemClass} onSelect={() => window.alert('five')}>
+              Five
+            </MenuItem>
+            <MenuItem className={itemClass} onSelect={() => window.alert('six')}>
+              Six
             </MenuItem>
           </Submenu>
           <Submenu heading="Sub Menu" open={open3} onOpenChange={setOpen3} animated={animated}>
@@ -406,13 +414,8 @@ const Submenu: React.FC<
       <MenuSubTrigger className={subTriggerClass} disabled={disabled}>
         {heading} →
       </MenuSubTrigger>
-      <MenuContent
-        className={animated ? animatedContentClass : contentClass}
-        sideOffset={12}
-        {...contentProps}
-      >
+      <MenuContent className={animated ? animatedContentClass : contentClass} {...contentProps}>
         {children}
-        <MenuArrow offset={8} />
       </MenuContent>
     </MenuSub>
   );
