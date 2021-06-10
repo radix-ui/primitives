@@ -130,7 +130,7 @@ type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
-  const { disableOutsidePointerEvents = true, offset, ...contentProps } = props;
+  const { offset, ...contentProps } = props;
   const context = useContextMenuContext(CONTENT_NAME);
 
   const commonProps = {
@@ -146,17 +146,7 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
   return (
     <ContentContext.Provider value={true}>
       {context.isRootMenu ? (
-        <MenuPrimitive.Content
-          {...commonProps}
-          ref={forwardedRef}
-          disableOutsidePointerEvents={context.open ? disableOutsidePointerEvents : false}
-          trapFocus
-          disableOutsideScroll
-          portalled
-          side="bottom"
-          align="start"
-          alignOffset={2}
-        />
+        <ContextMenuRootContent {...commonProps} ref={forwardedRef} />
       ) : (
         <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
       )}
@@ -165,6 +155,32 @@ const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
 }) as ContextMenuContentPrimitive;
 
 ContextMenuContent.displayName = CONTENT_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
+
+type ContextMenuRootContentOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Content>;
+type ContextMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Content>,
+  ContextMenuRootContentOwnProps
+>;
+
+const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
+  const { disableOutsidePointerEvents = true, ...contentProps } = props;
+  const context = useContextMenuContext(CONTENT_NAME);
+  return (
+    <MenuPrimitive.Content
+      {...contentProps}
+      ref={forwardedRef}
+      disableOutsidePointerEvents={context.open ? disableOutsidePointerEvents : false}
+      trapFocus
+      disableOutsideScroll
+      portalled
+      side="bottom"
+      align="start"
+      alignOffset={2}
+    />
+  );
+}) as ContextMenuRootContentPrimitive;
 
 /* ---------------------------------------------------------------------------------------------- */
 
