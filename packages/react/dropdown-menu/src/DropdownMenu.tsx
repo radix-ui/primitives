@@ -17,7 +17,7 @@ type Direction = 'ltr' | 'rtl';
 
 const DROPDOWN_MENU_NAME = 'DropdownMenu';
 
-type DropdownMenuContextValue = {
+type DropdownMenuRootContextValue = {
   isRootMenu: true;
   triggerId: string;
   triggerRef: React.RefObject<HTMLButtonElement>;
@@ -35,7 +35,7 @@ type DropdownMenuSubContextValue = {
 };
 
 const [DropdownMenuProvider, useDropdownMenuContext] = createContext<
-  DropdownMenuContextValue | DropdownMenuSubContextValue
+  DropdownMenuRootContextValue | DropdownMenuSubContextValue
 >(DROPDOWN_MENU_NAME);
 
 type DropdownMenuOwnProps = {

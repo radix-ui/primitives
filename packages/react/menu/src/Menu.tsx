@@ -41,7 +41,7 @@ const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
 
 const MENU_NAME = 'Menu';
 
-type MenuContextValue = {
+type MenuRootContextValue = {
   isSubmenu: false;
   dir: Direction;
   open: boolean;
@@ -51,7 +51,7 @@ type MenuContextValue = {
   onRootClose(): void;
 };
 
-type MenuSubContextValue = Omit<MenuContextValue, 'isSubmenu'> & {
+type MenuSubContextValue = Omit<MenuRootContextValue, 'isSubmenu'> & {
   isSubmenu: true;
   contentId: string;
   triggerId: string;
@@ -61,7 +61,7 @@ type MenuSubContextValue = Omit<MenuContextValue, 'isSubmenu'> & {
   onEntryFocus: RovingFocusGroupOwnProps['onEntryFocus'];
 };
 
-const [MenuProvider, useMenuContext] = createContext<MenuContextValue | MenuSubContextValue>(
+const [MenuProvider, useMenuContext] = createContext<MenuRootContextValue | MenuSubContextValue>(
   MENU_NAME
 );
 
