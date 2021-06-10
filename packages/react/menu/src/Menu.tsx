@@ -41,7 +41,7 @@ const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
 
 const MENU_NAME = 'Menu';
 
-type MenuContextValue = {
+type MenuRootContextValue = {
   isSubmenu: false;
   dir: Direction;
   open: boolean;
@@ -51,16 +51,17 @@ type MenuContextValue = {
   onRootClose(): void;
 };
 
-type MenuSubContextValue = Omit<MenuContextValue, 'isSubmenu'> & {
+type MenuSubContextValue = Omit<MenuRootContextValue, 'isSubmenu'> & {
   isSubmenu: true;
   contentId: string;
+  triggerId: string;
   trigger: MenuSubTriggerElement | null;
   onTriggerChange(trigger: MenuSubTriggerElement | null): void;
   onKeyOpen(): void;
   onEntryFocus: RovingFocusGroupOwnProps['onEntryFocus'];
 };
 
-const [MenuProvider, useMenuContext] = createContext<MenuContextValue | MenuSubContextValue>(
+const [MenuProvider, useMenuContext] = createContext<MenuRootContextValue | MenuSubContextValue>(
   MENU_NAME
 );
 
@@ -135,6 +136,7 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
         contentId={useId()}
         trigger={trigger}
         onTriggerChange={setTrigger}
+        triggerId={useId()}
         onKeyOpen={React.useCallback(() => {
           setFocusFirst(true);
           handleOpenChange(true);
@@ -280,6 +282,7 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
   return context.isSubmenu ? (
     <MenuContentImpl
       id={context.contentId}
+      aria-labelledby={context.triggerId}
       {...props}
       ref={composedRefs}
       align="start"
@@ -670,8 +673,9 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
       <MenuItemImpl
+        id={context.triggerId}
         aria-haspopup="menu"
-        aria-expanded={context.open || undefined}
+        aria-expanded={context.open}
         aria-controls={context.contentId}
         data-state={getOpenState(context.open)}
         {...props}
