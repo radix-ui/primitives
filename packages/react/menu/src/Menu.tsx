@@ -175,7 +175,7 @@ type MenuContentContextValue = {
   onTriggerLeave(event: React.MouseEvent): void;
   searchRef: React.RefObject<string>;
   pointerGraceTimerRef: React.MutableRefObject<number>;
-  onPointerGraceIntentChange(area: GraceArea | null): void;
+  onPointerGraceIntentChange(intent: GraceIntent | null): void;
 };
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
@@ -415,7 +415,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const timerRef = React.useRef(0);
   const searchRef = React.useRef('');
   const pointerGraceTimerRef = React.useRef(0);
-  const pointerGraceIntentRef = React.useRef<GraceArea | null>(null);
+  const pointerGraceIntentRef = React.useRef<GraceIntent | null>(null);
   const pointerDirRef = React.useRef<Side>('right');
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
@@ -1059,7 +1059,7 @@ function getNextMatch(values: string[], search: string, currentMatch?: string) {
 type Point = { x: number; y: number };
 type Polygon = Point[];
 type Side = 'left' | 'right';
-type GraceArea = { area: Polygon; side: Side };
+type GraceIntent = { area: Polygon; side: Side };
 
 // Determine if a point is inside of a polygon.
 // Based on https://github.com/substack/point-in-polygon
