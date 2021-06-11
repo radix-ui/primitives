@@ -464,9 +464,12 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
       <ScrollLockWrapper>
         <MenuContentProvider
           searchRef={searchRef}
-          onItemEnter={(event) => {
-            if (isPointerMovingToSubmenu(event)) event.preventDefault();
-          }}
+          onItemEnter={React.useCallback(
+            (event) => {
+              if (isPointerMovingToSubmenu(event)) event.preventDefault();
+            },
+            [isPointerMovingToSubmenu]
+          )}
           onItemLeave={React.useCallback(
             (event) => {
               if (!isPointerMovingToSubmenu(event)) {
@@ -476,9 +479,12 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
             },
             [isPointerMovingToSubmenu]
           )}
-          onTriggerLeave={(event) => {
-            if (isPointerMovingToSubmenu(event)) event.preventDefault();
-          }}
+          onTriggerLeave={React.useCallback(
+            (event) => {
+              if (isPointerMovingToSubmenu(event)) event.preventDefault();
+            },
+            [isPointerMovingToSubmenu]
+          )}
           pointerGraceTimerRef={pointerGraceTimerRef}
           onPointerGraceIntentChange={React.useCallback((intent) => {
             pointerGraceIntentRef.current = intent;
@@ -572,7 +578,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                   onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
                     const target = event.target as HTMLElement;
                     if (event.currentTarget.contains(target) && event.movementX !== 0) {
-                      pointerDirRef.current = event.movementX >= 1 ? 'right' : 'left';
+                      pointerDirRef.current = event.movementX > 0 ? 'right' : 'left';
                     }
                   })}
                 />
