@@ -175,8 +175,10 @@ const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
 type MenuContentContextValue = {
   onItemEnter(event: React.MouseEvent): void;
   onItemLeave(event: React.MouseEvent): void;
+  onTriggerLeave(event: React.MouseEvent): void;
   searchRef: React.RefObject<string>;
-  onPointerGraceAreaChange(area: Triangle | null): void;
+  pointerGraceTimerRef: React.MutableRefObject<number>;
+  onPointerGraceIntentChange(intent: GraceIntent | null): void;
 };
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
@@ -401,7 +403,9 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const isPointerDownOutsideRef = React.useRef(false);
   const timerRef = React.useRef(0);
   const searchRef = React.useRef('');
-  const pointerGraceAreaRef = React.useRef<Triangle | null>(null);
+  const pointerGraceTimerRef = React.useRef(0);
+  const pointerGraceIntentRef = React.useRef<GraceIntent | null>(null);
+  const pointerDirRef = React.useRef<Side>('right');
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -439,24 +443,41 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   // the last element in the DOM (beacuse of the `Portal`)
   useFocusGuards();
 
+  const isPointerMovingToSubmenu = React.useCallback((event: React.MouseEvent) => {
+    const isMovingTowards = pointerDirRef.current === pointerGraceIntentRef.current?.side;
+    return isMovingTowards && isPointerInGraceArea(event, pointerGraceIntentRef.current?.area);
+  }, []);
+
   return (
     <PortalWrapper>
       <ScrollLockWrapper>
         <MenuContentProvider
           searchRef={searchRef}
-          onItemEnter={(event) => {
-            if (isPointerInGraceArea(event, pointerGraceAreaRef.current)) event.preventDefault();
-          }}
-          onItemLeave={React.useCallback((event) => {
-            if (!isPointerInGraceArea(event, pointerGraceAreaRef.current)) {
-              contentRef.current?.focus();
-              setCurrentItemId(null);
-            }
-          }, [])}
-          onPointerGraceAreaChange={React.useCallback(
-            (area) => (pointerGraceAreaRef.current = area),
-            []
+          onItemEnter={React.useCallback(
+            (event) => {
+              if (isPointerMovingToSubmenu(event)) event.preventDefault();
+            },
+            [isPointerMovingToSubmenu]
           )}
+          onItemLeave={React.useCallback(
+            (event) => {
+              if (!isPointerMovingToSubmenu(event)) {
+                contentRef.current?.focus();
+                setCurrentItemId(null);
+              }
+            },
+            [isPointerMovingToSubmenu]
+          )}
+          onTriggerLeave={React.useCallback(
+            (event) => {
+              if (isPointerMovingToSubmenu(event)) event.preventDefault();
+            },
+            [isPointerMovingToSubmenu]
+          )}
+          pointerGraceTimerRef={pointerGraceTimerRef}
+          onPointerGraceIntentChange={React.useCallback((intent) => {
+            pointerGraceIntentRef.current = intent;
+          }, [])}
         >
           <FocusScope
             as={Slot}
@@ -551,6 +572,12 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                       searchRef.current = '';
                     }
                   })}
+                  onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
+                    const target = event.target as HTMLElement;
+                    if (event.currentTarget.contains(target) && event.movementX !== 0) {
+                      pointerDirRef.current = event.movementX > 0 ? 'right' : 'left';
+                    }
+                  })}
                 />
               </RovingFocusGroup>
             </DismissableLayer>
@@ -614,7 +641,6 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       disabled={disabled}
       // we handle selection on `mouseUp` rather than `click` to match native menus implementation
       onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
-      onMouseLeave={composeEventHandlers(props.onMouseLeave, contentContext.onItemLeave)}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         const isTypingAhead = contentContext.searchRef.current !== '';
         if (disabled || (isTypingAhead && event.key === ' ')) return;
@@ -647,8 +673,7 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(SUB_TRIGGER_NAME);
   const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
   const openTimerRef = React.useRef<number | null>(null);
-  const { onPointerGraceAreaChange } = contentContext;
-  const pointerGraceDurationTimer = React.useRef(0);
+  const { pointerGraceTimerRef, onPointerGraceIntentChange } = contentContext;
 
   const clearOpenTimer = React.useCallback(() => {
     if (openTimerRef.current) window.clearTimeout(openTimerRef.current);
@@ -658,11 +683,12 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
   React.useEffect(() => clearOpenTimer, [clearOpenTimer]);
 
   React.useEffect(() => {
+    const pointerGraceTimer = pointerGraceTimerRef.current;
     return () => {
-      window.clearTimeout(pointerGraceDurationTimer.current);
-      onPointerGraceAreaChange(null);
+      window.clearTimeout(pointerGraceTimer);
+      onPointerGraceIntentChange(null);
     };
-  }, [onPointerGraceAreaChange]);
+  }, [pointerGraceTimerRef, onPointerGraceIntentChange]);
 
   return context.isSubmenu ? (
     <MenuAnchor as={Slot}>
@@ -678,6 +704,7 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
           contentContext.onItemEnter(event);
           if (event.defaultPrevented) return;
           if (!props.disabled && !context.open && !openTimerRef.current) {
+            contentContext.onPointerGraceIntentChange(null);
             openTimerRef.current = window.setTimeout(() => {
               context.onOpenChange(true);
               clearOpenTimer();
@@ -690,21 +717,36 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
           const contentRect = context.content?.getBoundingClientRect();
           if (contentRect) {
             // TODO: make sure to update this when we change positioning logic
-            const side = context.content?.dataset.side;
-            const contentEdge = side === 'right' ? contentRect.left : contentRect.right;
-            contentContext.onPointerGraceAreaChange([
-              { x: event.clientX, y: event.clientY },
-              { x: contentEdge, y: contentRect.top },
-              { x: contentEdge, y: contentRect.bottom },
-            ]);
+            const side = context.content?.dataset.side as Side;
+            const rightSide = side === 'right';
+            const bleed = rightSide ? -5 : +5;
+            const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
+            const contentFarEdge = contentRect[rightSide ? 'right' : 'left'];
 
-            pointerGraceDurationTimer.current = window.setTimeout(
-              () => contentContext.onPointerGraceAreaChange(null),
+            contentContext.onPointerGraceIntentChange({
+              area: [
+                // Apply a bleed on clientX to ensure that our exit point is
+                // consistently within polygon bounds
+                { x: event.clientX + bleed, y: event.clientY },
+                { x: contentNearEdge, y: contentRect.top },
+                { x: contentFarEdge, y: contentRect.top },
+                { x: contentFarEdge, y: contentRect.bottom },
+                { x: contentNearEdge, y: contentRect.bottom },
+              ],
+              side,
+            });
+
+            window.clearTimeout(pointerGraceTimerRef.current);
+            pointerGraceTimerRef.current = window.setTimeout(
+              () => contentContext.onPointerGraceIntentChange(null),
               300
             );
           } else {
+            contentContext.onTriggerLeave(event);
+            if (event.defaultPrevented) return;
+
             // There's 100ms where the user may leave an item before the submenu was opened.
-            contentContext.onPointerGraceAreaChange(null);
+            contentContext.onPointerGraceIntentChange(null);
           }
         })}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
@@ -781,6 +823,7 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
             }
           }
         })}
+        onMouseLeave={composeEventHandlers(props.onMouseLeave, contentContext.onItemLeave)}
       />
     </CollectionItemSlot>
   );
@@ -1018,24 +1061,33 @@ function getNextMatch(values: string[], search: string, currentMatch?: string) {
 }
 
 type Point = { x: number; y: number };
-type Triangle = [Point, Point, Point];
+type Polygon = Point[];
+type Side = 'left' | 'right';
+type GraceIntent = { area: Polygon; side: Side };
 
-function getTriangleArea(a: Point, b: Point, c: Point) {
-  return Math.abs((a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y)) / 2);
+// Determine if a point is inside of a polygon.
+// Based on https://github.com/substack/point-in-polygon
+function isPointInPolygon(point: Point, polygon: Polygon) {
+  const { x, y } = point;
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    // prettier-ignore
+    const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
 }
 
-function isPointInTriangle(point: Point, a: Point, b: Point, c: Point) {
-  const A = getTriangleArea(a, b, c);
-  const A1 = getTriangleArea(point, b, c);
-  const A2 = getTriangleArea(a, point, c);
-  const A3 = getTriangleArea(a, b, point);
-  return A === A1 + A2 + A3;
-}
-
-function isPointerInGraceArea(event: React.MouseEvent, graceArea: Triangle | null) {
-  if (!graceArea) return false;
+function isPointerInGraceArea(event: React.MouseEvent, area?: Polygon) {
+  if (!area) return false;
   const cursorPos = { x: event.clientX, y: event.clientY };
-  return isPointInTriangle(cursorPos, ...graceArea);
+  return isPointInPolygon(cursorPos, area);
 }
 
 const Root = Menu;
