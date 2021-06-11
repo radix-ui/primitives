@@ -43,6 +43,7 @@ const MENU_NAME = 'Menu';
 
 type MenuRootContextValue = {
   isSubmenu: false;
+  isUsingKeyboardRef: React.RefObject<boolean>;
   dir: Direction;
   open: boolean;
   onOpenChange(open: boolean): void;
@@ -57,8 +58,6 @@ type MenuSubContextValue = Omit<MenuRootContextValue, 'isSubmenu'> & {
   triggerId: string;
   trigger: MenuSubTriggerElement | null;
   onTriggerChange(trigger: MenuSubTriggerElement | null): void;
-  onKeyOpen(): void;
-  onEntryFocus: RovingFocusGroupOwnProps['onEntryFocus'];
 };
 
 const [MenuProvider, useMenuContext] = createContext<MenuRootContextValue | MenuSubContextValue>(
@@ -74,13 +73,30 @@ type MenuOwnProps = {
 const Menu: React.FC<MenuOwnProps> = (props) => {
   const { open = false, children, onOpenChange } = props;
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
+  const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
   const computedDirection = useDirection(content, props.dir);
+
+  React.useEffect(() => {
+    const handleKeyDown = () => (isUsingKeyboardRef.current = true);
+    const handlePointer = () => (isUsingKeyboardRef.current = false);
+    // Capture phase ensures we set the boolean before any side effects execute
+    // in response to the key or pointer event as they might depend on this value.
+    document.addEventListener('keydown', handleKeyDown, { capture: true });
+    document.addEventListener('pointerdown', handlePointer, { capture: true });
+    document.addEventListener('pointermove', handlePointer, { capture: true });
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, { capture: true });
+      document.removeEventListener('pointerdown', handlePointer, { capture: true });
+      document.removeEventListener('pointermove', handlePointer, { capture: true });
+    };
+  }, []);
 
   return (
     <PopperPrimitive.Root>
       <MenuProvider
         isSubmenu={false}
+        isUsingKeyboardRef={isUsingKeyboardRef}
         dir={computedDirection}
         open={open}
         onOpenChange={handleOpenChange}
@@ -108,7 +124,6 @@ type MenuSubOwnProps = {
 const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
   const { children, open = false, onOpenChange } = props;
   const parentMenuContext = useMenuContext(SUB_NAME);
-  const [focusFirst, setFocusFirst] = React.useState(false);
   const [trigger, setTrigger] = React.useState<MenuSubTriggerElement | null>(null);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
   const handleOpenChange = useCallbackRef(onOpenChange);
@@ -119,14 +134,11 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
     return () => handleOpenChange(false);
   }, [parentMenuContext.open, handleOpenChange]);
 
-  React.useEffect(() => {
-    if (focusFirst) content?.focus();
-  }, [content, focusFirst]);
-
   return (
     <PopperPrimitive.Root>
       <MenuProvider
         isSubmenu={true}
+        isUsingKeyboardRef={parentMenuContext.isUsingKeyboardRef}
         dir={parentMenuContext.dir}
         open={open}
         onOpenChange={handleOpenChange}
@@ -137,17 +149,6 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
         trigger={trigger}
         onTriggerChange={setTrigger}
         triggerId={useId()}
-        onKeyOpen={React.useCallback(() => {
-          setFocusFirst(true);
-          handleOpenChange(true);
-        }, [handleOpenChange])}
-        onEntryFocus={React.useCallback(
-          (event) => {
-            if (!focusFirst) event.preventDefault();
-            setFocusFirst(false);
-          },
-          [focusFirst]
-        )}
       >
         {children}
       </MenuProvider>
@@ -241,17 +242,7 @@ const MenuRootContent = React.forwardRef((props, forwardedRef) => {
   }, []);
 
   return (
-    <MenuContentImpl
-      {...props}
-      ref={composedRefs}
-      onDismiss={() => context.onOpenChange(false)}
-      onEntryFocus={(event) => event.preventDefault()}
-      onOpenAutoFocus={composeEventHandlers(props.onOpenAutoFocus, (event) => {
-        // explicitly focus the content area only when opening
-        event.preventDefault();
-        ref.current?.focus();
-      })}
-    />
+    <MenuContentImpl {...props} ref={composedRefs} onDismiss={() => context.onOpenChange(false)} />
   );
 }) as MenuRootContentPrimitive;
 
@@ -266,7 +257,6 @@ type MenuSubContentOwnProps = Omit<
   | 'disabledOutsidePointerEvents'
   | 'disableOutsideScroll'
   | 'trapFocus'
-  | 'onOpenAutoFocus'
   | 'onCloseAutoFocus'
 >;
 
@@ -291,8 +281,11 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
       disableOutsidePointerEvents={false}
       disableOutsideScroll={false}
       trapFocus={false}
-      onEntryFocus={context.onEntryFocus}
-      onOpenAutoFocus={(event) => event.preventDefault()}
+      onOpenAutoFocus={(event) => {
+        // when opening a submenu, focus content for keyboard users only
+        if (context.isUsingKeyboardRef.current) ref.current?.focus();
+        event.preventDefault();
+      }}
       // The menu might close because of focusing another menu item in the parent menu. We
       // don't want it to refocus the trigger in that case so we handle trigger focus ourselves.
       onCloseAutoFocus={(event) => event.preventDefault()}
@@ -333,7 +326,7 @@ type DismissableLayerOwnProps = Polymorphic.OwnProps<typeof DismissableLayer>;
 type RovingFocusGroupOwnProps = Polymorphic.OwnProps<typeof RovingFocusGroup>;
 
 type MenuContentImplPrivateProps = {
-  onEntryFocus: RovingFocusGroupOwnProps['onEntryFocus'];
+  onOpenAutoFocus?: FocusScopeOwnProps['onMountAutoFocus'];
   onDismiss?: DismissableLayerOwnProps['onDismiss'];
 };
 
@@ -346,12 +339,6 @@ type MenuContentImplOwnProps = Polymorphic.Merge<
        * (default: false)
        */
       trapFocus?: FocusScopeOwnProps['trapped'];
-
-      /**
-       * Event handler called when auto-focusing on open.
-       * Can be prevented.
-       */
-      onOpenAutoFocus?: FocusScopeOwnProps['onMountAutoFocus'];
 
       /**
        * Event handler called when auto-focusing on close.
@@ -401,7 +388,6 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     onPointerDownOutside,
     onFocusOutside,
     onInteractOutside,
-    onEntryFocus,
     onDismiss,
     disableOutsideScroll,
     portalled,
@@ -477,7 +463,12 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
             // we make sure we're not trapping once it's been closed
             // (closed !== unmounted when animating out)
             trapped={trapFocus && context.open}
-            onMountAutoFocus={onOpenAutoFocus}
+            onMountAutoFocus={composeEventHandlers(onOpenAutoFocus, (event) => {
+              // when opening, explicitly focus the content area only and leave
+              // `onEntryFocus` in  control of focusing first item
+              event.preventDefault();
+              contentRef.current?.focus();
+            })}
             onUnmountAutoFocus={(event) => {
               // skip autofocus on unmount if clicking outside is permitted and it happened
               if (!disableOutsidePointerEvents && isPointerDownOutsideRef.current) {
@@ -521,7 +512,10 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                 loop={loop}
                 currentTabStopId={currentItemId}
                 onCurrentTabStopIdChange={setCurrentItemId}
-                onEntryFocus={onEntryFocus}
+                onEntryFocus={(event) => {
+                  // only focus first item when using keyboard
+                  if (!context.isUsingKeyboardRef.current) event.preventDefault();
+                }}
               >
                 <PopperPrimitive.Content
                   role="menu"
@@ -716,7 +710,7 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
           const isTypingAhead = contentContext.searchRef.current !== '';
           if (props.disabled || (isTypingAhead && event.key === ' ')) return;
-          if (SUB_OPEN_KEYS[context.dir].includes(event.key)) context.onKeyOpen();
+          if (SUB_OPEN_KEYS[context.dir].includes(event.key)) context.onOpenChange(true);
         })}
       />
     </MenuAnchor>

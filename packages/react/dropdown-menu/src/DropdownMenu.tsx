@@ -164,7 +164,7 @@ const ContentContext = React.createContext(false);
 
 type DropdownMenuContentOwnProps = Omit<
   Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
-  'trapFocus' | 'onOpenAutoFocus'
+  'trapFocus'
 >;
 
 type DropdownMenuContentPrimitive = Polymorphic.ForwardRefComponent<
