@@ -752,7 +752,12 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
           const isTypingAhead = contentContext.searchRef.current !== '';
           if (props.disabled || (isTypingAhead && event.key === ' ')) return;
-          if (SUB_OPEN_KEYS[context.dir].includes(event.key)) context.onOpenChange(true);
+          if (SUB_OPEN_KEYS[context.dir].includes(event.key)) {
+            context.onOpenChange(true);
+            // The trigger may hold focus if opened via pointer interaction
+            // so we ensure content is given focus again when switching to keyboard.
+            context.content?.focus();
+          }
         })}
       />
     </MenuAnchor>
