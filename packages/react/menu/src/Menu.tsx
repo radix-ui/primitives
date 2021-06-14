@@ -571,14 +571,15 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                       searchRef.current = '';
                     }
                   })}
-                  onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
-                    if (event.pointerType === 'mouse') {
+                  onPointerMove={composeEventHandlers(
+                    props.onPointerMove,
+                    whenMouse((event) => {
                       const target = event.target as HTMLElement;
                       if (event.currentTarget.contains(target) && event.movementX !== 0) {
                         pointerDirRef.current = event.movementX > 0 ? 'right' : 'left';
                       }
-                    }
-                  })}
+                    })
+                  )}
                 />
               </RovingFocusGroup>
             </DismissableLayer>
@@ -701,14 +702,17 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         data-state={getOpenState(context.open)}
         {...props}
         ref={composeRefs(forwardedRef, context.onTriggerChange)}
-        onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
-          if (event.pointerType === 'mouse') return;
-          contentContext.onItemEnter(event);
-          if (event.defaultPrevented) return;
-          if (!props.disabled && !context.open) context.onOpenChange(true);
-        })}
-        onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
-          if (event.pointerType === 'mouse') {
+        onPointerUp={composeEventHandlers(
+          props.onPointerUp,
+          whenTouchOrPen((event) => {
+            contentContext.onItemEnter(event);
+            if (event.defaultPrevented) return;
+            if (!props.disabled && !context.open) context.onOpenChange(true);
+          })
+        )}
+        onPointerMove={composeEventHandlers(
+          props.onPointerMove,
+          whenMouse((event) => {
             contentContext.onItemEnter(event);
             if (event.defaultPrevented) return;
             if (!props.disabled && !context.open && !openTimerRef.current) {
@@ -718,48 +722,49 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
                 clearOpenTimer();
               }, 100);
             }
-          }
-        })}
-        onPointerLeave={composeEventHandlers(props.onPointerLeave, (event) => {
-          if (event.pointerType !== 'mouse') return;
+          })
+        )}
+        onPointerLeave={composeEventHandlers(
+          props.onPointerLeave,
+          whenMouse((event) => {
+            clearOpenTimer();
 
-          clearOpenTimer();
+            const contentRect = context.content?.getBoundingClientRect();
+            if (contentRect) {
+              // TODO: make sure to update this when we change positioning logic
+              const side = context.content?.dataset.side as Side;
+              const rightSide = side === 'right';
+              const bleed = rightSide ? -5 : +5;
+              const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
+              const contentFarEdge = contentRect[rightSide ? 'right' : 'left'];
 
-          const contentRect = context.content?.getBoundingClientRect();
-          if (contentRect) {
-            // TODO: make sure to update this when we change positioning logic
-            const side = context.content?.dataset.side as Side;
-            const rightSide = side === 'right';
-            const bleed = rightSide ? -5 : +5;
-            const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
-            const contentFarEdge = contentRect[rightSide ? 'right' : 'left'];
+              contentContext.onPointerGraceIntentChange({
+                area: [
+                  // Apply a bleed on clientX to ensure that our exit point is
+                  // consistently within polygon bounds
+                  { x: event.clientX + bleed, y: event.clientY },
+                  { x: contentNearEdge, y: contentRect.top },
+                  { x: contentFarEdge, y: contentRect.top },
+                  { x: contentFarEdge, y: contentRect.bottom },
+                  { x: contentNearEdge, y: contentRect.bottom },
+                ],
+                side,
+              });
 
-            contentContext.onPointerGraceIntentChange({
-              area: [
-                // Apply a bleed on clientX to ensure that our exit point is
-                // consistently within polygon bounds
-                { x: event.clientX + bleed, y: event.clientY },
-                { x: contentNearEdge, y: contentRect.top },
-                { x: contentFarEdge, y: contentRect.top },
-                { x: contentFarEdge, y: contentRect.bottom },
-                { x: contentNearEdge, y: contentRect.bottom },
-              ],
-              side,
-            });
+              window.clearTimeout(pointerGraceTimerRef.current);
+              pointerGraceTimerRef.current = window.setTimeout(
+                () => contentContext.onPointerGraceIntentChange(null),
+                300
+              );
+            } else {
+              contentContext.onTriggerLeave(event);
+              if (event.defaultPrevented) return;
 
-            window.clearTimeout(pointerGraceTimerRef.current);
-            pointerGraceTimerRef.current = window.setTimeout(
-              () => contentContext.onPointerGraceIntentChange(null),
-              300
-            );
-          } else {
-            contentContext.onTriggerLeave(event);
-            if (event.defaultPrevented) return;
-
-            // There's 100ms where the user may leave an item before the submenu was opened.
-            contentContext.onPointerGraceIntentChange(null);
-          }
-        })}
+              // There's 100ms where the user may leave an item before the submenu was opened.
+              contentContext.onPointerGraceIntentChange(null);
+            }
+          })
+        )}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
           const isTypingAhead = contentContext.searchRef.current !== '';
           if (props.disabled || (isTypingAhead && event.key === ' ')) return;
@@ -828,8 +833,9 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
          * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
          * wiggles. This is to match native menu implementation.
          */
-        onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
-          if (event.pointerType === 'mouse') {
+        onPointerMove={composeEventHandlers(
+          props.onPointerMove,
+          whenMouse((event) => {
             if (disabled) {
               contentContext.onItemLeave(event);
             } else {
@@ -839,11 +845,12 @@ const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
                 item.focus();
               }
             }
-          }
-        })}
-        onPointerLeave={composeEventHandlers(props.onPointerLeave, (event) => {
-          if (event.pointerType === 'mouse') contentContext.onItemLeave(event);
-        })}
+          })
+        )}
+        onPointerLeave={composeEventHandlers(
+          props.onPointerLeave,
+          whenMouse((event) => contentContext.onItemLeave(event))
+        )}
       />
     </CollectionItemSlot>
   );
@@ -1108,6 +1115,14 @@ function isPointerInGraceArea(event: React.PointerEvent, area?: Polygon) {
   if (!area) return false;
   const cursorPos = { x: event.clientX, y: event.clientY };
   return isPointInPolygon(cursorPos, area);
+}
+
+function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
+  return (event) => (event.pointerType === 'mouse' ? handler(event) : undefined);
+}
+
+function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
+  return (event) => (event.pointerType !== 'mouse' ? handler(event) : undefined);
 }
 
 const Root = Menu;
