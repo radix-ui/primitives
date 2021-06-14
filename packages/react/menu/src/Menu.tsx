@@ -296,11 +296,7 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
         // on pointer interaction.
         if (event.target !== context.trigger) context.onOpenChange(false);
       })}
-      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-        context.onOpenChange(false);
-        // We focus manually because we prevented it in `onCloseAutoFocus`.
-        context.trigger?.focus();
-      })}
+      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, context.onRootClose)}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         // Submenu key events bubble through portals. We only care about keys in this menu.
         const isKeyDownInside = event.currentTarget.contains(event.target as HTMLElement);
