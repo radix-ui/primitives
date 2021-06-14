@@ -311,12 +311,6 @@ const MenuSubContent = React.forwardRef((props, forwardedRef) => {
           context.trigger?.focus();
         }
       })}
-      onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
-        const targetIsTrigger = context.trigger?.contains(event.target as HTMLElement);
-        if (!targetIsTrigger) {
-          context.onOpenChange(false);
-        }
-      })}
     />
   ) : null;
 }) as MenuSubContentPrimitive;
