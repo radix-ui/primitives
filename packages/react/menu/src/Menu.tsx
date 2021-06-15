@@ -609,9 +609,9 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
 
   const handleSelect = () => {
     const menuItem = ref.current;
-    if (!disabled && menuItem && onSelect) {
+    if (!disabled && menuItem) {
       const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
-      menuItem.addEventListener(ITEM_SELECT, onSelect, { once: true });
+      menuItem.addEventListener(ITEM_SELECT, (event) => onSelect?.(event), { once: true });
       menuItem.dispatchEvent(itemSelectEvent);
       if (itemSelectEvent.defaultPrevented) return;
       context.onRootClose();
