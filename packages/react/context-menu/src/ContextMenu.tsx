@@ -110,12 +110,9 @@ const CONTENT_NAME = 'ContextMenuContent';
 
 const ContentContext = React.createContext(false);
 
-type ContextMenuContentOwnProps = Polymorphic.Merge<
-  Omit<
-    Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
-    'trapFocus' | 'disableOutsideScroll' | 'portalled' | 'side' | 'sideOffset' | 'align'
-  >,
-  { offset?: number }
+type ContextMenuContentOwnProps = Omit<
+  Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
+  'trapFocus' | 'disableOutsideScroll' | 'portalled' | 'side' | 'align'
 >;
 
 type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
@@ -124,12 +121,10 @@ type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
-  const { offset, ...contentProps } = props;
   const context = useContextMenuContext(CONTENT_NAME);
 
   const commonProps = {
-    ...contentProps,
-    sideOffset: offset,
+    ...props,
     style: {
       ...props.style,
       // re-namespace exposed content custom property
@@ -169,9 +164,9 @@ const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
       trapFocus
       disableOutsideScroll
       portalled
-      side="bottom"
+      side="right"
+      sideOffset={2}
       align="start"
-      alignOffset={2}
     />
   );
 }) as ContextMenuRootContentPrimitive;

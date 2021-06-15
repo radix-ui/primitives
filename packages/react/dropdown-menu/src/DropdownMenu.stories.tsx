@@ -79,7 +79,7 @@ export const Submenus = () => {
               <DropdownMenuTriggerItem className={subTriggerClass}>
                 Submenu →
               </DropdownMenuTriggerItem>
-              <DropdownMenuContent className={contentClass} sideOffset={12}>
+              <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
                   One
                 </DropdownMenuItem>
@@ -92,7 +92,7 @@ export const Submenus = () => {
                   <DropdownMenuTriggerItem className={subTriggerClass}>
                     Submenu →
                   </DropdownMenuTriggerItem>
-                  <DropdownMenuContent className={contentClass} sideOffset={12}>
+                  <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
                     <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
                       One
                     </DropdownMenuItem>
@@ -102,14 +102,14 @@ export const Submenus = () => {
                     <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
                       Three
                     </DropdownMenuItem>
-                    <DropdownMenuArrow offset={8} />
+                    <DropdownMenuArrow offset={14} />
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <DropdownMenuSeparator className={separatorClass} />
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
                   Three
                 </DropdownMenuItem>
-                <DropdownMenuArrow offset={8} />
+                <DropdownMenuArrow offset={14} />
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenuSeparator className={separatorClass} />
@@ -474,80 +474,11 @@ export const Chromatic = () => {
           <DropdownMenuSeparator className={separatorClass} />
           <DropdownMenu open>
             <DropdownMenuTriggerItem className={subTriggerClass}>Submenu →</DropdownMenuTriggerItem>
-            <DropdownMenuContent className={contentClass} sideOffset={12} avoidCollisions={false}>
-              <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
-                One
-              </DropdownMenuItem>
-
-              <DropdownMenuItem className={itemClass} onSelect={() => console.log('two')}>
-                Two
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className={separatorClass} />
-              <DropdownMenu open>
-                <DropdownMenuTriggerItem className={subTriggerClass}>
-                  Submenu →
-                </DropdownMenuTriggerItem>
-                <DropdownMenuContent
-                  className={contentClass}
-                  sideOffset={12}
-                  avoidCollisions={false}
-                >
-                  <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
-                    One
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className={itemClass} onSelect={() => console.log('two')}>
-                    Two
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
-                    Three
-                  </DropdownMenuItem>
-                  <DropdownMenuArrow offset={8} />
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DropdownMenuSeparator className={separatorClass} />
-              <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
-                Three
-              </DropdownMenuItem>
-              <DropdownMenuArrow offset={8} />
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenuSeparator className={separatorClass} />
-          <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
-            Cut
-          </DropdownMenuItem>
-          <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
-            Copy
-          </DropdownMenuItem>
-          <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
-            Paste
-          </DropdownMenuItem>
-          <DropdownMenuArrow />
-        </DropdownMenuContent>
-        <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
-      </DropdownMenu>
-
-      <h2 style={{ marginTop: 275 }}>With custom alignment</h2>
-      <DropdownMenu open>
-        <DropdownMenuContent
-          className={contentClass}
-          sideOffset={5}
-          avoidCollisions={false}
-          disableOutsideScroll={false}
-        >
-          <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
-            Undo
-          </DropdownMenuItem>
-          <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
-            Redo
-          </DropdownMenuItem>
-          <DropdownMenuSeparator className={separatorClass} />
-          <DropdownMenu open>
-            <DropdownMenuTriggerItem className={subTriggerClass}>Submenu →</DropdownMenuTriggerItem>
             <DropdownMenuContent
               className={contentClass}
               sideOffset={12}
+              alignOffset={-6}
               avoidCollisions={false}
-              align="center"
             >
               <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
                 One
@@ -564,9 +495,8 @@ export const Chromatic = () => {
                 <DropdownMenuContent
                   className={contentClass}
                   sideOffset={12}
+                  alignOffset={-6}
                   avoidCollisions={false}
-                  align="end"
-                  alignOffset={-16}
                 >
                   <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
                     One
@@ -577,14 +507,14 @@ export const Chromatic = () => {
                   <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
                     Three
                   </DropdownMenuItem>
-                  <DropdownMenuArrow offset={24} />
+                  <DropdownMenuArrow offset={14} />
                 </DropdownMenuContent>
               </DropdownMenu>
               <DropdownMenuSeparator className={separatorClass} />
               <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
                 Three
               </DropdownMenuItem>
-              <DropdownMenuArrow offset={8} />
+              <DropdownMenuArrow offset={14} />
             </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenuSeparator className={separatorClass} />
@@ -622,7 +552,12 @@ export const Chromatic = () => {
               <DropdownMenuTriggerItem className={subTriggerClass}>
                 Submenu →
               </DropdownMenuTriggerItem>
-              <DropdownMenuContent className={contentClass} sideOffset={12} avoidCollisions={false}>
+              <DropdownMenuContent
+                className={contentClass}
+                sideOffset={12}
+                alignOffset={-6}
+                avoidCollisions={false}
+              >
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
                   One
                 </DropdownMenuItem>
@@ -638,6 +573,7 @@ export const Chromatic = () => {
                   <DropdownMenuContent
                     className={contentClass}
                     sideOffset={12}
+                    alignOffset={-6}
                     avoidCollisions={false}
                   >
                     <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
@@ -649,14 +585,14 @@ export const Chromatic = () => {
                     <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
                       Three
                     </DropdownMenuItem>
-                    <DropdownMenuArrow offset={8} />
+                    <DropdownMenuArrow offset={14} />
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <DropdownMenuSeparator className={separatorClass} />
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
                   Three
                 </DropdownMenuItem>
-                <DropdownMenuArrow offset={8} />
+                <DropdownMenuArrow offset={14} />
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenuSeparator className={separatorClass} />
