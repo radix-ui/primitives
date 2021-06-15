@@ -3,7 +3,7 @@ import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
@@ -13,15 +13,27 @@ import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
 import { Slot } from '@radix-ui/react-slot';
+import { useDirection } from '@radix-ui/react-use-direction';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
-import { useMenuTypeahead, useMenuTypeaheadItem } from './useMenuTypeahead';
+import { useId } from '@radix-ui/react-id';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
+type Direction = 'ltr' | 'rtl';
+
+const SELECTION_KEYS = ['Enter', ' '];
 const FIRST_KEYS = ['ArrowDown', 'PageUp', 'Home'];
 const LAST_KEYS = ['ArrowUp', 'PageDown', 'End'];
-const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
+const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
+const SUB_OPEN_KEYS: Record<Direction, string[]> = {
+  ltr: [...SELECTION_KEYS, 'ArrowRight'],
+  rtl: [...SELECTION_KEYS, 'ArrowLeft'],
+};
+const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
+  ltr: ['ArrowLeft'],
+  rtl: ['ArrowRight'],
+};
 
 /* -------------------------------------------------------------------------------------------------
  * Menu
@@ -29,24 +41,69 @@ const ALL_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 const MENU_NAME = 'Menu';
 
-type MenuContextValue = {
+type MenuRootContextValue = {
+  isSubmenu: false;
+  isUsingKeyboardRef: React.RefObject<boolean>;
+  dir: Direction;
   open: boolean;
   onOpenChange(open: boolean): void;
+  content: MenuContentElement | null;
+  onContentChange(content: MenuContentElement | null): void;
+  onRootClose(): void;
 };
 
-const [MenuProvider, useMenuContext] = createContext<MenuContextValue>(MENU_NAME);
+type MenuSubContextValue = Omit<MenuRootContextValue, 'isSubmenu'> & {
+  isSubmenu: true;
+  contentId: string;
+  triggerId: string;
+  trigger: MenuSubTriggerElement | null;
+  onTriggerChange(trigger: MenuSubTriggerElement | null): void;
+};
+
+const [MenuProvider, useMenuContext] = createContext<MenuRootContextValue | MenuSubContextValue>(
+  MENU_NAME
+);
 
 type MenuOwnProps = {
   open?: boolean;
   onOpenChange?(open: boolean): void;
+  dir?: Direction;
 };
 
 const Menu: React.FC<MenuOwnProps> = (props) => {
   const { open = false, children, onOpenChange } = props;
+  const [content, setContent] = React.useState<MenuContentElement | null>(null);
+  const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
+  const computedDirection = useDirection(content, props.dir);
+
+  React.useEffect(() => {
+    const handleKeyDown = () => (isUsingKeyboardRef.current = true);
+    const handlePointer = () => (isUsingKeyboardRef.current = false);
+    // Capture phase ensures we set the boolean before any side effects execute
+    // in response to the key or pointer event as they might depend on this value.
+    document.addEventListener('keydown', handleKeyDown, { capture: true });
+    document.addEventListener('pointerdown', handlePointer, { capture: true });
+    document.addEventListener('pointermove', handlePointer, { capture: true });
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, { capture: true });
+      document.removeEventListener('pointerdown', handlePointer, { capture: true });
+      document.removeEventListener('pointermove', handlePointer, { capture: true });
+    };
+  }, []);
+
   return (
     <PopperPrimitive.Root>
-      <MenuProvider open={open} onOpenChange={handleOpenChange}>
+      <MenuProvider
+        isSubmenu={false}
+        isUsingKeyboardRef={isUsingKeyboardRef}
+        dir={computedDirection}
+        open={open}
+        onOpenChange={handleOpenChange}
+        content={content}
+        onContentChange={setContent}
+        onRootClose={React.useCallback(() => handleOpenChange(false), [handleOpenChange])}
+      >
         {children}
       </MenuProvider>
     </PopperPrimitive.Root>
@@ -55,25 +112,85 @@ const Menu: React.FC<MenuOwnProps> = (props) => {
 
 Menu.displayName = MENU_NAME;
 
+/* ---------------------------------------------------------------------------------------------- */
+
+const SUB_NAME = 'MenuSub';
+
+type MenuSubOwnProps = {
+  open?: boolean;
+  onOpenChange?(open: boolean): void;
+};
+
+const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
+  const { children, open = false, onOpenChange } = props;
+  const parentMenuContext = useMenuContext(SUB_NAME);
+  const [trigger, setTrigger] = React.useState<MenuSubTriggerElement | null>(null);
+  const [content, setContent] = React.useState<MenuContentElement | null>(null);
+  const handleOpenChange = useCallbackRef(onOpenChange);
+
+  // Prevent the parent menu from reopening with open submenus.
+  React.useEffect(() => {
+    if (parentMenuContext.open === false) handleOpenChange(false);
+    return () => handleOpenChange(false);
+  }, [parentMenuContext.open, handleOpenChange]);
+
+  return (
+    <PopperPrimitive.Root>
+      <MenuProvider
+        isSubmenu={true}
+        isUsingKeyboardRef={parentMenuContext.isUsingKeyboardRef}
+        dir={parentMenuContext.dir}
+        open={open}
+        onOpenChange={handleOpenChange}
+        content={content}
+        onContentChange={setContent}
+        onRootClose={parentMenuContext.onRootClose}
+        contentId={useId()}
+        trigger={trigger}
+        onTriggerChange={setTrigger}
+        triggerId={useId()}
+      >
+        {children}
+      </MenuProvider>
+    </PopperPrimitive.Root>
+  );
+};
+
+MenuSub.displayName = SUB_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * MenuContent
  * -----------------------------------------------------------------------------------------------*/
 
 const CONTENT_NAME = 'MenuContent';
 
-type ItemData = { disabled: boolean };
+type MenuContentElement = React.ElementRef<typeof MenuContent>;
+type ItemData = { disabled: boolean; textValue: string };
+
 const [CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
   React.ElementRef<typeof MenuItem>,
   ItemData
 >();
 
-type MenuContentContextValue = { onItemLeave(): void };
+type MenuContentContextValue = {
+  onItemEnter(event: React.PointerEvent): void;
+  onItemLeave(event: React.PointerEvent): void;
+  onTriggerLeave(event: React.PointerEvent): void;
+  searchRef: React.RefObject<string>;
+  pointerGraceTimerRef: React.MutableRefObject<number>;
+  onPointerGraceIntentChange(intent: GraceIntent | null): void;
+};
 const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentContextValue>(
   CONTENT_NAME
 );
 
+/**
+ * We purposefully don't union MenuRootContent and MenuSubContent props here because
+ * they have conflicting prop types. We agreed that we would allow MenuSubContent to
+ * accept props that it would just ignore.
+ */
 type MenuContentOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof MenuContentImpl>,
+  Polymorphic.OwnProps<typeof MenuRootContent>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -84,7 +201,7 @@ type MenuContentOwnProps = Polymorphic.Merge<
 >;
 
 type MenuContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuContentImpl>,
+  Polymorphic.IntrinsicElement<typeof MenuRootContent>,
   MenuContentOwnProps
 >;
 
@@ -94,65 +211,157 @@ const MenuContent = React.forwardRef((props, forwardedRef) => {
   return (
     <Presence present={forceMount || context.open}>
       <CollectionSlot>
-        <MenuContentImpl
-          data-state={getOpenState(context.open)}
-          {...contentProps}
-          ref={forwardedRef}
-        />
+        {context.isSubmenu ? (
+          <MenuSubContent {...contentProps} ref={forwardedRef} />
+        ) : (
+          <MenuRootContent {...contentProps} ref={forwardedRef} />
+        )}
       </CollectionSlot>
     </Presence>
   );
 }) as MenuContentPrimitive;
 
+/* ---------------------------------------------------------------------------------------------- */
+
+type MenuRootContentOwnProps = Omit<
+  Polymorphic.OwnProps<typeof MenuContentImpl>,
+  keyof MenuContentImplPrivateProps
+>;
+type MenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuContentImpl>,
+  MenuRootContentOwnProps
+>;
+
+const MenuRootContent = React.forwardRef((props, forwardedRef) => {
+  const context = useMenuContext(CONTENT_NAME);
+  const ref = React.useRef<React.ElementRef<typeof MenuContentImpl>>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+
+  // Hide everything from ARIA except the `MenuContent`
+  React.useEffect(() => {
+    const content = ref.current;
+    if (content) return hideOthers(content);
+  }, []);
+
+  return (
+    <MenuContentImpl {...props} ref={composedRefs} onDismiss={() => context.onOpenChange(false)} />
+  );
+}) as MenuRootContentPrimitive;
+
+/* ---------------------------------------------------------------------------------------------- */
+
+type MenuSubContentOwnProps = Omit<
+  Polymorphic.OwnProps<typeof MenuContentImpl>,
+  | keyof MenuContentImplPrivateProps
+  | 'align'
+  | 'side'
+  | 'portalled'
+  | 'disabledOutsidePointerEvents'
+  | 'disableOutsideScroll'
+  | 'trapFocus'
+  | 'onCloseAutoFocus'
+>;
+
+type MenuSubContentPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuContentImpl>,
+  MenuSubContentOwnProps
+>;
+
+const MenuSubContent = React.forwardRef((props, forwardedRef) => {
+  const context = useMenuContext(CONTENT_NAME);
+  const ref = React.useRef<MenuContentElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+  return context.isSubmenu ? (
+    <MenuContentImpl
+      id={context.contentId}
+      aria-labelledby={context.triggerId}
+      {...props}
+      ref={composedRefs}
+      align="start"
+      side={context.dir === 'rtl' ? 'left' : 'right'}
+      portalled
+      disableOutsidePointerEvents={false}
+      disableOutsideScroll={false}
+      trapFocus={false}
+      onOpenAutoFocus={(event) => {
+        // when opening a submenu, focus content for keyboard users only
+        if (context.isUsingKeyboardRef.current) ref.current?.focus();
+        event.preventDefault();
+      }}
+      // The menu might close because of focusing another menu item in the parent menu. We
+      // don't want it to refocus the trigger in that case so we handle trigger focus ourselves.
+      onCloseAutoFocus={(event) => event.preventDefault()}
+      onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
+        // We prevent closing when the trigger is focused to avoid triggering a re-open animation
+        // on pointer interaction.
+        if (event.target !== context.trigger) context.onOpenChange(false);
+      })}
+      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, context.onRootClose)}
+      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        // Submenu key events bubble through portals. We only care about keys in this menu.
+        const isKeyDownInside = event.currentTarget.contains(event.target as HTMLElement);
+        const isCloseKey = SUB_CLOSE_KEYS[context.dir].includes(event.key);
+        if (isKeyDownInside && isCloseKey) {
+          context.onOpenChange(false);
+          // We focus manually because we prevented it in `onCloseAutoFocus`
+          context.trigger?.focus();
+        }
+      })}
+    />
+  ) : null;
+}) as MenuSubContentPrimitive;
+
+/* ---------------------------------------------------------------------------------------------- */
+
 type FocusScopeOwnProps = Polymorphic.OwnProps<typeof FocusScope>;
 type DismissableLayerOwnProps = Polymorphic.OwnProps<typeof DismissableLayer>;
 type RovingFocusGroupOwnProps = Polymorphic.OwnProps<typeof RovingFocusGroup>;
 
+type MenuContentImplPrivateProps = {
+  onOpenAutoFocus?: FocusScopeOwnProps['onMountAutoFocus'];
+  onDismiss?: DismissableLayerOwnProps['onDismiss'];
+};
+
 type MenuContentImplOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof PopperPrimitive.Content>,
-  Omit<DismissableLayerOwnProps, 'onDismiss'> & {
-    /**
-     * Whether focus should be trapped within the `MenuContent`
-     * (default: false)
-     */
-    trapFocus?: FocusScopeOwnProps['trapped'];
+  Omit<DismissableLayerOwnProps, 'onDismiss'> &
+    MenuContentImplPrivateProps & {
+      /**
+       * Whether focus should be trapped within the `MenuContent`
+       * (default: false)
+       */
+      trapFocus?: FocusScopeOwnProps['trapped'];
 
-    /**
-     * Event handler called when auto-focusing on open.
-     * Can be prevented.
-     */
-    onOpenAutoFocus?: FocusScopeOwnProps['onMountAutoFocus'];
+      /**
+       * Event handler called when auto-focusing on close.
+       * Can be prevented.
+       */
+      onCloseAutoFocus?: FocusScopeOwnProps['onUnmountAutoFocus'];
 
-    /**
-     * Event handler called when auto-focusing on close.
-     * Can be prevented.
-     */
-    onCloseAutoFocus?: FocusScopeOwnProps['onUnmountAutoFocus'];
+      /**
+       * Whether scrolling outside the `MenuContent` should be prevented
+       * (default: `false`)
+       */
+      disableOutsideScroll?: boolean;
 
-    /**
-     * Whether scrolling outside the `MenuContent` should be prevented
-     * (default: `false`)
-     */
-    disableOutsideScroll?: boolean;
+      /**
+       * The direction of navigation between menu items.
+       * @defaultValue ltr
+       */
+      dir?: RovingFocusGroupOwnProps['dir'];
 
-    /**
-     * The direction of navigation between menu items.
-     * @defaultValue ltr
-     */
-    dir?: RovingFocusGroupOwnProps['dir'];
+      /**
+       * Whether keyboard navigation should loop around
+       * @defaultValue false
+       */
+      loop?: RovingFocusGroupOwnProps['loop'];
 
-    /**
-     * Whether keyboard navigation should loop around
-     * @defaultValue false
-     */
-    loop?: RovingFocusGroupOwnProps['loop'];
-
-    /**
-     * Whether the `MenuContent` should render in a `Portal`
-     * (default: `true`)
-     */
-    portalled?: boolean;
-  }
+      /**
+       * Whether the `MenuContent` should render in a `Portal`
+       * (default: `true`)
+       */
+      portalled?: boolean;
+    }
 >;
 
 type MenuContentImplPrimitive = Polymorphic.ForwardRefComponent<
@@ -162,7 +371,6 @@ type MenuContentImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
-    dir = 'ltr',
     loop = false,
     trapFocus,
     onOpenAutoFocus,
@@ -172,38 +380,92 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
     onPointerDownOutside,
     onFocusOutside,
     onInteractOutside,
+    onDismiss,
     disableOutsideScroll,
     portalled,
     ...contentProps
   } = props;
   const context = useMenuContext(CONTENT_NAME);
-  const typeaheadProps = useMenuTypeahead();
   const { getItems } = useCollection();
   const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
-  const [skipCloseAutoFocus, setSkipCloseAutoFocus] = React.useState(false);
   const contentRef = React.useRef<HTMLDivElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, contentRef);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef, context.onContentChange);
+  const isPointerDownOutsideRef = React.useRef(false);
+  const timerRef = React.useRef(0);
+  const searchRef = React.useRef('');
+  const pointerGraceTimerRef = React.useRef(0);
+  const pointerGraceIntentRef = React.useRef<GraceIntent | null>(null);
+  const pointerDirRef = React.useRef<Side>('right');
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
+
+  const handleTypeaheadSearch = (key: string) => {
+    const search = searchRef.current + key;
+    const items = getItems().filter((item) => !item.disabled);
+    const currentItem = document.activeElement;
+    const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
+    const values = items.map((item) => item.textValue);
+    const nextMatch = getNextMatch(values, search, currentMatch);
+    const newItem = items.find((item) => item.textValue === nextMatch)?.ref.current;
+
+    // Reset `searchRef` 1 second after it was last updated
+    (function updateSearch(value: string) {
+      searchRef.current = value;
+      window.clearTimeout(timerRef.current);
+      if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
+    })(search);
+
+    if (newItem) {
+      /**
+       * Imperative focus during keydown is risky so we prevent React's batching updates
+       * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+       */
+      setTimeout(() => (newItem as HTMLElement).focus());
+    }
+  };
+
+  React.useEffect(() => {
+    return () => window.clearTimeout(timerRef.current);
+  }, []);
 
   // Make sure the whole tree has focus guards as our `MenuContent` may be
   // the last element in the DOM (beacuse of the `Portal`)
   useFocusGuards();
 
-  // Hide everything from ARIA except the `MenuContent`
-  React.useEffect(() => {
-    const content = contentRef.current;
-    if (content) return hideOthers(content);
+  const isPointerMovingToSubmenu = React.useCallback((event: React.PointerEvent) => {
+    const isMovingTowards = pointerDirRef.current === pointerGraceIntentRef.current?.side;
+    return isMovingTowards && isPointerInGraceArea(event, pointerGraceIntentRef.current?.area);
   }, []);
 
   return (
     <PortalWrapper>
       <ScrollLockWrapper>
         <MenuContentProvider
-          onItemLeave={React.useCallback(() => {
-            contentRef.current?.focus();
-            setCurrentItemId(null);
+          searchRef={searchRef}
+          onItemEnter={React.useCallback(
+            (event) => {
+              if (isPointerMovingToSubmenu(event)) event.preventDefault();
+            },
+            [isPointerMovingToSubmenu]
+          )}
+          onItemLeave={React.useCallback(
+            (event) => {
+              if (isPointerMovingToSubmenu(event)) return;
+              contentRef.current?.focus();
+              setCurrentItemId(null);
+            },
+            [isPointerMovingToSubmenu]
+          )}
+          onTriggerLeave={React.useCallback(
+            (event) => {
+              if (isPointerMovingToSubmenu(event)) event.preventDefault();
+            },
+            [isPointerMovingToSubmenu]
+          )}
+          pointerGraceTimerRef={pointerGraceTimerRef}
+          onPointerGraceIntentChange={React.useCallback((intent) => {
+            pointerGraceIntentRef.current = intent;
           }, [])}
         >
           <FocusScope
@@ -211,10 +473,15 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
             // we make sure we're not trapping once it's been closed
             // (closed !== unmounted when animating out)
             trapped={trapFocus && context.open}
-            onMountAutoFocus={onOpenAutoFocus}
+            onMountAutoFocus={composeEventHandlers(onOpenAutoFocus, (event) => {
+              // when opening, explicitly focus the content area only and leave
+              // `onEntryFocus` in  control of focusing first item
+              event.preventDefault();
+              contentRef.current?.focus();
+            })}
             onUnmountAutoFocus={(event) => {
               // skip autofocus on unmount if clicking outside is permitted and it happened
-              if (skipCloseAutoFocus) {
+              if (!disableOutsidePointerEvents && isPointerDownOutsideRef.current) {
                 event.preventDefault();
               } else {
                 onCloseAutoFocus?.(event);
@@ -225,14 +492,14 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
               as={Slot}
               disableOutsidePointerEvents={disableOutsidePointerEvents}
               onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
-                setSkipCloseAutoFocus(false);
+                isPointerDownOutsideRef.current = false;
               })}
               onPointerDownOutside={composeEventHandlers(
                 onPointerDownOutside,
                 (event) => {
                   const originalEvent = event.detail.originalEvent as MouseEvent;
                   const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
-                  setSkipCloseAutoFocus(!disableOutsidePointerEvents && isLeftClick);
+                  isPointerDownOutsideRef.current = isLeftClick;
                 },
                 { checkForDefaultPrevented: false }
               )}
@@ -246,38 +513,63 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                 { checkForDefaultPrevented: false }
               )}
               onInteractOutside={onInteractOutside}
-              onDismiss={() => context.onOpenChange(false)}
+              onDismiss={onDismiss}
             >
               <RovingFocusGroup
                 as={Slot}
-                dir={dir}
+                dir={context.dir}
                 orientation="vertical"
                 loop={loop}
                 currentTabStopId={currentItemId}
                 onCurrentTabStopIdChange={setCurrentItemId}
-                // we override the default behaviour which automatically focuses the first item
-                onEntryFocus={(event) => event.preventDefault()}
+                onEntryFocus={(event) => {
+                  // only focus first item when using keyboard
+                  if (!context.isUsingKeyboardRef.current) event.preventDefault();
+                }}
               >
                 <PopperPrimitive.Content
                   role="menu"
+                  dir={context.dir}
+                  data-state={getOpenState(context.open)}
                   {...contentProps}
                   ref={composedRefs}
                   style={{ outline: 'none', ...contentProps.style }}
-                  onKeyDownCapture={composeEventHandlers(
-                    contentProps.onKeyDownCapture,
-                    typeaheadProps.onKeyDownCapture
-                  )}
-                  // focus first/last item based on key pressed
                   onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+                    // submenu key events bubble through portals. We only care about keys in this menu.
+                    const target = event.target as HTMLElement;
+                    const isKeyDownInside = event.currentTarget.contains(target);
+                    const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+                    if (isKeyDownInside && !isModifierKey && event.key.length === 1) {
+                      handleTypeaheadSearch(event.key);
+                    }
+                    // menus should not be navigated using tab key so we prevent it
+                    if (event.key === 'Tab') event.preventDefault();
+                    // focus first/last item based on key pressed
                     const content = contentRef.current;
                     if (event.target !== content) return;
-                    if (!ALL_KEYS.includes(event.key)) return;
+                    if (!FIRST_LAST_KEYS.includes(event.key)) return;
                     event.preventDefault();
                     const items = getItems().filter((item) => !item.disabled);
                     const candidateNodes = items.map((item) => item.ref.current!);
                     if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
                     focusFirst(candidateNodes);
                   })}
+                  onBlur={composeEventHandlers(props.onBlur, (event) => {
+                    // clear search buffer when leaving the menu
+                    if (!event.currentTarget.contains(event.target)) {
+                      window.clearTimeout(timerRef.current);
+                      searchRef.current = '';
+                    }
+                  })}
+                  onPointerMove={composeEventHandlers(
+                    props.onPointerMove,
+                    whenMouse((event) => {
+                      const target = event.target as HTMLElement;
+                      if (event.currentTarget.contains(target) && event.movementX !== 0) {
+                        pointerDirRef.current = event.movementX > 0 ? 'right' : 'left';
+                      }
+                    })
+                  )}
                 />
               </RovingFocusGroup>
             </DismissableLayer>
@@ -299,21 +591,198 @@ const ITEM_DEFAULT_TAG = 'div';
 const ITEM_SELECT = 'menu.itemSelect';
 
 type MenuItemOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof MenuItemImpl>,
+  { onSelect?: (event: Event) => void }
+>;
+
+type MenuItemPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuItemImpl>,
+  MenuItemOwnProps
+>;
+
+const MenuItem = React.forwardRef((props, forwardedRef) => {
+  const { disabled = false, onSelect, ...itemProps } = props;
+  const ref = React.useRef<HTMLDivElement>(null);
+  const context = useMenuContext(ITEM_NAME);
+  const contentContext = useMenuContentContext(ITEM_NAME);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+
+  const handleSelect = () => {
+    const menuItem = ref.current;
+    if (!disabled && menuItem) {
+      const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
+      menuItem.addEventListener(ITEM_SELECT, (event) => onSelect?.(event), { once: true });
+      menuItem.dispatchEvent(itemSelectEvent);
+      if (itemSelectEvent.defaultPrevented) return;
+      context.onRootClose();
+    }
+  };
+
+  return (
+    <MenuItemImpl
+      {...itemProps}
+      ref={composedRefs}
+      disabled={disabled}
+      // we handle selection on `pointerUp` rather than `click` to match native menus implementation
+      onPointerUp={composeEventHandlers(props.onPointerUp, handleSelect)}
+      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        const isTypingAhead = contentContext.searchRef.current !== '';
+        if (disabled || (isTypingAhead && event.key === ' ')) return;
+        if (SELECTION_KEYS.includes(event.key)) {
+          // prevent page scroll if using the space key to select an item
+          if (event.key === ' ') event.preventDefault();
+          handleSelect();
+        }
+      })}
+    />
+  );
+}) as MenuItemPrimitive;
+
+MenuItem.displayName = ITEM_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuSubTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const SUB_TRIGGER_NAME = 'MenuSubTrigger';
+
+type MenuSubTriggerElement = React.ElementRef<typeof MenuSubTrigger>;
+type MenuSubTriggerOwnProps = Polymorphic.OwnProps<typeof MenuItemImpl>;
+type MenuSubTriggerPrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuItemImpl>,
+  MenuSubTriggerOwnProps
+>;
+
+const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
+  const context = useMenuContext(SUB_TRIGGER_NAME);
+  const contentContext = useMenuContentContext(SUB_TRIGGER_NAME);
+  const openTimerRef = React.useRef<number | null>(null);
+  const { pointerGraceTimerRef, onPointerGraceIntentChange } = contentContext;
+
+  const clearOpenTimer = React.useCallback(() => {
+    if (openTimerRef.current) window.clearTimeout(openTimerRef.current);
+    openTimerRef.current = null;
+  }, []);
+
+  React.useEffect(() => clearOpenTimer, [clearOpenTimer]);
+
+  React.useEffect(() => {
+    const pointerGraceTimer = pointerGraceTimerRef.current;
+    return () => {
+      window.clearTimeout(pointerGraceTimer);
+      onPointerGraceIntentChange(null);
+    };
+  }, [pointerGraceTimerRef, onPointerGraceIntentChange]);
+
+  return context.isSubmenu ? (
+    <MenuAnchor as={Slot}>
+      <MenuItemImpl
+        id={context.triggerId}
+        aria-haspopup="menu"
+        aria-expanded={context.open}
+        aria-controls={context.contentId}
+        data-state={getOpenState(context.open)}
+        {...props}
+        ref={composeRefs(forwardedRef, context.onTriggerChange)}
+        onPointerUp={composeEventHandlers(
+          props.onPointerUp,
+          whenTouchOrPen((event) => {
+            contentContext.onItemEnter(event);
+            if (event.defaultPrevented) return;
+            if (!props.disabled && !context.open) context.onOpenChange(true);
+          })
+        )}
+        onPointerMove={composeEventHandlers(
+          props.onPointerMove,
+          whenMouse((event) => {
+            contentContext.onItemEnter(event);
+            if (event.defaultPrevented) return;
+            if (!props.disabled && !context.open && !openTimerRef.current) {
+              contentContext.onPointerGraceIntentChange(null);
+              openTimerRef.current = window.setTimeout(() => {
+                context.onOpenChange(true);
+                clearOpenTimer();
+              }, 100);
+            }
+          })
+        )}
+        onPointerLeave={composeEventHandlers(
+          props.onPointerLeave,
+          whenMouse((event) => {
+            clearOpenTimer();
+
+            const contentRect = context.content?.getBoundingClientRect();
+            if (contentRect) {
+              // TODO: make sure to update this when we change positioning logic
+              const side = context.content?.dataset.side as Side;
+              const rightSide = side === 'right';
+              const bleed = rightSide ? -5 : +5;
+              const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
+              const contentFarEdge = contentRect[rightSide ? 'right' : 'left'];
+
+              contentContext.onPointerGraceIntentChange({
+                area: [
+                  // Apply a bleed on clientX to ensure that our exit point is
+                  // consistently within polygon bounds
+                  { x: event.clientX + bleed, y: event.clientY },
+                  { x: contentNearEdge, y: contentRect.top },
+                  { x: contentFarEdge, y: contentRect.top },
+                  { x: contentFarEdge, y: contentRect.bottom },
+                  { x: contentNearEdge, y: contentRect.bottom },
+                ],
+                side,
+              });
+
+              window.clearTimeout(pointerGraceTimerRef.current);
+              pointerGraceTimerRef.current = window.setTimeout(
+                () => contentContext.onPointerGraceIntentChange(null),
+                300
+              );
+            } else {
+              contentContext.onTriggerLeave(event);
+              if (event.defaultPrevented) return;
+
+              // There's 100ms where the user may leave an item before the submenu was opened.
+              contentContext.onPointerGraceIntentChange(null);
+            }
+          })
+        )}
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          const isTypingAhead = contentContext.searchRef.current !== '';
+          if (props.disabled || (isTypingAhead && event.key === ' ')) return;
+          if (SUB_OPEN_KEYS[context.dir].includes(event.key)) {
+            context.onOpenChange(true);
+            // The trigger may hold focus if opened via pointer interaction
+            // so we ensure content is given focus again when switching to keyboard.
+            context.content?.focus();
+          }
+        })}
+      />
+    </MenuAnchor>
+  ) : null;
+}) as MenuSubTriggerPrimitive;
+
+MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
+
+type MenuItemImplOwnProps = Polymorphic.Merge<
   Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
   {
     disabled?: boolean;
     textValue?: string;
-    onSelect?: (event: Event) => void;
   }
 >;
 
-type MenuItemPrimitive = Polymorphic.ForwardRefComponent<typeof ITEM_DEFAULT_TAG, MenuItemOwnProps>;
+type MenuItemImplPrimitive = Polymorphic.ForwardRefComponent<
+  typeof ITEM_DEFAULT_TAG,
+  MenuItemImplOwnProps
+>;
 
-const MenuItem = React.forwardRef((props, forwardedRef) => {
-  const { as = ITEM_DEFAULT_TAG, disabled = false, textValue, onSelect, ...itemProps } = props;
+const MenuItemImpl = React.forwardRef((props, forwardedRef) => {
+  const { as = ITEM_DEFAULT_TAG, disabled = false, textValue, ...itemProps } = props;
   const ref = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
-  const context = useMenuContext(ITEM_NAME);
   const contentContext = useMenuContentContext(ITEM_NAME);
 
   // get the item's `.textContent` as default strategy for typeahead `textValue`
@@ -325,52 +794,18 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
     }
   }, [itemProps.children]);
 
-  const menuTypeaheadItemProps = useMenuTypeaheadItem({
-    textValue: textValue ?? textContent,
-    disabled,
-  });
-
-  const handleSelect = () => {
-    const menuItem = ref.current;
-    if (!disabled && menuItem) {
-      const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
-      menuItem.dispatchEvent(itemSelectEvent);
-      if (itemSelectEvent.defaultPrevented) return;
-      context.onOpenChange?.(false);
-    }
-  };
-
-  React.useEffect(() => {
-    const menuItem = ref.current;
-    if (menuItem) {
-      const handleItemSelect = (event: Event) => onSelect?.(event);
-      menuItem.addEventListener(ITEM_SELECT, handleItemSelect);
-      return () => menuItem.removeEventListener(ITEM_SELECT, handleItemSelect);
-    }
-  }, [onSelect]);
-
   return (
-    <CollectionItemSlot disabled={disabled}>
+    <CollectionItemSlot disabled={disabled} textValue={textValue ?? textContent}>
       <RovingFocusItem
         role="menuitem"
         aria-disabled={disabled || undefined}
+        data-disabled={disabled ? '' : undefined}
         focusable={!disabled}
         {...itemProps}
-        {...menuTypeaheadItemProps}
         as={as}
         ref={composedRefs}
-        data-disabled={disabled ? '' : undefined}
-        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-          if (!disabled && (event.key === 'Enter' || event.key === ' ')) {
-            // prevent page scroll if using the space key to select an item
-            if (event.key === ' ') event.preventDefault();
-            handleSelect();
-          }
-        })}
-        // we handle selection on `mouseUp` rather than `click` to match native menus implementation
-        onMouseUp={composeEventHandlers(props.onMouseUp, handleSelect)}
         /**
-         * We focus items on `mouseMove` to achieve the following:
+         * We focus items on `pointerMove` to achieve the following:
          *
          * - Mouse over an item (it focuses)
          * - Leave mouse where it is and use keyboard to focus a different item
@@ -380,21 +815,28 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
          * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
          * wiggles. This is to match native menu implementation.
          */
-        onMouseMove={composeEventHandlers(props.onMouseMove, (event) => {
-          if (!disabled) {
-            const item = event.currentTarget;
-            item.focus();
-          } else {
-            contentContext.onItemLeave();
-          }
-        })}
-        onMouseLeave={composeEventHandlers(props.onMouseLeave, () => contentContext.onItemLeave())}
+        onPointerMove={composeEventHandlers(
+          props.onPointerMove,
+          whenMouse((event) => {
+            if (disabled) {
+              contentContext.onItemLeave(event);
+            } else {
+              contentContext.onItemEnter(event);
+              if (!event.defaultPrevented) {
+                const item = event.currentTarget;
+                item.focus();
+              }
+            }
+          })
+        )}
+        onPointerLeave={composeEventHandlers(
+          props.onPointerLeave,
+          whenMouse((event) => contentContext.onItemLeave(event))
+        )}
       />
     </CollectionItemSlot>
   );
-}) as MenuItemPrimitive;
-
-MenuItem.displayName = ITEM_NAME;
+}) as MenuItemImplPrimitive;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuCheckboxItem
@@ -589,8 +1031,86 @@ function focusFirst(candidates: HTMLElement[]) {
   }
 }
 
+/**
+ * Wraps an array around itself at a given start index
+ * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
+ */
+function wrapArray<T>(array: T[], startIndex: number) {
+  return array.map((_, index) => array[(startIndex + index) % array.length]);
+}
+
+/**
+ * This is the "meat" of the typeahead matching logic. It takes in all the values,
+ * the search and the current match, and returns the next match (or `undefined`).
+ *
+ * We normalize the search because if a user has repeatedly pressed a character,
+ * we want the exact same behavior as if we only had that one character
+ * (ie. cycle through options starting with that character)
+ *
+ * We also reorder the values by wrapping the array around the current match.
+ * This is so we always look forward from the current match, and picking the first
+ * match will always be the correct one.
+ *
+ * Finally, if the normalized search is exactly one character, we exclude the
+ * current match from the values because otherwise it would be the first to match always
+ * and focus would never move. This is as opposed to the regular case, where we
+ * don't want focus to move if the current match still matches.
+ */
+function getNextMatch(values: string[], search: string, currentMatch?: string) {
+  const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+  const normalizedSearch = isRepeated ? search[0] : search;
+  const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
+  let wrappedValues = wrapArray(values, Math.max(currentMatchIndex, 0));
+  const excludeCurrentMatch = normalizedSearch.length === 1;
+  if (excludeCurrentMatch) wrappedValues = wrappedValues.filter((v) => v !== currentMatch);
+  const nextMatch = wrappedValues.find((value) =>
+    value.toLowerCase().startsWith(normalizedSearch.toLowerCase())
+  );
+  return nextMatch !== currentMatch ? nextMatch : undefined;
+}
+
+type Point = { x: number; y: number };
+type Polygon = Point[];
+type Side = 'left' | 'right';
+type GraceIntent = { area: Polygon; side: Side };
+
+// Determine if a point is inside of a polygon.
+// Based on https://github.com/substack/point-in-polygon
+function isPointInPolygon(point: Point, polygon: Polygon) {
+  const { x, y } = point;
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    // prettier-ignore
+    const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
+}
+
+function isPointerInGraceArea(event: React.PointerEvent, area?: Polygon) {
+  if (!area) return false;
+  const cursorPos = { x: event.clientX, y: event.clientY };
+  return isPointInPolygon(cursorPos, area);
+}
+
+function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
+  return (event) => (event.pointerType === 'mouse' ? handler(event) : undefined);
+}
+
+function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
+  return (event) => (event.pointerType !== 'mouse' ? handler(event) : undefined);
+}
+
 const Root = Menu;
+const Sub = MenuSub;
 const Anchor = MenuAnchor;
+const SubTrigger = MenuSubTrigger;
 const Content = MenuContent;
 const Group = MenuGroup;
 const Label = MenuLabel;
@@ -604,7 +1124,9 @@ const Arrow = MenuArrow;
 
 export {
   Menu,
+  MenuSub,
   MenuAnchor,
+  MenuSubTrigger,
   MenuContent,
   MenuGroup,
   MenuLabel,
@@ -617,7 +1139,9 @@ export {
   MenuArrow,
   //
   Root,
+  Sub,
   Anchor,
+  SubTrigger,
   Content,
   Group,
   Label,
@@ -630,6 +1154,7 @@ export {
   Arrow,
 };
 export type {
+  MenuSubTriggerPrimitive,
   MenuContentPrimitive,
   MenuItemPrimitive,
   MenuCheckboxItemPrimitive,

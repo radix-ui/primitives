@@ -6,17 +6,19 @@ import {
   ContextMenuGroup,
   ContextMenuLabel,
   ContextMenuItem,
+  ContextMenuTriggerItem,
   ContextMenuCheckboxItem,
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
   ContextMenuItemIndicator,
   ContextMenuSeparator,
+  ContextMenuArrow,
 } from './ContextMenu';
 import { css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 import { classes, TickIcon } from '../../menu/src/Menu.stories';
 
-const { contentClass, itemClass, labelClass, separatorClass } = classes;
+const { contentClass, itemClass, labelClass, separatorClass, subTriggerClass } = classes;
 
 export default { title: 'Components/ContextMenu' };
 
@@ -57,6 +59,94 @@ export const Styled = () => {
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
+    </div>
+  );
+};
+
+export const Submenus = () => {
+  const [open, setOpen] = React.useState(false);
+  const [rtl, setRtl] = React.useState(false);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '200vw',
+        height: '200vh',
+        gap: 20,
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <label style={{ marginBottom: 10 }}>
+          <input
+            type="checkbox"
+            checked={rtl}
+            onChange={(event) => setRtl(event.currentTarget.checked)}
+          />
+          Right-to-left
+        </label>
+        <ContextMenu onOpenChange={setOpen} dir={rtl ? 'rtl' : 'ltr'}>
+          <ContextMenuTrigger
+            className={triggerClass}
+            style={{ background: open ? 'lightblue' : undefined }}
+          />
+          <ContextMenuContent className={contentClass} offset={-5}>
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+              Undo
+            </ContextMenuItem>
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+              Redo
+            </ContextMenuItem>
+            <ContextMenuSeparator className={separatorClass} />
+            <ContextMenu>
+              <ContextMenuTriggerItem className={subTriggerClass}>Submenu →</ContextMenuTriggerItem>
+              <ContextMenuContent className={contentClass} offset={12}>
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
+                  One
+                </ContextMenuItem>
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('two')}>
+                  Two
+                </ContextMenuItem>
+                <ContextMenuSeparator className={separatorClass} />
+                <ContextMenu>
+                  <ContextMenuTriggerItem className={subTriggerClass}>
+                    Submenu →
+                  </ContextMenuTriggerItem>
+                  <ContextMenuContent className={contentClass} offset={12}>
+                    <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
+                      One
+                    </ContextMenuItem>
+                    <ContextMenuItem className={itemClass} onSelect={() => console.log('two')}>
+                      Two
+                    </ContextMenuItem>
+                    <ContextMenuItem className={itemClass} onSelect={() => console.log('three')}>
+                      Three
+                    </ContextMenuItem>
+                    <ContextMenuArrow offset={8} />
+                  </ContextMenuContent>
+                </ContextMenu>
+                <ContextMenuSeparator className={separatorClass} />
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('three')}>
+                  Three
+                </ContextMenuItem>
+                <ContextMenuArrow offset={8} />
+              </ContextMenuContent>
+            </ContextMenu>
+            <ContextMenuSeparator className={separatorClass} />
+            <ContextMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+              Cut
+            </ContextMenuItem>
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+              Copy
+            </ContextMenuItem>
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+              Paste
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
+      </div>
     </div>
   );
 };
@@ -285,6 +375,25 @@ export const Nested = () => (
             <ContextMenuItem className={itemClass} onSelect={() => console.log('red action2')}>
               Red action 2
             </ContextMenuItem>
+            <ContextMenuSeparator className={separatorClass} />
+            <ContextMenu>
+              <ContextMenuTriggerItem className={subTriggerClass}>Submenu →</ContextMenuTriggerItem>
+              <ContextMenuContent className={contentClass} offset={12}>
+                <ContextMenuItem
+                  className={itemClass}
+                  onSelect={() => console.log('red sub action 1')}
+                >
+                  Red sub action 1
+                </ContextMenuItem>
+                <ContextMenuItem
+                  className={itemClass}
+                  onSelect={() => console.log('red sub action 2')}
+                >
+                  Red sub action 2
+                </ContextMenuItem>
+                <ContextMenuArrow offset={8} />
+              </ContextMenuContent>
+            </ContextMenu>
           </ContextMenuContent>
         </ContextMenu>
       </ContextMenuTrigger>
@@ -297,6 +406,25 @@ export const Nested = () => (
         <ContextMenuItem className={itemClass} onSelect={() => console.log('blue action2')}>
           Blue action 2
         </ContextMenuItem>
+        <ContextMenuSeparator className={separatorClass} />
+        <ContextMenu>
+          <ContextMenuTriggerItem className={subTriggerClass}>Submenu →</ContextMenuTriggerItem>
+          <ContextMenuContent className={contentClass} offset={12}>
+            <ContextMenuItem
+              className={itemClass}
+              onSelect={() => console.log('blue sub action 1')}
+            >
+              Blue sub action 1
+            </ContextMenuItem>
+            <ContextMenuItem
+              className={itemClass}
+              onSelect={() => console.log('blue sub action 2')}
+            >
+              Blue sub action 2
+            </ContextMenuItem>
+            <ContextMenuArrow offset={8} />
+          </ContextMenuContent>
+        </ContextMenu>
       </ContextMenuContent>
     </ContextMenu>
   </div>
