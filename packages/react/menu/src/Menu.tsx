@@ -606,13 +606,12 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(ITEM_NAME);
   const contentContext = useMenuContentContext(ITEM_NAME);
   const composedRefs = useComposedRefs(forwardedRef, ref);
-  const handleSelectProp = useCallbackRef(onSelect);
 
   const handleSelect = () => {
     const menuItem = ref.current;
-    if (!disabled && menuItem) {
+    if (!disabled && menuItem && onSelect) {
       const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
-      menuItem.addEventListener(ITEM_SELECT, handleSelectProp, { once: true });
+      menuItem.addEventListener(ITEM_SELECT, onSelect, { once: true });
       menuItem.dispatchEvent(itemSelectEvent);
       if (itemSelectEvent.defaultPrevented) return;
       context.onRootClose();
