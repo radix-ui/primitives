@@ -612,19 +612,12 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
     const menuItem = ref.current;
     if (!disabled && menuItem) {
       const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
+      menuItem.addEventListener(ITEM_SELECT, handleSelectProp, { once: true });
       menuItem.dispatchEvent(itemSelectEvent);
       if (itemSelectEvent.defaultPrevented) return;
       context.onRootClose();
     }
   };
-
-  React.useEffect(() => {
-    const menuItem = ref.current;
-    if (menuItem) {
-      menuItem.addEventListener(ITEM_SELECT, handleSelectProp);
-      return () => menuItem.removeEventListener(ITEM_SELECT, handleSelectProp);
-    }
-  }, [handleSelectProp]);
 
   return (
     <MenuItemImpl
