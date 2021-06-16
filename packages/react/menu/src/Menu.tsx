@@ -566,11 +566,11 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                     props.onPointerMove,
                     whenMouse((event) => {
                       const target = event.target as HTMLElement;
-                      const valueHasChanged = lastPointerXRef.current !== event.clientX;
+                      const pointerXHasChanged = lastPointerXRef.current !== event.clientX;
 
                       // We don't use `event.movementX` for this check because Safari will
                       // always return `0` on a pointer event.
-                      if (event.currentTarget.contains(target) && valueHasChanged) {
+                      if (event.currentTarget.contains(target) && pointerXHasChanged) {
                         const newDir = event.clientX > lastPointerXRef.current ? 'right' : 'left';
                         pointerDirRef.current = newDir;
                         lastPointerXRef.current = event.clientX;
