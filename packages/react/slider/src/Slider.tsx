@@ -19,7 +19,7 @@ const PAGE_KEYS = ['PageUp', 'PageDown'];
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
 const BACK_KEYS: Record<Direction, string[]> = {
-  ltr: ['ArrowDown', 'Home', 'ArrowLeft', 'PageUp'],
+  ltr: ['ArrowDown', 'Home', 'ArrowLeft', 'PageDown'],
   rtl: ['ArrowDown', 'Home', 'ArrowRight', 'PageDown'],
 };
 
