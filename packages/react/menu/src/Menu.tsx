@@ -396,6 +396,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const pointerGraceTimerRef = React.useRef(0);
   const pointerGraceIntentRef = React.useRef<GraceIntent | null>(null);
   const pointerDirRef = React.useRef<Side>('right');
+  const lastPointerXRef = React.useRef(0);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
   const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
@@ -565,8 +566,14 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                     props.onPointerMove,
                     whenMouse((event) => {
                       const target = event.target as HTMLElement;
-                      if (event.currentTarget.contains(target) && event.movementX !== 0) {
-                        pointerDirRef.current = event.movementX > 0 ? 'right' : 'left';
+                      const pointerXHasChanged = lastPointerXRef.current !== event.clientX;
+
+                      // We don't use `event.movementX` for this check because Safari will
+                      // always return `0` on a pointer event.
+                      if (event.currentTarget.contains(target) && pointerXHasChanged) {
+                        const newDir = event.clientX > lastPointerXRef.current ? 'right' : 'left';
+                        pointerDirRef.current = newDir;
+                        lastPointerXRef.current = event.clientX;
                       }
                     })
                   )}
