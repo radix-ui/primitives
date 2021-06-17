@@ -96,9 +96,9 @@ const ToggleGroupSingle = React.forwardRef((props, forwardedRef) => {
 
   return (
     <ToggleGroupValueProvider
-      value={value ? [value] : []}
+      value={value && value.length > 0 ? [value] : []}
       onItemActivate={setValue}
-      onItemDeactivate={() => setValue(undefined)}
+      onItemDeactivate={React.useCallback(() => setValue(''), [setValue])}
     >
       <ToggleGroupImpl {...toggleGroupSingleProps} ref={forwardedRef} />
     </ToggleGroupValueProvider>
