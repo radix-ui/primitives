@@ -107,7 +107,7 @@ const AccordionSingle = React.forwardRef((props, forwardedRef) => {
     <AccordionValueProvider
       value={value ? [value] : []}
       onItemOpen={setValue}
-      onItemClose={() => collapsible && setValue('')}
+      onItemClose={React.useCallback(() => collapsible && setValue(''), [collapsible, setValue])}
     >
       <AccordionCollapsibleContext.Provider value={collapsible}>
         <AccordionImpl {...accordionSingleProps} ref={forwardedRef} />
