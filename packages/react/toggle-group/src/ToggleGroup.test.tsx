@@ -47,7 +47,7 @@ describe('given a single ToggleGroup', () => {
           fireEvent.click(two);
         });
 
-        it('should change value to `""`', () => {
+        it('should change value to empty string', () => {
           expect(handleValueChange).toHaveBeenCalledWith('');
         });
       });
