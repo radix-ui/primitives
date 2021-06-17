@@ -47,8 +47,8 @@ describe('given a single ToggleGroup', () => {
           fireEvent.click(two);
         });
 
-        it('should change value to `undefined`', () => {
-          expect(handleValueChange).toHaveBeenCalledWith(undefined);
+        it('should change value to empty string', () => {
+          expect(handleValueChange).toHaveBeenCalledWith('');
         });
       });
     });
