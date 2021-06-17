@@ -6,7 +6,6 @@ import { createContext } from '@radix-ui/react-context';
 import { extendPrimitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
 import { Slot } from '@radix-ui/react-slot';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Radio, RadioIndicator } from './Radio';
 
