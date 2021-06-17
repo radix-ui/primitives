@@ -5,8 +5,6 @@ import { css } from '../../../../stitches.config';
 export default { title: 'Components/ScrollArea' };
 
 export const Basic = () => {
-  const [verticalCount, setVerticalCount] = React.useState(1);
-  const [horizontalCount, setHorizontalCount] = React.useState(1);
   const [props, setProps] = React.useState({} as any);
   return (
     <>
@@ -364,12 +362,12 @@ const ScrollAreaStory = ({ children, vertical = true, horizontal = true, ...prop
   >
     <ScrollArea.Viewport className={scrollAreaViewportClass}>{children}</ScrollArea.Viewport>
     {vertical && (
-      <ScrollArea.Scrollbar className={scrollbarVerticalClass} orientation="vertical">
+      <ScrollArea.Scrollbar className={scrollbarClass} orientation="vertical">
         <ScrollArea.Thumb className={thumbClass} />
       </ScrollArea.Scrollbar>
     )}
     {horizontal && (
-      <ScrollArea.Scrollbar className={scrollbarHorizontalClass} orientation="horizontal">
+      <ScrollArea.Scrollbar className={scrollbarClass} orientation="horizontal">
         <ScrollArea.Thumb className={thumbClass} />
       </ScrollArea.Scrollbar>
     )}
@@ -434,19 +432,13 @@ const scrollbarClass = css({
   '&:hover': {
     background: 'rgba(0, 0, 0, 0.5)',
   },
-});
-
-const scrollbarVerticalClass = css(scrollbarClass, {
-  width: SCROLLBAR_SIZE,
-});
-
-const RECOMMENDED_CSS__SCROLLBAR__HORIZONTAL: any = {
-  flexDirection: 'column',
-};
-
-const scrollbarHorizontalClass = css(scrollbarClass, {
-  ...RECOMMENDED_CSS__SCROLLBAR__HORIZONTAL,
-  height: SCROLLBAR_SIZE,
+  '&[data-orientation="vertical"]': {
+    width: SCROLLBAR_SIZE,
+  },
+  '&[data-orientation="horizontal"]': {
+    flexDirection: 'column',
+    height: SCROLLBAR_SIZE,
+  },
 });
 
 const RECOMMENDED_CSS__SCROLLBAR__THUMB: any = {
