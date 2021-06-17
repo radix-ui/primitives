@@ -501,6 +501,7 @@ const ScrollAreaScrollbarX = React.forwardRef((props, forwardedRef) => {
 
   return (
     <ScrollAreaScrollbarImpl
+      data-orientation="horizontal"
       {...scrollbarProps}
       ref={composeRefs}
       sizes={sizes}
@@ -553,6 +554,7 @@ const ScrollAreaScrollbarY = React.forwardRef((props, forwardedRef) => {
 
   return (
     <ScrollAreaScrollbarImpl
+      data-orientation="vertical"
       {...scrollbarProps}
       ref={composeRefs}
       sizes={sizes}
