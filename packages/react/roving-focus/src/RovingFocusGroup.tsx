@@ -109,6 +109,7 @@ const RovingFocusGroupImpl = React.forwardRef((props, forwardedRef) => {
   const [isTabbingBackOut, setIsTabbingBackOut] = React.useState(false);
   const handleEntryFocus = useCallbackRef(onEntryFocus);
   const { getItems } = useCollection();
+  const isClickFocusRef = React.useRef(false);
 
   React.useEffect(() => {
     const node = ref.current;
@@ -136,8 +137,18 @@ const RovingFocusGroupImpl = React.forwardRef((props, forwardedRef) => {
         {...groupProps}
         as={as}
         ref={composedRefs}
+        style={{ outline: 'none', ...props.style }}
+        onMouseDown={composeEventHandlers(props.onMouseDown, () => {
+          isClickFocusRef.current = true;
+        })}
         onFocus={composeEventHandlers(props.onFocus, (event) => {
-          if (event.target === event.currentTarget && !isTabbingBackOut) {
+          // We normally wouldn't need this check, because we already check
+          // that the focus is on the current target and not bubbling to it.
+          // We do this because Safari doesn't focus buttons when clicked, and
+          // instead, the wrapper will get focused and not through a bubbling event.
+          const isKeyboardFocus = !isClickFocusRef.current;
+
+          if (event.target === event.currentTarget && isKeyboardFocus && !isTabbingBackOut) {
             const entryFocusEvent = new Event(ENTRY_FOCUS, EVENT_OPTIONS);
             event.currentTarget.dispatchEvent(entryFocusEvent);
 
@@ -152,6 +163,8 @@ const RovingFocusGroupImpl = React.forwardRef((props, forwardedRef) => {
               focusFirst(candidateNodes);
             }
           }
+
+          isClickFocusRef.current = false;
         })}
         onBlur={composeEventHandlers(props.onBlur, () => setIsTabbingBackOut(false))}
       />
@@ -198,6 +211,8 @@ const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
           // We prevent focusing non-focusable items on `mousedown`.
           // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
           if (!focusable) event.preventDefault();
+          // Safari doesn't focus a button when clicked so we run our logic on mousedown also
+          else context.onItemFocus(id);
         })}
         onFocus={composeEventHandlers(props.onFocus, () => context.onItemFocus(id))}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
