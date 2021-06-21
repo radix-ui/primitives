@@ -3,7 +3,6 @@ import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-use-direction';
 import { usePrevious } from '@radix-ui/react-use-previous';
