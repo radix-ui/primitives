@@ -17,6 +17,10 @@ storybook-static
 !.yarn/sdks
 !.yarn/versions
 
+# Testing
+cypress/videos
+cypress/screenshots
+
 # Editor-specific
 .vscode
 .idea

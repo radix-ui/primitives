@@ -1,0 +1,7 @@
+{
+  "baseUrl": "http://localhost:9009",
+  "viewportWidth": 1024,
+  "viewportHeight": 768,
+  "fixturesFolder": false,
+  "pluginsFile": false
+}
