@@ -116,7 +116,7 @@ const Slider = React.forwardRef((props, forwardedRef) => {
       const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
       if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
         valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
-        return nextValues[atIndex] !== prevValues[atIndex] ? nextValues : prevValues;
+        return String(nextValues) === String(prevValues) ? prevValues : nextValues;
       } else {
         return prevValues;
       }
