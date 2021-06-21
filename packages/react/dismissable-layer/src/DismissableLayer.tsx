@@ -62,9 +62,9 @@ type DismissableLayerImplOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
-     * When `true`, hover/focus/click interactions will be disabled on elements outside the `DismissableLayer`.
-     * Users will need to click twice on outside elements to interact with them:
-     * Once to close the `DismissableLayer`, and again to trigger the element.
+     * When `true`, hover/focus/click interactions will be disabled on elements outside
+     * the `DismissableLayer`. Users will need to click twice on outside elements to
+     * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
      */
     disableOutsidePointerEvents?: boolean;
 
@@ -75,7 +75,7 @@ type DismissableLayerImplOwnProps = Polymorphic.Merge<
     onEscapeKeyDown?: (event: KeyboardEvent) => void;
 
     /**
-     * Event handler called when the a pointer event happens outside of the `DismissableLayer`.
+     * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
      * Can be prevented.
      */
     onPointerDownOutside?: (event: PointerDownOutsideEvent) => void;
@@ -88,7 +88,7 @@ type DismissableLayerImplOwnProps = Polymorphic.Merge<
 
     /**
      * Event handler called when an interaction happens outside the `DismissableLayer`.
-     * Specifically, when a pointer event happens outside of the `DismissableLayer` or focus moves outside of it.
+     * Specifically, when a `pointerdown` event happens outside or focus moves outside of it.
      * Can be prevented.
      */
     onInteractOutside?: (event: PointerDownOutsideEvent | FocusOutsideEvent) => void;

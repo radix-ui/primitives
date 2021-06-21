@@ -21,8 +21,16 @@ type FocusScopeOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
     /**
-     * Whether focus should be trapped within the FocusScope
-     * (default: false)
+     * When `true`, tabbing from last item will focus first tabbable
+     * and shift+tab from first item will focus last tababble.
+     * @defaultValue false
+     */
+    loop?: boolean;
+
+    /**
+     * When `true`, focus cannot escape the focus scope via keyboard,
+     * pointer, or a programmatic focus.
+     * @defaultValue false
      */
     trapped?: boolean;
 
@@ -47,6 +55,7 @@ type FocusScopePrimitive = Polymorphic.ForwardRefComponent<
 
 const FocusScope = React.forwardRef((props, forwardedRef) => {
   const {
+    loop = false,
     trapped = false,
     onMountAutoFocus: onMountAutoFocusProp,
     onUnmountAutoFocus: onUnmountAutoFocusProp,
@@ -58,9 +67,6 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
   const lastFocusedElementRef = React.useRef<HTMLElement | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setContainer(node));
 
-  const wrapped = trapped;
-  const contained = trapped;
-
   const focusScope = React.useRef({
     paused: false,
     pause() {
@@ -71,9 +77,9 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
     },
   }).current;
 
-  // Takes care of containing focus if focus is moved outside programmatically for example
+  // Takes care of trapping focus if focus is moved outside programmatically for example
   React.useEffect(() => {
-    if (contained) {
+    if (trapped) {
       function handleFocusIn(event: FocusEvent) {
         if (focusScope.paused || !container) return;
         const target = event.target as HTMLElement | null;
@@ -98,7 +104,7 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
         document.removeEventListener('focusout', handleFocusOut);
       };
     }
-  }, [contained, container, focusScope.paused]);
+  }, [trapped, container, focusScope.paused]);
 
   React.useEffect(() => {
     if (container) {
@@ -140,10 +146,10 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
     }
   }, [container, onMountAutoFocus, onUnmountAutoFocus, focusScope]);
 
-  // Takes care of containing focus and wrapping focus (when tabbing whilst at the edges)
+  // Takes care of looping focus (when tabbing whilst at the edges)
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent) => {
-      if (!wrapped && !contained) return;
+      if (!loop && !trapped) return;
       if (focusScope.paused) return;
 
       const isTabKey = event.key === 'Tab' && !event.altKey && !event.ctrlKey && !event.metaKey;
@@ -160,15 +166,15 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
         } else {
           if (!event.shiftKey && focusedElement === last) {
             event.preventDefault();
-            if (wrapped) focus(first, { select: true });
+            if (loop) focus(first, { select: true });
           } else if (event.shiftKey && focusedElement === first) {
             event.preventDefault();
-            if (wrapped) focus(last, { select: true });
+            if (loop) focus(last, { select: true });
           }
         }
       }
     },
-    [wrapped, contained, focusScope.paused]
+    [loop, trapped, focusScope.paused]
   );
 
   return <Primitive tabIndex={-1} {...scopeProps} ref={composedRefs} onKeyDown={handleKeyDown} />;
