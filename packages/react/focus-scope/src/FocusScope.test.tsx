@@ -18,12 +18,10 @@ describe('FocusScope', () => {
     beforeEach(() => {
       rendered = render(
         <div>
-          <FocusScope trapped>
-            <form>
-              <TestField label={INNER_NAME_INPUT_LABEL} />
-              <TestField label={INNER_EMAIL_INPUT_LABEL} />
-              <button>{INNER_SUBMIT_LABEL}</button>
-            </form>
+          <FocusScope as="form" loop trapped>
+            <TestField label={INNER_NAME_INPUT_LABEL} />
+            <TestField label={INNER_EMAIL_INPUT_LABEL} />
+            <button>{INNER_SUBMIT_LABEL}</button>
           </FocusScope>
           <TestField label="other" />
           <button>some outer button</button>
@@ -61,12 +59,10 @@ describe('FocusScope', () => {
     beforeEach(() => {
       rendered = render(
         <div>
-          <FocusScope trapped>
-            <form>
-              <TestField label={INNER_NAME_INPUT_LABEL} tabIndex={-1} />
-              <TestField label={INNER_EMAIL_INPUT_LABEL} />
-              <button>{INNER_SUBMIT_LABEL}</button>
-            </form>
+          <FocusScope as="form" loop trapped>
+            <TestField label={INNER_NAME_INPUT_LABEL} tabIndex={-1} />
+            <TestField label={INNER_EMAIL_INPUT_LABEL} />
+            <button>{INNER_SUBMIT_LABEL}</button>
           </FocusScope>
           <TestField label="other" />
           <button>some outer button</button>
@@ -96,11 +92,9 @@ describe('FocusScope', () => {
     beforeEach(() => {
       rendered = render(
         <div>
-          <FocusScope trapped>
-            <form>
-              <TestField label={INNER_NAME_INPUT_LABEL} />
-              <button onBlur={handleLastFocusableElementBlur}>{INNER_SUBMIT_LABEL}</button>
-            </form>
+          <FocusScope as="form" loop trapped>
+            <TestField label={INNER_NAME_INPUT_LABEL} />
+            <button onBlur={handleLastFocusableElementBlur}>{INNER_SUBMIT_LABEL}</button>
           </FocusScope>
         </div>
       );
