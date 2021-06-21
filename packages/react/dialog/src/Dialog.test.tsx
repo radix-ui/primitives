@@ -1,7 +1,7 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import { RenderResult } from '@testing-library/react';
-import { render, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import * as Dialog from './Dialog';
 
 const OPEN_TEXT = 'Open';
