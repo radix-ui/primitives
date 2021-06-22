@@ -3,7 +3,6 @@ import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-use-direction';
 import { usePrevious } from '@radix-ui/react-use-previous';
@@ -92,54 +91,36 @@ const Slider = React.forwardRef((props, forwardedRef) => {
   const [values = [], setValues] = useControllableState({
     prop: value,
     defaultProp: defaultValue,
-    onChange: onValueChange,
+    onChange: (value) => {
+      const thumbs = [...thumbRefs.current];
+      thumbs[valueIndexToChangeRef.current]?.focus();
+      onValueChange(value);
+    },
   });
 
   function handleSlideStart(value: number) {
     const closestIndex = getClosestValueIndex(values, value);
-    updateValues(value, closestIndex).then((valueIndexToChange) => {
-      /**
-       * Browsers fire event handlers before executing their event implementation
-       * so they can check if `preventDefault` was called first. Therefore,
-       * if we focus the thumb on slide start (`mousedown`), the browser will execute
-       * their `mousedown` implementation after our focus which will instantly
-       * `blur` the thumb again (because it effectively clicks off the thumb).
-       *
-       * We use a `setTimeout`  to move the focus to the next tick (after the
-       * mousedown) to ensure focus on mousedown.
-       */
-      window.setTimeout(() => focusThumb(valueIndexToChange), 0);
-    });
+    updateValues(value, closestIndex);
   }
 
   function handleSlideMove(value: number) {
-    updateValues(value, valueIndexToChangeRef.current).then(focusThumb);
+    updateValues(value, valueIndexToChangeRef.current);
   }
 
-  function updateValues(value: number, atIndex: number): Promise<number> {
+  function updateValues(value: number, atIndex: number) {
     const decimalCount = getDecimalCount(step);
     const snapToStep = roundValue(Math.round((value - min) / step) * step + min, decimalCount);
     const nextValue = clamp(snapToStep, [min, max]);
 
-    return new Promise((resolve) => {
-      setValues((prevValues = []) => {
-        const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
-
-        if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
-          valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
-          resolve(valueIndexToChangeRef.current);
-          return nextValues[atIndex] !== prevValues[atIndex] ? nextValues : prevValues;
-        } else {
-          resolve(valueIndexToChangeRef.current);
-          return prevValues;
-        }
-      });
+    setValues((prevValues = []) => {
+      const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
+      if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
+        valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
+        return nextValues[atIndex] !== prevValues[atIndex] ? nextValues : prevValues;
+      } else {
+        return prevValues;
+      }
     });
-  }
-
-  function focusThumb(index: number) {
-    const thumbs = [...thumbRefs.current];
-    thumbs[index]?.focus();
   }
 
   return (
@@ -203,10 +184,10 @@ const SliderOrientationContext = React.createContext<{
 }>({} as any);
 
 type SliderOrientationPartOwnProps = Omit<
-  Polymorphic.OwnProps<typeof SliderPart>,
-  | 'onSlideMouseDown'
-  | 'onSlideMouseMove'
-  | 'onSlideMouseUp'
+  Polymorphic.OwnProps<typeof SliderImpl>,
+  | 'onSlideStart'
+  | 'onSlideMove'
+  | 'onSlideEnd'
   | 'onSlideTouchStart'
   | 'onSlideTouchMove'
   | 'onSlideTouchEnd'
@@ -226,13 +207,13 @@ type SliderOrientationOwnProps = Polymorphic.Merge<
 
 type SliderHorizontalOwnProps = SliderOrientationOwnProps & { dir?: Direction };
 type SliderHorizontalPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof SliderPart>,
+  Polymorphic.IntrinsicElement<typeof SliderImpl>,
   SliderHorizontalOwnProps
 >;
 
 const SliderHorizontal = React.forwardRef((props, forwardedRef) => {
   const { min, max, dir, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
-  const [slider, setSlider] = React.useState<React.ElementRef<typeof SliderPart> | null>(null);
+  const [slider, setSlider] = React.useState<React.ElementRef<typeof SliderImpl> | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
   const rectRef = React.useRef<ClientRect>();
   const direction = useDirection(slider, dir);
@@ -260,7 +241,7 @@ const SliderHorizontal = React.forwardRef((props, forwardedRef) => {
         [isDirectionLTR]
       )}
     >
-      <SliderPart
+      <SliderImpl
         data-orientation="horizontal"
         {...sliderProps}
         ref={composedRefs}
@@ -268,26 +249,15 @@ const SliderHorizontal = React.forwardRef((props, forwardedRef) => {
           ...sliderProps.style,
           ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
         }}
-        onSlideMouseDown={(event) => {
+        onSlideStart={(event) => {
           const value = getValueFromPointer(event.clientX);
           onSlideStart?.(value);
         }}
-        onSlideMouseMove={(event) => {
+        onSlideMove={(event) => {
           const value = getValueFromPointer(event.clientX);
           onSlideMove?.(value);
         }}
-        onSlideMouseUp={() => (rectRef.current = undefined)}
-        onSlideTouchStart={(event) => {
-          const touch = event.targetTouches[0];
-          const value = getValueFromPointer(touch.clientX);
-          onSlideStart?.(value);
-        }}
-        onSlideTouchMove={(event) => {
-          const touch = event.targetTouches[0];
-          const value = getValueFromPointer(touch.clientX);
-          onSlideMove?.(value);
-        }}
-        onSlideTouchEnd={() => (rectRef.current = undefined)}
+        onSlideEnd={() => (rectRef.current = undefined)}
         onStepKeyDown={(event) => {
           const isBackKey = BACK_KEYS[direction].includes(event.key);
           onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
@@ -303,13 +273,13 @@ const SliderHorizontal = React.forwardRef((props, forwardedRef) => {
 
 type SliderVerticalOwnProps = SliderOrientationOwnProps;
 type SliderVerticalPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof SliderPart>,
+  Polymorphic.IntrinsicElement<typeof SliderImpl>,
   SliderVerticalOwnProps
 >;
 
 const SliderVertical = React.forwardRef((props, forwardedRef) => {
   const { min, max, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
-  const sliderRef = React.useRef<React.ElementRef<typeof SliderPart>>(null);
+  const sliderRef = React.useRef<React.ElementRef<typeof SliderImpl>>(null);
   const ref = useComposedRefs(forwardedRef, sliderRef);
   const rectRef = React.useRef<ClientRect>();
 
@@ -330,7 +300,7 @@ const SliderVertical = React.forwardRef((props, forwardedRef) => {
         []
       )}
     >
-      <SliderPart
+      <SliderImpl
         data-orientation="vertical"
         {...sliderProps}
         ref={ref}
@@ -338,26 +308,15 @@ const SliderVertical = React.forwardRef((props, forwardedRef) => {
           ...sliderProps.style,
           ['--radix-slider-thumb-transform' as any]: 'translateY(50%)',
         }}
-        onSlideMouseDown={(event) => {
+        onSlideStart={(event) => {
           const value = getValueFromPointer(event.clientY);
           onSlideStart?.(value);
         }}
-        onSlideMouseMove={(event) => {
+        onSlideMove={(event) => {
           const value = getValueFromPointer(event.clientY);
           onSlideMove?.(value);
         }}
-        onSlideMouseUp={() => (rectRef.current = undefined)}
-        onSlideTouchStart={(event) => {
-          const touch = event.targetTouches[0];
-          const value = getValueFromPointer(touch.clientY);
-          onSlideStart?.(value);
-        }}
-        onSlideTouchMove={(event) => {
-          const touch = event.targetTouches[0];
-          const value = getValueFromPointer(touch.clientY);
-          onSlideMove?.(value);
-        }}
-        onSlideTouchEnd={() => (rectRef.current = undefined)}
+        onSlideEnd={() => (rectRef.current = undefined)}
         onStepKeyDown={(event) => {
           const isBackKey = BACK_KEYS.ltr.includes(event.key);
           onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
@@ -368,17 +327,14 @@ const SliderVertical = React.forwardRef((props, forwardedRef) => {
 }) as SliderVerticalPrimitive;
 
 /* -------------------------------------------------------------------------------------------------
- * SliderPart
+ * SliderImpl
  * -----------------------------------------------------------------------------------------------*/
 type SliderPartOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
   {
-    onSlideMouseDown(event: React.MouseEvent): void;
-    onSlideMouseMove(event: MouseEvent): void;
-    onSlideMouseUp(): void;
-    onSlideTouchStart(event: React.TouchEvent): void;
-    onSlideTouchMove(event: TouchEvent): void;
-    onSlideTouchEnd(): void;
+    onSlideStart(event: React.PointerEvent): void;
+    onSlideMove(event: React.PointerEvent): void;
+    onSlideEnd(event: React.PointerEvent): void;
     onHomeKeyDown(event: React.KeyboardEvent): void;
     onEndKeyDown(event: React.KeyboardEvent): void;
     onStepKeyDown(event: React.KeyboardEvent): void;
@@ -390,70 +346,24 @@ type SliderPartPrimitive = Polymorphic.ForwardRefComponent<
   SliderPartOwnProps
 >;
 
-const SliderPart = React.forwardRef((props, forwardedRef) => {
+const SliderImpl = React.forwardRef((props, forwardedRef) => {
   const {
     as = SLIDER_DEFAULT_TAG,
-    onSlideMouseDown,
-    onSlideMouseMove,
-    onSlideMouseUp,
-    onSlideTouchStart,
-    onSlideTouchMove,
-    onSlideTouchEnd,
+    onSlideStart,
+    onSlideMove,
+    onSlideEnd,
     onHomeKeyDown,
     onEndKeyDown,
     onStepKeyDown,
     ...sliderProps
   } = props;
-
-  const handleSlideMouseMove = useCallbackRef(onSlideMouseMove);
-  const handleSlideTouchMove = useCallbackRef(onSlideTouchMove);
-  const removeMouseEventListeners = useCallbackRef(() => {
-    document.removeEventListener('mousemove', handleSlideMouseMove);
-    document.removeEventListener('mouseup', removeMouseEventListeners);
-    onSlideMouseUp();
-  });
-  const removeTouchEventListeners = useCallbackRef(() => {
-    document.removeEventListener('touchmove', handleSlideTouchMove);
-    document.removeEventListener('touchend', removeTouchEventListeners);
-    onSlideTouchEnd();
-  });
-
-  React.useEffect(() => {
-    return () => {
-      removeMouseEventListeners();
-      removeTouchEventListeners();
-    };
-  }, [removeMouseEventListeners, removeTouchEventListeners]);
+  const context = useSliderContext(SLIDER_NAME);
 
   return (
     <Primitive
       {...sliderProps}
       as={as}
       ref={forwardedRef}
-      onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
-        // Slide only if main mouse button was clicked
-        if (event.button === 0) {
-          if (!isThumb(event.target)) onSlideMouseDown(event);
-          document.addEventListener('mousemove', handleSlideMouseMove);
-          document.addEventListener('mouseup', removeMouseEventListeners);
-        }
-        // We purpoesfully avoid calling `event.preventDefault` here as it will
-        // also prevent PointerEvents which we need.
-      })}
-      onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
-        if (isThumb(event.target)) {
-          // Touch devices have a delay before focusing and won't focus if touch
-          // immediatedly moves away from target. We want thumb to focus regardless.
-          event.target.focus();
-        } else {
-          onSlideTouchStart(event);
-        }
-
-        document.addEventListener('touchmove', handleSlideTouchMove);
-        document.addEventListener('touchend', removeTouchEventListeners);
-        // Prevent scrolling for touch events
-        event.preventDefault();
-      })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         if (event.key === 'Home') {
           onHomeKeyDown(event);
@@ -465,19 +375,29 @@ const SliderPart = React.forwardRef((props, forwardedRef) => {
           event.preventDefault();
         }
       })}
-      /**
-       * Prevent pointer events on other elements on the page while sliding.
-       * For example, stops hover states from triggering on buttons if
-       * mouse moves over a button during slide.
-       *
-       * Also ensures that slider receives all pointer events after mouse down
-       * even when mouse moves outside the document.
-       */
       onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-        (event.target as HTMLElement).setPointerCapture(event.pointerId);
+        const target = event.target as HTMLElement;
+        target.setPointerCapture(event.pointerId);
+        // Prevent browser focus behaviour because we focus a thumb manually when values change.
+        event.preventDefault();
+        // Touch devices have a delay before focusing so won't focus if touch immediately moves
+        // away from target (sliding). We want thumb to focus regardless.
+        if (context.thumbs.has(target)) {
+          target.focus();
+        } else {
+          onSlideStart(event);
+        }
+      })}
+      onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
+        const target = event.target as HTMLElement;
+        if (target.hasPointerCapture(event.pointerId)) onSlideMove(event);
       })}
       onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
-        (event.target as HTMLElement).releasePointerCapture(event.pointerId);
+        const target = event.target as HTMLElement;
+        if (target.hasPointerCapture(event.pointerId)) {
+          target.releasePointerCapture(event.pointerId);
+          onSlideEnd(event);
+        }
       })}
     />
   );
@@ -627,7 +547,6 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
       }}
     >
       <Primitive
-        data-radix-slider-thumb=""
         role="slider"
         aria-label={props['aria-label'] || label}
         aria-valuemin={context.min}
@@ -686,15 +605,6 @@ function getNextSortedValues(prevValues: number[] = [], nextValue: number, atInd
   const nextValues = [...prevValues];
   nextValues[atIndex] = nextValue;
   return nextValues.sort((a, b) => a - b);
-}
-
-function isThumb(node: any): node is HTMLElement {
-  const thumbAttributeName = 'data-radix-slider-thumb';
-  const thumbAttribute = node.getAttribute(thumbAttributeName);
-  // `getAttribute` returns the attribute value and since we add the
-  // attribute without a value, we must check it is an empty string
-  // to determine its existence
-  return thumbAttribute === '';
 }
 
 function convertValueToPercentage(value: number, min: number, max: number) {
