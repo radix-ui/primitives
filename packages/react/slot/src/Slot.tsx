@@ -5,7 +5,7 @@ import { composeRefs } from '@radix-ui/react-compose-refs';
  * Slot
  * -----------------------------------------------------------------------------------------------*/
 
-type SlotProps = { children: React.ReactNode };
+type SlotProps = { children?: React.ReactNode };
 
 const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
