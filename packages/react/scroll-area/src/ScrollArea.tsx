@@ -196,17 +196,12 @@ ScrollAreaViewport.displayName = VIEWPORT_NAME;
 
 const SCROLLBAR_NAME = 'ScrollAreaScrollbar';
 
-type ScrollAreaScrollbarOwnProps =
-  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarAuto>
-  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarHover>
-  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarScroll>
-  | Polymorphic.OwnProps<typeof ScrollAreaScrollbarVisible>;
-
+type ScrollAreaScrollbarOwnProps = Polymorphic.Merge<
+  Polymorphic.OwnProps<typeof ScrollAreaScrollbarVisible>,
+  { forceMount?: true }
+>;
 type ScrollAreaScrollbarPrimitive = Polymorphic.ForwardRefComponent<
-  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarAuto>
-  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarHover>
-  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarScroll>
-  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarVisible>,
+  Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarVisible>,
   ScrollAreaScrollbarOwnProps
 >;
 
@@ -237,11 +232,10 @@ ScrollAreaScrollbar.displayName = SCROLLBAR_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaScrollbarHoverTypeOwnProps = Polymorphic.OwnProps<typeof ScrollAreaScrollbarAuto>;
-
-type ScrollAreaScrollbarHoverTypePrimitive = Polymorphic.ForwardRefComponent<
+type ScrollAreaScrollbarHoverOwnProps = Polymorphic.OwnProps<typeof ScrollAreaScrollbarAuto>;
+type ScrollAreaScrollbarHoverPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarAuto>,
-  ScrollAreaScrollbarHoverTypeOwnProps
+  ScrollAreaScrollbarHoverOwnProps
 >;
 
 const ScrollAreaScrollbarHover = React.forwardRef((props, forwardedRef) => {
@@ -274,16 +268,7 @@ const ScrollAreaScrollbarHover = React.forwardRef((props, forwardedRef) => {
       <ScrollAreaScrollbarAuto {...scrollbarProps} ref={forwardedRef} />
     </Presence>
   );
-}) as ScrollAreaScrollbarHoverTypePrimitive;
-
-type ScrollAreaScrollbarTypeOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof ScrollAreaScrollbarVisible>,
-  { forceMount?: true }
->;
-type ScrollAreaScrollbarTypePrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarVisible>,
-  ScrollAreaScrollbarTypeOwnProps
->;
+}) as ScrollAreaScrollbarHoverPrimitive;
 
 const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
   const { forceMount, ...scrollbarProps } = props;
@@ -346,7 +331,7 @@ const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
       />
     </Presence>
   );
-}) as ScrollAreaScrollbarTypePrimitive;
+}) as ScrollAreaScrollbarPrimitive;
 
 const ScrollAreaScrollbarAuto = React.forwardRef((props, forwardedRef) => {
   const context = useScrollAreaContext(SCROLLBAR_NAME);
@@ -369,7 +354,7 @@ const ScrollAreaScrollbarAuto = React.forwardRef((props, forwardedRef) => {
       <ScrollAreaScrollbarVisible {...scrollbarProps} ref={forwardedRef} />
     </Presence>
   );
-}) as ScrollAreaScrollbarTypePrimitive;
+}) as ScrollAreaScrollbarPrimitive;
 
 /* -----------------------------------------------------------------------------------------------*/
 
