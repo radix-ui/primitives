@@ -3576,6 +3576,7 @@ __metadata:
     "@radix-ui/react-dialog": "workspace:*"
     "@radix-ui/react-polymorphic": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
     react: ">=16.8"
     react-dom: ^16.8 || ^17.0
