@@ -82,6 +82,17 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
   const virtualRef = React.useRef({
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
   });
+  const longPressTimerRef = React.useRef(0);
+  const clearLongPress = React.useCallback(
+    () => window.clearTimeout(longPressTimerRef.current),
+    []
+  );
+  const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
+    pointRef.current = { x: event.clientX, y: event.clientY };
+    context.onOpenChange(true);
+  };
+
+  React.useEffect(() => clearLongPress, [clearLongPress]);
 
   return (
     <ContentContext.Provider value={false}>
@@ -90,11 +101,29 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
         {...triggerProps}
         as={as}
         ref={forwardedRef}
+        // prevent iOS context menu from appearing
+        style={{ WebkitTouchCallout: 'none', ...triggerProps.style }}
         onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
+          // clearing the long press here because some platforms already support
+          // long press to trigger a `contextmenu` event
+          clearLongPress();
           event.preventDefault();
-          pointRef.current = { x: event.clientX, y: event.clientY };
-          context.onOpenChange(true);
+          handleOpen(event);
         })}
+        onPointerDown={composeEventHandlers(
+          props.onPointerDown,
+          whenTouchOrPen((event) => {
+            // clear the long press here in case there's multiple touch points
+            clearLongPress();
+            longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
+          })
+        )}
+        onPointerMove={composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))}
+        onPointerCancel={composeEventHandlers(
+          props.onPointerCancel,
+          whenTouchOrPen(clearLongPress)
+        )}
+        onPointerUp={composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))}
       />
     </ContentContext.Provider>
   );
@@ -199,6 +228,10 @@ const ContextMenuArrow = extendPrimitive(MenuPrimitive.Arrow, {
 });
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
+  return (event) => (event.pointerType !== 'mouse' ? handler(event) : undefined);
+}
 
 const Root = ContextMenu;
 const Trigger = ContextMenuTrigger;
