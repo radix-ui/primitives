@@ -4,61 +4,80 @@ describe('DropdownMenu', () => {
       cy.visitStory('dropdownmenu--submenus');
     });
 
-    describe('in LTR and RTL configurations', () => {
+    describe('by default', () => {
       beforeEach(() => {
         cy.findByText('Open').click();
       });
 
       it('should scope typeahead behaviour to active submenu', () => {
-        pointerOverItem('Bookmarks →');
-        pointerOverItem('Modulz →');
-        pointerOverItem('Stitches').type('Inbox');
+        movePointerTo('Bookmarks →');
+        movePointerTo('Modulz →');
+        movePointerTo('Stitches').type('Inbox');
         cy.findByText('Inbox').should('not.have.focus');
 
-        pointerOverItem('Notion').type('Inbox');
+        movePointerTo('Notion').type('Inbox');
         cy.findByText('Inbox').should('have.focus');
       });
 
       it('should not close when pointer moves to parent trigger', () => {
-        pointerOverItem('Bookmarks →');
-        pointerOverItem('Inbox');
-        pointerOverItem('Bookmarks →');
+        movePointerTo('Bookmarks →');
+        movePointerTo('Inbox');
+        movePointerTo('Bookmarks →');
         cy.findByText('Inbox').should('exist');
       });
 
       it('should close when pointer moves to an item or sibling trigger in parent menu', () => {
-        pointerOverItem('Bookmarks →');
-        pointerOverItem('Inbox');
-        pointerOverItem('New Window');
+        movePointerTo('Bookmarks →');
+        movePointerTo('Inbox');
+        movePointerTo('New Window');
         cy.findByText('Inbox').should('not.exist');
 
-        pointerOverItem('Bookmarks →');
-        pointerOverItem('Inbox');
-        pointerOverItem('Tools →');
+        movePointerTo('Bookmarks →');
+        movePointerTo('Inbox');
+        movePointerTo('Tools →');
         cy.findByText('Inbox').should('not.exist');
       });
 
       it('should remain open when clicking trigger but close when clicking item', () => {
-        pointerOverItem('Bookmarks →').click();
+        movePointerTo('Bookmarks →').click();
         cy.findByText('Inbox').click();
         cy.findByText('Inbox').should('not.exist');
       });
 
-      it.skip('should not open when trigger is disabled', () => {});
+      it('should not open when trigger is disabled', () => {
+        movePointerTo('History →');
+        cy.findByText('Github').should('not.exist');
 
-      it('should close when pressing escape key', () => {
-        pointerOverItem('Bookmarks →');
-        pointerOverItem('Inbox').type('{esc}');
+        cy.findByText('History →').trigger('keydown', { key: ' ' });
+        cy.findByText('Github').should('not.exist');
+
+        cy.findByText('History →').trigger('keydown', { key: 'Enter' });
+        cy.findByText('Github').should('not.exist');
+      });
+
+      it('should open on space and enter key press', () => {
+        cy.findByText('Bookmarks →').trigger('keydown', { key: ' ' });
+        cy.findByText('Inbox').should('exist');
+
+        movePointerTo('New Tab');
+
+        cy.findByText('Bookmarks →').trigger('keydown', { key: 'Enter' });
+        cy.findByText('Inbox').should('exist');
+      });
+
+      it('should close on escape key press', () => {
+        movePointerTo('Bookmarks →');
+        movePointerTo('Inbox').type('{esc}');
         cy.findByText('Inbox').should('not.exist');
 
         cy.findByText('Open').click();
-        pointerOverItem('Bookmarks →');
-        pointerOverItem('Modulz →').type('{esc}');
+        movePointerTo('Bookmarks →');
+        movePointerTo('Modulz →').type('{esc}');
         cy.findByText('Inbox').should('not.exist');
       });
 
       it('should not focus first item when opening via pointer', () => {
-        pointerOverItem('Bookmarks →').then(($trigger) => {
+        movePointerTo('Bookmarks →').then(($trigger) => {
           const associatedMenuId = $trigger.attr('aria-controls');
           cy.get(`[id="${associatedMenuId}"]`).children().first().should('not.be.focused');
         });
@@ -69,24 +88,24 @@ describe('DropdownMenu', () => {
       it('should remain open when exiting trigger towards submenu', () => {
         cy.findByText('Open').click();
 
-        pointerOverItem('Bookmarks →');
+        movePointerTo('Bookmarks →');
         cy.findByText('Inbox').should('exist');
 
-        pointerExitLeftToRight('Bookmarks →');
+        exitPointerLeftToRight('Bookmarks →');
         cy.findByText('Inbox').should('exist');
       });
 
       it('should close when exiting trigger away from submenu', () => {
         cy.findByText('Open').click();
 
-        pointerOverItem('Bookmarks →');
+        movePointerTo('Bookmarks →');
         cy.findByText('Inbox').should('exist');
 
-        pointerExitRightToLeft('Bookmarks →');
+        exitPointerRightToLeft('Bookmarks →');
         cy.findByText('Inbox').should('not.exist');
       });
 
-      it('should open and close via oriented LTR keyboard controls', () => {
+      it('should open and close via LTR keyboard control', () => {
         cy.findByText('Open').click();
 
         // Test opposite orientation is not bound
@@ -114,10 +133,10 @@ describe('DropdownMenu', () => {
         cy.findByText('Right-to-left').click();
         cy.findByText('Open').click();
 
-        pointerOverItem('Bookmarks →');
+        movePointerTo('Bookmarks →');
         cy.findByText('Inbox').should('exist');
 
-        pointerExitRightToLeft('Bookmarks →');
+        exitPointerRightToLeft('Bookmarks →');
         cy.findByText('Inbox').should('exist');
       });
 
@@ -125,14 +144,14 @@ describe('DropdownMenu', () => {
         cy.findByText('Right-to-left').click();
         cy.findByText('Open').click();
 
-        pointerOverItem('Bookmarks →');
+        movePointerTo('Bookmarks →');
         cy.findByText('Inbox').should('exist');
 
-        pointerExitLeftToRight('Bookmarks →');
+        exitPointerLeftToRight('Bookmarks →');
         cy.findByText('Inbox').should('not.exist');
       });
 
-      it('should open and close via oriented RTL keyboard controls', () => {
+      it('should open and close via RTL keyboard control', () => {
         cy.findByText('Right-to-left').click();
         cy.findByText('Open').click();
 
@@ -158,9 +177,11 @@ describe('DropdownMenu', () => {
   });
 });
 
+/* ---------------------------------------------------------------------------------------------- */
+
 const mousePointerOptions = { pointerType: 'mouse' };
 
-function pointerExitRightToLeft(text) {
+function exitPointerRightToLeft(text) {
   return cy
     .findByText(text)
     .trigger('pointermove', 'right', mousePointerOptions)
@@ -168,7 +189,7 @@ function pointerExitRightToLeft(text) {
     .trigger('pointerout', 'bottomLeft', mousePointerOptions);
 }
 
-function pointerExitLeftToRight(text) {
+function exitPointerLeftToRight(text) {
   return cy
     .findByText(text)
     .trigger('pointermove', 'left', mousePointerOptions)
@@ -176,6 +197,6 @@ function pointerExitLeftToRight(text) {
     .trigger('pointerout', 'bottomRight', mousePointerOptions);
 }
 
-function pointerOverItem(text) {
+function movePointerTo(text) {
   return cy.findByText(text).trigger('pointermove', mousePointerOptions);
 }

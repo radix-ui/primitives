@@ -79,12 +79,10 @@ export const Submenus = () => {
               <DropdownMenuTriggerItem className={subTriggerClass}>
                 Bookmarks →
               </DropdownMenuTriggerItem>
-
               <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('index')}>
                   Inbox
                 </DropdownMenuItem>
-
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('calendar')}>
                   Calendar
                 </DropdownMenuItem>
@@ -120,20 +118,37 @@ export const Submenus = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
+              <DropdownMenuTriggerItem className={subTriggerClass} disabled>
+                History →
+              </DropdownMenuTriggerItem>
+              <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                <DropdownMenuItem className={itemClass} onSelect={() => console.log('github')}>
+                  Github
+                </DropdownMenuItem>
+                <DropdownMenuItem className={itemClass} onSelect={() => console.log('google')}>
+                  Google
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className={itemClass}
+                  onSelect={() => console.log('stack-overflow')}
+                >
+                  Stack Overflow
+                </DropdownMenuItem>
+                <DropdownMenuArrow offset={14} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
               <DropdownMenuTriggerItem className={subTriggerClass}>Tools →</DropdownMenuTriggerItem>
-
               <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('extensions')}>
                   Extensions
                 </DropdownMenuItem>
-
                 <DropdownMenuItem
                   className={itemClass}
                   onSelect={() => console.log('task-manager')}
                 >
                   Task Manager
                 </DropdownMenuItem>
-
                 <DropdownMenuItem
                   className={itemClass}
                   onSelect={() => console.log('developer-tools')}
