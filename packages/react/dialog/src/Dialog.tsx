@@ -25,6 +25,8 @@ const DIALOG_NAME = 'Dialog';
 type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
   contentId: string;
+  titleId: string;
+  descriptionId: string;
   open: boolean;
   onOpenChange(open: boolean): void;
 };
@@ -47,7 +49,14 @@ const Dialog: React.FC<DialogOwnProps> = (props) => {
   });
 
   return (
-    <DialogProvider triggerRef={triggerRef} contentId={useId()} open={open} onOpenChange={setOpen}>
+    <DialogProvider
+      triggerRef={triggerRef}
+      contentId={useId()}
+      titleId={useId()}
+      descriptionId={useId()}
+      open={open}
+      onOpenChange={setOpen}
+    >
       {children}
     </DialogProvider>
   );
@@ -198,6 +207,9 @@ type DialogContentImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    'aria-describedby': ariaDescribedBy,
     onOpenAutoFocus,
     onCloseAutoFocus,
     onEscapeKeyDown,
@@ -205,7 +217,6 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
     ...contentProps
   } = props;
   const context = useDialogContext(CONTENT_NAME);
-
   const contentRef = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
@@ -220,46 +231,97 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   }, []);
 
   return (
-    <Portal>
-      <RemoveScroll>
-        <FocusScope
-          as={Slot}
-          // we make sure we're not trapping once it's been closed
-          // (closed !== unmounted when animating out)
-          trapped={context.open}
-          onMountAutoFocus={onOpenAutoFocus}
-          onUnmountAutoFocus={onCloseAutoFocus}
-        >
-          <DismissableLayer
-            role="dialog"
-            aria-modal
-            id={context.contentId}
-            {...contentProps}
-            ref={composedRefs}
-            disableOutsidePointerEvents
-            onEscapeKeyDown={onEscapeKeyDown}
-            onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
-              const originalEvent = event.detail.originalEvent as MouseEvent;
-              const isRightClick =
-                originalEvent.button === 2 ||
-                (originalEvent.button === 0 && originalEvent.ctrlKey === true);
+    <>
+      <Portal>
+        <RemoveScroll>
+          <FocusScope
+            as={Slot}
+            // we make sure we're not trapping once it's been closed
+            // (closed !== unmounted when animating out)
+            trapped={context.open}
+            onMountAutoFocus={onOpenAutoFocus}
+            onUnmountAutoFocus={onCloseAutoFocus}
+          >
+            <DismissableLayer
+              role="dialog"
+              id={context.contentId}
+              aria-modal
+              aria-describedby={ariaDescribedBy || context.descriptionId}
+              // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
+              // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
+              // `DialogTitle`
+              aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || context.titleId}
+              aria-label={ariaLabel || undefined}
+              {...contentProps}
+              ref={composedRefs}
+              disableOutsidePointerEvents
+              onEscapeKeyDown={onEscapeKeyDown}
+              onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
+                const originalEvent = event.detail.originalEvent as MouseEvent;
+                const isRightClick =
+                  originalEvent.button === 2 ||
+                  (originalEvent.button === 0 && originalEvent.ctrlKey === true);
 
-              // If the event is a right-click, we shouldn't close because
-              // it is effectively as if we right-clicked the `Overlay`.
-              if (isRightClick) event.preventDefault();
-            })}
-            // When focus is trapped, a focusout event may still happen.
-            // We make sure we don't trigger our `onDismiss` in such case.
-            onFocusOutside={(event) => event.preventDefault()}
-            onDismiss={() => context.onOpenChange(false)}
-          />
-        </FocusScope>
-      </RemoveScroll>
-    </Portal>
+                // If the event is a right-click, we shouldn't close because
+                // it is effectively as if we right-clicked the `Overlay`.
+                if (isRightClick) event.preventDefault();
+              })}
+              // When focus is trapped, a focusout event may still happen.
+              // We make sure we don't trigger our `onDismiss` in such case.
+              onFocusOutside={(event) => event.preventDefault()}
+              onDismiss={() => context.onOpenChange(false)}
+            />
+          </FocusScope>
+        </RemoveScroll>
+      </Portal>
+      {process.env.NODE_ENV === 'development' && <LabelWarning contentRef={contentRef} />}
+    </>
   );
 }) as DialogContentImplPrimitive;
 
 DialogContent.displayName = CONTENT_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * DialogTitle
+ * -----------------------------------------------------------------------------------------------*/
+
+const TITLE_NAME = 'DialogTitle';
+const TITLE_DEFAULT_TAG = 'h2';
+
+type DialogTitleOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type DialogTitlePrimitive = Polymorphic.ForwardRefComponent<
+  typeof TITLE_DEFAULT_TAG,
+  DialogTitleOwnProps
+>;
+
+const DialogTitle = React.forwardRef((props, forwardedRef) => {
+  const { as = TITLE_DEFAULT_TAG, ...titleProps } = props;
+  const context = useDialogContext(TITLE_NAME);
+  return <Primitive id={context.titleId} {...titleProps} as={as} ref={forwardedRef} />;
+}) as DialogTitlePrimitive;
+
+DialogTitle.displayName = TITLE_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * DialogDescription
+ * -----------------------------------------------------------------------------------------------*/
+
+const DESCRIPTION_NAME = 'DialogDescription';
+const DESCRIPTION_DEFAULT_TAG = 'p';
+
+type DialogDescriptionOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type DialogDescriptionPrimitive = Polymorphic.ForwardRefComponent<
+  typeof DESCRIPTION_DEFAULT_TAG,
+  DialogDescriptionOwnProps
+>;
+
+const DialogDescription = React.forwardRef((props, forwardedRef) => {
+  const { as = DESCRIPTION_DEFAULT_TAG, ...descriptionProps } = props;
+  const context = useDialogContext(DESCRIPTION_NAME);
+  return <Primitive id={context.descriptionId} {...descriptionProps} as={as} ref={forwardedRef} />;
+}) as DialogDescriptionPrimitive;
+
+DialogDescription.displayName = DESCRIPTION_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogClose
@@ -296,10 +358,46 @@ function getState(open: boolean) {
   return open ? 'open' : 'closed';
 }
 
+const LabelWarningContext = React.createContext({
+  contentName: CONTENT_NAME,
+  titleName: TITLE_NAME,
+  docsSlug: 'dialog',
+});
+
+const LabelWarningProvider = LabelWarningContext.Provider;
+
+type LabelWarningProps = {
+  contentRef: React.RefObject<React.ElementRef<typeof DialogContent>>;
+};
+
+const LabelWarning: React.FC<LabelWarningProps> = ({ contentRef }) => {
+  const labelWarningContext = React.useContext(LabelWarningContext);
+
+  const MESSAGE = `\`${labelWarningContext.contentName}\` requires a label for the component to be accessible for screen reader users.
+
+You can label the \`${labelWarningContext.contentName}\` by passing a \`${labelWarningContext.titleName}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
+
+Alternatively, you can use your own component as a title by assigning it an \`id\` and passing the same value to the \`aria-labelledby\` prop in \`${labelWarningContext.contentName}\`. If the label is confusing or duplicative for sighted users, you can also pass a label directly by using the \`aria-label\` prop.
+
+For more information, see https://radix-ui.com/primitives/docs/components/${labelWarningContext.docsSlug}`;
+
+  React.useEffect(() => {
+    const hasLabel =
+      contentRef.current?.getAttribute('aria-label') ||
+      document.getElementById(contentRef.current?.getAttribute('aria-labelledby')!);
+
+    if (!hasLabel) console.warn(MESSAGE);
+  }, [MESSAGE, contentRef]);
+
+  return null;
+};
+
 const Root = Dialog;
 const Trigger = DialogTrigger;
 const Overlay = DialogOverlay;
 const Content = DialogContent;
+const Title = DialogTitle;
+const Description = DialogDescription;
 const Close = DialogClose;
 
 export {
@@ -307,17 +405,25 @@ export {
   DialogTrigger,
   DialogOverlay,
   DialogContent,
+  DialogTitle,
+  DialogDescription,
   DialogClose,
   //
   Root,
   Trigger,
   Overlay,
   Content,
+  Title,
+  Description,
   Close,
+  //
+  LabelWarningProvider,
 };
 export type {
   DialogTriggerPrimitive,
   DialogOverlayPrimitive,
   DialogContentPrimitive,
+  DialogTitlePrimitive,
+  DialogDescriptionPrimitive,
   DialogClosePrimitive,
 };

@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogClose } from './Dialog';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogOverlay,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from './Dialog';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Dialog' };
@@ -9,6 +17,8 @@ export const Styled = () => (
     <DialogTrigger className={triggerClass}>open</DialogTrigger>
     <DialogOverlay className={overlayClass} />
     <DialogContent className={contentClass}>
+      <DialogTitle>Booking info</DialogTitle>
+      <DialogDescription>Please enter the info for your booking below.</DialogDescription>
       <DialogClose className={closeClass}>close</DialogClose>
     </DialogContent>
   </Dialog>
@@ -21,6 +31,7 @@ export const Controlled = () => {
       <DialogTrigger>{open ? 'close' : 'open'}</DialogTrigger>
       <DialogOverlay className={overlayClass} />
       <DialogContent className={contentClass}>
+        <DialogTitle>Title</DialogTitle>
         <DialogClose>close</DialogClose>
       </DialogContent>
     </Dialog>
@@ -34,6 +45,7 @@ export const FocusTrap = () => (
       <DialogOverlay className={overlayClass} />
       <DialogContent className={contentClass}>
         <DialogClose>close</DialogClose>
+        <DialogTitle>Title</DialogTitle>
         <div>
           <label htmlFor="firstName">First Name</label>
           <input type="text" id="firstName" placeholder="John" />
@@ -74,6 +86,7 @@ export const CustomFocus = () => {
           <DialogClose>close</DialogClose>
 
           <div>
+            <DialogTitle>Title</DialogTitle>
             <p>The first name input will receive the focus after opening the dialog.</p>
             <label htmlFor="firstName">First Name</label>
             <input type="text" id="firstName" placeholder="John" ref={firstNameRef} />
@@ -99,6 +112,7 @@ export const NoEscapeDismiss = () => (
     <DialogTrigger>open</DialogTrigger>
     <DialogOverlay className={overlayClass} />
     <DialogContent className={contentClass} onEscapeKeyDown={(event) => event.preventDefault()}>
+      <DialogTitle>Title</DialogTitle>
       <DialogClose>close</DialogClose>
     </DialogContent>
   </Dialog>
@@ -112,6 +126,7 @@ export const NoPointerDownOutsideDismiss = () => (
       className={contentClass}
       onPointerDownOutside={(event) => event.preventDefault()}
     >
+      <DialogTitle>Title</DialogTitle>
       <DialogClose>close</DialogClose>
     </DialogContent>
   </Dialog>
@@ -122,6 +137,7 @@ export const Animated = () => (
     <DialogTrigger>open</DialogTrigger>
     <DialogOverlay className={animatedOverlayClass} />
     <DialogContent className={animatedContentClass}>
+      <DialogTitle>Title</DialogTitle>
       <DialogClose>close</DialogClose>
     </DialogContent>
   </Dialog>
@@ -132,6 +148,7 @@ export const ForcedMount = () => (
     <DialogTrigger>open</DialogTrigger>
     <DialogOverlay className={overlayClass} forceMount />
     <DialogContent className={contentClass} forceMount>
+      <DialogTitle>Title</DialogTitle>
       <DialogClose>close</DialogClose>
     </DialogContent>
   </Dialog>
@@ -153,6 +170,7 @@ export const Chromatic = () => (
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
         <DialogOverlay className={overlayClass} />
         <DialogContent className={chromaticContentClass}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
       </Dialog>
@@ -162,6 +180,7 @@ export const Chromatic = () => (
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
         <DialogOverlay className={overlayClass} style={{ left: 0, bottom: '50%', width: '25%' }} />
         <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '12%' }}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
       </Dialog>
@@ -173,6 +192,7 @@ export const Chromatic = () => (
       <Dialog>
         <DialogOverlay className={overlayClass} />
         <DialogContent className={chromaticContentClass}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
@@ -185,6 +205,7 @@ export const Chromatic = () => (
           style={{ left: '25%', bottom: '50%', width: '25%' }}
         />
         <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '37%' }}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
@@ -198,6 +219,7 @@ export const Chromatic = () => (
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
         <DialogOverlay className={overlayClass} />
         <DialogContent className={chromaticContentClass}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
       </Dialog>
@@ -210,6 +232,7 @@ export const Chromatic = () => (
           style={{ left: '50%', bottom: '50%', width: '25%' }}
         />
         <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '62%' }}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
       </Dialog>
@@ -221,6 +244,7 @@ export const Chromatic = () => (
       <Dialog open={false}>
         <DialogOverlay className={overlayClass} />
         <DialogContent className={chromaticContentClass}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
@@ -233,6 +257,7 @@ export const Chromatic = () => (
           style={{ left: '75%', bottom: '50%', width: '25%' }}
         />
         <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '88%' }}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
@@ -246,6 +271,7 @@ export const Chromatic = () => (
         <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
         <DialogOverlay className={overlayAttrClass} />
         <DialogContent className={contentAttrClass}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeAttrClass}>close</DialogClose>
         </DialogContent>
       </Dialog>
@@ -255,6 +281,7 @@ export const Chromatic = () => (
         <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
         <DialogOverlay className={overlayAttrClass} style={{ top: '50%' }} />
         <DialogContent className={contentAttrClass} style={{ top: '75%' }}>
+          <DialogTitle>Title</DialogTitle>
           <DialogClose className={closeAttrClass}>close</DialogClose>
         </DialogContent>
       </Dialog>
