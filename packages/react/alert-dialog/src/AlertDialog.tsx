@@ -47,7 +47,7 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
   const cancelRef = React.useRef<React.ElementRef<typeof AlertDialogCancel> | null>(null);
 
   return (
-    <DialogPrimitive.LabelWarningContext.Provider
+    <DialogPrimitive.LabelWarningProvider
       value={React.useMemo(
         () => ({ contentName: CONTENT_NAME, titleName: TITLE_NAME, docsSlug: 'alert-dialog' }),
         []
@@ -73,7 +73,7 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
           {process.env.NODE_ENV === 'development' && <DescriptionWarning contentRef={contentRef} />}
         </DialogPrimitive.Content>
       </AlertDialogContentProvider>
-    </DialogPrimitive.LabelWarningContext.Provider>
+    </DialogPrimitive.LabelWarningProvider>
   );
 }) as AlertDialogContentPrimitive;
 

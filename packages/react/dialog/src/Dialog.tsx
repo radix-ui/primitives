@@ -364,6 +364,8 @@ const LabelWarningContext = React.createContext({
   docsSlug: 'dialog',
 });
 
+const LabelWarningProvider = LabelWarningContext.Provider;
+
 type LabelWarningProps = {
   contentRef: React.RefObject<React.ElementRef<typeof DialogContent>>;
 };
@@ -415,7 +417,7 @@ export {
   Description,
   Close,
   //
-  LabelWarningContext,
+  LabelWarningProvider,
 };
 export type {
   DialogTriggerPrimitive,
