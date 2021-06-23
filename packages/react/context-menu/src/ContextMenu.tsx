@@ -87,7 +87,7 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
     () => window.clearTimeout(longPressTimerRef.current),
     []
   );
-  const open = (event: React.MouseEvent | React.PointerEvent) => {
+  const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
     pointRef.current = { x: event.clientX, y: event.clientY };
     context.onOpenChange(true);
   };
@@ -101,17 +101,19 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
         {...triggerProps}
         as={as}
         ref={forwardedRef}
+        // prevent iOS context menu from appearing
+        style={{ WebkitTouchCallout: 'none', ...triggerProps.style }}
         onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
-          // clearing the long press here because some platforms already supports
+          // clearing the long press here because some platforms already support
           // long press to trigger a `contextmenu` event
           clearLongPress();
           event.preventDefault();
-          open(event);
+          handleOpen(event);
         })}
         onPointerDown={composeEventHandlers(
           props.onPointerDown,
           whenTouchOrPen((event) => {
-            longPressTimerRef.current = window.setTimeout(() => open(event), 700);
+            longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
           })
         )}
         onPointerMove={composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))}
