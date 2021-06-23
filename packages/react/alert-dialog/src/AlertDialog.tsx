@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { createContext } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { extendPrimitive } from '@radix-ui/react-primitive';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { Slottable } from '@radix-ui/react-slot';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -40,31 +41,33 @@ type AlertDialogContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
+  const { children, ...contentProps } = props;
+  const contentRef = React.useRef<React.ElementRef<typeof AlertDialogContent>>(null);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
   const cancelRef = React.useRef<React.ElementRef<typeof AlertDialogCancel> | null>(null);
 
   return (
-    <DialogPrimitive.AccessibilityDevWarningsContext.Provider
+    <DialogPrimitive.LabelWarningContext.Provider
       value={React.useMemo(
-        () => ({
-          descriptionRequired: true,
-          partNames: { content: CONTENT_NAME, title: TITLE_NAME, description: DESCRIPTION_NAME },
-          docsUrl: 'https://radix-ui.com/primitives/docs/components/alert-dialog',
-        }),
+        () => ({ contentName: CONTENT_NAME, titleName: TITLE_NAME, docsSlug: 'alert-dialog' }),
         []
       )}
     >
       <AlertDialogContentProvider cancelRef={cancelRef}>
         <DialogPrimitive.Content
           role="alertdialog"
-          {...props}
-          ref={forwardedRef}
-          onOpenAutoFocus={composeEventHandlers(props.onOpenAutoFocus, (event) => {
+          {...contentProps}
+          ref={composedRefs}
+          onOpenAutoFocus={composeEventHandlers(contentProps.onOpenAutoFocus, (event) => {
             event.preventDefault();
             cancelRef.current?.focus({ preventScroll: true });
           })}
-        />
+        >
+          <Slottable>{children}</Slottable>
+          {process.env.NODE_ENV === 'development' && <DescriptionWarning contentRef={contentRef} />}
+        </DialogPrimitive.Content>
       </AlertDialogContentProvider>
-    </DialogPrimitive.AccessibilityDevWarningsContext.Provider>
+    </DialogPrimitive.LabelWarningContext.Provider>
   );
 }) as AlertDialogContentPrimitive;
 
@@ -111,6 +114,28 @@ const AlertDialogDescription = extendPrimitive(DialogPrimitive.Description, {
 });
 
 /* ---------------------------------------------------------------------------------------------- */
+
+type DescriptionWarningProps = {
+  contentRef: React.RefObject<React.ElementRef<typeof AlertDialogContent>>;
+};
+
+const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef }) => {
+  const MESSAGE = `\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
+
+You can add a description to the \`${CONTENT_NAME}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
+
+Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in \`${CONTENT_NAME}\`. If the description is confusing or duplicative for sighted users, you can use the \`@radix-ui/react-visually-hidden\` primitive as a wrapper around your description component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/alert-dialog`;
+
+  React.useEffect(() => {
+    const content = contentRef.current;
+    const hasDescription = document.getElementById(content?.getAttribute('aria-describedby')!);
+    if (!hasDescription) console.warn(MESSAGE);
+  }, [MESSAGE, contentRef]);
+
+  return null;
+};
 
 const Root = AlertDialog;
 const Trigger = AlertDialogTrigger;

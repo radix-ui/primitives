@@ -24,9 +24,10 @@ const DIALOG_NAME = 'Dialog';
 
 type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
+  contentRef: React.RefObject<React.ElementRef<typeof DialogContent>>;
   contentId: string;
-  descriptionId: string;
   titleId: string;
+  descriptionId: string;
   open: boolean;
   onOpenChange(open: boolean): void;
 };
@@ -42,6 +43,7 @@ type DialogOwnProps = {
 const Dialog: React.FC<DialogOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const contentRef = React.useRef<React.ElementRef<typeof DialogContent>>(null);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
@@ -51,9 +53,10 @@ const Dialog: React.FC<DialogOwnProps> = (props) => {
   return (
     <DialogProvider
       triggerRef={triggerRef}
+      contentRef={contentRef}
       contentId={useId()}
-      descriptionId={useId()}
       titleId={useId()}
+      descriptionId={useId()}
       open={open}
       onOpenChange={setOpen}
     >
@@ -217,9 +220,8 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
     ...contentProps
   } = props;
   const context = useDialogContext(CONTENT_NAME);
-
   const contentRef = React.useRef<HTMLDivElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, contentRef);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef, context.contentRef);
 
   // Make sure the whole tree has focus guards as our `Dialog` will be
   // the last element in the DOM (beacuse of the `Portal`)
@@ -275,13 +277,7 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
           </FocusScope>
         </RemoveScroll>
       </Portal>
-      {process.env.NODE_ENV === 'development' && (
-        <AccessibilityDevWarnings
-          ariaLabel={ariaLabel}
-          ariaLabelledBy={ariaLabelledBy}
-          ariaDescribedBy={ariaDescribedBy}
-        />
-      )}
+      {process.env.NODE_ENV === 'development' && <LabelWarning />}
     </>
   );
 }) as DialogContentImplPrimitive;
@@ -365,65 +361,32 @@ function getState(open: boolean) {
   return open ? 'open' : 'closed';
 }
 
-const AccessibilityDevWarningsContext = React.createContext({
-  descriptionRequired: false,
-  partNames: { content: CONTENT_NAME, title: TITLE_NAME, description: DESCRIPTION_NAME },
-  docsUrl: 'https://radix-ui.com/primitives/docs/components/dialog',
+const LabelWarningContext = React.createContext({
+  contentName: CONTENT_NAME,
+  titleName: TITLE_NAME,
+  docsSlug: 'dialog',
 });
 
-const AccessibilityDevWarnings: React.FC<{
-  ariaLabel?: string;
-  ariaLabelledBy?: string;
-  ariaDescribedBy?: string;
-}> = (props) => {
-  const { ariaLabel, ariaLabelledBy, ariaDescribedBy } = props;
-  const context = useDialogContext('AccessibilityDevWarnings');
-  const devWarningsContext = React.useContext(AccessibilityDevWarningsContext);
-  const { partNames } = devWarningsContext;
+const LabelWarning = () => {
+  const context = useDialogContext('LabelWarning');
+  const labelWarningContext = React.useContext(LabelWarningContext);
 
-  const LABEL_WARNING = `\`${partNames.content}\` requires a label for the component to be accessible for screen reader users.
+  const MESSAGE = `\`${labelWarningContext.contentName}\` requires a label for the component to be accessible for screen reader users.
 
-You can label the \`${partNames.content}\` by passing a \`${partNames.title}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
+You can label the \`${labelWarningContext.contentName}\` by passing a \`${labelWarningContext.titleName}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
 
-Alternatively, you can use your own component as a title by assigning it an \`id\` and passing the same value to the \`aria-labelledby\` prop in \`${partNames.content}\`. If the label is confusing or duplicative for sighted users, you can also pass a label directly by using the \`aria-label\` prop.
+Alternatively, you can use your own component as a title by assigning it an \`id\` and passing the same value to the \`aria-labelledby\` prop in \`${labelWarningContext.contentName}\`. If the label is confusing or duplicative for sighted users, you can also pass a label directly by using the \`aria-label\` prop.
 
-For more information, see ${devWarningsContext.docsUrl}`;
-
-  const DESCRIPTION_WARNING = `\`${partNames.content}\` requires a description for the component to be accessible for screen reader users.
-
-You can add a description to the \`${partNames.content}\` by passing a \`${partNames.description}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
-
-Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in \`${partNames.content}\`. If the description is confusing or duplicative for sighted users, you can use the \`@radix-ui/react-visually-hidden\` primitive as a wrapper around your description component.
-
-For more information, see ${devWarningsContext.docsUrl}`;
+For more information, see https://radix-ui.com/primitives/docs/components/${labelWarningContext.docsSlug}`;
 
   React.useEffect(() => {
-    const hasLabel = Boolean(
-      ariaLabel ||
-        (ariaLabelledBy && document.getElementById(ariaLabelledBy)) ||
-        (context.titleId && document.getElementById(context.titleId))
-    );
-    if (!hasLabel) {
-      console.warn(LABEL_WARNING);
-    }
+    const content = context.contentRef.current;
+    const hasLabel =
+      content?.getAttribute('aria-label') ||
+      document.getElementById(content?.getAttribute('aria-labelledby')!);
 
-    const hasDescription = Boolean(
-      (ariaDescribedBy && document.getElementById(ariaDescribedBy)) ||
-        (context.descriptionId && document.getElementById(context.descriptionId))
-    );
-    if (devWarningsContext.descriptionRequired && !hasDescription) {
-      console.warn(DESCRIPTION_WARNING);
-    }
-  }, [
-    ariaLabel,
-    ariaLabelledBy,
-    ariaDescribedBy,
-    devWarningsContext.descriptionRequired,
-    context.titleId,
-    context.descriptionId,
-    LABEL_WARNING,
-    DESCRIPTION_WARNING,
-  ]);
+    if (!hasLabel) console.warn(MESSAGE);
+  }, [MESSAGE, context.contentRef]);
 
   return null;
 };
@@ -453,7 +416,7 @@ export {
   Description,
   Close,
   //
-  AccessibilityDevWarningsContext,
+  LabelWarningContext,
 };
 export type {
   DialogTriggerPrimitive,
