@@ -63,6 +63,12 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
             cancelRef.current?.focus({ preventScroll: true });
           })}
         >
+          {/**
+           * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
+           * around everything, otherwise the `DescriptionWarning` would be rendered straight away.
+           * This is because we want the accessibility checks to run only once the content is actually
+           * open and that behaviour is already encapsulated in `DialogContent`.
+           */}
           <Slottable>{children}</Slottable>
           {process.env.NODE_ENV === 'development' && <DescriptionWarning contentRef={contentRef} />}
         </DialogPrimitive.Content>
