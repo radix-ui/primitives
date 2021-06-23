@@ -24,7 +24,6 @@ const DIALOG_NAME = 'Dialog';
 
 type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
-  contentRef: React.RefObject<React.ElementRef<typeof DialogContent>>;
   contentId: string;
   titleId: string;
   descriptionId: string;
@@ -43,7 +42,6 @@ type DialogOwnProps = {
 const Dialog: React.FC<DialogOwnProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const contentRef = React.useRef<React.ElementRef<typeof DialogContent>>(null);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
@@ -53,7 +51,6 @@ const Dialog: React.FC<DialogOwnProps> = (props) => {
   return (
     <DialogProvider
       triggerRef={triggerRef}
-      contentRef={contentRef}
       contentId={useId()}
       titleId={useId()}
       descriptionId={useId()}
@@ -221,7 +218,7 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   } = props;
   const context = useDialogContext(CONTENT_NAME);
   const contentRef = React.useRef<HTMLDivElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, contentRef, context.contentRef);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
   // Make sure the whole tree has focus guards as our `Dialog` will be
   // the last element in the DOM (beacuse of the `Portal`)
@@ -277,7 +274,7 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
           </FocusScope>
         </RemoveScroll>
       </Portal>
-      {process.env.NODE_ENV === 'development' && <LabelWarning />}
+      {process.env.NODE_ENV === 'development' && <LabelWarning contentRef={contentRef} />}
     </>
   );
 }) as DialogContentImplPrimitive;
@@ -367,8 +364,11 @@ const LabelWarningContext = React.createContext({
   docsSlug: 'dialog',
 });
 
-const LabelWarning = () => {
-  const context = useDialogContext('LabelWarning');
+type LabelWarningProps = {
+  contentRef: React.RefObject<React.ElementRef<typeof DialogContent>>;
+};
+
+const LabelWarning: React.FC<LabelWarningProps> = ({ contentRef }) => {
   const labelWarningContext = React.useContext(LabelWarningContext);
 
   const MESSAGE = `\`${labelWarningContext.contentName}\` requires a label for the component to be accessible for screen reader users.
@@ -380,13 +380,12 @@ Alternatively, you can use your own component as a title by assigning it an \`id
 For more information, see https://radix-ui.com/primitives/docs/components/${labelWarningContext.docsSlug}`;
 
   React.useEffect(() => {
-    const content = context.contentRef.current;
     const hasLabel =
-      content?.getAttribute('aria-label') ||
-      document.getElementById(content?.getAttribute('aria-labelledby')!);
+      contentRef.current?.getAttribute('aria-label') ||
+      document.getElementById(contentRef.current?.getAttribute('aria-labelledby')!);
 
     if (!hasLabel) console.warn(MESSAGE);
-  }, [MESSAGE, context.contentRef]);
+  }, [MESSAGE, contentRef]);
 
   return null;
 };

@@ -135,8 +135,9 @@ Alternatively, you can use your own component as a description by assigning it a
 For more information, see https://radix-ui.com/primitives/docs/components/alert-dialog`;
 
   React.useEffect(() => {
-    const content = contentRef.current;
-    const hasDescription = document.getElementById(content?.getAttribute('aria-describedby')!);
+    const hasDescription = document.getElementById(
+      contentRef.current?.getAttribute('aria-describedby')!
+    );
     if (!hasDescription) console.warn(MESSAGE);
   }, [MESSAGE, contentRef]);
 
