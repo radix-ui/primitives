@@ -33,6 +33,7 @@ export const NonModal = () => (
         className={contentSheetClass}
         onInteractOutside={(event) => event.preventDefault()}
       >
+        <DialogTitle>Booking info</DialogTitle>
         <DialogClose className={closeClass}>close</DialogClose>
       </DialogContent>
     </Dialog>

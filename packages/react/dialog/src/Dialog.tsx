@@ -159,7 +159,7 @@ const DialogOverlayImpl = React.forwardRef((props, forwardedRef) => {
 const CONTENT_NAME = 'DialogContent';
 
 type DialogContentOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof DialogContentModalImpl | typeof DialogContentNonModalImpl>,
+  Polymorphic.OwnProps<typeof DialogContentModal | typeof DialogContentNonModal>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -170,7 +170,7 @@ type DialogContentOwnProps = Polymorphic.Merge<
 >;
 
 type DialogContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof DialogContentModalImpl | typeof DialogContentNonModalImpl>,
+  Polymorphic.IntrinsicElement<typeof DialogContentModal | typeof DialogContentNonModal>,
   DialogContentOwnProps
 >;
 
@@ -180,9 +180,9 @@ const DialogContent = React.forwardRef((props, forwardedRef) => {
   return (
     <Presence present={forceMount || context.open}>
       {context.modal ? (
-        <DialogContentModalImpl {...contentProps} ref={forwardedRef} />
+        <DialogContentModal {...contentProps} ref={forwardedRef} />
       ) : (
-        <DialogContentNonModalImpl {...contentProps} ref={forwardedRef} />
+        <DialogContentNonModal {...contentProps} ref={forwardedRef} />
       )}
     </Presence>
   );
@@ -190,17 +190,17 @@ const DialogContent = React.forwardRef((props, forwardedRef) => {
 
 DialogContent.displayName = CONTENT_NAME;
 
-type DialogContentImplOwnProps = Omit<
-  Polymorphic.OwnProps<typeof DialogContentPart>,
+type DialogContentTypeOwnProps = Omit<
+  Polymorphic.OwnProps<typeof DialogContentImpl>,
   'trapFocus' | 'disableOutsidePointerEvents'
 >;
 
-type DialogContentImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof DialogContentPart>,
-  DialogContentImplOwnProps
+type DialogContentTypePrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof DialogContentImpl>,
+  DialogContentTypeOwnProps
 >;
 
-const DialogContentModalImpl = React.forwardRef((props, forwardedRef) => {
+const DialogContentModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, contentRef);
@@ -214,10 +214,10 @@ const DialogContentModalImpl = React.forwardRef((props, forwardedRef) => {
   return (
     <Portal>
       <RemoveScroll>
-        <DialogContentPart
+        <DialogContentImpl
           {...props}
           ref={composedRefs}
-          // we make sure focus isn't contained once `DialogContent` has been closed
+          // we make sure focus isn't trapped once `DialogContent` has been closed
           // (closed !== unmounted when animating out)
           trapFocus={context.open}
           disableOutsidePointerEvents
@@ -240,14 +240,14 @@ const DialogContentModalImpl = React.forwardRef((props, forwardedRef) => {
       </RemoveScroll>
     </Portal>
   );
-}) as DialogContentImplPrimitive;
+}) as DialogContentTypePrimitive;
 
-const DialogContentNonModalImpl = React.forwardRef((props, forwardedRef) => {
+const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
   const isPointerDownOutsideRef = React.useRef(false);
   return (
     <Portal>
-      <DialogContentPart
+      <DialogContentImpl
         {...props}
         ref={forwardedRef}
         trapFocus={false}
@@ -271,11 +271,11 @@ const DialogContentNonModalImpl = React.forwardRef((props, forwardedRef) => {
       />
     </Portal>
   );
-}) as DialogContentImplPrimitive;
+}) as DialogContentTypePrimitive;
 
 type FocusScopeOwnProps = Polymorphic.OwnProps<typeof FocusScope>;
 
-type DialogContentPartOwnProps = Polymorphic.Merge<
+type DialogContentImplOwnProps = Polymorphic.Merge<
   Omit<Polymorphic.OwnProps<typeof DismissableLayer>, 'onDismiss'>,
   {
     /**
@@ -299,12 +299,12 @@ type DialogContentPartOwnProps = Polymorphic.Merge<
   }
 >;
 
-type DialogContentPartPrimimitive = Polymorphic.ForwardRefComponent<
+type DialogContentImplPrimimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof DismissableLayer>,
-  DialogContentPartOwnProps
+  DialogContentImplOwnProps
 >;
 
-const DialogContentPart = React.forwardRef((props, forwardedRef) => {
+const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
@@ -349,7 +349,7 @@ const DialogContentPart = React.forwardRef((props, forwardedRef) => {
       {process.env.NODE_ENV === 'development' && <LabelWarning contentRef={contentRef} />}
     </>
   );
-}) as DialogContentPartPrimimitive;
+}) as DialogContentImplPrimimitive;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogTitle
