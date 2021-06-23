@@ -113,6 +113,8 @@ const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
         onPointerDown={composeEventHandlers(
           props.onPointerDown,
           whenTouchOrPen((event) => {
+            // clear the long press here in case there's multiple touch points
+            clearLongPress();
             longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
           })
         )}
