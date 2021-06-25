@@ -24,6 +24,31 @@ export const Styled = () => (
   </Dialog>
 );
 
+export const NonModal = () => (
+  <>
+    <Dialog modal={false}>
+      <DialogTrigger className={triggerClass}>open (non-modal)</DialogTrigger>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent
+        className={contentSheetClass}
+        onInteractOutside={(event) => event.preventDefault()}
+      >
+        <DialogTitle>Booking info</DialogTitle>
+        <DialogClose className={closeClass}>close</DialogClose>
+      </DialogContent>
+    </Dialog>
+
+    {Array.from({ length: 5 }, (_, i) => (
+      <div key={i} style={{ marginTop: 20 }}>
+        <textarea
+          style={{ width: 800, height: 400 }}
+          defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet, minima expedita alias et fugit voluptate laborum placeat odio dolore ab!"
+        />
+      </div>
+    ))}
+  </>
+);
+
 export const Controlled = () => {
   const [open, setOpen] = React.useState(false);
   return (
@@ -318,11 +343,23 @@ const contentClass = css({
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  background: 'white',
   minWidth: 300,
   minHeight: 150,
   padding: 50,
   borderRadius: 10,
+  backgroundColor: 'white',
+  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
+});
+
+const contentSheetClass = css({
+  ...RECOMMENDED_CSS__DIALOG__CONTENT,
+  left: undefined,
+  right: 0,
+  minWidth: 300,
+  minHeight: '100vh',
+  padding: 50,
+  borderTopLeftRadius: 10,
+  borderBottomLeftRadius: 10,
   backgroundColor: 'white',
   boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
 });
