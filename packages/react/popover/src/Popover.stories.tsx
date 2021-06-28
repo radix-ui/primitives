@@ -30,6 +30,21 @@ export const Styled = () => {
   );
 };
 
+export const NonModal = () => {
+  return (
+    <>
+      <Popover modal={false}>
+        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+        <PopoverContent className={contentClass} sideOffset={5}>
+          <PopoverClose className={closeClass}>close</PopoverClose>
+          <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
+        </PopoverContent>
+      </Popover>
+      <input style={{ marginLeft: 10 }} />
+    </>
+  );
+};
+
 export const Controlled = () => {
   const [open, setOpen] = React.useState(false);
   return (
@@ -172,21 +187,6 @@ export const CustomAnchor = () => (
     </PopoverContent>
   </Popover>
 );
-
-export const NonModal = () => {
-  return (
-    <>
-      <Popover>
-        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
-        <PopoverContent className={contentClass} sideOffset={5} trapFocus={false}>
-          <PopoverClose className={closeClass}>close</PopoverClose>
-          <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
-        </PopoverContent>
-      </Popover>
-      <input style={{ marginLeft: 10 }} />
-    </>
-  );
-};
 
 export const WithSlottedTrigger = () => {
   return (
