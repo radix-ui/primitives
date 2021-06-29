@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Portal } from './Portal';
-import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Portal' };
 
@@ -57,7 +56,6 @@ export const CustomContainer = () => {
 
 export const Chromatic = () => {
   const portalContainerRef = React.useRef<HTMLDivElement>(null);
-  const portalContainerRef2 = React.useRef<HTMLDivElement>(null);
 
   return (
     <div style={{ padding: 150 }}>

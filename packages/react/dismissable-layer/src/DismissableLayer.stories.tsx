@@ -438,7 +438,7 @@ export const PopoverNested = () => (
     <div style={{ display: 'flex', gap: 10 }}>
       <DummyPopover
         disableOutsidePointerEvents
-        onInteractOutside={(event) => {
+        onInteractOutside={() => {
           console.log('interact outside black');
         }}
       >
@@ -446,8 +446,7 @@ export const PopoverNested = () => (
           color="tomato"
           openLabel="Open red"
           closeLabel="Close red"
-          // disableOutsidePointerEvents
-          onInteractOutside={(event) => {
+          onInteractOutside={() => {
             console.log('interact outside red');
           }}
         >
@@ -456,7 +455,7 @@ export const PopoverNested = () => (
             openLabel="Open blue"
             closeLabel="Close blue"
             disableOutsidePointerEvents
-            onInteractOutside={(event) => {
+            onInteractOutside={() => {
               console.log('interact outside blue');
             }}
           ></DummyPopover>

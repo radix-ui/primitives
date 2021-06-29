@@ -155,10 +155,10 @@ function Item({ children, disabled = false, ...props }: ItemProps) {
 const [createTabsCollection, useTabsItem, useTabs] = createCollection('Tabs');
 const [createPanelsCollection, usePanelsItem, usePanels] = createCollection('Panels');
 
-const TabsContext = React.createContext({
-  selectedIndex: 0,
-  setSelectedIndex: (index: number) => {},
-});
+const TabsContext = React.createContext<{
+  selectedIndex: number;
+  setSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
+}>({ selectedIndex: 0, setSelectedIndex: () => {} });
 
 const Tabs = createTabsCollection(function Tabs({ children }) {
   const tabs = useTabs();
