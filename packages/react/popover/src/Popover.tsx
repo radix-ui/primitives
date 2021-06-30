@@ -264,8 +264,8 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
           onUnmountAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
             const isPointerOutside = isPointerDownOutsideRef.current;
             const isAllowedPointerOutside = isPointerOutside && !disableOutsidePointerEvents;
-            if (!isAllowedPointerOutside) context.triggerRef.current?.focus();
             event.preventDefault();
+            if (!isAllowedPointerOutside) context.triggerRef.current?.focus();
           })}
         >
           <DismissableLayer
