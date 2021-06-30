@@ -109,7 +109,6 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
       if (!hasAutoFocusedCandidate) {
         // we need to setup the listeners before we `dispatchEvent`
         container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
-        container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
 
         const mountEvent = new Event(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
         container.dispatchEvent(mountEvent);
@@ -129,6 +128,7 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
         // See: https://github.com/facebook/react/issues/17894
         setTimeout(() => {
           const unmountEvent = new Event(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
+          container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
           container.dispatchEvent(unmountEvent);
           if (!unmountEvent.defaultPrevented) {
             focus(previouslyFocusedElement ?? document.body, { select: true });
