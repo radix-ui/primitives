@@ -240,7 +240,7 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
             // (closed !== unmounted when animating out)
             trapped={context.open}
             onMountAutoFocus={onOpenAutoFocus}
-            onUnmountAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+            onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
               event.preventDefault();
               context.triggerRef.current?.focus();
             })}

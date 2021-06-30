@@ -261,7 +261,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
           // (closed !== unmounted when animating out)
           trapped={trapFocus && context.open}
           onMountAutoFocus={onOpenAutoFocus}
-          onUnmountAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+          onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
             const isPointerOutside = isPointerDownOutsideRef.current;
             const isAllowedPointerOutside = isPointerOutside && !disableOutsidePointerEvents;
             event.preventDefault();

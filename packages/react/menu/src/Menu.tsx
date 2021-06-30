@@ -480,7 +480,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
               event.preventDefault();
               contentRef.current?.focus();
             })}
-            onUnmountAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+            onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
               // skip autofocus on unmount if clicking outside is permitted and it happened
               if (!disableOutsidePointerEvents && isPointerDownOutsideRef.current) {
                 event.preventDefault();
