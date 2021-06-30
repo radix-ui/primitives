@@ -15,6 +15,7 @@ type ButtonProps = {
 };
 
 const Button = React.forwardRef((props, forwardedRef) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { isDisabled, ...buttonProps } = props;
   return <Primitive as="button" {...buttonProps} ref={forwardedRef} />;
 }) as Polymorphic.ForwardRefComponent<
@@ -57,6 +58,7 @@ type ExtendedButtonButtonOwnProps = Omit<
 >;
 
 const ExtendedButton = React.forwardRef((props, forwardedRef) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { isExtended, ...extendedButtonProps } = props;
   return <Button {...extendedButtonProps} ref={forwardedRef} />;
 }) as Polymorphic.ForwardRefComponent<
@@ -91,6 +93,7 @@ type AnchorProps = {
 };
 
 const Anchor = React.forwardRef((props, forwardedRef) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { as: Comp = 'a', requiredProp, ...anchorProps } = props;
   /* Does not expect requiredProp */
   return <Comp {...anchorProps} ref={forwardedRef} />;

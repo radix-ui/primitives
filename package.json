@@ -130,6 +130,12 @@
       }
     },
     "rules": {
+      "@typescript-eslint/no-unused-vars": [
+        1,
+        {
+          "vars": "local"
+        }
+      ],
       "prefer-const": [
         1,
         {

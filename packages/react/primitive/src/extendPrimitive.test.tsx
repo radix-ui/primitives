@@ -14,6 +14,7 @@ type ButtonProps = { isDisabled?: boolean };
 type ButtonPrimitive = Polymorphic.ForwardRefComponent<'button', ButtonProps>;
 
 const Button = React.forwardRef((props, forwardedRef) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { as: Comp = 'button', isDisabled, ...buttonProps } = props;
   return <Comp {...buttonProps} ref={forwardedRef} />;
 }) as ButtonPrimitive;

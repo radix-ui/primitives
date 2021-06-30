@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Presence } from './Presence';
-import { styled, css } from '../../../../stitches.config';
+import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Presence' };
 
