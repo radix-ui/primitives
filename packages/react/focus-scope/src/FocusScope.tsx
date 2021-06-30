@@ -104,13 +104,11 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
     if (container) {
       focusScopesStack.add(focusScope);
       const previouslyFocusedElement = document.activeElement as HTMLElement | null;
-      const hasAutoFocusedCandidate = container.contains(previouslyFocusedElement);
+      const hasFocusedCandidate = container.contains(previouslyFocusedElement);
 
-      if (!hasAutoFocusedCandidate) {
-        // we need to setup the listeners before we `dispatchEvent`
-        container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
-
+      if (!hasFocusedCandidate) {
         const mountEvent = new Event(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
+        container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
         container.dispatchEvent(mountEvent);
         if (!mountEvent.defaultPrevented) {
           focusFirst(getTabbableCandidates(container), { select: true });
