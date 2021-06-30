@@ -30,10 +30,10 @@ export const Styled = () => {
   );
 };
 
-export const NonModal = () => {
+export const Modal = () => {
   return (
     <>
-      <Popover modal={false}>
+      <Popover modal>
         <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
         <PopoverContent className={contentClass} sideOffset={5}>
           <PopoverClose className={closeClass}>close</PopoverClose>
