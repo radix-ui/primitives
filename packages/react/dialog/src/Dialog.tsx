@@ -264,8 +264,12 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
           isPointerDownOutsideRef.current = isLeftClick;
         })}
         onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
-          // prevent dismissing when clicking the trigger
-          // as it's already setup to close, otherwise it would close and immediately open.
+          // Prevent dismissing when clicking the trigger.
+          // As the trigger is already setup to close, without doing so would
+          // cause it to close and immediately open.
+          //
+          // We use `onInteractOutside` as some browsers also
+          // focus on pointer down, creating the same issue.
           const targetIsTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
           if (targetIsTrigger) event.preventDefault();
         })}
