@@ -37,9 +37,14 @@ const [
   useAlertDialogContentContext,
 ] = createContext<AlertDialogContentContextValue>(CONTENT_NAME);
 
+type AlertDialogContentProps = Omit<
+  Polymorphic.OwnProps<typeof DialogPrimitive.Content>,
+  'onPointerDownOutside'
+>;
+
 type AlertDialogContentPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof DialogPrimitive.Content>,
-  Omit<Polymorphic.OwnProps<typeof DialogPrimitive.Content>, 'onPointerDownOutside'>
+  AlertDialogContentProps
 >;
 
 const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
