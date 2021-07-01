@@ -37,9 +37,14 @@ const [
   useAlertDialogContentContext,
 ] = createContext<AlertDialogContentContextValue>(CONTENT_NAME);
 
+type AlertDialogContentProps = Omit<
+  Polymorphic.OwnProps<typeof DialogPrimitive.Content>,
+  'onPointerDownOutside'
+>;
+
 type AlertDialogContentPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof DialogPrimitive.Content>,
-  Polymorphic.OwnProps<typeof DialogPrimitive.Content>
+  AlertDialogContentProps
 >;
 
 const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
@@ -64,9 +69,7 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
             event.preventDefault();
             cancelRef.current?.focus({ preventScroll: true });
           })}
-          onPointerDownOutside={composeEventHandlers(contentProps.onPointerDownOutside, (event) =>
-            event.preventDefault()
-          )}
+          onPointerDownOutside={(event) => event.preventDefault()}
         >
           {/**
            * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
