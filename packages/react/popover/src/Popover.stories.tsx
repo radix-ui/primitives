@@ -222,7 +222,11 @@ export const Chromatic = () => (
     <h2>Open</h2>
     <Popover defaultOpen>
       <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
-      <PopoverContent className={contentClass} sideOffset={5}>
+      <PopoverContent
+        className={contentClass}
+        sideOffset={5}
+        onFocusOutside={(event) => event.preventDefault()}
+      >
         <PopoverClose className={closeClass}>close</PopoverClose>
         <PopoverArrow className={arrowClass} width={20} height={10} />
       </PopoverContent>
@@ -230,7 +234,11 @@ export const Chromatic = () => (
 
     <h2 style={{ marginTop: 100 }}>Open with reordered parts</h2>
     <Popover defaultOpen>
-      <PopoverContent className={contentClass} sideOffset={5}>
+      <PopoverContent
+        className={contentClass}
+        sideOffset={5}
+        onFocusOutside={(event) => event.preventDefault()}
+      >
         <PopoverClose className={closeClass}>close</PopoverClose>
         <PopoverArrow className={arrowClass} width={20} height={10} />
       </PopoverContent>
@@ -291,7 +299,7 @@ export const Chromatic = () => (
       <PopoverAnchor style={{ padding: 20, background: 'gainsboro' }}>
         <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
       </PopoverAnchor>
-      <PopoverContent className={contentClass}>
+      <PopoverContent className={contentClass} onFocusOutside={(event) => event.preventDefault()}>
         <PopoverClose className={closeClass}>close</PopoverClose>
         <PopoverArrow className={arrowClass} width={20} height={10} />
       </PopoverContent>
