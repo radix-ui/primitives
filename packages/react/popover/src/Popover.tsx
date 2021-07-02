@@ -226,8 +226,10 @@ const PopoverContentModal = React.forwardRef((props, forwardedRef) => {
           disableOutsidePointerEvents
           // When focus is trapped, a `focusout` event may still happen.
           // We make sure we don't trigger our `onDismiss` in such case.
-          onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
-            event.preventDefault()
+          onFocusOutside={composeEventHandlers(
+            props.onFocusOutside,
+            (event) => event.preventDefault(),
+            { checkForDefaultPrevented: false }
           )}
         />
       </RemoveScroll>
@@ -255,21 +257,30 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
         onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
           isPointerDownOutsideRef.current = false;
         })}
-        onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
-          const { originalEvent } = event.detail;
-          const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
-          isPointerDownOutsideRef.current = isLeftClick;
-        })}
-        onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
-          // Prevent dismissing when clicking the trigger.
-          // As the trigger is already setup to close, without doing so would
-          // cause it to close and immediately open.
-          //
-          // We use `onInteractOutside` as some browsers also
-          // focus on pointer down, creating the same issue.
-          const targetIsTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
-          if (targetIsTrigger) event.preventDefault();
-        })}
+        onPointerDownOutside={composeEventHandlers(
+          props.onPointerDownOutside,
+          (event) => {
+            const { originalEvent } = event.detail;
+            const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
+            isPointerDownOutsideRef.current = isLeftClick;
+          },
+          { checkForDefaultPrevented: false }
+        )}
+        onInteractOutside={composeEventHandlers(
+          props.onInteractOutside,
+          (event) => {
+            // Prevent dismissing when clicking the trigger.
+            // As the trigger is already setup to close, without doing so would
+            // cause it to close and immediately open.
+            //
+            // We use `onInteractOutside` as some browsers also
+            // focus on pointer down, creating the same issue.
+            const target = event.target as HTMLElement;
+            const targetIsTrigger = context.triggerRef.current?.contains(target);
+            if (targetIsTrigger) event.preventDefault();
+          },
+          { checkForDefaultPrevented: false }
+        )}
       />
     </PortalWrapper>
   );
