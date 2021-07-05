@@ -97,7 +97,7 @@ export const NonModal = () => {
           </DropdownMenuContent>
         </DropdownMenu>
         <textarea
-          style={{ width: 500, height: 200, marginTop: 10, display: 'block' }}
+          style={{ width: 500, height: 200, marginTop: 10 }}
           defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet, minima expedita alias et fugit voluptate laborum placeat odio dolore ab!"
         />
       </div>
