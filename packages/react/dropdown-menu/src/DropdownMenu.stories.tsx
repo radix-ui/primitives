@@ -54,7 +54,7 @@ export const Submenus = () => {
   const [rtl, setRtl] = React.useState(false);
   return (
     <div
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}
     >
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <label style={{ marginBottom: 10 }}>
@@ -68,59 +68,105 @@ export const Submenus = () => {
         <DropdownMenu dir={rtl ? 'rtl' : 'ltr'}>
           <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
           <DropdownMenuContent className={contentClass} sideOffset={5}>
-            <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
-              Undo
+            <DropdownMenuItem className={itemClass} onSelect={() => console.log('new-tab')}>
+              New Tab
             </DropdownMenuItem>
-            <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
-              Redo
+            <DropdownMenuItem className={itemClass} onSelect={() => console.log('new-window')}>
+              New Window
             </DropdownMenuItem>
             <DropdownMenuSeparator className={separatorClass} />
             <DropdownMenu>
               <DropdownMenuTriggerItem className={subTriggerClass}>
-                Submenu →
+                Bookmarks →
               </DropdownMenuTriggerItem>
               <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
-                <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
-                  One
+                <DropdownMenuItem className={itemClass} onSelect={() => console.log('index')}>
+                  Inbox
                 </DropdownMenuItem>
-
-                <DropdownMenuItem className={itemClass} onSelect={() => console.log('two')}>
-                  Two
+                <DropdownMenuItem className={itemClass} onSelect={() => console.log('calendar')}>
+                  Calendar
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className={separatorClass} />
                 <DropdownMenu>
                   <DropdownMenuTriggerItem className={subTriggerClass}>
-                    Submenu →
+                    Modulz →
                   </DropdownMenuTriggerItem>
                   <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
-                    <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
-                      One
+                    <DropdownMenuItem
+                      className={itemClass}
+                      onSelect={() => console.log('stitches')}
+                    >
+                      Stitches
                     </DropdownMenuItem>
-                    <DropdownMenuItem className={itemClass} onSelect={() => console.log('two')}>
-                      Two
+                    <DropdownMenuItem
+                      className={itemClass}
+                      onSelect={() => console.log('composer')}
+                    >
+                      Composer
                     </DropdownMenuItem>
-                    <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
-                      Three
+                    <DropdownMenuItem className={itemClass} onSelect={() => console.log('radix')}>
+                      Radix
                     </DropdownMenuItem>
                     <DropdownMenuArrow offset={14} />
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <DropdownMenuSeparator className={separatorClass} />
-                <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
-                  Three
+                <DropdownMenuItem className={itemClass} onSelect={() => console.log('notion')}>
+                  Notion
+                </DropdownMenuItem>
+                <DropdownMenuArrow offset={14} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTriggerItem className={subTriggerClass} disabled>
+                History →
+              </DropdownMenuTriggerItem>
+              <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                <DropdownMenuItem className={itemClass} onSelect={() => console.log('github')}>
+                  Github
+                </DropdownMenuItem>
+                <DropdownMenuItem className={itemClass} onSelect={() => console.log('google')}>
+                  Google
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className={itemClass}
+                  onSelect={() => console.log('stack-overflow')}
+                >
+                  Stack Overflow
+                </DropdownMenuItem>
+                <DropdownMenuArrow offset={14} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTriggerItem className={subTriggerClass}>Tools →</DropdownMenuTriggerItem>
+              <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                <DropdownMenuItem className={itemClass} onSelect={() => console.log('extensions')}>
+                  Extensions
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className={itemClass}
+                  onSelect={() => console.log('task-manager')}
+                >
+                  Task Manager
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className={itemClass}
+                  onSelect={() => console.log('developer-tools')}
+                >
+                  Developer Tools
                 </DropdownMenuItem>
                 <DropdownMenuArrow offset={14} />
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenuSeparator className={separatorClass} />
-            <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
-              Cut
+            <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('print')}>
+              Print…
             </DropdownMenuItem>
-            <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
-              Copy
+            <DropdownMenuItem className={itemClass} onSelect={() => console.log('cast')}>
+              Cast…
             </DropdownMenuItem>
-            <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
-              Paste
+            <DropdownMenuItem className={itemClass} onSelect={() => console.log('find')}>
+              Find…
             </DropdownMenuItem>
             <DropdownMenuArrow />
           </DropdownMenuContent>
