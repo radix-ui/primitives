@@ -50,6 +50,7 @@ type MenuRootContextValue = {
   content: MenuContentElement | null;
   onContentChange(content: MenuContentElement | null): void;
   onRootClose(): void;
+  modal: boolean;
 };
 
 type MenuSubContextValue = Omit<MenuRootContextValue, 'isSubmenu'> & {
@@ -68,10 +69,11 @@ type MenuOwnProps = {
   open?: boolean;
   onOpenChange?(open: boolean): void;
   dir?: Direction;
+  modal?: boolean;
 };
 
 const Menu: React.FC<MenuOwnProps> = (props) => {
-  const { open = false, children, onOpenChange } = props;
+  const { open = false, children, onOpenChange, modal = true } = props;
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
   const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
@@ -103,6 +105,7 @@ const Menu: React.FC<MenuOwnProps> = (props) => {
         content={content}
         onContentChange={setContent}
         onRootClose={React.useCallback(() => handleOpenChange(false), [handleOpenChange])}
+        modal={modal}
       >
         {children}
       </MenuProvider>
@@ -149,6 +152,7 @@ const MenuSub: React.FC<MenuSubOwnProps> = (props) => {
         trigger={trigger}
         onTriggerChange={setTrigger}
         triggerId={useId()}
+        modal={false}
       >
         {children}
       </MenuProvider>
@@ -224,15 +228,35 @@ const MenuContent = React.forwardRef((props, forwardedRef) => {
 /* ---------------------------------------------------------------------------------------------- */
 
 type MenuRootContentOwnProps = Omit<
-  Polymorphic.OwnProps<typeof MenuContentImpl>,
+  Polymorphic.OwnProps<typeof MenuRootContentModal | typeof MenuRootContentNonModal>,
   keyof MenuContentImplPrivateProps
 >;
 type MenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuContentImpl>,
+  Polymorphic.IntrinsicElement<typeof MenuRootContentModal | typeof MenuRootContentNonModal>,
   MenuRootContentOwnProps
 >;
 
 const MenuRootContent = React.forwardRef((props, forwardedRef) => {
+  const context = useMenuContext(CONTENT_NAME);
+
+  return context.modal ? (
+    <MenuRootContentModal {...props} ref={forwardedRef} />
+  ) : (
+    <MenuRootContentNonModal {...props} ref={forwardedRef} />
+  );
+}) as MenuRootContentPrimitive;
+
+type MenuRootContentTypeOwnProps = Omit<
+  Polymorphic.OwnProps<typeof MenuContentImpl>,
+  'trapFocus' | 'disableOutsidePointerEvents' | 'disableOutsideScroll'
+>;
+
+type MenuRootContentTypePrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof MenuContentImpl>,
+  MenuRootContentTypeOwnProps
+>;
+
+const MenuRootContentModal = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(CONTENT_NAME);
   const ref = React.useRef<React.ElementRef<typeof MenuContentImpl>>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -244,9 +268,40 @@ const MenuRootContent = React.forwardRef((props, forwardedRef) => {
   }, []);
 
   return (
-    <MenuContentImpl {...props} ref={composedRefs} onDismiss={() => context.onOpenChange(false)} />
+    <MenuContentImpl
+      {...props}
+      ref={composedRefs}
+      // we make sure we're not trapping once it's been closed
+      // (closed !== unmounted when animating out)
+      trapFocus={context.open}
+      disableOutsidePointerEvents
+      disableOutsideScroll
+      // When focus is trapped, a `focusout` event may still happen.
+      // We make sure we don't trigger our `onDismiss` in such case.
+      onFocusOutside={composeEventHandlers(
+        props.onFocusOutside,
+        (event) => event.preventDefault(),
+        { checkForDefaultPrevented: false }
+      )}
+      onDismiss={() => context.onOpenChange(false)}
+    />
   );
-}) as MenuRootContentPrimitive;
+}) as MenuRootContentTypePrimitive;
+
+const MenuRootContentNonModal = React.forwardRef((props, forwardedRef) => {
+  const context = useMenuContext(CONTENT_NAME);
+
+  return (
+    <MenuContentImpl
+      {...props}
+      ref={forwardedRef}
+      trapFocus={false}
+      disableOutsidePointerEvents={false}
+      disableOutsideScroll={false}
+      onDismiss={() => context.onOpenChange(false)}
+    />
+  );
+}) as MenuRootContentTypePrimitive;
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -471,9 +526,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
         >
           <FocusScope
             as={Slot}
-            // we make sure we're not trapping once it's been closed
-            // (closed !== unmounted when animating out)
-            trapped={trapFocus && context.open}
+            trapped={trapFocus}
             onMountAutoFocus={composeEventHandlers(onOpenAutoFocus, (event) => {
               // when opening, explicitly focus the content area only and leave
               // `onEntryFocus` in  control of focusing first item
@@ -504,15 +557,7 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
                 },
                 { checkForDefaultPrevented: false }
               )}
-              onFocusOutside={composeEventHandlers(
-                onFocusOutside,
-                (event) => {
-                  // When focus is trapped, a focusout event may still happen.
-                  // We make sure we don't trigger our `onDismiss` in such case.
-                  if (trapFocus) event.preventDefault();
-                },
-                { checkForDefaultPrevented: false }
-              )}
+              onFocusOutside={onFocusOutside}
               onInteractOutside={onInteractOutside}
               onDismiss={onDismiss}
             >
