@@ -103,18 +103,18 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
   React.useEffect(() => {
     if (container) {
       focusScopesStack.add(focusScope);
-      const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement as HTMLElement | null;
+      const previouslyFocusedElement = document.activeElement as HTMLElement | null;
+      const hasFocusedCandidate = container.contains(previouslyFocusedElement);
 
-      // we need to setup the listeners before we `dispatchEvent`
-      container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
-      container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
-
-      const mountEvent = new Event(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
-      container.dispatchEvent(mountEvent);
-      if (!mountEvent.defaultPrevented) {
-        focusFirst(getTabbableCandidates(container), { select: true });
-        if (document.activeElement === PREVIOUSLY_FOCUSED_ELEMENT) {
-          focus(container);
+      if (!hasFocusedCandidate) {
+        const mountEvent = new Event(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
+        container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
+        container.dispatchEvent(mountEvent);
+        if (!mountEvent.defaultPrevented) {
+          focusFirst(getTabbableCandidates(container), { select: true });
+          if (document.activeElement === previouslyFocusedElement) {
+            focus(container);
+          }
         }
       }
 
@@ -126,9 +126,10 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
         // See: https://github.com/facebook/react/issues/17894
         setTimeout(() => {
           const unmountEvent = new Event(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
+          container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
           container.dispatchEvent(unmountEvent);
           if (!unmountEvent.defaultPrevented) {
-            focus(PREVIOUSLY_FOCUSED_ELEMENT ?? document.body, { select: true });
+            focus(previouslyFocusedElement ?? document.body, { select: true });
           }
           // we need to remove the listener after we `dispatchEvent`
           container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
@@ -184,10 +185,10 @@ FocusScope.displayName = FOCUS_SCOPE_NAME;
  * Stops when focus has actually moved.
  */
 function focusFirst(candidates: HTMLElement[], { select = false } = {}) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+  const previouslyFocusedElement = document.activeElement;
   for (const candidate of candidates) {
     focus(candidate, { select });
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (document.activeElement !== previouslyFocusedElement) return;
   }
 }
 
