@@ -5,20 +5,26 @@ let changeCount = 0;
 let originalBodyPointerEvents: string;
 
 function useBodyPointerEvents({ disabled }: { disabled: boolean }) {
-  const isTouchOrPenPressRef = React.useRef(false);
+  const isTouchOrPenPressedRef = React.useRef(false);
+  const isMousePressedRef = React.useRef(false);
 
   React.useEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
-      isTouchOrPenPressRef.current = event.pointerType !== 'mouse';
+      const isMouse = event.pointerType === 'mouse';
+      isTouchOrPenPressedRef.current = !isMouse;
+      isMousePressedRef.current = isMouse;
     };
-    const handlePointerUp = () => (isTouchOrPenPressRef.current = false);
+    const handlePointerUp = () => {
+      isTouchOrPenPressedRef.current = false;
+      isMousePressedRef.current = false;
+    };
     document.addEventListener('pointerdown', handlePointerDown);
     document.addEventListener('pointerup', handlePointerUp);
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('pointerup', handlePointerUp);
     };
-  }, [isTouchOrPenPressRef]);
+  }, [isTouchOrPenPressedRef]);
 
   useLayoutEffect(() => {
     if (disabled) {
@@ -37,25 +43,32 @@ function useBodyPointerEvents({ disabled }: { disabled: boolean }) {
 
       return () => {
         changeCount--;
-        if (isTouchOrPenPressRef.current) {
+        if (isTouchOrPenPressedRef.current) {
           /**
-           * On touch devices, browsers implement a ~350ms delay between the time the user stops
+           * We force pointer-events to remain disabled until `click` fires on touch devices
+           * because browsers implement a ~350ms delay between the time the user stops
            * touching the display and when the browser executes events. We need to ensure we
            * don't reactivate pointer-events within this timeframe otherwise the browser may
            * execute events that should have been prevented.
            *
            * We are aware that `touch-action: manipulation` shortens this delay for events,
-           * but it isn't enough to cover all cases. When there is an input on screen:
+           * but it isn't enough to cover all cases.
+           *
+           * When there is an input on screen:
            * - if a click event is bound to it, it will fire after a `pointerdown` which may
            * have re-enabled pointer-events (regardless of `touch-action: manipulation`).
            * - if clicking it causes the page to zoom, the events will wait for the zoom to
            * finish before executing on the input.
            * - if long pressesing it, the events will execute after the longpress delay.
-           *
-           * Instead, we force pointer-events to remain disabled until the `click` event has
-           * executed when pressing on touch devices.
            */
           document.addEventListener('click', resetPointerEvents, { once: true });
+        } else if (isMousePressedRef.current) {
+          /**
+           * We force pointer-events to remain disabled until `pointerup` otherwise, events
+           * bound to inert controls could execute after pointer-events have been re-enabled,
+           * e.g. `select` event.
+           */
+          document.addEventListener('pointerup', resetPointerEvents, { once: true });
         } else {
           resetPointerEvents();
         }
