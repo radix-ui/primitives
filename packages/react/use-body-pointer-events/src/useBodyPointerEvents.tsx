@@ -52,9 +52,10 @@ function useBodyPointerEvents({ disabled }: { disabled: boolean }) {
            * finish before executing on the input.
            * - if long pressesing it, the events will execute after the longpress delay.
            *
-           * We've used 500ms to cover all cases.
+           * Instead, we force pointer-events to remain disabled until the `click` event has
+           * executed when pressing on touch devices.
            */
-          setTimeout(resetPointerEvents, 500);
+          document.addEventListener('click', resetPointerEvents, { once: true });
         } else {
           resetPointerEvents();
         }
