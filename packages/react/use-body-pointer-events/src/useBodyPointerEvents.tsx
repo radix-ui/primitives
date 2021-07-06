@@ -24,7 +24,7 @@ function useBodyPointerEvents({ disabled }: { disabled: boolean }) {
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('pointerup', handlePointerUp);
     };
-  }, [isTouchOrPenPressedRef]);
+  }, []);
 
   useLayoutEffect(() => {
     if (disabled) {
