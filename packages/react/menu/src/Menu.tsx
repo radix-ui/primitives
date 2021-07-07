@@ -274,7 +274,9 @@ const MenuRootContentModal = React.forwardRef((props, forwardedRef) => {
       // we make sure we're not trapping once it's been closed
       // (closed !== unmounted when animating out)
       trapFocus={context.open}
-      disableOutsidePointerEvents
+      // make sure to only disable pointer events when open
+      // this avoids blocking interactions while animating out
+      disableOutsidePointerEvents={context.open}
       disableOutsideScroll
       // When focus is trapped, a `focusout` event may still happen.
       // We make sure we don't trigger our `onDismiss` in such case.
@@ -290,6 +292,7 @@ const MenuRootContentModal = React.forwardRef((props, forwardedRef) => {
 
 const MenuRootContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(CONTENT_NAME);
+  const isPointerDownOutsideRef = React.useRef(false);
 
   return (
     <MenuContentImpl
@@ -298,6 +301,25 @@ const MenuRootContentNonModal = React.forwardRef((props, forwardedRef) => {
       trapFocus={false}
       disableOutsidePointerEvents={false}
       disableOutsideScroll={false}
+      onCloseAutoFocus={(event) => {
+        if (isPointerDownOutsideRef.current) {
+          event.preventDefault();
+        } else {
+          props.onCloseAutoFocus?.(event);
+        }
+      }}
+      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
+        isPointerDownOutsideRef.current = false;
+      })}
+      onPointerDownOutside={composeEventHandlers(
+        props.onPointerDownOutside,
+        (event) => {
+          const originalEvent = event.detail.originalEvent as MouseEvent;
+          const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
+          isPointerDownOutsideRef.current = isLeftClick;
+        },
+        { checkForDefaultPrevented: false }
+      )}
       onDismiss={() => context.onOpenChange(false)}
     />
   );
@@ -445,7 +467,6 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
   const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, contentRef, context.onContentChange);
-  const isPointerDownOutsideRef = React.useRef(false);
   const timerRef = React.useRef(0);
   const searchRef = React.useRef('');
   const pointerGraceTimerRef = React.useRef(0);
@@ -533,30 +554,13 @@ const MenuContentImpl = React.forwardRef((props, forwardedRef) => {
               event.preventDefault();
               contentRef.current?.focus();
             })}
-            onUnmountAutoFocus={(event) => {
-              // skip autofocus on unmount if clicking outside is permitted and it happened
-              if (!disableOutsidePointerEvents && isPointerDownOutsideRef.current) {
-                event.preventDefault();
-              } else {
-                onCloseAutoFocus?.(event);
-              }
-            }}
+            onUnmountAutoFocus={onCloseAutoFocus}
           >
             <DismissableLayer
               as={Slot}
               disableOutsidePointerEvents={disableOutsidePointerEvents}
-              onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
-                isPointerDownOutsideRef.current = false;
-              })}
-              onPointerDownOutside={composeEventHandlers(
-                onPointerDownOutside,
-                (event) => {
-                  const originalEvent = event.detail.originalEvent as MouseEvent;
-                  const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
-                  isPointerDownOutsideRef.current = isLeftClick;
-                },
-                { checkForDefaultPrevented: false }
-              )}
+              onEscapeKeyDown={onEscapeKeyDown}
+              onPointerDownOutside={onPointerDownOutside}
               onFocusOutside={onFocusOutside}
               onInteractOutside={onInteractOutside}
               onDismiss={onDismiss}
