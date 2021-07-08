@@ -376,16 +376,13 @@ type MenuOwnProps = Omit<
 const MenuWithAnchor: React.FC<MenuOwnProps> = (props) => {
   const { open = true, children, ...contentProps } = props;
   return (
-    <Menu open={open} onOpenChange={() => {}}>
+    <Menu open={open} onOpenChange={() => {}} modal={false}>
       {/* inline-block allows anchor to move when rtl changes on document */}
       <MenuAnchor style={{ display: 'inline-block' }} />
       <MenuContent
         className={contentClass}
         portalled
-        trapFocus={false}
         onCloseAutoFocus={(event) => event.preventDefault()}
-        disableOutsidePointerEvents={false}
-        disableOutsideScroll={false}
         align="start"
         {...contentProps}
       >
