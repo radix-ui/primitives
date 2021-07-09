@@ -6,17 +6,17 @@ let originalBodyPointerEvents: string;
 
 function useBodyPointerEvents({ disabled }: { disabled: boolean }) {
   const isTouchOrPenPressedRef = React.useRef(false);
-  const isMousePressedRef = React.useRef(false);
+  const isMouseLeftPressedRef = React.useRef(false);
 
   React.useEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
       const isMouse = event.pointerType === 'mouse';
       isTouchOrPenPressedRef.current = !isMouse;
-      isMousePressedRef.current = isMouse;
+      isMouseLeftPressedRef.current = isMouse && event.button === 0;
     };
     const handlePointerUp = () => {
       isTouchOrPenPressedRef.current = false;
-      isMousePressedRef.current = false;
+      isMouseLeftPressedRef.current = false;
     };
     document.addEventListener('pointerdown', handlePointerDown);
     document.addEventListener('pointerup', handlePointerUp);
@@ -62,7 +62,7 @@ function useBodyPointerEvents({ disabled }: { disabled: boolean }) {
            * - if long pressesing it, the events will execute after the longpress delay.
            */
           document.addEventListener('click', resetPointerEvents, { once: true });
-        } else if (isMousePressedRef.current) {
+        } else if (isMouseLeftPressedRef.current) {
           /**
            * We force pointer-events to remain disabled until `pointerup` otherwise, events
            * bound to inert controls could execute after pointer-events have been re-enabled,
