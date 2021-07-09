@@ -240,7 +240,6 @@ const PopoverContentModal = React.forwardRef((props, forwardedRef) => {
 const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentNonModalProps } = props;
   const context = usePopoverContext(CONTENT_NAME);
-  const isPointerDownOutsideRef = React.useRef(false);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
@@ -250,22 +249,7 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
         {...contentNonModalProps}
         ref={forwardedRef}
         trapFocus={false}
-        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-          if (isPointerDownOutsideRef.current) event.preventDefault();
-        })}
         disableOutsidePointerEvents={false}
-        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-          isPointerDownOutsideRef.current = false;
-        })}
-        onPointerDownOutside={composeEventHandlers(
-          props.onPointerDownOutside,
-          (event) => {
-            const { originalEvent } = event.detail;
-            const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
-            isPointerDownOutsideRef.current = isLeftClick;
-          },
-          { checkForDefaultPrevented: false }
-        )}
         onInteractOutside={composeEventHandlers(
           props.onInteractOutside,
           (event) => {
@@ -331,6 +315,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
     ...contentProps
   } = props;
   const context = usePopoverContext(CONTENT_NAME);
+  const preventAutoFocusRef = React.useRef(false);
 
   // Make sure the whole tree has focus guards as our `Popover` may be
   // the last element in the DOM (beacuse of the `Portal`)
@@ -342,14 +327,28 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
       loop
       trapped={trapFocus}
       onMountAutoFocus={onOpenAutoFocus}
-      onUnmountAutoFocus={onCloseAutoFocus}
+      onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+        event.preventDefault();
+        if (!preventAutoFocusRef.current) context.triggerRef.current?.focus();
+      })}
     >
       <DismissableLayer
         as={Slot}
         disableOutsidePointerEvents={disableOutsidePointerEvents}
         onInteractOutside={onInteractOutside}
-        onEscapeKeyDown={onEscapeKeyDown}
-        onPointerDownOutside={onPointerDownOutside}
+        onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
+          preventAutoFocusRef.current = false;
+        })}
+        onPointerDownOutside={composeEventHandlers(
+          onPointerDownOutside,
+          (event) => {
+            const originalEvent = event.detail.originalEvent;
+            const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+            const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+            preventAutoFocusRef.current = isRightClick || !disableOutsidePointerEvents;
+          },
+          { checkForDefaultPrevented: false }
+        )}
         onFocusOutside={onFocusOutside}
         onDismiss={() => context.onOpenChange(false)}
       >

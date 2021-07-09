@@ -292,7 +292,6 @@ const MenuRootContentModal = React.forwardRef((props, forwardedRef) => {
 
 const MenuRootContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(CONTENT_NAME);
-  const isPointerDownOutsideRef = React.useRef(false);
 
   return (
     <MenuContentImpl
@@ -301,23 +300,9 @@ const MenuRootContentNonModal = React.forwardRef((props, forwardedRef) => {
       trapFocus={false}
       disableOutsidePointerEvents={false}
       disableOutsideScroll={false}
-      onCloseAutoFocus={(event) => {
-        if (isPointerDownOutsideRef.current) {
-          event.preventDefault();
-        } else {
-          props.onCloseAutoFocus?.(event);
-        }
-      }}
-      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-        isPointerDownOutsideRef.current = false;
-      })}
-      onPointerDownOutside={composeEventHandlers(
-        props.onPointerDownOutside,
-        (event) => {
-          const originalEvent = event.detail.originalEvent as MouseEvent;
-          const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
-          isPointerDownOutsideRef.current = isLeftClick;
-        },
+      onCloseAutoFocus={composeEventHandlers(
+        props.onCloseAutoFocus,
+        (event) => event.preventDefault(),
         { checkForDefaultPrevented: false }
       )}
       onDismiss={() => context.onOpenChange(false)}

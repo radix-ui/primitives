@@ -222,7 +222,7 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
           trapFocus={context.open}
           disableOutsidePointerEvents
           onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
-            const originalEvent = event.detail.originalEvent as MouseEvent;
+            const originalEvent = event.detail.originalEvent;
             const isRightClick =
               originalEvent.button === 2 ||
               (originalEvent.button === 0 && originalEvent.ctrlKey === true);
@@ -244,25 +244,13 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
 
 const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
-  const isPointerDownOutsideRef = React.useRef(false);
   return (
     <Portal>
       <DialogContentImpl
         {...props}
         ref={forwardedRef}
         trapFocus={false}
-        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-          if (isPointerDownOutsideRef.current) event.preventDefault();
-        })}
         disableOutsidePointerEvents={false}
-        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-          isPointerDownOutsideRef.current = false;
-        })}
-        onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
-          const { originalEvent } = event.detail;
-          const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
-          isPointerDownOutsideRef.current = isLeftClick;
-        })}
         onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would
@@ -322,6 +310,7 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, contentRef);
+  const preventAutoFocusRef = React.useRef(false);
 
   // Make sure the whole tree has focus guards as our `Dialog` will be
   // the last element in the DOM (beacuse of the `Portal`)
@@ -334,7 +323,10 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
         loop
         trapped={trapFocus}
         onMountAutoFocus={onOpenAutoFocus}
-        onUnmountAutoFocus={onCloseAutoFocus}
+        onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+          event.preventDefault();
+          if (!preventAutoFocusRef.current) context.triggerRef.current?.focus();
+        })}
       >
         <DismissableLayer
           role="dialog"
@@ -347,6 +339,19 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
           aria-label={ariaLabel || undefined}
           data-state={getState(context.open)}
           {...contentProps}
+          onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
+            preventAutoFocusRef.current = false;
+          })}
+          onPointerDownOutside={composeEventHandlers(
+            props.onPointerDownOutside,
+            (event) => {
+              const originalEvent = event.detail.originalEvent;
+              const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+              const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+              preventAutoFocusRef.current = isRightClick || !props.disableOutsidePointerEvents;
+            },
+            { checkForDefaultPrevented: false }
+          )}
           ref={composedRefs}
           onDismiss={() => context.onOpenChange(false)}
         />
