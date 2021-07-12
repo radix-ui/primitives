@@ -204,7 +204,6 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, contentRef);
-  const isRightClickOutsideRef = React.useRef(false);
 
   // aria-hide everything except the content (better supported equivalent to setting aria-modal)
   React.useEffect(() => {
@@ -224,7 +223,7 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
           disableOutsidePointerEvents
           onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
             event.preventDefault();
-            if (!isRightClickOutsideRef.current) context.triggerRef.current?.focus();
+            context.triggerRef.current?.focus();
           })}
           onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
             const originalEvent = event.detail.originalEvent;
@@ -234,7 +233,6 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
             // If the event is a right-click, we shouldn't close because
             // it is effectively as if we right-clicked the `Overlay`.
             if (isRightClick) event.preventDefault();
-            isRightClickOutsideRef.current = isRightClick;
           })}
           // When focus is trapped, a `focusout` event may still happen.
           // We make sure we don't trigger our `onDismiss` in such case.
@@ -249,7 +247,7 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
 
 const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
-  const isEscapeKeyPressRef = React.useRef(false);
+  const isEscapeKeyDownRef = React.useRef(false);
   return (
     <Portal>
       <DialogContentImpl
@@ -259,10 +257,10 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
         disableOutsidePointerEvents={false}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
-          if (isEscapeKeyPressRef.current) context.triggerRef.current?.focus();
+          if (isEscapeKeyDownRef.current) context.triggerRef.current?.focus();
         })}
         onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-          isEscapeKeyPressRef.current = true;
+          isEscapeKeyDownRef.current = true;
         })}
         onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
           // Prevent dismissing when clicking the trigger.
