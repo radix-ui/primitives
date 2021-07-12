@@ -300,11 +300,6 @@ const MenuRootContentNonModal = React.forwardRef((props, forwardedRef) => {
       trapFocus={false}
       disableOutsidePointerEvents={false}
       disableOutsideScroll={false}
-      onCloseAutoFocus={composeEventHandlers(
-        props.onCloseAutoFocus,
-        (event) => event.preventDefault(),
-        { checkForDefaultPrevented: false }
-      )}
       onDismiss={() => context.onOpenChange(false)}
     />
   );
