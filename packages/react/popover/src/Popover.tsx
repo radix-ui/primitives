@@ -271,13 +271,9 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
           event.preventDefault();
           if (isEscapeKeyDownRef.current) context.triggerRef.current?.focus();
         })}
-        onEscapeKeyDown={composeEventHandlers(
-          props.onEscapeKeyDown,
-          () => {
-            isEscapeKeyDownRef.current = true;
-          },
-          { checkForDefaultPrevented: false }
-        )}
+        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
+          isEscapeKeyDownRef.current = true;
+        })}
         onInteractOutside={composeEventHandlers(
           props.onInteractOutside,
           (event) => {
