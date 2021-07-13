@@ -2,11 +2,14 @@ import React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Slot } from '@radix-ui/react-slot';
 
-type SlotProps = React.ComponentProps<typeof Slot>;
+// We have resorted to returning slots directly rather than exposing primitives that can then
+// be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`.
+// This is because we encountered issues with generic types that cannot be statically analysed
+// due to creating them dynamically via createCollection.
 
 function createCollection<ItemElement extends HTMLElement, ItemData>() {
   /* -----------------------------------------------------------------------------------------------
-   * Collection
+   * CollectionProvider
    * ---------------------------------------------------------------------------------------------*/
 
   type CollectionElement = HTMLElement;
@@ -17,18 +20,34 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
   };
   const Context = React.createContext<ContextValue>({} as any);
 
-  const COLLECTION_SLOT_NAME = 'CollectionSlot';
+  const PROVIDER_NAME = 'CollectionProvider';
 
-  const CollectionSlot = React.forwardRef<CollectionElement, SlotProps>((props, forwardedRef) => {
+  const CollectionProvider: React.FC = (props) => {
     const { children } = props;
     const ref = React.useRef<CollectionElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref);
     const itemMap = React.useRef<ContextValue['itemMap']>(new Map()).current;
     return (
       <Context.Provider value={React.useMemo(() => ({ itemMap, collectionRef: ref }), [itemMap])}>
-        <Slot ref={composedRefs}>{children}</Slot>
+        {children}
       </Context.Provider>
     );
+  };
+
+  CollectionProvider.displayName = PROVIDER_NAME;
+
+  /* -----------------------------------------------------------------------------------------------
+   * CollectionSlot
+   * ---------------------------------------------------------------------------------------------*/
+
+  const COLLECTION_SLOT_NAME = 'CollectionSlot';
+
+  type SlotProps = React.ComponentProps<typeof Slot>;
+
+  const CollectionSlot = React.forwardRef<CollectionElement, SlotProps>((props, forwardedRef) => {
+    const { children } = props;
+    const context = React.useContext(Context);
+    const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
+    return <Slot ref={composedRefs}>{children}</Slot>;
   });
 
   CollectionSlot.displayName = COLLECTION_SLOT_NAME;
@@ -84,7 +103,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
     };
   }
 
-  return [CollectionSlot, CollectionItemSlot, useCollection] as const;
+  return [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] as const;
 }
 
 export { createCollection };
