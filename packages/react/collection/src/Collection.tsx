@@ -4,8 +4,8 @@ import { Slot } from '@radix-ui/react-slot';
 
 // We have resorted to returning slots directly rather than exposing primitives that can then
 // be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`.
-// This is because we encountered issues with generic types, static analysis 
-// and the dynamic function used to return the components.
+// This is because we encountered issues with generic types that cannot be statically analysed
+// due to creating them dynamically via createCollection.
 
 function createCollection<ItemElement extends HTMLElement, ItemData>() {
   /* -----------------------------------------------------------------------------------------------
