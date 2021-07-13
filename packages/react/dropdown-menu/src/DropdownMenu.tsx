@@ -25,6 +25,7 @@ type DropdownMenuRootContextValue = {
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
+  modal: boolean;
 };
 
 type DropdownMenuSubContextValue = {
@@ -105,6 +106,7 @@ const DropdownMenuRoot: React.FC<DropdownMenuRootOwnProps> = (props) => {
       open={open}
       onOpenChange={onOpenChange}
       onOpenToggle={onOpenToggle}
+      modal={modal}
     >
       <MenuPrimitive.Root open={open} onOpenChange={onOpenChange} dir={dir} modal={modal}>
         {children}
@@ -215,6 +217,7 @@ type DropdownMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
 const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentProps } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
+  const preventCloseAutoFocusRef = React.useRef(false);
 
   return context.isRootMenu ? (
     <MenuPrimitive.Content
@@ -225,8 +228,21 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
       portalled={portalled}
       onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
         event.preventDefault();
-        context.triggerRef.current?.focus();
+        if (!preventCloseAutoFocusRef.current) context.triggerRef.current?.focus();
       })}
+      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
+        preventCloseAutoFocusRef.current = false;
+      })}
+      onPointerDownOutside={composeEventHandlers(
+        props.onPointerDownOutside,
+        (event) => {
+          const originalEvent = event.detail.originalEvent;
+          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+          preventCloseAutoFocusRef.current = isRightClick || !context.modal;
+        },
+        { checkForDefaultPrevented: false }
+      )}
       onInteractOutside={composeEventHandlers(
         props.onInteractOutside,
         (event) => {
