@@ -237,8 +237,26 @@ function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutside
       }
       isPointerInsideReactTreeRef.current = false;
     };
-    document.addEventListener('pointerdown', handlePointerDown);
-    return () => document.removeEventListener('pointerdown', handlePointerDown);
+    /**
+     * if this hook executes in a component that mounts via a `pointerdown` event, the event
+     * would bubble up to the document and trigger a `pointerDownOutside` event. We avoid
+     * this by delaying the event listener registration on the document.
+     * This is not React specific, but rather how the DOM works, ie:
+     * ```
+     * button.addEventListener('pointerdown', () => {
+     *   console.log('I will log');
+     *   document.addEventListener('pointerdown', () => {
+     *     console.log('I will also log');
+     *   })
+     * });
+     */
+    const timerId = window.setTimeout(() => {
+      document.addEventListener('pointerdown', handlePointerDown);
+    }, 0);
+    return () => {
+      window.clearTimeout(timerId);
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
   }, [handlePointerDownOutside]);
 
   return {
