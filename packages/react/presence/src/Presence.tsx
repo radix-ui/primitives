@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './useStateMachine';
 
 type PresenceProps = {
@@ -46,7 +47,7 @@ function usePresence(present: boolean) {
     },
   });
 
-  React.useEffect(() => {
+  useLayoutEffect(() => {
     const styles = stylesRef.current;
     const wasPresent = prevPresentRef.current;
     const hasPresentChanged = wasPresent !== present;
@@ -81,7 +82,7 @@ function usePresence(present: boolean) {
     }
   }, [present, send]);
 
-  React.useEffect(() => {
+  useLayoutEffect(() => {
     if (node) {
       /**
        * Triggering an ANIMATION_OUT during an ANIMATION_IN will fire an `animationcancel`
