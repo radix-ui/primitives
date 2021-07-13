@@ -3960,6 +3960,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ">=16.8"
   languageName: unknown
