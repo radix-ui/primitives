@@ -50,56 +50,106 @@ export const Styled = () => (
   </div>
 );
 
-export const NonModal = () => {
+export const Modality = () => {
   return (
     <div
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '110vh' }}
     >
-      <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
-          <DropdownMenuContent className={contentClass} sideOffset={5}>
-            <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
-              Undo
-            </DropdownMenuItem>
-            <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
-              Redo
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className={separatorClass} />
-            <DropdownMenu>
-              <DropdownMenuTriggerItem className={subTriggerClass}>
-                Submenu →
-              </DropdownMenuTriggerItem>
-              <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
-                <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
-                  One
-                </DropdownMenuItem>
-                <DropdownMenuItem className={itemClass} onSelect={() => console.log('two')}>
-                  Two
-                </DropdownMenuItem>
-                <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
-                  Three
-                </DropdownMenuItem>
-                <DropdownMenuArrow offset={14} />
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenuSeparator className={separatorClass} />
-            <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
-              Cut
-            </DropdownMenuItem>
-            <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
-              Copy
-            </DropdownMenuItem>
-            <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
-              Paste
-            </DropdownMenuItem>
-            <DropdownMenuArrow />
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <textarea
-          style={{ width: 500, height: 200, marginTop: 10 }}
-          defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet, minima expedita alias et fugit voluptate laborum placeat odio dolore ab!"
-        />
+      <div style={{ display: 'grid', gridGap: 50 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+          <h1>Modal (default)</h1>
+          <DropdownMenu>
+            <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
+            <DropdownMenuContent className={contentClass} sideOffset={5}>
+              <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+                Undo
+              </DropdownMenuItem>
+              <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+                Redo
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className={separatorClass} />
+              <DropdownMenu>
+                <DropdownMenuTriggerItem className={subTriggerClass}>
+                  Submenu →
+                </DropdownMenuTriggerItem>
+                <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                  <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
+                    One
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className={itemClass} onSelect={() => console.log('two')}>
+                    Two
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
+                    Three
+                  </DropdownMenuItem>
+                  <DropdownMenuArrow offset={14} />
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenuSeparator className={separatorClass} />
+              <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+                Cut
+              </DropdownMenuItem>
+              <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+                Copy
+              </DropdownMenuItem>
+              <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+                Paste
+              </DropdownMenuItem>
+              <DropdownMenuArrow />
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <textarea
+            style={{ width: 500, height: 100, marginTop: 10 }}
+            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+          />
+        </div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+          <h1>Non modal</h1>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
+            <DropdownMenuContent className={contentClass} sideOffset={5}>
+              <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+                Undo
+              </DropdownMenuItem>
+              <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+                Redo
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className={separatorClass} />
+              <DropdownMenu>
+                <DropdownMenuTriggerItem className={subTriggerClass}>
+                  Submenu →
+                </DropdownMenuTriggerItem>
+                <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                  <DropdownMenuItem className={itemClass} onSelect={() => console.log('one')}>
+                    One
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className={itemClass} onSelect={() => console.log('two')}>
+                    Two
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className={itemClass} onSelect={() => console.log('three')}>
+                    Three
+                  </DropdownMenuItem>
+                  <DropdownMenuArrow offset={14} />
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenuSeparator className={separatorClass} />
+              <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+                Cut
+              </DropdownMenuItem>
+              <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+                Copy
+              </DropdownMenuItem>
+              <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+                Paste
+              </DropdownMenuItem>
+              <DropdownMenuArrow />
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <textarea
+            style={{ width: 500, height: 100, marginTop: 10 }}
+            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+          />
+        </div>
       </div>
     </div>
   );

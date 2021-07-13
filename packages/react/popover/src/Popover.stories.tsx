@@ -30,18 +30,42 @@ export const Styled = () => {
   );
 };
 
-export const Modal = () => {
+export const Modality = () => {
   return (
-    <>
-      <Popover modal>
-        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
-        <PopoverContent className={contentClass} sideOffset={5}>
-          <PopoverClose className={closeClass}>close</PopoverClose>
-          <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
-        </PopoverContent>
-      </Popover>
-      <input style={{ marginLeft: 10 }} />
-    </>
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '110vh' }}
+    >
+      <div style={{ display: 'grid', gridGap: 50 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+          <h1>Non modal (default)</h1>
+          <Popover>
+            <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+            <PopoverContent className={contentClass} sideOffset={5}>
+              <PopoverClose className={closeClass}>close</PopoverClose>
+              <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
+            </PopoverContent>
+          </Popover>
+          <textarea
+            style={{ width: 500, height: 100, marginTop: 10 }}
+            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+          />
+        </div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+          <h1>Modal</h1>
+          <Popover modal>
+            <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+            <PopoverContent className={contentClass} sideOffset={5}>
+              <PopoverClose className={closeClass}>close</PopoverClose>
+              <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
+            </PopoverContent>
+          </Popover>
+          <textarea
+            style={{ width: 500, height: 100, marginTop: 10 }}
+            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 
