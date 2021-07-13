@@ -555,7 +555,7 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
         aria-orientation={context.orientation}
         data-orientation={context.orientation}
         data-disabled={context.disabled ? '' : undefined}
-        tabIndex={0}
+        tabIndex={context.disabled ? undefined : 0}
         {...thumbProps}
         as={as}
         ref={composedRefs}
