@@ -125,16 +125,18 @@ export const Nested = () => (
 
 type ItemData = { disabled: boolean };
 
-const [ListSlot, ListItemSlot, useItems] = createCollection<
+const [ListProvider, ListRootSlot, ListItemSlot, useItems] = createCollection<
   React.ElementRef<typeof Item>,
   ItemData
 >();
 
 const List: React.FC = (props) => {
   return (
-    <ListSlot>
-      <ul style={{ width: 200 }} {...props} />
-    </ListSlot>
+    <ListProvider>
+      <ListRootSlot>
+        <ul style={{ width: 200 }} {...props} />
+      </ListRootSlot>
+    </ListProvider>
   );
 };
 
