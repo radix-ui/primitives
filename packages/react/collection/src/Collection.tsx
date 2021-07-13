@@ -2,6 +2,11 @@ import React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Slot } from '@radix-ui/react-slot';
 
+// We have resorted to returning slots directly rather than exposing primitives that can then
+// be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`. This is because we were having
+// issues with types because there are generics at play and it's not statically analyzable because
+// the components are returned by a dynamic function.
+
 function createCollection<ItemElement extends HTMLElement, ItemData>() {
   /* -----------------------------------------------------------------------------------------------
    * CollectionProvider
@@ -31,23 +36,21 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
   CollectionProvider.displayName = PROVIDER_NAME;
 
   /* -----------------------------------------------------------------------------------------------
-   * CollectionRootSlot
+   * CollectionSlot
    * ---------------------------------------------------------------------------------------------*/
 
-  const ROOT_SLOT_NAME = 'CollectionRootSlot';
+  const COLLECTION_SLOT_NAME = 'CollectionSlot';
 
   type SlotProps = React.ComponentProps<typeof Slot>;
 
-  const CollectionRootSlot = React.forwardRef<CollectionElement, SlotProps>(
-    (props, forwardedRef) => {
-      const { children } = props;
-      const context = React.useContext(Context);
-      const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
-      return <Slot ref={composedRefs}>{children}</Slot>;
-    }
-  );
+  const CollectionSlot = React.forwardRef<CollectionElement, SlotProps>((props, forwardedRef) => {
+    const { children } = props;
+    const context = React.useContext(Context);
+    const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
+    return <Slot ref={composedRefs}>{children}</Slot>;
+  });
 
-  CollectionRootSlot.displayName = ROOT_SLOT_NAME;
+  CollectionSlot.displayName = COLLECTION_SLOT_NAME;
 
   /* -----------------------------------------------------------------------------------------------
    * CollectionItem
@@ -100,7 +103,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
     };
   }
 
-  return [CollectionProvider, CollectionRootSlot, CollectionItemSlot, useCollection] as const;
+  return [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] as const;
 }
 
 export { createCollection };

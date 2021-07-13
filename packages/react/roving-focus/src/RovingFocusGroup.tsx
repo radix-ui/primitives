@@ -14,12 +14,10 @@ const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };
 
 type ItemData = { id: string; focusable: boolean; active: boolean };
-const [
-  CollectionProvider,
-  CollectionRootSlot,
-  CollectionItemSlot,
-  useCollection,
-] = createCollection<HTMLSpanElement, ItemData>();
+const [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
+  HTMLSpanElement,
+  ItemData
+>();
 
 /* -------------------------------------------------------------------------------------------------
  * RovingFocusGroup
@@ -67,9 +65,9 @@ type RovingFocusGroupPrimitive = Polymorphic.ForwardRefComponent<
 const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
   return (
     <CollectionProvider>
-      <CollectionRootSlot>
+      <CollectionSlot>
         <RovingFocusGroupImpl {...props} ref={forwardedRef} />
-      </CollectionRootSlot>
+      </CollectionSlot>
     </CollectionProvider>
   );
 }) as RovingFocusGroupPrimitive;

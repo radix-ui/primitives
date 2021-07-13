@@ -167,12 +167,10 @@ const CONTENT_NAME = 'MenuContent';
 type MenuContentElement = React.ElementRef<typeof MenuContent>;
 type ItemData = { disabled: boolean; textValue: string };
 
-const [
-  CollectionProvider,
-  CollectionRootSlot,
-  CollectionItemSlot,
-  useCollection,
-] = createCollection<React.ElementRef<typeof MenuItem>, ItemData>();
+const [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
+  React.ElementRef<typeof MenuItem>,
+  ItemData
+>();
 
 type MenuContentContextValue = {
   onItemEnter(event: React.PointerEvent): void;
@@ -213,13 +211,13 @@ const MenuContent = React.forwardRef((props, forwardedRef) => {
   return (
     <CollectionProvider>
       <Presence present={forceMount || context.open}>
-        <CollectionRootSlot>
+        <CollectionSlot>
           {context.isSubmenu ? (
             <MenuSubContent {...contentProps} ref={forwardedRef} />
           ) : (
             <MenuRootContent {...contentProps} ref={forwardedRef} />
           )}
-        </CollectionRootSlot>
+        </CollectionSlot>
       </Presence>
     </CollectionProvider>
   );
