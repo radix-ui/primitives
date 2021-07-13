@@ -12,6 +12,7 @@ import type { RenderResult } from '@testing-library/react';
 type ButtonProps = {
   isDisabled?: boolean;
   another?: number;
+  common?: boolean;
 };
 
 const Button = React.forwardRef((props, forwardedRef) => {
@@ -73,6 +74,7 @@ const ExtendedButton = React.forwardRef((props, forwardedRef) => {
 type LinkProps = React.ComponentProps<'a'> & {
   isPrimary?: boolean;
   onToggle?(open: boolean): void;
+  common?: string;
 };
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
@@ -207,6 +209,11 @@ export function Test() {
 
       {/* Button as Anchor (Polymorphic.ForwardRefComponent) accepts requiredProp */}
       <Button as={Anchor} requiredProp />
+
+      {/* Button as Link expects Link props that conflict with Button props */}
+      {/* @ts-expect-error */}
+      <Button as={Link} common={true} />
+      <Button as={Link} common="string" />
     </>
   );
 }

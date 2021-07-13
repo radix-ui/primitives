@@ -36,20 +36,18 @@ interface ForwardRefComponent<
   /**
    * When `as` prop is passed, use this overload.
    * Merges original own props (without DOM props) and the inferred props
-   * from `as` element with the own props taking precendence.
+   * from `as` element with the inferred taking precendence.
    *
    * We explicitly avoid `React.ElementType` and manually narrow the prop types
    * so that events are typed when using JSX.IntrinsicElements.
    */
-  <
-    As extends
-      | keyof JSX.IntrinsicElements
-      | React.ComponentType<any> = NarrowIntrinsic<IntrinsicElementString>
-  >(
+  <As = NarrowIntrinsic<IntrinsicElementString>>(
     props: As extends keyof JSX.IntrinsicElements
-      ? Merge<JSX.IntrinsicElements[As], OwnProps & { as: As }>
+      ? Merge<OwnProps, Merge<JSX.IntrinsicElements[As], { as: As }>>
       : As extends React.ComponentType<infer P>
-      ? Merge<P, OwnProps & { as: As }>
+      ? Merge<OwnProps, Merge<P, { as: As }>>
+      : As extends ''
+      ? { as: keyof JSX.IntrinsicElements }
       : never
   ): React.ReactElement | null;
 }
