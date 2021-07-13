@@ -3,9 +3,9 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Slot } from '@radix-ui/react-slot';
 
 // We have resorted to returning slots directly rather than exposing primitives that can then
-// be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`. This is because we were having
-// issues with types because there are generics at play and it's not statically analyzable because
-// the components are returned by a dynamic function.
+// be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`.
+// This is because we encountered issues with generic types, static analysis 
+// and the dynamic function used to return the components.
 
 function createCollection<ItemElement extends HTMLElement, ItemData>() {
   /* -----------------------------------------------------------------------------------------------
