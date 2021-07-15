@@ -6,9 +6,12 @@ describe('ContextMenu', () => {
     });
 
     describe('when using pointer', () => {
-      it('should reposition open menu when right clicking trigger', () => {
-        cy.findByText('Right Click Here').rightclick('topLeft', { force: true });
+      it('should close open submenus and reopen the root menu when right clicking trigger', () => {
+        pointerOver('Bookmarks →');
+        cy.findByText('Inbox').should('be.visible');
+        cy.findByText('Right Click Here').rightclick({ force: true });
         cy.findByText('New Tab').should('be.visible');
+        cy.findByText('Inbox').should('not.exist');
       });
 
       it('should open submenu and not focus first item when moving pointer over trigger', () => {
@@ -151,7 +154,7 @@ describe('ContextMenu', () => {
         cy.findByText('New Window').should('be.visible');
       });
 
-      it.only('should close all menus when pressing escape, enter or space key on any item', () => {
+      it('should close all menus when pressing escape, enter or space key on any item', () => {
         // Test close on root menu
         cy.findByText('Bookmarks →').type('{esc}').should('not.exist');
 
