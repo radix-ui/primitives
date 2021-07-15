@@ -73,6 +73,7 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
     skipDelayDuration = 300,
   } = props;
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
+  const isTabChangeRef = React.useRef(false);
   const contentId = useId();
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -113,13 +114,24 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
     return unsubscribe;
   }, [contentId]);
 
-  const handleFocus = React.useCallback(() => stateMachine.send({ type: 'FOCUS', id: contentId }), [
-    contentId,
-  ]);
+  React.useEffect(() => {
+    const handleTabChange = () => (isTabChangeRef.current = document.visibilityState === 'visible');
+    document.addEventListener('visibilitychange', handleTabChange);
+    return () => document.removeEventListener('visibilitychange', handleTabChange);
+  }, []);
+
+  const handleFocus = React.useCallback(() => {
+    // Some browsers trigger a new focus event on the previously focused element when switching
+    // between browser tabs. We prevent the tooltip from reopening in this case.
+    if (!isTabChangeRef.current) stateMachine.send({ type: 'FOCUS', id: contentId });
+    isTabChangeRef.current = false;
+  }, [contentId]);
+
   const handleOpen = React.useCallback(
     () => stateMachine.send({ type: 'OPEN', id: contentId, delayDuration }),
     [contentId, delayDuration]
   );
+
   const handleClose = React.useCallback(
     () => stateMachine.send({ type: 'CLOSE', id: contentId, skipDelayDuration }),
     [skipDelayDuration, contentId]
