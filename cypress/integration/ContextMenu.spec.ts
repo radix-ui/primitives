@@ -16,11 +16,6 @@ describe('ContextMenu', () => {
         cy.findByText('Inbox').should('not.be.focused');
       });
 
-      it('should open submenu and not focus first item when moving pointer over trigger', () => {
-        pointerOver('Bookmarks →');
-        cy.findByText('Inbox').should('not.be.focused');
-      });
-
       it('should not close when moving pointer to submenu and back to parent trigger', () => {
         pointerOver('Bookmarks →');
         pointerOver('Inbox');
