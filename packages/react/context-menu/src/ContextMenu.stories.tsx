@@ -39,7 +39,9 @@ export const Styled = () => {
         <ContextMenuTrigger
           className={triggerClass}
           style={{ background: open ? 'lightblue' : undefined }}
-        />
+        >
+          Right click here
+        </ContextMenuTrigger>
         <ContextMenuContent className={contentClass} alignOffset={-5}>
           <ContextMenuItem className={itemClass} onSelect={() => console.log('undo')}>
             Undo
@@ -73,8 +75,7 @@ export const Submenus = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '200vw',
-        height: '200vh',
+        height: '100vh',
         gap: 20,
       }}
     >
@@ -91,58 +92,100 @@ export const Submenus = () => {
           <ContextMenuTrigger
             className={triggerClass}
             style={{ background: open ? 'lightblue' : undefined }}
-          />
-          <ContextMenuContent className={contentClass} alignOffset={-5}>
-            <ContextMenuItem className={itemClass} onSelect={() => console.log('undo')}>
-              Undo
+          >
+            Right Click Here
+          </ContextMenuTrigger>
+          <ContextMenuContent className={contentClass} sideOffset={5}>
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('new-tab')}>
+              New Tab
             </ContextMenuItem>
-            <ContextMenuItem className={itemClass} onSelect={() => console.log('redo')}>
-              Redo
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('new-window')}>
+              New Window
             </ContextMenuItem>
             <ContextMenuSeparator className={separatorClass} />
             <ContextMenu>
-              <ContextMenuTriggerItem className={subTriggerClass}>Submenu →</ContextMenuTriggerItem>
+              <ContextMenuTriggerItem className={subTriggerClass}>
+                Bookmarks →
+              </ContextMenuTriggerItem>
               <ContextMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
-                <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
-                  One
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('index')}>
+                  Inbox
                 </ContextMenuItem>
-                <ContextMenuItem className={itemClass} onSelect={() => console.log('two')}>
-                  Two
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('calendar')}>
+                  Calendar
                 </ContextMenuItem>
                 <ContextMenuSeparator className={separatorClass} />
                 <ContextMenu>
                   <ContextMenuTriggerItem className={subTriggerClass}>
-                    Submenu →
+                    Modulz →
                   </ContextMenuTriggerItem>
                   <ContextMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
-                    <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
-                      One
+                    <ContextMenuItem className={itemClass} onSelect={() => console.log('stitches')}>
+                      Stitches
                     </ContextMenuItem>
-                    <ContextMenuItem className={itemClass} onSelect={() => console.log('two')}>
-                      Two
+                    <ContextMenuItem className={itemClass} onSelect={() => console.log('composer')}>
+                      Composer
                     </ContextMenuItem>
-                    <ContextMenuItem className={itemClass} onSelect={() => console.log('three')}>
-                      Three
+                    <ContextMenuItem className={itemClass} onSelect={() => console.log('radix')}>
+                      Radix
                     </ContextMenuItem>
                     <ContextMenuArrow offset={14} />
                   </ContextMenuContent>
                 </ContextMenu>
                 <ContextMenuSeparator className={separatorClass} />
-                <ContextMenuItem className={itemClass} onSelect={() => console.log('three')}>
-                  Three
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('notion')}>
+                  Notion
+                </ContextMenuItem>
+                <ContextMenuArrow offset={14} />
+              </ContextMenuContent>
+            </ContextMenu>
+            <ContextMenu>
+              <ContextMenuTriggerItem className={subTriggerClass} disabled>
+                History →
+              </ContextMenuTriggerItem>
+              <ContextMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('github')}>
+                  Github
+                </ContextMenuItem>
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('google')}>
+                  Google
+                </ContextMenuItem>
+                <ContextMenuItem
+                  className={itemClass}
+                  onSelect={() => console.log('stack-overflow')}
+                >
+                  Stack Overflow
+                </ContextMenuItem>
+                <ContextMenuArrow offset={14} />
+              </ContextMenuContent>
+            </ContextMenu>
+            <ContextMenu>
+              <ContextMenuTriggerItem className={subTriggerClass}>Tools →</ContextMenuTriggerItem>
+              <ContextMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('extensions')}>
+                  Extensions
+                </ContextMenuItem>
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('task-manager')}>
+                  Task Manager
+                </ContextMenuItem>
+                <ContextMenuItem
+                  className={itemClass}
+                  onSelect={() => console.log('developer-tools')}
+                >
+                  Developer Tools
                 </ContextMenuItem>
                 <ContextMenuArrow offset={14} />
               </ContextMenuContent>
             </ContextMenu>
             <ContextMenuSeparator className={separatorClass} />
-            <ContextMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
-              Cut
+            <ContextMenuItem className={itemClass} disabled onSelect={() => console.log('print')}>
+              Print…
             </ContextMenuItem>
-            <ContextMenuItem className={itemClass} onSelect={() => console.log('copy')}>
-              Copy
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('cast')}>
+              Cast…
             </ContextMenuItem>
-            <ContextMenuItem className={itemClass} onSelect={() => console.log('paste')}>
-              Paste
+            <ContextMenuItem className={itemClass} onSelect={() => console.log('find')}>
+              Find…
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
@@ -154,7 +197,7 @@ export const Submenus = () => {
 export const WithLabels = () => (
   <div style={{ textAlign: 'center', padding: 50 }}>
     <ContextMenu>
-      <ContextMenuTrigger className={triggerClass} />
+      <ContextMenuTrigger className={triggerClass}>Right click here</ContextMenuTrigger>
       <ContextMenuContent className={contentClass} alignOffset={-5}>
         {foodGroups.map((foodGroup, index) => (
           <ContextMenuGroup key={index}>
@@ -192,7 +235,7 @@ export const CheckboxItems = () => {
   return (
     <div style={{ textAlign: 'center', padding: 50 }}>
       <ContextMenu>
-        <ContextMenuTrigger className={triggerClass} />
+        <ContextMenuTrigger className={triggerClass}>Right click here</ContextMenuTrigger>
         <ContextMenuContent className={contentClass} alignOffset={-5}>
           <ContextMenuItem className={itemClass} onSelect={() => console.log('show')}>
             Show fonts
@@ -231,7 +274,7 @@ export const RadioItems = () => {
   return (
     <div style={{ textAlign: 'center', padding: 50 }}>
       <ContextMenu>
-        <ContextMenuTrigger className={triggerClass} />
+        <ContextMenuTrigger className={triggerClass}>Right click here</ContextMenuTrigger>
         <ContextMenuContent className={contentClass} alignOffset={-5}>
           <ContextMenuItem className={itemClass} onSelect={() => console.log('minimize')}>
             Minimize window
@@ -263,7 +306,7 @@ export const RadioItems = () => {
 export const PreventClosing = () => (
   <div style={{ textAlign: 'center', padding: 50 }}>
     <ContextMenu>
-      <ContextMenuTrigger className={triggerClass} />
+      <ContextMenuTrigger className={triggerClass}>Right click here</ContextMenuTrigger>
       <ContextMenuContent className={contentClass} alignOffset={-5}>
         <ContextMenuItem className={itemClass} onSelect={() => window.alert('action 1')}>
           I will close
@@ -431,12 +474,14 @@ export const Nested = () => (
 );
 
 const triggerClass = css({
-  display: 'block',
-  width: 100,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 200,
   height: 100,
-  border: '1px solid $black',
+  border: '2px dashed $black',
   borderRadius: 6,
-  backgroundColor: '$gray100',
+  backgroundColor: 'rgba(0, 0, 0, 0.1)',
 
   '&:focus': {
     outline: 'none',
