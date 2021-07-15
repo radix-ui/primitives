@@ -115,10 +115,16 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
   }, [contentId]);
 
   React.useEffect(() => {
-    const handleFocus = () => (hasWindowFocusedRef.current = true);
+    let previouslyFocusedElement: Element | null;
+    const handleFocus = () => (hasWindowFocusedRef.current = previouslyFocusedElement === trigger);
+    const handleBlur = () => (previouslyFocusedElement = document.activeElement);
     window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, []);
+    window.addEventListener('blur', handleBlur);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, [trigger]);
 
   const handleFocus = React.useCallback(() => {
     // Some browsers trigger a new focus event on the previously focused element when
