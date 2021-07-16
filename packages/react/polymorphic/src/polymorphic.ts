@@ -41,15 +41,13 @@ interface ForwardRefComponent<
    * We explicitly avoid `React.ElementType` and manually narrow the prop types
    * so that events are typed when using JSX.IntrinsicElements.
    */
-  <
-    As extends
-      | keyof JSX.IntrinsicElements
-      | React.ComponentType<any> = NarrowIntrinsic<IntrinsicElementString>
-  >(
-    props: As extends keyof JSX.IntrinsicElements
-      ? Merge<JSX.IntrinsicElements[As], OwnProps & { as: As }>
+  <As = NarrowIntrinsic<IntrinsicElementString>>(
+    props: As extends ''
+      ? { as: keyof JSX.IntrinsicElements }
       : As extends React.ComponentType<infer P>
       ? Merge<P, OwnProps & { as: As }>
+      : As extends keyof JSX.IntrinsicElements
+      ? Merge<JSX.IntrinsicElements[As], OwnProps & { as: As }>
       : never
   ): React.ReactElement | null;
 }
