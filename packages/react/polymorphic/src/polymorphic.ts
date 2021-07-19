@@ -15,8 +15,6 @@ type OwnProps<E> = E extends ForwardRefComponent<any, infer P> ? P : {};
  */
 type IntrinsicElement<E> = E extends ForwardRefComponent<infer I, any> ? I : never;
 
-type NarrowIntrinsic<E> = E extends keyof JSX.IntrinsicElements ? E : never;
-
 type ForwardRefExoticComponent<E, OwnProps> = React.ForwardRefExoticComponent<
   Merge<E extends React.ElementType ? React.ComponentPropsWithRef<E> : never, OwnProps & { as?: E }>
 >;
@@ -41,15 +39,13 @@ interface ForwardRefComponent<
    * We explicitly avoid `React.ElementType` and manually narrow the prop types
    * so that events are typed when using JSX.IntrinsicElements.
    */
-  <
-    As extends
-      | keyof JSX.IntrinsicElements
-      | React.ComponentType<any> = NarrowIntrinsic<IntrinsicElementString>
-  >(
-    props: As extends keyof JSX.IntrinsicElements
-      ? Merge<JSX.IntrinsicElements[As], OwnProps & { as: As }>
+  <As = IntrinsicElementString>(
+    props: As extends ''
+      ? { as: keyof JSX.IntrinsicElements }
       : As extends React.ComponentType<infer P>
       ? Merge<P, OwnProps & { as: As }>
+      : As extends keyof JSX.IntrinsicElements
+      ? Merge<JSX.IntrinsicElements[As], OwnProps & { as: As }>
       : never
   ): React.ReactElement | null;
 }
