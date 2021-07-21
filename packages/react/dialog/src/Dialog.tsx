@@ -202,21 +202,13 @@ type DialogContentTypePrimitive = Polymorphic.ForwardRefComponent<
 
 const DialogContentModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, contentRef);
-
-  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
-  React.useEffect(() => {
-    const content = contentRef.current;
-    if (content) return hideOthers(content);
-  }, []);
 
   return (
     <Portal>
       <RemoveScroll>
         <DialogContentImpl
           {...props}
-          ref={composedRefs}
+          ref={forwardedRef}
           // we make sure focus isn't trapped once `DialogContent` has been closed
           // (closed !== unmounted when animating out)
           trapFocus={context.open}
@@ -247,7 +239,8 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
 
 const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
-  const isEscapeKeyDownRef = React.useRef(false);
+  const isPointerDownOutsideRef = React.useRef(false);
+
   return (
     <Portal>
       <DialogContentImpl
@@ -257,11 +250,15 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
         disableOutsidePointerEvents={false}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
-          if (isEscapeKeyDownRef.current) context.triggerRef.current?.focus();
+          if (!isPointerDownOutsideRef.current) context.triggerRef.current?.focus();
         })}
-        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-          isEscapeKeyDownRef.current = true;
-        })}
+        onPointerDownOutside={composeEventHandlers(
+          props.onPointerDownOutside,
+          () => {
+            isPointerDownOutsideRef.current = true;
+          },
+          { checkForDefaultPrevented: false }
+        )}
         onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would
@@ -325,6 +322,12 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   // Make sure the whole tree has focus guards as our `Dialog` will be
   // the last element in the DOM (beacuse of the `Portal`)
   useFocusGuards();
+
+  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+  React.useEffect(() => {
+    const content = contentRef.current;
+    if (content) return hideOthers(content);
+  }, []);
 
   return (
     <>

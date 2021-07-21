@@ -203,15 +203,7 @@ type PopoverContentTypePrimitive = Polymorphic.ForwardRefComponent<
 const PopoverContentModal = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentModalProps } = props;
   const context = usePopoverContext(CONTENT_NAME);
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, contentRef);
   const isRightClickOutsideRef = React.useRef(false);
-
-  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
-  React.useEffect(() => {
-    const content = contentRef.current;
-    if (content) return hideOthers(content);
-  }, []);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
@@ -220,7 +212,7 @@ const PopoverContentModal = React.forwardRef((props, forwardedRef) => {
       <RemoveScroll>
         <PopoverContentImpl
           {...contentModalProps}
-          ref={composedRefs}
+          ref={forwardedRef}
           // we make sure we're not trapping once it's been closed
           // (closed !== unmounted when animating out)
           trapFocus={context.open}
@@ -256,7 +248,7 @@ const PopoverContentModal = React.forwardRef((props, forwardedRef) => {
 const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentNonModalProps } = props;
   const context = usePopoverContext(CONTENT_NAME);
-  const isEscapeKeyDownRef = React.useRef(false);
+  const isPointerDownOutsideRef = React.useRef(false);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
@@ -269,11 +261,15 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
         disableOutsidePointerEvents={false}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
-          if (isEscapeKeyDownRef.current) context.triggerRef.current?.focus();
+          if (!isPointerDownOutsideRef.current) context.triggerRef.current?.focus();
         })}
-        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-          isEscapeKeyDownRef.current = true;
-        })}
+        onPointerDownOutside={composeEventHandlers(
+          props.onPointerDownOutside,
+          () => {
+            isPointerDownOutsideRef.current = true;
+          },
+          { checkForDefaultPrevented: false }
+        )}
         onInteractOutside={composeEventHandlers(
           props.onInteractOutside,
           (event) => {
@@ -339,10 +335,18 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
     ...contentProps
   } = props;
   const context = usePopoverContext(CONTENT_NAME);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
   // Make sure the whole tree has focus guards as our `Popover` may be
   // the last element in the DOM (beacuse of the `Portal`)
   useFocusGuards();
+
+  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+  React.useEffect(() => {
+    const content = contentRef.current;
+    if (content) return hideOthers(content);
+  }, []);
 
   return (
     <FocusScope
@@ -366,7 +370,7 @@ const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
           role="dialog"
           id={context.contentId}
           {...contentProps}
-          ref={forwardedRef}
+          ref={composedRefs}
           style={{
             ...contentProps.style,
             // re-namespace exposed content custom property

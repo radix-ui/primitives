@@ -263,7 +263,7 @@ const MenuRootContentModal = React.forwardRef((props, forwardedRef) => {
   const ref = React.useRef<React.ElementRef<typeof MenuContentImpl>>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
 
-  // Hide everything from ARIA except the `MenuContent`
+  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
   React.useEffect(() => {
     const content = ref.current;
     if (content) return hideOthers(content);
@@ -294,11 +294,19 @@ const MenuRootContentModal = React.forwardRef((props, forwardedRef) => {
 
 const MenuRootContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(CONTENT_NAME);
+  const ref = React.useRef<React.ElementRef<typeof MenuContentImpl>>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+
+  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+  React.useEffect(() => {
+    const content = ref.current;
+    if (content) return hideOthers(content);
+  }, []);
 
   return (
     <MenuContentImpl
       {...props}
-      ref={forwardedRef}
+      ref={composedRefs}
       trapFocus={false}
       disableOutsidePointerEvents={false}
       disableOutsideScroll={false}
