@@ -509,16 +509,16 @@ const SliderThumb = React.forwardRef((props, forwardedRef) => {
   }, []);
 
   /**
-   * Until we figure out SSR indexes, we hide the thumbs on initial render while we work out
-   * the index. Otherwise, SSR will place the thumbs in the wrong position and snap into the
-   * right position during hydration which would be jarring.
+   * We hide thumbs on the first render while we work out the index, otherwise SSR will
+   * render them in the wrong position before they snap into the correct position during
+   * hydration which would be visually jarring.
    */
   return isInitialRenderRef.current || index !== -1 ? (
     <SliderThumbImpl
       {...props}
       ref={composedRefs}
       index={index}
-      style={isInitialRenderRef.current ? { display: 'none' } : undefined}
+      style={isInitialRenderRef.current ? { display: 'none' } : props.style}
     />
   ) : null;
 }) as SliderThumbPrimitive;
