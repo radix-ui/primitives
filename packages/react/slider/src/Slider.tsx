@@ -22,12 +22,10 @@ const BACK_KEYS: Record<Direction, string[]> = {
   rtl: ['ArrowDown', 'Home', 'ArrowRight', 'PageDown'],
 };
 
-const [
-  CollectionProvider,
-  CollectionSlot,
-  CollectionItemSlot,
-  useCollectionItem,
-] = createCollection<React.ElementRef<typeof SliderThumb>, {}>();
+const [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
+  React.ElementRef<typeof SliderThumb>,
+  {}
+>();
 
 /* -------------------------------------------------------------------------------------------------
  * Slider
@@ -490,34 +488,44 @@ SliderRange.displayName = RANGE_NAME;
 const THUMB_NAME = 'SliderThumb';
 const THUMB_DEFAULT_TAG = 'span';
 
-type SliderThumbOwnProps = Omit<Polymorphic.OwnProps<typeof SliderThumbImpl>, 'value' | 'index'>;
+type SliderThumbOwnProps = Omit<Polymorphic.OwnProps<typeof SliderThumbImpl>, 'index'>;
 type SliderThumbPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof SliderThumbImpl>,
   SliderThumbOwnProps
 >;
 
 const SliderThumb = React.forwardRef((props, forwardedRef) => {
-  const context = useSliderContext(THUMB_NAME);
-  const { getItems } = useCollectionItem();
+  const { getItems } = useCollection();
   const [thumb, setThumb] = React.useState<React.ElementRef<typeof SliderThumbImpl> | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
+  const isInitialRenderRef = React.useRef(true);
   const index = React.useMemo(
-    () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : 0),
+    () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
     [getItems, thumb]
   );
-  const value = context.values[index];
 
-  return value !== undefined ? (
-    <SliderThumbImpl {...props} ref={composedRefs} index={index} value={value} />
+  React.useEffect(() => {
+    isInitialRenderRef.current = false;
+  }, []);
+
+  /**
+   * Until we figure out SSR indexes, we hide the thumbs on initial render while we work out
+   * the index. Otherwise, SSR will place the thumbs in the wrong position and snap into the
+   * right position during hydration which would be jarring.
+   */
+  return isInitialRenderRef.current || index !== -1 ? (
+    <SliderThumbImpl
+      {...props}
+      ref={composedRefs}
+      index={index}
+      style={isInitialRenderRef.current ? { display: 'none' } : undefined}
+    />
   ) : null;
 }) as SliderThumbPrimitive;
 
 type SliderThumbImplOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
-  {
-    value: number;
-    index: number;
-  }
+  { index: number }
 >;
 
 type SliderThumbImplPrimitive = Polymorphic.ForwardRefComponent<
@@ -526,12 +534,13 @@ type SliderThumbImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
-  const { as = THUMB_DEFAULT_TAG, index, value, ...thumbProps } = props;
+  const { as = THUMB_DEFAULT_TAG, index, ...thumbProps } = props;
   const context = useSliderContext(THUMB_NAME);
   const orientation = React.useContext(SliderOrientationContext);
   const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
   const size = useSize(thumb);
+  const value = context.values[index];
   const percent = convertValueToPercentage(value, context.min, context.max);
   const label = getLabel(index, context.values.length);
   const orientationSize = size?.[orientation.size];
