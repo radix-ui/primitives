@@ -42,6 +42,9 @@ export default function HomePage() {
         <li>
           <Link href="/tooltip">Tooltip</Link>
         </li>
+        <li>
+          <Link href="/slider">Slider</Link>
+        </li>
       </ul>
     </main>
   );

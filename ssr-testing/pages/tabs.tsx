@@ -1,24 +1,24 @@
 import * as React from 'react';
-import { Tabs, TabsList, TabsTab, TabsPanel } from '@radix-ui/react-tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@radix-ui/react-tabs';
 
 export default function TabsPage() {
   return (
     <Tabs defaultValue="one" orientation="vertical">
       <TabsList aria-label="tabs example">
-        <TabsTab value="one">Tab 1</TabsTab>
-        <TabsTab value="two">Tab 2</TabsTab>
-        <TabsTab value="three">Tab 3</TabsTab>
+        <TabsTrigger value="one">Tab 1</TabsTrigger>
+        <TabsTrigger value="two">Tab 2</TabsTrigger>
+        <TabsTrigger value="three">Tab 3</TabsTrigger>
       </TabsList>
-      <TabsPanel value="one">
+      <TabsContent value="one">
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsPanel>
-      <TabsPanel value="two">You'll never find me!</TabsPanel>
-      <TabsPanel value="three">
+      </TabsContent>
+      <TabsContent value="two">You'll never find me!</TabsContent>
+      <TabsContent value="three">
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsPanel>
+      </TabsContent>
     </Tabs>
   );
 }

@@ -3,50 +3,50 @@ import {
   Accordion,
   AccordionItem,
   AccordionHeader,
-  AccordionButton,
-  AccordionPanel,
+  AccordionTrigger,
+  AccordionContent,
 } from '@radix-ui/react-accordion';
 
 export default function AccordionPage() {
   return (
-    <Accordion>
+    <Accordion type="multiple">
       <AccordionItem value="one">
         <AccordionHeader>
-          <AccordionButton>One</AccordionButton>
+          <AccordionTrigger>One</AccordionTrigger>
         </AccordionHeader>
-        <AccordionPanel>
+        <AccordionContent>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
           integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
           habitant sed.
-        </AccordionPanel>
+        </AccordionContent>
       </AccordionItem>
       <AccordionItem value="two">
         <AccordionHeader>
-          <AccordionButton>Two</AccordionButton>
+          <AccordionTrigger>Two</AccordionTrigger>
         </AccordionHeader>
-        <AccordionPanel>
+        <AccordionContent>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
           porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
-        </AccordionPanel>
+        </AccordionContent>
       </AccordionItem>
       <AccordionItem value="three" disabled>
         <AccordionHeader>
-          <AccordionButton>Three (disabled)</AccordionButton>
+          <AccordionTrigger>Three (disabled)</AccordionTrigger>
         </AccordionHeader>
-        <AccordionPanel>
+        <AccordionContent>
           Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
           euismod magna, nec tempor pulvinar eu etiam mattis.
-        </AccordionPanel>
+        </AccordionContent>
       </AccordionItem>
       <AccordionItem value="four">
         <AccordionHeader>
-          <AccordionButton>Four</AccordionButton>
+          <AccordionTrigger>Four</AccordionTrigger>
         </AccordionHeader>
-        <AccordionPanel>
+        <AccordionContent>
           Odio placerat quisque sapien sagittis non sociis ligula penatibus dignissim vitae, enim
           vulputate nullam semper potenti etiam volutpat libero.
           <button>Cool</button>
-        </AccordionPanel>
+        </AccordionContent>
       </AccordionItem>
     </Accordion>
   );
