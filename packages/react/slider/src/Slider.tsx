@@ -8,7 +8,7 @@ import { useDirection } from '@radix-ui/react-use-direction';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
-import { createCollection } from './collection';
+import { createCollection } from '@radix-ui/react-collection';
 
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
@@ -22,10 +22,10 @@ const BACK_KEYS: Record<Direction, string[]> = {
   rtl: ['ArrowDown', 'Home', 'ArrowRight', 'PageDown'],
 };
 
-const [createSliderCollection, useSliderCollectionItem] = createCollection('Slider');
-const SliderCollectionProvider = createSliderCollection((props: { children: React.ReactNode }) => (
-  <>{props.children}</>
-));
+const [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
+  React.ElementRef<typeof SliderThumb>,
+  {}
+>();
 
 /* -------------------------------------------------------------------------------------------------
  * Slider
@@ -133,39 +133,41 @@ const Slider = React.forwardRef((props, forwardedRef) => {
       values={values}
       orientation={orientation}
     >
-      <SliderCollectionProvider>
-        <SliderOrientation
-          aria-disabled={disabled}
-          data-disabled={disabled ? '' : undefined}
-          {...sliderProps}
-          ref={composedRefs}
-          min={min}
-          max={max}
-          onSlideStart={disabled ? undefined : handleSlideStart}
-          onSlideMove={disabled ? undefined : handleSlideMove}
-          onHomeKeyDown={() => !disabled && updateValues(min, 0)}
-          onEndKeyDown={() => !disabled && updateValues(max, values.length - 1)}
-          onStepKeyDown={({ event, direction: stepDirection }) => {
-            if (!disabled) {
-              const isPageKey = PAGE_KEYS.includes(event.key);
-              const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
-              const multiplier = isSkipKey ? 10 : 1;
-              const atIndex = valueIndexToChangeRef.current;
-              const value = values[atIndex];
-              const stepInDirection = step * multiplier * stepDirection;
-              updateValues(value + stepInDirection, atIndex);
-            }
-          }}
-        />
-        {isFormControl &&
-          values.map((value, index) => (
-            <BubbleInput
-              key={index}
-              name={name ? name + (values.length > 1 ? '[]' : '') : undefined}
-              value={value}
-            />
-          ))}
-      </SliderCollectionProvider>
+      <CollectionProvider>
+        <CollectionSlot>
+          <SliderOrientation
+            aria-disabled={disabled}
+            data-disabled={disabled ? '' : undefined}
+            {...sliderProps}
+            ref={composedRefs}
+            min={min}
+            max={max}
+            onSlideStart={disabled ? undefined : handleSlideStart}
+            onSlideMove={disabled ? undefined : handleSlideMove}
+            onHomeKeyDown={() => !disabled && updateValues(min, 0)}
+            onEndKeyDown={() => !disabled && updateValues(max, values.length - 1)}
+            onStepKeyDown={({ event, direction: stepDirection }) => {
+              if (!disabled) {
+                const isPageKey = PAGE_KEYS.includes(event.key);
+                const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
+                const multiplier = isSkipKey ? 10 : 1;
+                const atIndex = valueIndexToChangeRef.current;
+                const value = values[atIndex];
+                const stepInDirection = step * multiplier * stepDirection;
+                updateValues(value + stepInDirection, atIndex);
+              }
+            }}
+          />
+        </CollectionSlot>
+      </CollectionProvider>
+      {isFormControl &&
+        values.map((value, index) => (
+          <BubbleInput
+            key={index}
+            name={name ? name + (values.length > 1 ? '[]' : '') : undefined}
+            value={value}
+          />
+        ))}
     </SliderProvider>
   );
 }) as SliderPrimitive;
@@ -486,28 +488,44 @@ SliderRange.displayName = RANGE_NAME;
 const THUMB_NAME = 'SliderThumb';
 const THUMB_DEFAULT_TAG = 'span';
 
-type SliderThumbOwnProps = Omit<Polymorphic.OwnProps<typeof SliderThumbImpl>, 'value' | 'index'>;
+type SliderThumbOwnProps = Omit<Polymorphic.OwnProps<typeof SliderThumbImpl>, 'index'>;
 type SliderThumbPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof SliderThumbImpl>,
   SliderThumbOwnProps
 >;
 
 const SliderThumb = React.forwardRef((props, forwardedRef) => {
-  const { ref: collectionRef, index } = useSliderCollectionItem();
-  const ref = useComposedRefs(forwardedRef, collectionRef);
-  const context = useSliderContext(THUMB_NAME);
-  const value = context.values[index];
-  return value !== undefined ? (
-    <SliderThumbImpl {...props} ref={ref} index={index} value={value} />
+  const { getItems } = useCollection();
+  const [thumb, setThumb] = React.useState<React.ElementRef<typeof SliderThumbImpl> | null>(null);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
+  const isInitialRenderRef = React.useRef(true);
+  const index = React.useMemo(
+    () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
+    [getItems, thumb]
+  );
+
+  React.useEffect(() => {
+    isInitialRenderRef.current = false;
+  }, []);
+
+  /**
+   * We hide thumbs on the first render while we work out the index, otherwise SSR will
+   * render them in the wrong position before they snap into the correct position during
+   * hydration which would be visually jarring.
+   */
+  return isInitialRenderRef.current || index !== -1 ? (
+    <SliderThumbImpl
+      {...props}
+      ref={composedRefs}
+      index={index}
+      style={isInitialRenderRef.current ? { display: 'none' } : props.style}
+    />
   ) : null;
 }) as SliderThumbPrimitive;
 
 type SliderThumbImplOwnProps = Polymorphic.Merge<
   Polymorphic.OwnProps<typeof Primitive>,
-  {
-    value: number;
-    index: number;
-  }
+  { index: number }
 >;
 
 type SliderThumbImplPrimitive = Polymorphic.ForwardRefComponent<
@@ -516,12 +534,13 @@ type SliderThumbImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
-  const { as = THUMB_DEFAULT_TAG, index, value, ...thumbProps } = props;
+  const { as = THUMB_DEFAULT_TAG, index, ...thumbProps } = props;
   const context = useSliderContext(THUMB_NAME);
   const orientation = React.useContext(SliderOrientationContext);
   const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
   const size = useSize(thumb);
+  const value = context.values[index];
   const percent = convertValueToPercentage(value, context.min, context.max);
   const label = getLabel(index, context.values.length);
   const orientationSize = size?.[orientation.size];
@@ -546,23 +565,25 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
         [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
       }}
     >
-      <Primitive
-        role="slider"
-        aria-label={props['aria-label'] || label}
-        aria-valuemin={context.min}
-        aria-valuenow={value}
-        aria-valuemax={context.max}
-        aria-orientation={context.orientation}
-        data-orientation={context.orientation}
-        data-disabled={context.disabled ? '' : undefined}
-        tabIndex={context.disabled ? undefined : 0}
-        {...thumbProps}
-        as={as}
-        ref={composedRefs}
-        onFocus={composeEventHandlers(props.onFocus, () => {
-          context.valueIndexToChangeRef.current = index;
-        })}
-      />
+      <CollectionItemSlot>
+        <Primitive
+          role="slider"
+          aria-label={props['aria-label'] || label}
+          aria-valuemin={context.min}
+          aria-valuenow={value}
+          aria-valuemax={context.max}
+          aria-orientation={context.orientation}
+          data-orientation={context.orientation}
+          data-disabled={context.disabled ? '' : undefined}
+          tabIndex={context.disabled ? undefined : 0}
+          {...thumbProps}
+          as={as}
+          ref={composedRefs}
+          onFocus={composeEventHandlers(props.onFocus, () => {
+            context.valueIndexToChangeRef.current = index;
+          })}
+        />
+      </CollectionItemSlot>
     </span>
   );
 }) as SliderThumbImplPrimitive;

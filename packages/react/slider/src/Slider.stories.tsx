@@ -176,6 +176,26 @@ export const WithinForm = () => {
   );
 };
 
+export const Strict = () => (
+  <React.StrictMode>
+    <Slider className={rootClass}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+    </Slider>
+    <Slider className={rootClass} defaultValue={[10, 15, 20, 80]}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+  </React.StrictMode>
+);
+
 export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
