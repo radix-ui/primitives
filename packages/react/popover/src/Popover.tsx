@@ -273,9 +273,7 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
         })}
         onPointerDownOutside={composeEventHandlers(
           props.onPointerDownOutside,
-          () => {
-            isPointerDownOutsideRef.current = true;
-          },
+          () => (isPointerDownOutsideRef.current = true),
           { checkForDefaultPrevented: false }
         )}
         onInteractOutside={composeEventHandlers(
