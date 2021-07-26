@@ -229,8 +229,6 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
       onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
         event.preventDefault();
         if (!preventCloseAutoFocusRef.current) context.triggerRef.current?.focus();
-      })}
-      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
         preventCloseAutoFocusRef.current = false;
       })}
       onPointerDownOutside={composeEventHandlers(

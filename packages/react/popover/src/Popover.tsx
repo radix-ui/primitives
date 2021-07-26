@@ -256,7 +256,7 @@ const PopoverContentModal = React.forwardRef((props, forwardedRef) => {
 const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentNonModalProps } = props;
   const context = usePopoverContext(CONTENT_NAME);
-  const isEscapeKeyDownRef = React.useRef(false);
+  const isPointerDownOutsideRef = React.useRef(false);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
@@ -269,11 +269,15 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
         disableOutsidePointerEvents={false}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
-          if (isEscapeKeyDownRef.current) context.triggerRef.current?.focus();
+          if (!isPointerDownOutsideRef.current) context.triggerRef.current?.focus();
         })}
-        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-          isEscapeKeyDownRef.current = true;
-        })}
+        onPointerDownOutside={composeEventHandlers(
+          props.onPointerDownOutside,
+          () => {
+            isPointerDownOutsideRef.current = true;
+          },
+          { checkForDefaultPrevented: false }
+        )}
         onInteractOutside={composeEventHandlers(
           props.onInteractOutside,
           (event) => {

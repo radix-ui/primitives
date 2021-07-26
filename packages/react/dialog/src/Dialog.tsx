@@ -247,7 +247,8 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
 
 const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
-  const isEscapeKeyDownRef = React.useRef(false);
+  const isPointerDownOutsideRef = React.useRef(false);
+
   return (
     <Portal>
       <DialogContentImpl
@@ -257,11 +258,15 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
         disableOutsidePointerEvents={false}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
-          if (isEscapeKeyDownRef.current) context.triggerRef.current?.focus();
+          if (!isPointerDownOutsideRef.current) context.triggerRef.current?.focus();
         })}
-        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-          isEscapeKeyDownRef.current = true;
-        })}
+        onPointerDownOutside={composeEventHandlers(
+          props.onPointerDownOutside,
+          () => {
+            isPointerDownOutsideRef.current = true;
+          },
+          { checkForDefaultPrevented: false }
+        )}
         onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would
