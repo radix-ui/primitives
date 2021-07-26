@@ -568,7 +568,7 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
            * snap into the correct position during hydration which would be visually jarring for
            * slower connections.
            */
-          style={value ? props.style : { display: 'none' }}
+          style={value === undefined ? { display: 'none' } : props.style}
           onFocus={composeEventHandlers(props.onFocus, () => {
             context.valueIndexToChangeRef.current = index;
           })}
