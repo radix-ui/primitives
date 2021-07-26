@@ -37,13 +37,13 @@ export default function HomePage() {
           <Link href="/scroll-area">ScrollArea</Link>
         </li>
         <li>
+          <Link href="/slider">Slider</Link>
+        </li>
+        <li>
           <Link href="/tabs">Tabs</Link>
         </li>
         <li>
           <Link href="/tooltip">Tooltip</Link>
-        </li>
-        <li>
-          <Link href="/slider">Slider</Link>
         </li>
       </ul>
     </main>
