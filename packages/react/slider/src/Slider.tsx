@@ -498,29 +498,11 @@ const SliderThumb = React.forwardRef((props, forwardedRef) => {
   const { getItems } = useCollection();
   const [thumb, setThumb] = React.useState<React.ElementRef<typeof SliderThumbImpl> | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
-  const isInitialRenderRef = React.useRef(true);
   const index = React.useMemo(
     () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
     [getItems, thumb]
   );
-
-  React.useEffect(() => {
-    isInitialRenderRef.current = false;
-  }, []);
-
-  /**
-   * We hide thumbs on the first render while we work out the index, otherwise SSR will
-   * render them in the wrong position before they snap into the correct position during
-   * hydration which would be visually jarring.
-   */
-  return isInitialRenderRef.current || index !== -1 ? (
-    <SliderThumbImpl
-      {...props}
-      ref={composedRefs}
-      index={index}
-      style={isInitialRenderRef.current ? { display: 'none' } : props.style}
-    />
-  ) : null;
+  return <SliderThumbImpl {...props} ref={composedRefs} index={index} />;
 }) as SliderThumbPrimitive;
 
 type SliderThumbImplOwnProps = Polymorphic.Merge<
@@ -540,8 +522,9 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
   const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
   const size = useSize(thumb);
-  const value = context.values[index];
-  const percent = convertValueToPercentage(value, context.min, context.max);
+  // We cast because index could be `-1` which would return undefined
+  const value = context.values[index] as number | undefined;
+  const percent = value ? convertValueToPercentage(value, context.min, context.max) : 0;
   const label = getLabel(index, context.values.length);
   const orientationSize = size?.[orientation.size];
   const thumbInBoundsOffset = orientationSize
@@ -579,6 +562,13 @@ const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
           {...thumbProps}
           as={as}
           ref={composedRefs}
+          /**
+           * There will be no value on initial render while we work out the index so we hide thumbs
+           * without a value, otherwise SSR will render them in the wrong position before they
+           * snap into the correct position during hydration which would be visually jarring for
+           * slower connections.
+           */
+          style={value === undefined ? { display: 'none' } : props.style}
           onFocus={composeEventHandlers(props.onFocus, () => {
             context.valueIndexToChangeRef.current = index;
           })}
