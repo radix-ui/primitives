@@ -2,46 +2,21 @@ import * as React from 'react';
 import {
   ScrollArea,
   ScrollAreaViewport,
-  ScrollAreaButtonEnd,
-  ScrollAreaButtonStart,
-  ScrollAreaScrollbarX,
-  ScrollAreaScrollbarY,
+  Scrollbar,
   ScrollAreaCorner,
-  ScrollAreaTrack,
   ScrollAreaThumb,
 } from '@radix-ui/react-scroll-area';
-import { Arrow } from '@radix-ui/react-arrow';
 
 export default function ScrollAreaPage() {
   return (
-    <ScrollArea overflowX="scroll" style={{ width: '400px', height: '400px' }}>
-      <ScrollAreaScrollbarY>
-        <ScrollAreaButtonStart>
-          <Arrow direction="up" />
-        </ScrollAreaButtonStart>
+    <ScrollArea style={{ width: '400px', height: '400px' }}>
+      <Scrollbar orientation="vertical">
+        <ScrollAreaThumb />
+      </Scrollbar>
 
-        <ScrollAreaTrack>
-          <ScrollAreaThumb />
-        </ScrollAreaTrack>
-        <ScrollAreaButtonEnd>
-          <Arrow direction="down" />
-        </ScrollAreaButtonEnd>
-      </ScrollAreaScrollbarY>
-
-      <ScrollAreaScrollbarX>
-        <ScrollAreaButtonStart>
-          <Arrow direction="left" />
-        </ScrollAreaButtonStart>
-
-        <ScrollAreaTrack>
-          <ScrollAreaThumb />
-        </ScrollAreaTrack>
-        <ScrollAreaButtonEnd>
-          <Arrow direction="right" />
-        </ScrollAreaButtonEnd>
-      </ScrollAreaScrollbarX>
-
-      <ScrollAreaCorner />
+      <Scrollbar orientation="horizontal">
+        <ScrollAreaThumb />
+      </Scrollbar>
 
       <ScrollAreaViewport style={{ width: '2000px', padding: 20 }}>
         <LongContent />
@@ -52,6 +27,8 @@ export default function ScrollAreaPage() {
         <LongContent />
         <LongContent />
       </ScrollAreaViewport>
+
+      <ScrollAreaCorner />
     </ScrollArea>
   );
 }
