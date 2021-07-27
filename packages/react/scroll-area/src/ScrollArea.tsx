@@ -266,7 +266,11 @@ const ScrollAreaScrollbarHover = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Presence present={forceMount || visible}>
-      <ScrollAreaScrollbarAuto {...scrollbarProps} ref={forwardedRef} />
+      <ScrollAreaScrollbarAuto
+        data-state={visible ? 'visible' : 'hidden'}
+        {...scrollbarProps}
+        ref={forwardedRef}
+      />
     </Presence>
   );
 }) as ScrollAreaScrollbarHoverPrimitive;
@@ -325,6 +329,7 @@ const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
   return (
     <Presence present={forceMount || state !== 'hidden'}>
       <ScrollAreaScrollbarVisible
+        data-state={state === 'hidden' ? 'hidden' : 'visible'}
         {...scrollbarProps}
         ref={forwardedRef}
         onPointerEnter={composeEventHandlers(props.onPointerEnter, () => send('POINTER_ENTER'))}
@@ -352,7 +357,11 @@ const ScrollAreaScrollbarAuto = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Presence present={forceMount || visible}>
-      <ScrollAreaScrollbarVisible {...scrollbarProps} ref={forwardedRef} />
+      <ScrollAreaScrollbarVisible
+        data-state={visible ? 'visible' : 'hidden'}
+        {...scrollbarProps}
+        ref={forwardedRef}
+      />
     </Presence>
   );
 }) as ScrollAreaScrollbarPrimitive;
