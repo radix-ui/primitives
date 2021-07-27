@@ -256,7 +256,7 @@ const PopoverContentModal = React.forwardRef((props, forwardedRef) => {
 const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentNonModalProps } = props;
   const context = usePopoverContext(CONTENT_NAME);
-  const isPointerDownOutsideRef = React.useRef(false);
+  const isInteractOutsideRef = React.useRef(false);
 
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
@@ -267,30 +267,15 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
         ref={forwardedRef}
         trapFocus={false}
         disableOutsidePointerEvents={false}
-        onPointerDownOutside={composeEventHandlers(
-          props.onPointerDownOutside,
-          () => (isPointerDownOutsideRef.current = true),
-          { checkForDefaultPrevented: false }
-        )}
         onCloseAutoFocus={composeEventHandlers(
           props.onCloseAutoFocus,
           (event) => {
-            if (!event.defaultPrevented && !isPointerDownOutsideRef.current) {
+            if (!event.defaultPrevented && !isInteractOutsideRef.current) {
               context.triggerRef.current?.focus();
             }
             event.preventDefault();
-            isPointerDownOutsideRef.current = false;
+            isInteractOutsideRef.current = false;
           },
-          { checkForDefaultPrevented: false }
-        )}
-        onEscapeKeyDown={composeEventHandlers(
-          props.onEscapeKeyDown,
-          () => (isPointerDownOutsideRef.current = false),
-          { checkForDefaultPrevented: false }
-        )}
-        onFocus={composeEventHandlers(
-          props.onFocus,
-          () => (isPointerDownOutsideRef.current = false),
           { checkForDefaultPrevented: false }
         )}
         onInteractOutside={composeEventHandlers(
@@ -305,6 +290,7 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
             const target = event.target as HTMLElement;
             const targetIsTrigger = context.triggerRef.current?.contains(target);
             if (targetIsTrigger) event.preventDefault();
+            else if (!event.defaultPrevented) isInteractOutsideRef.current = true;
           },
           { checkForDefaultPrevented: false }
         )}

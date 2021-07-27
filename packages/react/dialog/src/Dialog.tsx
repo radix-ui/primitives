@@ -247,7 +247,7 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
 
 const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
-  const isPointerDownOutsideRef = React.useRef(false);
+  const isInteractOutsideRef = React.useRef(false);
 
   return (
     <Portal>
@@ -256,30 +256,15 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
         ref={forwardedRef}
         trapFocus={false}
         disableOutsidePointerEvents={false}
-        onPointerDownOutside={composeEventHandlers(
-          props.onPointerDownOutside,
-          () => (isPointerDownOutsideRef.current = true),
-          { checkForDefaultPrevented: false }
-        )}
         onCloseAutoFocus={composeEventHandlers(
           props.onCloseAutoFocus,
           (event) => {
-            if (!event.defaultPrevented && !isPointerDownOutsideRef.current) {
+            if (!event.defaultPrevented && !isInteractOutsideRef.current) {
               context.triggerRef.current?.focus();
             }
             event.preventDefault();
-            isPointerDownOutsideRef.current = false;
+            isInteractOutsideRef.current = false;
           },
-          { checkForDefaultPrevented: false }
-        )}
-        onEscapeKeyDown={composeEventHandlers(
-          props.onEscapeKeyDown,
-          () => (isPointerDownOutsideRef.current = false),
-          { checkForDefaultPrevented: false }
-        )}
-        onFocus={composeEventHandlers(
-          props.onFocus,
-          () => (isPointerDownOutsideRef.current = false),
           { checkForDefaultPrevented: false }
         )}
         onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
@@ -291,6 +276,7 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
           // focus on pointer down, creating the same issue.
           const targetIsTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
           if (targetIsTrigger) event.preventDefault();
+          else if (!event.defaultPrevented) isInteractOutsideRef.current = true;
         })}
       />
     </Portal>

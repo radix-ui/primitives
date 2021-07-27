@@ -217,7 +217,7 @@ type DropdownMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
 const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentProps } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
-  const preventCloseAutoFocusRef = React.useRef(false);
+  const isInteractOutsideRef = React.useRef(false);
 
   return context.isRootMenu ? (
     <MenuPrimitive.Content
@@ -226,35 +226,15 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
       {...contentProps}
       ref={forwardedRef}
       portalled={portalled}
-      onPointerDownOutside={composeEventHandlers(
-        props.onPointerDownOutside,
-        (event) => {
-          const originalEvent = event.detail.originalEvent;
-          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
-          preventCloseAutoFocusRef.current = isRightClick || !context.modal;
-        },
-        { checkForDefaultPrevented: false }
-      )}
       onCloseAutoFocus={composeEventHandlers(
         props.onCloseAutoFocus,
         (event) => {
-          if (!event.defaultPrevented && !preventCloseAutoFocusRef.current) {
+          if (!event.defaultPrevented && !isInteractOutsideRef.current) {
             context.triggerRef.current?.focus();
           }
           event.preventDefault();
-          preventCloseAutoFocusRef.current = false;
+          isInteractOutsideRef.current = false;
         },
-        { checkForDefaultPrevented: false }
-      )}
-      onEscapeKeyDown={composeEventHandlers(
-        props.onEscapeKeyDown,
-        () => (preventCloseAutoFocusRef.current = false),
-        { checkForDefaultPrevented: false }
-      )}
-      onFocus={composeEventHandlers(
-        props.onFocus,
-        () => (preventCloseAutoFocusRef.current = false),
         { checkForDefaultPrevented: false }
       )}
       onInteractOutside={composeEventHandlers(
@@ -268,6 +248,11 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
           // focus on pointer down, creating the same issue.
           const targetIsTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
           if (targetIsTrigger) event.preventDefault();
+          else if (!event.defaultPrevented) {
+            const originalEvent = event.detail.originalEvent as PointerEvent;
+            const isModalLeftClick = context.modal && originalEvent.button === 0;
+            isInteractOutsideRef.current = !isModalLeftClick;
+          }
         },
         { checkForDefaultPrevented: false }
       )}
