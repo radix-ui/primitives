@@ -226,11 +226,6 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
       {...contentProps}
       ref={forwardedRef}
       portalled={portalled}
-      onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-        event.preventDefault();
-        if (!preventCloseAutoFocusRef.current) context.triggerRef.current?.focus();
-        preventCloseAutoFocusRef.current = false;
-      })}
       onPointerDownOutside={composeEventHandlers(
         props.onPointerDownOutside,
         (event) => {
@@ -239,6 +234,27 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
           const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
           preventCloseAutoFocusRef.current = isRightClick || !context.modal;
         },
+        { checkForDefaultPrevented: false }
+      )}
+      onCloseAutoFocus={composeEventHandlers(
+        props.onCloseAutoFocus,
+        (event) => {
+          if (!event.defaultPrevented && !preventCloseAutoFocusRef.current) {
+            context.triggerRef.current?.focus();
+          }
+          event.preventDefault();
+          preventCloseAutoFocusRef.current = false;
+        },
+        { checkForDefaultPrevented: false }
+      )}
+      onEscapeKeyDown={composeEventHandlers(
+        props.onEscapeKeyDown,
+        () => (preventCloseAutoFocusRef.current = false),
+        { checkForDefaultPrevented: false }
+      )}
+      onFocus={composeEventHandlers(
+        props.onFocus,
+        () => (preventCloseAutoFocusRef.current = false),
         { checkForDefaultPrevented: false }
       )}
       onInteractOutside={composeEventHandlers(

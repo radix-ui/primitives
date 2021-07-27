@@ -256,13 +256,30 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
         ref={forwardedRef}
         trapFocus={false}
         disableOutsidePointerEvents={false}
-        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-          event.preventDefault();
-          if (!isPointerDownOutsideRef.current) context.triggerRef.current?.focus();
-        })}
         onPointerDownOutside={composeEventHandlers(
           props.onPointerDownOutside,
           () => (isPointerDownOutsideRef.current = true),
+          { checkForDefaultPrevented: false }
+        )}
+        onCloseAutoFocus={composeEventHandlers(
+          props.onCloseAutoFocus,
+          (event) => {
+            if (!event.defaultPrevented && !isPointerDownOutsideRef.current) {
+              context.triggerRef.current?.focus();
+            }
+            event.preventDefault();
+            isPointerDownOutsideRef.current = false;
+          },
+          { checkForDefaultPrevented: false }
+        )}
+        onEscapeKeyDown={composeEventHandlers(
+          props.onEscapeKeyDown,
+          () => (isPointerDownOutsideRef.current = false),
+          { checkForDefaultPrevented: false }
+        )}
+        onFocus={composeEventHandlers(
+          props.onFocus,
+          () => (isPointerDownOutsideRef.current = false),
           { checkForDefaultPrevented: false }
         )}
         onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
