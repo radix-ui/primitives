@@ -61,18 +61,21 @@ describe('DropdownMenu', () => {
         // Disabled item
         pointerOver('Bookmarks →');
         cy.findByText('Inbox').should('be.visible');
+        pointerExitRightToLeft('Bookmarks →');
         pointerOver('Print…');
         cy.findByText('Inbox').should('not.exist');
 
         // Trigger item
         pointerOver('Bookmarks →');
         cy.findByText('Inbox').should('be.visible');
+        pointerExitRightToLeft('Bookmarks →');
         pointerOver('Tools →');
         cy.findByText('Inbox').should('not.exist');
 
         // Disabled trigger item
         pointerOver('Bookmarks →');
         cy.findByText('Inbox').should('be.visible');
+        pointerExitRightToLeft('Inbox');
         pointerOver('History →');
         cy.findByText('Inbox').should('not.exist');
       });
@@ -234,7 +237,7 @@ describe('DropdownMenu', () => {
   function pointerExitRightToLeft(elementText: string) {
     return cy
       .findByText(elementText)
-      .focus()
+      .should('be.visible')
       .realHover({ position: 'right' })
       .realHover({ position: 'bottomLeft' })
       .trigger('pointerout', 'bottomLeft', { pointerType: 'mouse' });
@@ -243,13 +246,13 @@ describe('DropdownMenu', () => {
   function pointerExitLeftToRight(elementText: string) {
     return cy
       .findByText(elementText)
-      .focus()
+      .should('be.visible')
       .realHover({ position: 'left' })
       .realHover({ position: 'bottomRight' })
       .trigger('pointerout', 'bottomRight', { pointerType: 'mouse' });
   }
 
   function pointerOver(elementText: string) {
-    return cy.findByText(elementText).focus().realHover();
+    return cy.findByText(elementText).should('be.visible').realHover();
   }
 });
