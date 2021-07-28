@@ -228,9 +228,8 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
       portalled={portalled}
       onCloseAutoFocus={(event) => {
         props.onCloseAutoFocus?.(event);
-        const userPrevented = event.defaultPrevented;
 
-        if (!userPrevented) {
+        if (!event.defaultPrevented && !isInteractOutsideRef.current) {
           event.preventDefault();
           if (!isInteractOutsideRef.current) context.triggerRef.current?.focus();
         }
@@ -239,7 +238,6 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
       }}
       onInteractOutside={(event) => {
         props.onInteractOutside?.(event);
-        const userPrevented = event.defaultPrevented;
 
         // Prevent dismissing when clicking the trigger.
         // As the trigger is already setup to close, without doing so would
@@ -250,7 +248,7 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
         const target = event.target as HTMLElement;
         const targetIsTrigger = context.triggerRef.current?.contains(target);
         if (targetIsTrigger) event.preventDefault();
-        else if (!userPrevented) {
+        else if (!event.defaultPrevented) {
           const originalEvent = event.detail.originalEvent as PointerEvent;
           const isModalLeftClick = context.modal && originalEvent.button === 0;
           isInteractOutsideRef.current = !isModalLeftClick;

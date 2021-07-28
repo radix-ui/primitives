@@ -269,18 +269,16 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
         disableOutsidePointerEvents={false}
         onCloseAutoFocus={(event) => {
           props.onCloseAutoFocus?.(event);
-          const userPrevented = event.defaultPrevented;
 
-          if (!userPrevented) {
+          if (!event.defaultPrevented && !isInteractOutsideRef.current) {
             event.preventDefault();
-            if (!isInteractOutsideRef.current) context.triggerRef.current?.focus();
+            context.triggerRef.current?.focus();
           }
 
           isInteractOutsideRef.current = false;
         }}
         onInteractOutside={(event) => {
           props.onInteractOutside?.(event);
-          const userPrevented = event.defaultPrevented;
 
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would
@@ -291,7 +289,7 @@ const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
           const target = event.target as HTMLElement;
           const targetIsTrigger = context.triggerRef.current?.contains(target);
           if (targetIsTrigger) event.preventDefault();
-          else if (!userPrevented) isInteractOutsideRef.current = true;
+          else if (!event.defaultPrevented) isInteractOutsideRef.current = true;
         }}
       />
     </PortalWrapper>
