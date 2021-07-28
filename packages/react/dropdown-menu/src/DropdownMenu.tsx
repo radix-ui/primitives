@@ -226,36 +226,36 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
       {...contentProps}
       ref={forwardedRef}
       portalled={portalled}
-      onCloseAutoFocus={composeEventHandlers(
-        props.onCloseAutoFocus,
-        (event) => {
-          if (!event.defaultPrevented && !isInteractOutsideRef.current) {
-            context.triggerRef.current?.focus();
-          }
+      onCloseAutoFocus={(event) => {
+        props.onCloseAutoFocus?.(event);
+        const userPrevented = event.defaultPrevented;
+
+        if (!userPrevented) {
           event.preventDefault();
-          isInteractOutsideRef.current = false;
-        },
-        { checkForDefaultPrevented: false }
-      )}
-      onInteractOutside={composeEventHandlers(
-        props.onInteractOutside,
-        (event) => {
-          // Prevent dismissing when clicking the trigger.
-          // As the trigger is already setup to close, without doing so would
-          // cause it to close and immediately open.
-          //
-          // We use `onInteractOutside` as some browsers also
-          // focus on pointer down, creating the same issue.
-          const targetIsTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
-          if (targetIsTrigger) event.preventDefault();
-          else if (!event.defaultPrevented) {
-            const originalEvent = event.detail.originalEvent as PointerEvent;
-            const isModalLeftClick = context.modal && originalEvent.button === 0;
-            isInteractOutsideRef.current = !isModalLeftClick;
-          }
-        },
-        { checkForDefaultPrevented: false }
-      )}
+          if (!isInteractOutsideRef.current) context.triggerRef.current?.focus();
+        }
+
+        isInteractOutsideRef.current = false;
+      }}
+      onInteractOutside={(event) => {
+        props.onInteractOutside?.(event);
+        const userPrevented = event.defaultPrevented;
+
+        // Prevent dismissing when clicking the trigger.
+        // As the trigger is already setup to close, without doing so would
+        // cause it to close and immediately open.
+        //
+        // We use `onInteractOutside` as some browsers also
+        // focus on pointer down, creating the same issue.
+        const target = event.target as HTMLElement;
+        const targetIsTrigger = context.triggerRef.current?.contains(target);
+        if (targetIsTrigger) event.preventDefault();
+        else if (!userPrevented) {
+          const originalEvent = event.detail.originalEvent as PointerEvent;
+          const isModalLeftClick = context.modal && originalEvent.button === 0;
+          isInteractOutsideRef.current = !isModalLeftClick;
+        }
+      }}
     />
   ) : null;
 }) as DropdownMenuRootContentPrimitive;
