@@ -20,6 +20,7 @@ type ContextMenuContextValue = {
   isRootMenu: boolean;
   open: boolean;
   onOpenChange(open: boolean): void;
+  modal: boolean;
 };
 
 const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuContextValue>(
@@ -33,7 +34,7 @@ type ContextMenuOwnProps = {
 };
 
 const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
-  const { children, onOpenChange, dir, modal } = props;
+  const { children, onOpenChange, dir, modal = true } = props;
   const [open, setOpen] = React.useState(false);
   const isInsideContent = React.useContext(ContentContext);
   const handleOpenChangeProp = useCallbackRef(onOpenChange);
@@ -47,13 +48,23 @@ const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
   );
 
   return isInsideContent ? (
-    <ContextMenuProvider isRootMenu={false} open={open} onOpenChange={handleOpenChange}>
+    <ContextMenuProvider
+      isRootMenu={false}
+      open={open}
+      onOpenChange={handleOpenChange}
+      modal={modal}
+    >
       <MenuPrimitive.Sub open={open} onOpenChange={handleOpenChange}>
         {children}
       </MenuPrimitive.Sub>
     </ContextMenuProvider>
   ) : (
-    <ContextMenuProvider isRootMenu={true} open={open} onOpenChange={handleOpenChange}>
+    <ContextMenuProvider
+      isRootMenu={true}
+      open={open}
+      onOpenChange={handleOpenChange}
+      modal={modal}
+    >
       <MenuPrimitive.Root dir={dir} open={open} onOpenChange={handleOpenChange} modal={modal}>
         {children}
       </MenuPrimitive.Root>
@@ -184,6 +195,9 @@ type ContextMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
+  const context = useContextMenuContext(CONTENT_NAME);
+  const shouldPreventFocusRef = React.useRef(false);
+
   return (
     <MenuPrimitive.Content
       {...props}
@@ -192,6 +206,22 @@ const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
       side="right"
       sideOffset={2}
       align="start"
+      onCloseAutoFocus={(event) => {
+        props.onCloseAutoFocus?.(event);
+
+        if (!event.defaultPrevented && shouldPreventFocusRef.current) {
+          event.preventDefault();
+        }
+
+        shouldPreventFocusRef.current = false;
+      }}
+      onInteractOutside={(event) => {
+        props.onInteractOutside?.(event);
+
+        if (!event.defaultPrevented && !context.modal) {
+          shouldPreventFocusRef.current = true;
+        }
+      }}
     />
   );
 }) as ContextMenuRootContentPrimitive;

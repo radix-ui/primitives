@@ -48,7 +48,7 @@ type DropdownMenuOwnProps = {
 };
 
 const DropdownMenu: React.FC<DropdownMenuOwnProps> = (props) => {
-  const { children, open: openProp, defaultOpen, onOpenChange, dir, modal } = props;
+  const { children, open: openProp, defaultOpen, onOpenChange, dir, modal = true } = props;
   const isInsideContent = React.useContext(ContentContext);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -217,7 +217,7 @@ type DropdownMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
 const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentProps } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
-  const preventCloseAutoFocusRef = React.useRef(false);
+  const shouldFocusTriggerRef = React.useRef(true);
 
   return context.isRootMenu ? (
     <MenuPrimitive.Content
@@ -226,37 +226,42 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
       {...contentProps}
       ref={forwardedRef}
       portalled={portalled}
-      onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-        event.preventDefault();
-        if (!preventCloseAutoFocusRef.current) context.triggerRef.current?.focus();
-      })}
-      onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-        preventCloseAutoFocusRef.current = false;
-      })}
-      onPointerDownOutside={composeEventHandlers(
-        props.onPointerDownOutside,
-        (event) => {
-          const originalEvent = event.detail.originalEvent;
-          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
-          preventCloseAutoFocusRef.current = isRightClick || !context.modal;
-        },
-        { checkForDefaultPrevented: false }
-      )}
-      onInteractOutside={composeEventHandlers(
-        props.onInteractOutside,
-        (event) => {
-          // Prevent dismissing when clicking the trigger.
-          // As the trigger is already setup to close, without doing so would
-          // cause it to close and immediately open.
-          //
-          // We use `onInteractOutside` as some browsers also
-          // focus on pointer down, creating the same issue.
-          const targetIsTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
-          if (targetIsTrigger) event.preventDefault();
-        },
-        { checkForDefaultPrevented: false }
-      )}
+      onCloseAutoFocus={(event) => {
+        props.onCloseAutoFocus?.(event);
+
+        if (!event.defaultPrevented) {
+          // Always prevent auto focus because we either focus manually or want user agent focus
+          event.preventDefault();
+          if (shouldFocusTriggerRef.current) context.triggerRef.current?.focus();
+        }
+
+        shouldFocusTriggerRef.current = true;
+      }}
+      onInteractOutside={(event) => {
+        props.onInteractOutside?.(event);
+
+        if (!event.defaultPrevented) {
+          if (context.modal) {
+            const originalEvent = event.detail.originalEvent as PointerEvent;
+            const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+            const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+
+            if (isRightClick) shouldFocusTriggerRef.current = false;
+          } else {
+            shouldFocusTriggerRef.current = false;
+          }
+        }
+
+        // Prevent dismissing when clicking the trigger.
+        // As the trigger is already setup to close, without doing so would
+        // cause it to close and immediately open.
+        //
+        // We use `onInteractOutside` as some browsers also
+        // focus on pointer down, creating the same issue.
+        const target = event.target as HTMLElement;
+        const targetIsTrigger = context.triggerRef.current?.contains(target);
+        if (targetIsTrigger) event.preventDefault();
+      }}
     />
   ) : null;
 }) as DropdownMenuRootContentPrimitive;

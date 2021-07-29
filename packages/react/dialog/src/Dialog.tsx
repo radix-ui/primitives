@@ -247,7 +247,8 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
 
 const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
-  const isEscapeKeyDownRef = React.useRef(false);
+  const shouldFocusTriggerRef = React.useRef(true);
+
   return (
     <Portal>
       <DialogContentImpl
@@ -255,23 +256,32 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
         ref={forwardedRef}
         trapFocus={false}
         disableOutsidePointerEvents={false}
-        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-          event.preventDefault();
-          if (isEscapeKeyDownRef.current) context.triggerRef.current?.focus();
-        })}
-        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, () => {
-          isEscapeKeyDownRef.current = true;
-        })}
-        onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
+        onCloseAutoFocus={(event) => {
+          props.onCloseAutoFocus?.(event);
+
+          if (!event.defaultPrevented) {
+            // Always prevent auto focus because we either focus manually or want user agent focus
+            event.preventDefault();
+            if (shouldFocusTriggerRef.current) context.triggerRef.current?.focus();
+          }
+
+          shouldFocusTriggerRef.current = true;
+        }}
+        onInteractOutside={(event) => {
+          props.onInteractOutside?.(event);
+
+          if (!event.defaultPrevented) shouldFocusTriggerRef.current = false;
+
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would
           // cause it to close and immediately open.
           //
           // We use `onInteractOutside` as some browsers also
           // focus on pointer down, creating the same issue.
-          const targetIsTrigger = context.triggerRef.current?.contains(event.target as HTMLElement);
+          const target = event.target as HTMLElement;
+          const targetIsTrigger = context.triggerRef.current?.contains(target);
           if (targetIsTrigger) event.preventDefault();
-        })}
+        }}
       />
     </Portal>
   );
