@@ -229,7 +229,7 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
       onCloseAutoFocus={(event) => {
         props.onCloseAutoFocus?.(event);
 
-        if (!event.defaultPrevented && !isInteractOutsideRef.current) {
+        if (!event.defaultPrevented) {
           event.preventDefault();
           if (!isInteractOutsideRef.current) context.triggerRef.current?.focus();
         }

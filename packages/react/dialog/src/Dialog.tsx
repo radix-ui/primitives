@@ -259,9 +259,9 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
         onCloseAutoFocus={(event) => {
           props.onCloseAutoFocus?.(event);
 
-          if (!event.defaultPrevented && !isInteractOutsideRef.current) {
+          if (!event.defaultPrevented) {
             event.preventDefault();
-            context.triggerRef.current?.focus();
+            if (!isInteractOutsideRef.current) context.triggerRef.current?.focus();
           }
 
           isInteractOutsideRef.current = false;
