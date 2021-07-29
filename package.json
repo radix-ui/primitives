@@ -59,7 +59,7 @@
     "@typescript-eslint/parser": "2.x",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
-    "cypress": "^7.5.0",
+    "cypress": "^8.0.0",
     "cypress-real-events": "^1.5.0",
     "eslint": "6.x",
     "eslint-config-react-app": "^5.2.1",

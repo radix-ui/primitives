@@ -1919,18 +1919,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cypress/listr-verbose-renderer@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "@cypress/listr-verbose-renderer@npm:0.4.1"
-  dependencies:
-    chalk: ^1.1.3
-    cli-cursor: ^1.0.2
-    date-fns: ^1.27.2
-    figures: ^1.7.0
-  checksum: 69c708e7b7200c4ce7dc5ab24b1da953a51cf9745e364ea4665794d2f939a527a377f8546b68e2388ef4c880d587b25fb1035ddfa0bb97d9529b9a6d1d371d76
-  languageName: node
-  linkType: hard
-
 "@cypress/request@npm:^2.88.5":
   version: 2.88.5
   resolution: "@cypress/request@npm:2.88.5"
@@ -7929,15 +7917,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli-cursor@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "cli-cursor@npm:1.0.2"
-  dependencies:
-    restore-cursor: ^1.0.1
-  checksum: 72cd1457558c76665a26b37e539f01f59266274a90ff101719231ce3ebed9d10eb5426942bc2b4b477203e6b3829f88970532347ad168928a99314de90c0d8de
-  languageName: node
-  linkType: hard
-
 "cli-cursor@npm:^3.1.0":
   version: 3.1.0
   resolution: "cli-cursor@npm:3.1.0"
@@ -8943,11 +8922,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^7.5.0":
-  version: 7.5.0
-  resolution: "cypress@npm:7.5.0"
+"cypress@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "cypress@npm:8.0.0"
   dependencies:
-    "@cypress/listr-verbose-renderer": ^0.4.1
     "@cypress/request": ^2.88.5
     "@cypress/xvfb": ^1.2.4
     "@types/node": ^14.14.31
@@ -8959,15 +8937,18 @@ __metadata:
     cachedir: ^2.3.0
     chalk: ^4.1.0
     check-more-types: ^2.24.0
+    cli-cursor: ^3.1.0
     cli-table3: ~0.6.0
     commander: ^5.1.0
     common-tags: ^1.8.0
     dayjs: ^1.10.4
-    debug: 4.3.2
+    debug: ^4.3.2
+    enquirer: ^2.3.6
     eventemitter2: ^6.4.3
     execa: 4.1.0
     executable: ^4.1.1
     extract-zip: 2.0.1
+    figures: ^3.2.0
     fs-extra: ^9.1.0
     getos: ^3.2.1
     is-ci: ^3.0.0
@@ -8988,7 +8969,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: c5ee3e1069e535e429b1498a17edc638300d467b030fae8f7b5256979bf9489ee89b1b3ae90a3d20c2cff0ea7ed02b3a3f4b235fd64fb4e023c40d4698f98b93
+  checksum: 03986bbb0db57f462dca8fbabb236b8ef90685be394ca8e7a1f097e976a7cd774fcdc79638a0e798480276df8ab37a60a66139ede8df6dcc8a758871d5a0937c
   languageName: node
   linkType: hard
 
@@ -9037,13 +9018,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^1.27.2":
-  version: 1.30.1
-  resolution: "date-fns@npm:1.30.1"
-  checksum: 351fc19b04d79de77823a90213b87039392528fdd44a42e3e87f28333e76a48f99e4fbb37c9823b6284f7eb0ef88368fafe61749d6eff173241170977751fa47
-  languageName: node
-  linkType: hard
-
 "dayjs@npm:^1.10.4":
   version: 1.10.5
   resolution: "dayjs@npm:1.10.5"
@@ -9060,7 +9034,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:4.3.2, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2.0":
+"debug@npm:4, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2.0, debug@npm:^4.3.2":
   version: 4.3.2
   resolution: "debug@npm:4.3.2"
   dependencies:
@@ -10461,13 +10435,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"exit-hook@npm:^1.0.0":
-  version: 1.1.1
-  resolution: "exit-hook@npm:1.1.1"
-  checksum: 4f89f35c225f6e28e86e85770185a02d650162e93e671a1040315a86f42fdf851f837152b2c38ded703eaae8e9934cb0f8db217a2896ff01d8125879cad1101a
-  languageName: node
-  linkType: hard
-
 "exit@npm:^0.1.2":
   version: 0.1.2
   resolution: "exit@npm:0.1.2"
@@ -10758,16 +10725,6 @@ __metadata:
   version: 3.5.2
   resolution: "figgy-pudding@npm:3.5.2"
   checksum: 737645f602631734ad53b7445128e255939f809565350b376b3b8fad7673f37c82525a16463f176643ff4b989bb79ed0ecc18111a364ead1082a74c99195a6ca
-  languageName: node
-  linkType: hard
-
-"figures@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "figures@npm:1.7.0"
-  dependencies:
-    escape-string-regexp: ^1.0.5
-    object-assign: ^4.1.0
-  checksum: 17f76820de5201632650d0ea10b5485111677df96423a2401158e85eeb277344551fea908d4ca7407f4fa99ac2e7a70839ece89ce6185e7fa6787245aeb7fd87
   languageName: node
   linkType: hard
 
@@ -15429,13 +15386,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"onetime@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "onetime@npm:1.1.0"
-  checksum: ddf13ecba8d11048dfd3a8b99c30a509ec0f629cc46b5bbfcfc78442f39385aa7512e92ac8d1fd980c2649bde515ffede5c14223767f7f6f96b1aab33d11f6b3
-  languageName: node
-  linkType: hard
-
 "onetime@npm:^5.1.0, onetime@npm:^5.1.2":
   version: 5.1.2
   resolution: "onetime@npm:5.1.2"
@@ -16832,7 +16782,7 @@ __metadata:
     "@typescript-eslint/parser": 2.x
     babel-eslint: ^10.1.0
     babel-loader: ^8.1.0
-    cypress: ^7.5.0
+    cypress: ^8.0.0
     cypress-real-events: ^1.5.0
     eslint: 6.x
     eslint-config-react-app: ^5.2.1
@@ -17993,16 +17943,6 @@ __metadata:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
   checksum: c4a515b76026806b5b26513fc7bdb80458c532bc91c02ef45ac928d1025585f93bec0b904be39c02131118a37ff7e3f9258f1526850b025d2ec0948bb5fd03d0
-  languageName: node
-  linkType: hard
-
-"restore-cursor@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "restore-cursor@npm:1.0.1"
-  dependencies:
-    exit-hook: ^1.0.0
-    onetime: ^1.0.0
-  checksum: 07ab5114eb6fe69e931f0df88ae28a3dd0018360622d3bb72bbf3b4cdbac5b6bc45e4bb502190c688484240bba3f02231d1f0a6ae68cab453c4aca168e3fccae
   languageName: node
   linkType: hard
 
