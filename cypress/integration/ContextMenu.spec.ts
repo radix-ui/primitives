@@ -59,40 +59,26 @@ describe('ContextMenu', () => {
         }
       );
 
-      it('should close submenu when moving pointer over any sibling item in parent menu', () => {
+      it('should close open submenu when moving pointer to any item in parent menu', () => {
         // Item
         pointerOver('Bookmarks →');
-        cy.findByText('Inbox').should('be.visible');
+        pointerOver('Inbox');
         pointerOver('New Tab');
         cy.findByText('Inbox').should('not.exist');
 
         // Disabled item
         pointerOver('Bookmarks →');
-        cy.findByText('Inbox').should('be.visible');
+        pointerOver('Inbox');
         pointerOver('Print…');
         cy.findByText('Inbox').should('not.exist');
 
         // Trigger item
         pointerOver('Bookmarks →');
-        cy.findByText('Inbox').should('be.visible');
-        pointerOver('Tools →');
-        cy.findByText('Inbox').should('not.exist');
-
-        // Disabled trigger item
-        pointerOver('Bookmarks →');
-        cy.findByText('Inbox').should('be.visible');
-        pointerOver('History →');
-        cy.findByText('Inbox').should('not.exist');
-      });
-
-      it('should close submenu when moving pointer from open submenu to enabled or disabled trigger siblings', () => {
-        // To submenu and then to sibling trigger in parent
-        pointerOver('Bookmarks →');
         pointerOver('Inbox');
         pointerOver('Tools →');
         cy.findByText('Inbox').should('not.exist');
 
-        // To submenu then to a disabled trigger sibling in parent
+        // Disabled trigger item
         pointerOver('Bookmarks →');
         pointerOver('Inbox');
         pointerOver('History →');
@@ -242,7 +228,7 @@ describe('ContextMenu', () => {
   function pointerExitRightToLeft(elementText: string) {
     return cy
       .findByText(elementText)
-      .focus()
+      .should('be.visible')
       .realHover({ position: 'right' })
       .realHover({ position: 'bottomLeft' })
       .trigger('pointerout', 'bottomLeft', { pointerType: 'mouse' });
@@ -251,13 +237,13 @@ describe('ContextMenu', () => {
   function pointerExitLeftToRight(elementText: string) {
     return cy
       .findByText(elementText)
-      .focus()
+      .should('be.visible')
       .realHover({ position: 'left' })
       .realHover({ position: 'bottomRight' })
       .trigger('pointerout', 'bottomRight', { pointerType: 'mouse' });
   }
 
   function pointerOver(elementText: string) {
-    return cy.findByText(elementText).focus().realHover();
+    return cy.findByText(elementText).should('be.visible').realHover();
   }
 });
