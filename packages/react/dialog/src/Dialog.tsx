@@ -247,7 +247,7 @@ const DialogContentModal = React.forwardRef((props, forwardedRef) => {
 
 const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
-  const shouldFocusTriggerRef = React.useRef(true);
+  const hasInteractedOutsideRef = React.useRef(false);
 
   return (
     <Portal>
@@ -260,17 +260,17 @@ const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
           props.onCloseAutoFocus?.(event);
 
           if (!event.defaultPrevented) {
+            if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
             // Always prevent auto focus because we either focus manually or want user agent focus
             event.preventDefault();
-            if (shouldFocusTriggerRef.current) context.triggerRef.current?.focus();
           }
 
-          shouldFocusTriggerRef.current = true;
+          hasInteractedOutsideRef.current = false;
         }}
         onInteractOutside={(event) => {
           props.onInteractOutside?.(event);
 
-          if (!event.defaultPrevented) shouldFocusTriggerRef.current = false;
+          if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
 
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would

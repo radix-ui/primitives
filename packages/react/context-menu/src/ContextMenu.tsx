@@ -196,7 +196,7 @@ type ContextMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
 
 const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
   const context = useContextMenuContext(CONTENT_NAME);
-  const shouldPreventFocusRef = React.useRef(false);
+  const hasInteractedOutsideRef = React.useRef(false);
 
   return (
     <MenuPrimitive.Content
@@ -209,18 +209,16 @@ const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
       onCloseAutoFocus={(event) => {
         props.onCloseAutoFocus?.(event);
 
-        if (!event.defaultPrevented && shouldPreventFocusRef.current) {
+        if (!event.defaultPrevented && hasInteractedOutsideRef.current) {
           event.preventDefault();
         }
 
-        shouldPreventFocusRef.current = false;
+        hasInteractedOutsideRef.current = false;
       }}
       onInteractOutside={(event) => {
         props.onInteractOutside?.(event);
 
-        if (!event.defaultPrevented && !context.modal) {
-          shouldPreventFocusRef.current = true;
-        }
+        if (!event.defaultPrevented && !context.modal) hasInteractedOutsideRef.current = true;
       }}
     />
   );

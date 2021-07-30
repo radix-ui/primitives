@@ -217,7 +217,7 @@ type DropdownMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
 const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
   const { portalled = true, ...contentProps } = props;
   const context = useDropdownMenuContext(CONTENT_NAME);
-  const shouldFocusTriggerRef = React.useRef(true);
+  const hasInteractedOutsideRef = React.useRef(false);
 
   return context.isRootMenu ? (
     <MenuPrimitive.Content
@@ -230,26 +230,22 @@ const DropdownMenuRootContent = React.forwardRef((props, forwardedRef) => {
         props.onCloseAutoFocus?.(event);
 
         if (!event.defaultPrevented) {
+          if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
           // Always prevent auto focus because we either focus manually or want user agent focus
           event.preventDefault();
-          if (shouldFocusTriggerRef.current) context.triggerRef.current?.focus();
         }
 
-        shouldFocusTriggerRef.current = true;
+        hasInteractedOutsideRef.current = false;
       }}
       onInteractOutside={(event) => {
         props.onInteractOutside?.(event);
 
         if (!event.defaultPrevented) {
-          if (context.modal) {
-            const originalEvent = event.detail.originalEvent as PointerEvent;
-            const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-            const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+          const originalEvent = event.detail.originalEvent as PointerEvent;
+          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
 
-            if (isRightClick) shouldFocusTriggerRef.current = false;
-          } else {
-            shouldFocusTriggerRef.current = false;
-          }
+          if (!context.modal || isRightClick) hasInteractedOutsideRef.current = true;
         }
 
         // Prevent dismissing when clicking the trigger.
