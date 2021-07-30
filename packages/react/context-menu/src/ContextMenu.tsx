@@ -209,7 +209,7 @@ const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
       onCloseAutoFocus={(event) => {
         props.onCloseAutoFocus?.(event);
 
-        if (!event.defaultPrevented && hasInteractedOutsideRef.current && !context.modal) {
+        if (!event.defaultPrevented && hasInteractedOutsideRef.current) {
           event.preventDefault();
         }
 
@@ -218,7 +218,7 @@ const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
       onInteractOutside={(event) => {
         props.onInteractOutside?.(event);
 
-        if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
+        if (!event.defaultPrevented && !context.modal) hasInteractedOutsideRef.current = true;
       }}
     />
   );
