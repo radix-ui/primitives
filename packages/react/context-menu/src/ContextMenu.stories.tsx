@@ -65,6 +65,156 @@ export const Styled = () => {
   );
 };
 
+export const Modality = () => {
+  const [open1, setOpen1] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '110vh' }}
+    >
+      <div style={{ display: 'grid', gridGap: 50 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+          <h1>Modal (default)</h1>
+          <ContextMenu onOpenChange={setOpen1}>
+            <ContextMenuTrigger
+              className={triggerClass}
+              style={{ background: open1 ? 'lightblue' : undefined }}
+            />
+            <ContextMenuContent className={contentClass} alignOffset={-5}>
+              <ContextMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+                Undo
+              </ContextMenuItem>
+              <ContextMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+                Redo
+              </ContextMenuItem>
+              <ContextMenuSeparator className={separatorClass} />
+              <ContextMenu>
+                <ContextMenuTriggerItem className={subTriggerClass}>
+                  Submenu →
+                </ContextMenuTriggerItem>
+                <ContextMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                  <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
+                    One
+                  </ContextMenuItem>
+                  <ContextMenuItem className={itemClass} onSelect={() => console.log('two')}>
+                    Two
+                  </ContextMenuItem>
+                  <ContextMenuSeparator className={separatorClass} />
+                  <ContextMenu>
+                    <ContextMenuTriggerItem className={subTriggerClass}>
+                      Submenu →
+                    </ContextMenuTriggerItem>
+                    <ContextMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                      <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
+                        One
+                      </ContextMenuItem>
+                      <ContextMenuItem className={itemClass} onSelect={() => console.log('two')}>
+                        Two
+                      </ContextMenuItem>
+                      <ContextMenuItem className={itemClass} onSelect={() => console.log('three')}>
+                        Three
+                      </ContextMenuItem>
+                      <ContextMenuArrow offset={14} />
+                    </ContextMenuContent>
+                  </ContextMenu>
+                  <ContextMenuSeparator className={separatorClass} />
+                  <ContextMenuItem className={itemClass} onSelect={() => console.log('three')}>
+                    Three
+                  </ContextMenuItem>
+                  <ContextMenuArrow offset={14} />
+                </ContextMenuContent>
+              </ContextMenu>
+              <ContextMenuSeparator className={separatorClass} />
+              <ContextMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+                Cut
+              </ContextMenuItem>
+              <ContextMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+                Copy
+              </ContextMenuItem>
+              <ContextMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+                Paste
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+          <textarea
+            style={{ width: 500, height: 100, marginTop: 10 }}
+            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+          />
+        </div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+          <h1>Non modal</h1>
+          <ContextMenu onOpenChange={setOpen2} modal={false}>
+            <ContextMenuTrigger
+              className={triggerClass}
+              style={{ background: open2 ? 'lightblue' : undefined }}
+            />
+            <ContextMenuContent className={contentClass} alignOffset={-5}>
+              <ContextMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+                Undo
+              </ContextMenuItem>
+              <ContextMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+                Redo
+              </ContextMenuItem>
+              <ContextMenuSeparator className={separatorClass} />
+              <ContextMenu>
+                <ContextMenuTriggerItem className={subTriggerClass}>
+                  Submenu →
+                </ContextMenuTriggerItem>
+                <ContextMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                  <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
+                    One
+                  </ContextMenuItem>
+                  <ContextMenuItem className={itemClass} onSelect={() => console.log('two')}>
+                    Two
+                  </ContextMenuItem>
+                  <ContextMenuSeparator className={separatorClass} />
+                  <ContextMenu>
+                    <ContextMenuTriggerItem className={subTriggerClass}>
+                      Submenu →
+                    </ContextMenuTriggerItem>
+                    <ContextMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
+                      <ContextMenuItem className={itemClass} onSelect={() => console.log('one')}>
+                        One
+                      </ContextMenuItem>
+                      <ContextMenuItem className={itemClass} onSelect={() => console.log('two')}>
+                        Two
+                      </ContextMenuItem>
+                      <ContextMenuItem className={itemClass} onSelect={() => console.log('three')}>
+                        Three
+                      </ContextMenuItem>
+                      <ContextMenuArrow offset={14} />
+                    </ContextMenuContent>
+                  </ContextMenu>
+                  <ContextMenuSeparator className={separatorClass} />
+                  <ContextMenuItem className={itemClass} onSelect={() => console.log('three')}>
+                    Three
+                  </ContextMenuItem>
+                  <ContextMenuArrow offset={14} />
+                </ContextMenuContent>
+              </ContextMenu>
+              <ContextMenuSeparator className={separatorClass} />
+              <ContextMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+                Cut
+              </ContextMenuItem>
+              <ContextMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+                Copy
+              </ContextMenuItem>
+              <ContextMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+                Paste
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+          <textarea
+            style={{ width: 500, height: 100, marginTop: 10 }}
+            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const Submenus = () => {
   const [open, setOpen] = React.useState(false);
   const [rtl, setRtl] = React.useState(false);

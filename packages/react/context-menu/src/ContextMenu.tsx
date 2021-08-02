@@ -20,6 +20,7 @@ type ContextMenuContextValue = {
   isRootMenu: boolean;
   open: boolean;
   onOpenChange(open: boolean): void;
+  modal: boolean;
 };
 
 const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuContextValue>(
@@ -29,10 +30,11 @@ const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuCo
 type ContextMenuOwnProps = {
   onOpenChange?(open: boolean): void;
   dir?: Direction;
+  modal?: boolean;
 };
 
 const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
-  const { children, onOpenChange, dir } = props;
+  const { children, onOpenChange, dir, modal = true } = props;
   const [open, setOpen] = React.useState(false);
   const isInsideContent = React.useContext(ContentContext);
   const handleOpenChangeProp = useCallbackRef(onOpenChange);
@@ -46,14 +48,24 @@ const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
   );
 
   return isInsideContent ? (
-    <ContextMenuProvider isRootMenu={false} open={open} onOpenChange={handleOpenChange}>
+    <ContextMenuProvider
+      isRootMenu={false}
+      open={open}
+      onOpenChange={handleOpenChange}
+      modal={modal}
+    >
       <MenuPrimitive.Sub open={open} onOpenChange={handleOpenChange}>
         {children}
       </MenuPrimitive.Sub>
     </ContextMenuProvider>
   ) : (
-    <ContextMenuProvider isRootMenu={true} open={open} onOpenChange={handleOpenChange}>
-      <MenuPrimitive.Root dir={dir} open={open} onOpenChange={handleOpenChange}>
+    <ContextMenuProvider
+      isRootMenu={true}
+      open={open}
+      onOpenChange={handleOpenChange}
+      modal={modal}
+    >
+      <MenuPrimitive.Root dir={dir} open={open} onOpenChange={handleOpenChange} modal={modal}>
         {children}
       </MenuPrimitive.Root>
     </ContextMenuProvider>
@@ -141,7 +153,7 @@ const ContentContext = React.createContext(false);
 
 type ContextMenuContentOwnProps = Omit<
   Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
-  'trapFocus' | 'disableOutsideScroll' | 'portalled' | 'side' | 'align'
+  'portalled' | 'side' | 'align'
 >;
 
 type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
@@ -183,19 +195,31 @@ type ContextMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
-  const { disableOutsidePointerEvents = true, ...contentProps } = props;
   const context = useContextMenuContext(CONTENT_NAME);
+  const hasInteractedOutsideRef = React.useRef(false);
+
   return (
     <MenuPrimitive.Content
-      {...contentProps}
+      {...props}
       ref={forwardedRef}
-      disableOutsidePointerEvents={context.open ? disableOutsidePointerEvents : false}
-      trapFocus
-      disableOutsideScroll
       portalled
       side="right"
       sideOffset={2}
       align="start"
+      onCloseAutoFocus={(event) => {
+        props.onCloseAutoFocus?.(event);
+
+        if (!event.defaultPrevented && hasInteractedOutsideRef.current) {
+          event.preventDefault();
+        }
+
+        hasInteractedOutsideRef.current = false;
+      }}
+      onInteractOutside={(event) => {
+        props.onInteractOutside?.(event);
+
+        if (!event.defaultPrevented && !context.modal) hasInteractedOutsideRef.current = true;
+      }}
     />
   );
 }) as ContextMenuRootContentPrimitive;

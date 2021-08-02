@@ -32,6 +32,7 @@ type PopoverContextValue = {
   hasCustomAnchor: boolean;
   onCustomAnchorAdd(): void;
   onCustomAnchorRemove(): void;
+  modal: boolean;
 };
 
 const [PopoverProvider, usePopoverContext] = createContext<PopoverContextValue>(POPOVER_NAME);
@@ -40,10 +41,11 @@ type PopoverOwnProps = {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  modal?: boolean;
 };
 
 const Popover: React.FC<PopoverOwnProps> = (props) => {
-  const { children, open: openProp, defaultOpen, onOpenChange } = props;
+  const { children, open: openProp, defaultOpen, onOpenChange, modal = false } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
   const [open = false, setOpen] = useControllableState({
@@ -63,6 +65,7 @@ const Popover: React.FC<PopoverOwnProps> = (props) => {
         hasCustomAnchor={hasCustomAnchor}
         onCustomAnchorAdd={React.useCallback(() => setHasCustomAnchor(true), [])}
         onCustomAnchorRemove={React.useCallback(() => setHasCustomAnchor(false), [])}
+        modal={modal}
       >
         {children}
       </PopoverProvider>
@@ -122,7 +125,7 @@ const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
       aria-haspopup="dialog"
       aria-expanded={context.open}
       aria-controls={context.contentId}
-      data-state={context.open ? 'open' : 'closed'}
+      data-state={getState(context.open)}
       {...triggerProps}
       as={as}
       ref={composedTriggerRef}
@@ -146,7 +149,7 @@ PopoverTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'PopoverContent';
 
 type PopoverContentOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof PopoverContentImpl>,
+  Polymorphic.OwnProps<typeof PopoverContentModal | typeof PopoverContentNonModal>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -157,7 +160,7 @@ type PopoverContentOwnProps = Polymorphic.Merge<
 >;
 
 type PopoverContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopoverContentImpl>,
+  Polymorphic.IntrinsicElement<typeof PopoverContentModal | typeof PopoverContentNonModal>,
   PopoverContentOwnProps
 >;
 
@@ -167,14 +170,133 @@ const PopoverContent = React.forwardRef((props, forwardedRef) => {
 
   return (
     <Presence present={forceMount || context.open}>
-      <PopoverContentImpl
-        data-state={context.open ? 'open' : 'closed'}
-        {...contentProps}
-        ref={forwardedRef}
-      />
+      {context.modal ? (
+        <PopoverContentModal {...contentProps} ref={forwardedRef} />
+      ) : (
+        <PopoverContentNonModal {...contentProps} ref={forwardedRef} />
+      )}
     </Presence>
   );
 }) as PopoverContentPrimitive;
+
+PopoverContent.displayName = CONTENT_NAME;
+
+type PopoverContentTypeOwnProps = Polymorphic.Merge<
+  Omit<
+    Polymorphic.OwnProps<typeof PopoverContentImpl>,
+    'trapFocus' | 'disableOutsidePointerEvents'
+  >,
+  {
+    /**
+     * Whether the `Popover` should render in a `Portal`
+     * (default: `true`)
+     */
+    portalled?: boolean;
+  }
+>;
+
+type PopoverContentTypePrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof PopoverContentImpl>,
+  PopoverContentTypeOwnProps
+>;
+
+const PopoverContentModal = React.forwardRef((props, forwardedRef) => {
+  const { portalled = true, ...contentModalProps } = props;
+  const context = usePopoverContext(CONTENT_NAME);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
+  const isRightClickOutsideRef = React.useRef(false);
+
+  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+  React.useEffect(() => {
+    const content = contentRef.current;
+    if (content) return hideOthers(content);
+  }, []);
+
+  const PortalWrapper = portalled ? Portal : React.Fragment;
+
+  return (
+    <PortalWrapper>
+      <RemoveScroll>
+        <PopoverContentImpl
+          {...contentModalProps}
+          ref={composedRefs}
+          // we make sure we're not trapping once it's been closed
+          // (closed !== unmounted when animating out)
+          trapFocus={context.open}
+          disableOutsidePointerEvents
+          onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+            event.preventDefault();
+            if (!isRightClickOutsideRef.current) context.triggerRef.current?.focus();
+          })}
+          onPointerDownOutside={composeEventHandlers(
+            props.onPointerDownOutside,
+            (event) => {
+              const originalEvent = event.detail.originalEvent;
+              const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+              const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+
+              isRightClickOutsideRef.current = isRightClick;
+            },
+            { checkForDefaultPrevented: false }
+          )}
+          // When focus is trapped, a `focusout` event may still happen.
+          // We make sure we don't trigger our `onDismiss` in such case.
+          onFocusOutside={composeEventHandlers(
+            props.onFocusOutside,
+            (event) => event.preventDefault(),
+            { checkForDefaultPrevented: false }
+          )}
+        />
+      </RemoveScroll>
+    </PortalWrapper>
+  );
+}) as PopoverContentTypePrimitive;
+
+const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
+  const { portalled = true, ...contentNonModalProps } = props;
+  const context = usePopoverContext(CONTENT_NAME);
+  const hasInteractedOutsideRef = React.useRef(false);
+
+  const PortalWrapper = portalled ? Portal : React.Fragment;
+
+  return (
+    <PortalWrapper>
+      <PopoverContentImpl
+        {...contentNonModalProps}
+        ref={forwardedRef}
+        trapFocus={false}
+        disableOutsidePointerEvents={false}
+        onCloseAutoFocus={(event) => {
+          props.onCloseAutoFocus?.(event);
+
+          if (!event.defaultPrevented) {
+            if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
+            // Always prevent auto focus because we either focus manually or want user agent focus
+            event.preventDefault();
+          }
+
+          hasInteractedOutsideRef.current = false;
+        }}
+        onInteractOutside={(event) => {
+          props.onInteractOutside?.(event);
+
+          if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
+
+          // Prevent dismissing when clicking the trigger.
+          // As the trigger is already setup to close, without doing so would
+          // cause it to close and immediately open.
+          //
+          // We use `onInteractOutside` as some browsers also
+          // focus on pointer down, creating the same issue.
+          const target = event.target as HTMLElement;
+          const targetIsTrigger = context.triggerRef.current?.contains(target);
+          if (targetIsTrigger) event.preventDefault();
+        }}
+      />
+    </PortalWrapper>
+  );
+}) as PopoverContentTypePrimitive;
 
 type FocusScopeOwnProps = Polymorphic.OwnProps<typeof FocusScope>;
 type DismissableLayerOwnProps = Polymorphic.OwnProps<typeof DismissableLayer>;
@@ -200,18 +322,6 @@ type PopoverContentImplOwnProps = Polymorphic.Merge<
      * Can be prevented.
      */
     onCloseAutoFocus?: FocusScopeOwnProps['onUnmountAutoFocus'];
-
-    /**
-     * Whether scrolling outside the `Popover` should be prevented
-     * (default: `false`)
-     */
-    disableOutsideScroll?: boolean;
-
-    /**
-     * Whether the `Popover` should render in a `Portal`
-     * (default: `true`)
-     */
-    portalled?: boolean;
   }
 >;
 
@@ -222,106 +332,55 @@ type PopoverContentImplPrimitive = Polymorphic.ForwardRefComponent<
 
 const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
   const {
-    trapFocus = true,
+    trapFocus,
     onOpenAutoFocus,
     onCloseAutoFocus,
-    disableOutsidePointerEvents = false,
+    disableOutsidePointerEvents,
     onEscapeKeyDown,
     onPointerDownOutside,
     onFocusOutside,
     onInteractOutside,
-    disableOutsideScroll = false,
-    portalled = true,
     ...contentProps
   } = props;
   const context = usePopoverContext(CONTENT_NAME);
-  const isPointerDownOutsideRef = React.useRef(false);
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, contentRef);
-
-  const PortalWrapper = portalled ? Portal : React.Fragment;
-  const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
 
   // Make sure the whole tree has focus guards as our `Popover` may be
   // the last element in the DOM (beacuse of the `Portal`)
   useFocusGuards();
 
-  // Hide everything from ARIA except the content
-  React.useEffect(() => {
-    const content = contentRef.current;
-    if (content) return hideOthers(content);
-  }, []);
-
   return (
-    <PortalWrapper>
-      <ScrollLockWrapper>
-        <FocusScope
-          as={Slot}
-          // we make sure we're not trapping once it's been closed
-          // (closed !== unmounted when animating out)
-          trapped={trapFocus && context.open}
-          onMountAutoFocus={onOpenAutoFocus}
-          onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
-            const isPointerOutside = isPointerDownOutsideRef.current;
-            const isAllowedPointerOutside = isPointerOutside && !disableOutsidePointerEvents;
-            event.preventDefault();
-            if (!isAllowedPointerOutside) context.triggerRef.current?.focus();
-          })}
-        >
-          <DismissableLayer
-            as={Slot}
-            disableOutsidePointerEvents={disableOutsidePointerEvents}
-            onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
-              isPointerDownOutsideRef.current = false;
-            })}
-            onPointerDownOutside={composeEventHandlers(
-              onPointerDownOutside,
-              (event) => {
-                const originalEvent = event.detail.originalEvent as MouseEvent;
-                const isLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === false;
-                isPointerDownOutsideRef.current = isLeftClick;
-
-                const targetIsTrigger = context.triggerRef.current?.contains(
-                  event.target as HTMLElement
-                );
-                // prevent dismissing when clicking the trigger
-                // as it's already setup to close, otherwise it would close and immediately open.
-                if (targetIsTrigger) event.preventDefault();
-              },
-              { checkForDefaultPrevented: false }
-            )}
-            onFocusOutside={composeEventHandlers(
-              onFocusOutside,
-              (event) => {
-                // When focus is trapped, a focusout event may still happen.
-                // We make sure we don't trigger our `onDismiss` in such case.
-                if (trapFocus) event.preventDefault();
-              },
-              { checkForDefaultPrevented: false }
-            )}
-            onInteractOutside={onInteractOutside}
-            onDismiss={() => context.onOpenChange(false)}
-          >
-            <PopperPrimitive.Content
-              role="dialog"
-              aria-modal
-              id={context.contentId}
-              {...contentProps}
-              ref={composedRefs}
-              style={{
-                ...contentProps.style,
-                // re-namespace exposed content custom property
-                ['--radix-popover-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
-              }}
-            />
-          </DismissableLayer>
-        </FocusScope>
-      </ScrollLockWrapper>
-    </PortalWrapper>
+    <FocusScope
+      as={Slot}
+      loop
+      trapped={trapFocus}
+      onMountAutoFocus={onOpenAutoFocus}
+      onUnmountAutoFocus={onCloseAutoFocus}
+    >
+      <DismissableLayer
+        as={Slot}
+        disableOutsidePointerEvents={disableOutsidePointerEvents}
+        onInteractOutside={onInteractOutside}
+        onEscapeKeyDown={onEscapeKeyDown}
+        onPointerDownOutside={onPointerDownOutside}
+        onFocusOutside={onFocusOutside}
+        onDismiss={() => context.onOpenChange(false)}
+      >
+        <PopperPrimitive.Content
+          data-state={getState(context.open)}
+          role="dialog"
+          id={context.contentId}
+          {...contentProps}
+          ref={forwardedRef}
+          style={{
+            ...contentProps.style,
+            // re-namespace exposed content custom property
+            ['--radix-popover-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
+          }}
+        />
+      </DismissableLayer>
+    </FocusScope>
   );
 }) as PopoverContentImplPrimitive;
-
-PopoverContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverClose
@@ -357,6 +416,10 @@ PopoverClose.displayName = CLOSE_NAME;
 const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'PopoverArrow' });
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function getState(open: boolean) {
+  return open ? 'open' : 'closed';
+}
 
 const Root = Popover;
 const Anchor = PopoverAnchor;

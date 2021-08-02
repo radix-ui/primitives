@@ -30,6 +30,45 @@ export const Styled = () => {
   );
 };
 
+export const Modality = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '110vh' }}
+    >
+      <div style={{ display: 'grid', gridGap: 50 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+          <h1>Non modal (default)</h1>
+          <Popover>
+            <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+            <PopoverContent className={contentClass} sideOffset={5}>
+              <PopoverClose className={closeClass}>close</PopoverClose>
+              <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
+            </PopoverContent>
+          </Popover>
+          <textarea
+            style={{ width: 500, height: 100, marginTop: 10 }}
+            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+          />
+        </div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+          <h1>Modal</h1>
+          <Popover modal>
+            <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+            <PopoverContent className={contentClass} sideOffset={5}>
+              <PopoverClose className={closeClass}>close</PopoverClose>
+              <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
+            </PopoverContent>
+          </Popover>
+          <textarea
+            style={{ width: 500, height: 100, marginTop: 10 }}
+            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const Controlled = () => {
   const [open, setOpen] = React.useState(false);
   return (
@@ -173,21 +212,6 @@ export const CustomAnchor = () => (
   </Popover>
 );
 
-export const NonModal = () => {
-  return (
-    <>
-      <Popover>
-        <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
-        <PopoverContent className={contentClass} sideOffset={5} trapFocus={false}>
-          <PopoverClose className={closeClass}>close</PopoverClose>
-          <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
-        </PopoverContent>
-      </Popover>
-      <input style={{ marginLeft: 10 }} />
-    </>
-  );
-};
-
 export const WithSlottedTrigger = () => {
   return (
     <Popover>
@@ -222,7 +246,11 @@ export const Chromatic = () => (
     <h2>Open</h2>
     <Popover defaultOpen>
       <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
-      <PopoverContent className={contentClass} sideOffset={5}>
+      <PopoverContent
+        className={contentClass}
+        sideOffset={5}
+        onFocusOutside={(event) => event.preventDefault()}
+      >
         <PopoverClose className={closeClass}>close</PopoverClose>
         <PopoverArrow className={arrowClass} width={20} height={10} />
       </PopoverContent>
@@ -230,7 +258,11 @@ export const Chromatic = () => (
 
     <h2 style={{ marginTop: 100 }}>Open with reordered parts</h2>
     <Popover defaultOpen>
-      <PopoverContent className={contentClass} sideOffset={5}>
+      <PopoverContent
+        className={contentClass}
+        sideOffset={5}
+        onFocusOutside={(event) => event.preventDefault()}
+      >
         <PopoverClose className={closeClass}>close</PopoverClose>
         <PopoverArrow className={arrowClass} width={20} height={10} />
       </PopoverContent>
@@ -291,7 +323,7 @@ export const Chromatic = () => (
       <PopoverAnchor style={{ padding: 20, background: 'gainsboro' }}>
         <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
       </PopoverAnchor>
-      <PopoverContent className={contentClass}>
+      <PopoverContent className={contentClass} onFocusOutside={(event) => event.preventDefault()}>
         <PopoverClose className={closeClass}>close</PopoverClose>
         <PopoverArrow className={arrowClass} width={20} height={10} />
       </PopoverContent>

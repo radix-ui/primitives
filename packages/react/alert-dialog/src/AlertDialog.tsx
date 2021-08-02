@@ -14,8 +14,10 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 const ROOT_NAME = 'AlertDialog';
 
-const AlertDialog: React.FC<React.ComponentProps<typeof DialogPrimitive.Root>> = (props) => (
-  <DialogPrimitive.Root {...props} />
+type AlertDialogProps = Omit<React.ComponentProps<typeof DialogPrimitive.Root>, 'modal'>;
+
+const AlertDialog: React.FC<AlertDialogProps> = (props) => (
+  <DialogPrimitive.Root {...props} modal={true} />
 );
 
 AlertDialog.displayName = ROOT_NAME;
@@ -35,9 +37,14 @@ const [
   useAlertDialogContentContext,
 ] = createContext<AlertDialogContentContextValue>(CONTENT_NAME);
 
+type AlertDialogContentProps = Omit<
+  Polymorphic.OwnProps<typeof DialogPrimitive.Content>,
+  'onPointerDownOutside'
+>;
+
 type AlertDialogContentPrimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof DialogPrimitive.Content>,
-  Polymorphic.OwnProps<typeof DialogPrimitive.Content>
+  AlertDialogContentProps
 >;
 
 const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
@@ -62,6 +69,7 @@ const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
             event.preventDefault();
             cancelRef.current?.focus({ preventScroll: true });
           })}
+          onPointerDownOutside={(event) => event.preventDefault()}
         >
           {/**
            * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`

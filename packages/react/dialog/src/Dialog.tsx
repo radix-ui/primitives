@@ -29,6 +29,8 @@ type DialogContextValue = {
   descriptionId: string;
   open: boolean;
   onOpenChange(open: boolean): void;
+  onOpenToggle(): void;
+  modal: boolean;
 };
 
 const [DialogProvider, useDialogContext] = createContext<DialogContextValue>(DIALOG_NAME);
@@ -37,10 +39,11 @@ type DialogOwnProps = {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
+  modal?: boolean;
 };
 
 const Dialog: React.FC<DialogOwnProps> = (props) => {
-  const { children, open: openProp, defaultOpen, onOpenChange } = props;
+  const { children, open: openProp, defaultOpen, onOpenChange, modal = true } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -56,6 +59,8 @@ const Dialog: React.FC<DialogOwnProps> = (props) => {
       descriptionId={useId()}
       open={open}
       onOpenChange={setOpen}
+      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+      modal={modal}
     >
       {children}
     </DialogProvider>
@@ -91,7 +96,7 @@ const DialogTrigger = React.forwardRef((props, forwardedRef) => {
       {...triggerProps}
       as={as}
       ref={composedTriggerRef}
-      onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(true))}
+      onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
     />
   );
 }) as DialogTriggerPrimitive;
@@ -123,12 +128,14 @@ type DialogOverlayPrimitive = Polymorphic.ForwardRefComponent<
 const DialogOverlay = React.forwardRef((props, forwardedRef) => {
   const { forceMount, ...overlayProps } = props;
   const context = useDialogContext(OVERLAY_NAME);
-  return (
+  return context.modal ? (
     <Presence present={forceMount || context.open}>
-      <DialogOverlayImpl data-state={getState(context.open)} {...overlayProps} ref={forwardedRef} />
+      <DialogOverlayImpl {...overlayProps} ref={forwardedRef} />
     </Presence>
-  );
+  ) : null;
 }) as DialogOverlayPrimitive;
+
+DialogOverlay.displayName = OVERLAY_NAME;
 
 type DialogOverlayImplOwnProps = Polymorphic.OwnProps<typeof Primitive>;
 type DialogOverlayImplPrimitive = Polymorphic.ForwardRefComponent<
@@ -137,14 +144,13 @@ type DialogOverlayImplPrimitive = Polymorphic.ForwardRefComponent<
 >;
 
 const DialogOverlayImpl = React.forwardRef((props, forwardedRef) => {
+  const context = useDialogContext(OVERLAY_NAME);
   return (
     <Portal>
-      <Primitive {...props} ref={forwardedRef} />
+      <Primitive data-state={getState(context.open)} {...props} ref={forwardedRef} />
     </Portal>
   );
 }) as DialogOverlayImplPrimitive;
-
-DialogOverlay.displayName = OVERLAY_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogContent
@@ -153,7 +159,7 @@ DialogOverlay.displayName = OVERLAY_NAME;
 const CONTENT_NAME = 'DialogContent';
 
 type DialogContentOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof DialogContentImpl>,
+  Polymorphic.OwnProps<typeof DialogContentModal | typeof DialogContentNonModal>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -164,7 +170,7 @@ type DialogContentOwnProps = Polymorphic.Merge<
 >;
 
 type DialogContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof DialogContentImpl>,
+  Polymorphic.IntrinsicElement<typeof DialogContentModal | typeof DialogContentNonModal>,
   DialogContentOwnProps
 >;
 
@@ -173,19 +179,126 @@ const DialogContent = React.forwardRef((props, forwardedRef) => {
   const context = useDialogContext(CONTENT_NAME);
   return (
     <Presence present={forceMount || context.open}>
-      <DialogContentImpl data-state={getState(context.open)} {...contentProps} ref={forwardedRef} />
+      {context.modal ? (
+        <DialogContentModal {...contentProps} ref={forwardedRef} />
+      ) : (
+        <DialogContentNonModal {...contentProps} ref={forwardedRef} />
+      )}
     </Presence>
   );
 }) as DialogContentPrimitive;
 
+DialogContent.displayName = CONTENT_NAME;
+
+type DialogContentTypeOwnProps = Omit<
+  Polymorphic.OwnProps<typeof DialogContentImpl>,
+  'trapFocus' | 'disableOutsidePointerEvents'
+>;
+
+type DialogContentTypePrimitive = Polymorphic.ForwardRefComponent<
+  Polymorphic.IntrinsicElement<typeof DialogContentImpl>,
+  DialogContentTypeOwnProps
+>;
+
+const DialogContentModal = React.forwardRef((props, forwardedRef) => {
+  const context = useDialogContext(CONTENT_NAME);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
+
+  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+  React.useEffect(() => {
+    const content = contentRef.current;
+    if (content) return hideOthers(content);
+  }, []);
+
+  return (
+    <Portal>
+      <RemoveScroll>
+        <DialogContentImpl
+          {...props}
+          ref={composedRefs}
+          // we make sure focus isn't trapped once `DialogContent` has been closed
+          // (closed !== unmounted when animating out)
+          trapFocus={context.open}
+          disableOutsidePointerEvents
+          onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+            event.preventDefault();
+            context.triggerRef.current?.focus();
+          })}
+          onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
+            const originalEvent = event.detail.originalEvent;
+            const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+            const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+
+            // If the event is a right-click, we shouldn't close because
+            // it is effectively as if we right-clicked the `Overlay`.
+            if (isRightClick) event.preventDefault();
+          })}
+          // When focus is trapped, a `focusout` event may still happen.
+          // We make sure we don't trigger our `onDismiss` in such case.
+          onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
+            event.preventDefault()
+          )}
+        />
+      </RemoveScroll>
+    </Portal>
+  );
+}) as DialogContentTypePrimitive;
+
+const DialogContentNonModal = React.forwardRef((props, forwardedRef) => {
+  const context = useDialogContext(CONTENT_NAME);
+  const hasInteractedOutsideRef = React.useRef(false);
+
+  return (
+    <Portal>
+      <DialogContentImpl
+        {...props}
+        ref={forwardedRef}
+        trapFocus={false}
+        disableOutsidePointerEvents={false}
+        onCloseAutoFocus={(event) => {
+          props.onCloseAutoFocus?.(event);
+
+          if (!event.defaultPrevented) {
+            if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
+            // Always prevent auto focus because we either focus manually or want user agent focus
+            event.preventDefault();
+          }
+
+          hasInteractedOutsideRef.current = false;
+        }}
+        onInteractOutside={(event) => {
+          props.onInteractOutside?.(event);
+
+          if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
+
+          // Prevent dismissing when clicking the trigger.
+          // As the trigger is already setup to close, without doing so would
+          // cause it to close and immediately open.
+          //
+          // We use `onInteractOutside` as some browsers also
+          // focus on pointer down, creating the same issue.
+          const target = event.target as HTMLElement;
+          const targetIsTrigger = context.triggerRef.current?.contains(target);
+          if (targetIsTrigger) event.preventDefault();
+        }}
+      />
+    </Portal>
+  );
+}) as DialogContentTypePrimitive;
+
 type FocusScopeOwnProps = Polymorphic.OwnProps<typeof FocusScope>;
 
 type DialogContentImplOwnProps = Polymorphic.Merge<
-  Omit<
-    Polymorphic.OwnProps<typeof DismissableLayer>,
-    'disableOutsidePointerEvents' | 'onFocusOutside' | 'onInteractOutside' | 'onDismiss'
-  >,
+  Omit<Polymorphic.OwnProps<typeof DismissableLayer>, 'onDismiss'>,
   {
+    /**
+     * When `true`, focus cannot escape the `Content` via keyboard,
+     * pointer, or a programmatic focus.
+     * @defaultValue false
+     */
+    trapFocus?: FocusScopeOwnProps['trapped'];
+
     /**
      * Event handler called when auto-focusing on open.
      * Can be prevented.
@@ -200,7 +313,7 @@ type DialogContentImplOwnProps = Polymorphic.Merge<
   }
 >;
 
-type DialogContentImplPrimitive = Polymorphic.ForwardRefComponent<
+type DialogContentImplPrimimitive = Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof DismissableLayer>,
   DialogContentImplOwnProps
 >;
@@ -210,10 +323,9 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     'aria-describedby': ariaDescribedBy,
+    trapFocus,
     onOpenAutoFocus,
     onCloseAutoFocus,
-    onEscapeKeyDown,
-    onPointerDownOutside,
     ...contentProps
   } = props;
   const context = useDialogContext(CONTENT_NAME);
@@ -224,65 +336,34 @@ const DialogContentImpl = React.forwardRef((props, forwardedRef) => {
   // the last element in the DOM (beacuse of the `Portal`)
   useFocusGuards();
 
-  // Hide everything from ARIA except the content
-  React.useEffect(() => {
-    const content = contentRef.current;
-    if (content) return hideOthers(content);
-  }, []);
-
   return (
     <>
-      <Portal>
-        <RemoveScroll>
-          <FocusScope
-            as={Slot}
-            // we make sure we're not trapping once it's been closed
-            // (closed !== unmounted when animating out)
-            trapped={context.open}
-            onMountAutoFocus={onOpenAutoFocus}
-            onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
-              event.preventDefault();
-              context.triggerRef.current?.focus();
-            })}
-          >
-            <DismissableLayer
-              role="dialog"
-              id={context.contentId}
-              aria-modal
-              aria-describedby={ariaDescribedBy || context.descriptionId}
-              // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
-              // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
-              // `DialogTitle`
-              aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || context.titleId}
-              aria-label={ariaLabel || undefined}
-              {...contentProps}
-              ref={composedRefs}
-              disableOutsidePointerEvents
-              onEscapeKeyDown={onEscapeKeyDown}
-              onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
-                const originalEvent = event.detail.originalEvent as MouseEvent;
-                const isRightClick =
-                  originalEvent.button === 2 ||
-                  (originalEvent.button === 0 && originalEvent.ctrlKey === true);
-
-                // If the event is a right-click, we shouldn't close because
-                // it is effectively as if we right-clicked the `Overlay`.
-                if (isRightClick) event.preventDefault();
-              })}
-              // When focus is trapped, a focusout event may still happen.
-              // We make sure we don't trigger our `onDismiss` in such case.
-              onFocusOutside={(event) => event.preventDefault()}
-              onDismiss={() => context.onOpenChange(false)}
-            />
-          </FocusScope>
-        </RemoveScroll>
-      </Portal>
+      <FocusScope
+        as={Slot}
+        loop
+        trapped={trapFocus}
+        onMountAutoFocus={onOpenAutoFocus}
+        onUnmountAutoFocus={onCloseAutoFocus}
+      >
+        <DismissableLayer
+          role="dialog"
+          id={context.contentId}
+          aria-describedby={ariaDescribedBy || context.descriptionId}
+          // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
+          // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
+          // `DialogTitle`
+          aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || context.titleId}
+          aria-label={ariaLabel || undefined}
+          data-state={getState(context.open)}
+          {...contentProps}
+          ref={composedRefs}
+          onDismiss={() => context.onOpenChange(false)}
+        />
+      </FocusScope>
       {process.env.NODE_ENV === 'development' && <LabelWarning contentRef={contentRef} />}
     </>
   );
-}) as DialogContentImplPrimitive;
-
-DialogContent.displayName = CONTENT_NAME;
+}) as DialogContentImplPrimimitive;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogTitle
