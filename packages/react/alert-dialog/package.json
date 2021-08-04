@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-alert-dialog",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
