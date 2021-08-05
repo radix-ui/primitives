@@ -16,9 +16,10 @@ The easiest way to track changes before raising your PR is to run `yarn version 
 
 ### Publishing releases
 
-1. Ensure you have latest `main`
-2. Run `yarn publish`
-3. Commit the resulting changes directly to `main` (you'll need to temporarily disable branch protection)
+1. Checkout latest `main`
+2. Run `yarn npm login` and supply your credentials (ensure you have access to the org scope for publishing)
+3. Run `yarn publish`
+4. Commit the resulting changes directly to `main` (you'll need to temporarily disable branch protection)
 
 ## Updating documentation
 
