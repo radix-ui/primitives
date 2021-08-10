@@ -15,6 +15,7 @@ import {
   DropdownMenuArrow,
 } from './DropdownMenu';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import * as Dialog from '@radix-ui/react-dialog';
 import { css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 import { classes, TickIcon } from '../../menu/src/Menu.stories';
@@ -311,6 +312,196 @@ export const WithLabels = () => (
     </DropdownMenu>
   </div>
 );
+
+export const WithAsDialogTrigger = () => {
+  const dropdownTriggerRef = React.useRef<React.ElementRef<typeof DropdownMenuTrigger>>(null);
+  const isDialogOpenRef = React.useRef(false);
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+      }}
+    >
+      <h1>Modal</h1>
+      <DropdownMenu>
+        <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef}>
+          Open
+        </DropdownMenuTrigger>
+        <Dialog.Root>
+          <DropdownMenuContent className={contentClass} sideOffset={5}>
+            <Dialog.Trigger className={itemClass} as={DropdownMenuItem}>
+              Delete
+            </Dialog.Trigger>
+            <DropdownMenuItem className={itemClass}>Test</DropdownMenuItem>
+            <DropdownMenuArrow />
+          </DropdownMenuContent>
+          <Dialog.Content
+            className={dialogClass}
+            onCloseAutoFocus={(event) => {
+              dropdownTriggerRef.current?.focus();
+              event.preventDefault();
+            }}
+          >
+            <Dialog.Title>Are you sure?</Dialog.Title>
+            <Dialog.Close>Close</Dialog.Close>`
+          </Dialog.Content>
+        </Dialog.Root>
+      </DropdownMenu>
+
+      <h1>Non-modal</h1>
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef}>
+          Open
+        </DropdownMenuTrigger>
+        <Dialog.Root modal={false}>
+          <DropdownMenuContent
+            className={contentClass}
+            sideOffset={5}
+            onCloseAutoFocus={(event) => {
+              // prevent focusing dropdown trigger when it closes from a dialog trigger
+              if (isDialogOpenRef.current) event.preventDefault();
+              isDialogOpenRef.current = false;
+            }}
+          >
+            <Dialog.Trigger
+              className={itemClass}
+              as={DropdownMenuItem}
+              onSelect={() => (isDialogOpenRef.current = true)}
+            >
+              Delete
+            </Dialog.Trigger>
+            <DropdownMenuItem className={itemClass}>Test</DropdownMenuItem>
+            <DropdownMenuArrow />
+          </DropdownMenuContent>
+          <Dialog.Content
+            className={dialogClass}
+            onCloseAutoFocus={(event) => {
+              dropdownTriggerRef.current?.focus();
+              event.preventDefault();
+            }}
+          >
+            <Dialog.Title>Are you sure?</Dialog.Title>
+            <Dialog.Close>Close</Dialog.Close>`
+          </Dialog.Content>
+        </Dialog.Root>
+      </DropdownMenu>
+    </div>
+  );
+};
+
+export const MultipleDialogsWithoutAs = () => {
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [switchAccountsOpen, setSwitchAccountsOpen] = React.useState(false);
+  const [deleteOpen2, setDeleteOpen2] = React.useState(false);
+  const [switchAccountsOpen2, setSwitchAccountsOpen2] = React.useState(false);
+  const dropdownTriggerRef = React.useRef<React.ElementRef<typeof DropdownMenuTrigger>>(null);
+  const dropdownTriggerRef2 = React.useRef<React.ElementRef<typeof DropdownMenuTrigger>>(null);
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+      }}
+    >
+      <h1>Modal</h1>
+      <DropdownMenu>
+        <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef}>
+          Open
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent className={contentClass} sideOffset={5}>
+          <DropdownMenuItem className={itemClass} onSelect={() => setSwitchAccountsOpen(true)}>
+            Switch Accounts
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => setDeleteOpen(true)}>
+            Delete
+          </DropdownMenuItem>
+          <DropdownMenuArrow />
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Dialog.Root open={switchAccountsOpen} onOpenChange={setSwitchAccountsOpen}>
+        <Dialog.Content
+          className={dialogClass}
+          onCloseAutoFocus={(event) => {
+            dropdownTriggerRef.current?.focus();
+            event.preventDefault();
+          }}
+        >
+          <Dialog.Title>Switch accounts</Dialog.Title>
+          <Dialog.Close>Close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>
+      <Dialog.Root open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <Dialog.Content
+          className={dialogClass}
+          onCloseAutoFocus={(event) => {
+            dropdownTriggerRef.current?.focus();
+            event.preventDefault();
+          }}
+        >
+          <Dialog.Title>Are you sure?</Dialog.Title>
+          <Dialog.Close>Close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>
+
+      <h1>Non-modal</h1>
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef2}>
+          Open
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+          className={contentClass}
+          sideOffset={5}
+          onCloseAutoFocus={(event) => {
+            // prevent focusing dropdown trigger when it closes from a dialog trigger
+            if (deleteOpen2 || switchAccountsOpen2) event.preventDefault();
+          }}
+        >
+          <DropdownMenuItem className={itemClass} onSelect={() => setSwitchAccountsOpen2(true)}>
+            Switch Accounts
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} onSelect={() => setDeleteOpen2(true)}>
+            Delete
+          </DropdownMenuItem>
+          <DropdownMenuArrow />
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog.Root modal={false} open={switchAccountsOpen2} onOpenChange={setSwitchAccountsOpen2}>
+        <Dialog.Content
+          className={dialogClass}
+          onCloseAutoFocus={(event) => {
+            dropdownTriggerRef2.current?.focus();
+            event.preventDefault();
+          }}
+        >
+          <Dialog.Title>Switch accounts</Dialog.Title>
+          <Dialog.Close>Close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>
+      <Dialog.Root modal={false} open={deleteOpen2} onOpenChange={setDeleteOpen2}>
+        <Dialog.Content
+          className={dialogClass}
+          onCloseAutoFocus={(event) => {
+            dropdownTriggerRef2.current?.focus();
+            event.preventDefault();
+          }}
+        >
+          <Dialog.Title>Are you sure?</Dialog.Title>
+          <Dialog.Close>Close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>
+    </div>
+  );
+};
 
 export const CheckboxItems = () => {
   const checkboxItems = [
@@ -1104,6 +1295,16 @@ const gridClass = css({
   rowGap: 100,
   padding: 100,
   border: '1px solid black',
+});
+
+const dialogClass = css({
+  position: 'fixed',
+  background: 'white',
+  border: '1px solid black',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  padding: 30,
 });
 
 const chromaticTriggerClass = css({
