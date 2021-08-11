@@ -33,6 +33,7 @@ function useBodyPointerEvents({ disabled }: { disabled: boolean }) {
       }
 
       function resetPointerEvents() {
+        changeCount--;
         if (changeCount === 0) {
           document.body.style.pointerEvents = originalBodyPointerEvents;
         }
@@ -42,7 +43,6 @@ function useBodyPointerEvents({ disabled }: { disabled: boolean }) {
       changeCount++;
 
       return () => {
-        changeCount--;
         if (isTouchOrPenPressedRef.current) {
           /**
            * We force pointer-events to remain disabled until `click` fires on touch devices
