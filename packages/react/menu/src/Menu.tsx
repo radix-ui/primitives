@@ -677,8 +677,12 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
         if (disabled || (isTypingAhead && event.key === ' ')) return;
         if (SELECTION_KEYS.includes(event.key)) {
           event.currentTarget.click();
-          // prevent default browser behaviour for selection keys, they should trigger a
-          // selection only. for example, stops page from scrolling when hitting space key.
+          /**
+           * We prevent default browser behaviour for selection keys as they should trigger
+           * a selection only:
+           * - prevents space from scrolling the page.
+           * - if keydown causes focus to move, prevents keydown from firing on the new target.
+           */
           event.preventDefault();
         }
       })}

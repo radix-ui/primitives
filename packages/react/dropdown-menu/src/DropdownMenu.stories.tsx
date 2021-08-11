@@ -315,7 +315,22 @@ export const WithLabels = () => (
 
 export const WithAsDialogTrigger = () => {
   const dropdownTriggerRef = React.useRef<React.ElementRef<typeof DropdownMenuTrigger>>(null);
+  const dropdownTriggerRef2 = React.useRef<React.ElementRef<typeof DropdownMenuTrigger>>(null);
   const isDialogOpenRef = React.useRef(false);
+
+  function handleModalDialogClose(event: Event) {
+    // focus dropdown trigger for accessibility so user doesn't lose their place in the document
+    dropdownTriggerRef.current?.focus();
+    event.preventDefault();
+  }
+
+  function handleNonModalDialogClose(event: Event) {
+    // focus dropdown trigger for accessibility so user doesn't lose their place in the document
+    dropdownTriggerRef2.current?.focus();
+    event.preventDefault();
+    isDialogOpenRef.current = false;
+  }
+
   return (
     <div
       style={{
@@ -327,11 +342,12 @@ export const WithAsDialogTrigger = () => {
       }}
     >
       <h1>Modal</h1>
-      <DropdownMenu>
-        <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef}>
-          Open
-        </DropdownMenuTrigger>
-        <Dialog.Root>
+      <Dialog.Root>
+        <DropdownMenu>
+          <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef}>
+            Open
+          </DropdownMenuTrigger>
+
           <DropdownMenuContent className={contentClass} sideOffset={5}>
             <Dialog.Trigger className={itemClass} as={DropdownMenuItem}>
               Delete
@@ -339,32 +355,27 @@ export const WithAsDialogTrigger = () => {
             <DropdownMenuItem className={itemClass}>Test</DropdownMenuItem>
             <DropdownMenuArrow />
           </DropdownMenuContent>
-          <Dialog.Content
-            className={dialogClass}
-            onCloseAutoFocus={(event) => {
-              dropdownTriggerRef.current?.focus();
-              event.preventDefault();
-            }}
-          >
-            <Dialog.Title>Are you sure?</Dialog.Title>
-            <Dialog.Close>Close</Dialog.Close>`
-          </Dialog.Content>
-        </Dialog.Root>
-      </DropdownMenu>
+        </DropdownMenu>
+
+        <Dialog.Content className={dialogClass} onCloseAutoFocus={handleModalDialogClose}>
+          <Dialog.Title>Are you sure?</Dialog.Title>
+          <Dialog.Close>Close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>
 
       <h1>Non-modal</h1>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef}>
-          Open
-        </DropdownMenuTrigger>
-        <Dialog.Root modal={false}>
+      <Dialog.Root modal={false}>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef2}>
+            Open
+          </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className={contentClass}
             sideOffset={5}
             onCloseAutoFocus={(event) => {
               // prevent focusing dropdown trigger when it closes from a dialog trigger
               if (isDialogOpenRef.current) event.preventDefault();
-              isDialogOpenRef.current = false;
             }}
           >
             <Dialog.Trigger
@@ -377,29 +388,25 @@ export const WithAsDialogTrigger = () => {
             <DropdownMenuItem className={itemClass}>Test</DropdownMenuItem>
             <DropdownMenuArrow />
           </DropdownMenuContent>
-          <Dialog.Content
-            className={dialogClass}
-            onCloseAutoFocus={(event) => {
-              dropdownTriggerRef.current?.focus();
-              event.preventDefault();
-            }}
-          >
-            <Dialog.Title>Are you sure?</Dialog.Title>
-            <Dialog.Close>Close</Dialog.Close>`
-          </Dialog.Content>
-        </Dialog.Root>
-      </DropdownMenu>
+        </DropdownMenu>
+
+        <Dialog.Content className={dialogClass} onCloseAutoFocus={handleNonModalDialogClose}>
+          <Dialog.Title>Are you sure?</Dialog.Title>
+          <Dialog.Close>Close</Dialog.Close>`
+        </Dialog.Content>
+      </Dialog.Root>
     </div>
   );
 };
 
-export const MultipleDialogsWithoutAs = () => {
+export const MultipleDialogsWithAs = () => {
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [switchAccountsOpen, setSwitchAccountsOpen] = React.useState(false);
   const [deleteOpen2, setDeleteOpen2] = React.useState(false);
   const [switchAccountsOpen2, setSwitchAccountsOpen2] = React.useState(false);
   const dropdownTriggerRef = React.useRef<React.ElementRef<typeof DropdownMenuTrigger>>(null);
   const dropdownTriggerRef2 = React.useRef<React.ElementRef<typeof DropdownMenuTrigger>>(null);
+
   return (
     <div
       style={{
@@ -411,91 +418,103 @@ export const MultipleDialogsWithoutAs = () => {
       }}
     >
       <h1>Modal</h1>
-      <DropdownMenu>
-        <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef}>
-          Open
-        </DropdownMenuTrigger>
+      <Dialog.Root
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteOpen(false);
+            setSwitchAccountsOpen(false);
+          }
+        }}
+      >
+        <DropdownMenu>
+          <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef}>
+            Open
+          </DropdownMenuTrigger>
 
-        <DropdownMenuContent className={contentClass} sideOffset={5}>
-          <DropdownMenuItem className={itemClass} onSelect={() => setSwitchAccountsOpen(true)}>
-            Switch Accounts
-          </DropdownMenuItem>
-          <DropdownMenuItem className={itemClass} onSelect={() => setDeleteOpen(true)}>
-            Delete
-          </DropdownMenuItem>
-          <DropdownMenuArrow />
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <Dialog.Root open={switchAccountsOpen} onOpenChange={setSwitchAccountsOpen}>
+          <DropdownMenuContent className={contentClass} sideOffset={5}>
+            <Dialog.Trigger
+              as={DropdownMenuItem}
+              className={itemClass}
+              onSelect={() => setSwitchAccountsOpen(true)}
+            >
+              Switch Accounts
+            </Dialog.Trigger>
+            <Dialog.Trigger
+              as={DropdownMenuItem}
+              className={itemClass}
+              onSelect={() => setDeleteOpen(true)}
+            >
+              Delete
+            </Dialog.Trigger>
+            <DropdownMenuArrow />
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <Dialog.Content
           className={dialogClass}
           onCloseAutoFocus={(event) => {
+            // focus dropdown trigger for accessibility so user doesn't lose their place in the document
             dropdownTriggerRef.current?.focus();
             event.preventDefault();
           }}
         >
-          <Dialog.Title>Switch accounts</Dialog.Title>
-          <Dialog.Close>Close</Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Root>
-      <Dialog.Root open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <Dialog.Content
-          className={dialogClass}
-          onCloseAutoFocus={(event) => {
-            dropdownTriggerRef.current?.focus();
-            event.preventDefault();
-          }}
-        >
-          <Dialog.Title>Are you sure?</Dialog.Title>
+          {switchAccountsOpen && <Dialog.Title>Switch accounts</Dialog.Title>}
+          {deleteOpen && <Dialog.Title>Are you sure?</Dialog.Title>}
           <Dialog.Close>Close</Dialog.Close>
         </Dialog.Content>
       </Dialog.Root>
 
       <h1>Non-modal</h1>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef2}>
-          Open
-        </DropdownMenuTrigger>
+      <Dialog.Root
+        modal={false}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteOpen2(false);
+            setSwitchAccountsOpen2(false);
+          }
+        }}
+      >
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger className={triggerClass} ref={dropdownTriggerRef2}>
+            Open
+          </DropdownMenuTrigger>
 
-        <DropdownMenuContent
-          className={contentClass}
-          sideOffset={5}
-          onCloseAutoFocus={(event) => {
-            // prevent focusing dropdown trigger when it closes from a dialog trigger
-            if (deleteOpen2 || switchAccountsOpen2) event.preventDefault();
-          }}
-        >
-          <DropdownMenuItem className={itemClass} onSelect={() => setSwitchAccountsOpen2(true)}>
-            Switch Accounts
-          </DropdownMenuItem>
-          <DropdownMenuItem className={itemClass} onSelect={() => setDeleteOpen2(true)}>
-            Delete
-          </DropdownMenuItem>
-          <DropdownMenuArrow />
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <DropdownMenuContent
+            className={contentClass}
+            sideOffset={5}
+            onCloseAutoFocus={(event) => {
+              // prevent focusing dropdown trigger when it closes from a dialog trigger
+              if (deleteOpen2 || switchAccountsOpen2) event.preventDefault();
+            }}
+          >
+            <Dialog.Trigger
+              as={DropdownMenuItem}
+              className={itemClass}
+              onSelect={() => setSwitchAccountsOpen2(true)}
+            >
+              Switch Accounts
+            </Dialog.Trigger>
+            <Dialog.Trigger
+              as={DropdownMenuItem}
+              className={itemClass}
+              onSelect={() => setDeleteOpen2(true)}
+            >
+              Delete
+            </Dialog.Trigger>
+            <DropdownMenuArrow />
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-      <Dialog.Root modal={false} open={switchAccountsOpen2} onOpenChange={setSwitchAccountsOpen2}>
         <Dialog.Content
           className={dialogClass}
           onCloseAutoFocus={(event) => {
+            // focus dropdown trigger for accessibility so user doesn't lose their place in the document
             dropdownTriggerRef2.current?.focus();
             event.preventDefault();
           }}
         >
-          <Dialog.Title>Switch accounts</Dialog.Title>
-          <Dialog.Close>Close</Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Root>
-      <Dialog.Root modal={false} open={deleteOpen2} onOpenChange={setDeleteOpen2}>
-        <Dialog.Content
-          className={dialogClass}
-          onCloseAutoFocus={(event) => {
-            dropdownTriggerRef2.current?.focus();
-            event.preventDefault();
-          }}
-        >
-          <Dialog.Title>Are you sure?</Dialog.Title>
+          {switchAccountsOpen2 && <Dialog.Title>Switch accounts</Dialog.Title>}
+          {deleteOpen2 && <Dialog.Title>Are you sure?</Dialog.Title>}
           <Dialog.Close>Close</Dialog.Close>
         </Dialog.Content>
       </Dialog.Root>
