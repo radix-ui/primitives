@@ -666,7 +666,10 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       ref={composedRefs}
       disabled={disabled}
       onClick={composeEventHandlers(props.onClick, handleSelect)}
-      onPointerDown={() => (isPointerDownRef.current = true)}
+      onPointerDown={(event) => {
+        props.onPointerDown?.(event);
+        isPointerDownRef.current = true;
+      }}
       onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
         // Pointer down can move to a different menu item which should activate it on pointer up.
         // We dispatch a click for selection to allow composition with click based triggers.

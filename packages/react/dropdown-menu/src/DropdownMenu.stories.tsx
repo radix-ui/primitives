@@ -313,7 +313,7 @@ export const WithLabels = () => (
   </div>
 );
 
-export const WithAsDialogTrigger = () => {
+export const SingleItemAsDialogTrigger = () => {
   const dropdownTriggerRef = React.useRef<React.ElementRef<typeof DropdownMenuTrigger>>(null);
   const dropdownTriggerRef2 = React.useRef<React.ElementRef<typeof DropdownMenuTrigger>>(null);
   const isDialogOpenRef = React.useRef(false);
@@ -399,7 +399,7 @@ export const WithAsDialogTrigger = () => {
   );
 };
 
-export const MultipleDialogsWithAs = () => {
+export const MultipleItemsAsDialogTriggers = () => {
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [switchAccountsOpen, setSwitchAccountsOpen] = React.useState(false);
   const [deleteOpen2, setDeleteOpen2] = React.useState(false);
