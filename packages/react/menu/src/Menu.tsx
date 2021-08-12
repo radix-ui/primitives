@@ -644,6 +644,7 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
   const context = useMenuContext(ITEM_NAME);
   const contentContext = useMenuContentContext(ITEM_NAME);
   const composedRefs = useComposedRefs(forwardedRef, ref);
+  const isPointerDownRef = React.useRef(false);
 
   const handleSelect = () => {
     const menuItem = ref.current;
@@ -651,8 +652,11 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
       menuItem.addEventListener(ITEM_SELECT, (event) => onSelect?.(event), { once: true });
       menuItem.dispatchEvent(itemSelectEvent);
-      if (itemSelectEvent.defaultPrevented) return;
-      context.onRootClose();
+      if (itemSelectEvent.defaultPrevented) {
+        isPointerDownRef.current = false;
+      } else {
+        context.onRootClose();
+      }
     }
   };
 
@@ -661,15 +665,28 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       {...itemProps}
       ref={composedRefs}
       disabled={disabled}
-      // we handle selection on `pointerUp` rather than `click` to match native menus implementation
-      onPointerUp={composeEventHandlers(props.onPointerUp, handleSelect)}
+      onClick={composeEventHandlers(props.onClick, handleSelect)}
+      onPointerDown={(event) => {
+        props.onPointerDown?.(event);
+        isPointerDownRef.current = true;
+      }}
+      onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+        // Pointer down can move to a different menu item which should activate it on pointer up.
+        // We dispatch a click for selection to allow composition with click based triggers.
+        if (!isPointerDownRef.current) event.currentTarget?.click();
+      })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         const isTypingAhead = contentContext.searchRef.current !== '';
         if (disabled || (isTypingAhead && event.key === ' ')) return;
         if (SELECTION_KEYS.includes(event.key)) {
-          // prevent page scroll if using the space key to select an item
-          if (event.key === ' ') event.preventDefault();
-          handleSelect();
+          event.currentTarget.click();
+          /**
+           * We prevent default browser behaviour for selection keys as they should trigger
+           * a selection only:
+           * - prevents space from scrolling the page.
+           * - if keydown causes focus to move, prevents keydown from firing on the new target.
+           */
+          event.preventDefault();
         }
       })}
     />
