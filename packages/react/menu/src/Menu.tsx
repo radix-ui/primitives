@@ -744,7 +744,18 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
           whenTouchOrPen((event) => {
             contentContext.onItemEnter(event);
             if (event.defaultPrevented) return;
-            if (!props.disabled && !context.open) context.onOpenChange(true);
+            if (!props.disabled && !context.open) {
+              context.onOpenChange(true);
+              event.preventDefault();
+              /**
+               * We manually focus because iOS Safari:
+               * - doesn't focus the item if a pointerup mounts DOM that has a click handler.
+               * - doesn't focus `button`s (if someone changes as prop).
+               * Both issues mean our `onFocusOutside` logic wouldn't fire when switching
+               * between separate submenus.
+               */
+              event.currentTarget.focus();
+            }
           })
         )}
         onPointerMove={composeEventHandlers(
