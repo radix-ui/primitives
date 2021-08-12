@@ -672,7 +672,8 @@ const MenuItem = React.forwardRef((props, forwardedRef) => {
       }}
       onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
         // Pointer down can move to a different menu item which should activate it on pointer up.
-        // We dispatch a click for selection to allow composition with click based triggers.
+        // We dispatch a click for selection to allow composition with click based triggers and to
+        // prevent Firefox from getting stuck in text selection mode when the menu closes.
         if (!isPointerDownRef.current) event.currentTarget?.click();
       })}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
