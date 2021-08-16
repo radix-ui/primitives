@@ -739,25 +739,17 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         data-state={getOpenState(context.open)}
         {...props}
         ref={composeRefs(forwardedRef, context.onTriggerChange)}
-        onPointerUp={composeEventHandlers(
-          props.onPointerUp,
-          whenTouchOrPen((event) => {
-            contentContext.onItemEnter(event);
-            if (event.defaultPrevented) return;
-            if (!props.disabled && !context.open) {
-              context.onOpenChange(true);
-              event.preventDefault();
-              /**
-               * We manually focus because iOS Safari:
-               * - doesn't focus the item if a pointerup mounts DOM that has a click handler.
-               * - doesn't focus `button`s (if someone changes as prop).
-               * Both issues mean our `onFocusOutside` logic wouldn't fire when switching
-               * between separate submenus.
-               */
-              event.currentTarget.focus();
-            }
-          })
-        )}
+        onClick={(event) => {
+          props.onClick?.(event);
+          if (event.defaultPrevented) return;
+          if (!props.disabled && !context.open) context.onOpenChange(true);
+          /**
+           * We manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
+           * and we rely heavily on `onFocusOutside` for submenus to close when switching
+           * between separate submenus.
+           */
+          event.currentTarget.focus();
+        }}
         onPointerMove={composeEventHandlers(
           props.onPointerMove,
           whenMouse((event) => {
@@ -1167,10 +1159,6 @@ function isPointerInGraceArea(event: React.PointerEvent, area?: Polygon) {
 
 function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
   return (event) => (event.pointerType === 'mouse' ? handler(event) : undefined);
-}
-
-function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
-  return (event) => (event.pointerType !== 'mouse' ? handler(event) : undefined);
 }
 
 const Root = Menu;
