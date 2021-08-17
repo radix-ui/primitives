@@ -740,14 +740,19 @@ const MenuSubTrigger = React.forwardRef((props, forwardedRef) => {
         data-state={getOpenState(context.open)}
         {...props}
         ref={composeRefs(forwardedRef, context.onTriggerChange)}
-        onPointerUp={composeEventHandlers(
-          props.onPointerUp,
-          whenTouchOrPen((event) => {
-            contentContext.onItemEnter(event);
-            if (event.defaultPrevented) return;
-            if (!props.disabled && !context.open) context.onOpenChange(true);
-          })
-        )}
+        // This is redundant for mouse users but we cannot determine pointer type from
+        // click event and we cannot use pointerup event (see git history for reasons why)
+        onClick={(event) => {
+          props.onClick?.(event);
+          if (props.disabled || event.defaultPrevented) return;
+          /**
+           * We manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
+           * and we rely heavily on `onFocusOutside` for submenus to close when switching
+           * between separate submenus.
+           */
+          event.currentTarget.focus();
+          if (!context.open) context.onOpenChange(true);
+        }}
         onPointerMove={composeEventHandlers(
           props.onPointerMove,
           whenMouse((event) => {
@@ -1157,10 +1162,6 @@ function isPointerInGraceArea(event: React.PointerEvent, area?: Polygon) {
 
 function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
   return (event) => (event.pointerType === 'mouse' ? handler(event) : undefined);
-}
-
-function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
-  return (event) => (event.pointerType !== 'mouse' ? handler(event) : undefined);
 }
 
 const Root = Menu;
