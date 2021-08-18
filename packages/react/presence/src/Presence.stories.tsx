@@ -19,6 +19,7 @@ export const Basic = () => {
 };
 
 export const WithMountAnimation = () => <Animation className={mountAnimationClass} />;
+export const WithUnmountAnimation = () => <Animation className={unmountAnimationClass} />;
 export const WithMultipleMountAnimations = () => (
   <Animation className={multipleMountAnimationsClass} />
 );
@@ -95,6 +96,12 @@ const slideDown = css.keyframes({
 
 const mountAnimationClass = css({
   animation: `${fadeIn} 3s ease-out`,
+});
+
+const unmountAnimationClass = css({
+  '&[data-state="closed"]': {
+    animation: `${fadeOut} 3s ease-in`,
+  },
 });
 
 const multipleMountAnimationsClass = css({

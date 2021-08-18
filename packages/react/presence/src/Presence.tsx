@@ -31,7 +31,7 @@ function usePresence(present: boolean) {
   const [node, setNode] = React.useState<HTMLElement>();
   const stylesRef = React.useRef<CSSStyleDeclaration>({} as any);
   const prevPresentRef = React.useRef(present);
-  const prevAnimationNameRef = React.useRef<string>();
+  const prevAnimationNameRef = React.useRef<string>('none');
   const initialState = present ? 'mounted' : 'unmounted';
   const [state, send] = useStateMachine(initialState, {
     mounted: {
@@ -46,6 +46,11 @@ function usePresence(present: boolean) {
       MOUNT: 'mounted',
     },
   });
+
+  React.useEffect(() => {
+    const currentAnimationName = getAnimationName(stylesRef.current);
+    prevAnimationNameRef.current = state === 'mounted' ? currentAnimationName : 'none';
+  }, [state]);
 
   useLayoutEffect(() => {
     const styles = stylesRef.current;
@@ -96,20 +101,9 @@ function usePresence(present: boolean) {
           send('ANIMATION_END');
         }
       };
-
-      const handleAnimationStart = (event: AnimationEvent) => {
-        if (event.target === node) {
-          // if animation occurred, store its name as the previous animation.
-          prevAnimationNameRef.current = getAnimationName(stylesRef.current);
-        }
-      };
-
-      node.addEventListener('animationstart', handleAnimationStart);
       node.addEventListener('animationcancel', handleAnimationEnd);
       node.addEventListener('animationend', handleAnimationEnd);
-
       return () => {
-        node.removeEventListener('animationstart', handleAnimationStart);
         node.removeEventListener('animationcancel', handleAnimationEnd);
         node.removeEventListener('animationend', handleAnimationEnd);
       };
@@ -119,10 +113,8 @@ function usePresence(present: boolean) {
   return {
     isPresent: ['mounted', 'unmountSuspended'].includes(state),
     ref: React.useCallback((node: HTMLElement) => {
-      if (node) {
-        stylesRef.current = getComputedStyle(node);
-        setNode(node);
-      }
+      if (node) stylesRef.current = getComputedStyle(node);
+      setNode(node);
     }, []),
   };
 }
