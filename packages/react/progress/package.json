@@ -19,7 +19,6 @@
   "dependencies": {
     "@babel/runtime": "^7.13.10",
     "@radix-ui/react-context": "workspace:*",
-    "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*"
   },
   "peerDependencies": {

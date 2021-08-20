@@ -1,26 +1,17 @@
 import * as React from 'react';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
-
-type ExtendedPrimitive<C, As> = Polymorphic.ForwardRefComponent<As, Polymorphic.OwnProps<C>>;
-type DefaultProps<C, As> = { as?: As } & Omit<
-  Partial<React.ComponentProps<ExtendedPrimitive<C, As>>>,
-  'as'
->;
-
-function extendPrimitive<
-  C extends Polymorphic.ForwardRefComponent<any, any>,
-  DefaultAs extends React.ElementType = Polymorphic.IntrinsicElement<C>
->(Comp: C, config: { displayName?: string; defaultProps?: DefaultProps<C, DefaultAs> }) {
+function extendPrimitive<C extends React.ForwardRefExoticComponent<any>>(
+  component: C,
+  config: { displayName?: string; defaultProps?: Partial<React.ComponentProps<C>> }
+) {
+  const Comp = component as any;
   const Extended = React.forwardRef((props, forwardedRef) => {
-    const As = Comp as any;
     const propsWithDefaults = { ...config.defaultProps, ...props };
-    return <As {...propsWithDefaults} ref={forwardedRef} />;
+    return <Comp {...propsWithDefaults} ref={forwardedRef} />;
   });
 
   Extended.displayName = config.displayName || 'Extended' + Comp.displayName;
-  return Extended as ExtendedPrimitive<C, DefaultAs>;
+  return Extended as React.ForwardRefExoticComponent<React.ComponentProps<C>>;
 }
 
 export { extendPrimitive };
-export type { ExtendedPrimitive };

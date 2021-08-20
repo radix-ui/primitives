@@ -8,22 +8,30 @@ export const Styled = () => (
   <>
     <h1>Horizontal</h1>
     <p>The following separator is horizontal and has semantic meaning.</p>
-    <Separator as={StyledRoot} orientation="horizontal" />
+    <Separator asChild orientation="horizontal">
+      <StyledRoot />
+    </Separator>
     <p>
       The following separator is horizontal and is purely decorative. Assistive technology will
       ignore this element.
     </p>
-    <Separator as={StyledRoot} orientation="horizontal" decorative />
+    <Separator asChild orientation="horizontal" decorative>
+      <StyledRoot />
+    </Separator>
 
     <h1>Vertical</h1>
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <p>The following separator is vertical and has semantic meaning.</p>
-      <Separator as={StyledRoot} orientation="vertical" />
+      <Separator asChild orientation="vertical">
+        <StyledRoot />
+      </Separator>
       <p>
         The following separator is vertical and is purely decorative. Assistive technology will
         ignore this element.
       </p>
-      <Separator as={StyledRoot} orientation="vertical" decorative />
+      <Separator asChild orientation="vertical" decorative>
+        <StyledRoot />
+      </Separator>
     </div>
   </>
 );

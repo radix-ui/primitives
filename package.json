@@ -49,26 +49,26 @@
     "@testing-library/react": "^10.4.8",
     "@testing-library/user-event": "^12.6.0",
     "@types/babel__template": "^7",
-    "@types/eslint": "^7",
+    "@types/eslint": "^7.28.0",
     "@types/jest": "^26.0.10",
     "@types/jest-axe": "^3.5.0",
     "@types/react": "^16.9.55",
     "@types/react-dom": "^16.9.9",
     "@types/react-test-renderer": "^16.9.3",
-    "@typescript-eslint/eslint-plugin": "2.x",
-    "@typescript-eslint/parser": "2.x",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "cypress": "^8.0.0",
     "cypress-real-events": "^1.5.0",
-    "eslint": "6.x",
-    "eslint-config-react-app": "^5.2.1",
+    "eslint": "^7.32.0",
+    "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-cypress": "^2.11.3",
     "eslint-plugin-flowtype": "4.x",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-react": "^7.20.6",
-    "eslint-plugin-react-hooks": "2.x",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^4.3.6",
     "jest": "^26.4.0",
     "jest-axe": "^3.5.0",
@@ -131,12 +131,20 @@
       }
     },
     "rules": {
-      "@typescript-eslint/no-unused-vars": [
+      "import/no-anonymous-default-export": [
         1,
         {
-          "vars": "local"
+          "allowObject": true
         }
       ],
+      "react/jsx-pascal-case": [
+        2,
+        {
+          "allowNamespace": true
+        }
+      ],
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off",
       "prefer-const": [
         1,
         {

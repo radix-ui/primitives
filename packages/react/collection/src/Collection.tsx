@@ -41,7 +41,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
 
   const COLLECTION_SLOT_NAME = 'CollectionSlot';
 
-  type SlotProps = React.ComponentProps<typeof Slot>;
+  type SlotProps = React.ComponentPropsWithoutRef<typeof Slot>;
 
   const CollectionSlot = React.forwardRef<CollectionElement, SlotProps>((props, forwardedRef) => {
     const { children } = props;

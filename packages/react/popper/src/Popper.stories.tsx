@@ -37,7 +37,9 @@ export const WithCustomArrow = () => {
         {open && (
           <PopperContent className={contentClass} side="right" sideOffset={5}>
             <button onClick={() => setOpen(false)}>close</button>
-            <PopperArrow as={CustomArrow} width={20} height={10} offset={20} />
+            <PopperArrow asChild offset={20}>
+              <CustomArrow width={20} height={10} />
+            </PopperArrow>
           </PopperContent>
         )}
       </Popper>

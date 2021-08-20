@@ -60,8 +60,8 @@ const ToolbarExample = ({ title, orientation }: any) => (
         Link
       </ToolbarLink>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-      <ToolbarButton className={toolbarToggleButtonClass} as={Toggle}>
-        Toggle
+      <ToolbarButton className={toolbarToggleButtonClass} asChild>
+        <Toggle>Toggle</Toggle>
       </ToolbarButton>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
       <ToolbarToggleGroup type="single" className={toolbarToggleGroupClass}>
@@ -77,8 +77,8 @@ const ToolbarExample = ({ title, orientation }: any) => (
       </ToolbarToggleGroup>
       <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
       <DropdownMenu>
-        <ToolbarButton className={toolbarItemClass} as={DropdownMenuTrigger}>
-          Menu
+        <ToolbarButton className={toolbarItemClass} asChild>
+          <DropdownMenuTrigger>Menu</DropdownMenuTrigger>
         </ToolbarButton>
         <DropdownMenuContent className={dropdownMenuContentClass} sideOffset={5}>
           <DropdownMenuItem className={dropdownMenuItemClass}>Undo</DropdownMenuItem>
