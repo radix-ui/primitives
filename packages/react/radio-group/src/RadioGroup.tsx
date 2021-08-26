@@ -8,7 +8,7 @@ import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus'
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Radio, RadioIndicator } from './Radio';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
@@ -26,13 +26,13 @@ const [RadioGroupProvider, useRadioGroupContext] = createContext<RadioGroupConte
   RADIO_GROUP_NAME
 );
 
-type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
+type RovingFocusGroupProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
 type RadioGroupElement = React.ElementRef<typeof Primitive.div>;
-type RadioGroupProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type RadioGroupProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     name?: RadioGroupContextValue['name'];
-    required?: React.ComponentPropsWithoutRef<typeof Radio>['required'];
+    required?: PrimitiveTypes.ComponentPropsWithoutRef<typeof Radio>['required'];
     dir?: RovingFocusGroupProps['dir'];
     orientation?: RovingFocusGroupProps['orientation'];
     loop?: RovingFocusGroupProps['loop'];
@@ -87,8 +87,8 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 const ITEM_NAME = 'RadioGroupItem';
 
 type RadioGroupItemElement = React.ElementRef<typeof Radio>;
-type RadioGroupItemProps = MergeProps<
-  Omit<React.ComponentPropsWithoutRef<typeof Radio>, 'onCheck'>,
+type RadioGroupItemProps = PrimitiveTypes.MergeProps<
+  Omit<PrimitiveTypes.ComponentPropsWithoutRef<typeof Radio>, 'onCheck'>,
   { value: string; name?: never }
 >;
 

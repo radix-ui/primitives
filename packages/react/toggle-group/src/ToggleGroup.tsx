@@ -5,7 +5,7 @@ import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus'
 import { Toggle } from '@radix-ui/react-toggle';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * ToggleGroup
@@ -15,8 +15,8 @@ const TOGGLE_GROUP_NAME = 'ToggleGroup';
 
 type ToggleGroupElement = React.ElementRef<typeof ToggleGroupSingle | typeof ToggleGroupMultiple>;
 type ToggleGroupProps =
-  | ({ type: 'single' } & React.ComponentPropsWithoutRef<typeof ToggleGroupSingle>)
-  | ({ type: 'multiple' } & React.ComponentPropsWithoutRef<typeof ToggleGroupMultiple>);
+  | ({ type: 'single' } & PrimitiveTypes.ComponentPropsWithoutRef<typeof ToggleGroupSingle>)
+  | ({ type: 'multiple' } & PrimitiveTypes.ComponentPropsWithoutRef<typeof ToggleGroupMultiple>);
 
 const ToggleGroup = React.forwardRef<ToggleGroupElement, ToggleGroupProps>(
   (props, forwardedRef) => {
@@ -48,8 +48,8 @@ const [
 ] = createContext<ToggleGroupValueContextValue>(TOGGLE_GROUP_NAME);
 
 type ToggleGroupSingleElement = React.ElementRef<typeof ToggleGroupImpl>;
-type ToggleGroupSingleProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof ToggleGroupImpl>,
+type ToggleGroupSingleProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof ToggleGroupImpl>,
   {
     /**
      * The controlled stateful value of the item that is pressed.
@@ -95,8 +95,8 @@ const ToggleGroupSingle = React.forwardRef<ToggleGroupSingleElement, ToggleGroup
 );
 
 type ToggleGroupMultipleElement = React.ElementRef<typeof ToggleGroupImpl>;
-type ToggleGroupMultipleProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof ToggleGroupImpl>,
+type ToggleGroupMultipleProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof ToggleGroupImpl>,
   {
     /**
      * The controlled stateful value of the items that are pressed.
@@ -161,10 +161,10 @@ const [ToggleGroupContext, useToggleGroupContext] = createContext<ToggleGroupCon
   TOGGLE_GROUP_NAME
 );
 
-type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
+type RovingFocusGroupProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
 type ToggleGroupImplElement = React.ElementRef<typeof Primitive.div>;
-type ToggleGroupImplProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type ToggleGroupImplProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /**
      * Whether the group is disabled from user interaction.
@@ -215,7 +215,7 @@ const ITEM_NAME = 'ToggleGroupItem';
 
 type ToggleGroupItemElement = React.ElementRef<typeof ToggleGroupItemImpl>;
 type ToggleGroupItemProps = Omit<
-  React.ComponentPropsWithoutRef<typeof ToggleGroupItemImpl>,
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof ToggleGroupItemImpl>,
   'pressed'
 >;
 
@@ -242,8 +242,11 @@ ToggleGroupItem.displayName = ITEM_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type ToggleGroupItemImplElement = React.ElementRef<typeof Toggle>;
-type ToggleGroupItemImplProps = MergeProps<
-  Omit<React.ComponentPropsWithoutRef<typeof Toggle>, 'defaultPressed' | 'onPressedChange'>,
+type ToggleGroupItemImplProps = PrimitiveTypes.MergeProps<
+  Omit<
+    PrimitiveTypes.ComponentPropsWithoutRef<typeof Toggle>,
+    'defaultPressed' | 'onPressedChange'
+  >,
   {
     /**
      * A string value for the toggle group item. All items within a toggle group should use a unique value.

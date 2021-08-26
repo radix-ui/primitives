@@ -7,9 +7,9 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
 import { useId } from '@radix-ui/react-id';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
 
-type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
+type RovingFocusGroupProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
 
 /* -------------------------------------------------------------------------------------------------
  * Tabs
@@ -29,8 +29,8 @@ type TabsContextValue = {
 const [TabsProvider, useTabsContext] = createContext<TabsContextValue>(TABS_NAME);
 
 type TabsElement = React.ElementRef<typeof Primitive.div>;
-type TabsProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type TabsProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /** The value for the selected tab, if controlled */
     value?: string;
@@ -94,8 +94,8 @@ Tabs.displayName = TABS_NAME;
 const TAB_LIST_NAME = 'TabsList';
 
 type TabsListElement = React.ElementRef<typeof Primitive.div>;
-type TabsListProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type TabsListProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
   { loop?: RovingFocusGroupProps['loop'] }
 >;
 
@@ -118,8 +118,8 @@ TabsList.displayName = TAB_LIST_NAME;
 const TRIGGER_NAME = 'TabsTrigger';
 
 type TabsTriggerElement = React.ElementRef<typeof Primitive.div>;
-type TabsTriggerProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type TabsTriggerProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     value: string;
     disabled?: boolean;
@@ -181,8 +181,8 @@ TabsTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'TabsContent';
 
 type TabsContentElement = React.ElementRef<typeof Primitive.div>;
-type TabsContentProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type TabsContentProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
   { value: string }
 >;
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * AspectRatio
@@ -10,8 +10,8 @@ import type { MergeProps } from '@radix-ui/react-primitive';
 const NAME = 'AspectRatio';
 
 type AspectRatioElement = React.ElementRef<typeof Primitive.div>;
-type AspectRatioProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type AspectRatioProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
   { ratio?: number }
 >;
 

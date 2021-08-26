@@ -17,7 +17,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { useId } from '@radix-ui/react-id';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -187,13 +187,13 @@ const [MenuContentProvider, useMenuContentContext] = createContext<MenuContentCo
 );
 
 type MenuContentElement = React.ElementRef<typeof MenuRootContent | typeof MenuSubContent>;
-type MenuContentProps = MergeProps<
+type MenuContentProps = PrimitiveTypes.MergeProps<
   /**
    * We purposefully don't union MenuRootContent and MenuSubContent props here because
    * they have conflicting prop types. We agreed that we would allow MenuSubContent to
    * accept props that it would just ignore.
    */
-  React.ComponentPropsWithoutRef<typeof MenuRootContent>,
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof MenuRootContent>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -229,7 +229,9 @@ type MenuRootContentElement = React.ElementRef<
   typeof MenuRootContentModal | typeof MenuRootContentNonModal
 >;
 type MenuRootContentProps = Omit<
-  React.ComponentPropsWithoutRef<typeof MenuRootContentModal | typeof MenuRootContentNonModal>,
+  PrimitiveTypes.ComponentPropsWithoutRef<
+    typeof MenuRootContentModal | typeof MenuRootContentNonModal
+  >,
   keyof MenuContentImplPrivateProps
 >;
 
@@ -246,7 +248,7 @@ const MenuRootContent = React.forwardRef<MenuRootContentElement, MenuRootContent
 
 type MenuRootContentTypeElement = React.ElementRef<typeof MenuContentImpl>;
 type MenuRootContentTypeProps = Omit<
-  React.ComponentPropsWithoutRef<typeof MenuContentImpl>,
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof MenuContentImpl>,
   'trapFocus' | 'disableOutsidePointerEvents' | 'disableOutsideScroll'
 >;
 
@@ -307,7 +309,7 @@ const MenuRootContentNonModal = React.forwardRef<
 
 type MenuSubContentElement = React.ElementRef<typeof MenuContentImpl>;
 type MenuSubContentProps = Omit<
-  React.ComponentPropsWithoutRef<typeof MenuContentImpl>,
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof MenuContentImpl>,
   | keyof MenuContentImplPrivateProps
   | 'align'
   | 'side'
@@ -366,17 +368,17 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
-type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
-type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
+type FocusScopeProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof FocusScope>;
+type DismissableLayerProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type RovingFocusGroupProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
 
 type MenuContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type MenuContentImplPrivateProps = {
   onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
   onDismiss?: DismissableLayerProps['onDismiss'];
 };
-type MenuContentImplProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
+type MenuContentImplProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
   Omit<DismissableLayerProps, 'onDismiss'> &
     MenuContentImplPrivateProps & {
       /**
@@ -619,8 +621,8 @@ const ITEM_NAME = 'MenuItem';
 const ITEM_SELECT = 'menu.itemSelect';
 
 type MenuItemElement = React.ElementRef<typeof MenuItemImpl>;
-type MenuItemProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof MenuItemImpl>,
+type MenuItemProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof MenuItemImpl>,
   { onSelect?: (event: Event) => void }
 >;
 
@@ -689,7 +691,7 @@ MenuItem.displayName = ITEM_NAME;
 const SUB_TRIGGER_NAME = 'MenuSubTrigger';
 
 type MenuSubTriggerElement = React.ElementRef<typeof MenuItemImpl>;
-type MenuSubTriggerProps = React.ComponentPropsWithoutRef<typeof MenuItemImpl>;
+type MenuSubTriggerProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof MenuItemImpl>;
 
 const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerProps>(
   (props, forwardedRef) => {
@@ -812,8 +814,8 @@ MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type MenuItemImplElement = React.ElementRef<typeof Primitive.div>;
-type MenuItemImplProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type MenuItemImplProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     disabled?: boolean;
     textValue?: string;
@@ -888,8 +890,8 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
 const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
 type MenuCheckboxItemElement = React.ElementRef<typeof MenuItem>;
-type MenuCheckboxItemProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof MenuItem>,
+type MenuCheckboxItemProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof MenuItem>,
   {
     checked?: boolean;
     onCheckedChange?: (checked: boolean) => void;
@@ -929,8 +931,8 @@ const RADIO_GROUP_NAME = 'MenuRadioGroup';
 const RadioGroupContext = React.createContext<MenuRadioGroupProps>({} as any);
 
 type MenuRadioGroupElement = React.ElementRef<typeof MenuGroup>;
-type MenuRadioGroupProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof MenuGroup>,
+type MenuRadioGroupProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof MenuGroup>,
   {
     value?: string;
     onValueChange?: (value: string) => void;
@@ -962,8 +964,8 @@ MenuRadioGroup.displayName = RADIO_GROUP_NAME;
 const RADIO_ITEM_NAME = 'MenuRadioItem';
 
 type MenuRadioItemElement = React.ElementRef<typeof MenuItem>;
-type MenuRadioItemProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof MenuItem>,
+type MenuRadioItemProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof MenuItem>,
   { value: string }
 >;
 
@@ -1002,8 +1004,8 @@ const ITEM_INDICATOR_NAME = 'MenuItemIndicator';
 const ItemIndicatorContext = React.createContext(false);
 
 type MenuItemIndicatorElement = React.ElementRef<typeof Primitive.span>;
-type MenuItemIndicatorProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.span>,
+type MenuItemIndicatorProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.span>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when

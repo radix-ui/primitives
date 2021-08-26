@@ -7,7 +7,14 @@ type MergeProps<P1 = {}, P2 = {}> = Omit<P1, keyof P2> & P2;
 type Primitives = { [E in typeof NODES[number]]: PrimitiveForwardRefComponent<E> };
 
 type PrimitiveForwardRefComponent<E extends React.ElementType> = React.ForwardRefExoticComponent<
-  MergeProps<React.ComponentProps<E>, PrimitiveProps>
+  MergeProps<React.ComponentPropsWithRef<E>, PrimitiveProps>
+>;
+
+// Temporary while we await merge of this fix:
+// https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55396
+type PropsWithoutRef<P> = P extends { ref?: any } ? Pick<P, Exclude<keyof P, 'ref'>> : P;
+type ComponentPropsWithoutRef<T extends React.ElementType> = PropsWithoutRef<
+  React.ComponentProps<T>
 >;
 
 /* -------------------------------------------------------------------------------------------------
@@ -40,4 +47,4 @@ export {
   //
   Root,
 };
-export type { MergeProps };
+export type { MergeProps, ComponentPropsWithoutRef };

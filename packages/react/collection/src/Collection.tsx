@@ -2,6 +2,8 @@ import React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Slot } from '@radix-ui/react-slot';
 
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+
 // We have resorted to returning slots directly rather than exposing primitives that can then
 // be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`.
 // This is because we encountered issues with generic types that cannot be statically analysed
@@ -41,7 +43,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
 
   const COLLECTION_SLOT_NAME = 'CollectionSlot';
 
-  type SlotProps = React.ComponentPropsWithoutRef<typeof Slot>;
+  type SlotProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Slot>;
 
   const CollectionSlot = React.forwardRef<CollectionElement, SlotProps>((props, forwardedRef) => {
     const { children } = props;

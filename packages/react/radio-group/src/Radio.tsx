@@ -8,7 +8,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Radio
@@ -20,8 +20,8 @@ type RadioContextValue = { checked: boolean; disabled?: boolean };
 const [RadioProvider, useRadioContext] = createContext<RadioContextValue>(RADIO_NAME);
 
 type RadioElement = React.ElementRef<typeof Primitive.button>;
-type RadioProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.button>,
+type RadioProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.button>,
   {
     checked?: boolean;
     required?: boolean;
@@ -101,8 +101,8 @@ Radio.displayName = RADIO_NAME;
 const INDICATOR_NAME = 'RadioIndicator';
 
 type RadioIndicatorElement = React.ElementRef<typeof Primitive.span>;
-type RadioIndicatorProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.span>,
+type RadioIndicatorProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.span>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -133,7 +133,7 @@ RadioIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type BubbleInputProps = Omit<React.ComponentPropsWithoutRef<'input'>, 'checked'> & {
+type BubbleInputProps = Omit<PrimitiveTypes.ComponentPropsWithoutRef<'input'>, 'checked'> & {
   checked: boolean;
   control: HTMLElement | null;
   bubbles: boolean;

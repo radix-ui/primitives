@@ -7,6 +7,8 @@ import { extendPrimitive, Primitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useId } from '@radix-ui/react-id';
 
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+
 type Direction = 'ltr' | 'rtl';
 
 /* -------------------------------------------------------------------------------------------------
@@ -120,7 +122,7 @@ const DropdownMenuRoot: React.FC<DropdownMenuRootProps> = (props) => {
 const TRIGGER_NAME = 'DropdownMenuTrigger';
 
 type DropdownMenuTriggerElement = React.ElementRef<typeof Primitive.button>;
-type DropdownMenuTriggerProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
+type DropdownMenuTriggerProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.button>;
 
 const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, DropdownMenuTriggerProps>(
   (props, forwardedRef) => {
@@ -171,7 +173,7 @@ const ContentContext = React.createContext(false);
 type DropdownMenuContentElement = React.ElementRef<
   typeof DropdownMenuRootContent | typeof MenuPrimitive.Content
 >;
-type DropdownMenuContentProps = React.ComponentPropsWithoutRef<
+type DropdownMenuContentProps = PrimitiveTypes.ComponentPropsWithoutRef<
   typeof DropdownMenuRootContent | typeof MenuPrimitive.Content
 >;
 
@@ -204,7 +206,9 @@ DropdownMenuContent.displayName = CONTENT_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type DropdownMenuRootContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type DropdownMenuRootContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
+type DropdownMenuRootContentProps = PrimitiveTypes.ComponentPropsWithoutRef<
+  typeof MenuPrimitive.Content
+>;
 
 const DropdownMenuRootContent = React.forwardRef<
   DropdownMenuRootContentElement,

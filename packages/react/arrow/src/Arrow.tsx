@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+
 /* -------------------------------------------------------------------------------------------------
  * Arrow
  * -----------------------------------------------------------------------------------------------*/
@@ -8,7 +10,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 const NAME = 'Arrow';
 
 type ArrowElement = React.ElementRef<typeof Primitive.svg>;
-type ArrowProps = React.ComponentPropsWithoutRef<typeof Primitive.svg>;
+type ArrowProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.svg>;
 
 const Arrow = React.forwardRef<ArrowElement, ArrowProps>((props, forwardedRef) => {
   const { children, width = 10, height = 5, ...arrowProps } = props;

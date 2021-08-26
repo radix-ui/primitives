@@ -6,13 +6,18 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { extendPrimitive } from '@radix-ui/react-primitive';
 import { Slottable } from '@radix-ui/react-slot';
 
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
  * -----------------------------------------------------------------------------------------------*/
 
 const ROOT_NAME = 'AlertDialog';
 
-type AlertDialogProps = Omit<React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root>, 'modal'>;
+type AlertDialogProps = Omit<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof DialogPrimitive.Root>,
+  'modal'
+>;
 
 const AlertDialog: React.FC<AlertDialogProps> = (props) => (
   <DialogPrimitive.Root {...props} modal={true} />
@@ -37,7 +42,7 @@ const [
 
 type AlertDialogContentElement = React.ElementRef<typeof DialogPrimitive.Content>;
 type AlertDialogContentProps = Omit<
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
   'onPointerDownOutside'
 >;
 
@@ -92,7 +97,7 @@ AlertDialogContent.displayName = CONTENT_NAME;
 const CANCEL_NAME = 'AlertDialogCancel';
 
 type AlertDialogCancelElement = React.ElementRef<typeof DialogPrimitive.Close>;
-type AlertDialogCancelProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Close>;
+type AlertDialogCancelProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof DialogPrimitive.Close>;
 
 const AlertDialogCancel = React.forwardRef<AlertDialogCancelElement, AlertDialogCancelProps>(
   (props, forwardedRef) => {

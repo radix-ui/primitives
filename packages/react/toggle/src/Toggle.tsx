@@ -3,7 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Toggle
@@ -12,8 +12,8 @@ import type { MergeProps } from '@radix-ui/react-primitive';
 const NAME = 'Toggle';
 
 type ToggleElement = React.ElementRef<typeof Primitive.button>;
-type ToggleProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.button>,
+type ToggleProps = PrimitiveTypes.MergeProps<
+  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.button>,
   {
     /**
      * The controlled state of the toggle.

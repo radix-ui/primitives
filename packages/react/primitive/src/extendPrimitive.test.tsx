@@ -4,14 +4,14 @@ import { extendPrimitive } from './extendPrimitive';
 import { Primitive } from './Primitive';
 
 import type { RenderResult } from '@testing-library/react';
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as PrimitiveTypes from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  *  Button
  * -----------------------------------------------------------------------------------------------*/
 
 type ButtonElement = React.ElementRef<typeof Primitive.button>;
-type ButtonProps = MergeProps<
+type ButtonProps = PrimitiveTypes.MergeProps<
   React.ComponentProps<typeof Primitive.button>,
   { isDisabled?: boolean }
 >;
