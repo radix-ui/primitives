@@ -364,7 +364,7 @@ export const Animated = () => {
   );
 };
 
-type MenuOwnProps = Omit<
+type MenuProps = Omit<
   React.ComponentProps<typeof Menu> & React.ComponentProps<typeof MenuContent>,
   | 'portalled'
   | 'trapFocus'
@@ -373,7 +373,7 @@ type MenuOwnProps = Omit<
   | 'disableOutsideScroll'
 >;
 
-const MenuWithAnchor: React.FC<MenuOwnProps> = (props) => {
+const MenuWithAnchor: React.FC<MenuProps> = (props) => {
   const { open = true, children, ...contentProps } = props;
   return (
     <Menu open={open} onOpenChange={() => {}} modal={false}>
@@ -392,9 +392,9 @@ const MenuWithAnchor: React.FC<MenuOwnProps> = (props) => {
   );
 };
 
-const Submenu: React.FC<
-  MenuOwnProps & { animated: boolean; disabled?: boolean; heading?: string }
-> = (props) => {
+const Submenu: React.FC<MenuProps & { animated: boolean; disabled?: boolean; heading?: string }> = (
+  props
+) => {
   const {
     heading = 'Submenu',
     open = true,

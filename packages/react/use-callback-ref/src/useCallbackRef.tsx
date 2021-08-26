@@ -11,12 +11,8 @@ function useCallbackRef<T extends (...args: any[]) => any>(callback: T | undefin
     callbackRef.current = callback;
   });
 
-  return React.useCallback(
-    ((...args) => {
-      return callbackRef.current?.(...args);
-    }) as T,
-    []
-  );
+  // https://github.com/facebook/react/issues/19240
+  return React.useMemo(() => ((...args) => callbackRef.current?.(...args)) as T, []);
 }
 
 export { useCallbackRef };

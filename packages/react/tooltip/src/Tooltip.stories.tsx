@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow } from './Tooltip';
-import { Slot } from '@radix-ui/react-slot';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 import { css } from '../../../../stitches.config';
 
@@ -430,20 +429,20 @@ export const WithText = () => (
   <p>
     Hello this is a test with{' '}
     <SimpleTooltip label="This is a tooltip">
-      <TooltipTrigger as="a" href="https://modulz.app">
-        Tooltip
+      <TooltipTrigger asChild>
+        <a href="https://modulz.app">Tooltip</a>
       </TooltipTrigger>
     </SimpleTooltip>{' '}
     inside a Text Component{' '}
     <SimpleTooltip label="This is a tooltip" side="top">
-      <TooltipTrigger as="a" href="https://modulz.app">
-        Tooltip
+      <TooltipTrigger asChild>
+        <a href="https://modulz.app">Tooltip</a>
       </TooltipTrigger>
     </SimpleTooltip>{' '}
     some more text{' '}
     <SimpleTooltip label="This is a tooltip" side="right" align="center">
-      <TooltipTrigger as="a" href="https://modulz.app">
-        Tooltip
+      <TooltipTrigger asChild>
+        <a href="https://modulz.app">Tooltip</a>
       </TooltipTrigger>
     </SimpleTooltip>{' '}
   </p>
@@ -511,7 +510,7 @@ export const Animated = () => {
 export const SlottableContent = () => (
   <Tooltip>
     <TooltipTrigger className={triggerClass}>Hover or Focus me</TooltipTrigger>
-    <TooltipContent as={Slot} sideOffset={5}>
+    <TooltipContent asChild sideOffset={5}>
       <div className={contentClass}>
         Nicely done!
         <TooltipArrow className={arrowClass} offset={10} />
@@ -793,7 +792,7 @@ export const Chromatic = () => (
 
     <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
     <Tooltip open>
-      <TooltipTrigger as={Slot}>
+      <TooltipTrigger asChild>
         <button className={triggerClass}>open</button>
       </TooltipTrigger>
       <TooltipContent className={contentClass} sideOffset={5}>
@@ -805,7 +804,7 @@ export const Chromatic = () => (
     <h1 style={{ marginTop: 100 }}>With slotted content</h1>
     <Tooltip open>
       <TooltipTrigger className={triggerClass}>Hover or Focus me</TooltipTrigger>
-      <TooltipContent as={Slot} sideOffset={5}>
+      <TooltipContent asChild sideOffset={5}>
         <div className={contentClass}>
           Some content
           <TooltipArrow className={arrowClass} offset={10} />

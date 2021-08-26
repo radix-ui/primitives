@@ -22,11 +22,9 @@
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-label": "workspace:*",
-    "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-roving-focus": "workspace:*",
-    "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-use-size": "workspace:*"

@@ -41,7 +41,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
 
   const COLLECTION_SLOT_NAME = 'CollectionSlot';
 
-  type SlotProps = React.ComponentProps<typeof Slot>;
+  type SlotProps = React.ComponentPropsWithoutRef<typeof Slot>;
 
   const CollectionSlot = React.forwardRef<CollectionElement, SlotProps>((props, forwardedRef) => {
     const { children } = props;
@@ -69,7 +69,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
       const context = React.useContext(Context);
 
       React.useEffect(() => {
-        context.itemMap.set(ref, { ref, ...((itemData as unknown) as ItemData) });
+        context.itemMap.set(ref, { ref, ...(itemData as unknown as ItemData) });
         return () => void context.itemMap.delete(ref);
       });
 
