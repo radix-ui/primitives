@@ -8,7 +8,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };
@@ -55,7 +55,7 @@ type RovingContextValue = RovingFocusGroupOptions & {
 const [RovingFocusProvider, useRovingFocusContext] = createContext<RovingContextValue>(GROUP_NAME);
 
 type RovingFocusGroupElement = React.ElementRef<typeof RovingFocusGroupImpl>;
-type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroupImpl>;
+type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroupImpl>;
 
 const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGroupProps>(
   (props, forwardedRef) => (
@@ -72,8 +72,8 @@ RovingFocusGroup.displayName = GROUP_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type RovingFocusGroupImplElement = React.ElementRef<typeof Primitive.div>;
-type RovingFocusGroupImplProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type RovingFocusGroupImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   RovingFocusGroupOptions & {
     currentTabStopId?: string | null;
     defaultCurrentTabStopId?: string;
@@ -176,8 +176,8 @@ const RovingFocusGroupImpl = React.forwardRef<
 const ITEM_NAME = 'RovingFocusItem';
 
 type RovingFocusItemElement = React.ElementRef<typeof Primitive.span>;
-type RovingFocusItemProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.span>,
+type RovingFocusItemProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
   {
     focusable?: boolean;
     active?: boolean;

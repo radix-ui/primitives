@@ -8,7 +8,7 @@ import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
@@ -17,8 +17,8 @@ import type { MergeProps } from '@radix-ui/react-primitive';
 const SWITCH_NAME = 'Switch';
 
 type SwitchElement = React.ElementRef<typeof Primitive.button>;
-type SwitchProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.button>,
+type SwitchProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.button>,
   {
     checked?: boolean;
     defaultChecked?: boolean;
@@ -109,7 +109,7 @@ Switch.displayName = SWITCH_NAME;
 const THUMB_NAME = 'SwitchThumb';
 
 type SwitchThumbElement = React.ElementRef<typeof Primitive.span>;
-type SwitchThumbProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
+type SwitchThumbProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
 const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
   (props, forwardedRef) => {
@@ -129,7 +129,7 @@ SwitchThumb.displayName = THUMB_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type BubbleInputProps = Omit<React.ComponentPropsWithoutRef<'input'>, 'checked'> & {
+type BubbleInputProps = Omit<Radix.ComponentPropsWithoutRef<'input'>, 'checked'> & {
   checked: boolean;
   control: HTMLElement | null;
   bubbles: boolean;

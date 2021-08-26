@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  *  Separator
@@ -13,8 +13,8 @@ const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 type Orientation = typeof ORIENTATIONS[number];
 type SeparatorElement = React.ElementRef<typeof Primitive.div>;
-type SeparatorProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type SeparatorProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /**
      * Either `vertical` or `horizontal`. Defaults to `horizontal`.

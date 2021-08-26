@@ -17,7 +17,7 @@ import { useId } from '@radix-ui/react-id';
 import { createStateMachine } from './createStateMachine';
 import { tooltipStateChart } from './tooltipStateChart';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * State machine
@@ -164,7 +164,7 @@ Tooltip.displayName = TOOLTIP_NAME;
 const TRIGGER_NAME = 'TooltipTrigger';
 
 type TooltipTriggerElement = React.ElementRef<typeof Primitive.button>;
-type TooltipTriggerProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
+type TooltipTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 
 const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
   (props, forwardedRef) => {
@@ -203,8 +203,8 @@ TooltipTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'TooltipContent';
 
 type TooltipContentElement = React.ElementRef<typeof TooltipContentImpl>;
-type TooltipContentProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof TooltipContentImpl>,
+type TooltipContentProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof TooltipContentImpl>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -227,8 +227,8 @@ const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentPro
 );
 
 type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type TooltipContentImplProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
+type TooltipContentImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
   {
     /**
      * A more descriptive label for accessibility purpose

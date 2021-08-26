@@ -6,7 +6,7 @@ import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * HoverCard
@@ -84,7 +84,7 @@ HoverCard.displayName = HOVERCARD_NAME;
 const TRIGGER_NAME = 'HoverCardTrigger';
 
 type HoverCardTriggerElement = React.ElementRef<typeof Primitive.a>;
-type HoverCardTriggerProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
+type HoverCardTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
 
 const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
   (props, forwardedRef) => {
@@ -112,8 +112,8 @@ HoverCardTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'HoverCardContent';
 
 type HoverCardContentElement = React.ElementRef<typeof HoverCardContentImpl>;
-type HoverCardContentProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof HoverCardContentImpl>,
+type HoverCardContentProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof HoverCardContentImpl>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -146,8 +146,8 @@ HoverCardContent.displayName = CONTENT_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type HoverCardContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type HoverCardContentImplProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
+type HoverCardContentImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
   {
     /**
      * Whether the `HoverCard` should render in a `Portal`

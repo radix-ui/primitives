@@ -5,6 +5,8 @@ import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
+import type * as Radix from '@radix-ui/react-primitive';
+
 type Direction = 'ltr' | 'rtl';
 type Point = { x: number; y: number };
 
@@ -78,7 +80,7 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
 const TRIGGER_NAME = 'ContextMenuTrigger';
 
 type ContextMenuTriggerElement = React.ElementRef<typeof Primitive.span>;
-type ContextMenuTriggerProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
+type ContextMenuTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
 const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMenuTriggerProps>(
   (props, forwardedRef) => {
@@ -146,7 +148,7 @@ const ContentContext = React.createContext(false);
 
 type ContextMenuContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
 type ContextMenuContentProps = Omit<
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>,
+  Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>,
   'portalled' | 'side' | 'align'
 >;
 
@@ -181,7 +183,7 @@ ContextMenuContent.displayName = CONTENT_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type ContextMenuRootContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type ContextMenuRootContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
+type ContextMenuRootContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
 
 const ContextMenuRootContent = React.forwardRef<
   ContextMenuRootContentElement,

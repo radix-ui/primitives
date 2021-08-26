@@ -4,7 +4,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar
@@ -22,7 +22,7 @@ type AvatarContextValue = {
 const [AvatarProvider, useAvatarContext] = createContext<AvatarContextValue>(AVATAR_NAME);
 
 type AvatarElement = React.ElementRef<typeof Primitive.span>;
-type AvatarProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
+type AvatarProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
 const Avatar = React.forwardRef<AvatarElement, AvatarProps>((props, forwardedRef) => {
   const [imageLoadingStatus, setImageLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
@@ -45,8 +45,8 @@ Avatar.displayName = AVATAR_NAME;
 const IMAGE_NAME = 'AvatarImage';
 
 type AvatarImageElement = React.ElementRef<typeof Primitive.img>;
-type AvatarImageProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.img>,
+type AvatarImageProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.img>,
   { onLoadingStatusChange?: (status: ImageLoadingStatus) => void }
 >;
 
@@ -81,8 +81,8 @@ AvatarImage.displayName = IMAGE_NAME;
 const FALLBACK_NAME = 'AvatarFallback';
 
 type AvatarFallbackElement = React.ElementRef<typeof Primitive.span>;
-type AvatarFallbackProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.span>,
+type AvatarFallbackProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
   { delayMs?: number }
 >;
 

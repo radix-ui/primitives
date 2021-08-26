@@ -5,7 +5,7 @@ import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 
-import type { MergeProps } from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 // We need to compute the total count of layers AND a running count of all layers
 // in order to find which layer is the deepest one.
@@ -34,7 +34,7 @@ const [
 const DISMISSABLE_LAYER_NAME = 'DismissableLayer';
 
 type DismissableLayerElement = React.ElementRef<typeof DismissableLayerImpl>;
-type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayerImpl>;
+type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayerImpl>;
 
 const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLayerProps>(
   (props, forwardedRef) => {
@@ -61,8 +61,8 @@ DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type DismissableLayerImplElement = React.ElementRef<typeof Primitive.div>;
-type DismissableLayerImplProps = MergeProps<
-  React.ComponentPropsWithoutRef<typeof Primitive.div>,
+type DismissableLayerImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /**
      * When `true`, hover/focus/click interactions will be disabled on elements outside

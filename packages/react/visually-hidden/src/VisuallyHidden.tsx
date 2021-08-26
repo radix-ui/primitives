@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
+import type * as Radix from '@radix-ui/react-primitive';
+
 /* -------------------------------------------------------------------------------------------------
  * VisuallyHidden
  * -----------------------------------------------------------------------------------------------*/
@@ -8,7 +10,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 const NAME = 'VisuallyHidden';
 
 type VisuallyHiddenElement = React.ElementRef<typeof Primitive.span>;
-type VisuallyHiddenProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
+type VisuallyHiddenProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
 const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenProps>(
   (props, forwardedRef) => {
