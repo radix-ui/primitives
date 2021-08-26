@@ -140,7 +140,7 @@ const Button = (props: ButtonProps) => {
     contextValue !== undefined && props.value !== undefined && contextValue === props.value;
 
   return (
-    <RovingFocusItem slot active={isSelected}>
+    <RovingFocusItem asChild active={isSelected}>
       <button
         {...props}
         style={{

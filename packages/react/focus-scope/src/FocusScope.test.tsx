@@ -61,7 +61,7 @@ describe('FocusScope', () => {
     beforeEach(() => {
       rendered = render(
         <div>
-          <FocusScope loop trapped>
+          <FocusScope asChild loop trapped>
             <form>
               <TestField label={INNER_NAME_INPUT_LABEL} tabIndex={-1} />
               <TestField label={INNER_EMAIL_INPUT_LABEL} />
