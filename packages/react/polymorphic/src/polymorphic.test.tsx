@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Polymorphic from './polymorphic';
 import type { RenderResult } from '@testing-library/react';
@@ -9,19 +8,16 @@ import type { RenderResult } from '@testing-library/react';
  * Polymorphic Button
  * -----------------------------------------------------------------------------------------------*/
 
-type ButtonProps = {
+type ButtonOwnProps = {
   isDisabled?: boolean;
   another?: number;
 };
 
 const Button = React.forwardRef((props, forwardedRef) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { isDisabled, ...buttonProps } = props;
-  return <Primitive as="button" {...buttonProps} ref={forwardedRef} />;
-}) as Polymorphic.ForwardRefComponent<
-  'button',
-  Polymorphic.OwnProps<typeof Primitive> & ButtonProps
->;
+  const { as: Comp = 'button', isDisabled, ...buttonProps } = props;
+  return <Comp {...buttonProps} ref={forwardedRef} />;
+}) as Polymorphic.ForwardRefComponent<'button', ButtonOwnProps>;
 
 /* -------------------------------------------------------------------------------------------------
  * Extended Button using react utilities without polymorphism
@@ -48,13 +44,13 @@ export function ExtendedButtonUsingReactUtilsWithInternalInlineAs(
  * Extended Polymorphic Button
  * -----------------------------------------------------------------------------------------------*/
 
-type ExtendedButtonProps = {
+type ExtendedButtonOwnProps = {
   isExtended?: boolean;
 };
 
 type ExtendedButtonButtonOwnProps = Omit<
   Polymorphic.OwnProps<typeof Button>,
-  keyof ExtendedButtonProps | 'another'
+  keyof ExtendedButtonOwnProps | 'another'
 >;
 
 const ExtendedButton = React.forwardRef((props, forwardedRef) => {
@@ -63,7 +59,7 @@ const ExtendedButton = React.forwardRef((props, forwardedRef) => {
   return <Button {...extendedButtonProps} ref={forwardedRef} />;
 }) as Polymorphic.ForwardRefComponent<
   Polymorphic.IntrinsicElement<typeof Button>,
-  ExtendedButtonProps & ExtendedButtonButtonOwnProps
+  ExtendedButtonOwnProps & ExtendedButtonButtonOwnProps
 >;
 
 /* -------------------------------------------------------------------------------------------------

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { HoverCard, HoverCardTrigger, HoverCardContent, HoverCardArrow } from './HoverCard';
-import { Slot } from '@radix-ui/react-slot';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 import { css } from '../../../../stitches.config';
 
@@ -232,7 +231,7 @@ export const NonPortal = () => {
 export const WithSlottedTrigger = () => {
   return (
     <HoverCard>
-      <HoverCardTrigger as={Slot}>
+      <HoverCardTrigger asChild>
         <button className={triggerClass} onClick={() => console.log('StyledTrigger click')}>
           trigger
         </button>
@@ -250,7 +249,7 @@ export const WithSlottedContent = () => (
     <HoverCardTrigger href="/" className={triggerClass}>
       trigger
     </HoverCardTrigger>
-    <HoverCardContent as={Slot} sideOffset={5}>
+    <HoverCardContent asChild sideOffset={5}>
       <div className={contentClass}>
         <HoverCardArrow className={arrowClass} width={20} height={10} offset={10} />
         <CardContentPlaceholder />
@@ -541,7 +540,7 @@ export const Chromatic = () => (
 
     <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
     <HoverCard open>
-      <HoverCardTrigger as={Slot}>
+      <HoverCardTrigger asChild>
         <button className={triggerClass}>open</button>
       </HoverCardTrigger>
       <HoverCardContent className={contentClass} sideOffset={5}>

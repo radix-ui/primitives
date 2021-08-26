@@ -5,7 +5,6 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Popper, PopperAnchor, PopperContent, PopperArrow } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
-import { Slot } from '@radix-ui/react-slot';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from './DismissableLayer';
 
@@ -145,7 +144,7 @@ export const WithFocusScope = () => {
 
       {open ? (
         <DismissableLayer
-          as={Slot}
+          asChild
           onPointerDownOutside={(event) => {
             if (event.target === openButtonRef.current) {
               event.preventDefault();
@@ -505,7 +504,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
           <Portal>
             <RemoveScroll>
               <DismissableLayer
-                as={Slot}
+                asChild
                 disableOutsidePointerEvents
                 onDismiss={() => setOpen(false)}
               >
@@ -574,20 +573,17 @@ function DummyPopover({
   const ScrollContainer = preventScroll ? RemoveScroll : React.Fragment;
   return (
     <Popper>
-      <PopperAnchor
-        as="button"
-        type="button"
-        ref={openButtonRef}
-        onClick={() => setOpen((prevOpen) => !prevOpen)}
-      >
-        {openLabel}
+      <PopperAnchor asChild>
+        <button type="button" ref={openButtonRef} onClick={() => setOpen((prevOpen) => !prevOpen)}>
+          {openLabel}
+        </button>
       </PopperAnchor>
       {open ? (
         <FocusGuards>
           <Portal>
             <ScrollContainer>
               <DismissableLayer
-                as={Slot}
+                asChild
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
                 onEscapeKeyDown={onEscapeKeyDown}
                 onPointerDownOutside={(event) => {
@@ -603,7 +599,7 @@ function DummyPopover({
                 onDismiss={() => setOpen(false)}
               >
                 <FocusScope
-                  as={Slot}
+                  asChild
                   trapped={trapped}
                   onUnmountAutoFocus={(event) => {
                     if (skipUnmountAutoFocus) {

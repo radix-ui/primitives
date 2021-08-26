@@ -349,8 +349,8 @@ export const SingleItemAsDialogTrigger = () => {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className={contentClass} sideOffset={5}>
-            <Dialog.Trigger className={itemClass} as={DropdownMenuItem}>
-              Delete
+            <Dialog.Trigger className={itemClass} asChild>
+              <DropdownMenuItem>Delete</DropdownMenuItem>
             </Dialog.Trigger>
             <DropdownMenuItem className={itemClass}>Test</DropdownMenuItem>
             <DropdownMenuArrow />
@@ -378,12 +378,10 @@ export const SingleItemAsDialogTrigger = () => {
               if (isDialogOpenRef.current) event.preventDefault();
             }}
           >
-            <Dialog.Trigger
-              className={itemClass}
-              as={DropdownMenuItem}
-              onSelect={() => (isDialogOpenRef.current = true)}
-            >
-              Delete
+            <Dialog.Trigger className={itemClass} asChild>
+              <DropdownMenuItem onSelect={() => (isDialogOpenRef.current = true)}>
+                Delete
+              </DropdownMenuItem>
             </Dialog.Trigger>
             <DropdownMenuItem className={itemClass}>Test</DropdownMenuItem>
             <DropdownMenuArrow />
@@ -432,19 +430,13 @@ export const MultipleItemsAsDialogTriggers = () => {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className={contentClass} sideOffset={5}>
-            <Dialog.Trigger
-              as={DropdownMenuItem}
-              className={itemClass}
-              onSelect={() => setSwitchAccountsOpen(true)}
-            >
-              Switch Accounts
+            <Dialog.Trigger asChild className={itemClass}>
+              <DropdownMenuItem onSelect={() => setSwitchAccountsOpen(true)}>
+                Switch Accounts
+              </DropdownMenuItem>
             </Dialog.Trigger>
-            <Dialog.Trigger
-              as={DropdownMenuItem}
-              className={itemClass}
-              onSelect={() => setDeleteOpen(true)}
-            >
-              Delete
+            <Dialog.Trigger asChild className={itemClass}>
+              <DropdownMenuItem onSelect={() => setDeleteOpen(true)}>Delete</DropdownMenuItem>
             </Dialog.Trigger>
             <DropdownMenuArrow />
           </DropdownMenuContent>
@@ -487,19 +479,13 @@ export const MultipleItemsAsDialogTriggers = () => {
               if (deleteOpen2 || switchAccountsOpen2) event.preventDefault();
             }}
           >
-            <Dialog.Trigger
-              as={DropdownMenuItem}
-              className={itemClass}
-              onSelect={() => setSwitchAccountsOpen2(true)}
-            >
-              Switch Accounts
+            <Dialog.Trigger asChild className={itemClass}>
+              <DropdownMenuItem onSelect={() => setSwitchAccountsOpen2(true)}>
+                Switch Accounts
+              </DropdownMenuItem>
             </Dialog.Trigger>
-            <Dialog.Trigger
-              as={DropdownMenuItem}
-              className={itemClass}
-              onSelect={() => setDeleteOpen2(true)}
-            >
-              Delete
+            <Dialog.Trigger asChild className={itemClass}>
+              <DropdownMenuItem onSelect={() => setDeleteOpen2(true)}>Delete</DropdownMenuItem>
             </Dialog.Trigger>
             <DropdownMenuArrow />
           </DropdownMenuContent>

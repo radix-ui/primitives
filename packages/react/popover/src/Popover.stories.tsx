@@ -7,7 +7,6 @@ import {
   PopoverClose,
   PopoverArrow,
 } from './Popover';
-import { Slot } from '@radix-ui/react-slot';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 import { css } from '../../../../stitches.config';
 
@@ -215,7 +214,7 @@ export const CustomAnchor = () => (
 export const WithSlottedTrigger = () => {
   return (
     <Popover>
-      <PopoverTrigger as={Slot}>
+      <PopoverTrigger asChild>
         <button className={triggerClass} onClick={() => console.log('StyledTrigger click')}>
           open
         </button>
@@ -541,7 +540,7 @@ export const Chromatic = () => (
 
     <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
     <Popover open>
-      <PopoverTrigger as={Slot}>
+      <PopoverTrigger asChild>
         <button className={triggerClass}>open</button>
       </PopoverTrigger>
       <PopoverContent className={contentClass} sideOffset={5}>

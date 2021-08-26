@@ -6,7 +6,7 @@ import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type { MergeProps } from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * HoverCard
@@ -25,7 +25,7 @@ const [HoverCardProvider, useHoverCardContext] = createContext<HoverCardContextV
   HOVERCARD_NAME
 );
 
-type HoverCardOwnProps = {
+type HoverCardProps = {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -33,7 +33,7 @@ type HoverCardOwnProps = {
   closeDelay?: number;
 };
 
-const HoverCard: React.FC<HoverCardOwnProps> = (props) => {
+const HoverCard: React.FC<HoverCardProps> = (props) => {
   const {
     children,
     open: openProp,
@@ -83,29 +83,26 @@ HoverCard.displayName = HOVERCARD_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'HoverCardTrigger';
-const TRIGGER_DEFAULT_TAG = 'a';
 
-type HoverCardTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type HoverCardTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TRIGGER_DEFAULT_TAG,
-  HoverCardTriggerOwnProps
->;
+type HoverCardTriggerElement = React.ElementRef<typeof Primitive.a>;
+type HoverCardTriggerProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 
-const HoverCardTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
-  const context = useHoverCardContext(TRIGGER_NAME);
-
-  return (
-    <PopperPrimitive.Anchor
-      data-state={context.open ? 'open' : 'closed'}
-      {...triggerProps}
-      as={as}
-      ref={forwardedRef}
-      onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
-      onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
-    />
-  );
-}) as HoverCardTriggerPrimitive;
+const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
+  (props, forwardedRef) => {
+    const context = useHoverCardContext(TRIGGER_NAME);
+    return (
+      <PopperPrimitive.Anchor asChild>
+        <Primitive.a
+          data-state={context.open ? 'open' : 'closed'}
+          {...props}
+          ref={forwardedRef}
+          onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
+          onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
+        ></Primitive.a>
+      </PopperPrimitive.Anchor>
+    );
+  }
+);
 
 HoverCardTrigger.displayName = TRIGGER_NAME;
 
@@ -115,8 +112,9 @@ HoverCardTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'HoverCardContent';
 
-type HoverCardContentOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof HoverCardContentImpl>,
+type HoverCardContentElement = React.ElementRef<typeof HoverCardContentImpl>;
+type HoverCardContentProps = MergeProps<
+  React.ComponentPropsWithoutRef<typeof HoverCardContentImpl>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -126,31 +124,31 @@ type HoverCardContentOwnProps = Polymorphic.Merge<
   }
 >;
 
-type HoverCardContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof HoverCardContentImpl>,
-  HoverCardContentOwnProps
->;
+const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardContentProps>(
+  (props, forwardedRef) => {
+    const { forceMount, ...contentProps } = props;
+    const context = useHoverCardContext(CONTENT_NAME);
+    return (
+      <Presence present={forceMount || context.open}>
+        <HoverCardContentImpl
+          data-state={context.open ? 'open' : 'closed'}
+          {...contentProps}
+          onPointerEnter={composeEventHandlers(props.onMouseEnter, excludeTouch(context.onOpen))}
+          onPointerLeave={composeEventHandlers(props.onMouseLeave, excludeTouch(context.onClose))}
+          ref={forwardedRef}
+        />
+      </Presence>
+    );
+  }
+);
 
-const HoverCardContent = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, ...contentProps } = props;
-  const context = useHoverCardContext(CONTENT_NAME);
+HoverCardContent.displayName = CONTENT_NAME;
 
-  return (
-    <Presence present={forceMount || context.open}>
-      <HoverCardContentImpl
-        data-state={context.open ? 'open' : 'closed'}
-        {...contentProps}
-        onPointerEnter={composeEventHandlers(props.onMouseEnter, excludeTouch(context.onOpen))}
-        onPointerLeave={composeEventHandlers(props.onMouseLeave, excludeTouch(context.onClose))}
-        ref={forwardedRef}
-      />
-    </Presence>
-  );
-}) as HoverCardContentPrimitive;
+/* ---------------------------------------------------------------------------------------------- */
 
-type PopperPrimitiveOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Content>;
-type HoverCardContentImplOwnProps = Polymorphic.Merge<
-  PopperPrimitiveOwnProps,
+type HoverCardContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type HoverCardContentImplProps = MergeProps<
+  React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
   {
     /**
      * Whether the `HoverCard` should render in a `Portal`
@@ -160,16 +158,12 @@ type HoverCardContentImplOwnProps = Polymorphic.Merge<
   }
 >;
 
-type HoverCardContentImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Content>,
-  HoverCardContentImplOwnProps
->;
-
-const HoverCardContentImpl = React.forwardRef((props, forwardedRef) => {
+const HoverCardContentImpl = React.forwardRef<
+  HoverCardContentImplElement,
+  HoverCardContentImplProps
+>((props, forwardedRef) => {
   const { portalled = true, ...contentProps } = props;
-
   const PortalWrapper = portalled ? Portal : React.Fragment;
-
   return (
     <PortalWrapper>
       <PopperPrimitive.Content
@@ -183,9 +177,7 @@ const HoverCardContentImpl = React.forwardRef((props, forwardedRef) => {
       />
     </PortalWrapper>
   );
-}) as HoverCardContentImplPrimitive;
-
-HoverCardContent.displayName = CONTENT_NAME;
+});
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -214,4 +206,3 @@ export {
   Content,
   Arrow,
 };
-export type { HoverCardTriggerPrimitive, HoverCardContentPrimitive };

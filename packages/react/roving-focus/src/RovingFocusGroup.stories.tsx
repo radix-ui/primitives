@@ -173,30 +173,30 @@ const Button = (props: ButtonProps) => {
     contextValue !== undefined && props.value !== undefined && contextValue === props.value;
 
   return (
-    <RovingFocusItem
-      {...props}
-      as="button"
-      active={isSelected}
-      style={{
-        ...props.style,
-        border: '1px solid',
-        borderColor: '#ccc',
-        padding: '5px 10px',
-        borderRadius: 5,
-        ...(isSelected
-          ? {
-              borderColor: 'black',
-              backgroundColor: 'black',
-              color: 'white',
-            }
-          : {}),
-      }}
-      onClick={props.disabled ? undefined : () => setValue(props.value)}
-      onFocus={composeEventHandlers(props.onFocus, (event) => {
-        if (contextValue !== undefined) {
-          event.target.click();
-        }
-      })}
-    />
+    <RovingFocusItem asChild active={isSelected}>
+      <button
+        {...props}
+        style={{
+          ...props.style,
+          border: '1px solid',
+          borderColor: '#ccc',
+          padding: '5px 10px',
+          borderRadius: 5,
+          ...(isSelected
+            ? {
+                borderColor: 'black',
+                backgroundColor: 'black',
+                color: 'white',
+              }
+            : {}),
+        }}
+        onClick={props.disabled ? undefined : () => setValue(props.value)}
+        onFocus={composeEventHandlers(props.onFocus, (event) => {
+          if (contextValue !== undefined) {
+            event.target.click();
+          }
+        })}
+      />
+    </RovingFocusItem>
   );
 };
