@@ -7,7 +7,7 @@ import type { RenderResult } from '@testing-library/react';
 import type { MergeProps } from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
- * Polymorphic Button
+ *  Button
  * -----------------------------------------------------------------------------------------------*/
 
 type ButtonElement = React.ElementRef<typeof Primitive.button>;
@@ -23,13 +23,13 @@ const Button = React.forwardRef<ButtonElement, ButtonProps>((props, forwardedRef
 });
 
 /* -------------------------------------------------------------------------------------------------
- * Extended Polymorphic Button
+ * Extended Button
  * -----------------------------------------------------------------------------------------------*/
 
 const ExtendedButton = extendPrimitive(Button, { displayName: 'ExtendedButton' });
 
 /* -------------------------------------------------------------------------------------------------
- * Extended Polymorphic Button with default props
+ * Extended Button with default props
  * -----------------------------------------------------------------------------------------------*/
 
 const ExtendedButtonDefaultProps = extendPrimitive(Button, {
