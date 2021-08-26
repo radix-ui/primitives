@@ -88,27 +88,23 @@ ToolbarButton.displayName = BUTTON_NAME;
 const LINK_NAME = 'ToolbarLink';
 
 type ToolbarLinkElement = React.ElementRef<typeof Primitive.a>;
-type ToolbarLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a> & { disabled?: boolean };
+type ToolbarLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 
 const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
-  (props, forwardedRef) => {
-    const { disabled, ...linkProps } = props;
-    return (
-      <RovingFocusItem asChild focusable={!disabled}>
-        <Primitive.a
-          role="toolbaritem"
-          {...linkProps}
-          href={disabled ? undefined : props.href}
-          ref={forwardedRef}
-          onKeyDown={composeEventHandlers(linkProps.onKeyDown, (event) => {
-            if (event.key === ' ') {
-              event.currentTarget.click();
-            }
-          })}
-        />
-      </RovingFocusItem>
-    );
-  }
+  (props, forwardedRef) => (
+    <RovingFocusItem asChild focusable>
+      <Primitive.a
+        role="toolbaritem"
+        {...props}
+        ref={forwardedRef}
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          if (event.key === ' ') {
+            event.currentTarget.click();
+          }
+        })}
+      />
+    </RovingFocusItem>
+  )
 );
 
 ToolbarLink.displayName = LINK_NAME;
