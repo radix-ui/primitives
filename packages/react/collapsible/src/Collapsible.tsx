@@ -8,7 +8,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
 
-import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Collapsible
@@ -28,8 +28,8 @@ const [CollapsibleProvider, useCollapsibleContext] = createContext<CollapsibleCo
 );
 
 type CollapsibleElement = React.ElementRef<typeof Primitive.div>;
-type CollapsibleProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
+type CollapsibleProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     defaultOpen?: boolean;
     open?: boolean;
@@ -75,7 +75,7 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 const TRIGGER_NAME = 'CollapsibleTrigger';
 
 type CollapsibleTriggerElement = React.ElementRef<typeof Primitive.button>;
-type CollapsibleTriggerProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.button>;
+type CollapsibleTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 
 const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, CollapsibleTriggerProps>(
   (props, forwardedRef) => {
@@ -104,8 +104,8 @@ CollapsibleTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'CollapsibleContent';
 
 type CollapsibleContentElement = React.ElementRef<typeof CollapsibleContentImpl>;
-type CollapsibleContentProps = PrimitiveTypes.MergeProps<
-  Omit<PrimitiveTypes.ComponentPropsWithoutRef<typeof CollapsibleContentImpl>, 'present'>,
+type CollapsibleContentProps = Radix.MergeProps<
+  Omit<Radix.ComponentPropsWithoutRef<typeof CollapsibleContentImpl>, 'present'>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -134,8 +134,8 @@ CollapsibleContent.displayName = CONTENT_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type CollapsibleContentImplElement = React.ElementRef<typeof Primitive.div>;
-type CollapsibleContentImplProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
+type CollapsibleContentImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   { present: boolean }
 >;
 

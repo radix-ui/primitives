@@ -7,7 +7,7 @@ import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as ArrowPrimitive from '@radix-ui/react-arrow';
 
-import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 import type { Side, Align } from '@radix-ui/popper';
 import type { Measurable } from '@radix-ui/rect';
 
@@ -41,8 +41,8 @@ Popper.displayName = POPPER_NAME;
 const ANCHOR_NAME = 'PopperAnchor';
 
 type PopperAnchorElement = React.ElementRef<typeof Primitive.div>;
-type PopperAnchorProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
+type PopperAnchorProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   { virtualRef?: React.RefObject<Measurable> }
 >;
 
@@ -83,8 +83,8 @@ const [PopperContentProvider, useContentContext] = createContext<PopperContentCo
 );
 
 type PopperContentElement = React.ElementRef<typeof Primitive.div>;
-type PopperContentProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
+type PopperContentProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     side?: Side;
     sideOffset?: number;
@@ -173,8 +173,8 @@ PopperContent.displayName = CONTENT_NAME;
 const ARROW_NAME = 'PopperArrow';
 
 type PopperArrowElement = React.ElementRef<typeof ArrowPrimitive.Root>;
-type PopperArrowProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>,
+type PopperArrowProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>,
   { offset?: number }
 >;
 

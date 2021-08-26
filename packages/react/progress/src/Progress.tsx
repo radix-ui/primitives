@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createContext } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Progress
@@ -16,8 +16,8 @@ type ProgressContextValue = { value: number | null; max: number };
 const [ProgressProvider, useProgressContext] = createContext<ProgressContextValue>(PROGRESS_NAME);
 
 type ProgressElement = React.ElementRef<typeof Primitive.div>;
-type ProgressProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
+type ProgressProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     value?: number | null | undefined;
     max?: number;
@@ -84,7 +84,7 @@ Progress.propTypes = {
 const INDICATOR_NAME = 'ProgressIndicator';
 
 type ProgressIndicatorElement = React.ElementRef<typeof Primitive.div>;
-type ProgressIndicatorProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>;
+type ProgressIndicatorProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 
 const ProgressIndicator = React.forwardRef<ProgressIndicatorElement, ProgressIndicatorProps>(
   (props, forwardedRef) => {

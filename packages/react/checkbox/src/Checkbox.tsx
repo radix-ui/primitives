@@ -9,7 +9,7 @@ import { useLabelContext } from '@radix-ui/react-label';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
@@ -27,8 +27,8 @@ type CheckboxContextValue = {
 const [CheckboxProvider, useCheckboxContext] = createContext<CheckboxContextValue>(CHECKBOX_NAME);
 
 type CheckboxElement = React.ElementRef<typeof Primitive.button>;
-type CheckboxProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.button>,
+type CheckboxProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.button>,
   {
     checked?: CheckedState;
     defaultChecked?: CheckedState;
@@ -115,8 +115,8 @@ Checkbox.displayName = CHECKBOX_NAME;
 const INDICATOR_NAME = 'CheckboxIndicator';
 
 type CheckboxIndicatorElement = React.ElementRef<typeof Primitive.span>;
-type CheckboxIndicatorProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.span>,
+type CheckboxIndicatorProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -148,7 +148,7 @@ CheckboxIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type BubbleInputProps = Omit<PrimitiveTypes.ComponentPropsWithoutRef<'input'>, 'checked'> & {
+type BubbleInputProps = Omit<Radix.ComponentPropsWithoutRef<'input'>, 'checked'> & {
   checked: CheckedState;
   control: HTMLElement | null;
   bubbles: boolean;

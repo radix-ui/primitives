@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 const MAX_Z_INDEX = 2147483647;
 
@@ -14,8 +14,8 @@ const MAX_Z_INDEX = 2147483647;
 const PORTAL_NAME = 'Portal';
 
 type PortalElement = React.ElementRef<typeof Primitive.div>;
-type PortalProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
+type PortalProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   { containerRef?: React.RefObject<HTMLElement> }
 >;
 

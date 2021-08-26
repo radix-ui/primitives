@@ -7,7 +7,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
 import { useId } from '@radix-ui/react-id';
 
-import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Accordion
@@ -18,21 +18,19 @@ const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
 
 type AccordionElement = React.ElementRef<typeof AccordionMultiple | typeof AccordionSingle>;
 type AccordionProps =
-  | ({ type: 'single' } & PrimitiveTypes.ComponentPropsWithoutRef<typeof AccordionSingle>)
-  | ({ type: 'multiple' } & PrimitiveTypes.ComponentPropsWithoutRef<typeof AccordionMultiple>);
+  | ({ type: 'single' } & Radix.ComponentPropsWithoutRef<typeof AccordionSingle>)
+  | ({ type: 'multiple' } & Radix.ComponentPropsWithoutRef<typeof AccordionMultiple>);
 
 const Accordion = React.forwardRef<AccordionElement, AccordionProps>((props, forwardedRef) => {
   const { type, ...accordionProps } = props;
 
   if (type === 'single') {
-    const singleProps = accordionProps as PrimitiveTypes.ComponentPropsWithoutRef<
-      typeof AccordionSingle
-    >;
+    const singleProps = accordionProps as Radix.ComponentPropsWithoutRef<typeof AccordionSingle>;
     return <AccordionSingle {...singleProps} ref={forwardedRef} />;
   }
 
   if (type === 'multiple') {
-    const multipleProps = accordionProps as PrimitiveTypes.ComponentPropsWithoutRef<
+    const multipleProps = accordionProps as Radix.ComponentPropsWithoutRef<
       typeof AccordionMultiple
     >;
     return <AccordionMultiple {...multipleProps} ref={forwardedRef} />;
@@ -59,8 +57,8 @@ const [
 const AccordionCollapsibleContext = React.createContext(false);
 
 type AccordionSingleElement = React.ElementRef<typeof AccordionImpl>;
-type AccordionSingleProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof AccordionImpl>,
+type AccordionSingleProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof AccordionImpl>,
   {
     /**
      * The controlled stateful value of the accordion item whose content is expanded.
@@ -116,8 +114,8 @@ const AccordionSingle = React.forwardRef<AccordionSingleElement, AccordionSingle
 /* -----------------------------------------------------------------------------------------------*/
 
 type AccordionMultipleElement = React.ElementRef<typeof AccordionImpl>;
-type AccordionMultipleProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof AccordionImpl>,
+type AccordionMultipleProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof AccordionImpl>,
   {
     /**
      * The controlled stateful value of the accordion items whose contents are expanded.
@@ -186,8 +184,8 @@ const [AccordionImplProvider, useAccordionContext] = createContext<AccordionImpl
 );
 
 type AccordionImplElement = React.ElementRef<typeof Primitive.div>;
-type AccordionImplProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
+type AccordionImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /**
      * Whether or not an accordion is disabled from user interaction.
@@ -270,9 +268,9 @@ const [AccordionItemProvider, useAccordionItemContext] = createContext<Accordion
 );
 
 type AccordionItemElement = React.ElementRef<typeof CollapsiblePrimitive.Root>;
-type AccordionItemProps = PrimitiveTypes.MergeProps<
+type AccordionItemProps = Radix.MergeProps<
   Omit<
-    PrimitiveTypes.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>,
+    Radix.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>,
     'open' | 'defaultOpen' | 'onOpenChange'
   >,
   {
@@ -331,7 +329,7 @@ AccordionItem.displayName = ITEM_NAME;
 const HEADER_NAME = 'AccordionHeader';
 
 type AccordionHeaderElement = React.ElementRef<typeof Primitive.h3>;
-type AccordionHeaderProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.h3>;
+type AccordionHeaderProps = Radix.ComponentPropsWithoutRef<typeof Primitive.h3>;
 /**
  * `AccordionHeader` contains the content for the parts of an `AccordionItem` that will be visible
  * whether or not its content is collapsed.
@@ -359,9 +357,7 @@ AccordionHeader.displayName = HEADER_NAME;
 const TRIGGER_NAME = 'AccordionTrigger';
 
 type AccordionTriggerElement = React.ElementRef<typeof CollapsiblePrimitive.Trigger>;
-type AccordionTriggerProps = PrimitiveTypes.ComponentPropsWithoutRef<
-  typeof CollapsiblePrimitive.Trigger
->;
+type AccordionTriggerProps = Radix.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Trigger>;
 
 /**
  * `AccordionTrigger` is the trigger that toggles the collapsed state of an `AccordionItem`. It
@@ -409,9 +405,7 @@ AccordionTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'AccordionContent';
 
 type AccordionContentElement = React.ElementRef<typeof CollapsiblePrimitive.Content>;
-type AccordionContentProps = PrimitiveTypes.ComponentPropsWithoutRef<
-  typeof CollapsiblePrimitive.Content
->;
+type AccordionContentProps = Radix.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Content>;
 /**
  * `AccordionContent` contains the collapsible content for an `AccordionItem`.
  */

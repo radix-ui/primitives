@@ -14,7 +14,7 @@ import { useId } from '@radix-ui/react-id';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
-import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Popover
@@ -81,7 +81,7 @@ Popover.displayName = POPOVER_NAME;
 const ANCHOR_NAME = 'PopoverAnchor';
 
 type PopoverAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
-type PopoverAnchorProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
+type PopoverAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
 
 const PopoverAnchor = React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>(
   (props, forwardedRef) => {
@@ -106,7 +106,7 @@ PopoverAnchor.displayName = ANCHOR_NAME;
 const TRIGGER_NAME = 'PopoverTrigger';
 
 type PopoverTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PopoverTriggerProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PopoverTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 
 const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerProps>(
   (props, forwardedRef) => {
@@ -145,10 +145,8 @@ const CONTENT_NAME = 'PopoverContent';
 type PopoverContentElement = React.ElementRef<
   typeof PopoverContentModal | typeof PopoverContentNonModal
 >;
-type PopoverContentProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<
-    typeof PopoverContentModal | typeof PopoverContentNonModal
-  >,
+type PopoverContentProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof PopoverContentModal | typeof PopoverContentNonModal>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -179,9 +177,9 @@ PopoverContent.displayName = CONTENT_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type PopoverContentTypeElement = React.ElementRef<typeof PopoverContentImpl>;
-type PopoverContentTypeProps = PrimitiveTypes.MergeProps<
+type PopoverContentTypeProps = Radix.MergeProps<
   Omit<
-    PrimitiveTypes.ComponentPropsWithoutRef<typeof PopoverContentImpl>,
+    Radix.ComponentPropsWithoutRef<typeof PopoverContentImpl>,
     'trapFocus' | 'disableOutsidePointerEvents'
   >,
   {
@@ -297,12 +295,12 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type FocusScopeProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof FocusScope>;
-type DismissableLayerProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
+type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 
 type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type PopoverContentImplProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
+type PopoverContentImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
   Omit<DismissableLayerProps, 'onDismiss'> & {
     /**
      * Whether focus should be trapped within the `Popover`
@@ -385,7 +383,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
 const CLOSE_NAME = 'PopoverClose';
 
 type PopoverCloseElement = React.ElementRef<typeof Primitive.button>;
-type PopoverCloseProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PopoverCloseProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 
 const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
   (props, forwardedRef) => {

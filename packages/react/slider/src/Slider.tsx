@@ -10,7 +10,7 @@ import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from '@radix-ui/react-collection';
 
-import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -46,9 +46,9 @@ type SliderContextValue = {
 const [SliderProvider, useSliderContext] = createContext<SliderContextValue>(SLIDER_NAME);
 
 type SliderElement = React.ElementRef<typeof SliderHorizontal | typeof SliderVertical>;
-type SliderProps = PrimitiveTypes.MergeProps<
+type SliderProps = Radix.MergeProps<
   Omit<
-    PrimitiveTypes.ComponentPropsWithoutRef<typeof SliderHorizontal | typeof SliderVertical>,
+    Radix.ComponentPropsWithoutRef<typeof SliderHorizontal | typeof SliderVertical>,
     keyof SliderOrientationPrivateProps
   >,
   {
@@ -193,8 +193,8 @@ type SliderOrientationPrivateProps = {
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
 };
-type SliderOrientationProps = PrimitiveTypes.MergeProps<
-  Omit<PrimitiveTypes.ComponentPropsWithoutRef<typeof SliderImpl>, keyof SliderImplPrivateProps>,
+type SliderOrientationProps = Radix.MergeProps<
+  Omit<Radix.ComponentPropsWithoutRef<typeof SliderImpl>, keyof SliderImplPrivateProps>,
   SliderOrientationPrivateProps & { min: number; max: number }
 >;
 
@@ -330,8 +330,8 @@ type SliderImplPrivateProps = {
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(event: React.KeyboardEvent): void;
 };
-type SliderImplProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.div>,
+type SliderImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   SliderImplPrivateProps
 >;
 
@@ -397,7 +397,7 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>((props, 
 const TRACK_NAME = 'SliderTrack';
 
 type SliderTrackElement = React.ElementRef<typeof Primitive.span>;
-type SliderTrackProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.span>;
+type SliderTrackProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
 const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
   (props, forwardedRef) => {
@@ -422,7 +422,7 @@ SliderTrack.displayName = TRACK_NAME;
 const RANGE_NAME = 'SliderRange';
 
 type SliderRangeElement = React.ElementRef<typeof Primitive.span>;
-type SliderRangeProps = PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.span>;
+type SliderRangeProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
 const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
   (props, forwardedRef) => {
@@ -462,10 +462,7 @@ SliderRange.displayName = RANGE_NAME;
 const THUMB_NAME = 'SliderThumb';
 
 type SliderThumbElement = React.ElementRef<typeof SliderThumbImpl>;
-type SliderThumbProps = Omit<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof SliderThumbImpl>,
-  'index'
->;
+type SliderThumbProps = Omit<Radix.ComponentPropsWithoutRef<typeof SliderThumbImpl>, 'index'>;
 
 const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
   (props, forwardedRef) => {
@@ -481,8 +478,8 @@ const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
 );
 
 type SliderThumbImplElement = React.ElementRef<typeof Primitive.span>;
-type SliderThumbImplProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.span>,
+type SliderThumbImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
   { index: number }
 >;
 
@@ -554,7 +551,7 @@ SliderThumb.displayName = THUMB_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const BubbleInput = (props: PrimitiveTypes.ComponentPropsWithoutRef<'input'>) => {
+const BubbleInput = (props: Radix.ComponentPropsWithoutRef<'input'>) => {
   const { value, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevValue = usePrevious(value);

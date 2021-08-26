@@ -3,7 +3,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useId } from '@radix-ui/react-id';
 
-import type * as PrimitiveTypes from '@radix-ui/react-primitive';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
@@ -15,8 +15,8 @@ type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
 type LabelElement = React.ElementRef<typeof Primitive.span>;
-type LabelProps = PrimitiveTypes.MergeProps<
-  PrimitiveTypes.ComponentPropsWithoutRef<typeof Primitive.span>,
+type LabelProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
   { htmlFor?: string }
 >;
 
