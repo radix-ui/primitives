@@ -3,13 +3,17 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
+
+/* -------------------------------------------------------------------------------------------------
+ * Toggle
+ * -----------------------------------------------------------------------------------------------*/
 
 const NAME = 'Toggle';
-const DEFAULT_TAG = 'button';
 
-type ToggleOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type ToggleElement = React.ElementRef<typeof Primitive.button>;
+type ToggleProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.button>,
   {
     /**
      * The controlled state of the toggle.
@@ -28,17 +32,8 @@ type ToggleOwnProps = Polymorphic.Merge<
   }
 >;
 
-type TogglePrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, ToggleOwnProps>;
-
-const Toggle = React.forwardRef((props, forwardedRef) => {
-  const {
-    as = DEFAULT_TAG,
-    pressed: pressedProp,
-    defaultPressed = false,
-    onClick,
-    onPressedChange,
-    ...buttonProps
-  } = props;
+const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef) => {
+  const { pressed: pressedProp, defaultPressed = false, onPressedChange, ...buttonProps } = props;
 
   const [pressed = false, setPressed] = useControllableState({
     prop: pressedProp,
@@ -47,24 +42,25 @@ const Toggle = React.forwardRef((props, forwardedRef) => {
   });
 
   return (
-    <Primitive
+    <Primitive.button
       type="button"
       aria-pressed={pressed}
       data-state={pressed ? 'on' : 'off'}
       data-disabled={props.disabled ? '' : undefined}
       {...buttonProps}
-      as={as}
       ref={forwardedRef}
-      onClick={composeEventHandlers(onClick, () => {
+      onClick={composeEventHandlers(props.onClick, () => {
         if (!props.disabled) {
           setPressed(!pressed);
         }
       })}
     />
   );
-}) as TogglePrimitive;
+});
 
 Toggle.displayName = NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
 
 const Root = Toggle;
 
@@ -73,4 +69,3 @@ export {
   //
   Root,
 };
-export type { TogglePrimitive };

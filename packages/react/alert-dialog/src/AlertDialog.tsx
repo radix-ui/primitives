@@ -6,7 +6,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { extendPrimitive } from '@radix-ui/react-primitive';
 import { Slottable } from '@radix-ui/react-slot';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
@@ -14,7 +14,7 @@ import type * as Polymorphic from '@radix-ui/react-polymorphic';
 
 const ROOT_NAME = 'AlertDialog';
 
-type AlertDialogProps = Omit<React.ComponentProps<typeof DialogPrimitive.Root>, 'modal'>;
+type AlertDialogProps = Omit<Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Root>, 'modal'>;
 
 const AlertDialog: React.FC<AlertDialogProps> = (props) => (
   <DialogPrimitive.Root {...props} modal={true} />
@@ -29,61 +29,59 @@ AlertDialog.displayName = ROOT_NAME;
 const CONTENT_NAME = 'AlertDialogContent';
 
 type AlertDialogContentContextValue = {
-  cancelRef: React.MutableRefObject<React.ElementRef<typeof AlertDialogCancel> | null>;
+  cancelRef: React.MutableRefObject<AlertDialogCancelElement | null>;
 };
 
-const [
-  AlertDialogContentProvider,
-  useAlertDialogContentContext,
-] = createContext<AlertDialogContentContextValue>(CONTENT_NAME);
+const [AlertDialogContentProvider, useAlertDialogContentContext] =
+  createContext<AlertDialogContentContextValue>(CONTENT_NAME);
 
+type AlertDialogContentElement = React.ElementRef<typeof DialogPrimitive.Content>;
 type AlertDialogContentProps = Omit<
-  Polymorphic.OwnProps<typeof DialogPrimitive.Content>,
+  Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
   'onPointerDownOutside'
 >;
 
-type AlertDialogContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof DialogPrimitive.Content>,
-  AlertDialogContentProps
->;
+const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDialogContentProps>(
+  (props, forwardedRef) => {
+    const { children, ...contentProps } = props;
+    const contentRef = React.useRef<AlertDialogContentElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, contentRef);
+    const cancelRef = React.useRef<AlertDialogCancelElement | null>(null);
 
-const AlertDialogContent = React.forwardRef((props, forwardedRef) => {
-  const { children, ...contentProps } = props;
-  const contentRef = React.useRef<React.ElementRef<typeof AlertDialogContent>>(null);
-  const composedRefs = useComposedRefs(forwardedRef, contentRef);
-  const cancelRef = React.useRef<React.ElementRef<typeof AlertDialogCancel> | null>(null);
-
-  return (
-    <DialogPrimitive.LabelWarningProvider
-      value={React.useMemo(
-        () => ({ contentName: CONTENT_NAME, titleName: TITLE_NAME, docsSlug: 'alert-dialog' }),
-        []
-      )}
-    >
-      <AlertDialogContentProvider cancelRef={cancelRef}>
-        <DialogPrimitive.Content
-          role="alertdialog"
-          {...contentProps}
-          ref={composedRefs}
-          onOpenAutoFocus={composeEventHandlers(contentProps.onOpenAutoFocus, (event) => {
-            event.preventDefault();
-            cancelRef.current?.focus({ preventScroll: true });
-          })}
-          onPointerDownOutside={(event) => event.preventDefault()}
-        >
-          {/**
-           * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
-           * around everything, otherwise the `DescriptionWarning` would be rendered straight away.
-           * This is because we want the accessibility checks to run only once the content is actually
-           * open and that behaviour is already encapsulated in `DialogContent`.
-           */}
-          <Slottable>{children}</Slottable>
-          {process.env.NODE_ENV === 'development' && <DescriptionWarning contentRef={contentRef} />}
-        </DialogPrimitive.Content>
-      </AlertDialogContentProvider>
-    </DialogPrimitive.LabelWarningProvider>
-  );
-}) as AlertDialogContentPrimitive;
+    return (
+      <DialogPrimitive.LabelWarningProvider
+        value={React.useMemo(
+          () => ({ contentName: CONTENT_NAME, titleName: TITLE_NAME, docsSlug: 'alert-dialog' }),
+          []
+        )}
+      >
+        <AlertDialogContentProvider cancelRef={cancelRef}>
+          <DialogPrimitive.Content
+            role="alertdialog"
+            {...contentProps}
+            ref={composedRefs}
+            onOpenAutoFocus={composeEventHandlers(contentProps.onOpenAutoFocus, (event) => {
+              event.preventDefault();
+              cancelRef.current?.focus({ preventScroll: true });
+            })}
+            onPointerDownOutside={(event) => event.preventDefault()}
+          >
+            {/**
+             * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
+             * around everything, otherwise the `DescriptionWarning` would be rendered straight away.
+             * This is because we want the accessibility checks to run only once the content is actually
+             * open and that behaviour is already encapsulated in `DialogContent`.
+             */}
+            <Slottable>{children}</Slottable>
+            {process.env.NODE_ENV === 'development' && (
+              <DescriptionWarning contentRef={contentRef} />
+            )}
+          </DialogPrimitive.Content>
+        </AlertDialogContentProvider>
+      </DialogPrimitive.LabelWarningProvider>
+    );
+  }
+);
 
 AlertDialogContent.displayName = CONTENT_NAME;
 
@@ -93,17 +91,16 @@ AlertDialogContent.displayName = CONTENT_NAME;
 
 const CANCEL_NAME = 'AlertDialogCancel';
 
-type AlertDialogCancelOwnProps = Polymorphic.OwnProps<typeof DialogPrimitive.Close>;
-type AlertDialogCancelPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof DialogPrimitive.Close>,
-  AlertDialogCancelOwnProps
->;
+type AlertDialogCancelElement = React.ElementRef<typeof DialogPrimitive.Close>;
+type AlertDialogCancelProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Close>;
 
-const AlertDialogCancel = React.forwardRef((props, forwardedRef) => {
-  const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
-  const ref = useComposedRefs(forwardedRef, cancelRef);
-  return <DialogPrimitive.Close {...props} ref={ref} />;
-}) as AlertDialogCancelPrimitive;
+const AlertDialogCancel = React.forwardRef<AlertDialogCancelElement, AlertDialogCancelProps>(
+  (props, forwardedRef) => {
+    const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
+    const ref = useComposedRefs(forwardedRef, cancelRef);
+    return <DialogPrimitive.Close {...props} ref={ref} />;
+  }
+);
 
 AlertDialogCancel.displayName = CANCEL_NAME;
 
@@ -130,7 +127,7 @@ const AlertDialogDescription = extendPrimitive(DialogPrimitive.Description, {
 /* ---------------------------------------------------------------------------------------------- */
 
 type DescriptionWarningProps = {
-  contentRef: React.RefObject<React.ElementRef<typeof AlertDialogContent>>;
+  contentRef: React.RefObject<AlertDialogContentElement>;
 };
 
 const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef }) => {
@@ -180,4 +177,3 @@ export {
   Title,
   Description,
 };
-export type { AlertDialogContentPrimitive, AlertDialogCancelPrimitive };

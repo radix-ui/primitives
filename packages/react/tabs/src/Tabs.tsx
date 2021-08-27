@@ -7,9 +7,9 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
 import { useId } from '@radix-ui/react-id';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
-type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
+type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
 
 /* -------------------------------------------------------------------------------------------------
  * Tabs
@@ -21,15 +21,16 @@ type TabsContextValue = {
   baseId: string;
   value?: string;
   onValueChange: (value: string) => void;
-  orientation?: TabsOwnProps['orientation'];
-  dir?: TabsOwnProps['dir'];
-  activationMode?: TabsOwnProps['activationMode'];
+  orientation?: TabsProps['orientation'];
+  dir?: TabsProps['dir'];
+  activationMode?: TabsProps['activationMode'];
 };
 
 const [TabsProvider, useTabsContext] = createContext<TabsContextValue>(TABS_NAME);
 
-type TabsOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type TabsElement = React.ElementRef<typeof Primitive.div>;
+type TabsProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /** The value for the selected tab, if controlled */
     value?: string;
@@ -53,12 +54,7 @@ type TabsOwnProps = Polymorphic.Merge<
   }
 >;
 
-type TabsPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  TabsOwnProps
->;
-
-const Tabs = React.forwardRef((props, forwardedRef) => {
+const Tabs = React.forwardRef<TabsElement, TabsProps>((props, forwardedRef) => {
   const {
     value: valueProp,
     onValueChange,
@@ -84,10 +80,10 @@ const Tabs = React.forwardRef((props, forwardedRef) => {
       dir={dir}
       activationMode={activationMode}
     >
-      <Primitive data-orientation={orientation} {...tabsProps} ref={forwardedRef} />
+      <Primitive.div data-orientation={orientation} {...tabsProps} ref={forwardedRef} />
     </TabsProvider>
   );
-}) as TabsPrimitive;
+});
 
 Tabs.displayName = TABS_NAME;
 
@@ -96,37 +92,22 @@ Tabs.displayName = TABS_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TAB_LIST_NAME = 'TabsList';
-const TAB_LIST_DEFAULT_TAG = 'div';
 
-type TabsListOwnProps = Omit<
-  Polymorphic.OwnProps<typeof RovingFocusGroup>,
-  | 'orientation'
-  | 'currentTabStopId'
-  | 'defaultCurrentTabStopId'
-  | 'onCurrentTabStopIdChange'
-  | 'onEntryFocus'
->;
-type TabsListPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TAB_LIST_DEFAULT_TAG,
-  TabsListOwnProps
+type TabsListElement = React.ElementRef<typeof Primitive.div>;
+type TabsListProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
+  { loop?: RovingFocusGroupProps['loop'] }
 >;
 
-const TabsList = React.forwardRef((props, forwardedRef) => {
-  const { as = TAB_LIST_DEFAULT_TAG, loop = true, ...otherProps } = props;
+const TabsList = React.forwardRef<TabsListElement, TabsListProps>((props, forwardedRef) => {
+  const { loop = true, ...listProps } = props;
   const context = useTabsContext(TAB_LIST_NAME);
-
   return (
-    <RovingFocusGroup
-      role="tablist"
-      orientation={context.orientation}
-      dir={context.dir}
-      loop={loop}
-      {...otherProps}
-      as={as}
-      ref={forwardedRef}
-    />
+    <RovingFocusGroup asChild orientation={context.orientation} dir={context.dir} loop={loop}>
+      <Primitive.div role="tablist" dir={context.dir} {...listProps} ref={forwardedRef} />
+    </RovingFocusGroup>
   );
-}) as TabsListPrimitive;
+});
 
 TabsList.displayName = TAB_LIST_NAME;
 
@@ -135,66 +116,61 @@ TabsList.displayName = TAB_LIST_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'TabsTrigger';
-const TRIGGER_DEFAULT_TAG = 'div';
 
-type TabsTriggerOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof RovingFocusItem>, 'focusable' | 'active'>,
+type TabsTriggerElement = React.ElementRef<typeof Primitive.div>;
+type TabsTriggerProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     value: string;
     disabled?: boolean;
   }
 >;
 
-type TabsTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TRIGGER_DEFAULT_TAG,
-  TabsTriggerOwnProps
->;
-
-const TabsTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, value, disabled = false, ...triggerProps } = props;
-  const context = useTabsContext(TRIGGER_NAME);
-  const triggerId = makeTriggerId(context.baseId, value);
-  const contentId = makeContentId(context.baseId, value);
-  const isSelected = value === context.value;
-  const handleTabChange = useCallbackRef(() => context.onValueChange(value));
-
-  return (
-    <RovingFocusItem
-      role="tab"
-      aria-selected={isSelected}
-      aria-controls={contentId}
-      aria-disabled={disabled || undefined}
-      data-state={isSelected ? 'active' : 'inactive'}
-      data-disabled={disabled ? '' : undefined}
-      id={triggerId}
-      {...triggerProps}
-      focusable={!disabled}
-      active={isSelected}
-      as={as}
-      ref={forwardedRef}
-      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
-          handleTabChange();
-        }
-      })}
-      onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
-        // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-        // but not when the control key is pressed (avoiding MacOS right click)
-        if (!disabled && event.button === 0 && event.ctrlKey === false) {
-          handleTabChange();
-        }
-      })}
-      onFocus={composeEventHandlers(props.onFocus, () => {
-        // handle "automatic" activation if necessary
-        // ie. activate tab following focus
-        const isAutomaticActivation = context.activationMode !== 'manual';
-        if (!isSelected && !disabled && isAutomaticActivation) {
-          handleTabChange();
-        }
-      })}
-    />
-  );
-}) as TabsTriggerPrimitive;
+const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
+  (props, forwardedRef) => {
+    const { value, disabled = false, ...triggerProps } = props;
+    const context = useTabsContext(TRIGGER_NAME);
+    const triggerId = makeTriggerId(context.baseId, value);
+    const contentId = makeContentId(context.baseId, value);
+    const isSelected = value === context.value;
+    const handleTabChange = useCallbackRef(() => context.onValueChange(value));
+    return (
+      <RovingFocusItem asChild focusable={!disabled} active={isSelected}>
+        <Primitive.div
+          role="tab"
+          aria-selected={isSelected}
+          aria-controls={contentId}
+          aria-disabled={disabled || undefined}
+          data-state={isSelected ? 'active' : 'inactive'}
+          data-disabled={disabled ? '' : undefined}
+          id={triggerId}
+          {...triggerProps}
+          ref={forwardedRef}
+          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+            if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
+              handleTabChange();
+            }
+          })}
+          onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
+            // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
+            // but not when the control key is pressed (avoiding MacOS right click)
+            if (!disabled && event.button === 0 && event.ctrlKey === false) {
+              handleTabChange();
+            }
+          })}
+          onFocus={composeEventHandlers(props.onFocus, () => {
+            // handle "automatic" activation if necessary
+            // ie. activate tab following focus
+            const isAutomaticActivation = context.activationMode !== 'manual';
+            if (!isSelected && !disabled && isAutomaticActivation) {
+              handleTabChange();
+            }
+          })}
+        />
+      </RovingFocusItem>
+    );
+  }
+);
 
 TabsTrigger.displayName = TRIGGER_NAME;
 
@@ -204,36 +180,34 @@ TabsTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'TabsContent';
 
-type TabsContentPropsOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type TabsContentElement = React.ElementRef<typeof Primitive.div>;
+type TabsContentProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   { value: string }
 >;
-type TabsContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  TabsContentPropsOwnProps
->;
 
-const TabsContent = React.forwardRef((props, forwardedRef) => {
-  const { value, ...contentProps } = props;
-  const context = useTabsContext(CONTENT_NAME);
-  const triggerId = makeTriggerId(context.baseId, value);
-  const contentId = makeContentId(context.baseId, value);
-  const isSelected = value === context.value;
-
-  return (
-    <Primitive
-      data-state={isSelected ? 'active' : 'inactive'}
-      data-orientation={context.orientation}
-      role="tabpanel"
-      aria-labelledby={triggerId}
-      hidden={!isSelected}
-      id={contentId}
-      tabIndex={0}
-      {...contentProps}
-      ref={forwardedRef}
-    />
-  );
-}) as TabsContentPrimitive;
+const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
+  (props, forwardedRef) => {
+    const { value, ...contentProps } = props;
+    const context = useTabsContext(CONTENT_NAME);
+    const triggerId = makeTriggerId(context.baseId, value);
+    const contentId = makeContentId(context.baseId, value);
+    const isSelected = value === context.value;
+    return (
+      <Primitive.div
+        data-state={isSelected ? 'active' : 'inactive'}
+        data-orientation={context.orientation}
+        role="tabpanel"
+        aria-labelledby={triggerId}
+        hidden={!isSelected}
+        id={contentId}
+        tabIndex={0}
+        {...contentProps}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
 
 TabsContent.displayName = CONTENT_NAME;
 
@@ -263,4 +237,3 @@ export {
   Trigger,
   Content,
 };
-export type { TabsPrimitive, TabsListPrimitive, TabsTriggerPrimitive, TabsContentPrimitive };

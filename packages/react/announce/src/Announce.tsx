@@ -4,7 +4,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';
@@ -24,8 +24,9 @@ const listenerMap = new Map<Element, number>();
 
 const NAME = 'Announce';
 
-type AnnounceOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type AnnounceElement = React.ElementRef<typeof Primitive.div>;
+type AnnounceProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /**
      * Mirrors the `aria-atomic` DOM attribute for live regions. It is an optional attribute that
@@ -86,12 +87,7 @@ type AnnounceOwnProps = Polymorphic.Merge<
   }
 >;
 
-type AnnouncePrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  AnnounceOwnProps
->;
-
-const Announce = React.forwardRef((props, forwardedRef) => {
+const Announce = React.forwardRef<AnnounceElement, AnnounceProps>((props, forwardedRef) => {
   const {
     'aria-relevant': ariaRelevant,
     children,
@@ -175,17 +171,19 @@ const Announce = React.forwardRef((props, forwardedRef) => {
 
   return (
     <React.Fragment>
-      <Primitive {...regionProps} ref={ref}>
+      <Primitive.div {...regionProps} ref={ref}>
         {children}
-      </Primitive>
+      </Primitive.div>
 
       {/* portal into live region for screen reader announcements */}
       {region && ReactDOM.createPortal(<div>{children}</div>, region)}
     </React.Fragment>
   );
-}) as AnnouncePrimitive;
+});
 
 Announce.displayName = NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
 
 type LiveRegionOptions = {
   type: string;
@@ -240,4 +238,3 @@ export {
   //
   Root,
 };
-export type { AnnouncePrimitive };

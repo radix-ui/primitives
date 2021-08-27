@@ -10,7 +10,7 @@ import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from '@radix-ui/react-collection';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -23,7 +23,7 @@ const BACK_KEYS: Record<Direction, string[]> = {
 };
 
 const [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
-  React.ElementRef<typeof SliderThumb>,
+  SliderThumbElement,
   {}
 >();
 
@@ -32,7 +32,6 @@ const [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] = 
  * -----------------------------------------------------------------------------------------------*/
 
 const SLIDER_NAME = 'Slider';
-const SLIDER_DEFAULT_TAG = 'span';
 
 type SliderContextValue = {
   disabled?: boolean;
@@ -41,13 +40,17 @@ type SliderContextValue = {
   values: number[];
   valueIndexToChangeRef: React.MutableRefObject<number>;
   thumbs: Set<React.ElementRef<typeof SliderThumb>>;
-  orientation: SliderOwnProps['orientation'];
+  orientation: SliderProps['orientation'];
 };
 
 const [SliderProvider, useSliderContext] = createContext<SliderContextValue>(SLIDER_NAME);
 
-type SliderOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type SliderElement = React.ElementRef<typeof SliderHorizontal | typeof SliderVertical>;
+type SliderProps = Radix.MergeProps<
+  Omit<
+    Radix.ComponentPropsWithoutRef<typeof SliderHorizontal | typeof SliderVertical>,
+    keyof SliderOrientationPrivateProps
+  >,
   {
     name?: string;
     disabled?: boolean;
@@ -63,9 +66,7 @@ type SliderOwnProps = Polymorphic.Merge<
   }
 >;
 
-type SliderPrimitive = Polymorphic.ForwardRefComponent<typeof SLIDER_DEFAULT_TAG, SliderOwnProps>;
-
-const Slider = React.forwardRef((props, forwardedRef) => {
+const Slider = React.forwardRef<SliderElement, SliderProps>((props, forwardedRef) => {
   const {
     name,
     min = 0,
@@ -170,7 +171,7 @@ const Slider = React.forwardRef((props, forwardedRef) => {
         ))}
     </SliderProvider>
   );
-}) as SliderPrimitive;
+});
 
 Slider.displayName = SLIDER_NAME;
 
@@ -185,172 +186,157 @@ const SliderOrientationContext = React.createContext<{
   direction: number;
 }>({} as any);
 
-type SliderOrientationPartOwnProps = Omit<
-  Polymorphic.OwnProps<typeof SliderImpl>,
-  | 'onSlideStart'
-  | 'onSlideMove'
-  | 'onSlideEnd'
-  | 'onSlideTouchStart'
-  | 'onSlideTouchMove'
-  | 'onSlideTouchEnd'
+type SliderOrientationPrivateProps = {
+  onSlideStart?(value: number): void;
+  onSlideMove?(value: number): void;
+  onHomeKeyDown(event: React.KeyboardEvent): void;
+  onEndKeyDown(event: React.KeyboardEvent): void;
+  onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
+};
+type SliderOrientationProps = Radix.MergeProps<
+  Omit<Radix.ComponentPropsWithoutRef<typeof SliderImpl>, keyof SliderImplPrivateProps>,
+  SliderOrientationPrivateProps & { min: number; max: number }
 >;
-type SliderOrientationOwnProps = Polymorphic.Merge<
-  SliderOrientationPartOwnProps,
-  {
-    min: number;
-    max: number;
-    onSlideStart?(value: number): void;
-    onSlideMove?(value: number): void;
-    onHomeKeyDown(event: React.KeyboardEvent): void;
-    onEndKeyDown(event: React.KeyboardEvent): void;
-    onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
+
+type SliderHorizontalElement = React.ElementRef<typeof SliderImpl>;
+type SliderHorizontalProps = SliderOrientationProps & { dir?: Direction };
+
+const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizontalProps>(
+  (props, forwardedRef) => {
+    const { min, max, dir, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
+    const [slider, setSlider] = React.useState<React.ElementRef<typeof SliderImpl> | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
+    const rectRef = React.useRef<ClientRect>();
+    const direction = useDirection(slider, dir);
+    const isDirectionLTR = direction === 'ltr';
+
+    function getValueFromPointer(pointerPosition: number) {
+      const rect = rectRef.current || slider!.getBoundingClientRect();
+      const input: [number, number] = [0, rect.width];
+      const output: [number, number] = isDirectionLTR ? [min, max] : [max, min];
+      const value = linearScale(input, output);
+
+      rectRef.current = rect;
+      return value(pointerPosition - rect.left);
+    }
+
+    return (
+      <SliderOrientationContext.Provider
+        value={React.useMemo(
+          () => ({
+            startEdge: isDirectionLTR ? 'left' : 'right',
+            endEdge: isDirectionLTR ? 'right' : 'left',
+            direction: isDirectionLTR ? 1 : -1,
+            size: 'width',
+          }),
+          [isDirectionLTR]
+        )}
+      >
+        <SliderImpl
+          data-orientation="horizontal"
+          {...sliderProps}
+          ref={composedRefs}
+          style={{
+            ...sliderProps.style,
+            ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
+          }}
+          onSlideStart={(event) => {
+            const value = getValueFromPointer(event.clientX);
+            onSlideStart?.(value);
+          }}
+          onSlideMove={(event) => {
+            const value = getValueFromPointer(event.clientX);
+            onSlideMove?.(value);
+          }}
+          onSlideEnd={() => (rectRef.current = undefined)}
+          onStepKeyDown={(event) => {
+            const isBackKey = BACK_KEYS[direction].includes(event.key);
+            onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
+          }}
+        />
+      </SliderOrientationContext.Provider>
+    );
   }
->;
-
-type SliderHorizontalOwnProps = SliderOrientationOwnProps & { dir?: Direction };
-type SliderHorizontalPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof SliderImpl>,
-  SliderHorizontalOwnProps
->;
-
-const SliderHorizontal = React.forwardRef((props, forwardedRef) => {
-  const { min, max, dir, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
-  const [slider, setSlider] = React.useState<React.ElementRef<typeof SliderImpl> | null>(null);
-  const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
-  const rectRef = React.useRef<ClientRect>();
-  const direction = useDirection(slider, dir);
-  const isDirectionLTR = direction === 'ltr';
-
-  function getValueFromPointer(pointerPosition: number) {
-    const rect = rectRef.current || slider!.getBoundingClientRect();
-    const input: [number, number] = [0, rect.width];
-    const output: [number, number] = isDirectionLTR ? [min, max] : [max, min];
-    const value = linearScale(input, output);
-
-    rectRef.current = rect;
-    return value(pointerPosition - rect.left);
-  }
-
-  return (
-    <SliderOrientationContext.Provider
-      value={React.useMemo(
-        () => ({
-          startEdge: isDirectionLTR ? 'left' : 'right',
-          endEdge: isDirectionLTR ? 'right' : 'left',
-          direction: isDirectionLTR ? 1 : -1,
-          size: 'width',
-        }),
-        [isDirectionLTR]
-      )}
-    >
-      <SliderImpl
-        data-orientation="horizontal"
-        {...sliderProps}
-        ref={composedRefs}
-        style={{
-          ...sliderProps.style,
-          ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
-        }}
-        onSlideStart={(event) => {
-          const value = getValueFromPointer(event.clientX);
-          onSlideStart?.(value);
-        }}
-        onSlideMove={(event) => {
-          const value = getValueFromPointer(event.clientX);
-          onSlideMove?.(value);
-        }}
-        onSlideEnd={() => (rectRef.current = undefined)}
-        onStepKeyDown={(event) => {
-          const isBackKey = BACK_KEYS[direction].includes(event.key);
-          onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
-        }}
-      />
-    </SliderOrientationContext.Provider>
-  );
-}) as SliderHorizontalPrimitive;
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SliderVertical
  * -----------------------------------------------------------------------------------------------*/
 
-type SliderVerticalOwnProps = SliderOrientationOwnProps;
-type SliderVerticalPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof SliderImpl>,
-  SliderVerticalOwnProps
->;
+type SliderVerticalElement = React.ElementRef<typeof SliderImpl>;
+type SliderVerticalProps = SliderOrientationProps;
 
-const SliderVertical = React.forwardRef((props, forwardedRef) => {
-  const { min, max, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
-  const sliderRef = React.useRef<React.ElementRef<typeof SliderImpl>>(null);
-  const ref = useComposedRefs(forwardedRef, sliderRef);
-  const rectRef = React.useRef<ClientRect>();
+const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
+  (props, forwardedRef) => {
+    const { min, max, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
+    const sliderRef = React.useRef<React.ElementRef<typeof SliderImpl>>(null);
+    const ref = useComposedRefs(forwardedRef, sliderRef);
+    const rectRef = React.useRef<ClientRect>();
 
-  function getValueFromPointer(pointerPosition: number) {
-    const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
-    const input: [number, number] = [0, rect.height];
-    const output: [number, number] = [max, min];
-    const value = linearScale(input, output);
+    function getValueFromPointer(pointerPosition: number) {
+      const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
+      const input: [number, number] = [0, rect.height];
+      const output: [number, number] = [max, min];
+      const value = linearScale(input, output);
 
-    rectRef.current = rect;
-    return value(pointerPosition - rect.top);
+      rectRef.current = rect;
+      return value(pointerPosition - rect.top);
+    }
+
+    return (
+      <SliderOrientationContext.Provider
+        value={React.useMemo(
+          () => ({ startEdge: 'bottom', endEdge: 'top', size: 'height', direction: 1 }),
+          []
+        )}
+      >
+        <SliderImpl
+          data-orientation="vertical"
+          {...sliderProps}
+          ref={ref}
+          style={{
+            ...sliderProps.style,
+            ['--radix-slider-thumb-transform' as any]: 'translateY(50%)',
+          }}
+          onSlideStart={(event) => {
+            const value = getValueFromPointer(event.clientY);
+            onSlideStart?.(value);
+          }}
+          onSlideMove={(event) => {
+            const value = getValueFromPointer(event.clientY);
+            onSlideMove?.(value);
+          }}
+          onSlideEnd={() => (rectRef.current = undefined)}
+          onStepKeyDown={(event) => {
+            const isBackKey = BACK_KEYS.ltr.includes(event.key);
+            onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
+          }}
+        />
+      </SliderOrientationContext.Provider>
+    );
   }
-
-  return (
-    <SliderOrientationContext.Provider
-      value={React.useMemo(
-        () => ({ startEdge: 'bottom', endEdge: 'top', size: 'height', direction: 1 }),
-        []
-      )}
-    >
-      <SliderImpl
-        data-orientation="vertical"
-        {...sliderProps}
-        ref={ref}
-        style={{
-          ...sliderProps.style,
-          ['--radix-slider-thumb-transform' as any]: 'translateY(50%)',
-        }}
-        onSlideStart={(event) => {
-          const value = getValueFromPointer(event.clientY);
-          onSlideStart?.(value);
-        }}
-        onSlideMove={(event) => {
-          const value = getValueFromPointer(event.clientY);
-          onSlideMove?.(value);
-        }}
-        onSlideEnd={() => (rectRef.current = undefined)}
-        onStepKeyDown={(event) => {
-          const isBackKey = BACK_KEYS.ltr.includes(event.key);
-          onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
-        }}
-      />
-    </SliderOrientationContext.Provider>
-  );
-}) as SliderVerticalPrimitive;
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SliderImpl
  * -----------------------------------------------------------------------------------------------*/
-type SliderPartOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
-  {
-    onSlideStart(event: React.PointerEvent): void;
-    onSlideMove(event: React.PointerEvent): void;
-    onSlideEnd(event: React.PointerEvent): void;
-    onHomeKeyDown(event: React.KeyboardEvent): void;
-    onEndKeyDown(event: React.KeyboardEvent): void;
-    onStepKeyDown(event: React.KeyboardEvent): void;
-  }
+
+type SliderImplElement = React.ElementRef<typeof Primitive.span>;
+type SliderImplPrivateProps = {
+  onSlideStart(event: React.PointerEvent): void;
+  onSlideMove(event: React.PointerEvent): void;
+  onSlideEnd(event: React.PointerEvent): void;
+  onHomeKeyDown(event: React.KeyboardEvent): void;
+  onEndKeyDown(event: React.KeyboardEvent): void;
+  onStepKeyDown(event: React.KeyboardEvent): void;
+};
+type SliderImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
+  SliderImplPrivateProps
 >;
 
-type SliderPartPrimitive = Polymorphic.ForwardRefComponent<
-  typeof SLIDER_DEFAULT_TAG,
-  SliderPartOwnProps
->;
-
-const SliderImpl = React.forwardRef((props, forwardedRef) => {
+const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>((props, forwardedRef) => {
   const {
-    as = SLIDER_DEFAULT_TAG,
     onSlideStart,
     onSlideMove,
     onSlideEnd,
@@ -362,9 +348,8 @@ const SliderImpl = React.forwardRef((props, forwardedRef) => {
   const context = useSliderContext(SLIDER_NAME);
 
   return (
-    <Primitive
+    <Primitive.span
       {...sliderProps}
-      as={as}
       ref={forwardedRef}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         if (event.key === 'Home') {
@@ -403,34 +388,30 @@ const SliderImpl = React.forwardRef((props, forwardedRef) => {
       })}
     />
   );
-}) as SliderPartPrimitive;
+});
 
 /* -------------------------------------------------------------------------------------------------
  * SliderTrack
  * -----------------------------------------------------------------------------------------------*/
 
 const TRACK_NAME = 'SliderTrack';
-const TRACK_DEFAULT_TAG = 'span';
 
-type SliderTrackOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type SliderTrackPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TRACK_DEFAULT_TAG,
-  SliderTrackOwnProps
->;
+type SliderTrackElement = React.ElementRef<typeof Primitive.span>;
+type SliderTrackProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
-const SliderTrack = React.forwardRef((props, forwardedRef) => {
-  const { as = TRACK_DEFAULT_TAG, ...trackProps } = props;
-  const context = useSliderContext(TRACK_NAME);
-  return (
-    <Primitive
-      data-disabled={context.disabled ? '' : undefined}
-      data-orientation={context.orientation}
-      {...trackProps}
-      as={as}
-      ref={forwardedRef}
-    />
-  );
-}) as SliderTrackPrimitive;
+const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
+  (props, forwardedRef) => {
+    const context = useSliderContext(TRACK_NAME);
+    return (
+      <Primitive.span
+        data-disabled={context.disabled ? '' : undefined}
+        data-orientation={context.orientation}
+        {...props}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
 
 SliderTrack.displayName = TRACK_NAME;
 
@@ -439,45 +420,38 @@ SliderTrack.displayName = TRACK_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const RANGE_NAME = 'SliderRange';
-const RANGE_DEFAULT_TAG = 'span';
 
-type SliderRangeOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
-  { children?: never }
->;
-type SliderRangePrimitive = Polymorphic.ForwardRefComponent<
-  typeof RANGE_DEFAULT_TAG,
-  SliderRangeOwnProps
->;
+type SliderRangeElement = React.ElementRef<typeof Primitive.span>;
+type SliderRangeProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
-const SliderRange = React.forwardRef((props, forwardedRef) => {
-  const { as = RANGE_DEFAULT_TAG, ...rangeProps } = props;
-  const context = useSliderContext(RANGE_NAME);
-  const orientation = React.useContext(SliderOrientationContext);
-  const ref = React.useRef<HTMLSpanElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
-  const valuesCount = context.values.length;
-  const percentages = context.values.map((value) =>
-    convertValueToPercentage(value, context.min, context.max)
-  );
-  const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
-  const offsetEnd = 100 - Math.max(...percentages);
+const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
+  (props, forwardedRef) => {
+    const context = useSliderContext(RANGE_NAME);
+    const orientation = React.useContext(SliderOrientationContext);
+    const ref = React.useRef<HTMLSpanElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref);
+    const valuesCount = context.values.length;
+    const percentages = context.values.map((value) =>
+      convertValueToPercentage(value, context.min, context.max)
+    );
+    const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
+    const offsetEnd = 100 - Math.max(...percentages);
 
-  return (
-    <Primitive
-      data-orientation={context.orientation}
-      data-disabled={context.disabled ? '' : undefined}
-      {...rangeProps}
-      as={as}
-      ref={composedRefs}
-      style={{
-        ...props.style,
-        [orientation.startEdge]: offsetStart + '%',
-        [orientation.endEdge]: offsetEnd + '%',
-      }}
-    />
-  );
-}) as SliderRangePrimitive;
+    return (
+      <Primitive.span
+        data-orientation={context.orientation}
+        data-disabled={context.disabled ? '' : undefined}
+        {...props}
+        ref={composedRefs}
+        style={{
+          ...props.style,
+          [orientation.startEdge]: offsetStart + '%',
+          [orientation.endEdge]: offsetEnd + '%',
+        }}
+      />
+    );
+  }
+);
 
 SliderRange.displayName = RANGE_NAME;
 
@@ -486,103 +460,98 @@ SliderRange.displayName = RANGE_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const THUMB_NAME = 'SliderThumb';
-const THUMB_DEFAULT_TAG = 'span';
 
-type SliderThumbOwnProps = Omit<Polymorphic.OwnProps<typeof SliderThumbImpl>, 'index'>;
-type SliderThumbPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof SliderThumbImpl>,
-  SliderThumbOwnProps
->;
+type SliderThumbElement = React.ElementRef<typeof SliderThumbImpl>;
+type SliderThumbProps = Omit<Radix.ComponentPropsWithoutRef<typeof SliderThumbImpl>, 'index'>;
 
-const SliderThumb = React.forwardRef((props, forwardedRef) => {
-  const { getItems } = useCollection();
-  const [thumb, setThumb] = React.useState<React.ElementRef<typeof SliderThumbImpl> | null>(null);
-  const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
-  const index = React.useMemo(
-    () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
-    [getItems, thumb]
-  );
-  return <SliderThumbImpl {...props} ref={composedRefs} index={index} />;
-}) as SliderThumbPrimitive;
+const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
+  (props, forwardedRef) => {
+    const { getItems } = useCollection();
+    const [thumb, setThumb] = React.useState<React.ElementRef<typeof SliderThumbImpl> | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
+    const index = React.useMemo(
+      () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
+      [getItems, thumb]
+    );
+    return <SliderThumbImpl {...props} ref={composedRefs} index={index} />;
+  }
+);
 
-type SliderThumbImplOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type SliderThumbImplElement = React.ElementRef<typeof Primitive.span>;
+type SliderThumbImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
   { index: number }
 >;
 
-type SliderThumbImplPrimitive = Polymorphic.ForwardRefComponent<
-  typeof THUMB_DEFAULT_TAG,
-  SliderThumbImplOwnProps
->;
+const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
+  (props, forwardedRef) => {
+    const { index, ...thumbProps } = props;
+    const context = useSliderContext(THUMB_NAME);
+    const orientation = React.useContext(SliderOrientationContext);
+    const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
+    const size = useSize(thumb);
+    // We cast because index could be `-1` which would return undefined
+    const value = context.values[index] as number | undefined;
+    const percent = value ? convertValueToPercentage(value, context.min, context.max) : 0;
+    const label = getLabel(index, context.values.length);
+    const orientationSize = size?.[orientation.size];
+    const thumbInBoundsOffset = orientationSize
+      ? getThumbInBoundsOffset(orientationSize, percent, orientation.direction)
+      : 0;
 
-const SliderThumbImpl = React.forwardRef((props, forwardedRef) => {
-  const { as = THUMB_DEFAULT_TAG, index, ...thumbProps } = props;
-  const context = useSliderContext(THUMB_NAME);
-  const orientation = React.useContext(SliderOrientationContext);
-  const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
-  const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
-  const size = useSize(thumb);
-  // We cast because index could be `-1` which would return undefined
-  const value = context.values[index] as number | undefined;
-  const percent = value ? convertValueToPercentage(value, context.min, context.max) : 0;
-  const label = getLabel(index, context.values.length);
-  const orientationSize = size?.[orientation.size];
-  const thumbInBoundsOffset = orientationSize
-    ? getThumbInBoundsOffset(orientationSize, percent, orientation.direction)
-    : 0;
+    React.useEffect(() => {
+      if (thumb) {
+        context.thumbs.add(thumb);
+        return () => {
+          context.thumbs.delete(thumb);
+        };
+      }
+    }, [thumb, context.thumbs]);
 
-  React.useEffect(() => {
-    if (thumb) {
-      context.thumbs.add(thumb);
-      return () => {
-        context.thumbs.delete(thumb);
-      };
-    }
-  }, [thumb, context.thumbs]);
-
-  return (
-    <span
-      style={{
-        transform: 'var(--radix-slider-thumb-transform)',
-        position: 'absolute',
-        [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
-      }}
-    >
-      <CollectionItemSlot>
-        <Primitive
-          role="slider"
-          aria-label={props['aria-label'] || label}
-          aria-valuemin={context.min}
-          aria-valuenow={value}
-          aria-valuemax={context.max}
-          aria-orientation={context.orientation}
-          data-orientation={context.orientation}
-          data-disabled={context.disabled ? '' : undefined}
-          tabIndex={context.disabled ? undefined : 0}
-          {...thumbProps}
-          as={as}
-          ref={composedRefs}
-          /**
-           * There will be no value on initial render while we work out the index so we hide thumbs
-           * without a value, otherwise SSR will render them in the wrong position before they
-           * snap into the correct position during hydration which would be visually jarring for
-           * slower connections.
-           */
-          style={value === undefined ? { display: 'none' } : props.style}
-          onFocus={composeEventHandlers(props.onFocus, () => {
-            context.valueIndexToChangeRef.current = index;
-          })}
-        />
-      </CollectionItemSlot>
-    </span>
-  );
-}) as SliderThumbImplPrimitive;
+    return (
+      <span
+        style={{
+          transform: 'var(--radix-slider-thumb-transform)',
+          position: 'absolute',
+          [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
+        }}
+      >
+        <CollectionItemSlot>
+          <Primitive.span
+            role="slider"
+            aria-label={props['aria-label'] || label}
+            aria-valuemin={context.min}
+            aria-valuenow={value}
+            aria-valuemax={context.max}
+            aria-orientation={context.orientation}
+            data-orientation={context.orientation}
+            data-disabled={context.disabled ? '' : undefined}
+            tabIndex={context.disabled ? undefined : 0}
+            {...thumbProps}
+            ref={composedRefs}
+            /**
+             * There will be no value on initial render while we work out the index so we hide thumbs
+             * without a value, otherwise SSR will render them in the wrong position before they
+             * snap into the correct position during hydration which would be visually jarring for
+             * slower connections.
+             */
+            style={value === undefined ? { display: 'none' } : props.style}
+            onFocus={composeEventHandlers(props.onFocus, () => {
+              context.valueIndexToChangeRef.current = index;
+            })}
+          />
+        </CollectionItemSlot>
+      </span>
+    );
+  }
+);
 
 SliderThumb.displayName = THUMB_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const BubbleInput = (props: React.ComponentProps<'input'>) => {
+const BubbleInput = (props: Radix.ComponentPropsWithoutRef<'input'>) => {
   const { value, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevValue = usePrevious(value);
@@ -729,4 +698,3 @@ export {
   Range,
   Thumb,
 };
-export type { SliderPrimitive, SliderTrackPrimitive, SliderRangePrimitive, SliderThumbPrimitive };

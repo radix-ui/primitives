@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createContext } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Progress
@@ -15,8 +15,9 @@ type ProgressState = 'indeterminate' | 'complete' | 'loading';
 type ProgressContextValue = { value: number | null; max: number };
 const [ProgressProvider, useProgressContext] = createContext<ProgressContextValue>(PROGRESS_NAME);
 
-type ProgressOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type ProgressElement = React.ElementRef<typeof Primitive.div>;
+type ProgressProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     value?: number | null | undefined;
     max?: number;
@@ -24,12 +25,7 @@ type ProgressOwnProps = Polymorphic.Merge<
   }
 >;
 
-type ProgressPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  ProgressOwnProps
->;
-
-const Progress = React.forwardRef((props, forwardedRef) => {
+const Progress = React.forwardRef<ProgressElement, ProgressProps>((props, forwardedRef) => {
   const {
     value: valueProp,
     max: maxProp,
@@ -43,7 +39,7 @@ const Progress = React.forwardRef((props, forwardedRef) => {
 
   return (
     <ProgressProvider value={value} max={max}>
-      <Primitive
+      <Primitive.div
         aria-valuemax={max}
         aria-valuemin={0}
         aria-valuenow={isNumber(value) ? value : undefined}
@@ -57,7 +53,7 @@ const Progress = React.forwardRef((props, forwardedRef) => {
       />
     </ProgressProvider>
   );
-}) as ProgressPrimitive;
+});
 
 Progress.displayName = PROGRESS_NAME;
 
@@ -87,24 +83,23 @@ Progress.propTypes = {
 
 const INDICATOR_NAME = 'ProgressIndicator';
 
-type ProgressIndicatorOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type ProgressIndicatorPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  ProgressIndicatorOwnProps
->;
+type ProgressIndicatorElement = React.ElementRef<typeof Primitive.div>;
+type ProgressIndicatorProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 
-const ProgressIndicator = React.forwardRef((props, forwardedRef) => {
-  const context = useProgressContext(INDICATOR_NAME);
-  return (
-    <Primitive
-      data-state={getProgressState(context.value, context.max)}
-      data-value={context.value ?? undefined}
-      data-max={context.max}
-      {...props}
-      ref={forwardedRef}
-    />
-  );
-}) as ProgressIndicatorPrimitive;
+const ProgressIndicator = React.forwardRef<ProgressIndicatorElement, ProgressIndicatorProps>(
+  (props, forwardedRef) => {
+    const context = useProgressContext(INDICATOR_NAME);
+    return (
+      <Primitive.div
+        data-state={getProgressState(context.value, context.max)}
+        data-value={context.value ?? undefined}
+        data-max={context.max}
+        {...props}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
 
 ProgressIndicator.displayName = INDICATOR_NAME;
 
@@ -172,4 +167,3 @@ export {
   //
   useProgressState,
 };
-export type { ProgressPrimitive, ProgressIndicatorPrimitive };

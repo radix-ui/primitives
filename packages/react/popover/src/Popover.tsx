@@ -10,12 +10,11 @@ import { Portal } from '@radix-ui/react-portal';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
-import { Slot } from '@radix-ui/react-slot';
 import { useId } from '@radix-ui/react-id';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Popover
@@ -37,14 +36,14 @@ type PopoverContextValue = {
 
 const [PopoverProvider, usePopoverContext] = createContext<PopoverContextValue>(POPOVER_NAME);
 
-type PopoverOwnProps = {
+type PopoverProps = {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   modal?: boolean;
 };
 
-const Popover: React.FC<PopoverOwnProps> = (props) => {
+const Popover: React.FC<PopoverProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange, modal = false } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
@@ -81,23 +80,22 @@ Popover.displayName = POPOVER_NAME;
 
 const ANCHOR_NAME = 'PopoverAnchor';
 
-type PopoverAnchorOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Anchor>;
-type PopoverAnchorPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Anchor>,
-  PopoverAnchorOwnProps
->;
+type PopoverAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
+type PopoverAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
 
-const PopoverAnchor = React.forwardRef((props, forwardedRef) => {
-  const context = usePopoverContext(ANCHOR_NAME);
-  const { onCustomAnchorAdd, onCustomAnchorRemove } = context;
+const PopoverAnchor = React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>(
+  (props, forwardedRef) => {
+    const context = usePopoverContext(ANCHOR_NAME);
+    const { onCustomAnchorAdd, onCustomAnchorRemove } = context;
 
-  React.useEffect(() => {
-    onCustomAnchorAdd();
-    return () => onCustomAnchorRemove();
-  }, [onCustomAnchorAdd, onCustomAnchorRemove]);
+    React.useEffect(() => {
+      onCustomAnchorAdd();
+      return () => onCustomAnchorRemove();
+    }, [onCustomAnchorAdd, onCustomAnchorRemove]);
 
-  return <PopperPrimitive.Anchor {...props} ref={forwardedRef} />;
-}) as PopoverAnchorPrimitive;
+    return <PopperPrimitive.Anchor {...props} ref={forwardedRef} />;
+  }
+);
 
 PopoverAnchor.displayName = ANCHOR_NAME;
 
@@ -106,39 +104,35 @@ PopoverAnchor.displayName = ANCHOR_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'PopoverTrigger';
-const TRIGGER_DEFAULT_TAG = 'button';
 
-type PopoverTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type PopoverTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TRIGGER_DEFAULT_TAG,
-  PopoverTriggerOwnProps
->;
+type PopoverTriggerElement = React.ElementRef<typeof Primitive.button>;
+type PopoverTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 
-const PopoverTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
-  const context = usePopoverContext(TRIGGER_NAME);
-  const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
+const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerProps>(
+  (props, forwardedRef) => {
+    const context = usePopoverContext(TRIGGER_NAME);
+    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 
-  const trigger = (
-    <Primitive
-      type="button"
-      aria-haspopup="dialog"
-      aria-expanded={context.open}
-      aria-controls={context.contentId}
-      data-state={getState(context.open)}
-      {...triggerProps}
-      as={as}
-      ref={composedTriggerRef}
-      onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
-    />
-  );
+    const trigger = (
+      <Primitive.button
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={context.open}
+        aria-controls={context.contentId}
+        data-state={getState(context.open)}
+        {...props}
+        ref={composedTriggerRef}
+        onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
+      />
+    );
 
-  return context.hasCustomAnchor ? (
-    trigger
-  ) : (
-    <PopperPrimitive.Anchor as={Slot}>{trigger}</PopperPrimitive.Anchor>
-  );
-}) as PopoverTriggerPrimitive;
+    return context.hasCustomAnchor ? (
+      trigger
+    ) : (
+      <PopperPrimitive.Anchor asChild>{trigger}</PopperPrimitive.Anchor>
+    );
+  }
+);
 
 PopoverTrigger.displayName = TRIGGER_NAME;
 
@@ -148,8 +142,11 @@ PopoverTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'PopoverContent';
 
-type PopoverContentOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof PopoverContentModal | typeof PopoverContentNonModal>,
+type PopoverContentElement = React.ElementRef<
+  typeof PopoverContentModal | typeof PopoverContentNonModal
+>;
+type PopoverContentProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof PopoverContentModal | typeof PopoverContentNonModal>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -159,31 +156,30 @@ type PopoverContentOwnProps = Polymorphic.Merge<
   }
 >;
 
-type PopoverContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopoverContentModal | typeof PopoverContentNonModal>,
-  PopoverContentOwnProps
->;
-
-const PopoverContent = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, ...contentProps } = props;
-  const context = usePopoverContext(CONTENT_NAME);
-
-  return (
-    <Presence present={forceMount || context.open}>
-      {context.modal ? (
-        <PopoverContentModal {...contentProps} ref={forwardedRef} />
-      ) : (
-        <PopoverContentNonModal {...contentProps} ref={forwardedRef} />
-      )}
-    </Presence>
-  );
-}) as PopoverContentPrimitive;
+const PopoverContent = React.forwardRef<PopoverContentElement, PopoverContentProps>(
+  (props, forwardedRef) => {
+    const { forceMount, ...contentProps } = props;
+    const context = usePopoverContext(CONTENT_NAME);
+    return (
+      <Presence present={forceMount || context.open}>
+        {context.modal ? (
+          <PopoverContentModal {...contentProps} ref={forwardedRef} />
+        ) : (
+          <PopoverContentNonModal {...contentProps} ref={forwardedRef} />
+        )}
+      </Presence>
+    );
+  }
+);
 
 PopoverContent.displayName = CONTENT_NAME;
 
-type PopoverContentTypeOwnProps = Polymorphic.Merge<
+/* -----------------------------------------------------------------------------------------------*/
+
+type PopoverContentTypeElement = React.ElementRef<typeof PopoverContentImpl>;
+type PopoverContentTypeProps = Radix.MergeProps<
   Omit<
-    Polymorphic.OwnProps<typeof PopoverContentImpl>,
+    Radix.ComponentPropsWithoutRef<typeof PopoverContentImpl>,
     'trapFocus' | 'disableOutsidePointerEvents'
   >,
   {
@@ -195,219 +191,214 @@ type PopoverContentTypeOwnProps = Polymorphic.Merge<
   }
 >;
 
-type PopoverContentTypePrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopoverContentImpl>,
-  PopoverContentTypeOwnProps
->;
+const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
+  (props, forwardedRef) => {
+    const { portalled = true, ...contentModalProps } = props;
+    const context = usePopoverContext(CONTENT_NAME);
+    const contentRef = React.useRef<HTMLDivElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, contentRef);
+    const isRightClickOutsideRef = React.useRef(false);
 
-const PopoverContentModal = React.forwardRef((props, forwardedRef) => {
-  const { portalled = true, ...contentModalProps } = props;
-  const context = usePopoverContext(CONTENT_NAME);
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, contentRef);
-  const isRightClickOutsideRef = React.useRef(false);
+    // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+    React.useEffect(() => {
+      const content = contentRef.current;
+      if (content) return hideOthers(content);
+    }, []);
 
-  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
-  React.useEffect(() => {
-    const content = contentRef.current;
-    if (content) return hideOthers(content);
-  }, []);
+    const PortalWrapper = portalled ? Portal : React.Fragment;
 
-  const PortalWrapper = portalled ? Portal : React.Fragment;
+    return (
+      <PortalWrapper>
+        <RemoveScroll>
+          <PopoverContentImpl
+            {...contentModalProps}
+            ref={composedRefs}
+            // we make sure we're not trapping once it's been closed
+            // (closed !== unmounted when animating out)
+            trapFocus={context.open}
+            disableOutsidePointerEvents
+            onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+              event.preventDefault();
+              if (!isRightClickOutsideRef.current) context.triggerRef.current?.focus();
+            })}
+            onPointerDownOutside={composeEventHandlers(
+              props.onPointerDownOutside,
+              (event) => {
+                const originalEvent = event.detail.originalEvent;
+                const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+                const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
 
-  return (
-    <PortalWrapper>
-      <RemoveScroll>
+                isRightClickOutsideRef.current = isRightClick;
+              },
+              { checkForDefaultPrevented: false }
+            )}
+            // When focus is trapped, a `focusout` event may still happen.
+            // We make sure we don't trigger our `onDismiss` in such case.
+            onFocusOutside={composeEventHandlers(
+              props.onFocusOutside,
+              (event) => event.preventDefault(),
+              { checkForDefaultPrevented: false }
+            )}
+          />
+        </RemoveScroll>
+      </PortalWrapper>
+    );
+  }
+);
+
+const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
+  (props, forwardedRef) => {
+    const { portalled = true, ...contentNonModalProps } = props;
+    const context = usePopoverContext(CONTENT_NAME);
+    const hasInteractedOutsideRef = React.useRef(false);
+
+    const PortalWrapper = portalled ? Portal : React.Fragment;
+
+    return (
+      <PortalWrapper>
         <PopoverContentImpl
-          {...contentModalProps}
-          ref={composedRefs}
-          // we make sure we're not trapping once it's been closed
-          // (closed !== unmounted when animating out)
-          trapFocus={context.open}
-          disableOutsidePointerEvents
-          onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-            event.preventDefault();
-            if (!isRightClickOutsideRef.current) context.triggerRef.current?.focus();
-          })}
-          onPointerDownOutside={composeEventHandlers(
-            props.onPointerDownOutside,
-            (event) => {
-              const originalEvent = event.detail.originalEvent;
-              const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-              const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+          {...contentNonModalProps}
+          ref={forwardedRef}
+          trapFocus={false}
+          disableOutsidePointerEvents={false}
+          onCloseAutoFocus={(event) => {
+            props.onCloseAutoFocus?.(event);
 
-              isRightClickOutsideRef.current = isRightClick;
-            },
-            { checkForDefaultPrevented: false }
-          )}
-          // When focus is trapped, a `focusout` event may still happen.
-          // We make sure we don't trigger our `onDismiss` in such case.
-          onFocusOutside={composeEventHandlers(
-            props.onFocusOutside,
-            (event) => event.preventDefault(),
-            { checkForDefaultPrevented: false }
-          )}
+            if (!event.defaultPrevented) {
+              if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
+              // Always prevent auto focus because we either focus manually or want user agent focus
+              event.preventDefault();
+            }
+
+            hasInteractedOutsideRef.current = false;
+          }}
+          onInteractOutside={(event) => {
+            props.onInteractOutside?.(event);
+
+            if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
+
+            // Prevent dismissing when clicking the trigger.
+            // As the trigger is already setup to close, without doing so would
+            // cause it to close and immediately open.
+            //
+            // We use `onInteractOutside` as some browsers also
+            // focus on pointer down, creating the same issue.
+            const target = event.target as HTMLElement;
+            const targetIsTrigger = context.triggerRef.current?.contains(target);
+            if (targetIsTrigger) event.preventDefault();
+          }}
         />
-      </RemoveScroll>
-    </PortalWrapper>
-  );
-}) as PopoverContentTypePrimitive;
+      </PortalWrapper>
+    );
+  }
+);
 
-const PopoverContentNonModal = React.forwardRef((props, forwardedRef) => {
-  const { portalled = true, ...contentNonModalProps } = props;
-  const context = usePopoverContext(CONTENT_NAME);
-  const hasInteractedOutsideRef = React.useRef(false);
+/* -----------------------------------------------------------------------------------------------*/
 
-  const PortalWrapper = portalled ? Portal : React.Fragment;
+type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
+type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 
-  return (
-    <PortalWrapper>
-      <PopoverContentImpl
-        {...contentNonModalProps}
-        ref={forwardedRef}
-        trapFocus={false}
-        disableOutsidePointerEvents={false}
-        onCloseAutoFocus={(event) => {
-          props.onCloseAutoFocus?.(event);
-
-          if (!event.defaultPrevented) {
-            if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
-            // Always prevent auto focus because we either focus manually or want user agent focus
-            event.preventDefault();
-          }
-
-          hasInteractedOutsideRef.current = false;
-        }}
-        onInteractOutside={(event) => {
-          props.onInteractOutside?.(event);
-
-          if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
-
-          // Prevent dismissing when clicking the trigger.
-          // As the trigger is already setup to close, without doing so would
-          // cause it to close and immediately open.
-          //
-          // We use `onInteractOutside` as some browsers also
-          // focus on pointer down, creating the same issue.
-          const target = event.target as HTMLElement;
-          const targetIsTrigger = context.triggerRef.current?.contains(target);
-          if (targetIsTrigger) event.preventDefault();
-        }}
-      />
-    </PortalWrapper>
-  );
-}) as PopoverContentTypePrimitive;
-
-type FocusScopeOwnProps = Polymorphic.OwnProps<typeof FocusScope>;
-type DismissableLayerOwnProps = Polymorphic.OwnProps<typeof DismissableLayer>;
-
-type PopperPrimitiveOwnProps = Polymorphic.OwnProps<typeof PopperPrimitive.Content>;
-type PopoverContentImplOwnProps = Polymorphic.Merge<
-  PopperPrimitiveOwnProps,
-  Omit<DismissableLayerOwnProps, 'onDismiss'> & {
+type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type PopoverContentImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
+  Omit<DismissableLayerProps, 'onDismiss'> & {
     /**
      * Whether focus should be trapped within the `Popover`
      * (default: false)
      */
-    trapFocus?: FocusScopeOwnProps['trapped'];
+    trapFocus?: FocusScopeProps['trapped'];
 
     /**
      * Event handler called when auto-focusing on open.
      * Can be prevented.
      */
-    onOpenAutoFocus?: FocusScopeOwnProps['onMountAutoFocus'];
+    onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
 
     /**
      * Event handler called when auto-focusing on close.
      * Can be prevented.
      */
-    onCloseAutoFocus?: FocusScopeOwnProps['onUnmountAutoFocus'];
+    onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
   }
 >;
 
-type PopoverContentImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Content>,
-  PopoverContentImplOwnProps
->;
+const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverContentImplProps>(
+  (props, forwardedRef) => {
+    const {
+      trapFocus,
+      onOpenAutoFocus,
+      onCloseAutoFocus,
+      disableOutsidePointerEvents,
+      onEscapeKeyDown,
+      onPointerDownOutside,
+      onFocusOutside,
+      onInteractOutside,
+      ...contentProps
+    } = props;
+    const context = usePopoverContext(CONTENT_NAME);
 
-const PopoverContentImpl = React.forwardRef((props, forwardedRef) => {
-  const {
-    trapFocus,
-    onOpenAutoFocus,
-    onCloseAutoFocus,
-    disableOutsidePointerEvents,
-    onEscapeKeyDown,
-    onPointerDownOutside,
-    onFocusOutside,
-    onInteractOutside,
-    ...contentProps
-  } = props;
-  const context = usePopoverContext(CONTENT_NAME);
+    // Make sure the whole tree has focus guards as our `Popover` may be
+    // the last element in the DOM (beacuse of the `Portal`)
+    useFocusGuards();
 
-  // Make sure the whole tree has focus guards as our `Popover` may be
-  // the last element in the DOM (beacuse of the `Portal`)
-  useFocusGuards();
-
-  return (
-    <FocusScope
-      as={Slot}
-      loop
-      trapped={trapFocus}
-      onMountAutoFocus={onOpenAutoFocus}
-      onUnmountAutoFocus={onCloseAutoFocus}
-    >
-      <DismissableLayer
-        as={Slot}
-        disableOutsidePointerEvents={disableOutsidePointerEvents}
-        onInteractOutside={onInteractOutside}
-        onEscapeKeyDown={onEscapeKeyDown}
-        onPointerDownOutside={onPointerDownOutside}
-        onFocusOutside={onFocusOutside}
-        onDismiss={() => context.onOpenChange(false)}
+    return (
+      <FocusScope
+        asChild
+        loop
+        trapped={trapFocus}
+        onMountAutoFocus={onOpenAutoFocus}
+        onUnmountAutoFocus={onCloseAutoFocus}
       >
-        <PopperPrimitive.Content
-          data-state={getState(context.open)}
-          role="dialog"
-          id={context.contentId}
-          {...contentProps}
-          ref={forwardedRef}
-          style={{
-            ...contentProps.style,
-            // re-namespace exposed content custom property
-            ['--radix-popover-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
-          }}
-        />
-      </DismissableLayer>
-    </FocusScope>
-  );
-}) as PopoverContentImplPrimitive;
+        <DismissableLayer
+          asChild
+          disableOutsidePointerEvents={disableOutsidePointerEvents}
+          onInteractOutside={onInteractOutside}
+          onEscapeKeyDown={onEscapeKeyDown}
+          onPointerDownOutside={onPointerDownOutside}
+          onFocusOutside={onFocusOutside}
+          onDismiss={() => context.onOpenChange(false)}
+        >
+          <PopperPrimitive.Content
+            data-state={getState(context.open)}
+            role="dialog"
+            id={context.contentId}
+            {...contentProps}
+            ref={forwardedRef}
+            style={{
+              ...contentProps.style,
+              // re-namespace exposed content custom property
+              ['--radix-popover-content-transform-origin' as any]:
+                'var(--radix-popper-transform-origin)',
+            }}
+          />
+        </DismissableLayer>
+      </FocusScope>
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverClose
  * -----------------------------------------------------------------------------------------------*/
 
 const CLOSE_NAME = 'PopoverClose';
-const CLOSE_DEFAULT_TAG = 'button';
 
-type PopoverCloseOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type PopoverClosePrimitive = Polymorphic.ForwardRefComponent<
-  typeof CLOSE_DEFAULT_TAG,
-  PopoverCloseOwnProps
->;
+type PopoverCloseElement = React.ElementRef<typeof Primitive.button>;
+type PopoverCloseProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 
-const PopoverClose = React.forwardRef((props, forwardedRef) => {
-  const { as = CLOSE_DEFAULT_TAG, ...closeProps } = props;
-  const context = usePopoverContext(CLOSE_NAME);
-  return (
-    <Primitive
-      type="button"
-      {...closeProps}
-      as={as}
-      ref={forwardedRef}
-      onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
-    />
-  );
-}) as PopoverClosePrimitive;
+const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
+  (props, forwardedRef) => {
+    const context = usePopoverContext(CLOSE_NAME);
+    return (
+      <Primitive.button
+        type="button"
+        {...props}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
+      />
+    );
+  }
+);
 
 PopoverClose.displayName = CLOSE_NAME;
 
@@ -442,10 +433,4 @@ export {
   Content,
   Close,
   Arrow,
-};
-export type {
-  PopoverAnchorPrimitive,
-  PopoverTriggerPrimitive,
-  PopoverContentPrimitive,
-  PopoverClosePrimitive,
 };

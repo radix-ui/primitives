@@ -8,7 +8,7 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useRect } from '@radix-ui/react-use-rect';
 import { Presence } from '@radix-ui/react-presence';
-import { extendPrimitive } from '@radix-ui/react-primitive';
+import { extendPrimitive, Primitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Slottable } from '@radix-ui/react-slot';
@@ -17,7 +17,7 @@ import { useId } from '@radix-ui/react-id';
 import { createStateMachine } from './createStateMachine';
 import { tooltipStateChart } from './tooltipStateChart';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * State machine
@@ -45,7 +45,7 @@ type TooltipContextValue = {
 
 const [TooltipProvider, useTooltipContext] = createContext<TooltipContextValue>(TOOLTIP_NAME);
 
-type TooltipOwnProps = {
+type TooltipProps = {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -63,7 +63,7 @@ type TooltipOwnProps = {
   skipDelayDuration?: number;
 };
 
-const Tooltip: React.FC<TooltipOwnProps> = (props) => {
+const Tooltip: React.FC<TooltipProps> = (props) => {
   const {
     children,
     open: openProp,
@@ -113,9 +113,10 @@ const Tooltip: React.FC<TooltipOwnProps> = (props) => {
     return unsubscribe;
   }, [contentId]);
 
-  const handleFocus = React.useCallback(() => stateMachine.send({ type: 'FOCUS', id: contentId }), [
-    contentId,
-  ]);
+  const handleFocus = React.useCallback(
+    () => stateMachine.send({ type: 'FOCUS', id: contentId }),
+    [contentId]
+  );
   const handleOpen = React.useCallback(
     () => stateMachine.send({ type: 'OPEN', id: contentId, delayDuration }),
     [contentId, delayDuration]
@@ -161,43 +162,37 @@ Tooltip.displayName = TOOLTIP_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'TooltipTrigger';
-const TRIGGER_DEFAULT_TAG = 'button';
 
-type TooltipTriggerOwnProps = Omit<
-  Polymorphic.OwnProps<typeof PopperPrimitive.Anchor>,
-  'virtualRef'
->;
-type TooltipTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TRIGGER_DEFAULT_TAG,
-  TooltipTriggerOwnProps
->;
+type TooltipTriggerElement = React.ElementRef<typeof Primitive.button>;
+type TooltipTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 
-const TooltipTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
-  const context = useTooltipContext(TRIGGER_NAME);
-  const composedTriggerRef = useComposedRefs(forwardedRef, (node) => context.onTriggerChange(node));
-
-  return (
-    <PopperPrimitive.Anchor
-      type="button"
-      aria-describedby={context.open ? context.contentId : undefined}
-      data-state={context.stateAttribute}
-      {...triggerProps}
-      as={as}
-      ref={composedTriggerRef}
-      onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onOpen)}
-      onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onClose)}
-      onMouseDown={composeEventHandlers(props.onMouseDown, context.onClose)}
-      onFocus={composeEventHandlers(props.onFocus, context.onFocus)}
-      onBlur={composeEventHandlers(props.onBlur, context.onClose)}
-      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          context.onClose();
-        }
-      })}
-    />
-  );
-}) as TooltipTriggerPrimitive;
+const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
+  (props, forwardedRef) => {
+    const context = useTooltipContext(TRIGGER_NAME);
+    const composedTriggerRef = useComposedRefs(forwardedRef, context.onTriggerChange);
+    return (
+      <PopperPrimitive.Anchor asChild>
+        <Primitive.button
+          type="button"
+          aria-describedby={context.open ? context.contentId : undefined}
+          data-state={context.stateAttribute}
+          {...props}
+          ref={composedTriggerRef}
+          onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onOpen)}
+          onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onClose)}
+          onMouseDown={composeEventHandlers(props.onMouseDown, context.onClose)}
+          onFocus={composeEventHandlers(props.onFocus, context.onFocus)}
+          onBlur={composeEventHandlers(props.onBlur, context.onClose)}
+          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              context.onClose();
+            }
+          })}
+        />
+      </PopperPrimitive.Anchor>
+    );
+  }
+);
 
 TooltipTrigger.displayName = TRIGGER_NAME;
 
@@ -207,8 +202,9 @@ TooltipTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'TooltipContent';
 
-type TooltipContentOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof TooltipContentImpl>,
+type TooltipContentElement = React.ElementRef<typeof TooltipContentImpl>;
+type TooltipContentProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof TooltipContentImpl>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -218,23 +214,21 @@ type TooltipContentOwnProps = Polymorphic.Merge<
   }
 >;
 
-type TooltipContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof TooltipContentImpl>,
-  TooltipContentOwnProps
->;
+const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentProps>(
+  (props, forwardedRef) => {
+    const { forceMount, ...contentProps } = props;
+    const context = useTooltipContext(CONTENT_NAME);
+    return (
+      <Presence present={forceMount || context.open}>
+        <TooltipContentImpl ref={forwardedRef} {...contentProps} />
+      </Presence>
+    );
+  }
+);
 
-const TooltipContent = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, ...contentProps } = props;
-  const context = useTooltipContext(CONTENT_NAME);
-  return (
-    <Presence present={forceMount || context.open}>
-      <TooltipContentImpl ref={forwardedRef} {...contentProps} />
-    </Presence>
-  );
-}) as TooltipContentPrimitive;
-
-type TooltipContentImplOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof PopperPrimitive.Content>,
+type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type TooltipContentImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
   {
     /**
      * A more descriptive label for accessibility purpose
@@ -249,39 +243,37 @@ type TooltipContentImplOwnProps = Polymorphic.Merge<
   }
 >;
 
-type TooltipContentImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof PopperPrimitive.Content>,
-  TooltipContentImplOwnProps
->;
+const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
+  (props, forwardedRef) => {
+    const { children, 'aria-label': ariaLabel, portalled = true, ...contentProps } = props;
+    const context = useTooltipContext(CONTENT_NAME);
+    const PortalWrapper = portalled ? Portal : React.Fragment;
 
-const TooltipContentImpl = React.forwardRef((props, forwardedRef) => {
-  const { children, 'aria-label': ariaLabel, portalled = true, ...contentProps } = props;
-  const context = useTooltipContext(CONTENT_NAME);
-  const PortalWrapper = portalled ? Portal : React.Fragment;
+    useEscapeKeydown(() => context.onClose());
 
-  useEscapeKeydown(() => context.onClose());
-
-  return (
-    <PortalWrapper>
-      <CheckTriggerMoved />
-      <PopperPrimitive.Content
-        data-state={context.stateAttribute}
-        {...contentProps}
-        ref={forwardedRef}
-        style={{
-          ...contentProps.style,
-          // re-namespace exposed content custom property
-          ['--radix-tooltip-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
-        }}
-      >
-        <Slottable>{children}</Slottable>
-        <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
-          {ariaLabel || children}
-        </VisuallyHiddenPrimitive.Root>
-      </PopperPrimitive.Content>
-    </PortalWrapper>
-  );
-}) as TooltipContentImplPrimitive;
+    return (
+      <PortalWrapper>
+        <CheckTriggerMoved />
+        <PopperPrimitive.Content
+          data-state={context.stateAttribute}
+          {...contentProps}
+          ref={forwardedRef}
+          style={{
+            ...contentProps.style,
+            // re-namespace exposed content custom property
+            ['--radix-tooltip-content-transform-origin' as any]:
+              'var(--radix-popper-transform-origin)',
+          }}
+        >
+          <Slottable>{children}</Slottable>
+          <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
+            {ariaLabel || children}
+          </VisuallyHiddenPrimitive.Root>
+        </PopperPrimitive.Content>
+      </PortalWrapper>
+    );
+  }
+);
 
 TooltipContent.displayName = CONTENT_NAME;
 
@@ -331,4 +323,3 @@ export {
   Content,
   Arrow,
 };
-export type { TooltipTriggerPrimitive, TooltipContentPrimitive };

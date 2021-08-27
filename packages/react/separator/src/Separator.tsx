@@ -1,15 +1,20 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
+
+/* -------------------------------------------------------------------------------------------------
+ *  Separator
+ * -----------------------------------------------------------------------------------------------*/
 
 const NAME = 'Separator';
 const DEFAULT_ORIENTATION = 'horizontal';
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 type Orientation = typeof ORIENTATIONS[number];
-type SeparatorOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type SeparatorElement = React.ElementRef<typeof Primitive.div>;
+type SeparatorProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /**
      * Either `vertical` or `horizontal`. Defaults to `horizontal`.
@@ -23,12 +28,7 @@ type SeparatorOwnProps = Polymorphic.Merge<
   }
 >;
 
-type SeparatorPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  SeparatorOwnProps
->;
-
-const Separator = React.forwardRef((props, forwardedRef) => {
+const Separator = React.forwardRef<SeparatorElement, SeparatorProps>((props, forwardedRef) => {
   const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
   const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
   // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
@@ -38,9 +38,14 @@ const Separator = React.forwardRef((props, forwardedRef) => {
     : { 'aria-orientation': ariaOrientation, role: 'separator' };
 
   return (
-    <Primitive {...semanticProps} data-orientation={orientation} {...domProps} ref={forwardedRef} />
+    <Primitive.div
+      data-orientation={orientation}
+      {...semanticProps}
+      {...domProps}
+      ref={forwardedRef}
+    />
   );
-}) as SeparatorPrimitive;
+});
 
 Separator.displayName = NAME;
 
@@ -77,4 +82,3 @@ export {
   //
   Root,
 };
-export type { SeparatorPrimitive };

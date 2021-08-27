@@ -8,34 +8,29 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Radio
  * -----------------------------------------------------------------------------------------------*/
 
 const RADIO_NAME = 'Radio';
-const RADIO_DEFAULT_TAG = 'button';
 
-type InputDOMProps = React.ComponentProps<'input'>;
-type RadioOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type RadioContextValue = { checked: boolean; disabled?: boolean };
+const [RadioProvider, useRadioContext] = createContext<RadioContextValue>(RADIO_NAME);
+
+type RadioElement = React.ElementRef<typeof Primitive.button>;
+type RadioProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.button>,
   {
     checked?: boolean;
-    required?: InputDOMProps['required'];
+    required?: boolean;
     onCheck?(): void;
   }
 >;
 
-type RadioPrimitive = Polymorphic.ForwardRefComponent<typeof RADIO_DEFAULT_TAG, RadioOwnProps>;
-
-type RadioContextValue = { checked: boolean; disabled?: boolean };
-
-const [RadioProvider, useRadioContext] = createContext<RadioContextValue>(RADIO_NAME);
-
-const Radio = React.forwardRef((props, forwardedRef) => {
+const Radio = React.forwardRef<RadioElement, RadioProps>((props, forwardedRef) => {
   const {
-    as = RADIO_DEFAULT_TAG,
     'aria-labelledby': ariaLabelledby,
     name,
     checked = false,
@@ -55,7 +50,7 @@ const Radio = React.forwardRef((props, forwardedRef) => {
 
   return (
     <RadioProvider checked={checked} disabled={disabled}>
-      <Primitive
+      <Primitive.button
         type="button"
         role="radio"
         aria-checked={checked}
@@ -65,7 +60,6 @@ const Radio = React.forwardRef((props, forwardedRef) => {
         disabled={disabled}
         value={value}
         {...radioProps}
-        as={as}
         ref={composedRefs}
         onClick={composeEventHandlers(props.onClick, (event) => {
           // radios cannot be unchecked so we only communicate a checked state
@@ -96,7 +90,7 @@ const Radio = React.forwardRef((props, forwardedRef) => {
       )}
     </RadioProvider>
   );
-}) as RadioPrimitive;
+});
 
 Radio.displayName = RADIO_NAME;
 
@@ -105,10 +99,10 @@ Radio.displayName = RADIO_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const INDICATOR_NAME = 'RadioIndicator';
-const INDICATOR_DEFAULT_TAG = 'span';
 
-type RadioIndicatorOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type RadioIndicatorElement = React.ElementRef<typeof Primitive.span>;
+type RadioIndicatorProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
   {
     /**
      * Used to force mounting when more control is needed. Useful when
@@ -118,32 +112,28 @@ type RadioIndicatorOwnProps = Polymorphic.Merge<
   }
 >;
 
-type RadioIndicatorPrimitive = Polymorphic.ForwardRefComponent<
-  typeof INDICATOR_DEFAULT_TAG,
-  RadioIndicatorOwnProps
->;
-
-const RadioIndicator = React.forwardRef((props, forwardedRef) => {
-  const { as = INDICATOR_DEFAULT_TAG, forceMount, ...indicatorProps } = props;
-  const context = useRadioContext(INDICATOR_NAME);
-  return (
-    <Presence present={forceMount || context.checked}>
-      <Primitive
-        data-state={getState(context.checked)}
-        data-disabled={context.disabled ? '' : undefined}
-        {...indicatorProps}
-        as={as}
-        ref={forwardedRef}
-      />
-    </Presence>
-  );
-}) as RadioIndicatorPrimitive;
+const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorProps>(
+  (props, forwardedRef) => {
+    const { forceMount, ...indicatorProps } = props;
+    const context = useRadioContext(INDICATOR_NAME);
+    return (
+      <Presence present={forceMount || context.checked}>
+        <Primitive.span
+          data-state={getState(context.checked)}
+          data-disabled={context.disabled ? '' : undefined}
+          {...indicatorProps}
+          ref={forwardedRef}
+        />
+      </Presence>
+    );
+  }
+);
 
 RadioIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type BubbleInputProps = Omit<React.ComponentProps<'input'>, 'checked'> & {
+type BubbleInputProps = Omit<Radix.ComponentPropsWithoutRef<'input'>, 'checked'> & {
   checked: boolean;
   control: HTMLElement | null;
   bubbles: boolean;
@@ -192,4 +182,3 @@ function getState(checked: boolean) {
 }
 
 export { Radio, RadioIndicator };
-export type { RadioPrimitive, RadioIndicatorPrimitive };

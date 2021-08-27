@@ -3,26 +3,25 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useId } from '@radix-ui/react-id';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Label
  * -----------------------------------------------------------------------------------------------*/
 
 const NAME = 'Label';
-const DEFAULT_TAG = 'span';
-
-type LabelOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
-  { htmlFor?: string }
->;
-type LabelPrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, LabelOwnProps>;
 
 type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
-const Label = React.forwardRef((props, forwardedRef) => {
-  const { as = DEFAULT_TAG, htmlFor, id: idProp, ...labelProps } = props;
+type LabelElement = React.ElementRef<typeof Primitive.span>;
+type LabelProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
+  { htmlFor?: string }
+>;
+
+const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) => {
+  const { htmlFor, id: idProp, ...labelProps } = props;
   const labelRef = React.useRef<HTMLSpanElement>(null);
   const ref = useComposedRefs(forwardedRef, labelRef);
   const id = useId(idProp);
@@ -71,10 +70,10 @@ const Label = React.forwardRef((props, forwardedRef) => {
 
   return (
     <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
-      <Primitive role="label" id={id} {...labelProps} as={as} ref={ref} />
+      <Primitive.span role="label" id={id} {...labelProps} ref={ref} />
     </LabelContext.Provider>
   );
-}) as LabelPrimitive;
+});
 
 Label.displayName = NAME;
 
@@ -124,4 +123,3 @@ export {
   //
   useLabelContext,
 };
-export type { LabelPrimitive };

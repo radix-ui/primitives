@@ -5,7 +5,7 @@ import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 // We need to compute the total count of layers AND a running count of all layers
 // in order to find which layer is the deepest one.
@@ -33,33 +33,36 @@ const [
 
 const DISMISSABLE_LAYER_NAME = 'DismissableLayer';
 
-type DismissableLayerPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof DismissableLayerImpl>,
-  Polymorphic.OwnProps<typeof DismissableLayerImpl>
->;
+type DismissableLayerElement = React.ElementRef<typeof DismissableLayerImpl>;
+type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayerImpl>;
 
-const DismissableLayer = React.forwardRef((props, forwardedRef) => {
-  const runningLayerCount = usePreviousRunningLayerCount();
-  const isRootLayer = runningLayerCount === 0;
-  const layer = <DismissableLayerImpl {...props} ref={forwardedRef} />;
+const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLayerProps>(
+  (props, forwardedRef) => {
+    const runningLayerCount = usePreviousRunningLayerCount();
+    const isRootLayer = runningLayerCount === 0;
+    const layer = <DismissableLayerImpl {...props} ref={forwardedRef} />;
 
-  // if it's the root layer, we wrap it with our necessary root providers
-  // (effectively we wrap the whole tree of nested layers)
-  return isRootLayer ? (
-    <TotalLayerCountProvider>
-      <TotalLayerCountWithDisabledOutsidePointerEventsProvider>
-        {layer}
-      </TotalLayerCountWithDisabledOutsidePointerEventsProvider>
-    </TotalLayerCountProvider>
-  ) : (
-    layer
-  );
-}) as DismissableLayerPrimitive;
+    // if it's the root layer, we wrap it with our necessary root providers
+    // (effectively we wrap the whole tree of nested layers)
+    return isRootLayer ? (
+      <TotalLayerCountProvider>
+        <TotalLayerCountWithDisabledOutsidePointerEventsProvider>
+          {layer}
+        </TotalLayerCountWithDisabledOutsidePointerEventsProvider>
+      </TotalLayerCountProvider>
+    ) : (
+      layer
+    );
+  }
+);
 
 DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
 
-type DismissableLayerImplOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+/* -----------------------------------------------------------------------------------------------*/
+
+type DismissableLayerImplElement = React.ElementRef<typeof Primitive.div>;
+type DismissableLayerImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /**
      * When `true`, hover/focus/click interactions will be disabled on elements outside
@@ -98,12 +101,10 @@ type DismissableLayerImplOwnProps = Polymorphic.Merge<
   }
 >;
 
-type DismissableLayerImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  DismissableLayerImplOwnProps
->;
-
-const DismissableLayerImpl = React.forwardRef((props, forwardedRef) => {
+const DismissableLayerImpl = React.forwardRef<
+  DismissableLayerImplElement,
+  DismissableLayerImplProps
+>((props, forwardedRef) => {
   const {
     disableOutsidePointerEvents = false,
     onEscapeKeyDown,
@@ -119,10 +120,10 @@ const DismissableLayerImpl = React.forwardRef((props, forwardedRef) => {
   const runningLayerCount = prevRunningLayerCount + 1;
   const isDeepestLayer = runningLayerCount === totalLayerCount;
 
-  const totalLayerCountWithDisabledOutsidePointerEvents = useTotalLayerCountWithDisabledOutsidePointerEvents(
-    disableOutsidePointerEvents
-  );
-  const prevRunningLayerCountWithDisabledOutsidePointerEvents = usePreviousRunningLayerCountWithDisabledOutsidePointerEvents();
+  const totalLayerCountWithDisabledOutsidePointerEvents =
+    useTotalLayerCountWithDisabledOutsidePointerEvents(disableOutsidePointerEvents);
+  const prevRunningLayerCountWithDisabledOutsidePointerEvents =
+    usePreviousRunningLayerCountWithDisabledOutsidePointerEvents();
   const runningLayerCountWithDisabledOutsidePointerEvents =
     prevRunningLayerCountWithDisabledOutsidePointerEvents + (disableOutsidePointerEvents ? 1 : 0);
   const containsChildLayerWithDisabledOutsidePointerEvents =
@@ -183,7 +184,7 @@ const DismissableLayerImpl = React.forwardRef((props, forwardedRef) => {
       <RunningLayerCountWithDisabledOutsidePointerEventsProvider
         runningCount={runningLayerCountWithDisabledOutsidePointerEvents}
       >
-        <Primitive
+        <Primitive.div
           {...layerProps}
           ref={forwardedRef}
           style={{
@@ -200,7 +201,7 @@ const DismissableLayerImpl = React.forwardRef((props, forwardedRef) => {
       </RunningLayerCountWithDisabledOutsidePointerEventsProvider>
     </RunningLayerCountProvider>
   );
-}) as DismissableLayerImplPrimitive;
+});
 
 /* -------------------------------------------------------------------------------------------------
  * Utility hooks

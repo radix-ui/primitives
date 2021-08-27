@@ -1,25 +1,44 @@
 import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+const NODES = ['a', 'button', 'div', 'h2', 'h3', 'p', 'img', 'span', 'svg'] as const;
+
+type MergeProps<P1 = {}, P2 = {}> = Omit<P1, keyof P2> & P2;
+type Primitives = { [E in typeof NODES[number]]: PrimitiveForwardRefComponent<E> };
+
+type PrimitiveForwardRefComponent<E extends React.ElementType> = React.ForwardRefExoticComponent<
+  MergeProps<React.ComponentPropsWithRef<E>, PrimitiveProps>
+>;
+
+// Temporary while we await merge of this fix:
+// https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55396
+type PropsWithoutRef<P> = P extends { ref?: any } ? Pick<P, Exclude<keyof P, 'ref'>> : P;
+type ComponentPropsWithoutRef<T extends React.ElementType> = PropsWithoutRef<
+  React.ComponentProps<T>
+>;
 
 /* -------------------------------------------------------------------------------------------------
  * Primitive
  * -----------------------------------------------------------------------------------------------*/
 
-const NAME = 'Primitive';
-const DEFAULT_TAG = 'div';
+type PrimitiveProps = { asChild?: boolean };
 
-type PrimitiveOwnProps = {};
-type PrimitivePrimitive = Polymorphic.ForwardRefComponent<typeof DEFAULT_TAG, PrimitiveOwnProps>;
-
-const Primitive = React.forwardRef((props, forwardedRef) => {
-  const { as: Comp = DEFAULT_TAG, ...primitiveProps } = props;
-  return <Comp {...primitiveProps} ref={forwardedRef} />;
-}) as PrimitivePrimitive;
-
-Primitive.displayName = NAME;
+const Primitive = NODES.reduce(
+  (primitive, node) => ({
+    ...primitive,
+    [node]: React.forwardRef((props: PrimitiveProps, forwardedRef: any) => {
+      const { asChild, ...primitiveProps } = props;
+      const Comp = asChild ? Slot : node;
+      if ((props as any).as) console.error(AS_ERROR);
+      return <Comp {...primitiveProps} ref={forwardedRef} />;
+    }),
+  }),
+  {} as Primitives
+);
 
 /* -----------------------------------------------------------------------------------------------*/
+
+const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChild\`. For details, see https://radix-ui.com/`;
 
 const Root = Primitive;
 
@@ -28,4 +47,4 @@ export {
   //
   Root,
 };
-export type { PrimitivePrimitive };
+export type { MergeProps, ComponentPropsWithoutRef };

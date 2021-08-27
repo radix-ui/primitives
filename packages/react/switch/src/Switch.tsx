@@ -8,35 +8,31 @@ import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
  * -----------------------------------------------------------------------------------------------*/
 
 const SWITCH_NAME = 'Switch';
-const SWITCH_DEFAULT_TAG = 'button';
 
-type InputDOMProps = React.ComponentProps<'input'>;
-type SwitchOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type SwitchElement = React.ElementRef<typeof Primitive.button>;
+type SwitchProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.button>,
   {
     checked?: boolean;
     defaultChecked?: boolean;
-    required?: InputDOMProps['required'];
+    required?: boolean;
     onCheckedChange?(checked: boolean): void;
   }
 >;
-
-type SwitchPrimitive = Polymorphic.ForwardRefComponent<typeof SWITCH_DEFAULT_TAG, SwitchOwnProps>;
 
 type SwitchContextValue = { checked: boolean; disabled?: boolean };
 
 const [SwitchProvider, useSwitchContext] = createContext<SwitchContextValue>(SWITCH_NAME);
 
-const Switch = React.forwardRef((props, forwardedRef) => {
+const Switch = React.forwardRef<SwitchElement, SwitchProps>((props, forwardedRef) => {
   const {
-    as = SWITCH_DEFAULT_TAG,
     'aria-labelledby': ariaLabelledby,
     name,
     checked: checkedProp,
@@ -62,7 +58,7 @@ const Switch = React.forwardRef((props, forwardedRef) => {
 
   return (
     <SwitchProvider checked={checked} disabled={disabled}>
-      <Primitive
+      <Primitive.button
         type="button"
         role="switch"
         aria-checked={checked}
@@ -73,7 +69,6 @@ const Switch = React.forwardRef((props, forwardedRef) => {
         disabled={disabled}
         value={value}
         {...switchProps}
-        as={as}
         ref={composedRefs}
         onClick={composeEventHandlers(props.onClick, (event) => {
           setChecked((prevChecked) => !prevChecked);
@@ -103,7 +98,7 @@ const Switch = React.forwardRef((props, forwardedRef) => {
       )}
     </SwitchProvider>
   );
-}) as SwitchPrimitive;
+});
 
 Switch.displayName = SWITCH_NAME;
 
@@ -112,33 +107,29 @@ Switch.displayName = SWITCH_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const THUMB_NAME = 'SwitchThumb';
-const THUMB_DEFAULT_TAG = 'span';
 
-type SwitchThumbOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type SwitchThumbPrimitive = Polymorphic.ForwardRefComponent<
-  typeof THUMB_DEFAULT_TAG,
-  SwitchThumbOwnProps
->;
+type SwitchThumbElement = React.ElementRef<typeof Primitive.span>;
+type SwitchThumbProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
-const SwitchThumb = React.forwardRef((props, forwardedRef) => {
-  const { as = THUMB_DEFAULT_TAG, ...thumbProps } = props;
-  const context = useSwitchContext(THUMB_NAME);
-  return (
-    <Primitive
-      data-state={getState(context.checked)}
-      data-disabled={context.disabled ? '' : undefined}
-      {...thumbProps}
-      as={as}
-      ref={forwardedRef}
-    />
-  );
-}) as SwitchThumbPrimitive;
+const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
+  (props, forwardedRef) => {
+    const context = useSwitchContext(THUMB_NAME);
+    return (
+      <Primitive.span
+        data-state={getState(context.checked)}
+        data-disabled={context.disabled ? '' : undefined}
+        {...props}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
 
 SwitchThumb.displayName = THUMB_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type BubbleInputProps = Omit<React.ComponentProps<'input'>, 'checked'> & {
+type BubbleInputProps = Omit<Radix.ComponentPropsWithoutRef<'input'>, 'checked'> & {
   checked: boolean;
   control: HTMLElement | null;
   bubbles: boolean;
@@ -196,4 +187,3 @@ export {
   Root,
   Thumb,
 };
-export type { SwitchPrimitive, SwitchThumbPrimitive };

@@ -25,11 +25,9 @@
     "@radix-ui/react-focus-guards": "workspace:*",
     "@radix-ui/react-focus-scope": "workspace:*",
     "@radix-ui/react-id": "workspace:*",
-    "@radix-ui/react-polymorphic": "workspace:*",
     "@radix-ui/react-portal": "workspace:*",
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "aria-hidden": "^1.1.1",
     "react-remove-scroll": "^2.4.0"

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 const MAX_Z_INDEX = 2147483647;
 
@@ -13,19 +13,13 @@ const MAX_Z_INDEX = 2147483647;
 
 const PORTAL_NAME = 'Portal';
 
-type PortalOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
-  {
-    containerRef?: React.RefObject<HTMLElement>;
-  }
+type PortalElement = React.ElementRef<typeof Primitive.div>;
+type PortalProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
+  { containerRef?: React.RefObject<HTMLElement> }
 >;
 
-type PortalPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  PortalOwnProps
->;
-
-const Portal = React.forwardRef((props, forwardedRef) => {
+const Portal = React.forwardRef<PortalElement, PortalProps>((props, forwardedRef) => {
   const { containerRef, style, ...portalProps } = props;
   const hostElement = containerRef?.current ?? globalThis?.document?.body;
   const [, forceUpdate] = React.useState({});
@@ -40,7 +34,7 @@ const Portal = React.forwardRef((props, forwardedRef) => {
 
   if (hostElement) {
     return ReactDOM.createPortal(
-      <Primitive
+      <Primitive.div
         data-radix-portal=""
         {...portalProps}
         ref={forwardedRef}
@@ -68,9 +62,11 @@ const Portal = React.forwardRef((props, forwardedRef) => {
 
   // bail out of ssr
   return null;
-}) as PortalPrimitive;
+});
 
 Portal.displayName = PORTAL_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
 
 const Root = Portal;
 
@@ -79,4 +75,3 @@ export {
   //
   Root,
 };
-export type { PortalPrimitive };

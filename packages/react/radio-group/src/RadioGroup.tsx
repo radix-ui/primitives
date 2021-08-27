@@ -3,58 +3,51 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
-import { extendPrimitive } from '@radix-ui/react-primitive';
+import { extendPrimitive, Primitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
-import { Slot } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Radio, RadioIndicator } from './Radio';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
  * -----------------------------------------------------------------------------------------------*/
 const RADIO_GROUP_NAME = 'RadioGroup';
-const RADIO_GROUP_DEFAULT_TAG = 'div';
 
-type RadioGroupOwnProps = Polymorphic.Merge<
-  Omit<
-    Polymorphic.OwnProps<typeof RovingFocusGroup>,
-    'currentTabStopId' | 'defaultCurrentTabStopId' | 'onCurrentTabStopIdChange' | 'onEntryFocus'
-  >,
+type RadioGroupContextValue = {
+  name?: string;
+  value?: string;
+  required: boolean;
+  onValueChange(value: string): void;
+};
+
+const [RadioGroupProvider, useRadioGroupContext] =
+  createContext<RadioGroupContextValue>(RADIO_GROUP_NAME);
+
+type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
+type RadioGroupElement = React.ElementRef<typeof Primitive.div>;
+type RadioGroupProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
-    name?: string;
-    value?: string;
+    name?: RadioGroupContextValue['name'];
+    required?: Radix.ComponentPropsWithoutRef<typeof Radio>['required'];
+    dir?: RovingFocusGroupProps['dir'];
+    orientation?: RovingFocusGroupProps['orientation'];
+    loop?: RovingFocusGroupProps['loop'];
     defaultValue?: string;
-    required?: React.ComponentProps<typeof Radio>['required'];
-    onValueChange?(value: string): void;
+    value?: RadioGroupContextValue['value'];
+    onValueChange?: RadioGroupContextValue['onValueChange'];
   }
 >;
 
-type RadioGroupPrimitive = Polymorphic.ForwardRefComponent<
-  typeof RADIO_GROUP_DEFAULT_TAG,
-  RadioGroupOwnProps
->;
-
-type RadioGroupContextValue = {
-  name: RadioGroupOwnProps['name'];
-  value: RadioGroupOwnProps['value'];
-  required: RadioGroupOwnProps['required'];
-  onValueChange: Required<RadioGroupOwnProps>['onValueChange'];
-};
-
-const [RadioGroupProvider, useRadioGroupContext] = createContext<RadioGroupContextValue>(
-  RADIO_GROUP_NAME
-);
-
-const RadioGroup = React.forwardRef((props, forwardedRef) => {
+const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>((props, forwardedRef) => {
   const {
-    as = RADIO_GROUP_DEFAULT_TAG,
     name,
     'aria-labelledby': ariaLabelledby,
     defaultValue,
     value: valueProp,
-    required,
+    required = false,
     orientation,
     dir = 'ltr',
     loop = true,
@@ -71,19 +64,18 @@ const RadioGroup = React.forwardRef((props, forwardedRef) => {
 
   return (
     <RadioGroupProvider name={name} value={value} required={required} onValueChange={setValue}>
-      <RovingFocusGroup
-        role="radiogroup"
-        aria-labelledby={labelledBy}
-        orientation={orientation}
-        dir={dir}
-        loop={loop}
-        {...groupProps}
-        as={as}
-        ref={forwardedRef}
-      />
+      <RovingFocusGroup asChild orientation={orientation} dir={dir} loop={loop}>
+        <Primitive.div
+          role="radiogroup"
+          aria-labelledby={labelledBy}
+          dir={dir}
+          {...groupProps}
+          ref={forwardedRef}
+        />
+      </RovingFocusGroup>
     </RadioGroupProvider>
   );
-}) as RadioGroupPrimitive;
+});
 
 RadioGroup.displayName = RADIO_GROUP_NAME;
 
@@ -93,44 +85,42 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 
 const ITEM_NAME = 'RadioGroupItem';
 
-type RadioGroupItemOwnProps = Polymorphic.Merge<
-  Omit<Polymorphic.OwnProps<typeof Radio>, 'onCheck'>,
+type RadioGroupItemElement = React.ElementRef<typeof Radio>;
+type RadioGroupItemProps = Radix.MergeProps<
+  Omit<Radix.ComponentPropsWithoutRef<typeof Radio>, 'onCheck'>,
   { value: string; name?: never }
 >;
-type RadioGroupItemPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Radio>,
-  RadioGroupItemOwnProps
->;
 
-const RadioGroupItem = React.forwardRef((props, forwardedRef) => {
-  const { disabled, ...itemProps } = props;
-  const context = useRadioGroupContext(ITEM_NAME);
-  const ref = React.useRef<React.ElementRef<typeof Radio>>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
-  const checked = context.value === itemProps.value;
-
-  return (
-    <RovingFocusItem as={Slot} focusable={!disabled} active={checked}>
-      <Radio
-        disabled={disabled}
-        required={context.required}
-        checked={checked}
-        {...itemProps}
-        name={context.name}
-        ref={composedRefs}
-        onCheck={() => context.onValueChange(itemProps.value)}
-        onFocus={composeEventHandlers(itemProps.onFocus, () => {
-          /**
-           * Roving index will focus the radio and we need to check it when this happens.
-           * We do this imperatively instead of updating `context.value` because changing via
-           * state would not trigger change events (e.g. when in a form).
-           */
-          if (context.value !== undefined) ref.current?.click();
-        })}
-      />
-    </RovingFocusItem>
-  );
-}) as RadioGroupItemPrimitive;
+const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemProps>(
+  (props, forwardedRef) => {
+    const { disabled, ...itemProps } = props;
+    const context = useRadioGroupContext(ITEM_NAME);
+    const ref = React.useRef<React.ElementRef<typeof Radio>>(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref);
+    const checked = context.value === itemProps.value;
+    return (
+      <RovingFocusItem asChild focusable={!disabled} active={checked}>
+        <Radio
+          disabled={disabled}
+          required={context.required}
+          checked={checked}
+          {...itemProps}
+          name={context.name}
+          ref={composedRefs}
+          onCheck={() => context.onValueChange(itemProps.value)}
+          onFocus={composeEventHandlers(itemProps.onFocus, () => {
+            /**
+             * Roving index will focus the radio and we need to check it when this happens.
+             * We do this imperatively instead of updating `context.value` because changing via
+             * state would not trigger change events (e.g. when in a form).
+             */
+            if (context.value !== undefined) ref.current?.click();
+          })}
+        />
+      </RovingFocusItem>
+    );
+  }
+);
 
 RadioGroupItem.displayName = ITEM_NAME;
 
@@ -153,4 +143,3 @@ export {
   Item,
   Indicator,
 };
-export type { RadioGroupPrimitive, RadioGroupItemPrimitive };

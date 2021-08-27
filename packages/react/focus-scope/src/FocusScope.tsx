@@ -3,7 +3,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 const AUTOFOCUS_ON_MOUNT = 'focusScope.autoFocusOnMount';
 const AUTOFOCUS_ON_UNMOUNT = 'focusScope.autoFocusOnUnmount';
@@ -17,8 +17,9 @@ type FocusableTarget = HTMLElement | { focus(): void };
 
 const FOCUS_SCOPE_NAME = 'FocusScope';
 
-type FocusScopeOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type FocusScopeElement = React.ElementRef<typeof Primitive.div>;
+type FocusScopeProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     /**
      * When `true`, tabbing from last item will focus first tabbable
@@ -48,12 +49,7 @@ type FocusScopeOwnProps = Polymorphic.Merge<
   }
 >;
 
-type FocusScopePrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  FocusScopeOwnProps
->;
-
-const FocusScope = React.forwardRef((props, forwardedRef) => {
+const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, forwardedRef) => {
   const {
     loop = false,
     trapped = false,
@@ -177,8 +173,10 @@ const FocusScope = React.forwardRef((props, forwardedRef) => {
     [loop, trapped, focusScope.paused]
   );
 
-  return <Primitive tabIndex={-1} {...scopeProps} ref={composedRefs} onKeyDown={handleKeyDown} />;
-}) as FocusScopePrimitive;
+  return (
+    <Primitive.div tabIndex={-1} {...scopeProps} ref={composedRefs} onKeyDown={handleKeyDown} />
+  );
+});
 
 FocusScope.displayName = FOCUS_SCOPE_NAME;
 

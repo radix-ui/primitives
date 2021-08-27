@@ -12,12 +12,8 @@ import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useStateMachine } from './useStateMachine';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
-type ScrollAreaElement = React.ElementRef<typeof ScrollArea>;
-type ViewportElement = React.ElementRef<typeof ScrollAreaViewport>;
-type ScrollbarElement = React.ElementRef<typeof ScrollAreaScrollbar>;
-type ThumbElement = React.ElementRef<typeof ScrollAreaThumb>;
 type Direction = 'ltr' | 'rtl';
 type Sizes = {
   content: number;
@@ -40,28 +36,28 @@ type ScrollAreaContextValue = {
   dir: Direction;
   scrollHideDelay: number;
   scrollArea: ScrollAreaElement | null;
-  viewport: ViewportElement | null;
-  onViewportChange(viewport: ViewportElement | null): void;
+  viewport: ScrollAreaViewportElement | null;
+  onViewportChange(viewport: ScrollAreaViewportElement | null): void;
   content: HTMLDivElement | null;
   onContentChange(content: HTMLDivElement): void;
-  scrollbarX: ScrollbarElement | null;
-  onScrollbarXChange(scrollbar: ScrollbarElement | null): void;
+  scrollbarX: ScrollAreaScrollbarElement | null;
+  onScrollbarXChange(scrollbar: ScrollAreaScrollbarElement | null): void;
   scrollbarXEnabled: boolean;
   onScrollbarXEnabledChange(rendered: boolean): void;
-  scrollbarY: ScrollbarElement | null;
-  onScrollbarYChange(scrollbar: ScrollbarElement | null): void;
+  scrollbarY: ScrollAreaScrollbarElement | null;
+  onScrollbarYChange(scrollbar: ScrollAreaScrollbarElement | null): void;
   scrollbarYEnabled: boolean;
   onScrollbarYEnabledChange(rendered: boolean): void;
   onCornerWidthChange(width: number): void;
   onCornerHeightChange(height: number): void;
 };
 
-const [ScrollAreaProvider, useScrollAreaContext] = createContext<ScrollAreaContextValue>(
-  SCROLL_AREA_NAME
-);
+const [ScrollAreaProvider, useScrollAreaContext] =
+  createContext<ScrollAreaContextValue>(SCROLL_AREA_NAME);
 
-type ScrollAreaOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type ScrollAreaElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   {
     type?: ScrollAreaContextValue['type'];
     dir?: ScrollAreaContextValue['dir'];
@@ -69,18 +65,13 @@ type ScrollAreaOwnProps = Polymorphic.Merge<
   }
 >;
 
-type ScrollAreaPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  ScrollAreaOwnProps
->;
-
-const ScrollArea = React.forwardRef((props, forwardedRef) => {
+const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>((props, forwardedRef) => {
   const { type = 'hover', scrollHideDelay = 600, ...scrollAreaProps } = props;
   const [scrollArea, setScrollArea] = React.useState<ScrollAreaElement | null>(null);
-  const [viewport, setViewport] = React.useState<ViewportElement | null>(null);
+  const [viewport, setViewport] = React.useState<ScrollAreaViewportElement | null>(null);
   const [content, setContent] = React.useState<HTMLDivElement | null>(null);
-  const [scrollbarX, setScrollbarX] = React.useState<ScrollbarElement | null>(null);
-  const [scrollbarY, setScrollbarY] = React.useState<ScrollbarElement | null>(null);
+  const [scrollbarX, setScrollbarX] = React.useState<ScrollAreaScrollbarElement | null>(null);
+  const [scrollbarY, setScrollbarY] = React.useState<ScrollAreaScrollbarElement | null>(null);
   const [cornerWidth, setCornerWidth] = React.useState(0);
   const [cornerHeight, setCornerHeight] = React.useState(0);
   const [scrollbarXEnabled, setScrollbarXEnabled] = React.useState(false);
@@ -109,7 +100,7 @@ const ScrollArea = React.forwardRef((props, forwardedRef) => {
       onCornerWidthChange={setCornerWidth}
       onCornerHeightChange={setCornerHeight}
     >
-      <Primitive
+      <Primitive.div
         {...scrollAreaProps}
         ref={composedRefs}
         style={{
@@ -122,7 +113,7 @@ const ScrollArea = React.forwardRef((props, forwardedRef) => {
       />
     </ScrollAreaProvider>
   );
-}) as ScrollAreaPrimitive;
+});
 
 ScrollArea.displayName = SCROLL_AREA_NAME;
 
@@ -132,61 +123,59 @@ ScrollArea.displayName = SCROLL_AREA_NAME;
 
 const VIEWPORT_NAME = 'ScrollAreaViewport';
 
-type ScrollAreaViewportOwnProps = Polymorphic.OwnProps<typeof Primitive>;
+type ScrollAreaViewportElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaViewportProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 
-type ScrollAreaViewportPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  ScrollAreaViewportOwnProps
->;
-
-const ScrollAreaViewport = React.forwardRef((props, forwardedRef) => {
-  const { children, ...viewportProps } = props;
-  const context = useScrollAreaContext(VIEWPORT_NAME);
-  const ref = React.useRef<React.ElementRef<typeof Primitive>>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
-  return (
-    <>
-      {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
-        }}
-      />
-      <Primitive
-        data-radix-scroll-area-viewport=""
-        {...viewportProps}
-        ref={composedRefs}
-        style={{
-          /**
-           * We don't support `visible` because the intention is to have at least one scrollbar
-           * if this component is used and `visible` will behave like `auto` in that case
-           * https://developer.mozilla.org/en-US/docs/Web/CSS/overflowed#description
-           *
-           * We don't handle `auto` because the intention is for the native implementation
-           * to be hidden if using this component. We just want to ensure the node is scrollable
-           * so could have used either `scroll` or `auto` here. We picked `scroll` to prevent
-           * the browser from having to work out whether to render native scrollbars or not,
-           * we tell it to with the intention of hiding them in CSS.
-           */
-          overflowX: context.scrollbarXEnabled ? 'scroll' : 'hidden',
-          overflowY: context.scrollbarYEnabled ? 'scroll' : 'hidden',
-          ...props.style,
-        }}
-      >
-        {/**
-         * `display: table` ensures our content div will match the size of its children in both
-         * horizontal and vertical axis so we can determine if scroll width/height changed and
-         * recalculate thumb sizes. This doesn't account for children with *percentage*
-         * widths that change. We'll wait to see what use-cases consumers come up with there
-         * before trying to resolve it.
-         */}
-        <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }}>
-          {children}
-        </div>
-      </Primitive>
-    </>
-  );
-}) as ScrollAreaViewportPrimitive;
+const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAreaViewportProps>(
+  (props, forwardedRef) => {
+    const { children, ...viewportProps } = props;
+    const context = useScrollAreaContext(VIEWPORT_NAME);
+    const ref = React.useRef<ScrollAreaViewportElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
+    return (
+      <>
+        {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
+          }}
+        />
+        <Primitive.div
+          data-radix-scroll-area-viewport=""
+          {...viewportProps}
+          ref={composedRefs}
+          style={{
+            /**
+             * We don't support `visible` because the intention is to have at least one scrollbar
+             * if this component is used and `visible` will behave like `auto` in that case
+             * https://developer.mozilla.org/en-US/docs/Web/CSS/overflowed#description
+             *
+             * We don't handle `auto` because the intention is for the native implementation
+             * to be hidden if using this component. We just want to ensure the node is scrollable
+             * so could have used either `scroll` or `auto` here. We picked `scroll` to prevent
+             * the browser from having to work out whether to render native scrollbars or not,
+             * we tell it to with the intention of hiding them in CSS.
+             */
+            overflowX: context.scrollbarXEnabled ? 'scroll' : 'hidden',
+            overflowY: context.scrollbarYEnabled ? 'scroll' : 'hidden',
+            ...props.style,
+          }}
+        >
+          {/**
+           * `display: table` ensures our content div will match the size of its children in both
+           * horizontal and vertical axis so we can determine if scroll width/height changed and
+           * recalculate thumb sizes. This doesn't account for children with *percentage*
+           * widths that change. We'll wait to see what use-cases consumers come up with there
+           * before trying to resolve it.
+           */}
+          <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }}>
+            {children}
+          </div>
+        </Primitive.div>
+      </>
+    );
+  }
+);
 
 ScrollAreaViewport.displayName = VIEWPORT_NAME;
 
@@ -196,50 +185,52 @@ ScrollAreaViewport.displayName = VIEWPORT_NAME;
 
 const SCROLLBAR_NAME = 'ScrollAreaScrollbar';
 
-type ScrollAreaScrollbarOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof ScrollAreaScrollbarVisible>,
+type ScrollAreaScrollbarElement = React.ElementRef<typeof ScrollAreaScrollbarVisible>;
+type ScrollAreaScrollbarProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarVisible>,
   { forceMount?: true }
 >;
-type ScrollAreaScrollbarPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarVisible>,
-  ScrollAreaScrollbarOwnProps
->;
 
-const ScrollAreaScrollbar = React.forwardRef((props, forwardedRef) => {
-  const { forceMount, ...scrollbarProps } = props;
-  const context = useScrollAreaContext(SCROLLBAR_NAME);
-  const { onScrollbarXEnabledChange, onScrollbarYEnabledChange } = context;
-  const isHorizontal = props.orientation === 'horizontal';
+const ScrollAreaScrollbar = React.forwardRef<ScrollAreaScrollbarElement, ScrollAreaScrollbarProps>(
+  (props, forwardedRef) => {
+    const { forceMount, ...scrollbarProps } = props;
+    const context = useScrollAreaContext(SCROLLBAR_NAME);
+    const { onScrollbarXEnabledChange, onScrollbarYEnabledChange } = context;
+    const isHorizontal = props.orientation === 'horizontal';
 
-  React.useEffect(() => {
-    isHorizontal ? onScrollbarXEnabledChange(true) : onScrollbarYEnabledChange(true);
-    return () => {
-      isHorizontal ? onScrollbarXEnabledChange(false) : onScrollbarYEnabledChange(false);
-    };
-  }, [isHorizontal, onScrollbarXEnabledChange, onScrollbarYEnabledChange]);
+    React.useEffect(() => {
+      isHorizontal ? onScrollbarXEnabledChange(true) : onScrollbarYEnabledChange(true);
+      return () => {
+        isHorizontal ? onScrollbarXEnabledChange(false) : onScrollbarYEnabledChange(false);
+      };
+    }, [isHorizontal, onScrollbarXEnabledChange, onScrollbarYEnabledChange]);
 
-  return context.type === 'hover' ? (
-    <ScrollAreaScrollbarHover {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
-  ) : context.type === 'scroll' ? (
-    <ScrollAreaScrollbarScroll {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
-  ) : context.type === 'auto' ? (
-    <ScrollAreaScrollbarAuto {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
-  ) : context.type === 'always' ? (
-    <ScrollAreaScrollbarVisible {...scrollbarProps} ref={forwardedRef} />
-  ) : null;
-}) as ScrollAreaScrollbarPrimitive;
+    return context.type === 'hover' ? (
+      <ScrollAreaScrollbarHover {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
+    ) : context.type === 'scroll' ? (
+      <ScrollAreaScrollbarScroll {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
+    ) : context.type === 'auto' ? (
+      <ScrollAreaScrollbarAuto {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
+    ) : context.type === 'always' ? (
+      <ScrollAreaScrollbarVisible {...scrollbarProps} ref={forwardedRef} />
+    ) : null;
+  }
+);
 
 ScrollAreaScrollbar.displayName = SCROLLBAR_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaScrollbarHoverOwnProps = Polymorphic.OwnProps<typeof ScrollAreaScrollbarAuto>;
-type ScrollAreaScrollbarHoverPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarAuto>,
-  ScrollAreaScrollbarHoverOwnProps
+type ScrollAreaScrollbarHoverElement = React.ElementRef<typeof ScrollAreaScrollbarAuto>;
+type ScrollAreaScrollbarHoverProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarAuto>,
+  { forceMount?: true }
 >;
 
-const ScrollAreaScrollbarHover = React.forwardRef((props, forwardedRef) => {
+const ScrollAreaScrollbarHover = React.forwardRef<
+  ScrollAreaScrollbarHoverElement,
+  ScrollAreaScrollbarHoverProps
+>((props, forwardedRef) => {
   const { forceMount, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
   const [visible, setVisible] = React.useState(false);
@@ -273,9 +264,18 @@ const ScrollAreaScrollbarHover = React.forwardRef((props, forwardedRef) => {
       />
     </Presence>
   );
-}) as ScrollAreaScrollbarHoverPrimitive;
+});
 
-const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
+type ScrollAreaScrollbarScrollElement = React.ElementRef<typeof ScrollAreaScrollbarVisible>;
+type ScrollAreaScrollbarScrollProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarVisible>,
+  { forceMount?: true }
+>;
+
+const ScrollAreaScrollbarScroll = React.forwardRef<
+  ScrollAreaScrollbarScrollElement,
+  ScrollAreaScrollbarScrollProps
+>((props, forwardedRef) => {
   const { forceMount, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
   const isHorizontal = props.orientation === 'horizontal';
@@ -337,9 +337,18 @@ const ScrollAreaScrollbarScroll = React.forwardRef((props, forwardedRef) => {
       />
     </Presence>
   );
-}) as ScrollAreaScrollbarPrimitive;
+});
 
-const ScrollAreaScrollbarAuto = React.forwardRef((props, forwardedRef) => {
+type ScrollAreaScrollbarAutoElement = React.ElementRef<typeof ScrollAreaScrollbarVisible>;
+type ScrollAreaScrollbarAutoProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarVisible>,
+  { forceMount?: true }
+>;
+
+const ScrollAreaScrollbarAuto = React.forwardRef<
+  ScrollAreaScrollbarAutoElement,
+  ScrollAreaScrollbarAutoProps
+>((props, forwardedRef) => {
   const context = useScrollAreaContext(SCROLLBAR_NAME);
   const { forceMount, ...scrollbarProps } = props;
   const [visible, setVisible] = React.useState(false);
@@ -364,29 +373,29 @@ const ScrollAreaScrollbarAuto = React.forwardRef((props, forwardedRef) => {
       />
     </Presence>
   );
-}) as ScrollAreaScrollbarPrimitive;
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaScrollbarVisibleOwnProps = Polymorphic.Merge<
+type ScrollAreaScrollbarVisibleElement = React.ElementRef<
+  typeof ScrollAreaScrollbarX | typeof ScrollAreaScrollbarY
+>;
+type ScrollAreaScrollbarVisibleProps = Radix.MergeProps<
   Omit<
-    | Polymorphic.OwnProps<typeof ScrollAreaScrollbarX>
-    | Polymorphic.OwnProps<typeof ScrollAreaScrollbarY>,
+    | Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarX>
+    | Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarY>,
     keyof ScrollAreaScrollbarAxisPrivateProps
   >,
   { orientation?: 'horizontal' | 'vertical' }
 >;
 
-type ScrollAreaScrollbarVisiblePrimitive = Polymorphic.ForwardRefComponent<
-  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarX>
-  | Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarY>,
-  ScrollAreaScrollbarVisibleOwnProps
->;
-
-const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
+const ScrollAreaScrollbarVisible = React.forwardRef<
+  ScrollAreaScrollbarVisibleElement,
+  ScrollAreaScrollbarVisibleProps
+>((props, forwardedRef) => {
   const { orientation = 'vertical', ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
-  const thumbRef = React.useRef<ThumbElement | null>(null);
+  const thumbRef = React.useRef<ScrollAreaThumbElement | null>(null);
   const pointerOffsetRef = React.useRef(0);
   const [sizes, setSizes] = React.useState<Sizes>({
     content: 0,
@@ -457,7 +466,7 @@ const ScrollAreaScrollbarVisible = React.forwardRef((props, forwardedRef) => {
   }
 
   return null;
-}) as ScrollAreaScrollbarVisiblePrimitive;
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -465,7 +474,7 @@ type ScrollAreaScrollbarAxisPrivateProps = {
   hasThumb: boolean;
   sizes: Sizes;
   onSizesChange(sizes: Sizes): void;
-  onThumbChange(thumb: ThumbElement | null): void;
+  onThumbChange(thumb: ScrollAreaThumbElement | null): void;
   onThumbPointerDown(pointerPos: number): void;
   onThumbPointerUp(): void;
   onThumbPositionChange(): void;
@@ -473,21 +482,20 @@ type ScrollAreaScrollbarAxisPrivateProps = {
   onDragScroll(pointerPos: number): void;
 };
 
-type ScrollAreaScrollbarAxisOwnProps = Polymorphic.Merge<
-  ScrollAreaScrollbarImplPublicProps,
+type ScrollAreaScrollbarAxisElement = React.ElementRef<typeof ScrollAreaScrollbarImpl>;
+type ScrollAreaScrollbarAxisProps = Radix.MergeProps<
+  Omit<ScrollAreaScrollbarImplProps, keyof ScrollAreaScrollbarImplPrivateProps>,
   ScrollAreaScrollbarAxisPrivateProps
 >;
 
-type ScrollAreaScrollbarAxisPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ScrollAreaScrollbarImpl>,
-  ScrollAreaScrollbarAxisOwnProps
->;
-
-const ScrollAreaScrollbarX = React.forwardRef((props, forwardedRef) => {
+const ScrollAreaScrollbarX = React.forwardRef<
+  ScrollAreaScrollbarAxisElement,
+  ScrollAreaScrollbarAxisProps
+>((props, forwardedRef) => {
   const { sizes, onSizesChange, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
   const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
-  const ref = React.useRef<ScrollbarElement>(null);
+  const ref = React.useRef<ScrollAreaScrollbarAxisElement>(null);
   const composeRefs = useComposedRefs(forwardedRef, ref, context.onScrollbarXChange);
 
   React.useEffect(() => {
@@ -534,13 +542,16 @@ const ScrollAreaScrollbarX = React.forwardRef((props, forwardedRef) => {
       }}
     />
   );
-}) as ScrollAreaScrollbarAxisPrimitive;
+});
 
-const ScrollAreaScrollbarY = React.forwardRef((props, forwardedRef) => {
+const ScrollAreaScrollbarY = React.forwardRef<
+  ScrollAreaScrollbarAxisElement,
+  ScrollAreaScrollbarAxisProps
+>((props, forwardedRef) => {
   const { sizes, onSizesChange, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
   const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
-  const ref = React.useRef<ScrollbarElement>(null);
+  const ref = React.useRef<ScrollAreaScrollbarAxisElement>(null);
   const composeRefs = useComposedRefs(forwardedRef, ref, context.onScrollbarYChange);
 
   React.useEffect(() => {
@@ -588,14 +599,14 @@ const ScrollAreaScrollbarY = React.forwardRef((props, forwardedRef) => {
       }}
     />
   );
-}) as ScrollAreaScrollbarAxisPrimitive;
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
 type ScrollbarContext = {
   hasThumb: boolean;
-  scrollbar: ScrollbarElement | null;
-  onThumbChange(thumb: ThumbElement | null): void;
+  scrollbar: ScrollAreaScrollbarElement | null;
+  onThumbChange(thumb: ScrollAreaThumbElement | null): void;
   onThumbPointerUp(): void;
   onThumbPointerDown(pointerPos: { x: number; y: number }): void;
   onThumbPositionChange(): void;
@@ -603,6 +614,7 @@ type ScrollbarContext = {
 
 const [ScrollbarProvider, useScrollbarContext] = createContext<ScrollbarContext>(SCROLLBAR_NAME);
 
+type ScrollAreaScrollbarImplElement = React.ElementRef<typeof Primitive.div>;
 type ScrollAreaScrollbarImplPrivateProps = {
   sizes: Sizes;
   hasThumb: boolean;
@@ -614,18 +626,15 @@ type ScrollAreaScrollbarImplPrivateProps = {
   onDragScroll(pointerPos: { x: number; y: number }): void;
   onResize(): void;
 };
-
-type ScrollAreaScrollbarImplPublicProps = Omit<
-  Polymorphic.OwnProps<typeof Primitive>,
-  keyof ScrollAreaScrollbarImplPrivateProps
+type ScrollAreaScrollbarImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
+  ScrollAreaScrollbarImplPrivateProps
 >;
 
-type ScrollAreaScrollbarImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  ScrollAreaScrollbarImplPublicProps & ScrollAreaScrollbarImplPrivateProps
->;
-
-const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
+const ScrollAreaScrollbarImpl = React.forwardRef<
+  ScrollAreaScrollbarImplElement,
+  ScrollAreaScrollbarImplProps
+>((props, forwardedRef) => {
   const {
     sizes,
     hasThumb,
@@ -639,7 +648,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
     ...scrollbarProps
   } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME);
-  const [scrollbar, setScrollbar] = React.useState<ScrollbarElement | null>(null);
+  const [scrollbar, setScrollbar] = React.useState<ScrollAreaScrollbarElement | null>(null);
   const composeRefs = useComposedRefs(forwardedRef, (node) => setScrollbar(node));
   const rectRef = React.useRef<ClientRect | null>(null);
   const prevWebkitUserSelectRef = React.useRef<string>('');
@@ -688,7 +697,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
       onThumbPositionChange={handleThumbPositionChange}
       onThumbPointerDown={useCallbackRef(onThumbPointerDown)}
     >
-      <Primitive
+      <Primitive.div
         {...scrollbarProps}
         ref={composeRefs}
         style={{ position: 'absolute', ...scrollbarProps.style }}
@@ -715,7 +724,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
       />
     </ScrollbarProvider>
   );
-}) as ScrollAreaScrollbarImplPrimitive;
+});
 
 /* -------------------------------------------------------------------------------------------------
  * ScrollAreaThumb
@@ -723,70 +732,71 @@ const ScrollAreaScrollbarImpl = React.forwardRef((props, forwardedRef) => {
 
 const THUMB_NAME = 'ScrollbarThumb';
 
-type ScrollAreaThumbOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type ScrollAreaThumbPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  ScrollAreaThumbOwnProps
->;
+type ScrollAreaThumbElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaThumbProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 
-const ScrollAreaThumb = React.forwardRef((props, forwardedRef) => {
-  const { style, ...thumbProps } = props;
-  const scrollAreaContext = useScrollAreaContext(THUMB_NAME);
-  const scrollbarContext = useScrollbarContext(THUMB_NAME);
-  const { onThumbPositionChange } = scrollbarContext;
-  const composedRef = useComposedRefs(forwardedRef, (node) => scrollbarContext.onThumbChange(node));
-  const removeUnlinkedScrollListenerRef = React.useRef<() => void>();
-  const debounceScrollEnd = useDebounceCallback(() => {
-    if (removeUnlinkedScrollListenerRef.current) {
-      removeUnlinkedScrollListenerRef.current();
-      removeUnlinkedScrollListenerRef.current = undefined;
-    }
-  }, 100);
+const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumbProps>(
+  (props, forwardedRef) => {
+    const { style, ...thumbProps } = props;
+    const scrollAreaContext = useScrollAreaContext(THUMB_NAME);
+    const scrollbarContext = useScrollbarContext(THUMB_NAME);
+    const { onThumbPositionChange } = scrollbarContext;
+    const composedRef = useComposedRefs(forwardedRef, (node) =>
+      scrollbarContext.onThumbChange(node)
+    );
+    const removeUnlinkedScrollListenerRef = React.useRef<() => void>();
+    const debounceScrollEnd = useDebounceCallback(() => {
+      if (removeUnlinkedScrollListenerRef.current) {
+        removeUnlinkedScrollListenerRef.current();
+        removeUnlinkedScrollListenerRef.current = undefined;
+      }
+    }, 100);
 
-  React.useEffect(() => {
-    const viewport = scrollAreaContext.viewport;
-    if (viewport) {
-      /**
-       * We only bind to native scroll event so we know when scroll starts and ends.
-       * When scroll starts we start a requestAnimationFrame loop that checks for
-       * changes to scroll position. That rAF loop triggers our thumb position change
-       * when relevant to avoid scroll-linked effects. We cancel the loop when scroll ends.
-       * https://developer.mozilla.org/en-US/docs/Mozilla/Performance/Scroll-linked_effects
-       */
-      const handleScroll = () => {
-        debounceScrollEnd();
-        if (!removeUnlinkedScrollListenerRef.current) {
-          const listener = addUnlinkedScrollListener(viewport, onThumbPositionChange);
-          removeUnlinkedScrollListenerRef.current = listener;
-          onThumbPositionChange();
-        }
-      };
-      onThumbPositionChange();
-      viewport.addEventListener('scroll', handleScroll);
-      return () => viewport.removeEventListener('scroll', handleScroll);
-    }
-  }, [scrollAreaContext.viewport, debounceScrollEnd, onThumbPositionChange]);
+    React.useEffect(() => {
+      const viewport = scrollAreaContext.viewport;
+      if (viewport) {
+        /**
+         * We only bind to native scroll event so we know when scroll starts and ends.
+         * When scroll starts we start a requestAnimationFrame loop that checks for
+         * changes to scroll position. That rAF loop triggers our thumb position change
+         * when relevant to avoid scroll-linked effects. We cancel the loop when scroll ends.
+         * https://developer.mozilla.org/en-US/docs/Mozilla/Performance/Scroll-linked_effects
+         */
+        const handleScroll = () => {
+          debounceScrollEnd();
+          if (!removeUnlinkedScrollListenerRef.current) {
+            const listener = addUnlinkedScrollListener(viewport, onThumbPositionChange);
+            removeUnlinkedScrollListenerRef.current = listener;
+            onThumbPositionChange();
+          }
+        };
+        onThumbPositionChange();
+        viewport.addEventListener('scroll', handleScroll);
+        return () => viewport.removeEventListener('scroll', handleScroll);
+      }
+    }, [scrollAreaContext.viewport, debounceScrollEnd, onThumbPositionChange]);
 
-  return scrollbarContext.hasThumb ? (
-    <Primitive
-      {...thumbProps}
-      ref={composedRef}
-      style={{
-        width: 'var(--radix-scroll-area-thumb-width)',
-        height: 'var(--radix-scroll-area-thumb-height)',
-        ...style,
-      }}
-      onPointerDownCapture={composeEventHandlers(props.onPointerDownCapture, (event) => {
-        const thumb = event.target as HTMLElement;
-        const thumbRect = thumb.getBoundingClientRect();
-        const x = event.clientX - thumbRect.left;
-        const y = event.clientY - thumbRect.top;
-        scrollbarContext.onThumbPointerDown({ x, y });
-      })}
-      onPointerUp={composeEventHandlers(props.onPointerUp, scrollbarContext.onThumbPointerUp)}
-    />
-  ) : null;
-}) as ScrollAreaThumbPrimitive;
+    return scrollbarContext.hasThumb ? (
+      <Primitive.div
+        {...thumbProps}
+        ref={composedRef}
+        style={{
+          width: 'var(--radix-scroll-area-thumb-width)',
+          height: 'var(--radix-scroll-area-thumb-height)',
+          ...style,
+        }}
+        onPointerDownCapture={composeEventHandlers(props.onPointerDownCapture, (event) => {
+          const thumb = event.target as HTMLElement;
+          const thumbRect = thumb.getBoundingClientRect();
+          const x = event.clientX - thumbRect.left;
+          const y = event.clientY - thumbRect.top;
+          scrollbarContext.onThumbPointerDown({ x, y });
+        })}
+        onPointerUp={composeEventHandlers(props.onPointerUp, scrollbarContext.onThumbPointerUp)}
+      />
+    ) : null;
+  }
+);
 
 ScrollAreaThumb.displayName = THUMB_NAME;
 
@@ -796,30 +806,29 @@ ScrollAreaThumb.displayName = THUMB_NAME;
 
 const CORNER_NAME = 'ScrollAreaCorner';
 
-type ScrollAreaCornerOwnProps = Polymorphic.OwnProps<typeof ScrollAreaCornerImpl>;
-type ScrollAreaCornerPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof ScrollAreaCornerImpl>,
-  ScrollAreaCornerOwnProps
->;
+type ScrollAreaCornerElement = React.ElementRef<typeof ScrollAreaCornerImpl>;
+type ScrollAreaCornerProps = Radix.ComponentPropsWithoutRef<typeof ScrollAreaCornerImpl>;
 
-const ScrollAreaCorner = React.forwardRef((props, forwardedRef) => {
-  const context = useScrollAreaContext(CORNER_NAME);
-  const hasBothScrollbarsVisible = Boolean(context.scrollbarX && context.scrollbarY);
-  const hasCorner = context.type !== 'scroll' && hasBothScrollbarsVisible;
-  return hasCorner ? <ScrollAreaCornerImpl {...props} ref={forwardedRef} /> : null;
-}) as ScrollAreaCornerPrimitive;
+const ScrollAreaCorner = React.forwardRef<ScrollAreaCornerElement, ScrollAreaCornerProps>(
+  (props, forwardedRef) => {
+    const context = useScrollAreaContext(CORNER_NAME);
+    const hasBothScrollbarsVisible = Boolean(context.scrollbarX && context.scrollbarY);
+    const hasCorner = context.type !== 'scroll' && hasBothScrollbarsVisible;
+    return hasCorner ? <ScrollAreaCornerImpl {...props} ref={forwardedRef} /> : null;
+  }
+);
 
 ScrollAreaCorner.displayName = CORNER_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaCornerImplOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type ScrollAreaCornerImplPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof Primitive>,
-  ScrollAreaCornerImplOwnProps
->;
+type ScrollAreaCornerImplElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaCornerImplProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 
-const ScrollAreaCornerImpl = React.forwardRef((props, forwardedRef) => {
+const ScrollAreaCornerImpl = React.forwardRef<
+  ScrollAreaCornerImplElement,
+  ScrollAreaCornerImplProps
+>((props, forwardedRef) => {
   const context = useScrollAreaContext(CORNER_NAME);
   const [width, setWidth] = React.useState(0);
   const [height, setHeight] = React.useState(0);
@@ -838,7 +847,7 @@ const ScrollAreaCornerImpl = React.forwardRef((props, forwardedRef) => {
   });
 
   return hasSize ? (
-    <Primitive
+    <Primitive.div
       {...props}
       ref={forwardedRef}
       style={{
@@ -852,7 +861,7 @@ const ScrollAreaCornerImpl = React.forwardRef((props, forwardedRef) => {
       }}
     />
   ) : null;
-}) as ScrollAreaCornerImplPrimitive;
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -987,11 +996,4 @@ export {
   Scrollbar,
   Thumb,
   Corner,
-};
-export type {
-  ScrollAreaPrimitive,
-  ScrollAreaViewportPrimitive,
-  ScrollAreaScrollbarPrimitive,
-  ScrollAreaThumbPrimitive,
-  ScrollAreaCornerPrimitive,
 };

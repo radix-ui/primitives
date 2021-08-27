@@ -8,7 +8,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };
@@ -24,7 +24,6 @@ const [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] = 
  * -----------------------------------------------------------------------------------------------*/
 
 const GROUP_NAME = 'RovingFocusGroup';
-const GROUP_DEFAULT_TAG = 'span';
 
 type Orientation = React.AriaAttributes['aria-orientation'];
 type Direction = 'ltr' | 'rtl';
@@ -55,27 +54,26 @@ type RovingContextValue = RovingFocusGroupOptions & {
 
 const [RovingFocusProvider, useRovingFocusContext] = createContext<RovingContextValue>(GROUP_NAME);
 
-type RovingFocusGroupOwnProps = Polymorphic.OwnProps<typeof RovingFocusGroupImpl>;
+type RovingFocusGroupElement = React.ElementRef<typeof RovingFocusGroupImpl>;
+type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroupImpl>;
 
-type RovingFocusGroupPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof RovingFocusGroupImpl>,
-  RovingFocusGroupOwnProps
->;
-
-const RovingFocusGroup = React.forwardRef((props, forwardedRef) => {
-  return (
+const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGroupProps>(
+  (props, forwardedRef) => (
     <CollectionProvider>
       <CollectionSlot>
         <RovingFocusGroupImpl {...props} ref={forwardedRef} />
       </CollectionSlot>
     </CollectionProvider>
-  );
-}) as RovingFocusGroupPrimitive;
+  )
+);
 
 RovingFocusGroup.displayName = GROUP_NAME;
 
-type RovingFocusGroupImplOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+/* -----------------------------------------------------------------------------------------------*/
+
+type RovingFocusGroupImplElement = React.ElementRef<typeof Primitive.div>;
+type RovingFocusGroupImplProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
   RovingFocusGroupOptions & {
     currentTabStopId?: string | null;
     defaultCurrentTabStopId?: string;
@@ -84,14 +82,11 @@ type RovingFocusGroupImplOwnProps = Polymorphic.Merge<
   }
 >;
 
-type RovingFocusGroupImplPrimitive = Polymorphic.ForwardRefComponent<
-  typeof GROUP_DEFAULT_TAG,
-  RovingFocusGroupImplOwnProps
->;
-
-const RovingFocusGroupImpl = React.forwardRef((props, forwardedRef) => {
+const RovingFocusGroupImpl = React.forwardRef<
+  RovingFocusGroupImplElement,
+  RovingFocusGroupImplProps
+>((props, forwardedRef) => {
   const {
-    as = GROUP_DEFAULT_TAG,
     orientation,
     dir = 'ltr',
     loop = false,
@@ -101,7 +96,7 @@ const RovingFocusGroupImpl = React.forwardRef((props, forwardedRef) => {
     onEntryFocus,
     ...groupProps
   } = props;
-  const ref = React.useRef<React.ElementRef<typeof RovingFocusGroup>>(null);
+  const ref = React.useRef<RovingFocusGroupImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const [currentTabStopId = null, setCurrentTabStopId] = useControllableState({
     prop: currentTabStopIdProp,
@@ -127,17 +122,17 @@ const RovingFocusGroupImpl = React.forwardRef((props, forwardedRef) => {
       dir={dir}
       loop={loop}
       currentTabStopId={currentTabStopId}
-      onItemFocus={React.useCallback((tabStopId) => setCurrentTabStopId(tabStopId), [
-        setCurrentTabStopId,
-      ])}
+      onItemFocus={React.useCallback(
+        (tabStopId) => setCurrentTabStopId(tabStopId),
+        [setCurrentTabStopId]
+      )}
       onItemShiftTab={React.useCallback(() => setIsTabbingBackOut(true), [])}
     >
-      <Primitive
+      <Primitive.div
         tabIndex={isTabbingBackOut ? -1 : 0}
         aria-orientation={orientation}
         data-orientation={orientation}
         {...groupProps}
-        as={as}
         ref={composedRefs}
         style={{ outline: 'none', ...props.style }}
         onMouseDown={composeEventHandlers(props.onMouseDown, () => {
@@ -172,86 +167,82 @@ const RovingFocusGroupImpl = React.forwardRef((props, forwardedRef) => {
       />
     </RovingFocusProvider>
   );
-}) as RovingFocusGroupImplPrimitive;
+});
 
 /* -------------------------------------------------------------------------------------------------
  * RovingFocusItem
  * -----------------------------------------------------------------------------------------------*/
 
 const ITEM_NAME = 'RovingFocusItem';
-const ITEM_DEFAULT_TAG = 'span';
 
-type RovingFocusItemOwnProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof Primitive>,
+type RovingFocusItemElement = React.ElementRef<typeof Primitive.span>;
+type RovingFocusItemProps = Radix.MergeProps<
+  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
   {
     focusable?: boolean;
     active?: boolean;
   }
 >;
 
-type RovingFocusItemPrimitive = Polymorphic.ForwardRefComponent<
-  typeof ITEM_DEFAULT_TAG,
-  RovingFocusItemOwnProps
->;
+const RovingFocusItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
+  (props, forwardedRef) => {
+    const { focusable = true, active = false, ...itemProps } = props;
+    const id = useId();
+    const context = useRovingFocusContext(ITEM_NAME);
+    const isCurrentTabStop = context.currentTabStopId === id;
+    const { getItems } = useCollection();
 
-const RovingFocusItem = React.forwardRef((props, forwardedRef) => {
-  const { as = ITEM_DEFAULT_TAG, focusable = true, active = false, ...itemProps } = props;
-  const id = useId();
-  const context = useRovingFocusContext(ITEM_NAME);
-  const isCurrentTabStop = context.currentTabStopId === id;
-  const { getItems } = useCollection();
-
-  return (
-    <CollectionItemSlot id={id} focusable={focusable} active={active}>
-      <Primitive
-        tabIndex={isCurrentTabStop ? 0 : -1}
-        data-orientation={context.orientation}
-        {...itemProps}
-        as={as}
-        ref={forwardedRef}
-        onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
-          // We prevent focusing non-focusable items on `mousedown`.
-          // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
-          if (!focusable) event.preventDefault();
-          // Safari doesn't focus a button when clicked so we run our logic on mousedown also
-          else context.onItemFocus(id);
-        })}
-        onFocus={composeEventHandlers(props.onFocus, () => context.onItemFocus(id))}
-        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-          if (event.key === 'Tab' && event.shiftKey) {
-            context.onItemShiftTab();
-            return;
-          }
-
-          if (event.target !== event.currentTarget) return;
-
-          const focusIntent = getFocusIntent(event, context.orientation, context.dir);
-
-          if (focusIntent !== undefined) {
-            event.preventDefault();
-            const items = getItems().filter((item) => item.focusable);
-            let candidateNodes = items.map((item) => item.ref.current!);
-
-            if (focusIntent === 'last') candidateNodes.reverse();
-            else if (focusIntent === 'prev' || focusIntent === 'next') {
-              if (focusIntent === 'prev') candidateNodes.reverse();
-              const currentIndex = candidateNodes.indexOf(event.currentTarget);
-              candidateNodes = context.loop
-                ? wrapArray(candidateNodes, currentIndex + 1)
-                : candidateNodes.slice(currentIndex + 1);
+    return (
+      <CollectionItemSlot id={id} focusable={focusable} active={active}>
+        <Primitive.span
+          tabIndex={isCurrentTabStop ? 0 : -1}
+          data-orientation={context.orientation}
+          {...itemProps}
+          ref={forwardedRef}
+          onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
+            // We prevent focusing non-focusable items on `mousedown`.
+            // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
+            if (!focusable) event.preventDefault();
+            // Safari doesn't focus a button when clicked so we run our logic on mousedown also
+            else context.onItemFocus(id);
+          })}
+          onFocus={composeEventHandlers(props.onFocus, () => context.onItemFocus(id))}
+          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+            if (event.key === 'Tab' && event.shiftKey) {
+              context.onItemShiftTab();
+              return;
             }
 
-            /**
-             * Imperative focus during keydown is risky so we prevent React's batching updates
-             * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
-             */
-            setTimeout(() => focusFirst(candidateNodes));
-          }
-        })}
-      />
-    </CollectionItemSlot>
-  );
-}) as RovingFocusItemPrimitive;
+            if (event.target !== event.currentTarget) return;
+
+            const focusIntent = getFocusIntent(event, context.orientation, context.dir);
+
+            if (focusIntent !== undefined) {
+              event.preventDefault();
+              const items = getItems().filter((item) => item.focusable);
+              let candidateNodes = items.map((item) => item.ref.current!);
+
+              if (focusIntent === 'last') candidateNodes.reverse();
+              else if (focusIntent === 'prev' || focusIntent === 'next') {
+                if (focusIntent === 'prev') candidateNodes.reverse();
+                const currentIndex = candidateNodes.indexOf(event.currentTarget);
+                candidateNodes = context.loop
+                  ? wrapArray(candidateNodes, currentIndex + 1)
+                  : candidateNodes.slice(currentIndex + 1);
+              }
+
+              /**
+               * Imperative focus during keydown is risky so we prevent React's batching updates
+               * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+               */
+              setTimeout(() => focusFirst(candidateNodes));
+            }
+          })}
+        />
+      </CollectionItemSlot>
+    );
+  }
+);
 
 RovingFocusItem.displayName = ITEM_NAME;
 
@@ -307,4 +298,3 @@ export {
   Root,
   Item,
 };
-export type { RovingFocusGroupPrimitive, RovingFocusItemPrimitive };

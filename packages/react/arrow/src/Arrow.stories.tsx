@@ -19,3 +19,17 @@ export const CustomSizes = () => (
     <Arrow style={{ ...RECOMMENDED_CSS__ARROW__ROOT }} width={20} height={100} />
   </>
 );
+
+export const CustomArrow = () => (
+  <Arrow asChild>
+    <div
+      style={{
+        width: 20,
+        height: 10,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        backgroundColor: 'tomato',
+      }}
+    />
+  </Arrow>
+);

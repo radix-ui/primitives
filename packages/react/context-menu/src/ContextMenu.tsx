@@ -5,7 +5,7 @@ import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
+import type * as Radix from '@radix-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 type Point = { x: number; y: number };
@@ -23,17 +23,16 @@ type ContextMenuContextValue = {
   modal: boolean;
 };
 
-const [ContextMenuProvider, useContextMenuContext] = createContext<ContextMenuContextValue>(
-  CONTEXT_MENU_NAME
-);
+const [ContextMenuProvider, useContextMenuContext] =
+  createContext<ContextMenuContextValue>(CONTEXT_MENU_NAME);
 
-type ContextMenuOwnProps = {
+type ContextMenuProps = {
   onOpenChange?(open: boolean): void;
   dir?: Direction;
   modal?: boolean;
 };
 
-const ContextMenu: React.FC<ContextMenuOwnProps> = (props) => {
+const ContextMenu: React.FC<ContextMenuProps> = (props) => {
   const { children, onOpenChange, dir, modal = true } = props;
   const [open, setOpen] = React.useState(false);
   const isInsideContent = React.useContext(ContentContext);
@@ -79,67 +78,63 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'ContextMenuTrigger';
-const TRIGGER_DEFAULT_TAG = 'span';
 
-type ContextMenuTriggerOwnProps = Polymorphic.OwnProps<typeof Primitive>;
-type ContextMenuTriggerPrimitive = Polymorphic.ForwardRefComponent<
-  typeof TRIGGER_DEFAULT_TAG,
-  ContextMenuTriggerOwnProps
->;
+type ContextMenuTriggerElement = React.ElementRef<typeof Primitive.span>;
+type ContextMenuTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 
-const ContextMenuTrigger = React.forwardRef((props, forwardedRef) => {
-  const { as = TRIGGER_DEFAULT_TAG, ...triggerProps } = props;
-  const context = useContextMenuContext(TRIGGER_NAME);
-  const pointRef = React.useRef<Point>({ x: 0, y: 0 });
-  const virtualRef = React.useRef({
-    getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
-  });
-  const longPressTimerRef = React.useRef(0);
-  const clearLongPress = React.useCallback(
-    () => window.clearTimeout(longPressTimerRef.current),
-    []
-  );
-  const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
-    pointRef.current = { x: event.clientX, y: event.clientY };
-    context.onOpenChange(true);
-  };
+const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMenuTriggerProps>(
+  (props, forwardedRef) => {
+    const context = useContextMenuContext(TRIGGER_NAME);
+    const pointRef = React.useRef<Point>({ x: 0, y: 0 });
+    const virtualRef = React.useRef({
+      getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
+    });
+    const longPressTimerRef = React.useRef(0);
+    const clearLongPress = React.useCallback(
+      () => window.clearTimeout(longPressTimerRef.current),
+      []
+    );
+    const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
+      pointRef.current = { x: event.clientX, y: event.clientY };
+      context.onOpenChange(true);
+    };
 
-  React.useEffect(() => clearLongPress, [clearLongPress]);
+    React.useEffect(() => clearLongPress, [clearLongPress]);
 
-  return (
-    <ContentContext.Provider value={false}>
-      <MenuPrimitive.Anchor virtualRef={virtualRef} />
-      <Primitive
-        {...triggerProps}
-        as={as}
-        ref={forwardedRef}
-        // prevent iOS context menu from appearing
-        style={{ WebkitTouchCallout: 'none', ...triggerProps.style }}
-        onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
-          // clearing the long press here because some platforms already support
-          // long press to trigger a `contextmenu` event
-          clearLongPress();
-          event.preventDefault();
-          handleOpen(event);
-        })}
-        onPointerDown={composeEventHandlers(
-          props.onPointerDown,
-          whenTouchOrPen((event) => {
-            // clear the long press here in case there's multiple touch points
+    return (
+      <ContentContext.Provider value={false}>
+        <MenuPrimitive.Anchor virtualRef={virtualRef} />
+        <Primitive.span
+          {...props}
+          ref={forwardedRef}
+          // prevent iOS context menu from appearing
+          style={{ WebkitTouchCallout: 'none', ...props.style }}
+          onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
+            // clearing the long press here because some platforms already support
+            // long press to trigger a `contextmenu` event
             clearLongPress();
-            longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
-          })
-        )}
-        onPointerMove={composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))}
-        onPointerCancel={composeEventHandlers(
-          props.onPointerCancel,
-          whenTouchOrPen(clearLongPress)
-        )}
-        onPointerUp={composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))}
-      />
-    </ContentContext.Provider>
-  );
-}) as ContextMenuTriggerPrimitive;
+            event.preventDefault();
+            handleOpen(event);
+          })}
+          onPointerDown={composeEventHandlers(
+            props.onPointerDown,
+            whenTouchOrPen((event) => {
+              // clear the long press here in case there's multiple touch points
+              clearLongPress();
+              longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
+            })
+          )}
+          onPointerMove={composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))}
+          onPointerCancel={composeEventHandlers(
+            props.onPointerCancel,
+            whenTouchOrPen(clearLongPress)
+          )}
+          onPointerUp={composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))}
+        />
+      </ContentContext.Provider>
+    );
+  }
+);
 
 ContextMenuTrigger.displayName = TRIGGER_NAME;
 
@@ -151,53 +146,51 @@ const CONTENT_NAME = 'ContextMenuContent';
 
 const ContentContext = React.createContext(false);
 
-type ContextMenuContentOwnProps = Omit<
-  Polymorphic.OwnProps<typeof MenuPrimitive.Content>,
+type ContextMenuContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
+type ContextMenuContentProps = Omit<
+  Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>,
   'portalled' | 'side' | 'align'
 >;
 
-type ContextMenuContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Content>,
-  ContextMenuContentOwnProps
->;
+const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMenuContentProps>(
+  (props, forwardedRef) => {
+    const context = useContextMenuContext(CONTENT_NAME);
 
-const ContextMenuContent = React.forwardRef((props, forwardedRef) => {
-  const context = useContextMenuContext(CONTENT_NAME);
+    const commonProps = {
+      ...props,
+      style: {
+        ...props.style,
+        // re-namespace exposed content custom property
+        ['--radix-context-menu-content-transform-origin' as any]:
+          'var(--radix-popper-transform-origin)',
+      },
+    };
 
-  const commonProps = {
-    ...props,
-    style: {
-      ...props.style,
-      // re-namespace exposed content custom property
-      ['--radix-context-menu-content-transform-origin' as any]: 'var(--radix-popper-transform-origin)',
-    },
-  };
-
-  return (
-    <ContentContext.Provider value={true}>
-      {context.isRootMenu ? (
-        <ContextMenuRootContent {...commonProps} ref={forwardedRef} />
-      ) : (
-        <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
-      )}
-    </ContentContext.Provider>
-  );
-}) as ContextMenuContentPrimitive;
+    return (
+      <ContentContext.Provider value={true}>
+        {context.isRootMenu ? (
+          <ContextMenuRootContent {...commonProps} ref={forwardedRef} />
+        ) : (
+          <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
+        )}
+      </ContentContext.Provider>
+    );
+  }
+);
 
 ContextMenuContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type ContextMenuRootContentOwnProps = Polymorphic.OwnProps<typeof MenuPrimitive.Content>;
-type ContextMenuRootContentPrimitive = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof MenuPrimitive.Content>,
-  ContextMenuRootContentOwnProps
->;
+type ContextMenuRootContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
+type ContextMenuRootContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
 
-const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
+const ContextMenuRootContent = React.forwardRef<
+  ContextMenuRootContentElement,
+  ContextMenuRootContentProps
+>((props, forwardedRef) => {
   const context = useContextMenuContext(CONTENT_NAME);
   const hasInteractedOutsideRef = React.useRef(false);
-
   return (
     <MenuPrimitive.Content
       {...props}
@@ -222,7 +215,7 @@ const ContextMenuRootContent = React.forwardRef((props, forwardedRef) => {
       }}
     />
   );
-}) as ContextMenuRootContentPrimitive;
+});
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -300,4 +293,3 @@ export {
   Separator,
   Arrow,
 };
-export type { ContextMenuTriggerPrimitive, ContextMenuContentPrimitive };
