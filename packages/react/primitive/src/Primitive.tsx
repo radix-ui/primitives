@@ -38,7 +38,7 @@ const Primitive = NODES.reduce(
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChild\`. For details, see https://radix-ui.com/`;
+const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChild\`. For details, see https://radix-ui.com/docs/primitives/overview/styling#changing-the-rendered-element`;
 
 const Root = Primitive;
 
