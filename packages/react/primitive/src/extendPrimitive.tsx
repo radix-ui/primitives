@@ -9,7 +9,6 @@ function extendPrimitive<C extends React.ForwardRefExoticComponent<any>>(
     const propsWithDefaults = { ...config.defaultProps, ...props };
     return <Comp {...propsWithDefaults} ref={forwardedRef} />;
   });
-
   Extended.displayName = config.displayName || 'Extended' + Comp.displayName;
   return Extended as React.ForwardRefExoticComponent<React.ComponentProps<C>>;
 }

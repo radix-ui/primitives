@@ -3,13 +3,13 @@ import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 const NAME = 'AccessibleIcon';
 
-type AccessibleIconProps = {
+interface AccessibleIconProps {
   /**
    * The accessible label for the icon. This label will be visually hidden but announced to screen
    * reader users, similar to `alt` text for `img` tags.
    */
   label: string;
-};
+}
 
 const AccessibleIcon: React.FC<AccessibleIconProps> = ({ children, label }) => {
   const child = React.Children.only(children);
@@ -34,3 +34,4 @@ export {
   //
   Root,
 };
+export type { AccessibleIconProps };

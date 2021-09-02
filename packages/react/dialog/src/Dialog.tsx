@@ -34,12 +34,12 @@ type DialogContextValue = {
 
 const [DialogProvider, useDialogContext] = createContext<DialogContextValue>(DIALOG_NAME);
 
-type DialogProps = {
+interface DialogProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
   modal?: boolean;
-};
+}
 
 const Dialog: React.FC<DialogProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange, modal = true } = props;
@@ -75,7 +75,8 @@ Dialog.displayName = DIALOG_NAME;
 const TRIGGER_NAME = 'DialogTrigger';
 
 type DialogTriggerElement = React.ElementRef<typeof Primitive.button>;
-type DialogTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface DialogTriggerProps extends PrimitiveButtonProps {}
 
 const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>(
   (props, forwardedRef) => {
@@ -104,17 +105,14 @@ DialogTrigger.displayName = TRIGGER_NAME;
 
 const OVERLAY_NAME = 'DialogOverlay';
 
-type DialogOverlayElement = React.ElementRef<typeof DialogOverlayImpl>;
-type DialogOverlayProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof DialogOverlayImpl>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+type DialogOverlayElement = DialogOverlayImplElement;
+interface DialogOverlayProps extends DialogOverlayImplProps {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
 const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
   (props, forwardedRef) => {
@@ -131,7 +129,8 @@ const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>
 DialogOverlay.displayName = OVERLAY_NAME;
 
 type DialogOverlayImplElement = React.ElementRef<typeof Primitive.div>;
-type DialogOverlayImplProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
 const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
   (props, forwardedRef) => {
@@ -150,19 +149,14 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
 
 const CONTENT_NAME = 'DialogContent';
 
-type DialogContentElement = React.ElementRef<
-  typeof DialogContentModal | typeof DialogContentNonModal
->;
-type DialogContentProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof DialogContentModal | typeof DialogContentNonModal>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+type DialogContentElement = DialogContentTypeElement;
+interface DialogContentProps extends DialogContentTypeProps {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
 const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>(
   (props, forwardedRef) => {
@@ -184,11 +178,9 @@ DialogContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type DialogContentTypeElement = React.ElementRef<typeof DialogContentImpl>;
-type DialogContentTypeProps = Omit<
-  Radix.ComponentPropsWithoutRef<typeof DialogContentImpl>,
-  'trapFocus' | 'disableOutsidePointerEvents'
->;
+type DialogContentTypeElement = DialogContentImplElement;
+interface DialogContentTypeProps
+  extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {}
 
 const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
   (props, forwardedRef) => {
@@ -285,31 +277,29 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
 type DialogContentImplElement = React.ElementRef<typeof DismissableLayer>;
-type DialogContentImplProps = Radix.MergeProps<
-  Omit<Radix.ComponentPropsWithoutRef<typeof DismissableLayer>, 'onDismiss'>,
-  {
-    /**
-     * When `true`, focus cannot escape the `Content` via keyboard,
-     * pointer, or a programmatic focus.
-     * @defaultValue false
-     */
-    trapFocus?: FocusScopeProps['trapped'];
+type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
+interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'> {
+  /**
+   * When `true`, focus cannot escape the `Content` via keyboard,
+   * pointer, or a programmatic focus.
+   * @defaultValue false
+   */
+  trapFocus?: FocusScopeProps['trapped'];
 
-    /**
-     * Event handler called when auto-focusing on open.
-     * Can be prevented.
-     */
-    onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
+  /**
+   * Event handler called when auto-focusing on open.
+   * Can be prevented.
+   */
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
 
-    /**
-     * Event handler called when auto-focusing on close.
-     * Can be prevented.
-     */
-    onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
-  }
->;
+  /**
+   * Event handler called when auto-focusing on close.
+   * Can be prevented.
+   */
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+}
 
 const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(
   (props, forwardedRef) => {
@@ -367,7 +357,8 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
 const TITLE_NAME = 'DialogTitle';
 
 type DialogTitleElement = React.ElementRef<typeof Primitive.h2>;
-type DialogTitleProps = Radix.ComponentPropsWithoutRef<typeof Primitive.h2>;
+type PrimitiveHeading2Props = Radix.ComponentPropsWithoutRef<typeof Primitive.h2>;
+interface DialogTitleProps extends PrimitiveHeading2Props {}
 
 const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
   (props, forwardedRef) => {
@@ -385,7 +376,8 @@ DialogTitle.displayName = TITLE_NAME;
 const DESCRIPTION_NAME = 'DialogDescription';
 
 type DialogDescriptionElement = React.ElementRef<typeof Primitive.p>;
-type DialogDescriptionProps = Radix.ComponentPropsWithoutRef<typeof Primitive.p>;
+type PrimitiveParagraphProps = Radix.ComponentPropsWithoutRef<typeof Primitive.p>;
+interface DialogDescriptionProps extends PrimitiveParagraphProps {}
 
 const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescriptionProps>(
   (props, forwardedRef) => {
@@ -403,7 +395,7 @@ DialogDescription.displayName = DESCRIPTION_NAME;
 const CLOSE_NAME = 'DialogClose';
 
 type DialogCloseElement = React.ElementRef<typeof Primitive.button>;
-type DialogCloseProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface DialogCloseProps extends PrimitiveButtonProps {}
 
 const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
   (props, forwardedRef) => {
@@ -487,4 +479,13 @@ export {
   Close,
   //
   LabelWarningProvider,
+};
+export type {
+  DialogProps,
+  DialogTriggerProps,
+  DialogOverlayProps,
+  DialogContentProps,
+  DialogTitleProps,
+  DialogDescriptionProps,
+  DialogCloseProps,
 };

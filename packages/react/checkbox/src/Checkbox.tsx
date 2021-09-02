@@ -27,15 +27,13 @@ type CheckboxContextValue = {
 const [CheckboxProvider, useCheckboxContext] = createContext<CheckboxContextValue>(CHECKBOX_NAME);
 
 type CheckboxElement = React.ElementRef<typeof Primitive.button>;
-type CheckboxProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.button>,
-  {
-    checked?: CheckedState;
-    defaultChecked?: CheckedState;
-    required?: boolean;
-    onCheckedChange?(checked: CheckedState): void;
-  }
->;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked'> {
+  checked?: CheckedState;
+  defaultChecked?: CheckedState;
+  required?: boolean;
+  onCheckedChange?(checked: CheckedState): void;
+}
 
 const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>((props, forwardedRef) => {
   const {
@@ -115,16 +113,14 @@ Checkbox.displayName = CHECKBOX_NAME;
 const INDICATOR_NAME = 'CheckboxIndicator';
 
 type CheckboxIndicatorElement = React.ElementRef<typeof Primitive.span>;
-type CheckboxIndicatorProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface CheckboxIndicatorProps extends PrimitiveSpanProps {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
 const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxIndicatorProps>(
   (props, forwardedRef) => {
@@ -148,11 +144,12 @@ CheckboxIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type BubbleInputProps = Omit<Radix.ComponentPropsWithoutRef<'input'>, 'checked'> & {
+type InputProps = Radix.ComponentPropsWithoutRef<'input'>;
+interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   checked: CheckedState;
   control: HTMLElement | null;
   bubbles: boolean;
-};
+}
 
 const BubbleInput = (props: BubbleInputProps) => {
   const { control, checked, bubbles = true, ...inputProps } = props;
@@ -212,3 +209,4 @@ export {
   Root,
   Indicator,
 };
+export type { CheckboxProps, CheckboxIndicatorProps };

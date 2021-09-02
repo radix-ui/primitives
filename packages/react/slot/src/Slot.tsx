@@ -5,7 +5,9 @@ import { composeRefs } from '@radix-ui/react-compose-refs';
  * Slot
  * -----------------------------------------------------------------------------------------------*/
 
-type SlotProps = { children?: React.ReactNode };
+interface SlotProps {
+  children?: React.ReactNode;
+}
 
 const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
@@ -42,7 +44,9 @@ Slot.displayName = 'Slot';
  * SlotClone
  * -----------------------------------------------------------------------------------------------*/
 
-type SlotCloneProps = { children: React.ReactNode };
+interface SlotCloneProps {
+  children: React.ReactNode;
+}
 
 const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
@@ -114,3 +118,4 @@ export {
   //
   Root,
 };
+export type { SlotProps };

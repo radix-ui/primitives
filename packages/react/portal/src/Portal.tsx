@@ -14,10 +14,10 @@ const MAX_Z_INDEX = 2147483647;
 const PORTAL_NAME = 'Portal';
 
 type PortalElement = React.ElementRef<typeof Primitive.div>;
-type PortalProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  { containerRef?: React.RefObject<HTMLElement> }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface PortalProps extends PrimitiveDivProps {
+  containerRef?: React.RefObject<HTMLElement>;
+}
 
 const Portal = React.forwardRef<PortalElement, PortalProps>((props, forwardedRef) => {
   const { containerRef, style, ...portalProps } = props;
@@ -75,3 +75,4 @@ export {
   //
   Root,
 };
+export type { PortalProps };

@@ -16,14 +16,12 @@ type ProgressContextValue = { value: number | null; max: number };
 const [ProgressProvider, useProgressContext] = createContext<ProgressContextValue>(PROGRESS_NAME);
 
 type ProgressElement = React.ElementRef<typeof Primitive.div>;
-type ProgressProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    value?: number | null | undefined;
-    max?: number;
-    getValueLabel?(value: number, max: number): string;
-  }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface ProgressProps extends PrimitiveDivProps {
+  value?: number | null | undefined;
+  max?: number;
+  getValueLabel?(value: number, max: number): string;
+}
 
 const Progress = React.forwardRef<ProgressElement, ProgressProps>((props, forwardedRef) => {
   const {
@@ -84,7 +82,7 @@ Progress.propTypes = {
 const INDICATOR_NAME = 'ProgressIndicator';
 
 type ProgressIndicatorElement = React.ElementRef<typeof Primitive.div>;
-type ProgressIndicatorProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface ProgressIndicatorProps extends PrimitiveDivProps {}
 
 const ProgressIndicator = React.forwardRef<ProgressIndicatorElement, ProgressIndicatorProps>(
   (props, forwardedRef) => {
@@ -167,3 +165,4 @@ export {
   //
   useProgressState,
 };
+export type { ProgressProps, ProgressIndicatorProps };

@@ -16,20 +16,17 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const SWITCH_NAME = 'Switch';
 
-type SwitchElement = React.ElementRef<typeof Primitive.button>;
-type SwitchProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.button>,
-  {
-    checked?: boolean;
-    defaultChecked?: boolean;
-    required?: boolean;
-    onCheckedChange?(checked: boolean): void;
-  }
->;
-
 type SwitchContextValue = { checked: boolean; disabled?: boolean };
-
 const [SwitchProvider, useSwitchContext] = createContext<SwitchContextValue>(SWITCH_NAME);
+
+type SwitchElement = React.ElementRef<typeof Primitive.button>;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface SwitchProps extends PrimitiveButtonProps {
+  checked?: boolean;
+  defaultChecked?: boolean;
+  required?: boolean;
+  onCheckedChange?(checked: boolean): void;
+}
 
 const Switch = React.forwardRef<SwitchElement, SwitchProps>((props, forwardedRef) => {
   const {
@@ -109,7 +106,8 @@ Switch.displayName = SWITCH_NAME;
 const THUMB_NAME = 'SwitchThumb';
 
 type SwitchThumbElement = React.ElementRef<typeof Primitive.span>;
-type SwitchThumbProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface SwitchThumbProps extends PrimitiveSpanProps {}
 
 const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
   (props, forwardedRef) => {
@@ -129,11 +127,12 @@ SwitchThumb.displayName = THUMB_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type BubbleInputProps = Omit<Radix.ComponentPropsWithoutRef<'input'>, 'checked'> & {
+type InputProps = Radix.ComponentPropsWithoutRef<'input'>;
+interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   checked: boolean;
   control: HTMLElement | null;
   bubbles: boolean;
-};
+}
 
 const BubbleInput = (props: BubbleInputProps) => {
   const { control, checked, bubbles = true, ...inputProps } = props;
@@ -187,3 +186,4 @@ export {
   Root,
   Thumb,
 };
+export type { SwitchProps, SwitchThumbProps };

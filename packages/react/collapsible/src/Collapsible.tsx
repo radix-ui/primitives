@@ -27,15 +27,13 @@ const [CollapsibleProvider, useCollapsibleContext] =
   createContext<CollapsibleContextValue>(COLLAPSIBLE_NAME);
 
 type CollapsibleElement = React.ElementRef<typeof Primitive.div>;
-type CollapsibleProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    defaultOpen?: boolean;
-    open?: boolean;
-    disabled?: boolean;
-    onOpenChange?(open?: boolean): void;
-  }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface CollapsibleProps extends PrimitiveDivProps {
+  defaultOpen?: boolean;
+  open?: boolean;
+  disabled?: boolean;
+  onOpenChange?(open?: boolean): void;
+}
 
 const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
   (props, forwardedRef) => {
@@ -74,7 +72,8 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 const TRIGGER_NAME = 'CollapsibleTrigger';
 
 type CollapsibleTriggerElement = React.ElementRef<typeof Primitive.button>;
-type CollapsibleTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface CollapsibleTriggerProps extends PrimitiveButtonProps {}
 
 const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, CollapsibleTriggerProps>(
   (props, forwardedRef) => {
@@ -102,17 +101,14 @@ CollapsibleTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'CollapsibleContent';
 
-type CollapsibleContentElement = React.ElementRef<typeof CollapsibleContentImpl>;
-type CollapsibleContentProps = Radix.MergeProps<
-  Omit<Radix.ComponentPropsWithoutRef<typeof CollapsibleContentImpl>, 'present'>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+type CollapsibleContentElement = CollapsibleContentImplElement;
+interface CollapsibleContentProps extends Omit<CollapsibleContentImplProps, 'present'> {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
 const CollapsibleContent = React.forwardRef<CollapsibleContentElement, CollapsibleContentProps>(
   (props, forwardedRef) => {
@@ -133,10 +129,9 @@ CollapsibleContent.displayName = CONTENT_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type CollapsibleContentImplElement = React.ElementRef<typeof Primitive.div>;
-type CollapsibleContentImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  { present: boolean }
->;
+interface CollapsibleContentImplProps extends PrimitiveDivProps {
+  present: boolean;
+}
 
 const CollapsibleContentImpl = React.forwardRef<
   CollapsibleContentImplElement,
@@ -216,3 +211,4 @@ export {
   Trigger,
   Content,
 };
+export type { CollapsibleProps, CollapsibleTriggerProps, CollapsibleContentProps };

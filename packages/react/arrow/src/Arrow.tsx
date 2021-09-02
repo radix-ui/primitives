@@ -10,7 +10,8 @@ import type * as Radix from '@radix-ui/react-primitive';
 const NAME = 'Arrow';
 
 type ArrowElement = React.ElementRef<typeof Primitive.svg>;
-type ArrowProps = Radix.ComponentPropsWithoutRef<typeof Primitive.svg>;
+type PrimitiveSvgProps = Radix.ComponentPropsWithoutRef<typeof Primitive.svg>;
+interface ArrowProps extends PrimitiveSvgProps {}
 
 const Arrow = React.forwardRef<ArrowElement, ArrowProps>((props, forwardedRef) => {
   const { children, width = 10, height = 5, ...arrowProps } = props;
@@ -40,3 +41,4 @@ export {
   //
   Root,
 };
+export type { ArrowProps };

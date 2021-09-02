@@ -39,32 +39,30 @@ type SliderContextValue = {
   max: number;
   values: number[];
   valueIndexToChangeRef: React.MutableRefObject<number>;
-  thumbs: Set<React.ElementRef<typeof SliderThumb>>;
+  thumbs: Set<SliderThumbElement>;
   orientation: SliderProps['orientation'];
 };
 
 const [SliderProvider, useSliderContext] = createContext<SliderContextValue>(SLIDER_NAME);
 
-type SliderElement = React.ElementRef<typeof SliderHorizontal | typeof SliderVertical>;
-type SliderProps = Radix.MergeProps<
-  Omit<
-    Radix.ComponentPropsWithoutRef<typeof SliderHorizontal | typeof SliderVertical>,
-    keyof SliderOrientationPrivateProps
-  >,
-  {
-    name?: string;
-    disabled?: boolean;
-    orientation?: React.AriaAttributes['aria-orientation'];
-    dir?: Direction;
-    min?: number;
-    max?: number;
-    step?: number;
-    minStepsBetweenThumbs?: number;
-    value?: number[];
-    defaultValue?: number[];
-    onValueChange?(value: number[]): void;
-  }
->;
+type SliderElement = SliderHorizontalElement | SliderVerticalElement;
+interface SliderProps
+  extends Omit<
+    SliderHorizontalProps | SliderVerticalProps,
+    keyof SliderOrientationPrivateProps | 'defaultValue'
+  > {
+  name?: string;
+  disabled?: boolean;
+  orientation?: React.AriaAttributes['aria-orientation'];
+  dir?: Direction;
+  min?: number;
+  max?: number;
+  step?: number;
+  minStepsBetweenThumbs?: number;
+  value?: number[];
+  defaultValue?: number[];
+  onValueChange?(value: number[]): void;
+}
 
 const Slider = React.forwardRef<SliderElement, SliderProps>((props, forwardedRef) => {
   const {
@@ -187,24 +185,27 @@ const SliderOrientationContext = React.createContext<{
 }>({} as any);
 
 type SliderOrientationPrivateProps = {
+  min: number;
+  max: number;
   onSlideStart?(value: number): void;
   onSlideMove?(value: number): void;
   onHomeKeyDown(event: React.KeyboardEvent): void;
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
 };
-type SliderOrientationProps = Radix.MergeProps<
-  Omit<Radix.ComponentPropsWithoutRef<typeof SliderImpl>, keyof SliderImplPrivateProps>,
-  SliderOrientationPrivateProps & { min: number; max: number }
->;
+interface SliderOrientationProps
+  extends Omit<SliderImplProps, keyof SliderImplPrivateProps>,
+    SliderOrientationPrivateProps {}
 
-type SliderHorizontalElement = React.ElementRef<typeof SliderImpl>;
-type SliderHorizontalProps = SliderOrientationProps & { dir?: Direction };
+type SliderHorizontalElement = SliderImplElement;
+interface SliderHorizontalProps extends SliderOrientationProps {
+  dir?: Direction;
+}
 
 const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizontalProps>(
   (props, forwardedRef) => {
     const { min, max, dir, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
-    const [slider, setSlider] = React.useState<React.ElementRef<typeof SliderImpl> | null>(null);
+    const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
     const rectRef = React.useRef<ClientRect>();
     const direction = useDirection(slider, dir);
@@ -263,13 +264,13 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
  * SliderVertical
  * -----------------------------------------------------------------------------------------------*/
 
-type SliderVerticalElement = React.ElementRef<typeof SliderImpl>;
-type SliderVerticalProps = SliderOrientationProps;
+type SliderVerticalElement = SliderImplElement;
+interface SliderVerticalProps extends SliderOrientationProps {}
 
 const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
   (props, forwardedRef) => {
     const { min, max, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
-    const sliderRef = React.useRef<React.ElementRef<typeof SliderImpl>>(null);
+    const sliderRef = React.useRef<SliderImplElement>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
     const rectRef = React.useRef<ClientRect>();
 
@@ -322,6 +323,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
  * -----------------------------------------------------------------------------------------------*/
 
 type SliderImplElement = React.ElementRef<typeof Primitive.span>;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 type SliderImplPrivateProps = {
   onSlideStart(event: React.PointerEvent): void;
   onSlideMove(event: React.PointerEvent): void;
@@ -330,10 +332,7 @@ type SliderImplPrivateProps = {
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(event: React.KeyboardEvent): void;
 };
-type SliderImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  SliderImplPrivateProps
->;
+interface SliderImplProps extends PrimitiveDivProps, SliderImplPrivateProps {}
 
 const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>((props, forwardedRef) => {
   const {
@@ -397,7 +396,8 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>((props, 
 const TRACK_NAME = 'SliderTrack';
 
 type SliderTrackElement = React.ElementRef<typeof Primitive.span>;
-type SliderTrackProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface SliderTrackProps extends PrimitiveSpanProps {}
 
 const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
   (props, forwardedRef) => {
@@ -422,7 +422,7 @@ SliderTrack.displayName = TRACK_NAME;
 const RANGE_NAME = 'SliderRange';
 
 type SliderRangeElement = React.ElementRef<typeof Primitive.span>;
-type SliderRangeProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface SliderRangeProps extends PrimitiveSpanProps {}
 
 const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
   (props, forwardedRef) => {
@@ -461,13 +461,13 @@ SliderRange.displayName = RANGE_NAME;
 
 const THUMB_NAME = 'SliderThumb';
 
-type SliderThumbElement = React.ElementRef<typeof SliderThumbImpl>;
-type SliderThumbProps = Omit<Radix.ComponentPropsWithoutRef<typeof SliderThumbImpl>, 'index'>;
+type SliderThumbElement = SliderThumbImplElement;
+interface SliderThumbProps extends Omit<SliderThumbImplProps, 'index'> {}
 
 const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
   (props, forwardedRef) => {
     const { getItems } = useCollection();
-    const [thumb, setThumb] = React.useState<React.ElementRef<typeof SliderThumbImpl> | null>(null);
+    const [thumb, setThumb] = React.useState<SliderThumbImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     const index = React.useMemo(
       () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
@@ -478,10 +478,9 @@ const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
 );
 
 type SliderThumbImplElement = React.ElementRef<typeof Primitive.span>;
-type SliderThumbImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
-  { index: number }
->;
+interface SliderThumbImplProps extends PrimitiveSpanProps {
+  index: number;
+}
 
 const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
   (props, forwardedRef) => {
@@ -698,3 +697,4 @@ export {
   Range,
   Thumb,
 };
+export type { SliderProps, SliderTrackProps, SliderRangeProps, SliderThumbProps };

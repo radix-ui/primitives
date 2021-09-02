@@ -26,11 +26,11 @@ type ContextMenuContextValue = {
 const [ContextMenuProvider, useContextMenuContext] =
   createContext<ContextMenuContextValue>(CONTEXT_MENU_NAME);
 
-type ContextMenuProps = {
+interface ContextMenuProps {
   onOpenChange?(open: boolean): void;
   dir?: Direction;
   modal?: boolean;
-};
+}
 
 const ContextMenu: React.FC<ContextMenuProps> = (props) => {
   const { children, onOpenChange, dir, modal = true } = props;
@@ -80,7 +80,8 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
 const TRIGGER_NAME = 'ContextMenuTrigger';
 
 type ContextMenuTriggerElement = React.ElementRef<typeof Primitive.span>;
-type ContextMenuTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface ContextMenuTriggerProps extends PrimitiveSpanProps {}
 
 const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMenuTriggerProps>(
   (props, forwardedRef) => {
@@ -147,10 +148,8 @@ const CONTENT_NAME = 'ContextMenuContent';
 const ContentContext = React.createContext(false);
 
 type ContextMenuContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type ContextMenuContentProps = Omit<
-  Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>,
-  'portalled' | 'side' | 'align'
->;
+type MenuProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
+interface ContextMenuContentProps extends Omit<MenuProps, 'portalled' | 'side' | 'align'> {}
 
 const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMenuContentProps>(
   (props, forwardedRef) => {
@@ -183,7 +182,8 @@ ContextMenuContent.displayName = CONTENT_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type ContextMenuRootContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type ContextMenuRootContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
+type MenuContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
+interface ContextMenuRootContentProps extends MenuContentProps {}
 
 const ContextMenuRootContent = React.forwardRef<
   ContextMenuRootContentElement,
@@ -293,3 +293,4 @@ export {
   Separator,
   Arrow,
 };
+export type { ContextMenuProps, ContextMenuTriggerProps, ContextMenuContentProps };

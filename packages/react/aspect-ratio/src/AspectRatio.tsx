@@ -10,10 +10,10 @@ import type * as Radix from '@radix-ui/react-primitive';
 const NAME = 'AspectRatio';
 
 type AspectRatioElement = React.ElementRef<typeof Primitive.div>;
-type AspectRatioProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  { ratio?: number }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface AspectRatioProps extends PrimitiveDivProps {
+  ratio?: number;
+}
 
 const AspectRatio = React.forwardRef<AspectRatioElement, AspectRatioProps>(
   (props, forwardedRef) => {
@@ -58,3 +58,4 @@ export {
   //
   Root,
 };
+export type { AspectRatioProps };

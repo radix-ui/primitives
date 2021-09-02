@@ -12,25 +12,23 @@ import type * as Radix from '@radix-ui/react-primitive';
 const NAME = 'Toggle';
 
 type ToggleElement = React.ElementRef<typeof Primitive.button>;
-type ToggleProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.button>,
-  {
-    /**
-     * The controlled state of the toggle.
-     */
-    pressed?: boolean;
-    /**
-     * The state of the toggle when initially rendered. Use `defaultPressed`
-     * if you do not need to control the state of the toggle.
-     * @defaultValue false
-     */
-    defaultPressed?: boolean;
-    /**
-     * The callback that fires when the state of the toggle changes.
-     */
-    onPressedChange?(pressed: boolean): void;
-  }
->;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface ToggleProps extends PrimitiveButtonProps {
+  /**
+   * The controlled state of the toggle.
+   */
+  pressed?: boolean;
+  /**
+   * The state of the toggle when initially rendered. Use `defaultPressed`
+   * if you do not need to control the state of the toggle.
+   * @defaultValue false
+   */
+  defaultPressed?: boolean;
+  /**
+   * The callback that fires when the state of the toggle changes.
+   */
+  onPressedChange?(pressed: boolean): void;
+}
 
 const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef) => {
   const { pressed: pressedProp, defaultPressed = false, onPressedChange, ...buttonProps } = props;
@@ -69,3 +67,4 @@ export {
   //
   Root,
 };
+export type { ToggleProps };

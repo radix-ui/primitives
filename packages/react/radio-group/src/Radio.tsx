@@ -20,14 +20,12 @@ type RadioContextValue = { checked: boolean; disabled?: boolean };
 const [RadioProvider, useRadioContext] = createContext<RadioContextValue>(RADIO_NAME);
 
 type RadioElement = React.ElementRef<typeof Primitive.button>;
-type RadioProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.button>,
-  {
-    checked?: boolean;
-    required?: boolean;
-    onCheck?(): void;
-  }
->;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface RadioProps extends PrimitiveButtonProps {
+  checked?: boolean;
+  required?: boolean;
+  onCheck?(): void;
+}
 
 const Radio = React.forwardRef<RadioElement, RadioProps>((props, forwardedRef) => {
   const {
@@ -101,16 +99,14 @@ Radio.displayName = RADIO_NAME;
 const INDICATOR_NAME = 'RadioIndicator';
 
 type RadioIndicatorElement = React.ElementRef<typeof Primitive.span>;
-type RadioIndicatorProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+export interface RadioIndicatorProps extends PrimitiveSpanProps {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
 const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorProps>(
   (props, forwardedRef) => {
@@ -133,11 +129,12 @@ RadioIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type BubbleInputProps = Omit<Radix.ComponentPropsWithoutRef<'input'>, 'checked'> & {
+type InputProps = Radix.ComponentPropsWithoutRef<'input'>;
+interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   checked: boolean;
   control: HTMLElement | null;
   bubbles: boolean;
-};
+}
 
 const BubbleInput = (props: BubbleInputProps) => {
   const { control, checked, bubbles = true, ...inputProps } = props;
@@ -182,3 +179,4 @@ function getState(checked: boolean) {
 }
 
 export { Radio, RadioIndicator };
+export type { RadioProps };

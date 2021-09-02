@@ -13,24 +13,32 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const TOGGLE_GROUP_NAME = 'ToggleGroup';
 
-type ToggleGroupElement = React.ElementRef<typeof ToggleGroupSingle | typeof ToggleGroupMultiple>;
-type ToggleGroupProps =
-  | ({ type: 'single' } & Radix.ComponentPropsWithoutRef<typeof ToggleGroupSingle>)
-  | ({ type: 'multiple' } & Radix.ComponentPropsWithoutRef<typeof ToggleGroupMultiple>);
+type ToggleGroupElement = ToggleGroupSingleElement | ToggleGroupMultipleElement;
+interface ToggleGroupWithSingleProps extends ToggleGroupSingleProps {
+  type: 'single';
+}
+interface ToggleGroupWithMultipleProps extends ToggleGroupMultipleProps {
+  type: 'multiple';
+}
 
-const ToggleGroup = React.forwardRef<ToggleGroupElement, ToggleGroupProps>(
-  (props, forwardedRef) => {
-    if (props.type === 'single') {
-      return <ToggleGroupSingle {...props} ref={forwardedRef} />;
-    }
+const ToggleGroup = React.forwardRef<
+  ToggleGroupElement,
+  ToggleGroupWithSingleProps | ToggleGroupWithMultipleProps
+>((props, forwardedRef) => {
+  const { type, ...toggleGroupProps } = props;
 
-    if (props.type === 'multiple') {
-      return <ToggleGroupMultiple {...props} ref={forwardedRef} />;
-    }
-
-    throw new Error(`Missing prop \`type\` expected on \`${TOGGLE_GROUP_NAME}\``);
+  if (type === 'single') {
+    const singleProps = toggleGroupProps as ToggleGroupSingleProps;
+    return <ToggleGroupSingle {...singleProps} ref={forwardedRef} />;
   }
-);
+
+  if (type === 'multiple') {
+    const multipleProps = toggleGroupProps as ToggleGroupMultipleProps;
+    return <ToggleGroupMultiple {...multipleProps} ref={forwardedRef} />;
+  }
+
+  throw new Error(`Missing prop \`type\` expected on \`${TOGGLE_GROUP_NAME}\``);
+});
 
 ToggleGroup.displayName = TOGGLE_GROUP_NAME;
 
@@ -45,25 +53,22 @@ type ToggleGroupValueContextValue = {
 const [ToggleGroupValueProvider, useToggleGroupValueContext] =
   createContext<ToggleGroupValueContextValue>(TOGGLE_GROUP_NAME);
 
-type ToggleGroupSingleElement = React.ElementRef<typeof ToggleGroupImpl>;
-type ToggleGroupSingleProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof ToggleGroupImpl>,
-  {
-    /**
-     * The controlled stateful value of the item that is pressed.
-     */
-    value?: string;
-    /**
-     * The value of the item that is pressed when initially rendered. Use
-     * `defaultValue` if you do not need to control the state of a toggle group.
-     */
-    defaultValue?: string;
-    /**
-     * The callback that fires when the value of the toggle group changes.
-     */
-    onValueChange?(value: string): void;
-  }
->;
+type ToggleGroupSingleElement = ToggleGroupImplElement;
+interface ToggleGroupSingleProps extends ToggleGroupImplProps {
+  /**
+   * The controlled stateful value of the item that is pressed.
+   */
+  value?: string;
+  /**
+   * The value of the item that is pressed when initially rendered. Use
+   * `defaultValue` if you do not need to control the state of a toggle group.
+   */
+  defaultValue?: string;
+  /**
+   * The callback that fires when the value of the toggle group changes.
+   */
+  onValueChange?(value: string): void;
+}
 
 const ToggleGroupSingle = React.forwardRef<ToggleGroupSingleElement, ToggleGroupSingleProps>(
   (props, forwardedRef) => {
@@ -92,25 +97,22 @@ const ToggleGroupSingle = React.forwardRef<ToggleGroupSingleElement, ToggleGroup
   }
 );
 
-type ToggleGroupMultipleElement = React.ElementRef<typeof ToggleGroupImpl>;
-type ToggleGroupMultipleProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof ToggleGroupImpl>,
-  {
-    /**
-     * The controlled stateful value of the items that are pressed.
-     */
-    value?: string[];
-    /**
-     * The value of the items that are pressed when initially rendered. Use
-     * `defaultValue` if you do not need to control the state of a toggle group.
-     */
-    defaultValue?: string[];
-    /**
-     * The callback that fires when the state of the toggle group changes.
-     */
-    onValueChange?(value: string[]): void;
-  }
->;
+type ToggleGroupMultipleElement = ToggleGroupImplElement;
+interface ToggleGroupMultipleProps extends ToggleGroupImplProps {
+  /**
+   * The controlled stateful value of the items that are pressed.
+   */
+  value?: string[];
+  /**
+   * The value of the items that are pressed when initially rendered. Use
+   * `defaultValue` if you do not need to control the state of a toggle group.
+   */
+  defaultValue?: string[];
+  /**
+   * The callback that fires when the state of the toggle group changes.
+   */
+  onValueChange?(value: string[]): void;
+}
 
 const ToggleGroupMultiple = React.forwardRef<ToggleGroupMultipleElement, ToggleGroupMultipleProps>(
   (props, forwardedRef) => {
@@ -160,24 +162,22 @@ const [ToggleGroupContext, useToggleGroupContext] =
 
 type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
 type ToggleGroupImplElement = React.ElementRef<typeof Primitive.div>;
-type ToggleGroupImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    /**
-     * Whether the group is disabled from user interaction.
-     * @defaultValue false
-     */
-    disabled?: boolean;
-    /**
-     * Whether the group should maintain roving focus of its buttons.
-     * @defaultValue true
-     */
-    rovingFocus?: boolean;
-    loop?: RovingFocusGroupProps['loop'];
-    orientation?: RovingFocusGroupProps['orientation'];
-    dir?: RovingFocusGroupProps['dir'];
-  }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface ToggleGroupImplProps extends PrimitiveDivProps {
+  /**
+   * Whether the group is disabled from user interaction.
+   * @defaultValue false
+   */
+  disabled?: boolean;
+  /**
+   * Whether the group should maintain roving focus of its buttons.
+   * @defaultValue true
+   */
+  rovingFocus?: boolean;
+  loop?: RovingFocusGroupProps['loop'];
+  orientation?: RovingFocusGroupProps['orientation'];
+  dir?: RovingFocusGroupProps['dir'];
+}
 
 const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImplProps>(
   (props, forwardedRef) => {
@@ -210,11 +210,8 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
 
 const ITEM_NAME = 'ToggleGroupItem';
 
-type ToggleGroupItemElement = React.ElementRef<typeof ToggleGroupItemImpl>;
-type ToggleGroupItemProps = Omit<
-  Radix.ComponentPropsWithoutRef<typeof ToggleGroupItemImpl>,
-  'pressed'
->;
+type ToggleGroupItemElement = ToggleGroupItemImplElement;
+interface ToggleGroupItemProps extends Omit<ToggleGroupItemImplProps, 'pressed'> {}
 
 const ToggleGroupItem = React.forwardRef<ToggleGroupItemElement, ToggleGroupItemProps>(
   (props, forwardedRef) => {
@@ -239,15 +236,13 @@ ToggleGroupItem.displayName = ITEM_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type ToggleGroupItemImplElement = React.ElementRef<typeof Toggle>;
-type ToggleGroupItemImplProps = Radix.MergeProps<
-  Omit<Radix.ComponentPropsWithoutRef<typeof Toggle>, 'defaultPressed' | 'onPressedChange'>,
-  {
-    /**
-     * A string value for the toggle group item. All items within a toggle group should use a unique value.
-     */
-    value: string;
-  }
->;
+type ToggleProps = Radix.ComponentPropsWithoutRef<typeof Toggle>;
+interface ToggleGroupItemImplProps extends Omit<ToggleProps, 'defaultPressed' | 'onPressedChange'> {
+  /**
+   * A string value for the toggle group item. All items within a toggle group should use a unique value.
+   */
+  value: string;
+}
 
 const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleGroupItemImplProps>(
   (props, forwardedRef) => {
@@ -281,3 +276,4 @@ export {
   Root,
   Item,
 };
+export type { ToggleGroupWithSingleProps, ToggleGroupWithMultipleProps, ToggleGroupItemProps };
