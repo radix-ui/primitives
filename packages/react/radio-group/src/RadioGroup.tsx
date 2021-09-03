@@ -85,9 +85,8 @@ const ITEM_NAME = 'RadioGroupItem';
 
 type RadioGroupItemElement = React.ElementRef<typeof Radio>;
 type RadioProps = Radix.ComponentPropsWithoutRef<typeof Radio>;
-interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck'> {
+interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck' | 'name'> {
   value: string;
-  name?: never;
 }
 
 const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemProps>(
