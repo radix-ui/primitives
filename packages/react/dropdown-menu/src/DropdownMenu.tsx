@@ -262,31 +262,60 @@ const DropdownMenuRootContent = React.forwardRef<
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type MenuGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Group>;
+interface DropdownMenuGroupProps extends MenuGroupProps {}
 const DropdownMenuGroup = extendPrimitive(MenuPrimitive.Group, {
   displayName: 'DropdownMenuGroup',
 });
+
+type MenuLabelProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Label>;
+interface DropdownMenuLabelProps extends MenuLabelProps {}
 const DropdownMenuLabel = extendPrimitive(MenuPrimitive.Label, {
   displayName: 'DropdownMenuLabel',
 });
+
+type MenuSubTriggerProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
+interface DropdownMenuTriggerItemProps extends MenuSubTriggerProps {}
 const DropdownMenuTriggerItem = extendPrimitive(MenuPrimitive.SubTrigger, {
   displayName: 'DropdownMenuTriggerItem',
 });
+
+type MenuItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Item>;
+interface DropdownMenuItemProps extends MenuItemProps {}
 const DropdownMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'DropdownMenuItem' });
+
+type MenuCheckboxItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItem>;
+interface DropdownMenuCheckboxItemProps extends MenuCheckboxItemProps {}
 const DropdownMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
   displayName: 'DropdownMenuCheckboxItem',
 });
+
+type MenuRadioGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioGroup>;
+interface DropdownMenuRadioGroupProps extends MenuRadioGroupProps {}
 const DropdownMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, {
   displayName: 'DropdownMenuRadioGroup',
 });
+
+type MenuRadioItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItem>;
+interface DropdownMenuRadioItemProps extends MenuRadioItemProps {}
 const DropdownMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, {
   displayName: 'DropdownMenuRadioItem',
 });
+
+type MenuItemIndicatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.ItemIndicator>;
+interface DropdownMenuItemIndicatorProps extends MenuItemIndicatorProps {}
 const DropdownMenuItemIndicator = extendPrimitive(MenuPrimitive.ItemIndicator, {
   displayName: 'DropdownMenuItemIndicator',
 });
+
+type MenuSeparatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>;
+interface DropdownMenuSeparatorProps extends MenuSeparatorProps {}
 const DropdownMenuSeparator = extendPrimitive(MenuPrimitive.Separator, {
   displayName: 'DropdownMenuSeparator',
 });
+
+type MenuArrowProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Arrow>;
+interface DropdownMenuArrowProps extends MenuArrowProps {}
 const DropdownMenuArrow = extendPrimitive(MenuPrimitive.Arrow, {
   displayName: 'DropdownMenuArrow',
 });
@@ -336,4 +365,18 @@ export {
   Separator,
   Arrow,
 };
-export type { DropdownMenuProps, DropdownMenuTriggerProps, DropdownMenuContentProps };
+export type {
+  DropdownMenuProps,
+  DropdownMenuTriggerProps,
+  DropdownMenuContentProps,
+  DropdownMenuGroupProps,
+  DropdownMenuLabelProps,
+  DropdownMenuItemProps,
+  DropdownMenuTriggerItemProps,
+  DropdownMenuCheckboxItemProps,
+  DropdownMenuRadioGroupProps,
+  DropdownMenuRadioItemProps,
+  DropdownMenuItemIndicatorProps,
+  DropdownMenuSeparatorProps,
+  DropdownMenuArrowProps,
+};

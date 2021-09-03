@@ -394,7 +394,11 @@ PopoverClose.displayName = CLOSE_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'PopoverArrow' });
+type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+interface PopoverArrowProps extends PopperArrowProps {}
+const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, {
+  displayName: 'PopoverArrow',
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -430,4 +434,5 @@ export type {
   PopoverTriggerProps,
   PopoverContentProps,
   PopoverCloseProps,
+  PopoverArrowProps,
 };

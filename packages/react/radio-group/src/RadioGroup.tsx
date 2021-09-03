@@ -125,7 +125,11 @@ RadioGroupItem.displayName = ITEM_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const RadioGroupIndicator = extendPrimitive(RadioIndicator, { displayName: 'RadioGroupIndicator' });
+type RadioIndicatorProps = Radix.ComponentPropsWithoutRef<typeof RadioIndicator>;
+interface RadioGroupIndicatorProps extends RadioIndicatorProps {}
+const RadioGroupIndicator = extendPrimitive(RadioIndicator, {
+  displayName: 'RadioGroupIndicator',
+});
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -142,4 +146,4 @@ export {
   Item,
   Indicator,
 };
-export type { RadioGroupProps, RadioGroupItemProps };
+export type { RadioGroupProps, RadioGroupItemProps, RadioGroupIndicatorProps };

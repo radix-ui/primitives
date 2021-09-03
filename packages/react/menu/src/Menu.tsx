@@ -916,7 +916,6 @@ const RADIO_GROUP_NAME = 'MenuRadioGroup';
 const RadioGroupContext = React.createContext<MenuRadioGroupProps>({} as any);
 
 type MenuRadioGroupElement = React.ElementRef<typeof MenuGroup>;
-type MenuGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuGroup>;
 interface MenuRadioGroupProps extends MenuGroupProps {
   value?: string;
   onValueChange?: (value: string) => void;
@@ -1015,17 +1014,32 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const MenuAnchor = extendPrimitive(PopperPrimitive.Anchor, { displayName: 'MenuAnchor' });
+type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
+interface MenuAnchorProps extends PopperAnchorProps {}
+const MenuAnchor = extendPrimitive(PopperPrimitive.Anchor, {
+  displayName: 'MenuAnchor',
+});
+
+interface MenuGroupProps extends PrimitiveDivProps {}
 const MenuGroup = extendPrimitive(Primitive.div, {
   defaultProps: { role: 'group' },
   displayName: 'MenuGroup',
 });
+
+interface MenuLabelProps extends PrimitiveDivProps {}
 const MenuLabel = extendPrimitive(Primitive.div, { displayName: 'MenuLabel' });
+
+interface MenuSeparatorProps extends PrimitiveDivProps {}
 const MenuSeparator = extendPrimitive(Primitive.div, {
   defaultProps: { role: 'separator', 'aria-orientation': 'horizontal' },
   displayName: 'MenuSeparator ',
 });
-const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'MenuArrow' });
+
+type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+interface MenuArrowProps extends PopperArrowProps {}
+const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, {
+  displayName: 'MenuArrow',
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -1168,12 +1182,16 @@ export {
 export type {
   MenuProps,
   MenuSubProps,
+  MenuAnchorProps,
   MenuSubTriggerProps,
   MenuContentProps,
   MenuGroupProps,
+  MenuLabelProps,
   MenuItemProps,
   MenuCheckboxItemProps,
   MenuRadioGroupProps,
   MenuRadioItemProps,
   MenuItemIndicatorProps,
+  MenuSeparatorProps,
+  MenuArrowProps,
 };

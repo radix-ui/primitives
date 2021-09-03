@@ -177,6 +177,8 @@ const HoverCardContentImpl = React.forwardRef<
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+interface HoverCardArrowProps extends PopperArrowProps {}
 const HoverCardArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'HoverCardArrow' });
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -202,4 +204,4 @@ export {
   Content,
   Arrow,
 };
-export type { HoverCardProps, HoverCardTriggerProps, HoverCardContentProps };
+export type { HoverCardProps, HoverCardTriggerProps, HoverCardContentProps, HoverCardArrowProps };

@@ -275,7 +275,11 @@ TooltipContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'TooltipArrow' });
+type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+interface TooltipArrowProps extends PopperArrowProps {}
+const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, {
+  displayName: 'TooltipArrow',
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -319,4 +323,4 @@ export {
   Content,
   Arrow,
 };
-export type { TooltipProps, TooltipTriggerProps, TooltipContentProps };
+export type { TooltipProps, TooltipTriggerProps, TooltipContentProps, TooltipArrowProps };

@@ -219,27 +219,56 @@ const ContextMenuRootContent = React.forwardRef<
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type MenuGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Group>;
+interface ContextMenuGroupProps extends MenuGroupProps {}
 const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, { displayName: 'ContextMenuGroup' });
+
+type MenuLabelProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Label>;
+interface ContextMenuLabelProps extends MenuLabelProps {}
 const ContextMenuLabel = extendPrimitive(MenuPrimitive.Label, { displayName: 'ContextMenuLabel' });
+
+type MenuSubTriggerProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
+interface ContextMenuTriggerItemProps extends MenuSubTriggerProps {}
 const ContextMenuTriggerItem = extendPrimitive(MenuPrimitive.SubTrigger, {
   displayName: 'ContextMenuTriggerItem',
 });
+
+type MenuItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Item>;
+interface ContextMenuItemProps extends MenuItemProps {}
 const ContextMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'ContextMenuItem' });
+
+type MenuCheckboxItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItem>;
+interface ContextMenuCheckboxItemProps extends MenuCheckboxItemProps {}
 const ContextMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
   displayName: 'ContextMenuCheckboxItem',
 });
+
+type MenuRadioGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioGroup>;
+interface ContextMenuRadioGroupProps extends MenuRadioGroupProps {}
 const ContextMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, {
   displayName: 'ContextMenuRadioGroup',
 });
+
+type MenuRadioItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItem>;
+interface ContextMenuRadioItemProps extends MenuRadioItemProps {}
 const ContextMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, {
   displayName: 'ContextMenuRadioItem',
 });
+
+type MenuItemIndicatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.ItemIndicator>;
+interface ContextMenuItemIndicatorProps extends MenuItemIndicatorProps {}
 const ContextMenuItemIndicator = extendPrimitive(MenuPrimitive.ItemIndicator, {
   displayName: 'ContextMenuItemIndicator',
 });
+
+type MenuSeparatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>;
+interface ContextMenuSeparatorProps extends MenuSeparatorProps {}
 const ContextMenuSeparator = extendPrimitive(MenuPrimitive.Separator, {
   displayName: 'ContextMenuSeparator',
 });
+
+type MenuArrowProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Arrow>;
+interface ContextMenuArrowProps extends MenuArrowProps {}
 const ContextMenuArrow = extendPrimitive(MenuPrimitive.Arrow, {
   displayName: 'ContextMenuArrow',
 });
@@ -293,4 +322,18 @@ export {
   Separator,
   Arrow,
 };
-export type { ContextMenuProps, ContextMenuTriggerProps, ContextMenuContentProps };
+export type {
+  ContextMenuProps,
+  ContextMenuTriggerProps,
+  ContextMenuContentProps,
+  ContextMenuGroupProps,
+  ContextMenuLabelProps,
+  ContextMenuItemProps,
+  ContextMenuTriggerItemProps,
+  ContextMenuCheckboxItemProps,
+  ContextMenuRadioGroupProps,
+  ContextMenuRadioItemProps,
+  ContextMenuItemIndicatorProps,
+  ContextMenuSeparatorProps,
+  ContextMenuArrowProps,
+};
