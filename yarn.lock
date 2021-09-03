@@ -3330,7 +3330,6 @@ __metadata:
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-dialog": "workspace:*"
-    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
     react: ">=16.8"

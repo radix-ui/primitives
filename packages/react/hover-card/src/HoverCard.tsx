@@ -5,7 +5,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
+import { Primitive } from '@radix-ui/react-primitive';
 import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
@@ -175,11 +175,21 @@ const HoverCardContentImpl = React.forwardRef<
   );
 });
 
-/* ---------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------
+ * HoverCardArrow
+ * -----------------------------------------------------------------------------------------------*/
 
+const ARROW_NAME = 'HoverCardArrow';
+
+type HoverCardArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface HoverCardArrowProps extends PopperArrowProps {}
-const HoverCardArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'HoverCardArrow' });
+
+const HoverCardArrow = React.forwardRef<HoverCardArrowElement, HoverCardArrowProps>(
+  (props, forwardedRef) => <PopperPrimitive.Arrow {...props} ref={forwardedRef} />
+);
+
+HoverCardArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

@@ -8,7 +8,7 @@ import { createContext } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
+import { Primitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
@@ -160,6 +160,22 @@ const MenuSub: React.FC<MenuSubProps> = (props) => {
 };
 
 MenuSub.displayName = SUB_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuAnchor
+ * -----------------------------------------------------------------------------------------------*/
+
+const ANCHOR_NAME = 'MenuAnchor';
+
+type MenuAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
+type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
+interface MenuAnchorProps extends PopperAnchorProps {}
+
+const MenuAnchor = React.forwardRef<MenuAnchorElement, MenuAnchorProps>((props, forwardedRef) => (
+  <PopperPrimitive.Anchor {...props} ref={forwardedRef} />
+));
+
+MenuAnchor.displayName = ANCHOR_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenuContent
@@ -605,6 +621,37 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
 MenuContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
+ * MenuGroup
+ * -----------------------------------------------------------------------------------------------*/
+
+const GROUP_NAME = 'MenuGroup';
+
+type MenuGroupElement = React.ElementRef<typeof Primitive.div>;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface MenuGroupProps extends PrimitiveDivProps {}
+
+const MenuGroup = React.forwardRef<MenuGroupElement, MenuGroupProps>((props, forwardedRef) => (
+  <Primitive.div role="group" {...props} ref={forwardedRef} />
+));
+
+MenuGroup.displayName = GROUP_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuLabel
+ * -----------------------------------------------------------------------------------------------*/
+
+const LABEL_NAME = 'MenuLabel';
+
+type MenuLabelElement = React.ElementRef<typeof Primitive.div>;
+interface MenuLabelProps extends PrimitiveDivProps {}
+
+const MenuLabel = React.forwardRef<MenuLabelElement, MenuLabelProps>((props, forwardedRef) => (
+  <Primitive.div {...props} ref={forwardedRef} />
+));
+
+MenuLabel.displayName = LABEL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * MenuItem
  * -----------------------------------------------------------------------------------------------*/
 
@@ -804,7 +851,6 @@ MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type MenuItemImplElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface MenuItemImplProps extends PrimitiveDivProps {
   disabled?: boolean;
   textValue?: string;
@@ -1012,34 +1058,38 @@ const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemInd
 
 MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 
-/* ---------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------
+ * MenuSeparator
+ * -----------------------------------------------------------------------------------------------*/
 
-type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
-interface MenuAnchorProps extends PopperAnchorProps {}
-const MenuAnchor = extendPrimitive(PopperPrimitive.Anchor, {
-  displayName: 'MenuAnchor',
-});
+const SEPARATOR_NAME = 'MenuSeparator';
 
-interface MenuGroupProps extends PrimitiveDivProps {}
-const MenuGroup = extendPrimitive(Primitive.div, {
-  defaultProps: { role: 'group' },
-  displayName: 'MenuGroup',
-});
-
-interface MenuLabelProps extends PrimitiveDivProps {}
-const MenuLabel = extendPrimitive(Primitive.div, { displayName: 'MenuLabel' });
-
+type MenuSeparatorElement = React.ElementRef<typeof Primitive.div>;
 interface MenuSeparatorProps extends PrimitiveDivProps {}
-const MenuSeparator = extendPrimitive(Primitive.div, {
-  defaultProps: { role: 'separator', 'aria-orientation': 'horizontal' },
-  displayName: 'MenuSeparator ',
-});
 
+const MenuSeparator = React.forwardRef<MenuSeparatorElement, MenuSeparatorProps>(
+  (props, forwardedRef) => (
+    <Primitive.div role="separator" aria-orientation="horizontal" {...props} ref={forwardedRef} />
+  )
+);
+
+MenuSeparator.displayName = SEPARATOR_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenuArrow
+ * -----------------------------------------------------------------------------------------------*/
+
+const ARROW_NAME = 'MenuArrow';
+
+type MenuArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface MenuArrowProps extends PopperArrowProps {}
-const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, {
-  displayName: 'MenuArrow',
-});
+
+const MenuArrow = React.forwardRef<MenuArrowElement, MenuArrowProps>((props, forwardedRef) => (
+  <PopperPrimitive.Arrow {...props} ref={forwardedRef} />
+));
+
+MenuArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

@@ -3,7 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
-import { extendPrimitive, Primitive } from '@radix-ui/react-primitive';
+import { Primitive } from '@radix-ui/react-primitive';
 import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Radio, RadioIndicator } from './Radio';
@@ -122,13 +122,21 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
 
 RadioGroupItem.displayName = ITEM_NAME;
 
-/* -----------------------------------------------------------------------------------------------*/
+/* -------------------------------------------------------------------------------------------------
+ * RadioGroupIndicator
+ * -----------------------------------------------------------------------------------------------*/
 
+const INDICATOR_NAME = 'RadioGroupIndicator';
+
+type RadioGroupIndicatorElement = React.ElementRef<typeof RadioIndicator>;
 type RadioIndicatorProps = Radix.ComponentPropsWithoutRef<typeof RadioIndicator>;
 interface RadioGroupIndicatorProps extends RadioIndicatorProps {}
-const RadioGroupIndicator = extendPrimitive(RadioIndicator, {
-  displayName: 'RadioGroupIndicator',
-});
+
+const RadioGroupIndicator = React.forwardRef<RadioGroupIndicatorElement, RadioGroupIndicatorProps>(
+  (props, forwardedRef) => <RadioIndicator {...props} ref={forwardedRef} />
+);
+
+RadioGroupIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 

@@ -9,7 +9,7 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal } from '@radix-ui/react-portal';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
+import { Primitive } from '@radix-ui/react-primitive';
 import { useId } from '@radix-ui/react-id';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
@@ -392,13 +392,21 @@ const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
 
 PopoverClose.displayName = CLOSE_NAME;
 
-/* ---------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------
+ * PopoverArrow
+ * -----------------------------------------------------------------------------------------------*/
 
+const ARROW_NAME = 'PopoverArrow';
+
+type PopoverArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface PopoverArrowProps extends PopperArrowProps {}
-const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, {
-  displayName: 'PopoverArrow',
-});
+
+const PopoverArrow = React.forwardRef<PopoverArrowElement, PopoverArrowProps>(
+  (props, forwardedRef) => <PopperPrimitive.Arrow {...props} ref={forwardedRef} />
+);
+
+PopoverArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
