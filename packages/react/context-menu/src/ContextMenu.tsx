@@ -148,8 +148,8 @@ const CONTENT_NAME = 'ContextMenuContent';
 const ContentContext = React.createContext(false);
 
 type ContextMenuContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type MenuProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
-interface ContextMenuContentProps extends Omit<MenuProps, 'portalled' | 'side' | 'align'> {}
+type MenuContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
+interface ContextMenuContentProps extends Omit<MenuContentProps, 'portalled' | 'side' | 'align'> {}
 
 const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMenuContentProps>(
   (props, forwardedRef) => {
@@ -182,7 +182,6 @@ ContextMenuContent.displayName = CONTENT_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type ContextMenuRootContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type MenuContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
 interface ContextMenuRootContentProps extends MenuContentProps {}
 
 const ContextMenuRootContent = React.forwardRef<

@@ -317,8 +317,8 @@ AccordionItem.displayName = ITEM_NAME;
 const HEADER_NAME = 'AccordionHeader';
 
 type AccordionHeaderElement = React.ElementRef<typeof Primitive.h3>;
-type PrimitiveHeadingProps = Radix.ComponentPropsWithoutRef<typeof Primitive.h3>;
-interface AccordionHeaderProps extends PrimitiveHeadingProps {}
+type PrimitiveHeading3Props = Radix.ComponentPropsWithoutRef<typeof Primitive.h3>;
+interface AccordionHeaderProps extends PrimitiveHeading3Props {}
 
 /**
  * `AccordionHeader` contains the content for the parts of an `AccordionItem` that will be visible
