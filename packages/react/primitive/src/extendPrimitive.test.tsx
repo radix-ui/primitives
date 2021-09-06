@@ -11,10 +11,10 @@ import type * as Radix from '@radix-ui/react-primitive';
  * -----------------------------------------------------------------------------------------------*/
 
 type ButtonElement = React.ElementRef<typeof Primitive.button>;
-type ButtonProps = Radix.MergeProps<
-  React.ComponentProps<typeof Primitive.button>,
-  { isDisabled?: boolean }
->;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface ButtonProps extends PrimitiveButtonProps {
+  isDisabled?: boolean;
+}
 
 const Button = React.forwardRef<ButtonElement, ButtonProps>((props, forwardedRef) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

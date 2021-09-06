@@ -10,7 +10,8 @@ import type * as Radix from '@radix-ui/react-primitive';
 const NAME = 'VisuallyHidden';
 
 type VisuallyHiddenElement = React.ElementRef<typeof Primitive.span>;
-type VisuallyHiddenProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface VisuallyHiddenProps extends PrimitiveSpanProps {}
 
 const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenProps>(
   (props, forwardedRef) => {
@@ -48,3 +49,4 @@ export {
   //
   Root,
 };
+export type { VisuallyHiddenProps };

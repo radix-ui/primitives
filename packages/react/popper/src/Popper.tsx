@@ -41,10 +41,10 @@ Popper.displayName = POPPER_NAME;
 const ANCHOR_NAME = 'PopperAnchor';
 
 type PopperAnchorElement = React.ElementRef<typeof Primitive.div>;
-type PopperAnchorProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  { virtualRef?: React.RefObject<Measurable> }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface PopperAnchorProps extends PrimitiveDivProps {
+  virtualRef?: React.RefObject<Measurable>;
+}
 
 const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
   (props, forwardedRef) => {
@@ -82,17 +82,14 @@ const [PopperContentProvider, useContentContext] =
   createContext<PopperContentContextValue>(CONTENT_NAME);
 
 type PopperContentElement = React.ElementRef<typeof Primitive.div>;
-type PopperContentProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    side?: Side;
-    sideOffset?: number;
-    align?: Align;
-    alignOffset?: number;
-    collisionTolerance?: number;
-    avoidCollisions?: boolean;
-  }
->;
+interface PopperContentProps extends PrimitiveDivProps {
+  side?: Side;
+  sideOffset?: number;
+  align?: Align;
+  alignOffset?: number;
+  collisionTolerance?: number;
+  avoidCollisions?: boolean;
+}
 
 const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
   (props, forwardedRef) => {
@@ -172,10 +169,10 @@ PopperContent.displayName = CONTENT_NAME;
 const ARROW_NAME = 'PopperArrow';
 
 type PopperArrowElement = React.ElementRef<typeof ArrowPrimitive.Root>;
-type PopperArrowProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>,
-  { offset?: number }
->;
+type ArrowProps = Radix.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
+interface PopperArrowProps extends ArrowProps {
+  offset?: number;
+}
 
 const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
   props,
@@ -262,3 +259,4 @@ export {
   Content,
   Arrow,
 };
+export type { PopperAnchorProps, PopperContentProps, PopperArrowProps };

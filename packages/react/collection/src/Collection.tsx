@@ -4,6 +4,9 @@ import { Slot } from '@radix-ui/react-slot';
 
 import type * as Radix from '@radix-ui/react-primitive';
 
+type SlotProps = Radix.ComponentPropsWithoutRef<typeof Slot>;
+interface CollectionProps extends SlotProps {}
+
 // We have resorted to returning slots directly rather than exposing primitives that can then
 // be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`.
 // This is because we encountered issues with generic types that cannot be statically analysed
@@ -43,14 +46,14 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
 
   const COLLECTION_SLOT_NAME = 'CollectionSlot';
 
-  type SlotProps = Radix.ComponentPropsWithoutRef<typeof Slot>;
-
-  const CollectionSlot = React.forwardRef<CollectionElement, SlotProps>((props, forwardedRef) => {
-    const { children } = props;
-    const context = React.useContext(Context);
-    const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
-    return <Slot ref={composedRefs}>{children}</Slot>;
-  });
+  const CollectionSlot = React.forwardRef<CollectionElement, CollectionProps>(
+    (props, forwardedRef) => {
+      const { children } = props;
+      const context = React.useContext(Context);
+      const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
+      return <Slot ref={composedRefs}>{children}</Slot>;
+    }
+  );
 
   CollectionSlot.displayName = COLLECTION_SLOT_NAME;
 
@@ -61,7 +64,9 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
   const ITEM_SLOT_NAME = 'CollectionItemSlot';
   const ITEM_DATA_ATTR = 'data-radix-collection-item';
 
-  type CollectionItemSlotProps = { children: React.ReactNode } & ItemData;
+  type CollectionItemSlotProps = ItemData & {
+    children: React.ReactNode;
+  };
 
   const CollectionItemSlot = React.forwardRef<ItemElement, CollectionItemSlotProps>(
     (props, forwardedRef) => {
@@ -109,3 +114,4 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
 }
 
 export { createCollection };
+export type { CollectionProps };

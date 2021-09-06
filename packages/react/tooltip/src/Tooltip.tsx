@@ -36,8 +36,8 @@ type TooltipContextValue = {
   contentId: string;
   open: boolean;
   stateAttribute: StateAttribute;
-  trigger: React.ElementRef<typeof TooltipTrigger> | null;
-  onTriggerChange(trigger: React.ElementRef<typeof TooltipTrigger> | null): void;
+  trigger: TooltipTriggerElement | null;
+  onTriggerChange(trigger: TooltipTriggerElement | null): void;
   onFocus(): void;
   onOpen(): void;
   onClose(): void;
@@ -45,7 +45,7 @@ type TooltipContextValue = {
 
 const [TooltipProvider, useTooltipContext] = createContext<TooltipContextValue>(TOOLTIP_NAME);
 
-type TooltipProps = {
+interface TooltipProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -61,7 +61,7 @@ type TooltipProps = {
    * (default: 300)
    */
   skipDelayDuration?: number;
-};
+}
 
 const Tooltip: React.FC<TooltipProps> = (props) => {
   const {
@@ -164,7 +164,8 @@ Tooltip.displayName = TOOLTIP_NAME;
 const TRIGGER_NAME = 'TooltipTrigger';
 
 type TooltipTriggerElement = React.ElementRef<typeof Primitive.button>;
-type TooltipTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
 const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
   (props, forwardedRef) => {
@@ -202,17 +203,14 @@ TooltipTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'TooltipContent';
 
-type TooltipContentElement = React.ElementRef<typeof TooltipContentImpl>;
-type TooltipContentProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof TooltipContentImpl>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+type TooltipContentElement = TooltipContentImplElement;
+interface TooltipContentProps extends TooltipContentImplProps {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
 const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentProps>(
   (props, forwardedRef) => {
@@ -227,21 +225,19 @@ const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentPro
 );
 
 type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type TooltipContentImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
-  {
-    /**
-     * A more descriptive label for accessibility purpose
-     */
-    'aria-label'?: string;
+type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
+interface TooltipContentImplProps extends PopperContentProps {
+  /**
+   * A more descriptive label for accessibility purpose
+   */
+  'aria-label'?: string;
 
-    /**
-     * Whether the Tooltip should render in a Portal
-     * (default: `true`)
-     */
-    portalled?: boolean;
-  }
->;
+  /**
+   * Whether the Tooltip should render in a Portal
+   * (default: `true`)
+   */
+  portalled?: boolean;
+}
 
 const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
   (props, forwardedRef) => {
@@ -279,7 +275,11 @@ TooltipContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'TooltipArrow' });
+type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+interface TooltipArrowProps extends PopperArrowProps {}
+const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, {
+  displayName: 'TooltipArrow',
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -323,3 +323,4 @@ export {
   Content,
   Arrow,
 };
+export type { TooltipProps, TooltipTriggerProps, TooltipContentProps, TooltipArrowProps };

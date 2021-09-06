@@ -36,12 +36,12 @@ type PopoverContextValue = {
 
 const [PopoverProvider, usePopoverContext] = createContext<PopoverContextValue>(POPOVER_NAME);
 
-type PopoverProps = {
+interface PopoverProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   modal?: boolean;
-};
+}
 
 const Popover: React.FC<PopoverProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange, modal = false } = props;
@@ -81,7 +81,8 @@ Popover.displayName = POPOVER_NAME;
 const ANCHOR_NAME = 'PopoverAnchor';
 
 type PopoverAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
-type PopoverAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
+type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
+interface PopoverAnchorProps extends PopperAnchorProps {}
 
 const PopoverAnchor = React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>(
   (props, forwardedRef) => {
@@ -106,7 +107,8 @@ PopoverAnchor.displayName = ANCHOR_NAME;
 const TRIGGER_NAME = 'PopoverTrigger';
 
 type PopoverTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PopoverTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface PopoverTriggerProps extends PrimitiveButtonProps {}
 
 const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerProps>(
   (props, forwardedRef) => {
@@ -142,21 +144,15 @@ PopoverTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'PopoverContent';
 
-type PopoverContentElement = React.ElementRef<
-  typeof PopoverContentModal | typeof PopoverContentNonModal
->;
-type PopoverContentProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof PopoverContentModal | typeof PopoverContentNonModal>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+interface PopoverContentProps extends PopoverContentTypeProps {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
-const PopoverContent = React.forwardRef<PopoverContentElement, PopoverContentProps>(
+const PopoverContent = React.forwardRef<PopoverContentTypeElement, PopoverContentProps>(
   (props, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
     const context = usePopoverContext(CONTENT_NAME);
@@ -176,20 +172,15 @@ PopoverContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type PopoverContentTypeElement = React.ElementRef<typeof PopoverContentImpl>;
-type PopoverContentTypeProps = Radix.MergeProps<
-  Omit<
-    Radix.ComponentPropsWithoutRef<typeof PopoverContentImpl>,
-    'trapFocus' | 'disableOutsidePointerEvents'
-  >,
-  {
-    /**
-     * Whether the `Popover` should render in a `Portal`
-     * (default: `true`)
-     */
-    portalled?: boolean;
-  }
->;
+type PopoverContentTypeElement = PopoverContentImplElement;
+interface PopoverContentTypeProps
+  extends Omit<PopoverContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {
+  /**
+   * Whether the `Popover` should render in a `Portal`
+   * (default: `true`)
+   */
+  portalled?: boolean;
+}
 
 const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
   (props, forwardedRef) => {
@@ -295,32 +286,31 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
 
 /* -----------------------------------------------------------------------------------------------*/
 
+type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
+interface PopoverContentImplProps
+  extends PopperContentProps,
+    Omit<DismissableLayerProps, 'onDismiss'> {
+  /**
+   * Whether focus should be trapped within the `Popover`
+   * (default: false)
+   */
+  trapFocus?: FocusScopeProps['trapped'];
 
-type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type PopoverContentImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
-  Omit<DismissableLayerProps, 'onDismiss'> & {
-    /**
-     * Whether focus should be trapped within the `Popover`
-     * (default: false)
-     */
-    trapFocus?: FocusScopeProps['trapped'];
+  /**
+   * Event handler called when auto-focusing on open.
+   * Can be prevented.
+   */
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
 
-    /**
-     * Event handler called when auto-focusing on open.
-     * Can be prevented.
-     */
-    onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
-
-    /**
-     * Event handler called when auto-focusing on close.
-     * Can be prevented.
-     */
-    onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
-  }
->;
+  /**
+   * Event handler called when auto-focusing on close.
+   * Can be prevented.
+   */
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+}
 
 const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverContentImplProps>(
   (props, forwardedRef) => {
@@ -384,7 +374,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
 const CLOSE_NAME = 'PopoverClose';
 
 type PopoverCloseElement = React.ElementRef<typeof Primitive.button>;
-type PopoverCloseProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface PopoverCloseProps extends PrimitiveButtonProps {}
 
 const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
   (props, forwardedRef) => {
@@ -404,7 +394,11 @@ PopoverClose.displayName = CLOSE_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'PopoverArrow' });
+type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+interface PopoverArrowProps extends PopperArrowProps {}
+const PopoverArrow = extendPrimitive(PopperPrimitive.Arrow, {
+  displayName: 'PopoverArrow',
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -433,4 +427,12 @@ export {
   Content,
   Close,
   Arrow,
+};
+export type {
+  PopoverProps,
+  PopoverAnchorProps,
+  PopoverTriggerProps,
+  PopoverContentProps,
+  PopoverCloseProps,
+  PopoverArrowProps,
 };

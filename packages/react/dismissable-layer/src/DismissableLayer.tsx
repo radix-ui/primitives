@@ -33,8 +33,8 @@ const [
 
 const DISMISSABLE_LAYER_NAME = 'DismissableLayer';
 
-type DismissableLayerElement = React.ElementRef<typeof DismissableLayerImpl>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayerImpl>;
+type DismissableLayerElement = DismissableLayerImplElement;
+interface DismissableLayerProps extends DismissableLayerImplProps {}
 
 const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLayerProps>(
   (props, forwardedRef) => {
@@ -61,45 +61,43 @@ DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type DismissableLayerImplElement = React.ElementRef<typeof Primitive.div>;
-type DismissableLayerImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    /**
-     * When `true`, hover/focus/click interactions will be disabled on elements outside
-     * the `DismissableLayer`. Users will need to click twice on outside elements to
-     * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
-     */
-    disableOutsidePointerEvents?: boolean;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface DismissableLayerImplProps extends PrimitiveDivProps {
+  /**
+   * When `true`, hover/focus/click interactions will be disabled on elements outside
+   * the `DismissableLayer`. Users will need to click twice on outside elements to
+   * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
+   */
+  disableOutsidePointerEvents?: boolean;
 
-    /**
-     * Event handler called when the escape key is down.
-     * Can be prevented.
-     */
-    onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  /**
+   * Event handler called when the escape key is down.
+   * Can be prevented.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
 
-    /**
-     * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
-     * Can be prevented.
-     */
-    onPointerDownOutside?: (event: PointerDownOutsideEvent) => void;
+  /**
+   * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
+   * Can be prevented.
+   */
+  onPointerDownOutside?: (event: PointerDownOutsideEvent) => void;
 
-    /**
-     * Event handler called when the focus moves outside of the `DismissableLayer`.
-     * Can be prevented.
-     */
-    onFocusOutside?: (event: FocusOutsideEvent) => void;
+  /**
+   * Event handler called when the focus moves outside of the `DismissableLayer`.
+   * Can be prevented.
+   */
+  onFocusOutside?: (event: FocusOutsideEvent) => void;
 
-    /**
-     * Event handler called when an interaction happens outside the `DismissableLayer`.
-     * Specifically, when a `pointerdown` event happens outside or focus moves outside of it.
-     * Can be prevented.
-     */
-    onInteractOutside?: (event: PointerDownOutsideEvent | FocusOutsideEvent) => void;
+  /**
+   * Event handler called when an interaction happens outside the `DismissableLayer`.
+   * Specifically, when a `pointerdown` event happens outside or focus moves outside of it.
+   * Can be prevented.
+   */
+  onInteractOutside?: (event: PointerDownOutsideEvent | FocusOutsideEvent) => void;
 
-    /** Callback called when the `DismissableLayer` should be dismissed */
-    onDismiss?: () => void;
-  }
->;
+  /** Callback called when the `DismissableLayer` should be dismissed */
+  onDismiss?: () => void;
+}
 
 const DismissableLayerImpl = React.forwardRef<
   DismissableLayerImplElement,
@@ -364,3 +362,4 @@ export {
   //
   Root,
 };
+export type { DismissableLayerProps };

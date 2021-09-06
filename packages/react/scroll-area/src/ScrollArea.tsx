@@ -56,14 +56,12 @@ const [ScrollAreaProvider, useScrollAreaContext] =
   createContext<ScrollAreaContextValue>(SCROLL_AREA_NAME);
 
 type ScrollAreaElement = React.ElementRef<typeof Primitive.div>;
-type ScrollAreaProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    type?: ScrollAreaContextValue['type'];
-    dir?: ScrollAreaContextValue['dir'];
-    scrollHideDelay?: number;
-  }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface ScrollAreaProps extends PrimitiveDivProps {
+  type?: ScrollAreaContextValue['type'];
+  dir?: ScrollAreaContextValue['dir'];
+  scrollHideDelay?: number;
+}
 
 const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>((props, forwardedRef) => {
   const { type = 'hover', scrollHideDelay = 600, ...scrollAreaProps } = props;
@@ -124,7 +122,7 @@ ScrollArea.displayName = SCROLL_AREA_NAME;
 const VIEWPORT_NAME = 'ScrollAreaViewport';
 
 type ScrollAreaViewportElement = React.ElementRef<typeof Primitive.div>;
-type ScrollAreaViewportProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface ScrollAreaViewportProps extends PrimitiveDivProps {}
 
 const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAreaViewportProps>(
   (props, forwardedRef) => {
@@ -185,11 +183,10 @@ ScrollAreaViewport.displayName = VIEWPORT_NAME;
 
 const SCROLLBAR_NAME = 'ScrollAreaScrollbar';
 
-type ScrollAreaScrollbarElement = React.ElementRef<typeof ScrollAreaScrollbarVisible>;
-type ScrollAreaScrollbarProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarVisible>,
-  { forceMount?: true }
->;
+type ScrollAreaScrollbarElement = ScrollAreaScrollbarVisibleElement;
+interface ScrollAreaScrollbarProps extends ScrollAreaScrollbarVisibleProps {
+  forceMount?: true;
+}
 
 const ScrollAreaScrollbar = React.forwardRef<ScrollAreaScrollbarElement, ScrollAreaScrollbarProps>(
   (props, forwardedRef) => {
@@ -221,11 +218,10 @@ ScrollAreaScrollbar.displayName = SCROLLBAR_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaScrollbarHoverElement = React.ElementRef<typeof ScrollAreaScrollbarAuto>;
-type ScrollAreaScrollbarHoverProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarAuto>,
-  { forceMount?: true }
->;
+type ScrollAreaScrollbarHoverElement = ScrollAreaScrollbarAutoElement;
+interface ScrollAreaScrollbarHoverProps extends ScrollAreaScrollbarAutoProps {
+  forceMount?: true;
+}
 
 const ScrollAreaScrollbarHover = React.forwardRef<
   ScrollAreaScrollbarHoverElement,
@@ -266,11 +262,10 @@ const ScrollAreaScrollbarHover = React.forwardRef<
   );
 });
 
-type ScrollAreaScrollbarScrollElement = React.ElementRef<typeof ScrollAreaScrollbarVisible>;
-type ScrollAreaScrollbarScrollProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarVisible>,
-  { forceMount?: true }
->;
+type ScrollAreaScrollbarScrollElement = ScrollAreaScrollbarVisibleElement;
+interface ScrollAreaScrollbarScrollProps extends ScrollAreaScrollbarVisibleProps {
+  forceMount?: true;
+}
 
 const ScrollAreaScrollbarScroll = React.forwardRef<
   ScrollAreaScrollbarScrollElement,
@@ -339,11 +334,10 @@ const ScrollAreaScrollbarScroll = React.forwardRef<
   );
 });
 
-type ScrollAreaScrollbarAutoElement = React.ElementRef<typeof ScrollAreaScrollbarVisible>;
-type ScrollAreaScrollbarAutoProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarVisible>,
-  { forceMount?: true }
->;
+type ScrollAreaScrollbarAutoElement = ScrollAreaScrollbarVisibleElement;
+interface ScrollAreaScrollbarAutoProps extends ScrollAreaScrollbarVisibleProps {
+  forceMount?: true;
+}
 
 const ScrollAreaScrollbarAuto = React.forwardRef<
   ScrollAreaScrollbarAutoElement,
@@ -377,17 +371,11 @@ const ScrollAreaScrollbarAuto = React.forwardRef<
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaScrollbarVisibleElement = React.ElementRef<
-  typeof ScrollAreaScrollbarX | typeof ScrollAreaScrollbarY
->;
-type ScrollAreaScrollbarVisibleProps = Radix.MergeProps<
-  Omit<
-    | Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarX>
-    | Radix.ComponentPropsWithoutRef<typeof ScrollAreaScrollbarY>,
-    keyof ScrollAreaScrollbarAxisPrivateProps
-  >,
-  { orientation?: 'horizontal' | 'vertical' }
->;
+type ScrollAreaScrollbarVisibleElement = ScrollAreaScrollbarAxisElement;
+interface ScrollAreaScrollbarVisibleProps
+  extends Omit<ScrollAreaScrollbarAxisProps, keyof ScrollAreaScrollbarAxisPrivateProps> {
+  orientation?: 'horizontal' | 'vertical';
+}
 
 const ScrollAreaScrollbarVisible = React.forwardRef<
   ScrollAreaScrollbarVisibleElement,
@@ -482,11 +470,10 @@ type ScrollAreaScrollbarAxisPrivateProps = {
   onDragScroll(pointerPos: number): void;
 };
 
-type ScrollAreaScrollbarAxisElement = React.ElementRef<typeof ScrollAreaScrollbarImpl>;
-type ScrollAreaScrollbarAxisProps = Radix.MergeProps<
-  Omit<ScrollAreaScrollbarImplProps, keyof ScrollAreaScrollbarImplPrivateProps>,
-  ScrollAreaScrollbarAxisPrivateProps
->;
+type ScrollAreaScrollbarAxisElement = ScrollAreaScrollbarImplElement;
+interface ScrollAreaScrollbarAxisProps
+  extends Omit<ScrollAreaScrollbarImplProps, keyof ScrollAreaScrollbarImplPrivateProps>,
+    ScrollAreaScrollbarAxisPrivateProps {}
 
 const ScrollAreaScrollbarX = React.forwardRef<
   ScrollAreaScrollbarAxisElement,
@@ -626,10 +613,9 @@ type ScrollAreaScrollbarImplPrivateProps = {
   onDragScroll(pointerPos: { x: number; y: number }): void;
   onResize(): void;
 };
-type ScrollAreaScrollbarImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  ScrollAreaScrollbarImplPrivateProps
->;
+interface ScrollAreaScrollbarImplProps
+  extends PrimitiveDivProps,
+    ScrollAreaScrollbarImplPrivateProps {}
 
 const ScrollAreaScrollbarImpl = React.forwardRef<
   ScrollAreaScrollbarImplElement,
@@ -733,7 +719,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
 const THUMB_NAME = 'ScrollbarThumb';
 
 type ScrollAreaThumbElement = React.ElementRef<typeof Primitive.div>;
-type ScrollAreaThumbProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface ScrollAreaThumbProps extends PrimitiveDivProps {}
 
 const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumbProps>(
   (props, forwardedRef) => {
@@ -806,8 +792,8 @@ ScrollAreaThumb.displayName = THUMB_NAME;
 
 const CORNER_NAME = 'ScrollAreaCorner';
 
-type ScrollAreaCornerElement = React.ElementRef<typeof ScrollAreaCornerImpl>;
-type ScrollAreaCornerProps = Radix.ComponentPropsWithoutRef<typeof ScrollAreaCornerImpl>;
+type ScrollAreaCornerElement = ScrollAreaCornerImplElement;
+interface ScrollAreaCornerProps extends ScrollAreaCornerImplProps {}
 
 const ScrollAreaCorner = React.forwardRef<ScrollAreaCornerElement, ScrollAreaCornerProps>(
   (props, forwardedRef) => {
@@ -823,7 +809,7 @@ ScrollAreaCorner.displayName = CORNER_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type ScrollAreaCornerImplElement = React.ElementRef<typeof Primitive.div>;
-type ScrollAreaCornerImplProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface ScrollAreaCornerImplProps extends PrimitiveDivProps {}
 
 const ScrollAreaCornerImpl = React.forwardRef<
   ScrollAreaCornerImplElement,
@@ -996,4 +982,11 @@ export {
   Scrollbar,
   Thumb,
   Corner,
+};
+export type {
+  ScrollAreaProps,
+  ScrollAreaViewportProps,
+  ScrollAreaScrollbarProps,
+  ScrollAreaThumbProps,
+  ScrollAreaCornerProps,
 };

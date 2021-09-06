@@ -64,12 +64,12 @@ const [MenuProvider, useMenuContext] = createContext<MenuRootContextValue | Menu
   MENU_NAME
 );
 
-type MenuProps = {
+interface MenuProps {
   open?: boolean;
   onOpenChange?(open: boolean): void;
   dir?: Direction;
   modal?: boolean;
-};
+}
 
 const Menu: React.FC<MenuProps> = (props) => {
   const { open = false, children, onOpenChange, modal = true } = props;
@@ -118,10 +118,10 @@ Menu.displayName = MENU_NAME;
 
 const SUB_NAME = 'MenuSub';
 
-type MenuSubProps = {
+interface MenuSubProps {
   open?: boolean;
   onOpenChange?(open: boolean): void;
-};
+}
 
 const MenuSub: React.FC<MenuSubProps> = (props) => {
   const { children, open = false, onOpenChange } = props;
@@ -185,22 +185,19 @@ type MenuContentContextValue = {
 const [MenuContentProvider, useMenuContentContext] =
   createContext<MenuContentContextValue>(CONTENT_NAME);
 
-type MenuContentElement = React.ElementRef<typeof MenuRootContent | typeof MenuSubContent>;
-type MenuContentProps = Radix.MergeProps<
+type MenuContentElement = MenuRootContentElement | MenuSubContentElement;
+/**
+ * We purposefully don't union MenuRootContent and MenuSubContent props here because
+ * they have conflicting prop types. We agreed that we would allow MenuSubContent to
+ * accept props that it would just ignore.
+ */
+interface MenuContentProps extends MenuRootContentProps {
   /**
-   * We purposefully don't union MenuRootContent and MenuSubContent props here because
-   * they have conflicting prop types. We agreed that we would allow MenuSubContent to
-   * accept props that it would just ignore.
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
    */
-  Radix.ComponentPropsWithoutRef<typeof MenuRootContent>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+  forceMount?: true;
+}
 
 const MenuContent = React.forwardRef<MenuContentElement, MenuContentProps>(
   (props, forwardedRef) => {
@@ -224,13 +221,9 @@ const MenuContent = React.forwardRef<MenuContentElement, MenuContentProps>(
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type MenuRootContentElement = React.ElementRef<
-  typeof MenuRootContentModal | typeof MenuRootContentNonModal
->;
-type MenuRootContentProps = Omit<
-  Radix.ComponentPropsWithoutRef<typeof MenuRootContentModal | typeof MenuRootContentNonModal>,
-  keyof MenuContentImplPrivateProps
->;
+type MenuRootContentElement = MenuRootContentTypeElement;
+interface MenuRootContentProps
+  extends Omit<MenuRootContentTypeProps, keyof MenuContentImplPrivateProps> {}
 
 const MenuRootContent = React.forwardRef<MenuRootContentElement, MenuRootContentProps>(
   (props, forwardedRef) => {
@@ -243,11 +236,12 @@ const MenuRootContent = React.forwardRef<MenuRootContentElement, MenuRootContent
   }
 );
 
-type MenuRootContentTypeElement = React.ElementRef<typeof MenuContentImpl>;
-type MenuRootContentTypeProps = Omit<
-  Radix.ComponentPropsWithoutRef<typeof MenuContentImpl>,
-  'trapFocus' | 'disableOutsidePointerEvents' | 'disableOutsideScroll'
->;
+type MenuRootContentTypeElement = MenuContentImplElement;
+interface MenuRootContentTypeProps
+  extends Omit<
+    MenuContentImplProps,
+    'trapFocus' | 'disableOutsidePointerEvents' | 'disableOutsideScroll'
+  > {}
 
 const MenuRootContentModal = React.forwardRef<MenuRootContentTypeElement, MenuRootContentTypeProps>(
   (props, forwardedRef) => {
@@ -304,18 +298,19 @@ const MenuRootContentNonModal = React.forwardRef<
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type MenuSubContentElement = React.ElementRef<typeof MenuContentImpl>;
-type MenuSubContentProps = Omit<
-  Radix.ComponentPropsWithoutRef<typeof MenuContentImpl>,
-  | keyof MenuContentImplPrivateProps
-  | 'align'
-  | 'side'
-  | 'portalled'
-  | 'disabledOutsidePointerEvents'
-  | 'disableOutsideScroll'
-  | 'trapFocus'
-  | 'onCloseAutoFocus'
->;
+type MenuSubContentElement = MenuContentImplElement;
+interface MenuSubContentProps
+  extends Omit<
+    MenuContentImplProps,
+    | keyof MenuContentImplPrivateProps
+    | 'align'
+    | 'side'
+    | 'portalled'
+    | 'disabledOutsidePointerEvents'
+    | 'disableOutsideScroll'
+    | 'trapFocus'
+    | 'onCloseAutoFocus'
+  > {}
 
 const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentProps>(
   (props, forwardedRef) => {
@@ -365,56 +360,55 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type MenuContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
-
-type MenuContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 type MenuContentImplPrivateProps = {
   onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
   onDismiss?: DismissableLayerProps['onDismiss'];
 };
-type MenuContentImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
-  Omit<DismissableLayerProps, 'onDismiss'> &
-    MenuContentImplPrivateProps & {
-      /**
-       * Whether focus should be trapped within the `MenuContent`
-       * (default: false)
-       */
-      trapFocus?: FocusScopeProps['trapped'];
+interface MenuContentImplProps
+  extends MenuContentImplPrivateProps,
+    PopperContentProps,
+    Omit<DismissableLayerProps, 'onDismiss'> {
+  /**
+   * Whether focus should be trapped within the `MenuContent`
+   * (default: false)
+   */
+  trapFocus?: FocusScopeProps['trapped'];
 
-      /**
-       * Event handler called when auto-focusing on close.
-       * Can be prevented.
-       */
-      onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+  /**
+   * Event handler called when auto-focusing on close.
+   * Can be prevented.
+   */
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 
-      /**
-       * Whether scrolling outside the `MenuContent` should be prevented
-       * (default: `false`)
-       */
-      disableOutsideScroll?: boolean;
+  /**
+   * Whether scrolling outside the `MenuContent` should be prevented
+   * (default: `false`)
+   */
+  disableOutsideScroll?: boolean;
 
-      /**
-       * The direction of navigation between menu items.
-       * @defaultValue ltr
-       */
-      dir?: RovingFocusGroupProps['dir'];
+  /**
+   * The direction of navigation between menu items.
+   * @defaultValue ltr
+   */
+  dir?: RovingFocusGroupProps['dir'];
 
-      /**
-       * Whether keyboard navigation should loop around
-       * @defaultValue false
-       */
-      loop?: RovingFocusGroupProps['loop'];
+  /**
+   * Whether keyboard navigation should loop around
+   * @defaultValue false
+   */
+  loop?: RovingFocusGroupProps['loop'];
 
-      /**
-       * Whether the `MenuContent` should render in a `Portal`
-       * (default: `true`)
-       */
-      portalled?: boolean;
-    }
->;
+  /**
+   * Whether the `MenuContent` should render in a `Portal`
+   * (default: `true`)
+   */
+  portalled?: boolean;
+}
 
 const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImplProps>(
   (props, forwardedRef) => {
@@ -617,11 +611,10 @@ MenuContent.displayName = CONTENT_NAME;
 const ITEM_NAME = 'MenuItem';
 const ITEM_SELECT = 'menu.itemSelect';
 
-type MenuItemElement = React.ElementRef<typeof MenuItemImpl>;
-type MenuItemProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof MenuItemImpl>,
-  { onSelect?: (event: Event) => void }
->;
+type MenuItemElement = MenuItemImplElement;
+interface MenuItemProps extends Omit<MenuItemImplProps, 'onSelect'> {
+  onSelect?: (event: Event) => void;
+}
 
 const MenuItem = React.forwardRef<MenuItemElement, MenuItemProps>((props, forwardedRef) => {
   const { disabled = false, onSelect, ...itemProps } = props;
@@ -687,8 +680,8 @@ MenuItem.displayName = ITEM_NAME;
 
 const SUB_TRIGGER_NAME = 'MenuSubTrigger';
 
-type MenuSubTriggerElement = React.ElementRef<typeof MenuItemImpl>;
-type MenuSubTriggerProps = Radix.ComponentPropsWithoutRef<typeof MenuItemImpl>;
+type MenuSubTriggerElement = MenuItemImplElement;
+interface MenuSubTriggerProps extends MenuItemImplProps {}
 
 const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerProps>(
   (props, forwardedRef) => {
@@ -811,13 +804,11 @@ MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type MenuItemImplElement = React.ElementRef<typeof Primitive.div>;
-type MenuItemImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    disabled?: boolean;
-    textValue?: string;
-  }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface MenuItemImplProps extends PrimitiveDivProps {
+  disabled?: boolean;
+  textValue?: string;
+}
 
 const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
   (props, forwardedRef) => {
@@ -886,14 +877,11 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
 
 const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
-type MenuCheckboxItemElement = React.ElementRef<typeof MenuItem>;
-type MenuCheckboxItemProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof MenuItem>,
-  {
-    checked?: boolean;
-    onCheckedChange?: (checked: boolean) => void;
-  }
->;
+type MenuCheckboxItemElement = MenuItemElement;
+interface MenuCheckboxItemProps extends MenuItemProps {
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+}
 
 const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxItemProps>(
   (props, forwardedRef) => {
@@ -928,13 +916,10 @@ const RADIO_GROUP_NAME = 'MenuRadioGroup';
 const RadioGroupContext = React.createContext<MenuRadioGroupProps>({} as any);
 
 type MenuRadioGroupElement = React.ElementRef<typeof MenuGroup>;
-type MenuRadioGroupProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof MenuGroup>,
-  {
-    value?: string;
-    onValueChange?: (value: string) => void;
-  }
->;
+interface MenuRadioGroupProps extends MenuGroupProps {
+  value?: string;
+  onValueChange?: (value: string) => void;
+}
 
 const MenuRadioGroup = React.forwardRef<MenuRadioGroupElement, MenuRadioGroupProps>(
   (props, forwardedRef) => {
@@ -961,10 +946,9 @@ MenuRadioGroup.displayName = RADIO_GROUP_NAME;
 const RADIO_ITEM_NAME = 'MenuRadioItem';
 
 type MenuRadioItemElement = React.ElementRef<typeof MenuItem>;
-type MenuRadioItemProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof MenuItem>,
-  { value: string }
->;
+interface MenuRadioItemProps extends MenuItemProps {
+  value: string;
+}
 
 const MenuRadioItem = React.forwardRef<MenuRadioItemElement, MenuRadioItemProps>(
   (props, forwardedRef) => {
@@ -1001,16 +985,14 @@ const ITEM_INDICATOR_NAME = 'MenuItemIndicator';
 const ItemIndicatorContext = React.createContext(false);
 
 type MenuItemIndicatorElement = React.ElementRef<typeof Primitive.span>;
-type MenuItemIndicatorProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface MenuItemIndicatorProps extends PrimitiveSpanProps {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
 const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemIndicatorProps>(
   (props, forwardedRef) => {
@@ -1032,17 +1014,32 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const MenuAnchor = extendPrimitive(PopperPrimitive.Anchor, { displayName: 'MenuAnchor' });
+type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
+interface MenuAnchorProps extends PopperAnchorProps {}
+const MenuAnchor = extendPrimitive(PopperPrimitive.Anchor, {
+  displayName: 'MenuAnchor',
+});
+
+interface MenuGroupProps extends PrimitiveDivProps {}
 const MenuGroup = extendPrimitive(Primitive.div, {
   defaultProps: { role: 'group' },
   displayName: 'MenuGroup',
 });
+
+interface MenuLabelProps extends PrimitiveDivProps {}
 const MenuLabel = extendPrimitive(Primitive.div, { displayName: 'MenuLabel' });
+
+interface MenuSeparatorProps extends PrimitiveDivProps {}
 const MenuSeparator = extendPrimitive(Primitive.div, {
   defaultProps: { role: 'separator', 'aria-orientation': 'horizontal' },
   displayName: 'MenuSeparator ',
 });
-const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'MenuArrow' });
+
+type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+interface MenuArrowProps extends PopperArrowProps {}
+const MenuArrow = extendPrimitive(PopperPrimitive.Arrow, {
+  displayName: 'MenuArrow',
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -1181,4 +1178,20 @@ export {
   ItemIndicator,
   Separator,
   Arrow,
+};
+export type {
+  MenuProps,
+  MenuSubProps,
+  MenuAnchorProps,
+  MenuSubTriggerProps,
+  MenuContentProps,
+  MenuGroupProps,
+  MenuLabelProps,
+  MenuItemProps,
+  MenuCheckboxItemProps,
+  MenuRadioGroupProps,
+  MenuRadioItemProps,
+  MenuItemIndicatorProps,
+  MenuSeparatorProps,
+  MenuArrowProps,
 };

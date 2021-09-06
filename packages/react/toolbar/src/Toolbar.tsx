@@ -19,14 +19,12 @@ type ToolbarContextValue = { orientation: RovingFocusGroupProps['orientation'] }
 const [ToolbarProvider, useToolbarContext] = createContext<ToolbarContextValue>(TOOLBAR_NAME);
 
 type ToolbarElement = React.ElementRef<typeof Primitive.div>;
-type ToolbarProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    orientation?: RovingFocusGroupProps['orientation'];
-    loop?: RovingFocusGroupProps['loop'];
-    dir?: RovingFocusGroupProps['dir'];
-  }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface ToolbarProps extends PrimitiveDivProps {
+  orientation?: RovingFocusGroupProps['orientation'];
+  loop?: RovingFocusGroupProps['loop'];
+  dir?: RovingFocusGroupProps['dir'];
+}
 
 const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>((props, forwardedRef) => {
   const { orientation = 'horizontal', dir = 'ltr', loop = true, ...toolbarProps } = props;
@@ -46,7 +44,8 @@ const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>((props, forwarded
 const SEPARATOR_NAME = 'ToolbarSeparator';
 
 type ToolbarSeparatorElement = React.ElementRef<typeof SeparatorPrimitive.Root>;
-type ToolbarSeparatorProps = Radix.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>;
+type SeparatorProps = Radix.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>;
+interface ToolbarSeparatorProps extends SeparatorProps {}
 
 const ToolbarSeparator = React.forwardRef<ToolbarSeparatorElement, ToolbarSeparatorProps>(
   (props, forwardedRef) => {
@@ -70,7 +69,8 @@ ToolbarSeparator.displayName = SEPARATOR_NAME;
 const BUTTON_NAME = 'ToolbarButton';
 
 type ToolbarButtonElement = React.ElementRef<typeof Primitive.button>;
-type ToolbarButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface ToolbarButtonProps extends PrimitiveButtonProps {}
 
 const ToolbarButton = React.forwardRef<ToolbarButtonElement, ToolbarButtonProps>(
   (props, forwardedRef) => (
@@ -89,9 +89,8 @@ ToolbarButton.displayName = BUTTON_NAME;
 const LINK_NAME = 'ToolbarLink';
 
 type ToolbarLinkElement = React.ElementRef<typeof Primitive.a>;
-type ToolbarLinkProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a> & {
-  disabled?: boolean;
-};
+type PrimitiveLinkProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
+interface ToolbarLinkProps extends PrimitiveLinkProps {}
 
 const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
   (props, forwardedRef) => (
@@ -101,9 +100,7 @@ const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
         {...props}
         ref={forwardedRef}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-          if (event.key === ' ') {
-            event.currentTarget.click();
-          }
+          if (event.key === ' ') event.currentTarget.click();
         })}
       />
     </RovingFocusItem>
@@ -119,7 +116,9 @@ ToolbarLink.displayName = LINK_NAME;
 const TOGGLE_GROUP_NAME = 'ToolbarToggleGroup';
 
 type ToolbarToggleGroupElement = React.ElementRef<typeof ToggleGroupPrimitive.Root>;
-type ToolbarToggleGroupProps = Radix.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>;
+type ToggleGroupProps = Radix.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>;
+// ToggleGroup props are a union of interfaces so we use a type alias because interfaces cannot extend unions.
+type ToolbarToggleGroupProps = ToggleGroupProps;
 
 const ToolbarToggleGroup = React.forwardRef<ToolbarToggleGroupElement, ToolbarToggleGroupProps>(
   (props, forwardedRef) => {
@@ -144,7 +143,8 @@ ToolbarToggleGroup.displayName = TOGGLE_GROUP_NAME;
 const TOGGLE_ITEM_NAME = 'ToolbarToggleItem';
 
 type ToolbarToggleItemElement = React.ElementRef<typeof ToggleGroupPrimitive.Item>;
-type ToolbarToggleItemProps = Radix.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item>;
+type ToggleGroupItemProps = Radix.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item>;
+interface ToolbarToggleItemProps extends ToggleGroupItemProps {}
 
 const ToolbarToggleItem = React.forwardRef<ToolbarToggleItemElement, ToolbarToggleItemProps>(
   (props, forwardedRef) => (
@@ -179,4 +179,12 @@ export {
   Link,
   ToggleGroup,
   ToggleItem,
+};
+export type {
+  ToolbarProps,
+  ToolbarSeparatorProps,
+  ToolbarButtonProps,
+  ToolbarLinkProps,
+  ToolbarToggleGroupProps,
+  ToolbarToggleItemProps,
 };

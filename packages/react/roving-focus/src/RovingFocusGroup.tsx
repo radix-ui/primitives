@@ -28,7 +28,7 @@ const GROUP_NAME = 'RovingFocusGroup';
 type Orientation = React.AriaAttributes['aria-orientation'];
 type Direction = 'ltr' | 'rtl';
 
-type RovingFocusGroupOptions = {
+interface RovingFocusGroupOptions {
   /**
    * The orientation of the group.
    * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
@@ -44,7 +44,7 @@ type RovingFocusGroupOptions = {
    * @defaultValue false
    */
   loop?: boolean;
-};
+}
 
 type RovingContextValue = RovingFocusGroupOptions & {
   currentTabStopId: string | null;
@@ -54,8 +54,8 @@ type RovingContextValue = RovingFocusGroupOptions & {
 
 const [RovingFocusProvider, useRovingFocusContext] = createContext<RovingContextValue>(GROUP_NAME);
 
-type RovingFocusGroupElement = React.ElementRef<typeof RovingFocusGroupImpl>;
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroupImpl>;
+type RovingFocusGroupElement = RovingFocusGroupImplElement;
+interface RovingFocusGroupProps extends RovingFocusGroupImplProps {}
 
 const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGroupProps>(
   (props, forwardedRef) => (
@@ -72,15 +72,15 @@ RovingFocusGroup.displayName = GROUP_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type RovingFocusGroupImplElement = React.ElementRef<typeof Primitive.div>;
-type RovingFocusGroupImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  RovingFocusGroupOptions & {
-    currentTabStopId?: string | null;
-    defaultCurrentTabStopId?: string;
-    onCurrentTabStopIdChange?: (tabStopId: string | null) => void;
-    onEntryFocus?: (event: Event) => void;
-  }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface RovingFocusGroupImplProps
+  extends Omit<PrimitiveDivProps, 'dir'>,
+    RovingFocusGroupOptions {
+  currentTabStopId?: string | null;
+  defaultCurrentTabStopId?: string;
+  onCurrentTabStopIdChange?: (tabStopId: string | null) => void;
+  onEntryFocus?: (event: Event) => void;
+}
 
 const RovingFocusGroupImpl = React.forwardRef<
   RovingFocusGroupImplElement,
@@ -176,13 +176,11 @@ const RovingFocusGroupImpl = React.forwardRef<
 const ITEM_NAME = 'RovingFocusItem';
 
 type RovingFocusItemElement = React.ElementRef<typeof Primitive.span>;
-type RovingFocusItemProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
-  {
-    focusable?: boolean;
-    active?: boolean;
-  }
->;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface RovingFocusItemProps extends PrimitiveSpanProps {
+  focusable?: boolean;
+  active?: boolean;
+}
 
 const RovingFocusItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
   (props, forwardedRef) => {
@@ -298,3 +296,4 @@ export {
   Root,
   Item,
 };
+export type { RovingFocusGroupProps, RovingFocusItemProps };

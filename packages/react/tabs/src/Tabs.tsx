@@ -9,8 +9,6 @@ import { useId } from '@radix-ui/react-id';
 
 import type * as Radix from '@radix-ui/react-primitive';
 
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
-
 /* -------------------------------------------------------------------------------------------------
  * Tabs
  * -----------------------------------------------------------------------------------------------*/
@@ -29,30 +27,29 @@ type TabsContextValue = {
 const [TabsProvider, useTabsContext] = createContext<TabsContextValue>(TABS_NAME);
 
 type TabsElement = React.ElementRef<typeof Primitive.div>;
-type TabsProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    /** The value for the selected tab, if controlled */
-    value?: string;
-    /** The value of the tab to select by default, if uncontrolled */
-    defaultValue?: string;
-    /** A function called when a new tab is selected */
-    onValueChange?: (value: string) => void;
-    /**
-     * The orientation the tabs are layed out.
-     * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
-     * @defaultValue horizontal
-     */
-    orientation?: RovingFocusGroupProps['orientation'];
-    /**
-     * The direction of navigation between toolbar items.
-     * @defaultValue ltr
-     */
-    dir?: RovingFocusGroupProps['dir'];
-    /** Whether a tab is activated automatically or manually (default: automatic) */
-    activationMode?: 'automatic' | 'manual';
-  }
->;
+type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface TabsProps extends PrimitiveDivProps {
+  /** The value for the selected tab, if controlled */
+  value?: string;
+  /** The value of the tab to select by default, if uncontrolled */
+  defaultValue?: string;
+  /** A function called when a new tab is selected */
+  onValueChange?: (value: string) => void;
+  /**
+   * The orientation the tabs are layed out.
+   * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
+   * @defaultValue horizontal
+   */
+  orientation?: RovingFocusGroupProps['orientation'];
+  /**
+   * The direction of navigation between toolbar items.
+   * @defaultValue ltr
+   */
+  dir?: RovingFocusGroupProps['dir'];
+  /** Whether a tab is activated automatically or manually (default: automatic) */
+  activationMode?: 'automatic' | 'manual';
+}
 
 const Tabs = React.forwardRef<TabsElement, TabsProps>((props, forwardedRef) => {
   const {
@@ -94,10 +91,9 @@ Tabs.displayName = TABS_NAME;
 const TAB_LIST_NAME = 'TabsList';
 
 type TabsListElement = React.ElementRef<typeof Primitive.div>;
-type TabsListProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  { loop?: RovingFocusGroupProps['loop'] }
->;
+interface TabsListProps extends PrimitiveDivProps {
+  loop?: RovingFocusGroupProps['loop'];
+}
 
 const TabsList = React.forwardRef<TabsListElement, TabsListProps>((props, forwardedRef) => {
   const { loop = true, ...listProps } = props;
@@ -118,13 +114,10 @@ TabsList.displayName = TAB_LIST_NAME;
 const TRIGGER_NAME = 'TabsTrigger';
 
 type TabsTriggerElement = React.ElementRef<typeof Primitive.div>;
-type TabsTriggerProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    value: string;
-    disabled?: boolean;
-  }
->;
+interface TabsTriggerProps extends PrimitiveDivProps {
+  value: string;
+  disabled?: boolean;
+}
 
 const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
   (props, forwardedRef) => {
@@ -181,10 +174,9 @@ TabsTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'TabsContent';
 
 type TabsContentElement = React.ElementRef<typeof Primitive.div>;
-type TabsContentProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  { value: string }
->;
+interface TabsContentProps extends PrimitiveDivProps {
+  value: string;
+}
 
 const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
   (props, forwardedRef) => {
@@ -237,3 +229,4 @@ export {
   Trigger,
   Content,
 };
+export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps };

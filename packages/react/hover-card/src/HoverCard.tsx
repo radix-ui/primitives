@@ -24,13 +24,13 @@ type HoverCardContextValue = {
 const [HoverCardProvider, useHoverCardContext] =
   createContext<HoverCardContextValue>(HOVERCARD_NAME);
 
-type HoverCardProps = {
+interface HoverCardProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   openDelay?: number;
   closeDelay?: number;
-};
+}
 
 const HoverCard: React.FC<HoverCardProps> = (props) => {
   const {
@@ -84,7 +84,8 @@ HoverCard.displayName = HOVERCARD_NAME;
 const TRIGGER_NAME = 'HoverCardTrigger';
 
 type HoverCardTriggerElement = React.ElementRef<typeof Primitive.a>;
-type HoverCardTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
+type PrimitiveLinkProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
+interface HoverCardTriggerProps extends PrimitiveLinkProps {}
 
 const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
   (props, forwardedRef) => {
@@ -111,17 +112,14 @@ HoverCardTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'HoverCardContent';
 
-type HoverCardContentElement = React.ElementRef<typeof HoverCardContentImpl>;
-type HoverCardContentProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof HoverCardContentImpl>,
-  {
-    /**
-     * Used to force mounting when more control is needed. Useful when
-     * controlling animation with React animation libraries.
-     */
-    forceMount?: true;
-  }
->;
+type HoverCardContentElement = HoverCardContentImplElement;
+interface HoverCardContentProps extends HoverCardContentImplProps {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
 const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardContentProps>(
   (props, forwardedRef) => {
@@ -146,16 +144,14 @@ HoverCardContent.displayName = CONTENT_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type HoverCardContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type HoverCardContentImplProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>,
-  {
-    /**
-     * Whether the `HoverCard` should render in a `Portal`
-     * (default: `true`)
-     */
-    portalled?: boolean;
-  }
->;
+type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
+interface HoverCardContentImplProps extends PopperContentProps {
+  /**
+   * Whether the `HoverCard` should render in a `Portal`
+   * (default: `true`)
+   */
+  portalled?: boolean;
+}
 
 const HoverCardContentImpl = React.forwardRef<
   HoverCardContentImplElement,
@@ -181,6 +177,8 @@ const HoverCardContentImpl = React.forwardRef<
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+interface HoverCardArrowProps extends PopperArrowProps {}
 const HoverCardArrow = extendPrimitive(PopperPrimitive.Arrow, { displayName: 'HoverCardArrow' });
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -206,3 +204,4 @@ export {
   Content,
   Arrow,
 };
+export type { HoverCardProps, HoverCardTriggerProps, HoverCardContentProps, HoverCardArrowProps };

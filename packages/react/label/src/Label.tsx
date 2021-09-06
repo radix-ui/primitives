@@ -15,10 +15,10 @@ type LabelContextValue = { id: string; ref: React.RefObject<HTMLSpanElement> };
 const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
 
 type LabelElement = React.ElementRef<typeof Primitive.span>;
-type LabelProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.span>,
-  { htmlFor?: string }
->;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface LabelProps extends PrimitiveSpanProps {
+  htmlFor?: string;
+}
 
 const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) => {
   const { htmlFor, id: idProp, ...labelProps } = props;
@@ -123,3 +123,4 @@ export {
   //
   useLabelContext,
 };
+export type { LabelProps };

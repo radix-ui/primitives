@@ -26,11 +26,11 @@ type ContextMenuContextValue = {
 const [ContextMenuProvider, useContextMenuContext] =
   createContext<ContextMenuContextValue>(CONTEXT_MENU_NAME);
 
-type ContextMenuProps = {
+interface ContextMenuProps {
   onOpenChange?(open: boolean): void;
   dir?: Direction;
   modal?: boolean;
-};
+}
 
 const ContextMenu: React.FC<ContextMenuProps> = (props) => {
   const { children, onOpenChange, dir, modal = true } = props;
@@ -80,7 +80,8 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
 const TRIGGER_NAME = 'ContextMenuTrigger';
 
 type ContextMenuTriggerElement = React.ElementRef<typeof Primitive.span>;
-type ContextMenuTriggerProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+interface ContextMenuTriggerProps extends PrimitiveSpanProps {}
 
 const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMenuTriggerProps>(
   (props, forwardedRef) => {
@@ -147,10 +148,8 @@ const CONTENT_NAME = 'ContextMenuContent';
 const ContentContext = React.createContext(false);
 
 type ContextMenuContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type ContextMenuContentProps = Omit<
-  Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>,
-  'portalled' | 'side' | 'align'
->;
+type MenuContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
+interface ContextMenuContentProps extends Omit<MenuContentProps, 'portalled' | 'side' | 'align'> {}
 
 const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMenuContentProps>(
   (props, forwardedRef) => {
@@ -183,7 +182,7 @@ ContextMenuContent.displayName = CONTENT_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type ContextMenuRootContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type ContextMenuRootContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
+interface ContextMenuRootContentProps extends MenuContentProps {}
 
 const ContextMenuRootContent = React.forwardRef<
   ContextMenuRootContentElement,
@@ -219,27 +218,56 @@ const ContextMenuRootContent = React.forwardRef<
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type MenuGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Group>;
+interface ContextMenuGroupProps extends MenuGroupProps {}
 const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, { displayName: 'ContextMenuGroup' });
+
+type MenuLabelProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Label>;
+interface ContextMenuLabelProps extends MenuLabelProps {}
 const ContextMenuLabel = extendPrimitive(MenuPrimitive.Label, { displayName: 'ContextMenuLabel' });
+
+type MenuSubTriggerProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
+interface ContextMenuTriggerItemProps extends MenuSubTriggerProps {}
 const ContextMenuTriggerItem = extendPrimitive(MenuPrimitive.SubTrigger, {
   displayName: 'ContextMenuTriggerItem',
 });
+
+type MenuItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Item>;
+interface ContextMenuItemProps extends MenuItemProps {}
 const ContextMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'ContextMenuItem' });
+
+type MenuCheckboxItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItem>;
+interface ContextMenuCheckboxItemProps extends MenuCheckboxItemProps {}
 const ContextMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
   displayName: 'ContextMenuCheckboxItem',
 });
+
+type MenuRadioGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioGroup>;
+interface ContextMenuRadioGroupProps extends MenuRadioGroupProps {}
 const ContextMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, {
   displayName: 'ContextMenuRadioGroup',
 });
+
+type MenuRadioItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItem>;
+interface ContextMenuRadioItemProps extends MenuRadioItemProps {}
 const ContextMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, {
   displayName: 'ContextMenuRadioItem',
 });
+
+type MenuItemIndicatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.ItemIndicator>;
+interface ContextMenuItemIndicatorProps extends MenuItemIndicatorProps {}
 const ContextMenuItemIndicator = extendPrimitive(MenuPrimitive.ItemIndicator, {
   displayName: 'ContextMenuItemIndicator',
 });
+
+type MenuSeparatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>;
+interface ContextMenuSeparatorProps extends MenuSeparatorProps {}
 const ContextMenuSeparator = extendPrimitive(MenuPrimitive.Separator, {
   displayName: 'ContextMenuSeparator',
 });
+
+type MenuArrowProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Arrow>;
+interface ContextMenuArrowProps extends MenuArrowProps {}
 const ContextMenuArrow = extendPrimitive(MenuPrimitive.Arrow, {
   displayName: 'ContextMenuArrow',
 });
@@ -292,4 +320,19 @@ export {
   ItemIndicator,
   Separator,
   Arrow,
+};
+export type {
+  ContextMenuProps,
+  ContextMenuTriggerProps,
+  ContextMenuContentProps,
+  ContextMenuGroupProps,
+  ContextMenuLabelProps,
+  ContextMenuItemProps,
+  ContextMenuTriggerItemProps,
+  ContextMenuCheckboxItemProps,
+  ContextMenuRadioGroupProps,
+  ContextMenuRadioItemProps,
+  ContextMenuItemIndicatorProps,
+  ContextMenuSeparatorProps,
+  ContextMenuArrowProps,
 };

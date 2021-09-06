@@ -13,20 +13,18 @@ const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 type Orientation = typeof ORIENTATIONS[number];
 type SeparatorElement = React.ElementRef<typeof Primitive.div>;
-type SeparatorProps = Radix.MergeProps<
-  Radix.ComponentPropsWithoutRef<typeof Primitive.div>,
-  {
-    /**
-     * Either `vertical` or `horizontal`. Defaults to `horizontal`.
-     */
-    orientation?: Orientation;
-    /**
-     * Whether or not the component is purely decorative. When true, accessibility-related attributes
-     * are updated so that that the rendered element is removed from the accessibility tree.
-     */
-    decorative?: boolean;
-  }
->;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface SeparatorProps extends PrimitiveDivProps {
+  /**
+   * Either `vertical` or `horizontal`. Defaults to `horizontal`.
+   */
+  orientation?: Orientation;
+  /**
+   * Whether or not the component is purely decorative. When true, accessibility-related attributes
+   * are updated so that that the rendered element is removed from the accessibility tree.
+   */
+  decorative?: boolean;
+}
 
 const Separator = React.forwardRef<SeparatorElement, SeparatorProps>((props, forwardedRef) => {
   const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
@@ -82,3 +80,4 @@ export {
   //
   Root,
 };
+export type { SeparatorProps };

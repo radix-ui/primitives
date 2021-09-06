@@ -3,18 +3,20 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './useStateMachine';
 
-type PresenceProps = {
+interface PresenceProps {
   present: boolean;
   children: React.ReactElement | ((props: { present: boolean }) => React.ReactElement);
-};
+}
 
 const Presence: React.FC<PresenceProps> = (props) => {
   const { present, children } = props;
   const presence = usePresence(present);
 
-  const child = (typeof children === 'function'
-    ? children({ present: presence.isPresent })
-    : React.Children.only(children)) as React.ReactElement;
+  const child = (
+    typeof children === 'function'
+      ? children({ present: presence.isPresent })
+      : React.Children.only(children)
+  ) as React.ReactElement;
 
   const ref = useComposedRefs(presence.ref, (child as any).ref);
   const forceMount = typeof children === 'function';
@@ -126,3 +128,4 @@ function getAnimationName(styles?: CSSStyleDeclaration) {
 }
 
 export { Presence };
+export type { PresenceProps };
