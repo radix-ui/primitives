@@ -454,7 +454,6 @@ export {
 export type {
   AccordionSingleProps,
   AccordionMultipleProps,
-  AccordionWithMultipleProps,
   AccordionItemProps,
   AccordionHeaderProps,
   AccordionTriggerProps,

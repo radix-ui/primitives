@@ -276,4 +276,4 @@ export {
   Root,
   Item,
 };
-export type { ToggleGroupWithSingleProps, ToggleGroupWithMultipleProps, ToggleGroupItemProps };
+export type { ToggleGroupSingleProps, ToggleGroupMultipleProps, ToggleGroupItemProps };

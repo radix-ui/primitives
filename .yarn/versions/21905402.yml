@@ -1,0 +1,7 @@
+releases:
+  "@radix-ui/react-accordion": patch
+  "@radix-ui/react-toggle-group": patch
+  "@radix-ui/react-toolbar": patch
+
+declined:
+  - primitives
