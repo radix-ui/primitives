@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-ignoring-paths
+    paths-ignore:
+      - '**/package.json'
 
 jobs:
   publish-rc:
