@@ -117,6 +117,7 @@ const TOGGLE_GROUP_NAME = 'ToolbarToggleGroup';
 
 type ToolbarToggleGroupElement = React.ElementRef<typeof ToggleGroupPrimitive.Root>;
 type ToggleGroupProps = Radix.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>;
+// ToggleGroup props are a union of interfaces so we use a type alias because interfaces cannot extend unions.
 type ToolbarToggleGroupProps = ToggleGroupProps;
 
 const ToolbarToggleGroup = React.forwardRef<ToolbarToggleGroupElement, ToolbarToggleGroupProps>(
