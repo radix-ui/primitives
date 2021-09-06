@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-polymorphic",
-  "version": "0.0.13",
+  "version": "0.0.14-rc.1",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -28,5 +28,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "0.0.13"
 }

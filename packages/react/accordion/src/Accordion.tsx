@@ -452,6 +452,9 @@ export {
   Content,
 };
 export type {
+  AccordionSingleProps,
+  AccordionMultipleProps,
+  AccordionWithMultipleProps,
   AccordionItemProps,
   AccordionHeaderProps,
   AccordionTriggerProps,
