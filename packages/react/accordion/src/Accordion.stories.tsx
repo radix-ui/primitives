@@ -7,7 +7,6 @@ import {
   AccordionHeader,
   AccordionTrigger,
   AccordionContent,
-  AccordionSingleProps,
 } from './Accordion';
 
 export default { title: 'Components/Accordion' };
@@ -677,7 +676,3 @@ const contentAttrClass = css({
   display: 'block',
   ...styles,
 });
-
-export function Accordion2(props: AccordionSingleProps) {
-  return <Accordion {...props} type="single" collapsible />;
-}

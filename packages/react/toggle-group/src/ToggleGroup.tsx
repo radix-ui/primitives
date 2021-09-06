@@ -13,28 +13,28 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const TOGGLE_GROUP_NAME = 'ToggleGroup';
 
-type ToggleGroupElement = ToggleGroupSingleElement | ToggleGroupMultipleElement;
-interface ToggleGroupWithSingleProps extends ToggleGroupSingleProps {
+type ToggleGroupElement = ToggleGroupImplSingleElement | ToggleGroupImplMultipleElement;
+interface ToggleGroupSingleProps extends ToggleGroupImplSingleProps {
   type: 'single';
 }
-interface ToggleGroupWithMultipleProps extends ToggleGroupMultipleProps {
+interface ToggleGroupMultipleProps extends ToggleGroupImplMultipleProps {
   type: 'multiple';
 }
 
 const ToggleGroup = React.forwardRef<
   ToggleGroupElement,
-  ToggleGroupWithSingleProps | ToggleGroupWithMultipleProps
+  ToggleGroupSingleProps | ToggleGroupMultipleProps
 >((props, forwardedRef) => {
   const { type, ...toggleGroupProps } = props;
 
   if (type === 'single') {
-    const singleProps = toggleGroupProps as ToggleGroupSingleProps;
-    return <ToggleGroupSingle {...singleProps} ref={forwardedRef} />;
+    const singleProps = toggleGroupProps as ToggleGroupImplSingleProps;
+    return <ToggleGroupImplSingle {...singleProps} ref={forwardedRef} />;
   }
 
   if (type === 'multiple') {
-    const multipleProps = toggleGroupProps as ToggleGroupMultipleProps;
-    return <ToggleGroupMultiple {...multipleProps} ref={forwardedRef} />;
+    const multipleProps = toggleGroupProps as ToggleGroupImplMultipleProps;
+    return <ToggleGroupImplMultiple {...multipleProps} ref={forwardedRef} />;
   }
 
   throw new Error(`Missing prop \`type\` expected on \`${TOGGLE_GROUP_NAME}\``);
@@ -53,8 +53,8 @@ type ToggleGroupValueContextValue = {
 const [ToggleGroupValueProvider, useToggleGroupValueContext] =
   createContext<ToggleGroupValueContextValue>(TOGGLE_GROUP_NAME);
 
-type ToggleGroupSingleElement = ToggleGroupImplElement;
-interface ToggleGroupSingleProps extends ToggleGroupImplProps {
+type ToggleGroupImplSingleElement = ToggleGroupImplElement;
+interface ToggleGroupImplSingleProps extends ToggleGroupImplProps {
   /**
    * The controlled stateful value of the item that is pressed.
    */
@@ -70,35 +70,36 @@ interface ToggleGroupSingleProps extends ToggleGroupImplProps {
   onValueChange?(value: string): void;
 }
 
-const ToggleGroupSingle = React.forwardRef<ToggleGroupSingleElement, ToggleGroupSingleProps>(
-  (props, forwardedRef) => {
-    const {
-      value: valueProp,
-      defaultValue,
-      onValueChange = () => {},
-      ...toggleGroupSingleProps
-    } = props;
+const ToggleGroupImplSingle = React.forwardRef<
+  ToggleGroupImplSingleElement,
+  ToggleGroupImplSingleProps
+>((props, forwardedRef) => {
+  const {
+    value: valueProp,
+    defaultValue,
+    onValueChange = () => {},
+    ...toggleGroupSingleProps
+  } = props;
 
-    const [value, setValue] = useControllableState({
-      prop: valueProp,
-      defaultProp: defaultValue,
-      onChange: onValueChange,
-    });
+  const [value, setValue] = useControllableState({
+    prop: valueProp,
+    defaultProp: defaultValue,
+    onChange: onValueChange,
+  });
 
-    return (
-      <ToggleGroupValueProvider
-        value={value ? [value] : []}
-        onItemActivate={setValue}
-        onItemDeactivate={React.useCallback(() => setValue(''), [setValue])}
-      >
-        <ToggleGroupImpl {...toggleGroupSingleProps} ref={forwardedRef} />
-      </ToggleGroupValueProvider>
-    );
-  }
-);
+  return (
+    <ToggleGroupValueProvider
+      value={value ? [value] : []}
+      onItemActivate={setValue}
+      onItemDeactivate={React.useCallback(() => setValue(''), [setValue])}
+    >
+      <ToggleGroupImpl {...toggleGroupSingleProps} ref={forwardedRef} />
+    </ToggleGroupValueProvider>
+  );
+});
 
-type ToggleGroupMultipleElement = ToggleGroupImplElement;
-interface ToggleGroupMultipleProps extends ToggleGroupImplProps {
+type ToggleGroupImplMultipleElement = ToggleGroupImplElement;
+interface ToggleGroupImplMultipleProps extends ToggleGroupImplProps {
   /**
    * The controlled stateful value of the items that are pressed.
    */
@@ -114,42 +115,43 @@ interface ToggleGroupMultipleProps extends ToggleGroupImplProps {
   onValueChange?(value: string[]): void;
 }
 
-const ToggleGroupMultiple = React.forwardRef<ToggleGroupMultipleElement, ToggleGroupMultipleProps>(
-  (props, forwardedRef) => {
-    const {
-      value: valueProp,
-      defaultValue,
-      onValueChange = () => {},
-      ...toggleGroupMultipleProps
-    } = props;
+const ToggleGroupImplMultiple = React.forwardRef<
+  ToggleGroupImplMultipleElement,
+  ToggleGroupImplMultipleProps
+>((props, forwardedRef) => {
+  const {
+    value: valueProp,
+    defaultValue,
+    onValueChange = () => {},
+    ...toggleGroupMultipleProps
+  } = props;
 
-    const [value = [], setValue] = useControllableState({
-      prop: valueProp,
-      defaultProp: defaultValue,
-      onChange: onValueChange,
-    });
+  const [value = [], setValue] = useControllableState({
+    prop: valueProp,
+    defaultProp: defaultValue,
+    onChange: onValueChange,
+  });
 
-    const handleButtonActivate = React.useCallback(
-      (itemValue) => setValue((prevValue = []) => [...prevValue, itemValue]),
-      [setValue]
-    );
+  const handleButtonActivate = React.useCallback(
+    (itemValue) => setValue((prevValue = []) => [...prevValue, itemValue]),
+    [setValue]
+  );
 
-    const handleButtonDeactivate = React.useCallback(
-      (itemValue) => setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
-      [setValue]
-    );
+  const handleButtonDeactivate = React.useCallback(
+    (itemValue) => setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
+    [setValue]
+  );
 
-    return (
-      <ToggleGroupValueProvider
-        value={value}
-        onItemActivate={handleButtonActivate}
-        onItemDeactivate={handleButtonDeactivate}
-      >
-        <ToggleGroupImpl {...toggleGroupMultipleProps} ref={forwardedRef} />
-      </ToggleGroupValueProvider>
-    );
-  }
-);
+  return (
+    <ToggleGroupValueProvider
+      value={value}
+      onItemActivate={handleButtonActivate}
+      onItemDeactivate={handleButtonDeactivate}
+    >
+      <ToggleGroupImpl {...toggleGroupMultipleProps} ref={forwardedRef} />
+    </ToggleGroupValueProvider>
+  );
+});
 
 ToggleGroup.displayName = TOGGLE_GROUP_NAME;
 
@@ -276,4 +278,4 @@ export {
   Root,
   Item,
 };
-export type { ToggleGroupWithSingleProps, ToggleGroupWithMultipleProps, ToggleGroupItemProps };
+export type { ToggleGroupSingleProps, ToggleGroupMultipleProps, ToggleGroupItemProps };
