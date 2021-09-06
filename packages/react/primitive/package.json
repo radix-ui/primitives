@@ -13,7 +13,6 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rm -rf dist",
-    "prepublish": "yarn clean",
     "version": "yarn version"
   },
   "dependencies": {
