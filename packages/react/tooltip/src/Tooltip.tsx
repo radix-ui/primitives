@@ -8,7 +8,7 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useRect } from '@radix-ui/react-use-rect';
 import { Presence } from '@radix-ui/react-presence';
-import { extendPrimitive, Primitive } from '@radix-ui/react-primitive';
+import { Primitive } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Slottable } from '@radix-ui/react-slot';
@@ -273,13 +273,21 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
 
 TooltipContent.displayName = CONTENT_NAME;
 
-/* ---------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------
+ * TooltipArrow
+ * -----------------------------------------------------------------------------------------------*/
 
+const ARROW_NAME = 'TooltipArrow';
+
+type TooltipArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface TooltipArrowProps extends PopperArrowProps {}
-const TooltipArrow = extendPrimitive(PopperPrimitive.Arrow, {
-  displayName: 'TooltipArrow',
-});
+
+const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
+  (props, forwardedRef) => <PopperPrimitive.Arrow {...props} ref={forwardedRef} />
+);
+
+TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

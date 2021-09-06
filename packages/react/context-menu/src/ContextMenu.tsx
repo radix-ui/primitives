@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContext } from '@radix-ui/react-context';
-import { Primitive, extendPrimitive } from '@radix-ui/react-primitive';
+import { Primitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
@@ -216,61 +216,171 @@ const ContextMenuRootContent = React.forwardRef<
   );
 });
 
-/* ---------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuGroup
+ * -----------------------------------------------------------------------------------------------*/
 
+const GROUP_NAME = 'ContextMenuGroup';
+
+type ContextMenuGroupElement = React.ElementRef<typeof MenuPrimitive.Group>;
 type MenuGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Group>;
 interface ContextMenuGroupProps extends MenuGroupProps {}
-const ContextMenuGroup = extendPrimitive(MenuPrimitive.Group, { displayName: 'ContextMenuGroup' });
 
+const ContextMenuGroup = React.forwardRef<ContextMenuGroupElement, ContextMenuGroupProps>(
+  (props, forwardedRef) => <MenuPrimitive.Group {...props} ref={forwardedRef} />
+);
+
+ContextMenuGroup.displayName = GROUP_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuLabel
+ * -----------------------------------------------------------------------------------------------*/
+
+const LABEL_NAME = 'ContextMenuLabel';
+
+type ContextMenuLabelElement = React.ElementRef<typeof MenuPrimitive.Label>;
 type MenuLabelProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Label>;
 interface ContextMenuLabelProps extends MenuLabelProps {}
-const ContextMenuLabel = extendPrimitive(MenuPrimitive.Label, { displayName: 'ContextMenuLabel' });
 
-type MenuSubTriggerProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
-interface ContextMenuTriggerItemProps extends MenuSubTriggerProps {}
-const ContextMenuTriggerItem = extendPrimitive(MenuPrimitive.SubTrigger, {
-  displayName: 'ContextMenuTriggerItem',
-});
+const ContextMenuLabel = React.forwardRef<ContextMenuLabelElement, ContextMenuLabelProps>(
+  (props, forwardedRef) => <MenuPrimitive.Label {...props} ref={forwardedRef} />
+);
 
+ContextMenuLabel.displayName = LABEL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const ITEM_NAME = 'ContextMenuItem';
+
+type ContextMenuItemElement = React.ElementRef<typeof MenuPrimitive.Item>;
 type MenuItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Item>;
 interface ContextMenuItemProps extends MenuItemProps {}
-const ContextMenuItem = extendPrimitive(MenuPrimitive.Item, { displayName: 'ContextMenuItem' });
 
+const ContextMenuItem = React.forwardRef<ContextMenuItemElement, ContextMenuItemProps>(
+  (props, forwardedRef) => <MenuPrimitive.Item {...props} ref={forwardedRef} />
+);
+
+ContextMenuItem.displayName = ITEM_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuTriggerItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const TRIGGER_ITEM_NAME = 'ContextMenuTriggerItem';
+
+type ContextMenuTriggerItemElement = React.ElementRef<typeof MenuPrimitive.SubTrigger>;
+type MenuSubTriggerProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
+interface ContextMenuTriggerItemProps extends MenuSubTriggerProps {}
+
+const ContextMenuTriggerItem = React.forwardRef<
+  ContextMenuTriggerItemElement,
+  ContextMenuTriggerItemProps
+>((props, forwardedRef) => <MenuPrimitive.SubTrigger {...props} ref={forwardedRef} />);
+
+ContextMenuTriggerItem.displayName = TRIGGER_ITEM_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuCheckboxItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const CHECKBOX_ITEM_NAME = 'ContextMenuCheckboxItem';
+
+type ContextMenuCheckboxItemElement = React.ElementRef<typeof MenuPrimitive.CheckboxItem>;
 type MenuCheckboxItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItem>;
 interface ContextMenuCheckboxItemProps extends MenuCheckboxItemProps {}
-const ContextMenuCheckboxItem = extendPrimitive(MenuPrimitive.CheckboxItem, {
-  displayName: 'ContextMenuCheckboxItem',
-});
 
+const ContextMenuCheckboxItem = React.forwardRef<
+  ContextMenuCheckboxItemElement,
+  ContextMenuCheckboxItemProps
+>((props, forwardedRef) => <MenuPrimitive.CheckboxItem {...props} ref={forwardedRef} />);
+
+ContextMenuCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuRadioGroup
+ * -----------------------------------------------------------------------------------------------*/
+
+const RADIO_GROUP_NAME = 'ContextMenuRadioGroup';
+
+type ContextMenuRadioGroupElement = React.ElementRef<typeof MenuPrimitive.RadioGroup>;
 type MenuRadioGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioGroup>;
 interface ContextMenuRadioGroupProps extends MenuRadioGroupProps {}
-const ContextMenuRadioGroup = extendPrimitive(MenuPrimitive.RadioGroup, {
-  displayName: 'ContextMenuRadioGroup',
-});
 
+const ContextMenuRadioGroup = React.forwardRef<
+  ContextMenuRadioGroupElement,
+  ContextMenuRadioGroupProps
+>((props, forwardedRef) => <MenuPrimitive.RadioGroup {...props} ref={forwardedRef} />);
+
+ContextMenuRadioGroup.displayName = RADIO_GROUP_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuRadioItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const RADIO_ITEM_NAME = 'ContextMenuRadioItem';
+
+type ContextMenuRadioItemElement = React.ElementRef<typeof MenuPrimitive.RadioItem>;
 type MenuRadioItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItem>;
 interface ContextMenuRadioItemProps extends MenuRadioItemProps {}
-const ContextMenuRadioItem = extendPrimitive(MenuPrimitive.RadioItem, {
-  displayName: 'ContextMenuRadioItem',
-});
 
+const ContextMenuRadioItem = React.forwardRef<
+  ContextMenuRadioItemElement,
+  ContextMenuRadioItemProps
+>((props, forwardedRef) => <MenuPrimitive.RadioItem {...props} ref={forwardedRef} />);
+
+ContextMenuRadioItem.displayName = RADIO_ITEM_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuItemIndicator
+ * -----------------------------------------------------------------------------------------------*/
+
+const INDICATOR_NAME = 'ContextMenuItemIndicator';
+
+type ContextMenuItemIndicatorElement = React.ElementRef<typeof MenuPrimitive.ItemIndicator>;
 type MenuItemIndicatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.ItemIndicator>;
 interface ContextMenuItemIndicatorProps extends MenuItemIndicatorProps {}
-const ContextMenuItemIndicator = extendPrimitive(MenuPrimitive.ItemIndicator, {
-  displayName: 'ContextMenuItemIndicator',
-});
 
+const ContextMenuItemIndicator = React.forwardRef<
+  ContextMenuItemIndicatorElement,
+  ContextMenuItemIndicatorProps
+>((props, forwardedRef) => <MenuPrimitive.ItemIndicator {...props} ref={forwardedRef} />);
+
+ContextMenuItemIndicator.displayName = INDICATOR_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuSeparator
+ * -----------------------------------------------------------------------------------------------*/
+
+const SEPARATOR_NAME = 'ContextMenuSeparator';
+
+type ContextMenuSeparatorElement = React.ElementRef<typeof MenuPrimitive.Separator>;
 type MenuSeparatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>;
 interface ContextMenuSeparatorProps extends MenuSeparatorProps {}
-const ContextMenuSeparator = extendPrimitive(MenuPrimitive.Separator, {
-  displayName: 'ContextMenuSeparator',
-});
 
+const ContextMenuSeparator = React.forwardRef<
+  ContextMenuSeparatorElement,
+  ContextMenuSeparatorProps
+>((props, forwardedRef) => <MenuPrimitive.Separator {...props} ref={forwardedRef} />);
+
+ContextMenuSeparator.displayName = SEPARATOR_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuArrow
+ * -----------------------------------------------------------------------------------------------*/
+
+const ARROW_NAME = 'ContextMenuArrow';
+
+type ContextMenuArrowElement = React.ElementRef<typeof MenuPrimitive.Arrow>;
 type MenuArrowProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Arrow>;
 interface ContextMenuArrowProps extends MenuArrowProps {}
-const ContextMenuArrow = extendPrimitive(MenuPrimitive.Arrow, {
-  displayName: 'ContextMenuArrow',
-});
+
+const ContextMenuArrow = React.forwardRef<ContextMenuArrowElement, ContextMenuArrowProps>(
+  (props, forwardedRef) => <MenuPrimitive.Arrow {...props} ref={forwardedRef} />
+);
+
+ContextMenuArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

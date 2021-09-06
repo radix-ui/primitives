@@ -3,7 +3,6 @@ import { createContext } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { extendPrimitive } from '@radix-ui/react-primitive';
 import { Slottable } from '@radix-ui/react-slot';
 
 import type * as Radix from '@radix-ui/react-primitive';
@@ -22,6 +21,37 @@ const AlertDialog: React.FC<AlertDialogProps> = (props) => (
 );
 
 AlertDialog.displayName = ROOT_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * AlertDialogTrigger
+ * -----------------------------------------------------------------------------------------------*/
+const TRIGGER_NAME = 'AlertDialogTrigger';
+
+type AlertDialogTriggerElement = React.ElementRef<typeof DialogPrimitive.Trigger>;
+type DialogTriggerProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Trigger>;
+interface AlertDialogTriggerProps extends DialogTriggerProps {}
+
+const AlertDialogTrigger = React.forwardRef<AlertDialogTriggerElement, AlertDialogTriggerProps>(
+  (props, forwardedRef) => <DialogPrimitive.Trigger {...props} ref={forwardedRef} />
+);
+
+AlertDialogTrigger.displayName = TRIGGER_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * AlertDialogOverlay
+ * -----------------------------------------------------------------------------------------------*/
+
+const OVERLAY_NAME = 'AlertDialogOverlay';
+
+type AlertDialogOverlayElement = React.ElementRef<typeof DialogPrimitive.Overlay>;
+type DialogOverlayProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>;
+interface AlertDialogOverlayProps extends DialogOverlayProps {}
+
+const AlertDialogOverlay = React.forwardRef<AlertDialogOverlayElement, AlertDialogOverlayProps>(
+  (props, forwardedRef) => <DialogPrimitive.Overlay {...props} ref={forwardedRef} />
+);
+
+AlertDialogOverlay.displayName = OVERLAY_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialogContent
@@ -85,13 +115,61 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
 AlertDialogContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
+ * AlertDialogTitle
+ * -----------------------------------------------------------------------------------------------*/
+
+const TITLE_NAME = 'AlertDialogTitle';
+
+type AlertDialogTitleElement = React.ElementRef<typeof DialogPrimitive.Title>;
+type DialogTitleProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>;
+interface AlertDialogTitleProps extends DialogTitleProps {}
+
+const AlertDialogTitle = React.forwardRef<AlertDialogTitleElement, AlertDialogTitleProps>(
+  (props, forwardedRef) => <DialogPrimitive.Title {...props} ref={forwardedRef} />
+);
+
+AlertDialogTitle.displayName = TITLE_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * AlertDialogDescription
+ * -----------------------------------------------------------------------------------------------*/
+
+const DESCRIPTION_NAME = 'AlertDialogDescription';
+
+type AlertDialogDescriptionElement = React.ElementRef<typeof DialogPrimitive.Description>;
+type DialogDescriptionProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>;
+interface AlertDialogDescriptionProps extends DialogDescriptionProps {}
+
+const AlertDialogDescription = React.forwardRef<
+  AlertDialogDescriptionElement,
+  AlertDialogDescriptionProps
+>((props, forwardedRef) => <DialogPrimitive.Description {...props} ref={forwardedRef} />);
+
+AlertDialogDescription.displayName = DESCRIPTION_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * AlertDialogAction
+ * -----------------------------------------------------------------------------------------------*/
+
+const ACTION_NAME = 'AlertDialogAction';
+
+type AlertDialogActionElement = React.ElementRef<typeof DialogPrimitive.Close>;
+type DialogCloseProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Close>;
+interface AlertDialogActionProps extends DialogCloseProps {}
+
+const AlertDialogAction = React.forwardRef<AlertDialogActionElement, AlertDialogActionProps>(
+  (props, forwardedRef) => <DialogPrimitive.Close {...props} ref={forwardedRef} />
+);
+
+AlertDialogAction.displayName = ACTION_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * AlertDialogCancel
  * -----------------------------------------------------------------------------------------------*/
 
 const CANCEL_NAME = 'AlertDialogCancel';
 
 type AlertDialogCancelElement = React.ElementRef<typeof DialogPrimitive.Close>;
-type DialogCloseProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Close>;
 interface AlertDialogCancelProps extends DialogCloseProps {}
 
 const AlertDialogCancel = React.forwardRef<AlertDialogCancelElement, AlertDialogCancelProps>(
@@ -103,38 +181,6 @@ const AlertDialogCancel = React.forwardRef<AlertDialogCancelElement, AlertDialog
 );
 
 AlertDialogCancel.displayName = CANCEL_NAME;
-
-/* ---------------------------------------------------------------------------------------------- */
-type DialogTriggerProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Trigger>;
-interface AlertDialogTriggerProps extends DialogTriggerProps {}
-const AlertDialogTrigger = extendPrimitive(DialogPrimitive.Trigger, {
-  displayName: 'AlertDialogTrigger',
-});
-
-type DialogOverlayProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>;
-interface AlertDialogOverlayProps extends DialogOverlayProps {}
-const AlertDialogOverlay = extendPrimitive(DialogPrimitive.Overlay, {
-  displayName: 'AlertDialogOverlay',
-});
-
-interface AlertDialogActionProps extends DialogCloseProps {}
-const AlertDialogAction = extendPrimitive(DialogPrimitive.Close, {
-  displayName: 'AlertDialogAction',
-});
-
-const TITLE_NAME = 'AlertDialogTitle';
-type DialogTitleProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>;
-interface AlertDialogTitleProps extends DialogTitleProps {}
-const AlertDialogTitle = extendPrimitive(DialogPrimitive.Title, {
-  displayName: TITLE_NAME,
-});
-
-const DESCRIPTION_NAME = 'AlertDialogDescription';
-type DialogDescriptionProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>;
-interface AlertDialogDescriptionProps extends DialogDescriptionProps {}
-const AlertDialogDescription = extendPrimitive(DialogPrimitive.Description, {
-  displayName: DESCRIPTION_NAME,
-});
 
 /* ---------------------------------------------------------------------------------------------- */
 
