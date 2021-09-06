@@ -1,0 +1,68 @@
+name: 'Publish Release Candidate'
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-rc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+      - uses: actions/checkout@v2
+        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+
+      - name: Install dependencies and publish
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+        run: yarn && yarn publish:next
+
+      # https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101/30
+      - name: Branch protection OFF
+        uses: octokit/request-action@v2.x
+        with:
+          route: PUT /repos/:repository/branches/main/protection
+          repository: ${{ github.repository }}
+          required_status_checks: |
+            null
+          enforce_admins: |
+            null
+          required_pull_request_reviews: |
+            null
+          restrictions: |
+            null
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit release
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'Publish release candidate'
+
+      # https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101/30
+      - name: Branch protection ON
+        uses: octokit/request-action@v2.x
+        with:
+          route: PUT /repos/:repository/branches/main/protection
+          repository: ${{ github.repository }}
+          # https://docs.github.com/en/rest/reference/repos#update-branch-protection-preview-notices
+          mediaType: |
+            previews:
+              - luke-cage
+          required_status_checks: |
+            strict: false
+            contexts:
+              - UI Tests
+              - check
+              - test
+          enforce_admins: |
+            true
+          required_pull_request_reviews: |
+            require_code_owner_reviews: true
+            required_approving_review_count: 1
+          restrictions: |
+            null
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
