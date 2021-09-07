@@ -28,6 +28,8 @@ const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | Acco
   (props, forwardedRef) => {
     const { type, ...accordionProps } = props;
 
+    console.log('test');
+
     if (type === 'single') {
       const singleProps = accordionProps as AccordionImplSingleProps;
       return <AccordionImplSingle {...singleProps} ref={forwardedRef} />;
