@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-focus-guards",
-  "version": "0.1.0-rc.2",
+  "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -28,6 +28,5 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10"
-  },
-  "stableVersion": "0.0.7"
+  }
 }
