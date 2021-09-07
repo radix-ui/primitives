@@ -16,32 +16,31 @@ import type * as Radix from '@radix-ui/react-primitive';
 const ACCORDION_NAME = 'Accordion';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
 
-type AccordionElement = AccordionMultipleElement | AccordionSingleElement;
-interface AccordionWithSingleProps extends AccordionSingleProps {
+type AccordionElement = AccordionImplMultipleElement | AccordionImplSingleElement;
+interface AccordionSingleProps extends AccordionImplSingleProps {
   type: 'single';
 }
-interface AccordionWithMultipleProps extends AccordionMultipleProps {
+interface AccordionMultipleProps extends AccordionImplMultipleProps {
   type: 'multiple';
 }
 
-const Accordion = React.forwardRef<
-  AccordionElement,
-  AccordionWithSingleProps | AccordionWithMultipleProps
->((props, forwardedRef) => {
-  const { type, ...accordionProps } = props;
+const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | AccordionMultipleProps>(
+  (props, forwardedRef) => {
+    const { type, ...accordionProps } = props;
 
-  if (type === 'single') {
-    const singleProps = accordionProps as AccordionSingleProps;
-    return <AccordionSingle {...singleProps} ref={forwardedRef} />;
+    if (type === 'single') {
+      const singleProps = accordionProps as AccordionImplSingleProps;
+      return <AccordionImplSingle {...singleProps} ref={forwardedRef} />;
+    }
+
+    if (type === 'multiple') {
+      const multipleProps = accordionProps as AccordionImplMultipleProps;
+      return <AccordionImplMultiple {...multipleProps} ref={forwardedRef} />;
+    }
+
+    throw new Error(`Missing prop \`type\` expected on \`${ACCORDION_NAME}\``);
   }
-
-  if (type === 'multiple') {
-    const multipleProps = accordionProps as AccordionMultipleProps;
-    return <AccordionMultiple {...multipleProps} ref={forwardedRef} />;
-  }
-
-  throw new Error(`Missing prop \`type\` expected on \`${ACCORDION_NAME}\``);
-});
+);
 
 Accordion.displayName = ACCORDION_NAME;
 
@@ -58,8 +57,8 @@ const [AccordionValueProvider, useAccordionValueContext] =
 
 const AccordionCollapsibleContext = React.createContext(false);
 
-type AccordionSingleElement = AccordionImplElement;
-interface AccordionSingleProps extends AccordionImplProps {
+type AccordionImplSingleElement = AccordionImplElement;
+interface AccordionImplSingleProps extends AccordionImplProps {
   /**
    * The controlled stateful value of the accordion item whose content is expanded.
    */
@@ -80,7 +79,7 @@ interface AccordionSingleProps extends AccordionImplProps {
   collapsible?: boolean;
 }
 
-const AccordionSingle = React.forwardRef<AccordionSingleElement, AccordionSingleProps>(
+const AccordionImplSingle = React.forwardRef<AccordionImplSingleElement, AccordionImplSingleProps>(
   (props, forwardedRef) => {
     const {
       value: valueProp,
@@ -112,8 +111,8 @@ const AccordionSingle = React.forwardRef<AccordionSingleElement, AccordionSingle
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type AccordionMultipleElement = AccordionImplElement;
-interface AccordionMultipleProps extends AccordionImplProps {
+type AccordionImplMultipleElement = AccordionImplElement;
+interface AccordionImplMultipleProps extends AccordionImplProps {
   /**
    * The controlled stateful value of the accordion items whose contents are expanded.
    */
@@ -129,44 +128,41 @@ interface AccordionMultipleProps extends AccordionImplProps {
   onValueChange?(value: string[]): void;
 }
 
-const AccordionMultiple = React.forwardRef<AccordionMultipleElement, AccordionMultipleProps>(
-  (props, forwardedRef) => {
-    const {
-      value: valueProp,
-      defaultValue,
-      onValueChange = () => {},
-      ...accordionMultipleProps
-    } = props;
+const AccordionImplMultiple = React.forwardRef<
+  AccordionImplMultipleElement,
+  AccordionImplMultipleProps
+>((props, forwardedRef) => {
+  const {
+    value: valueProp,
+    defaultValue,
+    onValueChange = () => {},
+    ...accordionMultipleProps
+  } = props;
 
-    const [value = [], setValue] = useControllableState({
-      prop: valueProp,
-      defaultProp: defaultValue,
-      onChange: onValueChange,
-    });
+  const [value = [], setValue] = useControllableState({
+    prop: valueProp,
+    defaultProp: defaultValue,
+    onChange: onValueChange,
+  });
 
-    const handleItemOpen = React.useCallback(
-      (itemValue) => setValue((prevValue = []) => [...prevValue, itemValue]),
-      [setValue]
-    );
+  const handleItemOpen = React.useCallback(
+    (itemValue) => setValue((prevValue = []) => [...prevValue, itemValue]),
+    [setValue]
+  );
 
-    const handleItemClose = React.useCallback(
-      (itemValue) => setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
-      [setValue]
-    );
+  const handleItemClose = React.useCallback(
+    (itemValue) => setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
+    [setValue]
+  );
 
-    return (
-      <AccordionValueProvider
-        value={value}
-        onItemOpen={handleItemOpen}
-        onItemClose={handleItemClose}
-      >
-        <AccordionCollapsibleContext.Provider value={true}>
-          <AccordionImpl {...accordionMultipleProps} ref={forwardedRef} />
-        </AccordionCollapsibleContext.Provider>
-      </AccordionValueProvider>
-    );
-  }
-);
+  return (
+    <AccordionValueProvider value={value} onItemOpen={handleItemOpen} onItemClose={handleItemClose}>
+      <AccordionCollapsibleContext.Provider value={true}>
+        <AccordionImpl {...accordionMultipleProps} ref={forwardedRef} />
+      </AccordionCollapsibleContext.Provider>
+    </AccordionValueProvider>
+  );
+});
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -454,7 +450,6 @@ export {
 export type {
   AccordionSingleProps,
   AccordionMultipleProps,
-  AccordionWithMultipleProps,
   AccordionItemProps,
   AccordionHeaderProps,
   AccordionTriggerProps,

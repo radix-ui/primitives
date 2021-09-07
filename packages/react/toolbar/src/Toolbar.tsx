@@ -117,22 +117,23 @@ const TOGGLE_GROUP_NAME = 'ToolbarToggleGroup';
 
 type ToolbarToggleGroupElement = React.ElementRef<typeof ToggleGroupPrimitive.Root>;
 type ToggleGroupProps = Radix.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>;
-// ToggleGroup props are a union of interfaces so we use a type alias because interfaces cannot extend unions.
-type ToolbarToggleGroupProps = ToggleGroupProps;
+interface ToolbarToggleGroupSingleProps extends Extract<ToggleGroupProps, { type: 'single' }> {}
+interface ToolbarToggleGroupMultipleProps extends Extract<ToggleGroupProps, { type: 'multiple' }> {}
 
-const ToolbarToggleGroup = React.forwardRef<ToolbarToggleGroupElement, ToolbarToggleGroupProps>(
-  (props, forwardedRef) => {
-    const context = useToolbarContext(TOGGLE_GROUP_NAME);
-    return (
-      <ToggleGroupPrimitive.Root
-        data-orientation={context.orientation}
-        {...props}
-        ref={forwardedRef}
-        rovingFocus={false}
-      />
-    );
-  }
-);
+const ToolbarToggleGroup = React.forwardRef<
+  ToolbarToggleGroupElement,
+  ToolbarToggleGroupSingleProps | ToolbarToggleGroupMultipleProps
+>((props, forwardedRef) => {
+  const context = useToolbarContext(TOGGLE_GROUP_NAME);
+  return (
+    <ToggleGroupPrimitive.Root
+      data-orientation={context.orientation}
+      {...props}
+      ref={forwardedRef}
+      rovingFocus={false}
+    />
+  );
+});
 
 ToolbarToggleGroup.displayName = TOGGLE_GROUP_NAME;
 
@@ -185,6 +186,7 @@ export type {
   ToolbarSeparatorProps,
   ToolbarButtonProps,
   ToolbarLinkProps,
-  ToolbarToggleGroupProps,
+  ToolbarToggleGroupSingleProps,
+  ToolbarToggleGroupMultipleProps,
   ToolbarToggleItemProps,
 };
