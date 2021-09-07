@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { composeRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { Primitive } from '@radix-ui/react-primitive';
-import * as MenuPrimitive from '@radix-ui/react-menu';
-import { useId } from '@radix-ui/react-id';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { composeRefs } from '@interop-ui/react-compose-refs';
+import { createContext } from '@interop-ui/react-context';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
+import { Primitive } from '@interop-ui/react-primitive';
+import * as MenuPrimitive from '@interop-ui/react-menu';
+import { useId } from '@interop-ui/react-id';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 

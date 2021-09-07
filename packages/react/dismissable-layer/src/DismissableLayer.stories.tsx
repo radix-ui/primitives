@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
 import React from 'react';
-import { FocusScope } from '@radix-ui/react-focus-scope';
-import { Popper, PopperAnchor, PopperContent, PopperArrow } from '@radix-ui/react-popper';
-import { Portal } from '@radix-ui/react-portal';
-import { FocusGuards } from '@radix-ui/react-focus-guards';
+import { FocusScope } from '@interop-ui/react-focus-scope';
+import { Popper, PopperAnchor, PopperContent, PopperArrow } from '@interop-ui/react-popper';
+import { Portal } from '@interop-ui/react-portal';
+import { FocusGuards } from '@interop-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from './DismissableLayer';
 

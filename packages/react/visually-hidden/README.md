@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-visually-hidden
+$ yarn add @interop-ui/react-visually-hidden
 # or
-$ npm install @radix-ui/react-visually-hidden
+$ npm install @interop-ui/react-visually-hidden
 ```
 
 ## Usage

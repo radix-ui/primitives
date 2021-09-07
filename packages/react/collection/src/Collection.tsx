@@ -1,8 +1,8 @@
 import React from 'react';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { Slot } from '@radix-ui/react-slot';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { Slot } from '@interop-ui/react-slot';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 type SlotProps = Radix.ComponentPropsWithoutRef<typeof Slot>;
 interface CollectionProps extends SlotProps {}

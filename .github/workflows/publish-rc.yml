@@ -3,7 +3,7 @@ name: 'Publish Release Candidate'
 on:
   push:
     branches:
-      - main
+      - rc-action
     # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-ignoring-paths
     paths-ignore:
       - '**/package.json'
@@ -26,7 +26,7 @@ jobs:
       - name: Branch protection OFF
         uses: octokit/request-action@v2.x
         with:
-          route: PUT /repos/:repository/branches/main/protection
+          route: PUT /repos/:repository/branches/rc-action/protection
           repository: ${{ github.repository }}
           required_status_checks: |
             null
@@ -48,7 +48,7 @@ jobs:
       - name: Branch protection ON
         uses: octokit/request-action@v2.x
         with:
-          route: PUT /repos/:repository/branches/main/protection
+          route: PUT /repos/:repository/branches/rc-action/protection
           repository: ${{ github.repository }}
           # https://docs.github.com/en/rest/reference/repos#update-branch-protection-preview-notices
           mediaType: |

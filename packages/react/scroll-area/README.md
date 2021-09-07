@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-scroll-area
+$ yarn add @interop-ui/react-scroll-area
 # or
-$ npm install @radix-ui/react-scroll-area
+$ npm install @interop-ui/react-scroll-area
 ```
 
 ## Usage

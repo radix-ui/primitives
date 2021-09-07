@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContext } from '@radix-ui/react-context';
-import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
-import { Primitive } from '@radix-ui/react-primitive';
-import * as SeparatorPrimitive from '@radix-ui/react-separator';
-import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { createContext } from '@interop-ui/react-context';
+import { RovingFocusGroup, RovingFocusItem } from '@interop-ui/react-roving-focus';
+import { Primitive } from '@interop-ui/react-primitive';
+import * as SeparatorPrimitive from '@interop-ui/react-separator';
+import * as ToggleGroupPrimitive from '@interop-ui/react-toggle-group';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Toolbar

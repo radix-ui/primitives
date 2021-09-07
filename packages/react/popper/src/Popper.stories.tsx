@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Popper, PopperAnchor, PopperContent, PopperArrow } from './Popper';
-import { Portal } from '@radix-ui/react-portal';
+import { Portal } from '@interop-ui/react-portal';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Popper' };

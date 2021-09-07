@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Root, Track, Range, Thumb } from '@radix-ui/react-slider';
+import { Root, Track, Range, Thumb } from '@interop-ui/react-slider';
 
 export default function SliderPage() {
   return (

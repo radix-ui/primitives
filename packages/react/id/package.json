@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-id",
+  "name": "@interop-ui/react-id",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",

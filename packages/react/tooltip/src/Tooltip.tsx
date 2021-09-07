@@ -1,23 +1,23 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { usePrevious } from '@radix-ui/react-use-previous';
-import { useRect } from '@radix-ui/react-use-rect';
-import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
-import * as PopperPrimitive from '@radix-ui/react-popper';
-import { Portal } from '@radix-ui/react-portal';
-import { Slottable } from '@radix-ui/react-slot';
-import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
-import { useId } from '@radix-ui/react-id';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { createContext } from '@interop-ui/react-context';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
+import { useEscapeKeydown } from '@interop-ui/react-use-escape-keydown';
+import { useLayoutEffect } from '@interop-ui/react-use-layout-effect';
+import { usePrevious } from '@interop-ui/react-use-previous';
+import { useRect } from '@interop-ui/react-use-rect';
+import { Presence } from '@interop-ui/react-presence';
+import { Primitive } from '@interop-ui/react-primitive';
+import * as PopperPrimitive from '@interop-ui/react-popper';
+import { Portal } from '@interop-ui/react-portal';
+import { Slottable } from '@interop-ui/react-slot';
+import * as VisuallyHiddenPrimitive from '@interop-ui/react-visually-hidden';
+import { useId } from '@interop-ui/react-id';
 import { createStateMachine } from './createStateMachine';
 import { tooltipStateChart } from './tooltipStateChart';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * State machine

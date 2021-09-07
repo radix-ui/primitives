@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-use-body-pointer-events
+$ yarn add @interop-ui/react-use-body-pointer-events
 # or
-$ npm install @radix-ui/react-use-body-pointer-events
+$ npm install @interop-ui/react-use-body-pointer-events
 ```
 
 ## Usage

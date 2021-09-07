@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-use-layout-effect
+$ yarn add @interop-ui/react-use-layout-effect
 # or
-$ npm install @radix-ui/react-use-layout-effect
+$ npm install @interop-ui/react-use-layout-effect
 ```
 
 ## Usage

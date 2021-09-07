@@ -1,23 +1,23 @@
 import * as React from 'react';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { createCollection } from '@radix-ui/react-collection';
-import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
-import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
-import { FocusScope } from '@radix-ui/react-focus-scope';
-import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
-import * as PopperPrimitive from '@radix-ui/react-popper';
-import { Portal } from '@radix-ui/react-portal';
-import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
-import { useDirection } from '@radix-ui/react-use-direction';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useFocusGuards } from '@radix-ui/react-focus-guards';
-import { useId } from '@radix-ui/react-id';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { createCollection } from '@interop-ui/react-collection';
+import { useComposedRefs, composeRefs } from '@interop-ui/react-compose-refs';
+import { createContext } from '@interop-ui/react-context';
+import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
+import { FocusScope } from '@interop-ui/react-focus-scope';
+import { Presence } from '@interop-ui/react-presence';
+import { Primitive } from '@interop-ui/react-primitive';
+import * as PopperPrimitive from '@interop-ui/react-popper';
+import { Portal } from '@interop-ui/react-portal';
+import { RovingFocusGroup, RovingFocusItem } from '@interop-ui/react-roving-focus';
+import { useDirection } from '@interop-ui/react-use-direction';
+import { useCallbackRef } from '@interop-ui/react-use-callback-ref';
+import { useFocusGuards } from '@interop-ui/react-focus-guards';
+import { useId } from '@interop-ui/react-id';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 

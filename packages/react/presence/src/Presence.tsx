@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { useLayoutEffect } from '@interop-ui/react-use-layout-effect';
 import { useStateMachine } from './useStateMachine';
 
 interface PresenceProps {

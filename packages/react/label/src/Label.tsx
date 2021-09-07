@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { Primitive } from '@radix-ui/react-primitive';
-import { useId } from '@radix-ui/react-id';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { Primitive } from '@interop-ui/react-primitive';
+import { useId } from '@interop-ui/react-id';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Label

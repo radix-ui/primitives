@@ -8,14 +8,14 @@ import {
   ToolbarToggleItem,
 } from './Toolbar';
 import { css } from '../../../../stitches.config';
-import { Toggle } from '@radix-ui/react-toggle';
+import { Toggle } from '@interop-ui/react-toggle';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuArrow,
-} from '@radix-ui/react-dropdown-menu';
+} from '@interop-ui/react-dropdown-menu';
 
 import { classes } from '../../menu/src/Menu.stories';
 const { contentClass: dropdownMenuContentClass, itemClass: dropdownMenuItemClass } = classes;

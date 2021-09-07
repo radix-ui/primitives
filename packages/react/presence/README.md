@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-presence
+$ yarn add @interop-ui/react-presence
 # or
-$ npm install @radix-ui/react-presence
+$ npm install @interop-ui/react-presence
 ```
 
 ## Usage

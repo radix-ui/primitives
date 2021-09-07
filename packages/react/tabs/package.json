@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-tabs",
+  "name": "@interop-ui/react-tabs",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",
@@ -17,13 +17,13 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
-    "@radix-ui/primitive": "workspace:*",
-    "@radix-ui/react-context": "workspace:*",
-    "@radix-ui/react-id": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-roving-focus": "workspace:*",
-    "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@interop-ui/primitive": "workspace:*",
+    "@interop-ui/react-context": "workspace:*",
+    "@interop-ui/react-id": "workspace:*",
+    "@interop-ui/react-primitive": "workspace:*",
+    "@interop-ui/react-roving-focus": "workspace:*",
+    "@interop-ui/react-use-callback-ref": "workspace:*",
+    "@interop-ui/react-use-controllable-state": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

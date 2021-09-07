@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@radix-ui/react-tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@interop-ui/react-tabs';
 
 export default function TabsPage() {
   return (

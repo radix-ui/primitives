@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/popper",
+  "name": "@interop-ui/popper",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",

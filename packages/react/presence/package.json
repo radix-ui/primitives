@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-presence",
+  "name": "@interop-ui/react-presence",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",
@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
-    "@radix-ui/react-compose-refs": "workspace:*",
-    "@radix-ui/react-use-layout-effect": "workspace:*"
+    "@interop-ui/react-compose-refs": "workspace:*",
+    "@interop-ui/react-use-layout-effect": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=16.8"

@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-switch
+$ yarn add @interop-ui/react-switch
 # or
-$ npm install @radix-ui/react-switch
+$ npm install @interop-ui/react-switch
 ```
 
 ## Usage

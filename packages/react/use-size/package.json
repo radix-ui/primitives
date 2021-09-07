@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-use-size",
+  "name": "@interop-ui/react-use-size",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",

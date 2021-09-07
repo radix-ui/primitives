@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-use-direction
+$ yarn add @interop-ui/react-use-direction
 # or
-$ npm install @radix-ui/react-use-direction
+$ npm install @interop-ui/react-use-direction
 ```
 
 ## Usage

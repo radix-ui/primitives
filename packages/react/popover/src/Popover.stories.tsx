@@ -7,7 +7,7 @@ import {
   PopoverClose,
   PopoverArrow,
 } from './Popover';
-import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@interop-ui/popper';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Popover' };

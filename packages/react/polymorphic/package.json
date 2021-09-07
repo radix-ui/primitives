@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-polymorphic",
+  "name": "@interop-ui/react-polymorphic",
   "version": "0.0.14",
   "license": "MIT",
   "source": "src/index.ts",

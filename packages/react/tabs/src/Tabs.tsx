@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContext } from '@radix-ui/react-context';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { Primitive } from '@radix-ui/react-primitive';
-import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
-import { useId } from '@radix-ui/react-id';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { createContext } from '@interop-ui/react-context';
+import { useCallbackRef } from '@interop-ui/react-use-callback-ref';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
+import { Primitive } from '@interop-ui/react-primitive';
+import { RovingFocusGroup, RovingFocusItem } from '@interop-ui/react-roving-focus';
+import { useId } from '@interop-ui/react-id';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Tabs

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow } from '@radix-ui/react-tooltip';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipArrow } from '@interop-ui/react-tooltip';
 
 export default function TooltipPage() {
   return (

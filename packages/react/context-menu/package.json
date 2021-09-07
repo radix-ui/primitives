@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-context-menu",
+  "name": "@interop-ui/react-context-menu",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",
@@ -17,11 +17,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
-    "@radix-ui/primitive": "workspace:*",
-    "@radix-ui/react-context": "workspace:*",
-    "@radix-ui/react-menu": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@interop-ui/primitive": "workspace:*",
+    "@interop-ui/react-context": "workspace:*",
+    "@interop-ui/react-menu": "workspace:*",
+    "@interop-ui/react-primitive": "workspace:*",
+    "@interop-ui/react-use-callback-ref": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0",

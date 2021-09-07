@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Label, useLabelContext } from './Label';
-import { IdProvider } from '@radix-ui/react-id';
+import { IdProvider } from '@interop-ui/react-id';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Label', excludeStories: ['RECOMMENDED_CSS__LABEL__ROOT'] };

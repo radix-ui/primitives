@@ -5,7 +5,7 @@ import {
   DialogOverlay,
   DialogContent,
   DialogClose,
-} from '@radix-ui/react-dialog';
+} from '@interop-ui/react-dialog';
 
 export default function DialogPage() {
   return (

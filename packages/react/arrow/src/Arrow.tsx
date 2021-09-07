@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive } from '@interop-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Arrow

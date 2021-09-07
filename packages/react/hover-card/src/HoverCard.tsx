@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContext } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import * as PopperPrimitive from '@radix-ui/react-popper';
-import { Portal } from '@radix-ui/react-portal';
-import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
-import type * as Radix from '@radix-ui/react-primitive';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { createContext } from '@interop-ui/react-context';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
+import * as PopperPrimitive from '@interop-ui/react-popper';
+import { Portal } from '@interop-ui/react-portal';
+import { Presence } from '@interop-ui/react-presence';
+import { Primitive } from '@interop-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * HoverCard

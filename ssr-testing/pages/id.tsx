@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IdProvider, useId } from '@radix-ui/react-id';
+import { IdProvider, useId } from '@interop-ui/react-id';
 
 export default function IdPage() {
   return (

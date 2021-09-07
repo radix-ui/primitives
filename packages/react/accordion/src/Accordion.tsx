@@ -1,13 +1,13 @@
 import React from 'react';
-import { createContext } from '@radix-ui/react-context';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { Primitive } from '@radix-ui/react-primitive';
-import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
-import { useId } from '@radix-ui/react-id';
+import { createContext } from '@interop-ui/react-context';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
+import { Primitive } from '@interop-ui/react-primitive';
+import * as CollapsiblePrimitive from '@interop-ui/react-collapsible';
+import { useId } from '@interop-ui/react-id';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Accordion

@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-use-layout-effect",
+  "name": "@interop-ui/react-use-layout-effect",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",

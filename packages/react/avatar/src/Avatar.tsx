@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { createContext } from '@radix-ui/react-context';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { Primitive } from '@radix-ui/react-primitive';
+import { createContext } from '@interop-ui/react-context';
+import { useCallbackRef } from '@interop-ui/react-use-callback-ref';
+import { useLayoutEffect } from '@interop-ui/react-use-layout-effect';
+import { Primitive } from '@interop-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar

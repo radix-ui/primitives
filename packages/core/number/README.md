@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/number
+$ yarn add @interop-ui/number
 # or
-$ npm install @radix-ui/number
+$ npm install @interop-ui/number
 ```
 
 ## Usage

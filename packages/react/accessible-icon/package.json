@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-accessible-icon",
+  "name": "@interop-ui/react-accessible-icon",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
-    "@radix-ui/react-visually-hidden": "workspace:*"
+    "@interop-ui/react-visually-hidden": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

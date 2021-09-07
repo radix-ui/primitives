@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { Primitive } from '@radix-ui/react-primitive';
-import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { Primitive } from '@interop-ui/react-primitive';
+import { useBodyPointerEvents } from '@interop-ui/react-use-body-pointer-events';
+import { useCallbackRef } from '@interop-ui/react-use-callback-ref';
+import { useEscapeKeydown } from '@interop-ui/react-use-escape-keydown';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 // We need to compute the total count of layers AND a running count of all layers
 // in order to find which layer is the deepest one.

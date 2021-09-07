@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/rect
+$ yarn add @interop-ui/rect
 # or
-$ npm install @radix-ui/rect
+$ npm install @interop-ui/rect
 ```
 
 ## Usage

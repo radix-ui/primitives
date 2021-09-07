@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContext } from '@radix-ui/react-context';
-import { Primitive } from '@radix-ui/react-primitive';
-import * as MenuPrimitive from '@radix-ui/react-menu';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { createContext } from '@interop-ui/react-context';
+import { Primitive } from '@interop-ui/react-primitive';
+import * as MenuPrimitive from '@interop-ui/react-menu';
+import { useCallbackRef } from '@interop-ui/react-use-callback-ref';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 type Point = { x: number; y: number };

@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverClose,
   PopoverArrow,
-} from '@radix-ui/react-popover';
+} from '@interop-ui/react-popover';
 
 export default function PopoverPage() {
   return (

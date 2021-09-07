@@ -1,9 +1,9 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { Primitive } from '@radix-ui/react-primitive';
+import { useLayoutEffect } from '@interop-ui/react-use-layout-effect';
+import { Primitive } from '@interop-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 const MAX_Z_INDEX = 2147483647;
 

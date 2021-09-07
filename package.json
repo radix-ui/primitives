@@ -103,8 +103,8 @@
       "^.+\\.(ts|tsx)$": "ts-jest"
     },
     "moduleNameMapper": {
-      "@radix-ui/react-(.+)$": "<rootDir>/packages/react/$1/src",
-      "@radix-ui/(.+)$": "<rootDir>packages/core/$1/src"
+      "@interop-ui/react-(.+)$": "<rootDir>/packages/react/$1/src",
+      "@interop-ui/(.+)$": "<rootDir>packages/core/$1/src"
     },
     "watchPlugins": [
       "jest-watch-typeahead/filename",

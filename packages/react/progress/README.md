@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-progress
+$ yarn add @interop-ui/react-progress
 # or
-$ npm install @radix-ui/react-progress
+$ npm install @interop-ui/react-progress
 ```
 
 ## Usage

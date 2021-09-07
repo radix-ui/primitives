@@ -1,18 +1,18 @@
 /// <reference types="resize-observer-browser" />
 
 import * as React from 'react';
-import { Primitive } from '@radix-ui/react-primitive';
-import { Presence } from '@radix-ui/react-presence';
-import { createContext } from '@radix-ui/react-context';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useDirection } from '@radix-ui/react-use-direction';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { clamp } from '@radix-ui/number';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { Primitive } from '@interop-ui/react-primitive';
+import { Presence } from '@interop-ui/react-presence';
+import { createContext } from '@interop-ui/react-context';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { useCallbackRef } from '@interop-ui/react-use-callback-ref';
+import { useDirection } from '@interop-ui/react-use-direction';
+import { useLayoutEffect } from '@interop-ui/react-use-layout-effect';
+import { clamp } from '@interop-ui/number';
+import { composeEventHandlers } from '@interop-ui/primitive';
 import { useStateMachine } from './useStateMachine';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 type Sizes = {

@@ -1,20 +1,20 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import * as PopperPrimitive from '@radix-ui/react-popper';
-import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
-import { FocusScope } from '@radix-ui/react-focus-scope';
-import { Portal } from '@radix-ui/react-portal';
-import { useFocusGuards } from '@radix-ui/react-focus-guards';
-import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
-import { useId } from '@radix-ui/react-id';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { createContext } from '@interop-ui/react-context';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
+import * as PopperPrimitive from '@interop-ui/react-popper';
+import { DismissableLayer } from '@interop-ui/react-dismissable-layer';
+import { FocusScope } from '@interop-ui/react-focus-scope';
+import { Portal } from '@interop-ui/react-portal';
+import { useFocusGuards } from '@interop-ui/react-focus-guards';
+import { Presence } from '@interop-ui/react-presence';
+import { Primitive } from '@interop-ui/react-primitive';
+import { useId } from '@interop-ui/react-id';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Popover

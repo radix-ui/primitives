@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { useLayoutEffect } from '@interop-ui/react-use-layout-effect';
 
 let changeCount = 0;
 let originalBodyPointerEvents: string;

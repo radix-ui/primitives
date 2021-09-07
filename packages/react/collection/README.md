@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-collection
+$ yarn add @interop-ui/react-collection
 # or
-$ npm install @radix-ui/react-collection
+$ npm install @interop-ui/react-collection
 ```
 
 ## Usage

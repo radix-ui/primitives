@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { Primitive } from '@radix-ui/react-primitive';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { Primitive } from '@interop-ui/react-primitive';
+import { useCallbackRef } from '@interop-ui/react-use-callback-ref';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 const AUTOFOCUS_ON_MOUNT = 'focusScope.autoFocusOnMount';
 const AUTOFOCUS_ON_UNMOUNT = 'focusScope.autoFocusOnUnmount';

@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/primitive",
+  "name": "@interop-ui/primitive",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",

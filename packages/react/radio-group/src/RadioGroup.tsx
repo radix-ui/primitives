@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { useLabelContext } from '@radix-ui/react-label';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
-import { Primitive } from '@radix-ui/react-primitive';
-import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { useLabelContext } from '@interop-ui/react-label';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { createContext } from '@interop-ui/react-context';
+import { Primitive } from '@interop-ui/react-primitive';
+import { RovingFocusGroup, RovingFocusItem } from '@interop-ui/react-roving-focus';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
 import { Radio, RadioIndicator } from './Radio';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup

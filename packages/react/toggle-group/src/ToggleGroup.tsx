@@ -1,11 +1,11 @@
 import React from 'react';
-import { createContext } from '@radix-ui/react-context';
-import { Primitive } from '@radix-ui/react-primitive';
-import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
-import { Toggle } from '@radix-ui/react-toggle';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { createContext } from '@interop-ui/react-context';
+import { Primitive } from '@interop-ui/react-primitive';
+import { RovingFocusGroup, RovingFocusItem } from '@interop-ui/react-roving-focus';
+import { Toggle } from '@interop-ui/react-toggle';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * ToggleGroup

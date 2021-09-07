@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { usePrevious } from '@radix-ui/react-use-previous';
-import { useSize } from '@radix-ui/react-use-size';
-import { Primitive } from '@radix-ui/react-primitive';
-import { useLabelContext } from '@radix-ui/react-label';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { createContext } from '@interop-ui/react-context';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
+import { usePrevious } from '@interop-ui/react-use-previous';
+import { useSize } from '@interop-ui/react-use-size';
+import { Primitive } from '@interop-ui/react-primitive';
+import { useLabelContext } from '@interop-ui/react-label';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch

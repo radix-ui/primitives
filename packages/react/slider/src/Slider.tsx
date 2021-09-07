@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { clamp } from '@radix-ui/number';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { useDirection } from '@radix-ui/react-use-direction';
-import { usePrevious } from '@radix-ui/react-use-previous';
-import { useSize } from '@radix-ui/react-use-size';
-import { Primitive } from '@radix-ui/react-primitive';
-import { createCollection } from '@radix-ui/react-collection';
+import { clamp } from '@interop-ui/number';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { createContext } from '@interop-ui/react-context';
+import { useControllableState } from '@interop-ui/react-use-controllable-state';
+import { useDirection } from '@interop-ui/react-use-direction';
+import { usePrevious } from '@interop-ui/react-use-previous';
+import { useSize } from '@interop-ui/react-use-size';
+import { Primitive } from '@interop-ui/react-primitive';
+import { createCollection } from '@interop-ui/react-collection';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 

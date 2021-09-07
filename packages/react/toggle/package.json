@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-toggle",
+  "name": "@interop-ui/react-toggle",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",
@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
-    "@radix-ui/primitive": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@interop-ui/primitive": "workspace:*",
+    "@interop-ui/react-primitive": "workspace:*",
+    "@interop-ui/react-use-controllable-state": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0"

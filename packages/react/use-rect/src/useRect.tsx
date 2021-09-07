@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { observeElementRect } from '@radix-ui/rect';
+import { observeElementRect } from '@interop-ui/rect';
 
-import type { Measurable } from '@radix-ui/rect';
+import type { Measurable } from '@interop-ui/rect';
 
 /**
  * Use this custom hook to get access to an element's rect (getBoundingClientRect)

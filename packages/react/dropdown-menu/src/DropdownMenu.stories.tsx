@@ -14,8 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuArrow,
 } from './DropdownMenu';
-import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
-import * as Dialog from '@radix-ui/react-dialog';
+import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@interop-ui/popper';
+import * as Dialog from '@interop-ui/react-dialog';
 import { css } from '../../../../stitches.config';
 import { foodGroups } from '../../../../test-data/foods';
 import { classes, TickIcon } from '../../menu/src/Menu.stories';

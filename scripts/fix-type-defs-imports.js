@@ -4,7 +4,7 @@ console.log('Fix bad imports in d.ts files…');
 
 replaceInFiles({
   files: 'packages/**/dist/**/*.d.ts',
-  from: /(import\("@radix-ui\/[a-z-]+)[a-zA-Z/"]*"\)/g,
+  from: /(import\("@interop-ui\/[a-z-]+)[a-zA-Z/"]*"\)/g,
   to: '$1")',
 })
   .then(({ countOfMatchesByPaths }) => console.log('Fixed:', countOfMatchesByPaths))

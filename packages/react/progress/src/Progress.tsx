@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { createContext } from '@radix-ui/react-context';
-import { Primitive } from '@radix-ui/react-primitive';
+import { createContext } from '@interop-ui/react-context';
+import { Primitive } from '@interop-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * Progress

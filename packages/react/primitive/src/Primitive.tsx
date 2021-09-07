@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Slot } from '@radix-ui/react-slot';
+import { Slot } from '@interop-ui/react-slot';
 
 const NODES = ['a', 'button', 'div', 'h2', 'h3', 'p', 'img', 'span', 'svg'] as const;
 

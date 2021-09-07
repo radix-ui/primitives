@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-tooltip
+$ yarn add @interop-ui/react-tooltip
 # or
-$ npm install @radix-ui/react-tooltip
+$ npm install @interop-ui/react-tooltip
 ```
 
 ## Usage

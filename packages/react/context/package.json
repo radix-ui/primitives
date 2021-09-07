@@ -1,5 +1,5 @@
 {
-  "name": "@radix-ui/react-context",
+  "name": "@interop-ui/react-context",
   "version": "0.1.0",
   "license": "MIT",
   "source": "src/index.ts",

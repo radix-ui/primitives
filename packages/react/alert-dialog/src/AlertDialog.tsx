@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { createContext } from '@radix-ui/react-context';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import { Slottable } from '@radix-ui/react-slot';
+import { createContext } from '@interop-ui/react-context';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import * as DialogPrimitive from '@interop-ui/react-dialog';
+import { composeEventHandlers } from '@interop-ui/primitive';
+import { Slottable } from '@interop-ui/react-slot';
 
-import type * as Radix from '@radix-ui/react-primitive';
+import type * as Radix from '@interop-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
@@ -193,7 +193,7 @@ const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef }) =
 
 You can add a description to the \`${CONTENT_NAME}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
 
-Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in \`${CONTENT_NAME}\`. If the description is confusing or duplicative for sighted users, you can use the \`@radix-ui/react-visually-hidden\` primitive as a wrapper around your description component.
+Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in \`${CONTENT_NAME}\`. If the description is confusing or duplicative for sighted users, you can use the \`@interop-ui/react-visually-hidden\` primitive as a wrapper around your description component.
 
 For more information, see https://radix-ui.com/primitives/docs/components/alert-dialog`;
 

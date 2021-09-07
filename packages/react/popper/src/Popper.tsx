@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { getPlacementData } from '@radix-ui/popper';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
-import { useRect } from '@radix-ui/react-use-rect';
-import { useSize } from '@radix-ui/react-use-size';
-import { Primitive } from '@radix-ui/react-primitive';
-import * as ArrowPrimitive from '@radix-ui/react-arrow';
+import { getPlacementData } from '@interop-ui/popper';
+import { useComposedRefs } from '@interop-ui/react-compose-refs';
+import { createContext } from '@interop-ui/react-context';
+import { useRect } from '@interop-ui/react-use-rect';
+import { useSize } from '@interop-ui/react-use-size';
+import { Primitive } from '@interop-ui/react-primitive';
+import * as ArrowPrimitive from '@interop-ui/react-arrow';
 
-import type * as Radix from '@radix-ui/react-primitive';
-import type { Side, Align } from '@radix-ui/popper';
-import type { Measurable } from '@radix-ui/rect';
+import type * as Radix from '@interop-ui/react-primitive';
+import type { Side, Align } from '@interop-ui/popper';
+import type { Measurable } from '@interop-ui/rect';
 
 /* -------------------------------------------------------------------------------------------------
  * Popper

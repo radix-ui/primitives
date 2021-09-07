@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-toolbar
+$ yarn add @interop-ui/react-toolbar
 # or
-$ npm install @radix-ui/react-toolbar
+$ npm install @interop-ui/react-toolbar
 ```
 
 ## Usage

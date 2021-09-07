@@ -4,7 +4,7 @@ import {
   HoverCardTrigger,
   HoverCardContent,
   HoverCardArrow,
-} from '@radix-ui/react-hover-card';
+} from '@interop-ui/react-hover-card';
 
 export default function HoverCardPage() {
   return (

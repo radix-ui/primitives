@@ -3,9 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn add @radix-ui/react-toggle-group
+$ yarn add @interop-ui/react-toggle-group
 # or
-$ npm install @radix-ui/react-toggle-group
+$ npm install @interop-ui/react-toggle-group
 ```
 
 ## Usage
