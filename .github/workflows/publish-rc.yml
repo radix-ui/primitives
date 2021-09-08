@@ -14,14 +14,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+
+      - name: Set node version
+        id: node_version
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '${{ steps.node_version.outputs.NVMRC }}'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies and publish
-        uses: actions/setup-node@v2
-        with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
-          registry-url: 'https://registry.npmjs.org'
-      - run: yarn && yarn publish:next
+        run: yarn && yarn publish:next
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_STEPHEN }}
 
@@ -32,7 +35,7 @@ jobs:
           --header 'Authorization: token ${{ secrets.PAT_CHANGE_BRANCH_PROTECTION_RULES_FROM_STEPHEN }}' \
           --data '{"required_status_checks":null,"enforce_admins":false,"required_pull_request_reviews":null,"restrictions":null}'
 
-      - name: Commit release
+      - name: Commit release candidate
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: 'Publish release candidate'
