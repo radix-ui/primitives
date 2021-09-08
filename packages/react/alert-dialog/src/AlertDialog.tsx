@@ -68,7 +68,8 @@ const [AlertDialogContentProvider, useAlertDialogContentContext] =
 
 type AlertDialogContentElement = React.ElementRef<typeof DialogPrimitive.Content>;
 type DialogContentProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>;
-interface AlertDialogContentProps extends Omit<DialogContentProps, 'onPointerDownOutside'> {}
+interface AlertDialogContentProps
+  extends Omit<DialogContentProps, 'onPointerDownOutside' | 'onInteractOutside'> {}
 
 const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDialogContentProps>(
   (props, forwardedRef) => {
@@ -94,6 +95,7 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
               cancelRef.current?.focus({ preventScroll: true });
             })}
             onPointerDownOutside={(event) => event.preventDefault()}
+            onInteractOutside={(event) => event.preventDefault()}
           >
             {/**
              * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
