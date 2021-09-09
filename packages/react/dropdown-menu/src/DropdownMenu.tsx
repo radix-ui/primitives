@@ -49,7 +49,7 @@ interface DropdownMenuProps {
 
 const DropdownMenu: React.FC<DropdownMenuProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange, dir, modal = true } = props;
-  const isInsideContent = React.useContext(ContentContext);
+  const { isInsideContent } = useContentContext(DROPDOWN_MENU_NAME);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
@@ -169,7 +169,9 @@ DropdownMenuTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'DropdownMenuContent';
 
-const ContentContext = React.createContext(false);
+const [ContentProvider, useContentContext] = createContext(CONTENT_NAME, {
+  isInsideContent: false,
+});
 
 type DropdownMenuContentElement =
   | DropdownMenuRootContentElement
@@ -191,13 +193,13 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
     };
 
     return (
-      <ContentContext.Provider value={true}>
+      <ContentProvider isInsideContent={true}>
         {context.isRootMenu ? (
           <DropdownMenuRootContent {...commonProps} ref={forwardedRef} />
         ) : (
           <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
         )}
-      </ContentContext.Provider>
+      </ContentProvider>
     );
   }
 );

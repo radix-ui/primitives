@@ -1,7 +1,10 @@
 import * as React from 'react';
 
-function createContext<ContextValueType extends object>(rootComponentName: string) {
-  const Context = React.createContext<ContextValueType>(null as any);
+function createContext<ContextValueType extends object | undefined>(
+  groupName: string,
+  defaultContext?: ContextValueType
+) {
+  const Context = React.createContext<ContextValueType>(defaultContext as any);
 
   function Provider(props: ContextValueType & { children: React.ReactNode }) {
     const { children, ...providerProps } = props;
@@ -14,15 +17,15 @@ function createContext<ContextValueType extends object>(rootComponentName: strin
     return <Context.Provider value={value}>{children}</Context.Provider>;
   }
 
-  function useContext(consumerName: string) {
+  function useContext(partName: string) {
     const context = React.useContext(Context);
-    if (context === null) {
-      throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
+    if (!defaultContext && context === undefined) {
+      throw new Error(`\`${partName}\` must be used within \`${groupName}\``);
     }
     return context;
   }
 
-  Provider.displayName = rootComponentName + 'Provider';
+  Provider.displayName = groupName + 'Provider';
   return [Provider, useContext] as const;
 }
 
