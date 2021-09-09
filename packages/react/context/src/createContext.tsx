@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-function createContext<ContextValueType extends object | undefined>(
+function createContext<ContextValueType extends object | null>(
   groupName: string,
   defaultContext?: ContextValueType
 ) {
@@ -19,7 +19,7 @@ function createContext<ContextValueType extends object | undefined>(
 
   function useContext(partName: string) {
     const context = React.useContext(Context);
-    if (!defaultContext && context === undefined) {
+    if (defaultContext === undefined && context === undefined) {
       throw new Error(`\`${partName}\` must be used within \`${groupName}\``);
     }
     return context;
