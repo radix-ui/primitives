@@ -29,6 +29,11 @@ const Primitive = NODES.reduce(
     [node]: React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
       const { asChild, ...primitiveProps } = props;
       const Comp: any = asChild ? Slot : node;
+
+      React.useEffect(() => {
+        (window as any)[Symbol.for('radix-ui')] = true;
+      }, []);
+
       if ((props as any).as) console.error(AS_ERROR);
       return <Comp {...primitiveProps} ref={forwardedRef} />;
     }),
