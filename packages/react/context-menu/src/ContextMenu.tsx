@@ -35,7 +35,7 @@ interface ContextMenuProps {
 const ContextMenu: React.FC<ContextMenuProps> = (props) => {
   const { children, onOpenChange, dir, modal = true } = props;
   const [open, setOpen] = React.useState(false);
-  const { isInsideContent } = useContentContext(CONTEXT_MENU_NAME);
+  const contentContext = useContentContext(CONTEXT_MENU_NAME);
   const handleOpenChangeProp = useCallbackRef(onOpenChange);
 
   const handleOpenChange = React.useCallback(
@@ -46,7 +46,7 @@ const ContextMenu: React.FC<ContextMenuProps> = (props) => {
     [handleOpenChangeProp]
   );
 
-  return isInsideContent ? (
+  return contentContext.isInsideContent ? (
     <ContextMenuProvider
       isRootMenu={false}
       open={open}

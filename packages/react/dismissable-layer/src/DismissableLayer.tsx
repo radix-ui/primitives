@@ -323,10 +323,9 @@ function createTotalLayerCount(displayName?: string) {
     TotalLayerCountProvider.displayName = displayName;
   }
 
-  const CONSUMER_NAME = 'TotalLayerCountConsumer';
-
   function useTotalLayerCount(counted = true) {
-    const { total, onTotalIncrease, onTotalDecrease } = useTotalLayerCountContext(CONSUMER_NAME);
+    const { total, onTotalIncrease, onTotalDecrease } =
+      useTotalLayerCountContext('TotalLayerCountConsumer');
 
     React.useLayoutEffect(() => {
       if (counted) {
@@ -356,10 +355,9 @@ function createRunningLayerCount(displayName?: string) {
     RunningLayerCountProvider.displayName = displayName;
   }
 
-  const CONSUMER_NAME = 'RunningLayerCountConsumer';
   function usePreviousRunningLayerCount() {
-    const { count } = useRunningLayerCount(CONSUMER_NAME);
-    return count || 0;
+    const context = useRunningLayerCount('RunningLayerCountConsumer');
+    return context.count || 0;
   }
 
   return [RunningLayerCountProvider, usePreviousRunningLayerCount] as const;

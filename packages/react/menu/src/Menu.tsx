@@ -1044,13 +1044,13 @@ interface MenuItemIndicatorProps extends PrimitiveSpanProps {
 const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemIndicatorProps>(
   (props, forwardedRef) => {
     const { forceMount, ...indicatorProps } = props;
-    const { checked } = useItemIndicatorContext(ITEM_INDICATOR_NAME);
+    const indicatorContext = useItemIndicatorContext(ITEM_INDICATOR_NAME);
     return (
-      <Presence present={forceMount || checked}>
+      <Presence present={forceMount || indicatorContext.checked}>
         <Primitive.span
           {...indicatorProps}
           ref={forwardedRef}
-          data-state={getCheckedState(checked)}
+          data-state={getCheckedState(indicatorContext.checked)}
         />
       </Presence>
     );

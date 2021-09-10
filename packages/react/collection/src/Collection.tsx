@@ -17,6 +17,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
   /* -----------------------------------------------------------------------------------------------
    * CollectionProvider
    * ---------------------------------------------------------------------------------------------*/
+
   const PROVIDER_NAME = 'CollectionProvider';
 
   type CollectionElement = HTMLElement;
@@ -47,6 +48,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
   /* -----------------------------------------------------------------------------------------------
    * CollectionSlot
    * ---------------------------------------------------------------------------------------------*/
+
   const COLLECTION_SLOT_NAME = 'CollectionSlot';
 
   const CollectionSlot = React.forwardRef<CollectionElement, CollectionProps>(
@@ -96,10 +98,9 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
   /* -----------------------------------------------------------------------------------------------
    * useCollection
    * ---------------------------------------------------------------------------------------------*/
-  const CONSUMER_NAME = 'CollectionConsumer';
 
   function useCollection() {
-    const context = useCollectionContext(CONSUMER_NAME);
+    const context = useCollectionContext('CollectionConsumer');
     return {
       getItems() {
         const collection = context.collectionRef.current;

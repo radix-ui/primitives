@@ -25,10 +25,8 @@ const IdProvider: React.FC<{ children: React.ReactNode }> = (props) => {
   );
 };
 
-const CONSUMER_NAME = 'IdProviderConsumer';
-
 function useId(deterministicId?: string): string {
-  const context = useIdContext(CONSUMER_NAME);
+  const context = useIdContext('IdProviderConsumer');
   const isBrowser = Boolean(globalThis?.document);
 
   if (!isBrowser && context === defaultIdContext) {

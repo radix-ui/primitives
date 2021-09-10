@@ -49,7 +49,7 @@ interface DropdownMenuProps {
 
 const DropdownMenu: React.FC<DropdownMenuProps> = (props) => {
   const { children, open: openProp, defaultOpen, onOpenChange, dir, modal = true } = props;
-  const { isInsideContent } = useContentContext(DROPDOWN_MENU_NAME);
+  const contentContext = useContentContext(DROPDOWN_MENU_NAME);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
@@ -58,7 +58,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props) => {
 
   const handleOpenToggle = React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]);
 
-  return isInsideContent ? (
+  return contentContext.isInsideContent ? (
     <DropdownMenuProvider
       isRootMenu={false}
       open={open}

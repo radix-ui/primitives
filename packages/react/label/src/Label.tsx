@@ -94,10 +94,8 @@ Label.displayName = NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const CONSUMER_NAME = 'LabelConsumer';
-
 const useLabelContext = (element?: HTMLElement | null) => {
-  const context = useLabelContextImpl(CONSUMER_NAME);
+  const context = useLabelContextImpl('LabelConsumer');
   const { controlRef } = context;
 
   React.useEffect(() => {
