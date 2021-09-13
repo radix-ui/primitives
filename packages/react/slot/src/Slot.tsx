@@ -13,28 +13,24 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
   const childLength = React.Children.count(children);
 
-  if (childLength === 1) {
-    return (
-      <SlotClone {...slotProps} ref={forwardedRef}>
-        {children}
-      </SlotClone>
-    );
-  }
-
-  return (
+  return childLength === 1 ? (
+    <SlotClone {...slotProps} ref={forwardedRef}>
+      {children}
+    </SlotClone>
+  ) : React.Children.toArray(children).some(isSlottable) ? (
     <>
       {React.Children.map(children, (child) => {
-        if (React.isValidElement(child) && child.type === Slottable) {
-          return (
-            <SlotClone {...slotProps} ref={forwardedRef}>
-              {child.props.children}
-            </SlotClone>
-          );
-        }
-
-        return child;
+        return isSlottable(child) ? (
+          <SlotClone {...slotProps} ref={forwardedRef}>
+            {child.props.children}
+          </SlotClone>
+        ) : (
+          child
+        );
       })}
     </>
+  ) : (
+    <>{React.Children.only(children)}</>
   );
 });
 
@@ -50,11 +46,10 @@ interface SlotCloneProps {
 
 const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
-  const child = React.isValidElement(children) && React.Children.only(children);
-  return child
-    ? React.cloneElement(child, {
-        ...mergeProps(slotProps, child.props),
-        ref: composeRefs(forwardedRef, (child as any).ref),
+  return React.isValidElement(children)
+    ? React.cloneElement(children, {
+        ...mergeProps(slotProps, children.props),
+        ref: composeRefs(forwardedRef, (children as any).ref),
       })
     : null;
 });
@@ -72,6 +67,10 @@ const Slottable = ({ children }: { children: React.ReactNode }) => {
 /* ---------------------------------------------------------------------------------------------- */
 
 type AnyProps = Record<string, any>;
+
+function isSlottable(child: React.ReactNode): child is React.ReactElement {
+  return React.isValidElement(child) && child.type === Slottable;
+}
 
 function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
   // all child props should override
