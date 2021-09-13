@@ -32,7 +32,7 @@ interface CollapsibleProps extends PrimitiveDivProps {
   defaultOpen?: boolean;
   open?: boolean;
   disabled?: boolean;
-  onOpenChange?(open?: boolean): void;
+  onOpenChange?(open: boolean): void;
 }
 
 const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(

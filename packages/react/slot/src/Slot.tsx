@@ -50,9 +50,8 @@ interface SlotCloneProps {
 
 const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
-  const child = React.Children.only(children);
-
-  return React.isValidElement(child)
+  const child = React.isValidElement(children) && React.Children.only(children);
+  return child
     ? React.cloneElement(child, {
         ...mergeProps(slotProps, child.props),
         ref: composeRefs(forwardedRef, (child as any).ref),
@@ -67,7 +66,7 @@ SlotClone.displayName = 'SlotClone';
  * -----------------------------------------------------------------------------------------------*/
 
 const Slottable = ({ children }: { children: React.ReactNode }) => {
-  return children as React.ReactElement;
+  return <>{children}</>;
 };
 
 /* ---------------------------------------------------------------------------------------------- */
