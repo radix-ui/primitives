@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Label, useLabelContext } from './Label';
 import { IdProvider } from '@radix-ui/react-id';
+import * as Checkbox from '@radix-ui/react-checkbox';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Label', excludeStories: ['RECOMMENDED_CSS__LABEL__ROOT'] };
@@ -27,6 +28,56 @@ export const WithHtmlFor = () => (
     <Control id="test" />
   </>
 );
+
+export const WithControl = () => {
+  return (
+    <>
+      <h1>Wrapping control</h1>
+      <Label>
+        <Checkbox.Root className={controlClass}>
+          <Checkbox.Indicator className={indicatorClass} />
+        </Checkbox.Root>{' '}
+        Label
+      </Label>
+
+      <h1>Referencing control</h1>
+      <Checkbox.Root id="control" className={controlClass}>
+        <Checkbox.Indicator className={indicatorClass} />{' '}
+      </Checkbox.Root>
+      <Label htmlFor="control">Label</Label>
+
+      <h1>Wrapping control - stopping propagation</h1>
+      <Label>
+        <Checkbox.Root className={controlClass}>
+          <Checkbox.Indicator className={indicatorClass} />
+        </Checkbox.Root>{' '}
+        Label.{' '}
+        <span
+          aria-hidden
+          style={{ color: 'royalblue' }}
+          onClick={(event) => event.stopPropagation()}
+        >
+          Clicking me should not propagate
+        </span>
+      </Label>
+
+      <h1>Referencing control - stopping propagation</h1>
+      <Checkbox.Root id="control-b" className={controlClass}>
+        <Checkbox.Indicator className={indicatorClass} />{' '}
+      </Checkbox.Root>
+      <Label htmlFor="control-b">
+        Label.{' '}
+        <span
+          aria-hidden
+          style={{ color: 'royalblue' }}
+          onClick={(event) => event.stopPropagation()}
+        >
+          Clicking me should not propagate
+        </span>
+      </Label>
+    </>
+  );
+};
 
 export const Chromatic = () => (
   <IdProvider>
@@ -76,7 +127,7 @@ const rootClass = css({
 });
 
 const controlClass = css({
-  display: 'inline-block',
+  display: 'inline-flex',
   border: '1px solid gainsboro',
   padding: 10,
   verticalAlign: 'middle',
@@ -84,7 +135,16 @@ const controlClass = css({
 
   '&::after': {
     content: 'attr(aria-labelledby)',
+    marginLeft: 5,
   },
+});
+
+const indicatorClass = css({
+  display: 'inline-block',
+  width: 15,
+  height: 15,
+  background: 'black',
+  marginRight: 10,
 });
 
 const chromaticRootClass = css(rootClass, {
