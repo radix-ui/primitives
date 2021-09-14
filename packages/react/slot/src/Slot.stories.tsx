@@ -17,56 +17,106 @@ export const WithSlottable = () => (
 
 export const Chromatic = () => (
   <>
-    <h1>
-      One consumer child without internal slottable - <span aria-hidden>✅</span>
-    </h1>
+    <h1>Without Slottable</h1>
+
+    <h2>
+      One consumer child - <span aria-hidden>✅</span>
+    </h2>
     <ErrorBoundary>
       <SlotWithoutSlottable>
         <b data-slot-element>hello</b>
       </SlotWithoutSlottable>
     </ErrorBoundary>
 
-    <h1>
-      One consumer child with internal slottable - <span aria-hidden>✅</span>
-    </h1>
+    <h2>
+      Multiple consumer child - <span aria-hidden>🔴</span>
+    </h2>
     <ErrorBoundary>
-      <SlotWithSlottable>
+      <SlotWithoutSlottable>
         <b data-slot-element>hello</b>
-      </SlotWithSlottable>
+        <b data-slot-element>hello</b>
+      </SlotWithoutSlottable>
     </ErrorBoundary>
 
-    <h1>
-      No consumer child without internal slottable - <span aria-hidden>🔴</span>
-    </h1>
+    <h2>
+      Null consumer child - <span aria-hidden>✅</span>
+    </h2>
+    <ErrorBoundary>
+      <SlotWithoutSlottable>{null}</SlotWithoutSlottable>
+    </ErrorBoundary>
+
+    <h2>
+      Empty consumer child - <span aria-hidden>✅</span>
+    </h2>
     <ErrorBoundary>
       <SlotWithoutSlottable></SlotWithoutSlottable>
     </ErrorBoundary>
 
-    <h1>
-      No consumer child with internal slottable - <span aria-hidden>🔴</span>
-    </h1>
+    <h2>
+      False consumer child - <span aria-hidden>✅</span>
+    </h2>
     <ErrorBoundary>
-      <SlotWithSlottable></SlotWithSlottable>
+      <SlotWithoutSlottable>{false}</SlotWithoutSlottable>
     </ErrorBoundary>
 
-    <h1>
-      Multiple consumer children without internal slottable - <span aria-hidden>🔴</span>
-    </h1>
+    <h1>With Slottable</h1>
+
+    <h2>
+      One consumer child - <span aria-hidden>✅</span>
+    </h2>
     <ErrorBoundary>
-      <SlotWithoutSlottable>
+      <SlotWithSlottable>
         <b data-slot-element>hello</b>
-        <b data-slot-element>hello</b>
-      </SlotWithoutSlottable>
+      </SlotWithSlottable>
     </ErrorBoundary>
 
-    <h1>
-      Multiple consumer children with internal slottable - <span aria-hidden>🔴</span>
-    </h1>
+    <h2>
+      Multiple consumer child - <span aria-hidden>🔴</span>
+    </h2>
     <ErrorBoundary>
       <SlotWithSlottable>
         <b data-slot-element>hello</b>
         <b data-slot-element>hello</b>
       </SlotWithSlottable>
+    </ErrorBoundary>
+
+    <h2>
+      Null consumer child - <span aria-hidden>✅</span>
+    </h2>
+    <ErrorBoundary>
+      <SlotWithSlottable>{null}</SlotWithSlottable>
+    </ErrorBoundary>
+
+    <h2>
+      Empty consumer child - <span aria-hidden>✅</span>
+    </h2>
+    <ErrorBoundary>
+      <SlotWithSlottable></SlotWithSlottable>
+    </ErrorBoundary>
+
+    <h2>
+      False consumer child - <span aria-hidden>✅</span>
+    </h2>
+    <ErrorBoundary>
+      <SlotWithSlottable>{false}</SlotWithSlottable>
+    </ErrorBoundary>
+
+    <h2>
+      False internal child - <span aria-hidden>✅</span>
+    </h2>
+    <ErrorBoundary>
+      <SlotWithFalseInternalChild>
+        <b data-slot-element>hello</b>
+      </SlotWithFalseInternalChild>
+    </ErrorBoundary>
+
+    <h2>
+      Null internal child - <span aria-hidden>✅</span>
+    </h2>
+    <ErrorBoundary>
+      <SlotWithNullInternalChild>
+        <b data-slot-element>hello</b>
+      </SlotWithNullInternalChild>
     </ErrorBoundary>
   </>
 );
@@ -97,5 +147,17 @@ const SlotWithSlottable = ({ children, ...props }: any) => (
   <Slot {...props}>
     <Slottable>{children}</Slottable>
     <span>world</span>
+  </Slot>
+);
+
+const SlotWithFalseInternalChild = ({ children, ...props }: any) => (
+  <Slot {...props}>
+    <Slottable>{false && children}</Slottable>
+  </Slot>
+);
+
+const SlotWithNullInternalChild = ({ children, ...props }: any) => (
+  <Slot {...props}>
+    <Slottable>{false ? children : null}</Slottable>
   </Slot>
 );

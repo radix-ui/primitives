@@ -11,23 +11,15 @@ interface SlotProps {
 
 const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
-  const childLength = React.Children.count(children);
+  const childArray = React.Children.toArray(children);
 
-  if (childLength === 1) {
-    return (
-      <SlotClone {...slotProps} ref={forwardedRef}>
-        {children}
-      </SlotClone>
-    );
-  }
-
-  if (React.Children.toArray(children).some(isSlottable)) {
+  if (childArray.some(isSlottable)) {
     return (
       <>
-        {React.Children.map(children, (child) => {
+        {childArray.map((child) => {
           return isSlottable(child) ? (
             <SlotClone {...slotProps} ref={forwardedRef}>
-              <Slot>{child.props.children}</Slot>
+              {child.props.children}
             </SlotClone>
           ) : (
             child
@@ -37,7 +29,11 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
     );
   }
 
-  return <>{React.Children.only(children)}</>;
+  return (
+    <SlotClone {...slotProps} ref={forwardedRef}>
+      {children}
+    </SlotClone>
+  );
 });
 
 Slot.displayName = 'Slot';
@@ -52,12 +48,15 @@ interface SlotCloneProps {
 
 const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
-  return React.isValidElement(children)
-    ? React.cloneElement(children, {
-        ...mergeProps(slotProps, children.props),
-        ref: composeRefs(forwardedRef, (children as any).ref),
-      })
-    : null;
+
+  if (React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      ...mergeProps(slotProps, children.props),
+      ref: composeRefs(forwardedRef, (children as any).ref),
+    });
+  }
+
+  return React.Children.count(children) > 1 ? React.Children.only(null) : null;
 });
 
 SlotClone.displayName = 'SlotClone';

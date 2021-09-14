@@ -17,7 +17,7 @@ export const Controlled = () => {
     <Collapsible open={open} onOpenChange={setOpen} className={rootClass}>
       <CollapsibleTrigger className={triggerClass}>{open ? 'close' : 'open'}</CollapsibleTrigger>
       <CollapsibleContent className={contentClass} asChild>
-        <div>Content 1</div>
+        <article>Content 1</article>
       </CollapsibleContent>
     </Collapsible>
   );
