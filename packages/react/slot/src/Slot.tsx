@@ -13,25 +13,31 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
   const childLength = React.Children.count(children);
 
-  return childLength === 1 ? (
-    <SlotClone {...slotProps} ref={forwardedRef}>
-      {children}
-    </SlotClone>
-  ) : React.Children.toArray(children).some(isSlottable) ? (
-    <>
-      {React.Children.map(children, (child) => {
-        return isSlottable(child) ? (
-          <SlotClone {...slotProps} ref={forwardedRef}>
-            {child.props.children}
-          </SlotClone>
-        ) : (
-          child
-        );
-      })}
-    </>
-  ) : (
-    <>{React.Children.only(children)}</>
-  );
+  if (childLength === 1) {
+    return (
+      <SlotClone {...slotProps} ref={forwardedRef}>
+        {children}
+      </SlotClone>
+    );
+  }
+
+  if (React.Children.toArray(children).some(isSlottable)) {
+    return (
+      <>
+        {React.Children.map(children, (child) => {
+          return isSlottable(child) ? (
+            <SlotClone {...slotProps} ref={forwardedRef}>
+              <Slot>{child.props.children}</Slot>
+            </SlotClone>
+          ) : (
+            child
+          );
+        })}
+      </>
+    );
+  }
+
+  return <>{React.Children.only(children)}</>;
 });
 
 Slot.displayName = 'Slot';
