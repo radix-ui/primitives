@@ -28,6 +28,35 @@ export const WithMultipleOpenAndCloseAnimations = () => (
   <Animation className={multipleOpenAndCloseAnimationsClass} />
 );
 
+export const WithDeferredMountAnimation = () => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const timerRef = React.useRef(0);
+  const [open, setOpen] = React.useState(false);
+  const [animate, setAnimate] = React.useState(false);
+
+  React.useEffect(() => {
+    if (open) {
+      timerRef.current = window.setTimeout(() => {
+        setAnimate(true);
+      }, 150);
+    } else {
+      setAnimate(false);
+      window.clearTimeout(timerRef.current);
+    }
+  }, [open]);
+
+  return (
+    <>
+      <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
+      <Presence present={open}>
+        <div className={animate ? mountAnimationClass : noAnimationClass} ref={ref}>
+          Content
+        </div>
+      </Presence>
+    </>
+  );
+};
+
 function Animation(props: React.ComponentProps<'div'>) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -92,6 +121,10 @@ const slideUp = css.keyframes({
 const slideDown = css.keyframes({
   from: { transform: 'translateY(0)' },
   to: { transform: 'translateY(30px)' },
+});
+
+const noAnimationClass = css({
+  animation: 'none',
 });
 
 const mountAnimationClass = css({
