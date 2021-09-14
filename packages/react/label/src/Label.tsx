@@ -94,10 +94,11 @@ Label.displayName = NAME;
 
 const useLabelContext = (element?: HTMLElement | null) => {
   const context = React.useContext(LabelContext);
+  const { onControlChange } = context || {};
 
   React.useEffect(() => {
-    if (context && element) context.onControlChange(element);
-  }, [context, element]);
+    if (element) onControlChange?.(element);
+  }, [element, onControlChange]);
 
   return context?.id;
 };
