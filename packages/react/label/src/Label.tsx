@@ -11,8 +11,11 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const NAME = 'Label';
 
-type LabelContextValue = { id: string; onControlChange(control: HTMLElement | null): void };
-const LabelContext = React.createContext<LabelContextValue | undefined>(undefined);
+type LabelContextValue = { id?: string; onControlChange(control: HTMLElement | null): void };
+const LabelContext = React.createContext<LabelContextValue>({
+  id: undefined,
+  onControlChange: () => {},
+});
 
 type LabelElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
@@ -23,14 +26,14 @@ interface LabelProps extends PrimitiveSpanProps {
 const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) => {
   const { htmlFor, id: idProp, ...labelProps } = props;
   const [control, setControl] = React.useState<HTMLElement | null>(null);
-  const labelRef = React.useRef<HTMLSpanElement>(null);
-  const ref = useComposedRefs(forwardedRef, labelRef);
+  const ref = React.useRef<HTMLSpanElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
   const id = useId(idProp);
 
   React.useEffect(() => {
     if (htmlFor) {
       const element = document.getElementById(htmlFor);
-      const label = labelRef.current;
+      const label = ref.current;
       if (label && element) {
         const getAriaLabel = () => element.getAttribute('aria-labelledby');
         const ariaLabelledBy = [getAriaLabel(), id].filter(Boolean).join(' ');
@@ -53,14 +56,12 @@ const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) =
   }, [id, htmlFor]);
 
   return (
-    <LabelContext.Provider
-      value={React.useMemo(() => ({ id, ref: labelRef, onControlChange: setControl }), [id])}
-    >
+    <LabelContext.Provider value={React.useMemo(() => ({ id, onControlChange: setControl }), [id])}>
       <Primitive.span
         role="label"
         id={id}
         {...labelProps}
-        ref={ref}
+        ref={composedRefs}
         onMouseDown={(event) => {
           props.onMouseDown?.(event);
           // prevent text selection when double clicking label
@@ -94,13 +95,13 @@ Label.displayName = NAME;
 
 const useLabelContext = (element?: HTMLElement | null) => {
   const context = React.useContext(LabelContext);
-  const { onControlChange } = context || {};
+  const { onControlChange } = context;
 
   React.useEffect(() => {
-    if (element) onControlChange?.(element);
+    if (element) onControlChange(element);
   }, [element, onControlChange]);
 
-  return context?.id;
+  return context.id;
 };
 
 const Root = Label;
