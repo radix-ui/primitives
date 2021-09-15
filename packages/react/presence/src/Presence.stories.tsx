@@ -36,9 +36,7 @@ export const WithDeferredMountAnimation = () => {
 
   React.useEffect(() => {
     if (open) {
-      timerRef.current = window.setTimeout(() => {
-        setAnimate(true);
-      }, 150);
+      timerRef.current = window.setTimeout(() => setAnimate(true), 150);
     } else {
       setAnimate(false);
       window.clearTimeout(timerRef.current);
@@ -47,9 +45,13 @@ export const WithDeferredMountAnimation = () => {
 
   return (
     <>
+      <p>
+        Deferred animation should unmount correctly when toggled. Content will flash briefly while
+        we wait for animation to be applied.
+      </p>
       <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
       <Presence present={open}>
-        <div className={animate ? mountAnimationClass : noAnimationClass} ref={ref}>
+        <div className={animate ? mountAnimationClass : undefined} ref={ref}>
           Content
         </div>
       </Presence>
@@ -121,10 +123,6 @@ const slideUp = css.keyframes({
 const slideDown = css.keyframes({
   from: { transform: 'translateY(0)' },
   to: { transform: 'translateY(30px)' },
-});
-
-const noAnimationClass = css({
-  animation: 'none',
 });
 
 const mountAnimationClass = css({
