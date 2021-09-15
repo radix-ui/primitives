@@ -69,7 +69,9 @@ const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) =
   }, [id, htmlFor]);
 
   return (
-    <LabelContext.Provider value={React.useMemo(() => ({ id, ref: labelRef }), [id])}>
+    <LabelContext.Provider
+      value={React.useMemo((): LabelContextValue => ({ id, ref: labelRef }), [id])}
+    >
       <Primitive.span role="label" id={id} {...labelProps} ref={ref} />
     </LabelContext.Provider>
   );

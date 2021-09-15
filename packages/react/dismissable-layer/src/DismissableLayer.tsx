@@ -301,16 +301,26 @@ function useFocusOutside(onFocusOutside?: (event: FocusOutsideEvent) => void) {
  * -----------------------------------------------------------------------------------------------*/
 
 function createTotalLayerCount(displayName?: string) {
-  const TotalLayerCountContext = React.createContext<{
+  type TotalLayerCountContextValue = {
     total: number;
     setTotal: React.Dispatch<React.SetStateAction<number>>;
-  }>({ total: 0, setTotal: () => {} });
+  };
+  const TotalLayerCountContext = React.createContext<TotalLayerCountContextValue>({
+    total: 0,
+    setTotal: () => {},
+  });
 
   const TotalLayerCountProvider: React.FC = ({ children }) => {
     const [total, setTotal] = React.useState(0);
-    const context = React.useMemo(() => ({ total, setTotal }), [total, setTotal]);
     return (
-      <TotalLayerCountContext.Provider value={context}>{children}</TotalLayerCountContext.Provider>
+      <TotalLayerCountContext.Provider
+        value={React.useMemo(
+          (): TotalLayerCountContextValue => ({ total, setTotal }),
+          [total, setTotal]
+        )}
+      >
+        {children}
+      </TotalLayerCountContext.Provider>
     );
   };
   if (displayName) {

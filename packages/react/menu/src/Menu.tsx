@@ -971,12 +971,13 @@ const MenuRadioGroup = React.forwardRef<MenuRadioGroupElement, MenuRadioGroupPro
   (props, forwardedRef) => {
     const { value, onValueChange, ...groupProps } = props;
     const handleValueChange = useCallbackRef(onValueChange);
-    const context = React.useMemo(
-      () => ({ value, onValueChange: handleValueChange }),
-      [value, handleValueChange]
-    );
     return (
-      <RadioGroupContext.Provider value={context}>
+      <RadioGroupContext.Provider
+        value={React.useMemo(
+          (): MenuRadioGroupProps => ({ value, onValueChange: handleValueChange }),
+          [value, handleValueChange]
+        )}
+      >
         <MenuGroup {...groupProps} ref={forwardedRef} />
       </RadioGroupContext.Provider>
     );

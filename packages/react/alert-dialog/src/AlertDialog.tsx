@@ -59,10 +59,12 @@ AlertDialogOverlay.displayName = OVERLAY_NAME;
 
 const CONTENT_NAME = 'AlertDialogContent';
 
+type LabelWarningContextValue = React.ComponentPropsWithoutRef<
+  typeof DialogPrimitive.LabelWarningProvider
+>['value'];
 type AlertDialogContentContextValue = {
   cancelRef: React.MutableRefObject<AlertDialogCancelElement | null>;
 };
-
 const [AlertDialogContentProvider, useAlertDialogContentContext] =
   createContext<AlertDialogContentContextValue>(CONTENT_NAME);
 
@@ -81,7 +83,11 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
     return (
       <DialogPrimitive.LabelWarningProvider
         value={React.useMemo(
-          () => ({ contentName: CONTENT_NAME, titleName: TITLE_NAME, docsSlug: 'alert-dialog' }),
+          (): LabelWarningContextValue => ({
+            contentName: CONTENT_NAME,
+            titleName: TITLE_NAME,
+            docsSlug: 'alert-dialog',
+          }),
           []
         )}
       >

@@ -1,0 +1,9 @@
+declined:
+  - primitives
+  - "@radix-ui/react-alert-dialog"
+  - "@radix-ui/react-collection"
+  - "@radix-ui/react-dismissable-layer"
+  - "@radix-ui/react-id"
+  - "@radix-ui/react-label"
+  - "@radix-ui/react-menu"
+  - "@radix-ui/react-slider"

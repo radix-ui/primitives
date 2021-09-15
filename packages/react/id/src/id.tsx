@@ -18,15 +18,18 @@ const IdContext = React.createContext<IdContextValue>(defaultIdContext);
 const IdProvider: React.FC = (props) => {
   const currentContext = React.useContext(IdContext);
   const isRootIdProvider = currentContext === defaultIdContext;
-  const context: IdContextValue = React.useMemo(
-    () => ({
-      prefix: isRootIdProvider ? 0 : ++currentContext.prefix,
-      current: 0,
-    }),
-    [isRootIdProvider, currentContext]
+  return (
+    <IdContext.Provider
+      value={React.useMemo(
+        (): IdContextValue => ({
+          prefix: isRootIdProvider ? 0 : ++currentContext.prefix,
+          current: 0,
+        }),
+        [isRootIdProvider, currentContext]
+      )}
+      {...props}
+    />
   );
-
-  return <IdContext.Provider value={context} {...props} />;
 };
 
 function useId(deterministicId?: string): string {

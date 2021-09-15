@@ -177,12 +177,13 @@ Slider.displayName = SLIDER_NAME;
  * SliderHorizontal
  * -----------------------------------------------------------------------------------------------*/
 
-const SliderOrientationContext = React.createContext<{
+type SliderOrientationContextValue = {
   startEdge: 'bottom' | 'left' | 'right';
   endEdge: 'top' | 'right' | 'left';
   size: keyof NonNullable<ReturnType<typeof useSize>>;
   direction: number;
-}>({} as any);
+};
+const SliderOrientationContext = React.createContext<SliderOrientationContextValue>({} as any);
 
 type SliderOrientationPrivateProps = {
   min: number;
@@ -224,7 +225,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
     return (
       <SliderOrientationContext.Provider
         value={React.useMemo(
-          () => ({
+          (): SliderOrientationContextValue => ({
             startEdge: isDirectionLTR ? 'left' : 'right',
             endEdge: isDirectionLTR ? 'right' : 'left',
             direction: isDirectionLTR ? 1 : -1,
@@ -287,7 +288,12 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
     return (
       <SliderOrientationContext.Provider
         value={React.useMemo(
-          () => ({ startEdge: 'bottom', endEdge: 'top', size: 'height', direction: 1 }),
+          (): SliderOrientationContextValue => ({
+            startEdge: 'bottom',
+            endEdge: 'top',
+            size: 'height',
+            direction: 1,
+          }),
           []
         )}
       >

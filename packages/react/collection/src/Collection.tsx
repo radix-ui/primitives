@@ -32,7 +32,9 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
     const ref = React.useRef<CollectionElement>(null);
     const itemMap = React.useRef<ContextValue['itemMap']>(new Map()).current;
     return (
-      <Context.Provider value={React.useMemo(() => ({ itemMap, collectionRef: ref }), [itemMap])}>
+      <Context.Provider
+        value={React.useMemo((): ContextValue => ({ itemMap, collectionRef: ref }), [itemMap])}
+      >
         {children}
       </Context.Provider>
     );
