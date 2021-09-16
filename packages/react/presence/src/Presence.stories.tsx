@@ -28,6 +28,37 @@ export const WithMultipleOpenAndCloseAnimations = () => (
   <Animation className={multipleOpenAndCloseAnimationsClass} />
 );
 
+export const WithDeferredMountAnimation = () => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const timerRef = React.useRef(0);
+  const [open, setOpen] = React.useState(false);
+  const [animate, setAnimate] = React.useState(false);
+
+  React.useEffect(() => {
+    if (open) {
+      timerRef.current = window.setTimeout(() => setAnimate(true), 150);
+    } else {
+      setAnimate(false);
+      window.clearTimeout(timerRef.current);
+    }
+  }, [open]);
+
+  return (
+    <>
+      <p>
+        Deferred animation should unmount correctly when toggled. Content will flash briefly while
+        we wait for animation to be applied.
+      </p>
+      <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
+      <Presence present={open}>
+        <div className={animate ? mountAnimationClass : undefined} ref={ref}>
+          Content
+        </div>
+      </Presence>
+    </>
+  );
+};
+
 function Animation(props: React.ComponentProps<'div'>) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
