@@ -271,12 +271,21 @@ export const Chromatic = () => (
       <SliderThumb className={thumbClass} />
     </Slider>
 
+    <h1>Scenarios</h1>
     <h2>Extremes</h2>
     <Slider className={rootClass} defaultValue={[0, 100]}>
       <SliderTrack className={trackClass}>
         <SliderRange className={rangeClass} />
       </SliderTrack>
       <SliderThumb className={thumbClass} />
+      <SliderThumb className={thumbClass} />
+    </Slider>
+
+    <h2>0 case</h2>
+    <Slider className={rootClass} defaultValue={[0]} min={-100} max={100}>
+      <SliderTrack className={trackClass}>
+        <SliderRange className={rangeClass} />
+      </SliderTrack>
       <SliderThumb className={thumbClass} />
     </Slider>
 
