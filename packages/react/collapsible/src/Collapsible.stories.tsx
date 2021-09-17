@@ -11,6 +11,18 @@ export const Styled = () => (
   </Collapsible>
 );
 
+export const Controlled = () => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} className={rootClass}>
+      <CollapsibleTrigger className={triggerClass}>{open ? 'close' : 'open'}</CollapsibleTrigger>
+      <CollapsibleContent className={contentClass} asChild>
+        <article>Content 1</article>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
+
 export const Animated = () => {
   return (
     <Collapsible className={rootClass}>

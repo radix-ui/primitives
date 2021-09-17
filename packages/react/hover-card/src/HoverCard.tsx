@@ -98,7 +98,7 @@ const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTrig
           ref={forwardedRef}
           onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
           onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
-        ></Primitive.a>
+        />
       </PopperPrimitive.Anchor>
     );
   }
