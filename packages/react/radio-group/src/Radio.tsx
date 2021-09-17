@@ -158,6 +158,7 @@ const BubbleInput = (props: BubbleInputProps) => {
   return (
     <input
       type="radio"
+      aria-hidden
       defaultChecked={checked}
       {...inputProps}
       tabIndex={-1}
