@@ -156,6 +156,7 @@ const BubbleInput = (props: BubbleInputProps) => {
   return (
     <input
       type="checkbox"
+      aria-hidden
       defaultChecked={checked}
       {...inputProps}
       tabIndex={-1}
