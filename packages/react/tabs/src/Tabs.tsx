@@ -180,7 +180,7 @@ interface TabsContentProps extends PrimitiveDivProps {
 
 const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
   (props, forwardedRef) => {
-    const { value, ...contentProps } = props;
+    const { value, children, ...contentProps } = props;
     const context = useTabsContext(CONTENT_NAME);
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
@@ -196,7 +196,9 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
         tabIndex={0}
         {...contentProps}
         ref={forwardedRef}
-      />
+      >
+        {isSelected && children}
+      </Primitive.div>
     );
   }
 );
