@@ -55,7 +55,10 @@ type AccordionValueContextValue = {
 const [AccordionValueProvider, useAccordionValueContext] =
   createContext<AccordionValueContextValue>(ACCORDION_NAME);
 
-const AccordionCollapsibleContext = React.createContext(false);
+const [AccordionCollapsibleProvider, useAccordionCollapsibleContext] = createContext(
+  ACCORDION_NAME,
+  { collapsible: false }
+);
 
 type AccordionImplSingleElement = AccordionImplElement;
 interface AccordionImplSingleProps extends AccordionImplProps {
@@ -101,9 +104,9 @@ const AccordionImplSingle = React.forwardRef<AccordionImplSingleElement, Accordi
         onItemOpen={setValue}
         onItemClose={React.useCallback(() => collapsible && setValue(''), [collapsible, setValue])}
       >
-        <AccordionCollapsibleContext.Provider value={collapsible}>
+        <AccordionCollapsibleProvider collapsible={collapsible}>
           <AccordionImpl {...accordionSingleProps} ref={forwardedRef} />
-        </AccordionCollapsibleContext.Provider>
+        </AccordionCollapsibleProvider>
       </AccordionValueProvider>
     );
   }
@@ -157,9 +160,9 @@ const AccordionImplMultiple = React.forwardRef<
 
   return (
     <AccordionValueProvider value={value} onItemOpen={handleItemOpen} onItemClose={handleItemClose}>
-      <AccordionCollapsibleContext.Provider value={true}>
+      <AccordionCollapsibleProvider collapsible={true}>
         <AccordionImpl {...accordionMultipleProps} ref={forwardedRef} />
-      </AccordionCollapsibleContext.Provider>
+      </AccordionCollapsibleProvider>
     </AccordionValueProvider>
   );
 });
@@ -354,7 +357,7 @@ const AccordionTrigger = React.forwardRef<AccordionTriggerElement, AccordionTrig
   (props, forwardedRef) => {
     const { triggerNodesRef } = useAccordionContext(TRIGGER_NAME);
     const itemContext = useAccordionItemContext(TRIGGER_NAME);
-    const collapsible = React.useContext(AccordionCollapsibleContext);
+    const collapsibleContext = useAccordionCollapsibleContext(TRIGGER_NAME);
 
     const ref = React.useRef<AccordionTriggerElement>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -374,7 +377,7 @@ const AccordionTrigger = React.forwardRef<AccordionTriggerElement, AccordionTrig
 
     return (
       <CollapsiblePrimitive.Trigger
-        aria-disabled={(itemContext.open && !collapsible) || undefined}
+        aria-disabled={(itemContext.open && !collapsibleContext.collapsible) || undefined}
         id={itemContext.triggerId}
         {...props}
         ref={composedRefs}
