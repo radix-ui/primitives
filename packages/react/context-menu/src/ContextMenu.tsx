@@ -35,7 +35,7 @@ interface ContextMenuProps {
 const ContextMenu: React.FC<ContextMenuProps> = (props) => {
   const { children, onOpenChange, dir, modal = true } = props;
   const [open, setOpen] = React.useState(false);
-  const isInsideContent = React.useContext(ContentContext);
+  const contentContext = useContentContext(CONTEXT_MENU_NAME);
   const handleOpenChangeProp = useCallbackRef(onOpenChange);
 
   const handleOpenChange = React.useCallback(
@@ -46,7 +46,7 @@ const ContextMenu: React.FC<ContextMenuProps> = (props) => {
     [handleOpenChangeProp]
   );
 
-  return isInsideContent ? (
+  return contentContext.isInsideContent ? (
     <ContextMenuProvider
       isRootMenu={false}
       open={open}
@@ -103,7 +103,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
     React.useEffect(() => clearLongPress, [clearLongPress]);
 
     return (
-      <ContentContext.Provider value={false}>
+      <ContentProvider isInsideContent={false}>
         <MenuPrimitive.Anchor virtualRef={virtualRef} />
         <Primitive.span
           {...props}
@@ -132,7 +132,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
           )}
           onPointerUp={composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))}
         />
-      </ContentContext.Provider>
+      </ContentProvider>
     );
   }
 );
@@ -145,7 +145,9 @@ ContextMenuTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'ContextMenuContent';
 
-const ContentContext = React.createContext(false);
+const [ContentProvider, useContentContext] = createContext(CONTENT_NAME, {
+  isInsideContent: false,
+});
 
 type ContextMenuContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
 type MenuContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
@@ -166,13 +168,13 @@ const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMe
     };
 
     return (
-      <ContentContext.Provider value={true}>
+      <ContentProvider isInsideContent={true}>
         {context.isRootMenu ? (
           <ContextMenuRootContent {...commonProps} ref={forwardedRef} />
         ) : (
           <MenuPrimitive.Content {...commonProps} ref={forwardedRef} />
         )}
-      </ContentContext.Provider>
+      </ContentProvider>
     );
   }
 );

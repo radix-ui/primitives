@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive } from '@radix-ui/react-primitive';
+import { createContext } from '@radix-ui/react-context';
 import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
@@ -301,16 +302,21 @@ function useFocusOutside(onFocusOutside?: (event: FocusOutsideEvent) => void) {
  * -----------------------------------------------------------------------------------------------*/
 
 function createTotalLayerCount(displayName?: string) {
-  const TotalLayerCountContext = React.createContext<{
-    total: number;
-    setTotal: React.Dispatch<React.SetStateAction<number>>;
-  }>({ total: 0, setTotal: () => {} });
+  const [TotalLayerCountProviderImpl, useTotalLayerCountContext] = createContext(
+    'TotalLayerCount',
+    { total: 0, onTotalIncrease: () => {}, onTotalDecrease: () => {} }
+  );
 
   const TotalLayerCountProvider: React.FC = ({ children }) => {
     const [total, setTotal] = React.useState(0);
-    const context = React.useMemo(() => ({ total, setTotal }), [total, setTotal]);
     return (
-      <TotalLayerCountContext.Provider value={context}>{children}</TotalLayerCountContext.Provider>
+      <TotalLayerCountProviderImpl
+        total={total}
+        onTotalIncrease={React.useCallback(() => setTotal((n) => n + 1), [])}
+        onTotalDecrease={React.useCallback(() => setTotal((n) => n - 1), [])}
+      >
+        {children}
+      </TotalLayerCountProviderImpl>
     );
   };
   if (displayName) {
@@ -318,14 +324,15 @@ function createTotalLayerCount(displayName?: string) {
   }
 
   function useTotalLayerCount(counted = true) {
-    const { total, setTotal } = React.useContext(TotalLayerCountContext);
+    const { total, onTotalIncrease, onTotalDecrease } =
+      useTotalLayerCountContext('TotalLayerCountConsumer');
 
     React.useLayoutEffect(() => {
       if (counted) {
-        setTotal((n) => n + 1);
-        return () => setTotal((n) => n - 1);
+        onTotalIncrease();
+        return () => onTotalDecrease();
       }
-    }, [counted, setTotal]);
+    }, [counted, onTotalIncrease, onTotalDecrease]);
 
     return total;
   }
@@ -334,14 +341,14 @@ function createTotalLayerCount(displayName?: string) {
 }
 
 function createRunningLayerCount(displayName?: string) {
-  const RunningLayerCountContext = React.createContext(0);
+  const [RunningLayerCountProviderImp, useRunningLayerCount] = createContext('RunningLayerCount', {
+    count: 0,
+  });
 
   const RunningLayerCountProvider: React.FC<{ runningCount: number }> = (props) => {
     const { children, runningCount } = props;
     return (
-      <RunningLayerCountContext.Provider value={runningCount}>
-        {children}
-      </RunningLayerCountContext.Provider>
+      <RunningLayerCountProviderImp count={runningCount}>{children}</RunningLayerCountProviderImp>
     );
   };
   if (displayName) {
@@ -349,7 +356,8 @@ function createRunningLayerCount(displayName?: string) {
   }
 
   function usePreviousRunningLayerCount() {
-    return React.useContext(RunningLayerCountContext) || 0;
+    const context = useRunningLayerCount('RunningLayerCountConsumer');
+    return context.count || 0;
   }
 
   return [RunningLayerCountProvider, usePreviousRunningLayerCount] as const;

@@ -3430,6 +3430,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
+    "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
@@ -3503,6 +3504,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
+    "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-body-pointer-events": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
@@ -3579,6 +3581,7 @@ __metadata:
   resolution: "@radix-ui/react-id@workspace:packages/react/id"
   dependencies:
     "@babel/runtime": ^7.13.10
+    "@radix-ui/react-context": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown
@@ -3590,6 +3593,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
+    "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:

@@ -177,12 +177,17 @@ Slider.displayName = SLIDER_NAME;
  * SliderHorizontal
  * -----------------------------------------------------------------------------------------------*/
 
-const SliderOrientationContext = React.createContext<{
+const [SliderOrientationProvider, useSliderOrientationContext] = createContext<{
   startEdge: 'bottom' | 'left' | 'right';
   endEdge: 'top' | 'right' | 'left';
   size: keyof NonNullable<ReturnType<typeof useSize>>;
   direction: number;
-}>({} as any);
+}>(SLIDER_NAME, {
+  startEdge: 'left',
+  endEdge: 'right',
+  size: 'width',
+  direction: 1,
+});
 
 type SliderOrientationPrivateProps = {
   min: number;
@@ -222,16 +227,11 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
     }
 
     return (
-      <SliderOrientationContext.Provider
-        value={React.useMemo(
-          () => ({
-            startEdge: isDirectionLTR ? 'left' : 'right',
-            endEdge: isDirectionLTR ? 'right' : 'left',
-            direction: isDirectionLTR ? 1 : -1,
-            size: 'width',
-          }),
-          [isDirectionLTR]
-        )}
+      <SliderOrientationProvider
+        startEdge={isDirectionLTR ? 'left' : 'right'}
+        endEdge={isDirectionLTR ? 'right' : 'left'}
+        direction={isDirectionLTR ? 1 : -1}
+        size="width"
       >
         <SliderImpl
           data-orientation="horizontal"
@@ -255,7 +255,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
             onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
           }}
         />
-      </SliderOrientationContext.Provider>
+      </SliderOrientationProvider>
     );
   }
 );
@@ -285,12 +285,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
     }
 
     return (
-      <SliderOrientationContext.Provider
-        value={React.useMemo(
-          () => ({ startEdge: 'bottom', endEdge: 'top', size: 'height', direction: 1 }),
-          []
-        )}
-      >
+      <SliderOrientationProvider startEdge="bottom" endEdge="top" size="height" direction={1}>
         <SliderImpl
           data-orientation="vertical"
           {...sliderProps}
@@ -313,7 +308,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
             onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
           }}
         />
-      </SliderOrientationContext.Provider>
+      </SliderOrientationProvider>
     );
   }
 );
@@ -427,7 +422,7 @@ interface SliderRangeProps extends PrimitiveSpanProps {}
 const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
   (props, forwardedRef) => {
     const context = useSliderContext(RANGE_NAME);
-    const orientation = React.useContext(SliderOrientationContext);
+    const orientation = useSliderOrientationContext(RANGE_NAME);
     const ref = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const valuesCount = context.values.length;
@@ -486,7 +481,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
   (props, forwardedRef) => {
     const { index, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME);
-    const orientation = React.useContext(SliderOrientationContext);
+    const orientation = useSliderOrientationContext(THUMB_NAME);
     const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     const size = useSize(thumb);

@@ -426,20 +426,20 @@ function getState(open: boolean) {
   return open ? 'open' : 'closed';
 }
 
-const LabelWarningContext = React.createContext({
+const LABEL_WARNING_NAME = 'DialogLabelWarning';
+
+const [LabelWarningProvider, useLabelWarningContext] = createContext(LABEL_WARNING_NAME, {
   contentName: CONTENT_NAME,
   titleName: TITLE_NAME,
   docsSlug: 'dialog',
 });
-
-const LabelWarningProvider = LabelWarningContext.Provider;
 
 type LabelWarningProps = {
   contentRef: React.RefObject<DialogContentElement>;
 };
 
 const LabelWarning: React.FC<LabelWarningProps> = ({ contentRef }) => {
-  const labelWarningContext = React.useContext(LabelWarningContext);
+  const labelWarningContext = useLabelWarningContext(LABEL_WARNING_NAME);
 
   const MESSAGE = `\`${labelWarningContext.contentName}\` requires a label for the component to be accessible for screen reader users.
 

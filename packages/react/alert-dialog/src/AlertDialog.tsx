@@ -80,10 +80,9 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
 
     return (
       <DialogPrimitive.LabelWarningProvider
-        value={React.useMemo(
-          () => ({ contentName: CONTENT_NAME, titleName: TITLE_NAME, docsSlug: 'alert-dialog' }),
-          []
-        )}
+        contentName={CONTENT_NAME}
+        titleName={TITLE_NAME}
+        docsSlug="alert-dialog"
       >
         <AlertDialogContentProvider cancelRef={cancelRef}>
           <DialogPrimitive.Content
