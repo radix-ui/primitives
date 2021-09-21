@@ -945,7 +945,7 @@ const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxI
   (props, forwardedRef) => {
     const { checked = false, onCheckedChange, ...checkboxItemProps } = props;
     return (
-      <ItemIndicatorContext.Provider value={checked}>
+      <ItemIndicatorProvider checked={checked}>
         <MenuItem
           role="menuitemcheckbox"
           aria-checked={checked}
@@ -958,7 +958,7 @@ const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxI
             { checkForDefaultPrevented: false }
           )}
         />
-      </ItemIndicatorContext.Provider>
+      </ItemIndicatorProvider>
     );
   }
 );
@@ -971,7 +971,10 @@ MenuCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
 
 const RADIO_GROUP_NAME = 'MenuRadioGroup';
 
-const RadioGroupContext = React.createContext<MenuRadioGroupProps>({} as any);
+const [RadioGroupProvider, useRadioGroupContext] = createContext<MenuRadioGroupProps>(
+  RADIO_GROUP_NAME,
+  { value: undefined, onValueChange: () => {} }
+);
 
 type MenuRadioGroupElement = React.ElementRef<typeof MenuGroup>;
 interface MenuRadioGroupProps extends MenuGroupProps {
@@ -983,14 +986,10 @@ const MenuRadioGroup = React.forwardRef<MenuRadioGroupElement, MenuRadioGroupPro
   (props, forwardedRef) => {
     const { value, onValueChange, ...groupProps } = props;
     const handleValueChange = useCallbackRef(onValueChange);
-    const context = React.useMemo(
-      () => ({ value, onValueChange: handleValueChange }),
-      [value, handleValueChange]
-    );
     return (
-      <RadioGroupContext.Provider value={context}>
+      <RadioGroupProvider value={value} onValueChange={handleValueChange}>
         <MenuGroup {...groupProps} ref={forwardedRef} />
-      </RadioGroupContext.Provider>
+      </RadioGroupProvider>
     );
   }
 );
@@ -1011,10 +1010,10 @@ interface MenuRadioItemProps extends MenuItemProps {
 const MenuRadioItem = React.forwardRef<MenuRadioItemElement, MenuRadioItemProps>(
   (props, forwardedRef) => {
     const { value, ...radioItemProps } = props;
-    const context = React.useContext(RadioGroupContext);
+    const context = useRadioGroupContext(RADIO_ITEM_NAME);
     const checked = value === context.value;
     return (
-      <ItemIndicatorContext.Provider value={checked}>
+      <ItemIndicatorProvider checked={checked}>
         <MenuItem
           role="menuitemradio"
           aria-checked={checked}
@@ -1027,7 +1026,7 @@ const MenuRadioItem = React.forwardRef<MenuRadioItemElement, MenuRadioItemProps>
             { checkForDefaultPrevented: false }
           )}
         />
-      </ItemIndicatorContext.Provider>
+      </ItemIndicatorProvider>
     );
   }
 );
@@ -1040,7 +1039,9 @@ MenuRadioItem.displayName = RADIO_ITEM_NAME;
 
 const ITEM_INDICATOR_NAME = 'MenuItemIndicator';
 
-const ItemIndicatorContext = React.createContext(false);
+const [ItemIndicatorProvider, useItemIndicatorContext] = createContext(ITEM_INDICATOR_NAME, {
+  checked: false,
+});
 
 type MenuItemIndicatorElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
@@ -1055,13 +1056,13 @@ interface MenuItemIndicatorProps extends PrimitiveSpanProps {
 const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemIndicatorProps>(
   (props, forwardedRef) => {
     const { forceMount, ...indicatorProps } = props;
-    const checked = React.useContext(ItemIndicatorContext);
+    const indicatorContext = useItemIndicatorContext(ITEM_INDICATOR_NAME);
     return (
-      <Presence present={forceMount || checked}>
+      <Presence present={forceMount || indicatorContext.checked}>
         <Primitive.span
           {...indicatorProps}
           ref={forwardedRef}
-          data-state={getCheckedState(checked)}
+          data-state={getCheckedState(indicatorContext.checked)}
         />
       </Presence>
     );

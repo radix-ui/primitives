@@ -2,35 +2,31 @@
 // See: https://github.com/adobe/react-spectrum/blob/main/packages/%40react-aria/ssr/src/SSRProvider.tsx
 
 import * as React from 'react';
+import { createContext } from '@radix-ui/react-context';
 
-type IdContextValue = {
-  prefix: number;
-  current: number;
-};
+const PROVIDER_NAME = 'IdProvider';
 
-const defaultIdContext: IdContextValue = {
+const defaultIdContext = {
   prefix: Math.round(Math.random() * 10000000000),
   current: 0,
 };
 
-const IdContext = React.createContext<IdContextValue>(defaultIdContext);
+const [IdProviderImpl, useIdContext] = createContext(PROVIDER_NAME, defaultIdContext);
 
-const IdProvider: React.FC = (props) => {
-  const currentContext = React.useContext(IdContext);
+const IdProvider: React.FC<{ children: React.ReactNode }> = (props) => {
+  const currentContext = useIdContext(PROVIDER_NAME);
   const isRootIdProvider = currentContext === defaultIdContext;
-  const context: IdContextValue = React.useMemo(
-    () => ({
-      prefix: isRootIdProvider ? 0 : ++currentContext.prefix,
-      current: 0,
-    }),
-    [isRootIdProvider, currentContext]
+  return (
+    <IdProviderImpl
+      prefix={isRootIdProvider ? 0 : ++currentContext.prefix}
+      current={0}
+      {...props}
+    />
   );
-
-  return <IdContext.Provider value={context} {...props} />;
 };
 
 function useId(deterministicId?: string): string {
-  const context = React.useContext(IdContext);
+  const context = useIdContext('IdProviderConsumer');
   const isBrowser = Boolean(globalThis?.document);
 
   if (!isBrowser && context === defaultIdContext) {

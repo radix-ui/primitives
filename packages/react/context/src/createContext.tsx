@@ -1,7 +1,10 @@
 import * as React from 'react';
 
-function createContext<ContextValueType extends object>(rootComponentName: string) {
-  const Context = React.createContext<ContextValueType>(null as any);
+function createContext<ContextValueType extends object | null>(
+  rootComponentName: string,
+  defaultContext?: ContextValueType
+) {
+  const Context = React.createContext<ContextValueType | undefined>(defaultContext);
 
   function Provider(props: ContextValueType & { children: React.ReactNode }) {
     const { children, ...providerProps } = props;
@@ -16,8 +19,13 @@ function createContext<ContextValueType extends object>(rootComponentName: strin
 
   function useContext(consumerName: string) {
     const context = React.useContext(Context);
-    if (context === null) {
-      throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
+
+    if (context === undefined) {
+      // if a defaultContext wasn't specified, it's a required context.
+      if (defaultContext === undefined) {
+        throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
+      }
+      return defaultContext;
     }
     return context;
   }
