@@ -1,7 +1,20 @@
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 
-const NODES = ['a', 'button', 'div', 'h2', 'h3', 'p', 'img', 'span', 'svg'] as const;
+const NODES = [
+  'a',
+  'button',
+  'div',
+  'h2',
+  'h3',
+  'img',
+  'li',
+  'nav',
+  'p',
+  'span',
+  'svg',
+  'ul',
+] as const;
 
 // Temporary while we await merge of this fix:
 // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55396
