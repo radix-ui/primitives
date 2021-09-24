@@ -466,7 +466,7 @@ interface SliderThumbProps extends Omit<SliderThumbImplProps, 'index'> {}
 
 const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
   (props, forwardedRef) => {
-    const { getItems } = useCollection();
+    const getItems = useCollection();
     const [thumb, setThumb] = React.useState<SliderThumbImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     const index = React.useMemo(
