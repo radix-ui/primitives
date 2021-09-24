@@ -105,7 +105,7 @@ const RovingFocusGroupImpl = React.forwardRef<
   });
   const [isTabbingBackOut, setIsTabbingBackOut] = React.useState(false);
   const handleEntryFocus = useCallbackRef(onEntryFocus);
-  const { getItems } = useCollection();
+  const getItems = useCollection();
   const isClickFocusRef = React.useRef(false);
 
   React.useEffect(() => {
@@ -188,7 +188,7 @@ const RovingFocusItem = React.forwardRef<RovingFocusItemElement, RovingFocusItem
     const id = useId();
     const context = useRovingFocusContext(ITEM_NAME);
     const isCurrentTabStop = context.currentTabStopId === id;
-    const { getItems } = useCollection();
+    const getItems = useCollection();
 
     return (
       <CollectionItemSlot id={id} focusable={focusable} active={active}>

@@ -98,9 +98,9 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
     const context = React.useContext(Context);
 
     const getItems = React.useCallback(() => {
-      const orderedNodes = Array.from(
-        context.collectionRef.current!.querySelectorAll(`[${ITEM_DATA_ATTR}]`)
-      );
+      const collectionNode = context.collectionRef.current;
+      if (!collectionNode) return [];
+      const orderedNodes = Array.from(collectionNode.querySelectorAll(`[${ITEM_DATA_ATTR}]`));
       const items = Array.from(context.itemMap.values());
       const orderedItems = items.sort(
         (a, b) => orderedNodes.indexOf(a.ref.current!) - orderedNodes.indexOf(b.ref.current!)
@@ -108,7 +108,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>() {
       return orderedItems;
     }, [context.collectionRef, context.itemMap]);
 
-    return { getItems };
+    return getItems;
   }
 
   return [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] as const;

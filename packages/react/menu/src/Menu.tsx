@@ -444,7 +444,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       ...contentProps
     } = props;
     const context = useMenuContext(CONTENT_NAME);
-    const { getItems } = useCollection();
+    const getItems = useCollection();
     const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef, context.onContentChange);
