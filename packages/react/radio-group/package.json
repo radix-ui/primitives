@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-radio-group",
-  "version": "0.1.1-rc.8",
+  "version": "0.1.1-rc.9",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
