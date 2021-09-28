@@ -159,7 +159,7 @@ const CollapsibleContentImpl = React.forwardRef<
       node.style.transition = 'none';
       node.style.animation = 'none';
 
-      // set height to height from full dimensions
+      // get width and height from full dimensions
       const rect = node.getBoundingClientRect();
       heightRef.current = rect.height;
       widthRef.current = rect.width;
