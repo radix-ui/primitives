@@ -296,6 +296,34 @@ export const Animated = () => {
   );
 };
 
+export const Animated2D = () => {
+  const values = ['One', 'Two', 'Three', 'Four'];
+
+  return (
+    <>
+      <Accordion type="single" className={rootClass}>
+        {values.map((value) => (
+          <AccordionItem key={value} value={value} className={itemClass}>
+            <AccordionHeader className={headerClass}>
+              <AccordionTrigger className={triggerClass}>{value}</AccordionTrigger>
+            </AccordionHeader>
+            <AccordionContent className={animated2DContentClass}>
+                <div style={{ padding: 10, background: 'whitesmoke', overflow: 'hidden'}}>
+                  <div style={{width: 'calc(20em - 20px)', height: 100}}>
+                    Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+                    viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque
+                    quam suscipit habitant sed.
+                  </div>
+                </div>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </>
+  );
+};
+
+
 export const OutsideViewport = () => (
   <>
     <p>Scroll down to see tabs</p>
@@ -647,6 +675,28 @@ const slideUp = css.keyframes({
   to: { height: 0 },
 });
 
+const open2D = css.keyframes({
+  from: {
+    width: 0,
+    height: 0,
+  },
+  to: {
+    width: 'var(--radix-accordion-content-width)',
+    height: 'var(--radix-accordion-content-height)',
+  },
+});
+
+const close2D = css.keyframes({
+  from: {
+    width: 'var(--radix-accordion-content-width)',
+    height: 'var(--radix-accordion-content-height)'
+  },
+  to: {
+    width: 0,
+    height: 0
+  },
+});
+
 const animatedContentClass = css({
   overflow: 'hidden',
   '&[data-state="open"]': {
@@ -654,6 +704,16 @@ const animatedContentClass = css({
   },
   '&[data-state="closed"]': {
     animation: `${slideUp} 300ms ease-out`,
+  },
+});
+
+const animated2DContentClass = css({
+  overflow: 'hidden',
+  '&[data-state="open"]': {
+    animation: `${open2D} 1000ms ease-out`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${close2D} 1000ms ease-out`,
   },
 });
 

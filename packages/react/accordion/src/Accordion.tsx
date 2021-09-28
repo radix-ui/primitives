@@ -408,6 +408,7 @@ const AccordionContent = React.forwardRef<AccordionContentElement, AccordionCont
         {...props}
         style={{
           ['--radix-accordion-content-height' as any]: 'var(--radix-collapsible-content-height)',
+          ['--radix-accordion-content-width' as any]: 'var(--radix-collapsible-content-width)',
           ...props.style,
         }}
         ref={forwardedRef}
