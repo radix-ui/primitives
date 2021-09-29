@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-menu",
-  "version": "0.1.1-rc.9",
+  "version": "0.1.1-rc.10",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
