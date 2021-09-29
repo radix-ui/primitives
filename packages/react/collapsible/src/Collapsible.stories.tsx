@@ -34,6 +34,17 @@ export const Animated = () => {
   );
 };
 
+export const AnimatedHorizontal = () => {
+  return (
+    <Collapsible className={rootClass}>
+      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
+      <CollapsibleContent className={animatedWidthContentClass}>
+        <div style={{ padding: 10 }}>Content</div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
+
 export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
@@ -151,6 +162,16 @@ const slideUp = css.keyframes({
   to: { height: 0 },
 });
 
+const openRight = css.keyframes({
+  from: { width: 0 },
+  to: { width: 'var(--radix-collapsible-content-width)' },
+});
+
+const closeRight = css.keyframes({
+  from: { width: 'var(--radix-collapsible-content-width)' },
+  to: { width: 0 },
+});
+
 const animatedContentClass = css({
   overflow: 'hidden',
   '&[data-state="open"]': {
@@ -158,6 +179,16 @@ const animatedContentClass = css({
   },
   '&[data-state="closed"]': {
     animation: `${slideUp} 300ms ease-in`,
+  },
+});
+
+const animatedWidthContentClass = css({
+  overflow: 'hidden',
+  '&[data-state="open"]': {
+    animation: `${openRight} 300ms ease-out`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${closeRight} 300ms ease-in`,
   },
 });
 

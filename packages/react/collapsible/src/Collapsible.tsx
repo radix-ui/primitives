@@ -144,8 +144,10 @@ const CollapsibleContentImpl = React.forwardRef<
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const heightRef = React.useRef<number | undefined>(0);
   const height = heightRef.current;
+  const widthRef = React.useRef<number | undefined>(0);
+  const width = widthRef.current;
   // when opening we want it to immediately open to retrieve dimensions
-  // when closing we delay `present` to retreive dimensions before closing
+  // when closing we delay `present` to retrieve dimensions before closing
   const isOpen = context.open || isPresent;
 
   useLayoutEffect(() => {
@@ -157,9 +159,10 @@ const CollapsibleContentImpl = React.forwardRef<
       node.style.transition = 'none';
       node.style.animation = 'none';
 
-      // set height to height from full dimensions
+      // get width and height from full dimensions
       const rect = node.getBoundingClientRect();
       heightRef.current = rect.height;
+      widthRef.current = rect.width;
 
       // kick off any animations/transitions that were originally set up
       node.style.transition = originalTransition;
@@ -184,6 +187,7 @@ const CollapsibleContentImpl = React.forwardRef<
       ref={composedRefs}
       style={{
         [`--radix-collapsible-content-height` as any]: height ? `${height}px` : undefined,
+        [`--radix-collapsible-content-width` as any]: width ? `${width}px` : undefined,
         ...props.style,
       }}
     >
