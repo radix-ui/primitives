@@ -60,32 +60,35 @@ function usePresence(present: boolean) {
     const hasPresentChanged = wasPresent !== present;
 
     if (hasPresentChanged) {
-      const prevAnimationName = prevAnimationNameRef.current;
-      const currentAnimationName = getAnimationName(styles);
+      // Defer to next tick to ensure we always retrieve the latest animation values
+      setTimeout(() => {
+        const prevAnimationName = prevAnimationNameRef.current;
+        const currentAnimationName = getAnimationName(styles);
 
-      if (present) {
-        send('MOUNT');
-      } else if (currentAnimationName === 'none' || styles?.display === 'none') {
-        // If there is no exit animation or the element is hidden, animations won't run
-        // so we unmount instantly
-        send('UNMOUNT');
-      } else {
-        /**
-         * When `present` changes to `false`, we check changes to animation-name to
-         * determine whether an animation has started. We chose this approach (reading
-         * computed styles) because there is no `animationrun` event and `animationstart`
-         * fires after `animation-delay` has expired which would be too late.
-         */
-        const isAnimating = prevAnimationName !== currentAnimationName;
-
-        if (wasPresent && isAnimating) {
-          send('ANIMATION_OUT');
-        } else {
+        if (present) {
+          send('MOUNT');
+        } else if (currentAnimationName === 'none' || styles?.display === 'none') {
+          // If there is no exit animation or the element is hidden, animations won't run
+          // so we unmount instantly
           send('UNMOUNT');
-        }
-      }
+        } else {
+          /**
+           * When `present` changes to `false`, we check changes to animation-name to
+           * determine whether an animation has started. We chose this approach (reading
+           * computed styles) because there is no `animationrun` event and `animationstart`
+           * fires after `animation-delay` has expired which would be too late.
+           */
+          const isAnimating = prevAnimationName !== currentAnimationName;
 
-      prevPresentRef.current = present;
+          if (wasPresent && isAnimating) {
+            send('ANIMATION_OUT');
+          } else {
+            send('UNMOUNT');
+          }
+        }
+
+        prevPresentRef.current = present;
+      });
     }
   }, [present, send]);
 

@@ -59,6 +59,27 @@ export const WithDeferredMountAnimation = () => {
   );
 };
 
+export const WithOpenAndCloseAnimationViaEffect = () => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [open, setOpen] = React.useState(false);
+  const [stateAttribute, setStateAttribute] = React.useState('closed');
+
+  React.useEffect(() => {
+    setStateAttribute(open ? 'open' : 'closed');
+  }, [open]);
+
+  return (
+    <>
+      <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
+      <Presence present={open}>
+        <div data-state={stateAttribute} className={openAndCloseAnimationClass} ref={ref}>
+          Content
+        </div>
+      </Presence>
+    </>
+  );
+};
+
 function Animation(props: React.ComponentProps<'div'>) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
