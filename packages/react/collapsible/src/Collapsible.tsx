@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -16,6 +16,9 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const COLLAPSIBLE_NAME = 'Collapsible';
 
+const [createCollapsibleContext, removeCollapsibleScopeProps, createCollapsibleScope] =
+  createContextScope(COLLAPSIBLE_NAME);
+
 type CollapsibleContextValue = {
   contentId: string;
   disabled?: boolean;
@@ -24,7 +27,7 @@ type CollapsibleContextValue = {
 };
 
 const [CollapsibleProvider, useCollapsibleContext] =
-  createContext<CollapsibleContextValue>(COLLAPSIBLE_NAME);
+  createCollapsibleContext<CollapsibleContextValue>(COLLAPSIBLE_NAME);
 
 type CollapsibleElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
@@ -47,6 +50,7 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
 
     return (
       <CollapsibleProvider
+        scope={props}
         disabled={disabled}
         contentId={useId()}
         open={open}
@@ -55,7 +59,7 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
         <Primitive.div
           data-state={getState(open)}
           data-disabled={disabled ? '' : undefined}
-          {...collapsibleProps}
+          {...removeCollapsibleScopeProps(collapsibleProps)}
           ref={forwardedRef}
         />
       </CollapsibleProvider>
@@ -77,7 +81,7 @@ interface CollapsibleTriggerProps extends PrimitiveButtonProps {}
 
 const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, CollapsibleTriggerProps>(
   (props, forwardedRef) => {
-    const context = useCollapsibleContext(TRIGGER_NAME);
+    const context = useCollapsibleContext(TRIGGER_NAME, props);
     return (
       <Primitive.button
         aria-controls={context.contentId}
@@ -85,7 +89,7 @@ const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, Collapsib
         data-state={getState(context.open)}
         data-disabled={context.disabled ? '' : undefined}
         disabled={context.disabled}
-        {...props}
+        {...removeCollapsibleScopeProps(props)}
         ref={forwardedRef}
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
       />
@@ -113,7 +117,7 @@ interface CollapsibleContentProps extends Omit<CollapsibleContentImplProps, 'pre
 const CollapsibleContent = React.forwardRef<CollapsibleContentElement, CollapsibleContentProps>(
   (props, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
-    const context = useCollapsibleContext(CONTENT_NAME);
+    const context = useCollapsibleContext(CONTENT_NAME, props);
     return (
       <Presence present={forceMount || context.open}>
         {({ present }) => (
@@ -138,7 +142,7 @@ const CollapsibleContentImpl = React.forwardRef<
   CollapsibleContentImplProps
 >((props, forwardedRef) => {
   const { present, children, ...contentProps } = props;
-  const context = useCollapsibleContext(CONTENT_NAME);
+  const context = useCollapsibleContext(CONTENT_NAME, props);
   const [isPresent, setIsPresent] = React.useState(present);
   const ref = React.useRef<CollapsibleContentImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -180,7 +184,7 @@ const CollapsibleContentImpl = React.forwardRef<
       data-disabled={context.disabled ? '' : undefined}
       id={context.contentId}
       hidden={!isOpen}
-      {...contentProps}
+      {...removeCollapsibleScopeProps(contentProps)}
       ref={composedRefs}
       style={{
         [`--radix-collapsible-content-height` as any]: height ? `${height}px` : undefined,
@@ -203,6 +207,7 @@ const Trigger = CollapsibleTrigger;
 const Content = CollapsibleContent;
 
 export {
+  createCollapsibleScope,
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
@@ -16,8 +16,11 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const SWITCH_NAME = 'Switch';
 
+const [createSwitchContext, removeSwitchScopeProps, createSwitchScope] =
+  createContextScope(SWITCH_NAME);
+
 type SwitchContextValue = { checked: boolean; disabled?: boolean };
-const [SwitchProvider, useSwitchContext] = createContext<SwitchContextValue>(SWITCH_NAME);
+const [SwitchProvider, useSwitchContext] = createSwitchContext<SwitchContextValue>(SWITCH_NAME);
 
 type SwitchElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
@@ -54,7 +57,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>((props, forwardedRef
   });
 
   return (
-    <SwitchProvider checked={checked} disabled={disabled}>
+    <SwitchProvider scope={props} checked={checked} disabled={disabled}>
       <Primitive.button
         type="button"
         role="switch"
@@ -65,7 +68,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>((props, forwardedRef
         data-disabled={disabled ? '' : undefined}
         disabled={disabled}
         value={value}
-        {...switchProps}
+        {...removeSwitchScopeProps(switchProps)}
         ref={composedRefs}
         onClick={composeEventHandlers(props.onClick, (event) => {
           setChecked((prevChecked) => !prevChecked);
@@ -111,12 +114,12 @@ interface SwitchThumbProps extends PrimitiveSpanProps {}
 
 const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
   (props, forwardedRef) => {
-    const context = useSwitchContext(THUMB_NAME);
+    const context = useSwitchContext(THUMB_NAME, props);
     return (
       <Primitive.span
         data-state={getState(context.checked)}
         data-disabled={context.disabled ? '' : undefined}
-        {...props}
+        {...removeSwitchScopeProps(props)}
         ref={forwardedRef}
       />
     );
@@ -181,6 +184,7 @@ const Root = Switch;
 const Thumb = SwitchThumb;
 
 export {
+  createSwitchScope,
   Switch,
   SwitchThumb,
   //

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-use-direction';
 import { usePrevious } from '@radix-ui/react-use-previous';
@@ -22,16 +22,19 @@ const BACK_KEYS: Record<Direction, string[]> = {
   rtl: ['ArrowDown', 'Home', 'ArrowRight', 'PageDown'],
 };
 
-const [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
-  SliderThumbElement,
-  {}
->();
-
 /* -------------------------------------------------------------------------------------------------
  * Slider
  * -----------------------------------------------------------------------------------------------*/
 
 const SLIDER_NAME = 'Slider';
+
+const [Collection, useCollection, createCollectionScope] = createCollection<SliderThumbElement, {}>(
+  SLIDER_NAME
+);
+const [createSliderContext, removeSliderScopeProps, createSliderScope] = createContextScope(
+  SLIDER_NAME,
+  [createCollectionScope]
+);
 
 type SliderContextValue = {
   disabled?: boolean;
@@ -43,7 +46,7 @@ type SliderContextValue = {
   orientation: SliderProps['orientation'];
 };
 
-const [SliderProvider, useSliderContext] = createContext<SliderContextValue>(SLIDER_NAME);
+const [SliderProvider, useSliderContext] = createSliderContext<SliderContextValue>(SLIDER_NAME);
 
 type SliderElement = SliderHorizontalElement | SliderVerticalElement;
 interface SliderProps
@@ -124,6 +127,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>((props, forwardedRef
 
   return (
     <SliderProvider
+      scope={props}
       disabled={disabled}
       min={min}
       max={max}
@@ -132,8 +136,8 @@ const Slider = React.forwardRef<SliderElement, SliderProps>((props, forwardedRef
       values={values}
       orientation={orientation}
     >
-      <CollectionProvider>
-        <CollectionSlot>
+      <Collection.Provider scope={props}>
+        <Collection.Slot scope={props}>
           <SliderOrientation
             aria-disabled={disabled}
             data-disabled={disabled ? '' : undefined}
@@ -157,8 +161,8 @@ const Slider = React.forwardRef<SliderElement, SliderProps>((props, forwardedRef
               }
             }}
           />
-        </CollectionSlot>
-      </CollectionProvider>
+        </Collection.Slot>
+      </Collection.Provider>
       {isFormControl &&
         values.map((value, index) => (
           <BubbleInput
@@ -177,7 +181,7 @@ Slider.displayName = SLIDER_NAME;
  * SliderHorizontal
  * -----------------------------------------------------------------------------------------------*/
 
-const [SliderOrientationProvider, useSliderOrientationContext] = createContext<{
+const [SliderOrientationProvider, useSliderOrientationContext] = createSliderContext<{
   startEdge: 'bottom' | 'left' | 'right';
   endEdge: 'top' | 'right' | 'left';
   size: keyof NonNullable<ReturnType<typeof useSize>>;
@@ -228,6 +232,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
 
     return (
       <SliderOrientationProvider
+        scope={props}
         startEdge={isDirectionLTR ? 'left' : 'right'}
         endEdge={isDirectionLTR ? 'right' : 'left'}
         direction={isDirectionLTR ? 1 : -1}
@@ -285,7 +290,13 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
     }
 
     return (
-      <SliderOrientationProvider startEdge="bottom" endEdge="top" size="height" direction={1}>
+      <SliderOrientationProvider
+        scope={props}
+        startEdge="bottom"
+        endEdge="top"
+        size="height"
+        direction={1}
+      >
         <SliderImpl
           data-orientation="vertical"
           {...sliderProps}
@@ -339,11 +350,11 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>((props, 
     onStepKeyDown,
     ...sliderProps
   } = props;
-  const context = useSliderContext(SLIDER_NAME);
+  const context = useSliderContext(SLIDER_NAME, props);
 
   return (
     <Primitive.span
-      {...sliderProps}
+      {...removeSliderScopeProps(sliderProps)}
       ref={forwardedRef}
       onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
         if (event.key === 'Home') {
@@ -396,12 +407,12 @@ interface SliderTrackProps extends PrimitiveSpanProps {}
 
 const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
   (props, forwardedRef) => {
-    const context = useSliderContext(TRACK_NAME);
+    const context = useSliderContext(TRACK_NAME, props);
     return (
       <Primitive.span
         data-disabled={context.disabled ? '' : undefined}
         data-orientation={context.orientation}
-        {...props}
+        {...removeSliderScopeProps(props)}
         ref={forwardedRef}
       />
     );
@@ -421,8 +432,8 @@ interface SliderRangeProps extends PrimitiveSpanProps {}
 
 const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
   (props, forwardedRef) => {
-    const context = useSliderContext(RANGE_NAME);
-    const orientation = useSliderOrientationContext(RANGE_NAME);
+    const context = useSliderContext(RANGE_NAME, props);
+    const orientation = useSliderOrientationContext(RANGE_NAME, props);
     const ref = React.useRef<HTMLSpanElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const valuesCount = context.values.length;
@@ -436,7 +447,7 @@ const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
       <Primitive.span
         data-orientation={context.orientation}
         data-disabled={context.disabled ? '' : undefined}
-        {...props}
+        {...removeSliderScopeProps(props)}
         ref={composedRefs}
         style={{
           ...props.style,
@@ -461,7 +472,7 @@ interface SliderThumbProps extends Omit<SliderThumbImplProps, 'index'> {}
 
 const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
   (props, forwardedRef) => {
-    const { getItems } = useCollection();
+    const { getItems } = useCollection(props);
     const [thumb, setThumb] = React.useState<SliderThumbImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     const index = React.useMemo(
@@ -480,8 +491,8 @@ interface SliderThumbImplProps extends PrimitiveSpanProps {
 const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
   (props, forwardedRef) => {
     const { index, ...thumbProps } = props;
-    const context = useSliderContext(THUMB_NAME);
-    const orientation = useSliderOrientationContext(THUMB_NAME);
+    const context = useSliderContext(THUMB_NAME, props);
+    const orientation = useSliderOrientationContext(THUMB_NAME, props);
     const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     const size = useSize(thumb);
@@ -512,7 +523,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
           [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
         }}
       >
-        <CollectionItemSlot>
+        <Collection.ItemSlot scope={props}>
           <Primitive.span
             role="slider"
             aria-label={props['aria-label'] || label}
@@ -523,7 +534,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
             data-orientation={context.orientation}
             data-disabled={context.disabled ? '' : undefined}
             tabIndex={context.disabled ? undefined : 0}
-            {...thumbProps}
+            {...removeSliderScopeProps(thumbProps)}
             ref={composedRefs}
             /**
              * There will be no value on initial render while we work out the index so we hide thumbs
@@ -536,7 +547,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
               context.valueIndexToChangeRef.current = index;
             })}
           />
-        </CollectionItemSlot>
+        </Collection.ItemSlot>
       </span>
     );
   }
@@ -683,6 +694,7 @@ const Range = SliderRange;
 const Thumb = SliderThumb;
 
 export {
+  createSliderScope,
   Slider,
   SliderTrack,
   SliderRange,

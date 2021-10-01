@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useDirection } from '@radix-ui/react-use-direction';
@@ -31,6 +31,9 @@ type Sizes = {
 
 const SCROLL_AREA_NAME = 'ScrollArea';
 
+const [createScrollAreaContext, removeScrollAreaScopeProps, createScrollAreaScope] =
+  createContextScope(SCROLL_AREA_NAME);
+
 type ScrollAreaContextValue = {
   type: 'auto' | 'always' | 'scroll' | 'hover';
   dir: Direction;
@@ -53,7 +56,7 @@ type ScrollAreaContextValue = {
 };
 
 const [ScrollAreaProvider, useScrollAreaContext] =
-  createContext<ScrollAreaContextValue>(SCROLL_AREA_NAME);
+  createScrollAreaContext<ScrollAreaContextValue>(SCROLL_AREA_NAME);
 
 type ScrollAreaElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
@@ -79,6 +82,7 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>((props, 
 
   return (
     <ScrollAreaProvider
+      scope={props}
       type={type}
       dir={computedDirection}
       scrollHideDelay={scrollHideDelay}
@@ -99,7 +103,7 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>((props, 
       onCornerHeightChange={setCornerHeight}
     >
       <Primitive.div
-        {...scrollAreaProps}
+        {...removeScrollAreaScopeProps(scrollAreaProps)}
         ref={composedRefs}
         style={{
           position: 'relative',
@@ -127,7 +131,7 @@ interface ScrollAreaViewportProps extends PrimitiveDivProps {}
 const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAreaViewportProps>(
   (props, forwardedRef) => {
     const { children, ...viewportProps } = props;
-    const context = useScrollAreaContext(VIEWPORT_NAME);
+    const context = useScrollAreaContext(VIEWPORT_NAME, props);
     const ref = React.useRef<ScrollAreaViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
     return (
@@ -140,7 +144,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
         />
         <Primitive.div
           data-radix-scroll-area-viewport=""
-          {...viewportProps}
+          {...removeScrollAreaScopeProps(viewportProps)}
           ref={composedRefs}
           style={{
             /**
@@ -191,7 +195,7 @@ interface ScrollAreaScrollbarProps extends ScrollAreaScrollbarVisibleProps {
 const ScrollAreaScrollbar = React.forwardRef<ScrollAreaScrollbarElement, ScrollAreaScrollbarProps>(
   (props, forwardedRef) => {
     const { forceMount, ...scrollbarProps } = props;
-    const context = useScrollAreaContext(SCROLLBAR_NAME);
+    const context = useScrollAreaContext(SCROLLBAR_NAME, props);
     const { onScrollbarXEnabledChange, onScrollbarYEnabledChange } = context;
     const isHorizontal = props.orientation === 'horizontal';
 
@@ -228,7 +232,7 @@ const ScrollAreaScrollbarHover = React.forwardRef<
   ScrollAreaScrollbarHoverProps
 >((props, forwardedRef) => {
   const { forceMount, ...scrollbarProps } = props;
-  const context = useScrollAreaContext(SCROLLBAR_NAME);
+  const context = useScrollAreaContext(SCROLLBAR_NAME, props);
   const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
@@ -272,7 +276,7 @@ const ScrollAreaScrollbarScroll = React.forwardRef<
   ScrollAreaScrollbarScrollProps
 >((props, forwardedRef) => {
   const { forceMount, ...scrollbarProps } = props;
-  const context = useScrollAreaContext(SCROLLBAR_NAME);
+  const context = useScrollAreaContext(SCROLLBAR_NAME, props);
   const isHorizontal = props.orientation === 'horizontal';
   const debounceScrollEnd = useDebounceCallback(() => send('SCROLL_END'), 100);
   const [state, send] = useStateMachine('hidden', {
@@ -343,7 +347,7 @@ const ScrollAreaScrollbarAuto = React.forwardRef<
   ScrollAreaScrollbarAutoElement,
   ScrollAreaScrollbarAutoProps
 >((props, forwardedRef) => {
-  const context = useScrollAreaContext(SCROLLBAR_NAME);
+  const context = useScrollAreaContext(SCROLLBAR_NAME, props);
   const { forceMount, ...scrollbarProps } = props;
   const [visible, setVisible] = React.useState(false);
   const isHorizontal = props.orientation === 'horizontal';
@@ -382,7 +386,7 @@ const ScrollAreaScrollbarVisible = React.forwardRef<
   ScrollAreaScrollbarVisibleProps
 >((props, forwardedRef) => {
   const { orientation = 'vertical', ...scrollbarProps } = props;
-  const context = useScrollAreaContext(SCROLLBAR_NAME);
+  const context = useScrollAreaContext(SCROLLBAR_NAME, props);
   const thumbRef = React.useRef<ScrollAreaThumbElement | null>(null);
   const pointerOffsetRef = React.useRef(0);
   const [sizes, setSizes] = React.useState<Sizes>({
@@ -480,7 +484,7 @@ const ScrollAreaScrollbarX = React.forwardRef<
   ScrollAreaScrollbarAxisProps
 >((props, forwardedRef) => {
   const { sizes, onSizesChange, ...scrollbarProps } = props;
-  const context = useScrollAreaContext(SCROLLBAR_NAME);
+  const context = useScrollAreaContext(SCROLLBAR_NAME, props);
   const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
   const ref = React.useRef<ScrollAreaScrollbarAxisElement>(null);
   const composeRefs = useComposedRefs(forwardedRef, ref, context.onScrollbarXChange);
@@ -536,7 +540,7 @@ const ScrollAreaScrollbarY = React.forwardRef<
   ScrollAreaScrollbarAxisProps
 >((props, forwardedRef) => {
   const { sizes, onSizesChange, ...scrollbarProps } = props;
-  const context = useScrollAreaContext(SCROLLBAR_NAME);
+  const context = useScrollAreaContext(SCROLLBAR_NAME, props);
   const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
   const ref = React.useRef<ScrollAreaScrollbarAxisElement>(null);
   const composeRefs = useComposedRefs(forwardedRef, ref, context.onScrollbarYChange);
@@ -599,7 +603,8 @@ type ScrollbarContext = {
   onThumbPositionChange(): void;
 };
 
-const [ScrollbarProvider, useScrollbarContext] = createContext<ScrollbarContext>(SCROLLBAR_NAME);
+const [ScrollbarProvider, useScrollbarContext] =
+  createScrollAreaContext<ScrollbarContext>(SCROLLBAR_NAME);
 
 type ScrollAreaScrollbarImplElement = React.ElementRef<typeof Primitive.div>;
 type ScrollAreaScrollbarImplPrivateProps = {
@@ -633,7 +638,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
     onResize,
     ...scrollbarProps
   } = props;
-  const context = useScrollAreaContext(SCROLLBAR_NAME);
+  const context = useScrollAreaContext(SCROLLBAR_NAME, props);
   const [scrollbar, setScrollbar] = React.useState<ScrollAreaScrollbarElement | null>(null);
   const composeRefs = useComposedRefs(forwardedRef, (node) => setScrollbar(node));
   const rectRef = React.useRef<ClientRect | null>(null);
@@ -676,6 +681,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
 
   return (
     <ScrollbarProvider
+      scope={props}
       scrollbar={scrollbar}
       hasThumb={hasThumb}
       onThumbChange={useCallbackRef(onThumbChange)}
@@ -684,7 +690,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
       onThumbPointerDown={useCallbackRef(onThumbPointerDown)}
     >
       <Primitive.div
-        {...scrollbarProps}
+        {...removeScrollAreaScopeProps(scrollbarProps)}
         ref={composeRefs}
         style={{ position: 'absolute', ...scrollbarProps.style }}
         onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
@@ -724,8 +730,8 @@ interface ScrollAreaThumbProps extends PrimitiveDivProps {}
 const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumbProps>(
   (props, forwardedRef) => {
     const { style, ...thumbProps } = props;
-    const scrollAreaContext = useScrollAreaContext(THUMB_NAME);
-    const scrollbarContext = useScrollbarContext(THUMB_NAME);
+    const scrollAreaContext = useScrollAreaContext(THUMB_NAME, props);
+    const scrollbarContext = useScrollbarContext(THUMB_NAME, props);
     const { onThumbPositionChange } = scrollbarContext;
     const composedRef = useComposedRefs(forwardedRef, (node) =>
       scrollbarContext.onThumbChange(node)
@@ -764,7 +770,7 @@ const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumb
 
     return scrollbarContext.hasThumb ? (
       <Primitive.div
-        {...thumbProps}
+        {...removeScrollAreaScopeProps(thumbProps)}
         ref={composedRef}
         style={{
           width: 'var(--radix-scroll-area-thumb-width)',
@@ -797,7 +803,7 @@ interface ScrollAreaCornerProps extends ScrollAreaCornerImplProps {}
 
 const ScrollAreaCorner = React.forwardRef<ScrollAreaCornerElement, ScrollAreaCornerProps>(
   (props, forwardedRef) => {
-    const context = useScrollAreaContext(CORNER_NAME);
+    const context = useScrollAreaContext(CORNER_NAME, props);
     const hasBothScrollbarsVisible = Boolean(context.scrollbarX && context.scrollbarY);
     const hasCorner = context.type !== 'scroll' && hasBothScrollbarsVisible;
     return hasCorner ? <ScrollAreaCornerImpl {...props} ref={forwardedRef} /> : null;
@@ -815,7 +821,7 @@ const ScrollAreaCornerImpl = React.forwardRef<
   ScrollAreaCornerImplElement,
   ScrollAreaCornerImplProps
 >((props, forwardedRef) => {
-  const context = useScrollAreaContext(CORNER_NAME);
+  const context = useScrollAreaContext(CORNER_NAME, props);
   const [width, setWidth] = React.useState(0);
   const [height, setHeight] = React.useState(0);
   const hasSize = Boolean(width && height);
@@ -834,7 +840,7 @@ const ScrollAreaCornerImpl = React.forwardRef<
 
   return hasSize ? (
     <Primitive.div
-      {...props}
+      {...removeScrollAreaScopeProps(props)}
       ref={forwardedRef}
       style={{
         width,
@@ -971,6 +977,7 @@ const Thumb = ScrollAreaThumb;
 const Corner = ScrollAreaCorner;
 
 export {
+  createScrollAreaScope,
   ScrollArea,
   ScrollAreaViewport,
   ScrollAreaScrollbar,

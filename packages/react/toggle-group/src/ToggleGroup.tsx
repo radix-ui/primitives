@@ -1,7 +1,8 @@
 import React from 'react';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
-import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
+import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
+import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { Toggle } from '@radix-ui/react-toggle';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
@@ -12,6 +13,10 @@ import type * as Radix from '@radix-ui/react-primitive';
  * -----------------------------------------------------------------------------------------------*/
 
 const TOGGLE_GROUP_NAME = 'ToggleGroup';
+
+const [createToggleGroupContext, removeToggleGroupScopeProps, createToggleGroupScope] =
+  createContextScope(TOGGLE_GROUP_NAME, [createRovingFocusGroupScope]);
+const useRovingFocusGroupScope = createRovingFocusGroupScope();
 
 type ToggleGroupElement = ToggleGroupImplSingleElement | ToggleGroupImplMultipleElement;
 interface ToggleGroupSingleProps extends ToggleGroupImplSingleProps {
@@ -51,7 +56,7 @@ type ToggleGroupValueContextValue = {
 };
 
 const [ToggleGroupValueProvider, useToggleGroupValueContext] =
-  createContext<ToggleGroupValueContextValue>(TOGGLE_GROUP_NAME);
+  createToggleGroupContext<ToggleGroupValueContextValue>(TOGGLE_GROUP_NAME);
 
 type ToggleGroupImplSingleElement = ToggleGroupImplElement;
 interface ToggleGroupImplSingleProps extends ToggleGroupImplProps {
@@ -89,6 +94,7 @@ const ToggleGroupImplSingle = React.forwardRef<
 
   return (
     <ToggleGroupValueProvider
+      scope={props}
       value={value ? [value] : []}
       onItemActivate={setValue}
       onItemDeactivate={React.useCallback(() => setValue(''), [setValue])}
@@ -144,6 +150,7 @@ const ToggleGroupImplMultiple = React.forwardRef<
 
   return (
     <ToggleGroupValueProvider
+      scope={props}
       value={value}
       onItemActivate={handleButtonActivate}
       onItemDeactivate={handleButtonDeactivate}
@@ -160,9 +167,9 @@ ToggleGroup.displayName = TOGGLE_GROUP_NAME;
 type ToggleGroupContextValue = { rovingFocus: boolean; disabled: boolean };
 
 const [ToggleGroupContext, useToggleGroupContext] =
-  createContext<ToggleGroupContextValue>(TOGGLE_GROUP_NAME);
+  createToggleGroupContext<ToggleGroupContextValue>(TOGGLE_GROUP_NAME);
 
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
+type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type ToggleGroupImplElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToggleGroupImplProps extends PrimitiveDivProps {
@@ -192,14 +199,21 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
       ...toggleGroupProps
     } = props;
     const commonProps = { role: 'group', dir, ...toggleGroupProps };
+    const rovingFocusGroupScope = useRovingFocusGroupScope(TOGGLE_GROUP_NAME, props);
     return (
-      <ToggleGroupContext rovingFocus={rovingFocus} disabled={disabled}>
+      <ToggleGroupContext scope={props} rovingFocus={rovingFocus} disabled={disabled}>
         {rovingFocus ? (
-          <RovingFocusGroup asChild orientation={orientation} dir={dir} loop={loop}>
-            <Primitive.div {...commonProps} ref={forwardedRef} />
-          </RovingFocusGroup>
+          <RovingFocusGroup.Root
+            asChild
+            {...rovingFocusGroupScope}
+            orientation={orientation}
+            dir={dir}
+            loop={loop}
+          >
+            <Primitive.div {...removeToggleGroupScopeProps(commonProps)} ref={forwardedRef} />
+          </RovingFocusGroup.Root>
         ) : (
-          <Primitive.div {...commonProps} ref={forwardedRef} />
+          <Primitive.div {...removeToggleGroupScopeProps(commonProps)} ref={forwardedRef} />
         )}
       </ToggleGroupContext>
     );
@@ -217,16 +231,23 @@ interface ToggleGroupItemProps extends Omit<ToggleGroupItemImplProps, 'pressed'>
 
 const ToggleGroupItem = React.forwardRef<ToggleGroupItemElement, ToggleGroupItemProps>(
   (props, forwardedRef) => {
-    const valueContext = useToggleGroupValueContext(ITEM_NAME);
-    const context = useToggleGroupContext(ITEM_NAME);
+    const valueContext = useToggleGroupValueContext(ITEM_NAME, props);
+    const context = useToggleGroupContext(ITEM_NAME, props);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(ITEM_NAME, props);
     const pressed = valueContext.value.includes(props.value);
     const disabled = context.disabled || props.disabled;
     const commonProps = { ...props, pressed, disabled };
     const ref = React.useRef<HTMLDivElement>(null);
     return context.rovingFocus ? (
-      <RovingFocusItem asChild focusable={!disabled} active={pressed} ref={ref}>
+      <RovingFocusGroup.Item
+        asChild
+        {...rovingFocusGroupScope}
+        focusable={!disabled}
+        active={pressed}
+        ref={ref}
+      >
         <ToggleGroupItemImpl {...commonProps} ref={forwardedRef} />
-      </RovingFocusItem>
+      </RovingFocusGroup.Item>
     ) : (
       <ToggleGroupItemImpl {...commonProps} ref={forwardedRef} />
     );
@@ -249,10 +270,10 @@ interface ToggleGroupItemImplProps extends Omit<ToggleProps, 'defaultPressed' | 
 const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleGroupItemImplProps>(
   (props, forwardedRef) => {
     const { value, ...itemProps } = props;
-    const valueContext = useToggleGroupValueContext(ITEM_NAME);
+    const valueContext = useToggleGroupValueContext(ITEM_NAME, props);
     return (
       <Toggle
-        {...itemProps}
+        {...removeToggleGroupScopeProps(itemProps)}
         ref={forwardedRef}
         onPressedChange={(pressed) => {
           if (pressed) {
@@ -272,6 +293,7 @@ const Root = ToggleGroup;
 const Item = ToggleGroupItem;
 
 export {
+  createToggleGroupScope,
   ToggleGroup,
   ToggleGroupItem,
   //

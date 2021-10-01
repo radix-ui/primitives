@@ -2,7 +2,7 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
@@ -13,17 +13,23 @@ import type * as Radix from '@radix-ui/react-primitive';
 const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };
 
-type ItemData = { id: string; focusable: boolean; active: boolean };
-const [CollectionProvider, CollectionSlot, CollectionItemSlot, useCollection] = createCollection<
-  HTMLSpanElement,
-  ItemData
->();
-
 /* -------------------------------------------------------------------------------------------------
  * RovingFocusGroup
  * -----------------------------------------------------------------------------------------------*/
 
 const GROUP_NAME = 'RovingFocusGroup';
+
+type ItemData = { id: string; focusable: boolean; active: boolean };
+const [Collection, useCollection, createCollectionScope] = createCollection<
+  HTMLSpanElement,
+  ItemData
+>(GROUP_NAME);
+
+const [
+  createRovingFocusGroupContext,
+  removeRovingFocusGroupScopeProps,
+  createRovingFocusGroupScope,
+] = createContextScope(GROUP_NAME, [createCollectionScope]);
 
 type Orientation = React.AriaAttributes['aria-orientation'];
 type Direction = 'ltr' | 'rtl';
@@ -52,19 +58,22 @@ type RovingContextValue = RovingFocusGroupOptions & {
   onItemShiftTab(): void;
 };
 
-const [RovingFocusProvider, useRovingFocusContext] = createContext<RovingContextValue>(GROUP_NAME);
+const [RovingFocusProvider, useRovingFocusContext] =
+  createRovingFocusGroupContext<RovingContextValue>(GROUP_NAME);
 
 type RovingFocusGroupElement = RovingFocusGroupImplElement;
 interface RovingFocusGroupProps extends RovingFocusGroupImplProps {}
 
 const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGroupProps>(
-  (props, forwardedRef) => (
-    <CollectionProvider>
-      <CollectionSlot>
-        <RovingFocusGroupImpl {...props} ref={forwardedRef} />
-      </CollectionSlot>
-    </CollectionProvider>
-  )
+  (props, forwardedRef) => {
+    return (
+      <Collection.Provider scope={props}>
+        <Collection.Slot scope={props}>
+          <RovingFocusGroupImpl {...props} ref={forwardedRef} />
+        </Collection.Slot>
+      </Collection.Provider>
+    );
+  }
 );
 
 RovingFocusGroup.displayName = GROUP_NAME;
@@ -105,7 +114,7 @@ const RovingFocusGroupImpl = React.forwardRef<
   });
   const [isTabbingBackOut, setIsTabbingBackOut] = React.useState(false);
   const handleEntryFocus = useCallbackRef(onEntryFocus);
-  const { getItems } = useCollection();
+  const { getItems } = useCollection(props);
   const isClickFocusRef = React.useRef(false);
 
   React.useEffect(() => {
@@ -118,6 +127,7 @@ const RovingFocusGroupImpl = React.forwardRef<
 
   return (
     <RovingFocusProvider
+      scope={props}
       orientation={orientation}
       dir={dir}
       loop={loop}
@@ -132,7 +142,7 @@ const RovingFocusGroupImpl = React.forwardRef<
         tabIndex={isTabbingBackOut ? -1 : 0}
         aria-orientation={orientation}
         data-orientation={orientation}
-        {...groupProps}
+        {...removeRovingFocusGroupScopeProps(groupProps)}
         ref={composedRefs}
         style={{ outline: 'none', ...props.style }}
         onMouseDown={composeEventHandlers(props.onMouseDown, () => {
@@ -170,10 +180,10 @@ const RovingFocusGroupImpl = React.forwardRef<
 });
 
 /* -------------------------------------------------------------------------------------------------
- * RovingFocusItem
+ * RovingFocusGroupItem
  * -----------------------------------------------------------------------------------------------*/
 
-const ITEM_NAME = 'RovingFocusItem';
+const ITEM_NAME = 'RovingFocusGroupItem';
 
 type RovingFocusItemElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
@@ -182,20 +192,20 @@ interface RovingFocusItemProps extends PrimitiveSpanProps {
   active?: boolean;
 }
 
-const RovingFocusItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
+const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
   (props, forwardedRef) => {
     const { focusable = true, active = false, ...itemProps } = props;
     const id = useId();
-    const context = useRovingFocusContext(ITEM_NAME);
+    const context = useRovingFocusContext(ITEM_NAME, props);
     const isCurrentTabStop = context.currentTabStopId === id;
-    const { getItems } = useCollection();
+    const { getItems } = useCollection(props);
 
     return (
-      <CollectionItemSlot id={id} focusable={focusable} active={active}>
+      <Collection.ItemSlot scope={props} id={id} focusable={focusable} active={active}>
         <Primitive.span
           tabIndex={isCurrentTabStop ? 0 : -1}
           data-orientation={context.orientation}
-          {...itemProps}
+          {...removeRovingFocusGroupScopeProps(itemProps)}
           ref={forwardedRef}
           onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
             // We prevent focusing non-focusable items on `mousedown`.
@@ -237,12 +247,12 @@ const RovingFocusItem = React.forwardRef<RovingFocusItemElement, RovingFocusItem
             }
           })}
         />
-      </CollectionItemSlot>
+      </Collection.ItemSlot>
     );
   }
 );
 
-RovingFocusItem.displayName = ITEM_NAME;
+RovingFocusGroupItem.displayName = ITEM_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -287,11 +297,12 @@ function wrapArray<T>(array: T[], startIndex: number) {
 }
 
 const Root = RovingFocusGroup;
-const Item = RovingFocusItem;
+const Item = RovingFocusGroupItem;
 
 export {
+  createRovingFocusGroupScope,
   RovingFocusGroup,
-  RovingFocusItem,
+  RovingFocusGroupItem,
   //
   Root,
   Item,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useSize } from '@radix-ui/react-use-size';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { Presence } from '@radix-ui/react-presence';
@@ -16,8 +16,11 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const RADIO_NAME = 'Radio';
 
+const [createRadioContext, removeRadioScopeProps, createRadioScope] =
+  createContextScope(RADIO_NAME);
+
 type RadioContextValue = { checked: boolean; disabled?: boolean };
-const [RadioProvider, useRadioContext] = createContext<RadioContextValue>(RADIO_NAME);
+const [RadioProvider, useRadioContext] = createRadioContext<RadioContextValue>(RADIO_NAME);
 
 type RadioElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
@@ -47,7 +50,7 @@ const Radio = React.forwardRef<RadioElement, RadioProps>((props, forwardedRef) =
   const isFormControl = button ? Boolean(button.closest('form')) : true;
 
   return (
-    <RadioProvider checked={checked} disabled={disabled}>
+    <RadioProvider scope={props} checked={checked} disabled={disabled}>
       <Primitive.button
         type="button"
         role="radio"
@@ -57,7 +60,7 @@ const Radio = React.forwardRef<RadioElement, RadioProps>((props, forwardedRef) =
         data-disabled={disabled ? '' : undefined}
         disabled={disabled}
         value={value}
-        {...radioProps}
+        {...removeRadioScopeProps(radioProps)}
         ref={composedRefs}
         onClick={composeEventHandlers(props.onClick, (event) => {
           // radios cannot be unchecked so we only communicate a checked state
@@ -111,13 +114,13 @@ export interface RadioIndicatorProps extends PrimitiveSpanProps {
 const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorProps>(
   (props, forwardedRef) => {
     const { forceMount, ...indicatorProps } = props;
-    const context = useRadioContext(INDICATOR_NAME);
+    const context = useRadioContext(INDICATOR_NAME, props);
     return (
       <Presence present={forceMount || context.checked}>
         <Primitive.span
           data-state={getState(context.checked)}
           data-disabled={context.disabled ? '' : undefined}
-          {...indicatorProps}
+          {...removeRadioScopeProps(indicatorProps)}
           ref={forwardedRef}
         />
       </Presence>
@@ -179,5 +182,5 @@ function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
 
-export { Radio, RadioIndicator };
+export { createRadioScope, Radio, RadioIndicator };
 export type { RadioProps };

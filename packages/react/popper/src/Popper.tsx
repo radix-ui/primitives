@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getPlacementData } from '@radix-ui/popper';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useRect } from '@radix-ui/react-use-rect';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -17,16 +17,19 @@ import type { Measurable } from '@radix-ui/rect';
 
 const POPPER_NAME = 'Popper';
 
+const [createPopperContext, removePopperScopeProps, createPopperScope] =
+  createContextScope(POPPER_NAME);
+
 type PopperContextValue = {
   anchor: Measurable | null;
   onAnchorChange(anchor: Measurable | null): void;
 };
-const [PopperProvider, usePopperContext] = createContext<PopperContextValue>(POPPER_NAME);
+const [PopperProvider, usePopperContext] = createPopperContext<PopperContextValue>(POPPER_NAME);
 
-const Popper: React.FC = ({ children }) => {
+const Popper: React.FC = ({ children, ...props }) => {
   const [anchor, setAnchor] = React.useState<Measurable | null>(null);
   return (
-    <PopperProvider anchor={anchor} onAnchorChange={setAnchor}>
+    <PopperProvider scope={props} anchor={anchor} onAnchorChange={setAnchor}>
       {children}
     </PopperProvider>
   );
@@ -49,7 +52,7 @@ interface PopperAnchorProps extends PrimitiveDivProps {
 const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
   (props, forwardedRef) => {
     const { virtualRef, ...anchorProps } = props;
-    const context = usePopperContext(ANCHOR_NAME);
+    const context = usePopperContext(ANCHOR_NAME, props);
     const ref = React.useRef<PopperAnchorElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
 
@@ -60,7 +63,9 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
       context.onAnchorChange(virtualRef?.current || ref.current);
     });
 
-    return virtualRef ? null : <Primitive.div {...anchorProps} ref={composedRefs} />;
+    return virtualRef ? null : (
+      <Primitive.div {...removePopperScopeProps(anchorProps)} ref={composedRefs} />
+    );
   }
 );
 
@@ -79,7 +84,7 @@ type PopperContentContextValue = {
 };
 
 const [PopperContentProvider, useContentContext] =
-  createContext<PopperContentContextValue>(CONTENT_NAME);
+  createPopperContext<PopperContentContextValue>(CONTENT_NAME);
 
 type PopperContentElement = React.ElementRef<typeof Primitive.div>;
 interface PopperContentProps extends PrimitiveDivProps {
@@ -103,7 +108,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       ...contentProps
     } = props;
 
-    const context = usePopperContext(CONTENT_NAME);
+    const context = usePopperContext(CONTENT_NAME, props);
     const [arrowOffset, setArrowOffset] = React.useState<number>();
     const anchorRect = useRect(context.anchor);
     const [content, setContent] = React.useState<HTMLDivElement | null>(null);
@@ -138,6 +143,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     return (
       <div style={popperStyles} data-radix-popper-content-wrapper="">
         <PopperContentProvider
+          scope={props}
           arrowStyles={arrowStyles}
           onArrowChange={setArrow}
           onArrowOffsetChange={setArrowOffset}
@@ -145,7 +151,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           <Primitive.div
             data-side={placedSide}
             data-align={placedAlign}
-            {...contentProps}
+            {...removePopperScopeProps(contentProps)}
             style={{
               ...contentProps.style,
               // if the PopperContent hasn't been placed yet (not all measurements done)
@@ -179,7 +185,7 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
   forwardedRef
 ) {
   const { offset, ...arrowProps } = props;
-  const context = useContentContext(ARROW_NAME);
+  const context = useContentContext(ARROW_NAME, props);
   const { onArrowOffsetChange } = context;
 
   // send the Arrow's offset up to Popper
@@ -199,7 +205,7 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
         }}
       >
         <ArrowPrimitive.Root
-          {...arrowProps}
+          {...removePopperScopeProps(arrowProps)}
           ref={forwardedRef}
           style={{
             ...arrowProps.style,
@@ -249,6 +255,7 @@ const Content = PopperContent;
 const Arrow = PopperArrow;
 
 export {
+  createPopperScope,
   Popper,
   PopperAnchor,
   PopperContent,

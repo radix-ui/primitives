@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
-import { RovingFocusGroup, RovingFocusItem } from '@radix-ui/react-roving-focus';
+import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
+import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { useId } from '@radix-ui/react-id';
 
 import type * as Radix from '@radix-ui/react-primitive';
@@ -15,6 +16,11 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const TABS_NAME = 'Tabs';
 
+const [createTabsContext, removeTabsScopeProps, createTabsScope] = createContextScope(TABS_NAME, [
+  createRovingFocusGroupScope,
+]);
+const useRovingFocusGroupScope = createRovingFocusGroupScope();
+
 type TabsContextValue = {
   baseId: string;
   value?: string;
@@ -24,10 +30,10 @@ type TabsContextValue = {
   activationMode?: TabsProps['activationMode'];
 };
 
-const [TabsProvider, useTabsContext] = createContext<TabsContextValue>(TABS_NAME);
+const [TabsProvider, useTabsContext] = createTabsContext<TabsContextValue>(TABS_NAME);
 
 type TabsElement = React.ElementRef<typeof Primitive.div>;
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup>;
+type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface TabsProps extends PrimitiveDivProps {
   /** The value for the selected tab, if controlled */
@@ -70,6 +76,7 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>((props, forwardedRef) => {
 
   return (
     <TabsProvider
+      scope={props}
       baseId={useId()}
       value={value}
       onValueChange={setValue}
@@ -77,7 +84,11 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>((props, forwardedRef) => {
       dir={dir}
       activationMode={activationMode}
     >
-      <Primitive.div data-orientation={orientation} {...tabsProps} ref={forwardedRef} />
+      <Primitive.div
+        data-orientation={orientation}
+        {...removeTabsScopeProps(tabsProps)}
+        ref={forwardedRef}
+      />
     </TabsProvider>
   );
 });
@@ -97,11 +108,23 @@ interface TabsListProps extends PrimitiveDivProps {
 
 const TabsList = React.forwardRef<TabsListElement, TabsListProps>((props, forwardedRef) => {
   const { loop = true, ...listProps } = props;
-  const context = useTabsContext(TAB_LIST_NAME);
+  const context = useTabsContext(TAB_LIST_NAME, props);
+  const rovingFocusGroupScope = useRovingFocusGroupScope(TAB_LIST_NAME, props);
   return (
-    <RovingFocusGroup asChild orientation={context.orientation} dir={context.dir} loop={loop}>
-      <Primitive.div role="tablist" dir={context.dir} {...listProps} ref={forwardedRef} />
-    </RovingFocusGroup>
+    <RovingFocusGroup.Root
+      asChild
+      {...rovingFocusGroupScope}
+      orientation={context.orientation}
+      dir={context.dir}
+      loop={loop}
+    >
+      <Primitive.div
+        role="tablist"
+        dir={context.dir}
+        {...removeTabsScopeProps(listProps)}
+        ref={forwardedRef}
+      />
+    </RovingFocusGroup.Root>
   );
 });
 
@@ -122,13 +145,19 @@ interface TabsTriggerProps extends PrimitiveDivProps {
 const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
   (props, forwardedRef) => {
     const { value, disabled = false, ...triggerProps } = props;
-    const context = useTabsContext(TRIGGER_NAME);
+    const context = useTabsContext(TRIGGER_NAME, props);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(TRIGGER_NAME, props);
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
     const isSelected = value === context.value;
     const handleTabChange = useCallbackRef(() => context.onValueChange(value));
     return (
-      <RovingFocusItem asChild focusable={!disabled} active={isSelected}>
+      <RovingFocusGroup.Item
+        asChild
+        {...rovingFocusGroupScope}
+        focusable={!disabled}
+        active={isSelected}
+      >
         <Primitive.div
           role="tab"
           aria-selected={isSelected}
@@ -137,7 +166,7 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
           data-state={isSelected ? 'active' : 'inactive'}
           data-disabled={disabled ? '' : undefined}
           id={triggerId}
-          {...triggerProps}
+          {...removeTabsScopeProps(triggerProps)}
           ref={forwardedRef}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
@@ -160,7 +189,7 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
             }
           })}
         />
-      </RovingFocusItem>
+      </RovingFocusGroup.Item>
     );
   }
 );
@@ -181,7 +210,7 @@ interface TabsContentProps extends PrimitiveDivProps {
 const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
   (props, forwardedRef) => {
     const { value, children, ...contentProps } = props;
-    const context = useTabsContext(CONTENT_NAME);
+    const context = useTabsContext(CONTENT_NAME, props);
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
     const isSelected = value === context.value;
@@ -194,7 +223,7 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
         hidden={!isSelected}
         id={contentId}
         tabIndex={0}
-        {...contentProps}
+        {...removeTabsScopeProps(contentProps)}
         ref={forwardedRef}
       >
         {isSelected && children}
@@ -221,6 +250,7 @@ const Trigger = TabsTrigger;
 const Content = TabsContent;
 
 export {
+  createTabsScope,
   Tabs,
   TabsList,
   TabsTrigger,

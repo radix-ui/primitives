@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { usePrevious } from '@radix-ui/react-use-previous';
@@ -17,6 +17,9 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const CHECKBOX_NAME = 'Checkbox';
 
+const [createCheckboxContext, removeCheckboxScopeProps, createCheckboxScope] =
+  createContextScope(CHECKBOX_NAME);
+
 type CheckedState = boolean | 'indeterminate';
 
 type CheckboxContextValue = {
@@ -24,7 +27,8 @@ type CheckboxContextValue = {
   disabled?: boolean;
 };
 
-const [CheckboxProvider, useCheckboxContext] = createContext<CheckboxContextValue>(CHECKBOX_NAME);
+const [CheckboxProvider, useCheckboxContext] =
+  createCheckboxContext<CheckboxContextValue>(CHECKBOX_NAME);
 
 type CheckboxElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
@@ -61,7 +65,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>((props, forwar
   });
 
   return (
-    <CheckboxProvider state={checked} disabled={disabled}>
+    <CheckboxProvider scope={props} state={checked} disabled={disabled}>
       <Primitive.button
         type="button"
         role="checkbox"
@@ -72,7 +76,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>((props, forwar
         data-disabled={disabled ? '' : undefined}
         disabled={disabled}
         value={value}
-        {...checkboxProps}
+        {...removeCheckboxScopeProps(checkboxProps)}
         ref={composedRefs}
         onClick={composeEventHandlers(props.onClick, (event) => {
           setChecked((prevChecked) => (isIndeterminate(prevChecked) ? true : !prevChecked));
@@ -125,13 +129,13 @@ interface CheckboxIndicatorProps extends PrimitiveSpanProps {
 const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxIndicatorProps>(
   (props, forwardedRef) => {
     const { forceMount, ...indicatorProps } = props;
-    const context = useCheckboxContext(INDICATOR_NAME);
+    const context = useCheckboxContext(INDICATOR_NAME, props);
     return (
       <Presence present={forceMount || isIndeterminate(context.state) || context.state === true}>
         <Primitive.span
           data-state={getState(context.state)}
           data-disabled={context.disabled ? '' : undefined}
-          {...indicatorProps}
+          {...removeCheckboxScopeProps(indicatorProps)}
           ref={forwardedRef}
           style={{ pointerEvents: 'none', ...props.style }}
         />
@@ -204,6 +208,7 @@ const Root = Checkbox;
 const Indicator = CheckboxIndicator;
 
 export {
+  createCheckboxScope,
   Checkbox,
   CheckboxIndicator,
   //
