@@ -15,6 +15,44 @@ export const WithSlottable = () => (
   </SlotWithSlottable>
 );
 
+export const WithComposedEvents = () => (
+  <>
+    <h1>Should log both</h1>
+    <SlotWithPreventableEvent>
+      <button onClick={() => console.log('button click')}>Slot event not prevented</button>
+    </SlotWithPreventableEvent>
+
+    <h1>Should log "button click"</h1>
+    <SlotWithPreventableEvent>
+      <button
+        onClick={(event) => {
+          console.log('button click');
+          event.preventDefault();
+        }}
+      >
+        Slot event prevented
+      </button>
+    </SlotWithPreventableEvent>
+
+    <h1>Should log both</h1>
+    <SlotWithoutPreventableEvent>
+      <button onClick={() => console.log('button click')}>Slot event not prevented</button>
+    </SlotWithoutPreventableEvent>
+
+    <h1>Should log both</h1>
+    <SlotWithoutPreventableEvent>
+      <button
+        onClick={(event) => {
+          console.log('button click');
+          event.preventDefault();
+        }}
+      >
+        Slot event prevented
+      </button>
+    </SlotWithoutPreventableEvent>
+  </>
+);
+
 export const Chromatic = () => (
   <>
     <h1>Without Slottable</h1>
@@ -170,7 +208,12 @@ class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
   }
 }
 
-const SlotWithoutSlottable = (props: any) => <Slot {...props} />;
+/* Also verifying that props and ref types don't error */
+const SlotWithoutSlottable = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentPropsWithoutRef<'div'>
+>((props, forwardedRef) => <Slot {...props} className="test" ref={forwardedRef} />);
+
 const SlotWithSlottable = ({ children, ...props }: any) => (
   <Slot {...props}>
     <Slottable>{children}</Slottable>
@@ -184,4 +227,26 @@ const SlotWithFalseInternalChild = ({ children, ...props }: any) => (
 
 const SlotWithNullInternalChild = ({ children, ...props }: any) => (
   <Slot {...props}>{false ? children : null}</Slot>
+);
+
+const SlotWithPreventableEvent = (props: any) => (
+  <Slot
+    {...props}
+    onClick={(event) => {
+      props.onClick?.(event);
+      if (!event.defaultPrevented) {
+        console.log(event.target);
+      }
+    }}
+  />
+);
+
+const SlotWithoutPreventableEvent = (props: any) => (
+  <Slot
+    {...props}
+    onClick={(event) => {
+      props.onClick?.(event);
+      console.log(event.target);
+    }}
+  />
 );
