@@ -5,7 +5,7 @@ import { composeRefs } from '@radix-ui/react-compose-refs';
  * Slot
  * -----------------------------------------------------------------------------------------------*/
 
-interface SlotProps {
+interface SlotProps extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode;
 }
 
@@ -88,7 +88,10 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
     const isHandler = /^on[A-Z]/.test(propName);
     // if it's a handler, modify the override by composing the base handler
     if (isHandler) {
-      overrideProps[propName] = composeHandlers(childPropValue, slotPropValue);
+      overrideProps[propName] = (...args: unknown[]) => {
+        childPropValue?.(...args);
+        slotPropValue?.(...args);
+      };
     }
     // if it's `style`, we merge them
     else if (propName === 'style') {
@@ -99,18 +102,6 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
   }
 
   return { ...slotProps, ...overrideProps };
-}
-
-type EventHandler = (...args: unknown[]) => unknown;
-
-function composeHandlers(childHandler?: EventHandler, slotHandler?: EventHandler) {
-  return function handleEvent(...args) {
-    childHandler?.(...args);
-    const isDefaultPreventedEvent = args[0] instanceof Event && args[0].defaultPrevented;
-    if (!isDefaultPreventedEvent) {
-      slotHandler?.(...args);
-    }
-  } as EventHandler;
 }
 
 const Root = Slot;
