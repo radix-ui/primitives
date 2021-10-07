@@ -130,8 +130,8 @@ const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardCont
         <HoverCardContentImpl
           data-state={context.open ? 'open' : 'closed'}
           {...contentProps}
-          onPointerEnter={composeEventHandlers(props.onMouseEnter, excludeTouch(context.onOpen))}
-          onPointerLeave={composeEventHandlers(props.onMouseLeave, excludeTouch(context.onClose))}
+          onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
+          onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
           ref={forwardedRef}
         />
       </Presence>
