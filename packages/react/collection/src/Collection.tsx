@@ -8,7 +8,7 @@ import type * as Radix from '@radix-ui/react-primitive';
 type SlotProps = Radix.ComponentPropsWithoutRef<typeof Slot>;
 type CollectionElement = HTMLElement;
 interface CollectionProps extends SlotProps {
-  scope: Record<string, any>;
+  scope: any;
 }
 
 // We have resorted to returning slots directly rather than exposing primitives that can then
@@ -21,8 +21,8 @@ function createCollection<ItemElement extends HTMLElement, ItemData>(name: strin
    * CollectionProvider
    * ---------------------------------------------------------------------------------------------*/
 
-  const PROVIDER_NAME = name + 'CollectionProvider';
-  const [createCollectionContext, , createCollectionScope] = createContextScope(PROVIDER_NAME);
+  const PROVIDER_NAME = name + 'Collection';
+  const [createCollectionContext, createCollectionScope] = createContextScope(PROVIDER_NAME);
 
   type ContextValue = {
     collectionRef: React.RefObject<CollectionElement>;
@@ -34,7 +34,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>(name: strin
     { collectionRef: { current: null }, itemMap: new Map() }
   );
 
-  const CollectionProvider: React.FC<{ scope: Record<string, any> }> = (props) => {
+  const CollectionProvider: React.FC<{ scope: any }> = (props) => {
     const { scope, children } = props;
     const ref = React.useRef<CollectionElement>(null);
     const itemMap = React.useRef<ContextValue['itemMap']>(new Map()).current;
@@ -73,7 +73,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>(name: strin
 
   type CollectionItemSlotProps = ItemData & {
     children: React.ReactNode;
-    scope: Record<string, any>;
+    scope: any;
   };
 
   const CollectionItemSlot = React.forwardRef<ItemElement, CollectionItemSlotProps>(
@@ -102,8 +102,8 @@ function createCollection<ItemElement extends HTMLElement, ItemData>(name: strin
    * useCollection
    * ---------------------------------------------------------------------------------------------*/
 
-  function useCollection(props: Record<string, any>) {
-    const context = useCollectionContext(name + 'CollectionConsumer', props);
+  function useCollection(scope: any) {
+    const context = useCollectionContext(name + 'CollectionConsumer', scope);
     return {
       getItems() {
         const collection = context.collectionRef.current;

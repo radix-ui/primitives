@@ -9,27 +9,19 @@ function createContext<ContextValueType extends object | null>(
   const Context = React.createContext<ContextValueType | undefined>(defaultContext);
 
   function Provider(props: ContextValueType & { children: React.ReactNode }) {
-    const { children, ...providerProps } = props;
+    const { children, ...context } = props;
     // Only re-memoize when prop values change
-    const value = React.useMemo(
-      () => providerProps,
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      Object.values(providerProps)
-    ) as ContextValueType;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const value = React.useMemo(() => context, Object.values(context)) as ContextValueType;
     return <Context.Provider value={value}>{children}</Context.Provider>;
   }
 
   function useContext(consumerName: string) {
     const context = React.useContext(Context);
-
-    if (context === undefined) {
-      // if a defaultContext wasn't specified, it's a required context.
-      if (defaultContext === undefined) {
-        throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
-      }
-      return defaultContext;
-    }
-    return context;
+    if (context) return context;
+    if (defaultContext !== undefined) return defaultContext;
+    // if a defaultContext wasn't specified, it's a required context.
+    throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
   }
 
   Provider.displayName = rootComponentName + 'Provider';
@@ -40,15 +32,19 @@ function createContext<ContextValueType extends object | null>(
  * createContextScope
  * -----------------------------------------------------------------------------------------------*/
 
-type ScopeHook = (consumerName: string, props: Record<string, any>) => Record<string, any>;
-
+type Scope<C = any> = { [scopeName: string]: React.Context<C>[] } | undefined;
+type ScopeHook = (scope: Scope) => { [__scopeProp: string]: Scope };
 interface CreateScope {
-  __removeScopeProps<T>(props: T): T;
+  scopeName: string;
   (): ScopeHook;
 }
 
 function createContextScope(scopeName: string, createContextScopeDeps: CreateScope[] = []) {
   let baseContexts: React.Context<any>[] = [];
+
+  /* -----------------------------------------------------------------------------------------------
+   * createContext
+   * ---------------------------------------------------------------------------------------------*/
 
   function createContext<ContextValueType extends object | null>(
     rootComponentName: string,
@@ -56,76 +52,56 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
   ) {
     const BaseContext = React.createContext<ContextValueType | undefined>(defaultContext);
     const index = baseContexts.length;
+
+    // We attach the defaultContext to each context so we can clone later
     (BaseContext as any)[$$DefaultContext] = defaultContext;
     baseContexts = [...baseContexts, BaseContext];
 
     function Provider(
-      props: ContextValueType & { scope: Record<string, any>; children: React.ReactNode }
+      props: ContextValueType & { scope: Scope<ContextValueType>; children: React.ReactNode }
     ) {
-      const { scope, children, ...providerProps } = props;
-      const __scope = (scope as any)[`__scope-${scopeName}-contexts`] || [];
-      const Context = __scope[index] || BaseContext;
-
+      const { scope, children, ...context } = props;
+      const Context = scope?.[scopeName][index] || baseContexts[index];
       // Only re-memoize when prop values change
-      const value = React.useMemo(
-        () => providerProps,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        Object.values(providerProps)
-      ) as ContextValueType;
-
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const value = React.useMemo(() => context, Object.values(context)) as ContextValueType;
       return <Context.Provider value={value}>{children}</Context.Provider>;
     }
 
-    function useContext(consumerName: string, props: Record<string, any>) {
-      type ScopeContexts = React.Context<ContextValueType>[];
-      const __scope: ScopeContexts = props[`__scope-${scopeName}-contexts`] || [];
-      const partName = props[`__scope-${scopeName}-part`] || consumerName;
-      const context = React.useContext(__scope[index] || BaseContext);
-      if (context === undefined) {
-        // if a defaultContext wasn't specified, it's a required context.
-        if (defaultContext === undefined) {
-          throw new Error(`\`${partName}\` must be used within \`${rootComponentName}\``);
-        }
-        return defaultContext;
-      }
-      return context;
+    function useContext(consumerName: string, scope: Scope<ContextValueType>) {
+      const currentScope = scope?.[scopeName];
+      const Context = currentScope?.[index] || baseContexts[index];
+      const context = React.useContext(Context) as ContextValueType | undefined;
+      if (context) return context;
+      if (defaultContext !== undefined) return defaultContext;
+      // if a defaultContext wasn't specified, it's a required context.
+      throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
     }
 
     Provider.displayName = rootComponentName + 'Provider';
     return [Provider, useContext] as const;
   }
 
+  /* -----------------------------------------------------------------------------------------------
+   * createScope
+   * ---------------------------------------------------------------------------------------------*/
+
   const createScope: CreateScope = () => {
     const scopeContexts = baseContexts.map((BaseContext) => {
       const defaultContext = (BaseContext as any)[$$DefaultContext];
       return React.createContext(defaultContext);
     });
-    return function useScope(consumerName, props) {
-      const contextsPropName = `__scope-${scopeName}-contexts`;
-      const partPropName = `__scope-${scopeName}-part`;
-      const contexts = props[contextsPropName] || scopeContexts;
-      const part = props[partPropName] || consumerName;
+    return function useScope(scope: Scope) {
+      const contexts = scope?.[scopeName] || scopeContexts;
       return React.useMemo(
-        () => ({ [contextsPropName]: contexts, [partPropName]: part }),
-        [contextsPropName, contexts, partPropName, part]
+        () => ({ [`__scope${scopeName}`]: { ...scope, [scopeName]: contexts } }),
+        [scope, contexts]
       );
     };
   };
 
-  function removeScopeProps<T>(originalProps: T) {
-    const props = removeScopePropsFromScopes(originalProps, createContextScopeDeps);
-    return Object.fromEntries(
-      Object.entries(props).filter(([prop]) => !prop.startsWith(`__scope-${scopeName}`))
-    ) as T;
-  }
-
-  createScope.__removeScopeProps = removeScopeProps;
-
-  return [
-    createContext,
-    removeScopeProps,
-    composeContextScopes(createScope, ...createContextScopeDeps),
-  ] as const;
+  createScope.scopeName = scopeName;
+  return [createContext, composeContextScopes(createScope, ...createContextScopeDeps)] as const;
 }
 
 /* -------------------------------------------------------------------------------------------------
@@ -133,30 +109,31 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
  * -----------------------------------------------------------------------------------------------*/
 
 function composeContextScopes(...scopes: CreateScope[]) {
+  const baseScope = scopes[0];
+  if (scopes.length === 1) return baseScope;
+
   const createScope: CreateScope = () => {
-    const scopeHooks: ScopeHook[] = scopes.map((createScope) => createScope());
-    return function useComposedScopes(consumerName, props) {
-      const scopes = scopeHooks.map((use) => use(consumerName, props));
-      return React.useMemo(
-        () => scopes.reduce((scopeA, scopeB) => ({ ...scopeA, ...scopeB }), {}),
-        [scopes]
-      );
+    const scopeHooks = scopes.map((createScope) => ({
+      use: createScope(),
+      scopeName: createScope.scopeName,
+    }));
+
+    return function useComposedScopes(overrideScopes) {
+      const nextScopes = scopeHooks.reduce((scopeA, { use, scopeName }) => {
+        const scopeProps = use(overrideScopes);
+        const scopeB = scopeProps[`__scope${scopeName}`];
+        return { ...scopeA, ...scopeB };
+      }, {});
+
+      return React.useMemo(() => ({ [`__scope${baseScope.scopeName}`]: nextScopes }), [nextScopes]);
     };
   };
 
-  createScope.__removeScopeProps = (props) => removeScopePropsFromScopes(props, scopes);
+  createScope.scopeName = baseScope.scopeName;
   return createScope;
-}
-
-/* -------------------------------------------------------------------------------------------------
- * removeScopePropsFromScopes
- * -----------------------------------------------------------------------------------------------*/
-
-function removeScopePropsFromScopes<T>(originalProps: T, scopes: CreateScope[]) {
-  return scopes.reduce((props, { __removeScopeProps }) => __removeScopeProps(props), originalProps);
 }
 
 /* -----------------------------------------------------------------------------------------------*/
 
 export { createContext, createContextScope };
-export type { CreateScope };
+export type { CreateScope, Scope };

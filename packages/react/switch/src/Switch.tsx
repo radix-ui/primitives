@@ -9,6 +9,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useLabelContext } from '@radix-ui/react-label';
 
 import type * as Radix from '@radix-ui/react-primitive';
+import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
@@ -16,8 +17,8 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const SWITCH_NAME = 'Switch';
 
-const [createSwitchContext, removeSwitchScopeProps, createSwitchScope] =
-  createContextScope(SWITCH_NAME);
+type ScopeProps<P> = P & { __scopeSwitch?: Scope };
+const [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME);
 
 type SwitchContextValue = { checked: boolean; disabled?: boolean };
 const [SwitchProvider, useSwitchContext] = createSwitchContext<SwitchContextValue>(SWITCH_NAME);
@@ -31,74 +32,77 @@ interface SwitchProps extends PrimitiveButtonProps {
   onCheckedChange?(checked: boolean): void;
 }
 
-const Switch = React.forwardRef<SwitchElement, SwitchProps>((props, forwardedRef) => {
-  const {
-    'aria-labelledby': ariaLabelledby,
-    name,
-    checked: checkedProp,
-    defaultChecked,
-    required,
-    disabled,
-    value = 'on',
-    onCheckedChange,
-    ...switchProps
-  } = props;
-  const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
-  const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
-  const labelId = useLabelContext(button);
-  const labelledBy = ariaLabelledby || labelId;
-  const hasConsumerStoppedPropagationRef = React.useRef(false);
-  // We set this to true by default so that events bubble to forms without JS (SSR)
-  const isFormControl = button ? Boolean(button.closest('form')) : true;
-  const [checked = false, setChecked] = useControllableState({
-    prop: checkedProp,
-    defaultProp: defaultChecked,
-    onChange: onCheckedChange,
-  });
+const Switch = React.forwardRef<SwitchElement, SwitchProps>(
+  (props: ScopeProps<SwitchProps>, forwardedRef) => {
+    const {
+      __scopeSwitch,
+      'aria-labelledby': ariaLabelledby,
+      name,
+      checked: checkedProp,
+      defaultChecked,
+      required,
+      disabled,
+      value = 'on',
+      onCheckedChange,
+      ...switchProps
+    } = props;
+    const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
+    const labelId = useLabelContext(button);
+    const labelledBy = ariaLabelledby || labelId;
+    const hasConsumerStoppedPropagationRef = React.useRef(false);
+    // We set this to true by default so that events bubble to forms without JS (SSR)
+    const isFormControl = button ? Boolean(button.closest('form')) : true;
+    const [checked = false, setChecked] = useControllableState({
+      prop: checkedProp,
+      defaultProp: defaultChecked,
+      onChange: onCheckedChange,
+    });
 
-  return (
-    <SwitchProvider scope={props} checked={checked} disabled={disabled}>
-      <Primitive.button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-labelledby={labelledBy}
-        aria-required={required}
-        data-state={getState(checked)}
-        data-disabled={disabled ? '' : undefined}
-        disabled={disabled}
-        value={value}
-        {...removeSwitchScopeProps(switchProps)}
-        ref={composedRefs}
-        onClick={composeEventHandlers(props.onClick, (event) => {
-          setChecked((prevChecked) => !prevChecked);
-          if (isFormControl) {
-            hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-            // if switch is in a form, stop propagation from the button so that we only propagate
-            // one click event (from the input). We propagate changes from an input so that native
-            // form validation works and form events reflect switch updates.
-            if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
-          }
-        })}
-      />
-      {isFormControl && (
-        <BubbleInput
-          control={button}
-          bubbles={!hasConsumerStoppedPropagationRef.current}
-          name={name}
-          value={value}
-          checked={checked}
-          required={required}
+    return (
+      <SwitchProvider scope={__scopeSwitch} checked={checked} disabled={disabled}>
+        <Primitive.button
+          type="button"
+          role="switch"
+          aria-checked={checked}
+          aria-labelledby={labelledBy}
+          aria-required={required}
+          data-state={getState(checked)}
+          data-disabled={disabled ? '' : undefined}
           disabled={disabled}
-          // We transform because the input is absolutely positioned but we have
-          // rendered it **after** the button. This pulls it back to sit on top
-          // of the button.
-          style={{ transform: 'translateX(-100%)' }}
+          value={value}
+          {...switchProps}
+          ref={composedRefs}
+          onClick={composeEventHandlers(props.onClick, (event) => {
+            setChecked((prevChecked) => !prevChecked);
+            if (isFormControl) {
+              hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+              // if switch is in a form, stop propagation from the button so that we only propagate
+              // one click event (from the input). We propagate changes from an input so that native
+              // form validation works and form events reflect switch updates.
+              if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+            }
+          })}
         />
-      )}
-    </SwitchProvider>
-  );
-});
+        {isFormControl && (
+          <BubbleInput
+            control={button}
+            bubbles={!hasConsumerStoppedPropagationRef.current}
+            name={name}
+            value={value}
+            checked={checked}
+            required={required}
+            disabled={disabled}
+            // We transform because the input is absolutely positioned but we have
+            // rendered it **after** the button. This pulls it back to sit on top
+            // of the button.
+            style={{ transform: 'translateX(-100%)' }}
+          />
+        )}
+      </SwitchProvider>
+    );
+  }
+);
 
 Switch.displayName = SWITCH_NAME;
 
@@ -113,13 +117,14 @@ type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SwitchThumbProps extends PrimitiveSpanProps {}
 
 const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
-  (props, forwardedRef) => {
-    const context = useSwitchContext(THUMB_NAME, props);
+  (props: ScopeProps<SwitchThumbProps>, forwardedRef) => {
+    const { __scopeSwitch, ...thumbProps } = props;
+    const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
     return (
       <Primitive.span
         data-state={getState(context.checked)}
         data-disabled={context.disabled ? '' : undefined}
-        {...removeSwitchScopeProps(props)}
+        {...thumbProps}
         ref={forwardedRef}
       />
     );

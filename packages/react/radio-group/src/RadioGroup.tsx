@@ -10,14 +10,18 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Radio, RadioIndicator, createRadioScope } from './Radio';
 
 import type * as Radix from '@radix-ui/react-primitive';
+import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
  * -----------------------------------------------------------------------------------------------*/
 const RADIO_GROUP_NAME = 'RadioGroup';
 
-const [createRadioGroupContet, removeRadioGroupScopeProps, createRadioGroupScope] =
-  createContextScope(RADIO_GROUP_NAME, [createRovingFocusGroupScope, createRadioScope]);
+type ScopeProps<P> = P & { __scopeRadioGroup?: Scope };
+const [createRadioGroupContet, createRadioGroupScope] = createContextScope(RADIO_GROUP_NAME, [
+  createRovingFocusGroupScope,
+  createRadioScope,
+]);
 const useRovingFocusGroupScope = createRovingFocusGroupScope();
 const useRadioScope = createRadioScope();
 
@@ -45,54 +49,57 @@ interface RadioGroupProps extends PrimitiveDivProps {
   onValueChange?: RadioGroupContextValue['onValueChange'];
 }
 
-const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>((props, forwardedRef) => {
-  const {
-    name,
-    'aria-labelledby': ariaLabelledby,
-    defaultValue,
-    value: valueProp,
-    required = false,
-    orientation,
-    dir = 'ltr',
-    loop = true,
-    onValueChange,
-    ...groupProps
-  } = props;
-  const labelId = useLabelContext();
-  const labelledBy = ariaLabelledby || labelId;
-  const rovingFocusGroupScope = useRovingFocusGroupScope(RADIO_GROUP_NAME, props);
-  const [value, setValue] = useControllableState({
-    prop: valueProp,
-    defaultProp: defaultValue,
-    onChange: onValueChange,
-  });
+const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
+  (props: ScopeProps<RadioGroupProps>, forwardedRef) => {
+    const {
+      __scopeRadioGroup,
+      name,
+      'aria-labelledby': ariaLabelledby,
+      defaultValue,
+      value: valueProp,
+      required = false,
+      orientation,
+      dir = 'ltr',
+      loop = true,
+      onValueChange,
+      ...groupProps
+    } = props;
+    const labelId = useLabelContext();
+    const labelledBy = ariaLabelledby || labelId;
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
+    const [value, setValue] = useControllableState({
+      prop: valueProp,
+      defaultProp: defaultValue,
+      onChange: onValueChange,
+    });
 
-  return (
-    <RadioGroupProvider
-      scope={props}
-      name={name}
-      value={value}
-      required={required}
-      onValueChange={setValue}
-    >
-      <RovingFocusGroup.Root
-        asChild
-        {...rovingFocusGroupScope}
-        orientation={orientation}
-        dir={dir}
-        loop={loop}
+    return (
+      <RadioGroupProvider
+        scope={__scopeRadioGroup}
+        name={name}
+        value={value}
+        required={required}
+        onValueChange={setValue}
       >
-        <Primitive.div
-          role="radiogroup"
-          aria-labelledby={labelledBy}
+        <RovingFocusGroup.Root
+          asChild
+          {...rovingFocusGroupScope}
+          orientation={orientation}
           dir={dir}
-          {...removeRadioGroupScopeProps(groupProps)}
-          ref={forwardedRef}
-        />
-      </RovingFocusGroup.Root>
-    </RadioGroupProvider>
-  );
-});
+          loop={loop}
+        >
+          <Primitive.div
+            role="radiogroup"
+            aria-labelledby={labelledBy}
+            dir={dir}
+            {...groupProps}
+            ref={forwardedRef}
+          />
+        </RovingFocusGroup.Root>
+      </RadioGroupProvider>
+    );
+  }
+);
 
 RadioGroup.displayName = RADIO_GROUP_NAME;
 
@@ -109,14 +116,14 @@ interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck' | 'name'> {
 }
 
 const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemProps>(
-  (props, forwardedRef) => {
-    const { disabled, ...itemProps } = props;
-    const context = useRadioGroupContext(ITEM_NAME, props);
+  (props: ScopeProps<RadioGroupItemProps>, forwardedRef) => {
+    const { __scopeRadioGroup, disabled, ...itemProps } = props;
+    const context = useRadioGroupContext(ITEM_NAME, __scopeRadioGroup);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
+    const radioScope = useRadioScope(__scopeRadioGroup);
     const ref = React.useRef<React.ElementRef<typeof Radio>>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const checked = context.value === itemProps.value;
-    const rovingFocusGroupScope = useRovingFocusGroupScope(ITEM_NAME, props);
-    const radioScope = useRadioScope(ITEM_NAME, props);
     return (
       <RovingFocusGroup.Item
         asChild
@@ -129,7 +136,7 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
           required={context.required}
           checked={checked}
           {...radioScope}
-          {...removeRadioGroupScopeProps(itemProps)}
+          {...itemProps}
           name={context.name}
           ref={composedRefs}
           onCheck={() => context.onValueChange(itemProps.value)}
@@ -160,11 +167,10 @@ type RadioIndicatorProps = Radix.ComponentPropsWithoutRef<typeof RadioIndicator>
 interface RadioGroupIndicatorProps extends RadioIndicatorProps {}
 
 const RadioGroupIndicator = React.forwardRef<RadioGroupIndicatorElement, RadioGroupIndicatorProps>(
-  (props, forwardedRef) => {
-    const radioScope = useRadioScope(INDICATOR_NAME, props);
-    return (
-      <RadioIndicator {...radioScope} {...removeRadioGroupScopeProps(props)} ref={forwardedRef} />
-    );
+  (props: ScopeProps<RadioGroupIndicatorProps>, forwardedRef) => {
+    const { __scopeRadioGroup, ...indicatorProps } = props;
+    const radioScope = useRadioScope(__scopeRadioGroup);
+    return <RadioIndicator {...radioScope} {...indicatorProps} ref={forwardedRef} />;
   }
 );
 

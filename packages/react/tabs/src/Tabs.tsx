@@ -9,6 +9,7 @@ import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { useId } from '@radix-ui/react-id';
 
 import type * as Radix from '@radix-ui/react-primitive';
+import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
  * Tabs
@@ -16,7 +17,8 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const TABS_NAME = 'Tabs';
 
-const [createTabsContext, removeTabsScopeProps, createTabsScope] = createContextScope(TABS_NAME, [
+type ScopeProps<P> = P & { __scopeTabs?: Scope };
+const [createTabsContext, createTabsScope] = createContextScope(TABS_NAME, [
   createRovingFocusGroupScope,
 ]);
 const useRovingFocusGroupScope = createRovingFocusGroupScope();
@@ -57,41 +59,40 @@ interface TabsProps extends PrimitiveDivProps {
   activationMode?: 'automatic' | 'manual';
 }
 
-const Tabs = React.forwardRef<TabsElement, TabsProps>((props, forwardedRef) => {
-  const {
-    value: valueProp,
-    onValueChange,
-    defaultValue,
-    orientation = 'horizontal',
-    dir = 'ltr',
-    activationMode = 'automatic',
-    ...tabsProps
-  } = props;
+const Tabs = React.forwardRef<TabsElement, TabsProps>(
+  (props: ScopeProps<TabsProps>, forwardedRef) => {
+    const {
+      __scopeTabs,
+      value: valueProp,
+      onValueChange,
+      defaultValue,
+      orientation = 'horizontal',
+      dir = 'ltr',
+      activationMode = 'automatic',
+      ...tabsProps
+    } = props;
 
-  const [value, setValue] = useControllableState({
-    prop: valueProp,
-    onChange: onValueChange,
-    defaultProp: defaultValue,
-  });
+    const [value, setValue] = useControllableState({
+      prop: valueProp,
+      onChange: onValueChange,
+      defaultProp: defaultValue,
+    });
 
-  return (
-    <TabsProvider
-      scope={props}
-      baseId={useId()}
-      value={value}
-      onValueChange={setValue}
-      orientation={orientation}
-      dir={dir}
-      activationMode={activationMode}
-    >
-      <Primitive.div
-        data-orientation={orientation}
-        {...removeTabsScopeProps(tabsProps)}
-        ref={forwardedRef}
-      />
-    </TabsProvider>
-  );
-});
+    return (
+      <TabsProvider
+        scope={__scopeTabs}
+        baseId={useId()}
+        value={value}
+        onValueChange={setValue}
+        orientation={orientation}
+        dir={dir}
+        activationMode={activationMode}
+      >
+        <Primitive.div data-orientation={orientation} {...tabsProps} ref={forwardedRef} />
+      </TabsProvider>
+    );
+  }
+);
 
 Tabs.displayName = TABS_NAME;
 
@@ -106,27 +107,24 @@ interface TabsListProps extends PrimitiveDivProps {
   loop?: RovingFocusGroupProps['loop'];
 }
 
-const TabsList = React.forwardRef<TabsListElement, TabsListProps>((props, forwardedRef) => {
-  const { loop = true, ...listProps } = props;
-  const context = useTabsContext(TAB_LIST_NAME, props);
-  const rovingFocusGroupScope = useRovingFocusGroupScope(TAB_LIST_NAME, props);
-  return (
-    <RovingFocusGroup.Root
-      asChild
-      {...rovingFocusGroupScope}
-      orientation={context.orientation}
-      dir={context.dir}
-      loop={loop}
-    >
-      <Primitive.div
-        role="tablist"
+const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
+  (props: ScopeProps<TabsListProps>, forwardedRef) => {
+    const { __scopeTabs, loop = true, ...listProps } = props;
+    const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
+    return (
+      <RovingFocusGroup.Root
+        asChild
+        {...rovingFocusGroupScope}
+        orientation={context.orientation}
         dir={context.dir}
-        {...removeTabsScopeProps(listProps)}
-        ref={forwardedRef}
-      />
-    </RovingFocusGroup.Root>
-  );
-});
+        loop={loop}
+      >
+        <Primitive.div role="tablist" dir={context.dir} {...listProps} ref={forwardedRef} />
+      </RovingFocusGroup.Root>
+    );
+  }
+);
 
 TabsList.displayName = TAB_LIST_NAME;
 
@@ -143,10 +141,10 @@ interface TabsTriggerProps extends PrimitiveDivProps {
 }
 
 const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
-  (props, forwardedRef) => {
-    const { value, disabled = false, ...triggerProps } = props;
-    const context = useTabsContext(TRIGGER_NAME, props);
-    const rovingFocusGroupScope = useRovingFocusGroupScope(TRIGGER_NAME, props);
+  (props: ScopeProps<TabsTriggerProps>, forwardedRef) => {
+    const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
+    const context = useTabsContext(TRIGGER_NAME, __scopeTabs);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
     const isSelected = value === context.value;
@@ -166,7 +164,7 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
           data-state={isSelected ? 'active' : 'inactive'}
           data-disabled={disabled ? '' : undefined}
           id={triggerId}
-          {...removeTabsScopeProps(triggerProps)}
+          {...triggerProps}
           ref={forwardedRef}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
@@ -208,9 +206,9 @@ interface TabsContentProps extends PrimitiveDivProps {
 }
 
 const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
-  (props, forwardedRef) => {
-    const { value, children, ...contentProps } = props;
-    const context = useTabsContext(CONTENT_NAME, props);
+  (props: ScopeProps<TabsContentProps>, forwardedRef) => {
+    const { __scopeTabs, value, children, ...contentProps } = props;
+    const context = useTabsContext(CONTENT_NAME, __scopeTabs);
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
     const isSelected = value === context.value;
@@ -223,7 +221,7 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
         hidden={!isSelected}
         id={contentId}
         tabIndex={0}
-        {...removeTabsScopeProps(contentProps)}
+        {...contentProps}
         ref={forwardedRef}
       >
         {isSelected && children}

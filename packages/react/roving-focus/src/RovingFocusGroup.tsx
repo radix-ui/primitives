@@ -9,6 +9,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
 import type * as Radix from '@radix-ui/react-primitive';
+import type { Scope } from '@radix-ui/react-context';
 
 const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };
@@ -25,11 +26,11 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
   ItemData
 >(GROUP_NAME);
 
-const [
-  createRovingFocusGroupContext,
-  removeRovingFocusGroupScopeProps,
-  createRovingFocusGroupScope,
-] = createContextScope(GROUP_NAME, [createCollectionScope]);
+type ScopeProps<P> = P & { __scopeRovingFocusGroup?: Scope };
+const [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope(
+  GROUP_NAME,
+  [createCollectionScope]
+);
 
 type Orientation = React.AriaAttributes['aria-orientation'];
 type Direction = 'ltr' | 'rtl';
@@ -65,10 +66,10 @@ type RovingFocusGroupElement = RovingFocusGroupImplElement;
 interface RovingFocusGroupProps extends RovingFocusGroupImplProps {}
 
 const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGroupProps>(
-  (props, forwardedRef) => {
+  (props: ScopeProps<RovingFocusGroupProps>, forwardedRef) => {
     return (
-      <Collection.Provider scope={props}>
-        <Collection.Slot scope={props}>
+      <Collection.Provider scope={props.__scopeRovingFocusGroup}>
+        <Collection.Slot scope={props.__scopeRovingFocusGroup}>
           <RovingFocusGroupImpl {...props} ref={forwardedRef} />
         </Collection.Slot>
       </Collection.Provider>
@@ -94,8 +95,9 @@ interface RovingFocusGroupImplProps
 const RovingFocusGroupImpl = React.forwardRef<
   RovingFocusGroupImplElement,
   RovingFocusGroupImplProps
->((props, forwardedRef) => {
+>((props: ScopeProps<RovingFocusGroupImplProps>, forwardedRef) => {
   const {
+    __scopeRovingFocusGroup,
     orientation,
     dir = 'ltr',
     loop = false,
@@ -114,7 +116,7 @@ const RovingFocusGroupImpl = React.forwardRef<
   });
   const [isTabbingBackOut, setIsTabbingBackOut] = React.useState(false);
   const handleEntryFocus = useCallbackRef(onEntryFocus);
-  const { getItems } = useCollection(props);
+  const { getItems } = useCollection(__scopeRovingFocusGroup);
   const isClickFocusRef = React.useRef(false);
 
   React.useEffect(() => {
@@ -127,7 +129,7 @@ const RovingFocusGroupImpl = React.forwardRef<
 
   return (
     <RovingFocusProvider
-      scope={props}
+      scope={__scopeRovingFocusGroup}
       orientation={orientation}
       dir={dir}
       loop={loop}
@@ -142,7 +144,7 @@ const RovingFocusGroupImpl = React.forwardRef<
         tabIndex={isTabbingBackOut ? -1 : 0}
         aria-orientation={orientation}
         data-orientation={orientation}
-        {...removeRovingFocusGroupScopeProps(groupProps)}
+        {...groupProps}
         ref={composedRefs}
         style={{ outline: 'none', ...props.style }}
         onMouseDown={composeEventHandlers(props.onMouseDown, () => {
@@ -193,19 +195,24 @@ interface RovingFocusItemProps extends PrimitiveSpanProps {
 }
 
 const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
-  (props, forwardedRef) => {
-    const { focusable = true, active = false, ...itemProps } = props;
+  (props: ScopeProps<RovingFocusItemProps>, forwardedRef) => {
+    const { __scopeRovingFocusGroup, focusable = true, active = false, ...itemProps } = props;
     const id = useId();
-    const context = useRovingFocusContext(ITEM_NAME, props);
+    const context = useRovingFocusContext(ITEM_NAME, __scopeRovingFocusGroup);
     const isCurrentTabStop = context.currentTabStopId === id;
-    const { getItems } = useCollection(props);
+    const { getItems } = useCollection(__scopeRovingFocusGroup);
 
     return (
-      <Collection.ItemSlot scope={props} id={id} focusable={focusable} active={active}>
+      <Collection.ItemSlot
+        scope={__scopeRovingFocusGroup}
+        id={id}
+        focusable={focusable}
+        active={active}
+      >
         <Primitive.span
           tabIndex={isCurrentTabStop ? 0 : -1}
           data-orientation={context.orientation}
-          {...removeRovingFocusGroupScopeProps(itemProps)}
+          {...itemProps}
           ref={forwardedRef}
           onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
             // We prevent focusing non-focusable items on `mousedown`.

@@ -9,6 +9,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
 
 import type * as Radix from '@radix-ui/react-primitive';
+import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
  * Collapsible
@@ -16,8 +17,8 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const COLLAPSIBLE_NAME = 'Collapsible';
 
-const [createCollapsibleContext, removeCollapsibleScopeProps, createCollapsibleScope] =
-  createContextScope(COLLAPSIBLE_NAME);
+type ScopeProps<P> = P & { __scopeCollapsible?: Scope };
+const [createCollapsibleContext, createCollapsibleScope] = createContextScope(COLLAPSIBLE_NAME);
 
 type CollapsibleContextValue = {
   contentId: string;
@@ -39,8 +40,15 @@ interface CollapsibleProps extends PrimitiveDivProps {
 }
 
 const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
-  (props, forwardedRef) => {
-    const { open: openProp, defaultOpen, disabled, onOpenChange, ...collapsibleProps } = props;
+  (props: ScopeProps<CollapsibleProps>, forwardedRef) => {
+    const {
+      __scopeCollapsible,
+      open: openProp,
+      defaultOpen,
+      disabled,
+      onOpenChange,
+      ...collapsibleProps
+    } = props;
 
     const [open = false, setOpen] = useControllableState({
       prop: openProp,
@@ -50,7 +58,7 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
 
     return (
       <CollapsibleProvider
-        scope={props}
+        scope={__scopeCollapsible}
         disabled={disabled}
         contentId={useId()}
         open={open}
@@ -59,7 +67,7 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
         <Primitive.div
           data-state={getState(open)}
           data-disabled={disabled ? '' : undefined}
-          {...removeCollapsibleScopeProps(collapsibleProps)}
+          {...collapsibleProps}
           ref={forwardedRef}
         />
       </CollapsibleProvider>
@@ -80,8 +88,9 @@ type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.butt
 interface CollapsibleTriggerProps extends PrimitiveButtonProps {}
 
 const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, CollapsibleTriggerProps>(
-  (props, forwardedRef) => {
-    const context = useCollapsibleContext(TRIGGER_NAME, props);
+  (props: ScopeProps<CollapsibleTriggerProps>, forwardedRef) => {
+    const { __scopeCollapsible, ...triggerProps } = props;
+    const context = useCollapsibleContext(TRIGGER_NAME, __scopeCollapsible);
     return (
       <Primitive.button
         aria-controls={context.contentId}
@@ -89,7 +98,7 @@ const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, Collapsib
         data-state={getState(context.open)}
         data-disabled={context.disabled ? '' : undefined}
         disabled={context.disabled}
-        {...removeCollapsibleScopeProps(props)}
+        {...triggerProps}
         ref={forwardedRef}
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
       />
@@ -115,9 +124,9 @@ interface CollapsibleContentProps extends Omit<CollapsibleContentImplProps, 'pre
 }
 
 const CollapsibleContent = React.forwardRef<CollapsibleContentElement, CollapsibleContentProps>(
-  (props, forwardedRef) => {
+  (props: ScopeProps<CollapsibleContentProps>, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
-    const context = useCollapsibleContext(CONTENT_NAME, props);
+    const context = useCollapsibleContext(CONTENT_NAME, props.__scopeCollapsible);
     return (
       <Presence present={forceMount || context.open}>
         {({ present }) => (
@@ -140,9 +149,9 @@ interface CollapsibleContentImplProps extends PrimitiveDivProps {
 const CollapsibleContentImpl = React.forwardRef<
   CollapsibleContentImplElement,
   CollapsibleContentImplProps
->((props, forwardedRef) => {
-  const { present, children, ...contentProps } = props;
-  const context = useCollapsibleContext(CONTENT_NAME, props);
+>((props: ScopeProps<CollapsibleContentImplProps>, forwardedRef) => {
+  const { __scopeCollapsible, present, children, ...contentProps } = props;
+  const context = useCollapsibleContext(CONTENT_NAME, __scopeCollapsible);
   const [isPresent, setIsPresent] = React.useState(present);
   const ref = React.useRef<CollapsibleContentImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -184,7 +193,7 @@ const CollapsibleContentImpl = React.forwardRef<
       data-disabled={context.disabled ? '' : undefined}
       id={context.contentId}
       hidden={!isOpen}
-      {...removeCollapsibleScopeProps(contentProps)}
+      {...contentProps}
       ref={composedRefs}
       style={{
         [`--radix-collapsible-content-height` as any]: height ? `${height}px` : undefined,
