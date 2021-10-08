@@ -50,6 +50,20 @@ export const Modality = () => {
           />
         </div>
         <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+          <h1>Non modal (not portalled)</h1>
+          <Popover>
+            <PopoverTrigger className={triggerClass}>open</PopoverTrigger>
+            <PopoverContent className={contentClass} sideOffset={5} portalled={false}>
+              <PopoverClose className={closeClass}>close</PopoverClose>
+              <PopoverArrow className={arrowClass} width={20} height={10} offset={10} />
+            </PopoverContent>
+          </Popover>
+          <textarea
+            style={{ width: 500, height: 100, marginTop: 10 }}
+            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+          />
+        </div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
           <h1>Modal</h1>
           <Popover modal>
             <PopoverTrigger className={triggerClass}>open</PopoverTrigger>

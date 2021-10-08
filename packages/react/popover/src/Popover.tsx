@@ -210,11 +210,23 @@ interface PopoverContentTypeProps
    * (default: `true`)
    */
   portalled?: boolean;
+
+  /**
+   * Event handler called when auto-focusing on open.
+   * Can be prevented.
+   */
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
+
+  /**
+   * Event handler called when auto-focusing on close.
+   * Can be prevented.
+   */
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 }
 
 const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
   (props: ScopedProps<PopoverContentTypeProps>, forwardedRef) => {
-    const { allowPinchZoom, portalled = true, ...contentModalProps } = props;
+    const { allowPinchZoom, portalled = true, onOpenAutoFocus, ...contentModalProps } = props;
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
@@ -231,36 +243,43 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
     return (
       <PortalWrapper>
         <RemoveScroll allowPinchZoom={allowPinchZoom}>
-          <PopoverContentImpl
-            {...contentModalProps}
-            ref={composedRefs}
-            // we make sure we're not trapping once it's been closed
-            // (closed !== unmounted when animating out)
-            trapFocus={context.open}
-            disableOutsidePointerEvents
-            onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+          <FocusScope
+            asChild
+            loop
+            trapped={context.open}
+            onMountAutoFocus={onOpenAutoFocus}
+            onUnmountAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
               event.preventDefault();
               if (!isRightClickOutsideRef.current) context.triggerRef.current?.focus();
             })}
-            onPointerDownOutside={composeEventHandlers(
-              props.onPointerDownOutside,
-              (event) => {
-                const originalEvent = event.detail.originalEvent;
-                const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-                const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+          >
+            <PopoverContentImpl
+              {...contentModalProps}
+              ref={composedRefs}
+              // we make sure we're not trapping once it's been closed
+              // (closed !== unmounted when animating out)
+              disableOutsidePointerEvents
+              onPointerDownOutside={composeEventHandlers(
+                props.onPointerDownOutside,
+                (event) => {
+                  const originalEvent = event.detail.originalEvent;
+                  const ctrlLeftClick =
+                    originalEvent.button === 0 && originalEvent.ctrlKey === true;
+                  const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
 
-                isRightClickOutsideRef.current = isRightClick;
-              },
-              { checkForDefaultPrevented: false }
-            )}
-            // When focus is trapped, a `focusout` event may still happen.
-            // We make sure we don't trigger our `onDismiss` in such case.
-            onFocusOutside={composeEventHandlers(
-              props.onFocusOutside,
-              (event) => event.preventDefault(),
-              { checkForDefaultPrevented: false }
-            )}
-          />
+                  isRightClickOutsideRef.current = isRightClick;
+                },
+                { checkForDefaultPrevented: false }
+              )}
+              // When focus is trapped, a `focusout` event may still happen.
+              // We make sure we don't trigger our `onDismiss` in such case.
+              onFocusOutside={composeEventHandlers(
+                props.onFocusOutside,
+                (event) => event.preventDefault(),
+                { checkForDefaultPrevented: false }
+              )}
+            />
+          </FocusScope>
         </RemoveScroll>
       </PortalWrapper>
     );
@@ -269,7 +288,7 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
 
 const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
   (props: ScopedProps<PopoverContentTypeProps>, forwardedRef) => {
-    const { portalled = true, ...contentNonModalProps } = props;
+    const { portalled = true, onOpenAutoFocus, ...contentNonModalProps } = props;
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     const hasInteractedOutsideRef = React.useRef(false);
 
@@ -277,12 +296,12 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
 
     return (
       <PortalWrapper>
-        <PopoverContentImpl
-          {...contentNonModalProps}
-          ref={forwardedRef}
-          trapFocus={false}
-          disableOutsidePointerEvents={false}
-          onCloseAutoFocus={(event) => {
+        <FocusScope
+          asChild
+          loop={portalled}
+          trapped={false}
+          onMountAutoFocus={onOpenAutoFocus}
+          onUnmountAutoFocus={(event) => {
             props.onCloseAutoFocus?.(event);
 
             if (!event.defaultPrevented) {
@@ -293,22 +312,28 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
 
             hasInteractedOutsideRef.current = false;
           }}
-          onInteractOutside={(event) => {
-            props.onInteractOutside?.(event);
+        >
+          <PopoverContentImpl
+            {...contentNonModalProps}
+            ref={forwardedRef}
+            disableOutsidePointerEvents={false}
+            onInteractOutside={(event) => {
+              props.onInteractOutside?.(event);
 
-            if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
+              if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
 
-            // Prevent dismissing when clicking the trigger.
-            // As the trigger is already setup to close, without doing so would
-            // cause it to close and immediately open.
-            //
-            // We use `onInteractOutside` as some browsers also
-            // focus on pointer down, creating the same issue.
-            const target = event.target as HTMLElement;
-            const targetIsTrigger = context.triggerRef.current?.contains(target);
-            if (targetIsTrigger) event.preventDefault();
-          }}
-        />
+              // Prevent dismissing when clicking the trigger.
+              // As the trigger is already setup to close, without doing so would
+              // cause it to close and immediately open.
+              //
+              // We use `onInteractOutside` as some browsers also
+              // focus on pointer down, creating the same issue.
+              const target = event.target as HTMLElement;
+              const targetIsTrigger = context.triggerRef.current?.contains(target);
+              if (targetIsTrigger) event.preventDefault();
+            }}
+          />
+        </FocusScope>
       </PortalWrapper>
     );
   }
@@ -328,18 +353,6 @@ interface PopoverContentImplProps
    * (default: false)
    */
   trapFocus?: FocusScopeProps['trapped'];
-
-  /**
-   * Event handler called when auto-focusing on open.
-   * Can be prevented.
-   */
-  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
-
-  /**
-   * Event handler called when auto-focusing on close.
-   * Can be prevented.
-   */
-  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 }
 
 const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverContentImplProps>(
@@ -347,8 +360,6 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
     const {
       __scopePopover,
       trapFocus,
-      onOpenAutoFocus,
-      onCloseAutoFocus,
       disableOutsidePointerEvents,
       onEscapeKeyDown,
       onPointerDownOutside,
@@ -364,38 +375,30 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
     useFocusGuards();
 
     return (
-      <FocusScope
+      <DismissableLayer
         asChild
-        loop
-        trapped={trapFocus}
-        onMountAutoFocus={onOpenAutoFocus}
-        onUnmountAutoFocus={onCloseAutoFocus}
+        disableOutsidePointerEvents={disableOutsidePointerEvents}
+        onInteractOutside={onInteractOutside}
+        onEscapeKeyDown={onEscapeKeyDown}
+        onPointerDownOutside={onPointerDownOutside}
+        onFocusOutside={onFocusOutside}
+        onDismiss={() => context.onOpenChange(false)}
       >
-        <DismissableLayer
-          asChild
-          disableOutsidePointerEvents={disableOutsidePointerEvents}
-          onInteractOutside={onInteractOutside}
-          onEscapeKeyDown={onEscapeKeyDown}
-          onPointerDownOutside={onPointerDownOutside}
-          onFocusOutside={onFocusOutside}
-          onDismiss={() => context.onOpenChange(false)}
-        >
-          <PopperPrimitive.Content
-            data-state={getState(context.open)}
-            role="dialog"
-            id={context.contentId}
-            {...popperScope}
-            {...contentProps}
-            ref={forwardedRef}
-            style={{
-              ...contentProps.style,
-              // re-namespace exposed content custom property
-              ['--radix-popover-content-transform-origin' as any]:
-                'var(--radix-popper-transform-origin)',
-            }}
-          />
-        </DismissableLayer>
-      </FocusScope>
+        <PopperPrimitive.Content
+          data-state={getState(context.open)}
+          role="dialog"
+          id={context.contentId}
+          {...popperScope}
+          {...contentProps}
+          ref={forwardedRef}
+          style={{
+            ...contentProps.style,
+            // re-namespace exposed content custom property
+            ['--radix-popover-content-transform-origin' as any]:
+              'var(--radix-popper-transform-origin)',
+          }}
+        />
+      </DismissableLayer>
     );
   }
 );
