@@ -131,8 +131,8 @@ const [Collection, useCollection] = createCollection<React.ElementRef<typeof Ite
 
 const List: React.FC = (props) => {
   return (
-    <Collection.Provider scope={props}>
-      <Collection.Slot scope={props}>
+    <Collection.Provider scope={undefined}>
+      <Collection.Slot scope={undefined}>
         <ul {...props} style={{ width: 200 }} />
       </Collection.Slot>
     </Collection.Provider>
@@ -146,7 +146,7 @@ type ItemProps = React.ComponentPropsWithRef<'li'> & {
 
 function Item({ disabled = false, ...props }: ItemProps) {
   return (
-    <Collection.ItemSlot scope={props} disabled={disabled}>
+    <Collection.ItemSlot scope={undefined} disabled={disabled}>
       <li {...props} style={{ ...props.style, opacity: disabled ? 0.3 : undefined }} />
     </Collection.ItemSlot>
   );
