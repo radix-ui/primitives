@@ -2,6 +2,7 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
@@ -98,6 +99,10 @@ const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTrig
           ref={forwardedRef}
           onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
           onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
+          onFocus={composeEventHandlers(props.onFocus, context.onOpen)}
+          onBlur={composeEventHandlers(props.onBlur, context.onClose)}
+          // prevent focus event on touch devices
+          onTouchStart={composeEventHandlers(props.onTouchStart, (event) => event.preventDefault())}
         />
       </PopperPrimitive.Anchor>
     );
@@ -158,7 +163,11 @@ const HoverCardContentImpl = React.forwardRef<
   HoverCardContentImplProps
 >((props, forwardedRef) => {
   const { portalled = true, ...contentProps } = props;
+  const context = useHoverCardContext(CONTENT_NAME);
   const PortalWrapper = portalled ? Portal : React.Fragment;
+
+  useEscapeKeydown(() => context.onClose());
+
   return (
     <PortalWrapper>
       <PopperPrimitive.Content
