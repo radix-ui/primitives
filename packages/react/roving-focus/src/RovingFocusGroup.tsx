@@ -26,7 +26,7 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
   ItemData
 >(GROUP_NAME);
 
-type ScopeProps<P> = P & { __scopeRovingFocusGroup?: Scope };
+type ScopedProps<P> = P & { __scopeRovingFocusGroup?: Scope };
 const [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope(
   GROUP_NAME,
   [createCollectionScope]
@@ -66,7 +66,7 @@ type RovingFocusGroupElement = RovingFocusGroupImplElement;
 interface RovingFocusGroupProps extends RovingFocusGroupImplProps {}
 
 const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGroupProps>(
-  (props: ScopeProps<RovingFocusGroupProps>, forwardedRef) => {
+  (props: ScopedProps<RovingFocusGroupProps>, forwardedRef) => {
     return (
       <Collection.Provider scope={props.__scopeRovingFocusGroup}>
         <Collection.Slot scope={props.__scopeRovingFocusGroup}>
@@ -95,7 +95,7 @@ interface RovingFocusGroupImplProps
 const RovingFocusGroupImpl = React.forwardRef<
   RovingFocusGroupImplElement,
   RovingFocusGroupImplProps
->((props: ScopeProps<RovingFocusGroupImplProps>, forwardedRef) => {
+>((props: ScopedProps<RovingFocusGroupImplProps>, forwardedRef) => {
   const {
     __scopeRovingFocusGroup,
     orientation,
@@ -195,7 +195,7 @@ interface RovingFocusItemProps extends PrimitiveSpanProps {
 }
 
 const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
-  (props: ScopeProps<RovingFocusItemProps>, forwardedRef) => {
+  (props: ScopedProps<RovingFocusItemProps>, forwardedRef) => {
     const { __scopeRovingFocusGroup, focusable = true, active = false, ...itemProps } = props;
     const id = useId();
     const context = useRovingFocusContext(ITEM_NAME, __scopeRovingFocusGroup);
@@ -308,6 +308,7 @@ const Item = RovingFocusGroupItem;
 
 export {
   createRovingFocusGroupScope,
+  //
   RovingFocusGroup,
   RovingFocusGroupItem,
   //

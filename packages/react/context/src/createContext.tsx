@@ -69,8 +69,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
     }
 
     function useContext(consumerName: string, scope: Scope<ContextValueType>) {
-      const currentScope = scope?.[scopeName];
-      const Context = currentScope?.[index] || baseContexts[index];
+      const Context = scope?.[scopeName]?.[index] || baseContexts[index];
       const context = React.useContext(Context) as ContextValueType | undefined;
       if (context) return context;
       if (defaultContext !== undefined) return defaultContext;
@@ -114,15 +113,18 @@ function composeContextScopes(...scopes: CreateScope[]) {
 
   const createScope: CreateScope = () => {
     const scopeHooks = scopes.map((createScope) => ({
-      use: createScope(),
+      useScope: createScope(),
       scopeName: createScope.scopeName,
     }));
 
     return function useComposedScopes(overrideScopes) {
-      const nextScopes = scopeHooks.reduce((scopeA, { use, scopeName }) => {
-        const scopeProps = use(overrideScopes);
-        const scopeB = scopeProps[`__scope${scopeName}`];
-        return { ...scopeA, ...scopeB };
+      const nextScopes = scopeHooks.reduce((nextScopes, { useScope, scopeName }) => {
+        // We are calling a hook inside a callback which React warns against to avoid inconsistent
+        // renders, however, scoping doesn't have render side effects so we ignore the rule.
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const ScopedProps = useScope(overrideScopes);
+        const currentScope = ScopedProps[`__scope${scopeName}`];
+        return { ...nextScopes, ...currentScope };
       }, {});
 
       return React.useMemo(() => ({ [`__scope${baseScope.scopeName}`]: nextScopes }), [nextScopes]);

@@ -19,7 +19,7 @@ const FOCUS_SCOPE_NAME = 'FocusScope';
 
 type FocusScopeElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
-interface FocusScopeProps extends PrimitiveDivProps {
+interface FocusScopedProps extends PrimitiveDivProps {
   /**
    * When `true`, tabbing from last item will focus first tabbable
    * and shift+tab from first item will focus last tababble.
@@ -47,13 +47,13 @@ interface FocusScopeProps extends PrimitiveDivProps {
   onUnmountAutoFocus?: (event: Event) => void;
 }
 
-const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, forwardedRef) => {
+const FocusScope = React.forwardRef<FocusScopeElement, FocusScopedProps>((props, forwardedRef) => {
   const {
     loop = false,
     trapped = false,
     onMountAutoFocus: onMountAutoFocusProp,
     onUnmountAutoFocus: onUnmountAutoFocusProp,
-    ...scopeProps
+    ...ScopedProps
   } = props;
   const [container, setContainer] = React.useState<HTMLElement | null>(null);
   const onMountAutoFocus = useCallbackRef(onMountAutoFocusProp);
@@ -172,7 +172,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
   );
 
   return (
-    <Primitive.div tabIndex={-1} {...scopeProps} ref={composedRefs} onKeyDown={handleKeyDown} />
+    <Primitive.div tabIndex={-1} {...ScopedProps} ref={composedRefs} onKeyDown={handleKeyDown} />
   );
 });
 
@@ -316,4 +316,4 @@ export {
   //
   Root,
 };
-export type { FocusScopeProps };
+export type { FocusScopedProps };

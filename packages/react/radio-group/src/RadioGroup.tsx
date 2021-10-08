@@ -17,7 +17,7 @@ import type { Scope } from '@radix-ui/react-context';
  * -----------------------------------------------------------------------------------------------*/
 const RADIO_GROUP_NAME = 'RadioGroup';
 
-type ScopeProps<P> = P & { __scopeRadioGroup?: Scope };
+type ScopedProps<P> = P & { __scopeRadioGroup?: Scope };
 const [createRadioGroupContet, createRadioGroupScope] = createContextScope(RADIO_GROUP_NAME, [
   createRovingFocusGroupScope,
   createRadioScope,
@@ -50,7 +50,7 @@ interface RadioGroupProps extends PrimitiveDivProps {
 }
 
 const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
-  (props: ScopeProps<RadioGroupProps>, forwardedRef) => {
+  (props: ScopedProps<RadioGroupProps>, forwardedRef) => {
     const {
       __scopeRadioGroup,
       name,
@@ -116,7 +116,7 @@ interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck' | 'name'> {
 }
 
 const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemProps>(
-  (props: ScopeProps<RadioGroupItemProps>, forwardedRef) => {
+  (props: ScopedProps<RadioGroupItemProps>, forwardedRef) => {
     const { __scopeRadioGroup, disabled, ...itemProps } = props;
     const context = useRadioGroupContext(ITEM_NAME, __scopeRadioGroup);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
@@ -167,7 +167,7 @@ type RadioIndicatorProps = Radix.ComponentPropsWithoutRef<typeof RadioIndicator>
 interface RadioGroupIndicatorProps extends RadioIndicatorProps {}
 
 const RadioGroupIndicator = React.forwardRef<RadioGroupIndicatorElement, RadioGroupIndicatorProps>(
-  (props: ScopeProps<RadioGroupIndicatorProps>, forwardedRef) => {
+  (props: ScopedProps<RadioGroupIndicatorProps>, forwardedRef) => {
     const { __scopeRadioGroup, ...indicatorProps } = props;
     const radioScope = useRadioScope(__scopeRadioGroup);
     return <RadioIndicator {...radioScope} {...indicatorProps} ref={forwardedRef} />;
@@ -184,6 +184,7 @@ const Indicator = RadioGroupIndicator;
 
 export {
   createRadioGroupScope,
+  //
   RadioGroup,
   RadioGroupItem,
   RadioGroupIndicator,

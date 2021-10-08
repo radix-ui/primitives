@@ -18,7 +18,7 @@ import type { Scope } from '@radix-ui/react-context';
 const ACCORDION_NAME = 'Accordion';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
 
-type ScopeProps<P> = P & { __scopeAccordion?: Scope };
+type ScopedProps<P> = P & { __scopeAccordion?: Scope };
 const [createAccordionContext, createAccordionScope] = createContextScope(ACCORDION_NAME, [
   createCollapsibleScope,
 ]);
@@ -91,7 +91,7 @@ interface AccordionImplSingleProps extends AccordionImplProps {
 }
 
 const AccordionImplSingle = React.forwardRef<AccordionImplSingleElement, AccordionImplSingleProps>(
-  (props: ScopeProps<AccordionImplSingleProps>, forwardedRef) => {
+  (props: ScopedProps<AccordionImplSingleProps>, forwardedRef) => {
     const {
       value: valueProp,
       defaultValue,
@@ -143,7 +143,7 @@ interface AccordionImplMultipleProps extends AccordionImplProps {
 const AccordionImplMultiple = React.forwardRef<
   AccordionImplMultipleElement,
   AccordionImplMultipleProps
->((props: ScopeProps<AccordionImplMultipleProps>, forwardedRef) => {
+>((props: ScopedProps<AccordionImplMultipleProps>, forwardedRef) => {
   const {
     value: valueProp,
     defaultValue,
@@ -203,7 +203,7 @@ interface AccordionImplProps extends PrimitiveDivProps {
 }
 
 const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>(
-  (props: ScopeProps<AccordionImplProps>, forwardedRef) => {
+  (props: ScopedProps<AccordionImplProps>, forwardedRef) => {
     const { __scopeAccordion, disabled, ...accordionProps } = props;
     const triggerNodesRef = React.useRef<Set<AccordionTriggerElement>>(new Set());
     const accordionRef = React.useRef<AccordionImplElement>(null);
@@ -295,7 +295,7 @@ interface AccordionItemProps
  * `AccordionItem` contains all of the parts of a collapsible section inside of an `Accordion`.
  */
 const AccordionItem = React.forwardRef<AccordionItemElement, AccordionItemProps>(
-  (props: ScopeProps<AccordionItemProps>, forwardedRef) => {
+  (props: ScopedProps<AccordionItemProps>, forwardedRef) => {
     const { __scopeAccordion, value, ...accordionItemProps } = props;
     const accordionContext = useAccordionContext(ITEM_NAME, __scopeAccordion);
     const valueContext = useAccordionValueContext(ITEM_NAME, __scopeAccordion);
@@ -348,7 +348,7 @@ interface AccordionHeaderProps extends PrimitiveHeading3Props {}
  * whether or not its content is collapsed.
  */
 const AccordionHeader = React.forwardRef<AccordionHeaderElement, AccordionHeaderProps>(
-  (props: ScopeProps<AccordionHeaderProps>, forwardedRef) => {
+  (props: ScopedProps<AccordionHeaderProps>, forwardedRef) => {
     const { __scopeAccordion, ...headerProps } = props;
     const itemContext = useAccordionItemContext(HEADER_NAME, __scopeAccordion);
     return (
@@ -379,7 +379,7 @@ interface AccordionTriggerProps extends CollapsibleTriggerProps {}
  * should always be nested inside of an `AccordionHeader`.
  */
 const AccordionTrigger = React.forwardRef<AccordionTriggerElement, AccordionTriggerProps>(
-  (props: ScopeProps<AccordionTriggerProps>, forwardedRef) => {
+  (props: ScopedProps<AccordionTriggerProps>, forwardedRef) => {
     const { __scopeAccordion, ...triggerProps } = props;
     const { triggerNodesRef } = useAccordionContext(TRIGGER_NAME, __scopeAccordion);
     const itemContext = useAccordionItemContext(TRIGGER_NAME, __scopeAccordion);
@@ -429,7 +429,7 @@ interface AccordionContentProps extends CollapsibleContentProps {}
  * `AccordionContent` contains the collapsible content for an `AccordionItem`.
  */
 const AccordionContent = React.forwardRef<AccordionContentElement, AccordionContentProps>(
-  (props: ScopeProps<AccordionContentProps>, forwardedRef) => {
+  (props: ScopedProps<AccordionContentProps>, forwardedRef) => {
     const { __scopeAccordion, ...contentProps } = props;
     const itemContext = useAccordionItemContext(CONTENT_NAME, __scopeAccordion);
     const collapsibleScope = useCollapsibleScope(__scopeAccordion);
@@ -469,6 +469,7 @@ const Content = AccordionContent;
 
 export {
   createAccordionScope,
+  //
   Accordion,
   AccordionItem,
   AccordionHeader,

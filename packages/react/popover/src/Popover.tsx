@@ -24,7 +24,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const POPOVER_NAME = 'Popover';
 
-type ScopeProps<P> = P & { __scopePopover?: Scope };
+type ScopedProps<P> = P & { __scopePopover?: Scope };
 const [createPopoverContext, createPopoverScope] = createContextScope(POPOVER_NAME, [
   createPopperScope,
 ]);
@@ -53,7 +53,7 @@ interface PopoverProps {
   children?: React.ReactNode;
 }
 
-const Popover: React.FC<PopoverProps> = (props: ScopeProps<PopoverProps>) => {
+const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
   const {
     __scopePopover,
     children,
@@ -104,7 +104,7 @@ type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.A
 interface PopoverAnchorProps extends PopperAnchorProps {}
 
 const PopoverAnchor = React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>(
-  (props: ScopeProps<PopoverAnchorProps>, forwardedRef) => {
+  (props: ScopedProps<PopoverAnchorProps>, forwardedRef) => {
     const { __scopePopover, ...anchorProps } = props;
     const context = usePopoverContext(ANCHOR_NAME, __scopePopover);
     const popperScope = usePopperScope(__scopePopover);
@@ -132,7 +132,7 @@ type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.butt
 interface PopoverTriggerProps extends PrimitiveButtonProps {}
 
 const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerProps>(
-  (props: ScopeProps<PopoverTriggerProps>, forwardedRef) => {
+  (props: ScopedProps<PopoverTriggerProps>, forwardedRef) => {
     const { __scopePopover, ...triggerProps } = props;
     const context = usePopoverContext(TRIGGER_NAME, __scopePopover);
     const popperScope = usePopperScope(__scopePopover);
@@ -178,7 +178,7 @@ interface PopoverContentProps extends PopoverContentTypeProps {
 }
 
 const PopoverContent = React.forwardRef<PopoverContentTypeElement, PopoverContentProps>(
-  (props: ScopeProps<PopoverContentProps>, forwardedRef) => {
+  (props: ScopedProps<PopoverContentProps>, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     return (
@@ -208,7 +208,7 @@ interface PopoverContentTypeProps
 }
 
 const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
-  (props: ScopeProps<PopoverContentTypeProps>, forwardedRef) => {
+  (props: ScopedProps<PopoverContentTypeProps>, forwardedRef) => {
     const { portalled = true, ...contentModalProps } = props;
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     const contentRef = React.useRef<HTMLDivElement>(null);
@@ -263,7 +263,7 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
 );
 
 const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
-  (props: ScopeProps<PopoverContentTypeProps>, forwardedRef) => {
+  (props: ScopedProps<PopoverContentTypeProps>, forwardedRef) => {
     const { portalled = true, ...contentNonModalProps } = props;
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     const hasInteractedOutsideRef = React.useRef(false);
@@ -312,7 +312,7 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
 /* -----------------------------------------------------------------------------------------------*/
 
 type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
+type FocusScopedProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface PopoverContentImplProps
@@ -322,23 +322,23 @@ interface PopoverContentImplProps
    * Whether focus should be trapped within the `Popover`
    * (default: false)
    */
-  trapFocus?: FocusScopeProps['trapped'];
+  trapFocus?: FocusScopedProps['trapped'];
 
   /**
    * Event handler called when auto-focusing on open.
    * Can be prevented.
    */
-  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
+  onOpenAutoFocus?: FocusScopedProps['onMountAutoFocus'];
 
   /**
    * Event handler called when auto-focusing on close.
    * Can be prevented.
    */
-  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+  onCloseAutoFocus?: FocusScopedProps['onUnmountAutoFocus'];
 }
 
 const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverContentImplProps>(
-  (props: ScopeProps<PopoverContentImplProps>, forwardedRef) => {
+  (props: ScopedProps<PopoverContentImplProps>, forwardedRef) => {
     const {
       __scopePopover,
       trapFocus,
@@ -405,7 +405,7 @@ type PopoverCloseElement = React.ElementRef<typeof Primitive.button>;
 interface PopoverCloseProps extends PrimitiveButtonProps {}
 
 const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
-  (props: ScopeProps<PopoverCloseProps>, forwardedRef) => {
+  (props: ScopedProps<PopoverCloseProps>, forwardedRef) => {
     const { __scopePopover, ...closeProps } = props;
     const context = usePopoverContext(CLOSE_NAME, __scopePopover);
     return (
@@ -432,7 +432,7 @@ type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Ar
 interface PopoverArrowProps extends PopperArrowProps {}
 
 const PopoverArrow = React.forwardRef<PopoverArrowElement, PopoverArrowProps>(
-  (props: ScopeProps<PopoverArrowProps>, forwardedRef) => {
+  (props: ScopedProps<PopoverArrowProps>, forwardedRef) => {
     const { __scopePopover, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopePopover);
     return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
@@ -456,6 +456,7 @@ const Arrow = PopoverArrow;
 
 export {
   createPopoverScope,
+  //
   Popover,
   PopoverAnchor,
   PopoverTrigger,

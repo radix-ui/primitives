@@ -32,7 +32,7 @@ const SLIDER_NAME = 'Slider';
 const [Collection, useCollection, createCollectionScope] = createCollection<SliderThumbElement, {}>(
   SLIDER_NAME
 );
-type ScopeProps<P> = P & { __scopeSlider?: Scope };
+type ScopedProps<P> = P & { __scopeSlider?: Scope };
 const [createSliderContext, createSliderScope] = createContextScope(SLIDER_NAME, [
   createCollectionScope,
 ]);
@@ -69,7 +69,7 @@ interface SliderProps
 }
 
 const Slider = React.forwardRef<SliderElement, SliderProps>(
-  (props: ScopeProps<SliderProps>, forwardedRef) => {
+  (props: ScopedProps<SliderProps>, forwardedRef) => {
     const {
       name,
       min = 0,
@@ -215,7 +215,7 @@ interface SliderHorizontalProps extends SliderOrientationProps {
 }
 
 const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizontalProps>(
-  (props: ScopeProps<SliderHorizontalProps>, forwardedRef) => {
+  (props: ScopedProps<SliderHorizontalProps>, forwardedRef) => {
     const { min, max, dir, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
@@ -276,7 +276,7 @@ type SliderVerticalElement = SliderImplElement;
 interface SliderVerticalProps extends SliderOrientationProps {}
 
 const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
-  (props: ScopeProps<SliderVerticalProps>, forwardedRef) => {
+  (props: ScopedProps<SliderVerticalProps>, forwardedRef) => {
     const { min, max, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
     const sliderRef = React.useRef<SliderImplElement>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
@@ -344,7 +344,7 @@ type SliderImplPrivateProps = {
 interface SliderImplProps extends PrimitiveDivProps, SliderImplPrivateProps {}
 
 const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
-  (props: ScopeProps<SliderImplProps>, forwardedRef) => {
+  (props: ScopedProps<SliderImplProps>, forwardedRef) => {
     const {
       __scopeSlider,
       onSlideStart,
@@ -412,7 +412,7 @@ type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SliderTrackProps extends PrimitiveSpanProps {}
 
 const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
-  (props: ScopeProps<SliderTrackProps>, forwardedRef) => {
+  (props: ScopedProps<SliderTrackProps>, forwardedRef) => {
     const { __scopeSlider, ...trackProps } = props;
     const context = useSliderContext(TRACK_NAME, __scopeSlider);
     return (
@@ -438,7 +438,7 @@ type SliderRangeElement = React.ElementRef<typeof Primitive.span>;
 interface SliderRangeProps extends PrimitiveSpanProps {}
 
 const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
-  (props: ScopeProps<SliderRangeProps>, forwardedRef) => {
+  (props: ScopedProps<SliderRangeProps>, forwardedRef) => {
     const { __scopeSlider, ...rangeProps } = props;
     const context = useSliderContext(RANGE_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(RANGE_NAME, __scopeSlider);
@@ -479,7 +479,7 @@ type SliderThumbElement = SliderThumbImplElement;
 interface SliderThumbProps extends Omit<SliderThumbImplProps, 'index'> {}
 
 const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
-  (props: ScopeProps<SliderThumbProps>, forwardedRef) => {
+  (props: ScopedProps<SliderThumbProps>, forwardedRef) => {
     const { getItems } = useCollection(props.__scopeSlider);
     const [thumb, setThumb] = React.useState<SliderThumbImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
@@ -497,7 +497,7 @@ interface SliderThumbImplProps extends PrimitiveSpanProps {
 }
 
 const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
-  (props: ScopeProps<SliderThumbImplProps>, forwardedRef) => {
+  (props: ScopedProps<SliderThumbImplProps>, forwardedRef) => {
     const { __scopeSlider, index, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(THUMB_NAME, __scopeSlider);
@@ -703,6 +703,7 @@ const Thumb = SliderThumb;
 
 export {
   createSliderScope,
+  //
   Slider,
   SliderTrack,
   SliderRange,

@@ -12,7 +12,7 @@ import type { Scope } from '@radix-ui/react-context';
 const PROGRESS_NAME = 'Progress';
 const DEFAULT_MAX = 100;
 
-type ScopeProps<P> = P & { __scopeProgress?: Scope };
+type ScopedProps<P> = P & { __scopeProgress?: Scope };
 const [createProgressContext, createProgressScope] = createContextScope(PROGRESS_NAME);
 
 type ProgressState = 'indeterminate' | 'complete' | 'loading';
@@ -29,7 +29,7 @@ interface ProgressProps extends PrimitiveDivProps {
 }
 
 const Progress = React.forwardRef<ProgressElement, ProgressProps>(
-  (props: ScopeProps<ProgressProps>, forwardedRef) => {
+  (props: ScopedProps<ProgressProps>, forwardedRef) => {
     const {
       __scopeProgress,
       value: valueProp,
@@ -93,7 +93,7 @@ type ProgressIndicatorElement = React.ElementRef<typeof Primitive.div>;
 interface ProgressIndicatorProps extends PrimitiveDivProps {}
 
 const ProgressIndicator = React.forwardRef<ProgressIndicatorElement, ProgressIndicatorProps>(
-  (props: ScopeProps<ProgressIndicatorProps>, forwardedRef) => {
+  (props: ScopedProps<ProgressIndicatorProps>, forwardedRef) => {
     const { __scopeProgress, ...indicatorProps } = props;
     const context = useProgressContext(INDICATOR_NAME, __scopeProgress);
     return (
@@ -111,11 +111,6 @@ const ProgressIndicator = React.forwardRef<ProgressIndicatorElement, ProgressInd
 ProgressIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
-
-function useProgressState(props = {}) {
-  const context = useProgressContext('useProgressState', props);
-  return getProgressState(context.value, context.max);
-}
 
 function defaultGetValueLabel(value: number, max: number) {
   return `${Math.round((value / max) * 100)}%`;
@@ -167,12 +162,11 @@ const Indicator = ProgressIndicator;
 
 export {
   createProgressScope,
+  //
   Progress,
   ProgressIndicator,
   //
   Root,
   Indicator,
-  //
-  useProgressState,
 };
 export type { ProgressProps, ProgressIndicatorProps };

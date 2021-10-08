@@ -17,7 +17,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const TABS_NAME = 'Tabs';
 
-type ScopeProps<P> = P & { __scopeTabs?: Scope };
+type ScopedProps<P> = P & { __scopeTabs?: Scope };
 const [createTabsContext, createTabsScope] = createContextScope(TABS_NAME, [
   createRovingFocusGroupScope,
 ]);
@@ -60,7 +60,7 @@ interface TabsProps extends PrimitiveDivProps {
 }
 
 const Tabs = React.forwardRef<TabsElement, TabsProps>(
-  (props: ScopeProps<TabsProps>, forwardedRef) => {
+  (props: ScopedProps<TabsProps>, forwardedRef) => {
     const {
       __scopeTabs,
       value: valueProp,
@@ -108,7 +108,7 @@ interface TabsListProps extends PrimitiveDivProps {
 }
 
 const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
-  (props: ScopeProps<TabsListProps>, forwardedRef) => {
+  (props: ScopedProps<TabsListProps>, forwardedRef) => {
     const { __scopeTabs, loop = true, ...listProps } = props;
     const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
@@ -141,7 +141,7 @@ interface TabsTriggerProps extends PrimitiveDivProps {
 }
 
 const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
-  (props: ScopeProps<TabsTriggerProps>, forwardedRef) => {
+  (props: ScopedProps<TabsTriggerProps>, forwardedRef) => {
     const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
     const context = useTabsContext(TRIGGER_NAME, __scopeTabs);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
@@ -206,7 +206,7 @@ interface TabsContentProps extends PrimitiveDivProps {
 }
 
 const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
-  (props: ScopeProps<TabsContentProps>, forwardedRef) => {
+  (props: ScopedProps<TabsContentProps>, forwardedRef) => {
     const { __scopeTabs, value, children, ...contentProps } = props;
     const context = useTabsContext(CONTENT_NAME, __scopeTabs);
     const triggerId = makeTriggerId(context.baseId, value);
@@ -249,6 +249,7 @@ const Content = TabsContent;
 
 export {
   createTabsScope,
+  //
   Tabs,
   TabsList,
   TabsTrigger,

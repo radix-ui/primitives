@@ -21,7 +21,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData>(name: strin
    * CollectionProvider
    * ---------------------------------------------------------------------------------------------*/
 
-  const PROVIDER_NAME = name + 'Collection';
+  const PROVIDER_NAME = name + 'CollectionProvider';
   const [createCollectionContext, createCollectionScope] = createContextScope(PROVIDER_NAME);
 
   type ContextValue = {

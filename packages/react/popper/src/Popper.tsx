@@ -18,7 +18,7 @@ import type { Measurable } from '@radix-ui/rect';
 
 const POPPER_NAME = 'Popper';
 
-type ScopeProps<P> = P & { __scopePopper?: Scope };
+type ScopedProps<P> = P & { __scopePopper?: Scope };
 const [createPopperContext, createPopperScope] = createContextScope(POPPER_NAME);
 
 type PopperContextValue = {
@@ -30,7 +30,7 @@ const [PopperProvider, usePopperContext] = createPopperContext<PopperContextValu
 interface PopperProps {
   children?: React.ReactNode;
 }
-const Popper: React.FC<PopperProps> = (props: ScopeProps<PopperProps>) => {
+const Popper: React.FC<PopperProps> = (props: ScopedProps<PopperProps>) => {
   const { __scopePopper, children } = props;
   const [anchor, setAnchor] = React.useState<Measurable | null>(null);
   return (
@@ -55,7 +55,7 @@ interface PopperAnchorProps extends PrimitiveDivProps {
 }
 
 const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
-  (props: ScopeProps<PopperAnchorProps>, forwardedRef) => {
+  (props: ScopedProps<PopperAnchorProps>, forwardedRef) => {
     const { __scopePopper, virtualRef, ...anchorProps } = props;
     const context = usePopperContext(ANCHOR_NAME, __scopePopper);
     const ref = React.useRef<PopperAnchorElement>(null);
@@ -100,7 +100,7 @@ interface PopperContentProps extends PrimitiveDivProps {
 }
 
 const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
-  (props: ScopeProps<PopperContentProps>, forwardedRef) => {
+  (props: ScopedProps<PopperContentProps>, forwardedRef) => {
     const {
       __scopePopper,
       side = 'bottom',
@@ -185,7 +185,7 @@ interface PopperArrowProps extends ArrowProps {
 }
 
 const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
-  props: ScopeProps<PopperArrowProps>,
+  props: ScopedProps<PopperArrowProps>,
   forwardedRef
 ) {
   const { __scopePopper, offset, ...arrowProps } = props;
@@ -260,6 +260,7 @@ const Arrow = PopperArrow;
 
 export {
   createPopperScope,
+  //
   Popper,
   PopperAnchor,
   PopperContent,

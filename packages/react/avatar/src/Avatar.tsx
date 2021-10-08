@@ -13,7 +13,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const AVATAR_NAME = 'Avatar';
 
-type ScopeProps<P> = P & { __scopeAvatar?: Scope };
+type ScopedProps<P> = P & { __scopeAvatar?: Scope };
 const [createAvatarContext, createAvatarScope] = createContextScope(AVATAR_NAME);
 
 type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
@@ -30,7 +30,7 @@ type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface AvatarProps extends PrimitiveSpanProps {}
 
 const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
-  (props: ScopeProps<AvatarProps>, forwardedRef) => {
+  (props: ScopedProps<AvatarProps>, forwardedRef) => {
     const { __scopeAvatar, ...avatarProps } = props;
     const [imageLoadingStatus, setImageLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
     return (
@@ -60,7 +60,7 @@ interface AvatarImageProps extends PrimitiveImageProps {
 }
 
 const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
-  (props: ScopeProps<AvatarImageProps>, forwardedRef) => {
+  (props: ScopedProps<AvatarImageProps>, forwardedRef) => {
     const { __scopeAvatar, src, onLoadingStatusChange = () => {}, ...imageProps } = props;
     const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
     const imageLoadingStatus = useImageLoadingStatus(src);
@@ -95,7 +95,7 @@ interface AvatarFallbackProps extends PrimitiveSpanProps {
 }
 
 const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackProps>(
-  (props: ScopeProps<AvatarFallbackProps>, forwardedRef) => {
+  (props: ScopedProps<AvatarFallbackProps>, forwardedRef) => {
     const { __scopeAvatar, delayMs, ...fallbackProps } = props;
     const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
     const [canRender, setCanRender] = React.useState(delayMs === undefined);
@@ -152,6 +152,7 @@ const Fallback = AvatarFallback;
 
 export {
   createAvatarScope,
+  //
   Avatar,
   AvatarImage,
   AvatarFallback,

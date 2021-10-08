@@ -18,7 +18,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const CHECKBOX_NAME = 'Checkbox';
 
-type ScopeProps<P> = P & { __scopeCheckbox?: Scope };
+type ScopedProps<P> = P & { __scopeCheckbox?: Scope };
 const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
 
 type CheckedState = boolean | 'indeterminate';
@@ -41,7 +41,7 @@ interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultC
 }
 
 const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
-  (props: ScopeProps<CheckboxProps>, forwardedRef) => {
+  (props: ScopedProps<CheckboxProps>, forwardedRef) => {
     const {
       __scopeCheckbox,
       'aria-labelledby': ariaLabelledby,
@@ -131,7 +131,7 @@ interface CheckboxIndicatorProps extends PrimitiveSpanProps {
 }
 
 const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxIndicatorProps>(
-  (props: ScopeProps<CheckboxIndicatorProps>, forwardedRef) => {
+  (props: ScopedProps<CheckboxIndicatorProps>, forwardedRef) => {
     const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
     const context = useCheckboxContext(INDICATOR_NAME, __scopeCheckbox);
     return (
@@ -213,6 +213,7 @@ const Indicator = CheckboxIndicator;
 
 export {
   createCheckboxScope,
+  //
   Checkbox,
   CheckboxIndicator,
   //

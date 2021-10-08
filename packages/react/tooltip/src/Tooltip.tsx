@@ -34,7 +34,7 @@ const stateMachine = createStateMachine(tooltipStateChart);
 
 const TOOLTIP_NAME = 'Tooltip';
 
-type ScopeProps<P> = P & { __scopeTooltip?: Scope };
+type ScopedProps<P> = P & { __scopeTooltip?: Scope };
 const [createTooltipContext, createTooltipScope] = createContextScope(TOOLTIP_NAME, [
   createPopperScope,
 ]);
@@ -73,7 +73,7 @@ interface TooltipProps {
   children?: React.ReactNode;
 }
 
-const Tooltip: React.FC<TooltipProps> = (props: ScopeProps<TooltipProps>) => {
+const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const {
     __scopeTooltip,
     children,
@@ -181,7 +181,7 @@ type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.butt
 interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
 const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
-  (props: ScopeProps<TooltipTriggerProps>, forwardedRef) => {
+  (props: ScopedProps<TooltipTriggerProps>, forwardedRef) => {
     const { __scopeTooltip, ...triggerProps } = props;
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
@@ -228,7 +228,7 @@ interface TooltipContentProps extends TooltipContentImplProps {
 }
 
 const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentProps>(
-  (props: ScopeProps<TooltipContentProps>, forwardedRef) => {
+  (props: ScopedProps<TooltipContentProps>, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
     const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
     return (
@@ -255,7 +255,7 @@ interface TooltipContentImplProps extends PopperContentProps {
 }
 
 const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
-  (props: ScopeProps<TooltipContentImplProps>, forwardedRef) => {
+  (props: ScopedProps<TooltipContentImplProps>, forwardedRef) => {
     const {
       __scopeTooltip,
       children,
@@ -271,7 +271,7 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
 
     return (
       <PortalWrapper>
-        <CheckTriggerMoved __scopeTooltip={__scopeTooltip} {...contentProps} />
+        <CheckTriggerMoved __scopeTooltip={__scopeTooltip} />
         <PopperPrimitive.Content
           data-state={context.stateAttribute}
           {...popperScope}
@@ -307,7 +307,7 @@ type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Ar
 interface TooltipArrowProps extends PopperArrowProps {}
 
 const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
-  (props: ScopeProps<TooltipArrowProps>, forwardedRef) => {
+  (props: ScopedProps<TooltipArrowProps>, forwardedRef) => {
     const { __scopeTooltip, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeTooltip);
     return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
@@ -318,7 +318,7 @@ TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function CheckTriggerMoved(props: ScopeProps<TooltipContentImplProps>) {
+function CheckTriggerMoved(props: ScopedProps<{}>) {
   const { __scopeTooltip } = props;
   const context = useTooltipContext('CheckTriggerMoved', __scopeTooltip);
 
@@ -350,6 +350,7 @@ const Arrow = TooltipArrow;
 
 export {
   createTooltipScope,
+  //
   Tooltip,
   TooltipTrigger,
   TooltipContent,

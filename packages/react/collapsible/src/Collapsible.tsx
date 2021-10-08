@@ -17,7 +17,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const COLLAPSIBLE_NAME = 'Collapsible';
 
-type ScopeProps<P> = P & { __scopeCollapsible?: Scope };
+type ScopedProps<P> = P & { __scopeCollapsible?: Scope };
 const [createCollapsibleContext, createCollapsibleScope] = createContextScope(COLLAPSIBLE_NAME);
 
 type CollapsibleContextValue = {
@@ -40,7 +40,7 @@ interface CollapsibleProps extends PrimitiveDivProps {
 }
 
 const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
-  (props: ScopeProps<CollapsibleProps>, forwardedRef) => {
+  (props: ScopedProps<CollapsibleProps>, forwardedRef) => {
     const {
       __scopeCollapsible,
       open: openProp,
@@ -88,7 +88,7 @@ type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.butt
 interface CollapsibleTriggerProps extends PrimitiveButtonProps {}
 
 const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, CollapsibleTriggerProps>(
-  (props: ScopeProps<CollapsibleTriggerProps>, forwardedRef) => {
+  (props: ScopedProps<CollapsibleTriggerProps>, forwardedRef) => {
     const { __scopeCollapsible, ...triggerProps } = props;
     const context = useCollapsibleContext(TRIGGER_NAME, __scopeCollapsible);
     return (
@@ -124,7 +124,7 @@ interface CollapsibleContentProps extends Omit<CollapsibleContentImplProps, 'pre
 }
 
 const CollapsibleContent = React.forwardRef<CollapsibleContentElement, CollapsibleContentProps>(
-  (props: ScopeProps<CollapsibleContentProps>, forwardedRef) => {
+  (props: ScopedProps<CollapsibleContentProps>, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
     const context = useCollapsibleContext(CONTENT_NAME, props.__scopeCollapsible);
     return (
@@ -149,7 +149,7 @@ interface CollapsibleContentImplProps extends PrimitiveDivProps {
 const CollapsibleContentImpl = React.forwardRef<
   CollapsibleContentImplElement,
   CollapsibleContentImplProps
->((props: ScopeProps<CollapsibleContentImplProps>, forwardedRef) => {
+>((props: ScopedProps<CollapsibleContentImplProps>, forwardedRef) => {
   const { __scopeCollapsible, present, children, ...contentProps } = props;
   const context = useCollapsibleContext(CONTENT_NAME, __scopeCollapsible);
   const [isPresent, setIsPresent] = React.useState(present);
@@ -217,6 +217,7 @@ const Content = CollapsibleContent;
 
 export {
   createCollapsibleScope,
+  //
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,

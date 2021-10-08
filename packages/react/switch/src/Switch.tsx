@@ -17,7 +17,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const SWITCH_NAME = 'Switch';
 
-type ScopeProps<P> = P & { __scopeSwitch?: Scope };
+type ScopedProps<P> = P & { __scopeSwitch?: Scope };
 const [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME);
 
 type SwitchContextValue = { checked: boolean; disabled?: boolean };
@@ -33,7 +33,7 @@ interface SwitchProps extends PrimitiveButtonProps {
 }
 
 const Switch = React.forwardRef<SwitchElement, SwitchProps>(
-  (props: ScopeProps<SwitchProps>, forwardedRef) => {
+  (props: ScopedProps<SwitchProps>, forwardedRef) => {
     const {
       __scopeSwitch,
       'aria-labelledby': ariaLabelledby,
@@ -117,7 +117,7 @@ type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SwitchThumbProps extends PrimitiveSpanProps {}
 
 const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
-  (props: ScopeProps<SwitchThumbProps>, forwardedRef) => {
+  (props: ScopedProps<SwitchThumbProps>, forwardedRef) => {
     const { __scopeSwitch, ...thumbProps } = props;
     const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
     return (
@@ -190,6 +190,7 @@ const Thumb = SwitchThumb;
 
 export {
   createSwitchScope,
+  //
   Switch,
   SwitchThumb,
   //

@@ -17,7 +17,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const RADIO_NAME = 'Radio';
 
-type ScopeProps<P> = P & { __scopeRadio?: Scope };
+type ScopedProps<P> = P & { __scopeRadio?: Scope };
 const [createRadioContext, createRadioScope] = createContextScope(RADIO_NAME);
 
 type RadioContextValue = { checked: boolean; disabled?: boolean };
@@ -32,7 +32,7 @@ interface RadioProps extends PrimitiveButtonProps {
 }
 
 const Radio = React.forwardRef<RadioElement, RadioProps>(
-  (props: ScopeProps<RadioProps>, forwardedRef) => {
+  (props: ScopedProps<RadioProps>, forwardedRef) => {
     const {
       __scopeRadio,
       'aria-labelledby': ariaLabelledby,
@@ -116,7 +116,7 @@ export interface RadioIndicatorProps extends PrimitiveSpanProps {
 }
 
 const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorProps>(
-  (props: ScopeProps<RadioIndicatorProps>, forwardedRef) => {
+  (props: ScopedProps<RadioIndicatorProps>, forwardedRef) => {
     const { __scopeRadio, forceMount, ...indicatorProps } = props;
     const context = useRadioContext(INDICATOR_NAME, __scopeRadio);
     return (
@@ -186,5 +186,10 @@ function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
 
-export { createRadioScope, Radio, RadioIndicator };
+export {
+  createRadioScope,
+  //
+  Radio,
+  RadioIndicator,
+};
 export type { RadioProps };
