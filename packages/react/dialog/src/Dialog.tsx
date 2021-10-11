@@ -186,15 +186,11 @@ interface DialogContentTypeProps
    * @see https://github.com/theKashey/react-remove-scroll#usage
    */
   allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
-  /**
-   * @see https://github.com/theKashey/react-remove-scroll#usage
-   */
-  removeScrollbar?: RemoveScrollProps['removeScrollBar'];
 }
 
 const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
   (props, forwardedRef) => {
-    const { allowPinchZoom, removeScrollbar = true, ...contentModalProps } = props;
+    const { allowPinchZoom, ...contentModalProps } = props;
     const context = useDialogContext(CONTENT_NAME);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
@@ -207,7 +203,7 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
 
     return (
       <Portal>
-        <RemoveScroll allowPinchZoom={allowPinchZoom} removeScrollBar={removeScrollbar}>
+        <RemoveScroll allowPinchZoom={allowPinchZoom}>
           <DialogContentImpl
             {...contentModalProps}
             ref={composedRefs}

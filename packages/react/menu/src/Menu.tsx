@@ -408,11 +408,6 @@ interface MenuContentImplProps
   allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
 
   /**
-   * @see https://github.com/theKashey/react-remove-scroll#usage
-   */
-  removeScrollbar?: RemoveScrollProps['removeScrollBar'];
-
-  /**
    * Whether scrolling outside the `MenuContent` should be prevented
    * (default: `false`)
    */
@@ -451,7 +446,6 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       onInteractOutside,
       onDismiss,
       disableOutsideScroll,
-      removeScrollbar = true,
       allowPinchZoom,
       portalled,
       ...contentProps
@@ -511,7 +505,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
 
     return (
       <PortalWrapper>
-        <ScrollLockWrapper allowPinchZoom={allowPinchZoom} removeScrollBar={removeScrollbar}>
+        <ScrollLockWrapper allowPinchZoom={allowPinchZoom}>
           <MenuContentProvider
             searchRef={searchRef}
             onItemEnter={React.useCallback(

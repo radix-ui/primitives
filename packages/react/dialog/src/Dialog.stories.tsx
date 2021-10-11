@@ -179,20 +179,6 @@ export const ForcedMount = () => (
   </Dialog>
 );
 
-export const ModalWithScrollbar = () => (
-  <div style={{ display: 'grid', placeItems: 'center', height: '200vh' }}>
-    <Dialog>
-      <DialogTrigger className={triggerClass}>open</DialogTrigger>
-      <DialogOverlay className={overlayClass} />
-      <DialogContent className={contentClass} removeScrollbar={false}>
-        <DialogTitle>Booking info</DialogTitle>
-        <DialogDescription>Please enter the info for your booking below.</DialogDescription>
-        <DialogClose className={closeClass}>close</DialogClose>
-      </DialogContent>
-    </Dialog>
-  </div>
-);
-
 export const AllowPinchZoom = () => (
   <div style={{ display: 'grid', placeItems: 'center', height: '200vh' }}>
     <Dialog>
