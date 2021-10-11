@@ -165,7 +165,7 @@ const HoverCardContentImpl = React.forwardRef<
 >((props, forwardedRef) => {
   const { portalled = true, ...contentProps } = props;
   const context = useHoverCardContext(CONTENT_NAME);
-  const ref = React.useRef<React.ElementRef<typeof PopperPrimitive.Content>>(null);
+  const ref = React.useRef<HoverCardContentImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
