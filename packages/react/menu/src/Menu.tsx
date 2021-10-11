@@ -367,6 +367,8 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
             context.onOpenChange(false);
             // We focus manually because we prevented it in `onCloseAutoFocus`
             context.trigger?.focus();
+            // prevent window from scrolling
+            event.preventDefault();
           }
         })}
       />
@@ -838,6 +840,8 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
               // The trigger may hold focus if opened via pointer interaction
               // so we ensure content is given focus again when switching to keyboard.
               context.content?.focus();
+              // prevent window from scrolling
+              event.preventDefault();
             }
           })}
         />
