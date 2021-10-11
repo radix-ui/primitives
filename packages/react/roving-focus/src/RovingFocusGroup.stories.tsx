@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { RovingFocusGroup, RovingFocusItem } from './RovingFocusGroup';
+import * as RovingFocusGroup from './RovingFocusGroup';
 
-type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup>;
+type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup.Root>;
 
 export default { title: 'Components/RovingFocusGroup' };
 
@@ -152,7 +152,7 @@ const ButtonGroup = ({ defaultValue, ...props }: ButtonGroupProps) => {
   const [value, setValue] = React.useState(defaultValue);
   return (
     <ButtonGroupContext.Provider value={{ value, setValue }}>
-      <RovingFocusGroup
+      <RovingFocusGroup.Root
         {...props}
         style={{
           ...props.style,
@@ -173,7 +173,7 @@ const Button = (props: ButtonProps) => {
     contextValue !== undefined && props.value !== undefined && contextValue === props.value;
 
   return (
-    <RovingFocusItem asChild active={isSelected}>
+    <RovingFocusGroup.Item asChild active={isSelected}>
       <button
         {...props}
         style={{
@@ -197,6 +197,6 @@ const Button = (props: ButtonProps) => {
           }
         })}
       />
-    </RovingFocusItem>
+    </RovingFocusGroup.Item>
   );
 };

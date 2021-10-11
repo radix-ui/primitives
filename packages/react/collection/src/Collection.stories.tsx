@@ -125,18 +125,17 @@ export const Nested = () => (
 
 type ItemData = { disabled: boolean };
 
-const [ListProvider, ListRootSlot, ListItemSlot, useItems] = createCollection<
-  React.ElementRef<typeof Item>,
-  ItemData
->();
+const [Collection, useCollection] = createCollection<React.ElementRef<typeof Item>, ItemData>(
+  'List'
+);
 
 const List: React.FC = (props) => {
   return (
-    <ListProvider>
-      <ListRootSlot>
-        <ul style={{ width: 200 }} {...props} />
-      </ListRootSlot>
-    </ListProvider>
+    <Collection.Provider scope={undefined}>
+      <Collection.Slot scope={undefined}>
+        <ul {...props} style={{ width: 200 }} />
+      </Collection.Slot>
+    </Collection.Provider>
   );
 };
 
@@ -147,9 +146,9 @@ type ItemProps = React.ComponentPropsWithRef<'li'> & {
 
 function Item({ disabled = false, ...props }: ItemProps) {
   return (
-    <ListItemSlot disabled={disabled}>
+    <Collection.ItemSlot scope={undefined} disabled={disabled}>
       <li {...props} style={{ ...props.style, opacity: disabled ? 0.3 : undefined }} />
-    </ListItemSlot>
+    </Collection.ItemSlot>
   );
 }
 
@@ -158,7 +157,7 @@ const MemoItem = React.memo(Item);
 const MemoItems = React.memo(WrappedItems);
 
 function LogItems({ name = 'items' }: { name?: string }) {
-  const getItems = useItems();
+  const getItems = useCollection({});
   React.useEffect(() => console.log(name, getItems()));
   return null;
 }
