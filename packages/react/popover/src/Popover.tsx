@@ -181,7 +181,13 @@ interface PopoverContentTypeProps
    * (default: `true`)
    */
   portalled?: boolean;
+  /**
+   * @see https://github.com/theKashey/react-remove-scroll#usage
+   */
   allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
+  /**
+   * @see https://github.com/theKashey/react-remove-scroll#usage
+   */
   removeScrollbar?: RemoveScrollProps['removeScrollBar'];
 }
 

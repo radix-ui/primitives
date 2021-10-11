@@ -182,7 +182,13 @@ type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 type DialogContentTypeElement = DialogContentImplElement;
 interface DialogContentTypeProps
   extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {
+  /**
+   * @see https://github.com/theKashey/react-remove-scroll#usage
+   */
   allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
+  /**
+   * @see https://github.com/theKashey/react-remove-scroll#usage
+   */
   removeScrollbar?: RemoveScrollProps['removeScrollBar'];
 }
 
