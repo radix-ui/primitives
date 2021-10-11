@@ -216,15 +216,20 @@ export const Nested = () => {
 
 export const NonPortal = () => {
   return (
-    <HoverCard>
-      <HoverCardTrigger href="/" className={triggerClass}>
-        trigger
-      </HoverCardTrigger>
-      <HoverCardContent portalled={false} className={contentClass} sideOffset={5}>
-        <HoverCardArrow className={arrowClass} width={20} height={10} offset={10} />
-        <CardContentPlaceholder />
-      </HoverCardContent>
-    </HoverCard>
+    <div>
+      <button>button</button>
+      <HoverCard>
+        <HoverCardTrigger href="/" className={triggerClass}>
+          trigger
+        </HoverCardTrigger>
+        <HoverCardContent portalled={false} className={contentClass} sideOffset={5}>
+          <HoverCardArrow className={arrowClass} width={20} height={10} offset={10} />
+          <a href="#link">Should not be able to focus me</a>
+          <CardContentPlaceholder />
+        </HoverCardContent>
+      </HoverCard>
+      <button>button</button>
+    </div>
   );
 };
 
