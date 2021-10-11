@@ -398,12 +398,12 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
 /* ---------------------------------------------------------------------------------------------- */
 
 type MenuContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type FocusScopedProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
+type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 type MenuContentImplPrivateProps = {
-  onOpenAutoFocus?: FocusScopedProps['onMountAutoFocus'];
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
   onDismiss?: DismissableLayerProps['onDismiss'];
 };
 interface MenuContentImplProps
@@ -414,13 +414,13 @@ interface MenuContentImplProps
    * Whether focus should be trapped within the `MenuContent`
    * (default: false)
    */
-  trapFocus?: FocusScopedProps['trapped'];
+  trapFocus?: FocusScopeProps['trapped'];
 
   /**
    * Event handler called when auto-focusing on close.
    * Can be prevented.
    */
-  onCloseAutoFocus?: FocusScopedProps['onUnmountAutoFocus'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 
   /**
    * Whether scrolling outside the `MenuContent` should be prevented

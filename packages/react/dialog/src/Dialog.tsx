@@ -294,26 +294,26 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
 
 type DialogContentImplElement = React.ElementRef<typeof DismissableLayer>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
-type FocusScopedProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
+type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
 interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'> {
   /**
    * When `true`, focus cannot escape the `Content` via keyboard,
    * pointer, or a programmatic focus.
    * @defaultValue false
    */
-  trapFocus?: FocusScopedProps['trapped'];
+  trapFocus?: FocusScopeProps['trapped'];
 
   /**
    * Event handler called when auto-focusing on open.
    * Can be prevented.
    */
-  onOpenAutoFocus?: FocusScopedProps['onMountAutoFocus'];
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
 
   /**
    * Event handler called when auto-focusing on close.
    * Can be prevented.
    */
-  onCloseAutoFocus?: FocusScopedProps['onUnmountAutoFocus'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 }
 
 const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(

@@ -312,7 +312,7 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
 /* -----------------------------------------------------------------------------------------------*/
 
 type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type FocusScopedProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
+type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface PopoverContentImplProps
@@ -322,19 +322,19 @@ interface PopoverContentImplProps
    * Whether focus should be trapped within the `Popover`
    * (default: false)
    */
-  trapFocus?: FocusScopedProps['trapped'];
+  trapFocus?: FocusScopeProps['trapped'];
 
   /**
    * Event handler called when auto-focusing on open.
    * Can be prevented.
    */
-  onOpenAutoFocus?: FocusScopedProps['onMountAutoFocus'];
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
 
   /**
    * Event handler called when auto-focusing on close.
    * Can be prevented.
    */
-  onCloseAutoFocus?: FocusScopedProps['onUnmountAutoFocus'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 }
 
 const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverContentImplProps>(
