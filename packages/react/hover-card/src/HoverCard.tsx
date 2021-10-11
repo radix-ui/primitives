@@ -3,6 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
@@ -164,15 +165,24 @@ const HoverCardContentImpl = React.forwardRef<
 >((props, forwardedRef) => {
   const { portalled = true, ...contentProps } = props;
   const context = useHoverCardContext(CONTENT_NAME);
+  const ref = React.useRef<React.ElementRef<typeof PopperPrimitive.Content>>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
   useEscapeKeydown(() => context.onClose());
+
+  React.useEffect(() => {
+    if (ref.current) {
+      const tabbables = getTabbableNodes(ref.current);
+      tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));
+    }
+  }, []);
 
   return (
     <PortalWrapper>
       <PopperPrimitive.Content
         {...contentProps}
-        ref={forwardedRef}
+        ref={composedRefs}
         style={{
           ...contentProps.style,
           // re-namespace exposed content custom property
@@ -205,6 +215,24 @@ HoverCardArrow.displayName = ARROW_NAME;
 function excludeTouch<E>(eventHandler: () => void) {
   return (event: React.PointerEvent<E>) =>
     event.pointerType === 'touch' ? undefined : eventHandler();
+}
+
+/**
+ * Returns a list of nodes that can be in the tab sequence.
+ * @see: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
+ */
+function getTabbableNodes(container: HTMLElement) {
+  const nodes: HTMLElement[] = [];
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+    acceptNode: (node: any) => {
+      // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
+      // runtime's understanding of tabbability, so this automatically accounts
+      // for any kind of element that could be tabbed to.
+      return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+    },
+  });
+  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
+  return nodes;
 }
 
 const Root = HoverCard;
