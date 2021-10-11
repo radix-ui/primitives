@@ -176,7 +176,7 @@ const HoverCardContentImpl = React.forwardRef<
       const tabbables = getTabbableNodes(ref.current);
       tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));
     }
-  }, []);
+  });
 
   return (
     <PortalWrapper>
