@@ -172,9 +172,14 @@ PopoverContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
+type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 type PopoverContentTypeElement = PopoverContentImplElement;
 interface PopoverContentTypeProps
   extends Omit<PopoverContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {
+  /**
+   * @see https://github.com/theKashey/react-remove-scroll#usage
+   */
+  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
   /**
    * Whether the `Popover` should render in a `Portal`
    * (default: `true`)
@@ -184,7 +189,7 @@ interface PopoverContentTypeProps
 
 const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
   (props, forwardedRef) => {
-    const { portalled = true, ...contentModalProps } = props;
+    const { allowPinchZoom, portalled = true, ...contentModalProps } = props;
     const context = usePopoverContext(CONTENT_NAME);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
@@ -200,7 +205,7 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
 
     return (
       <PortalWrapper>
-        <RemoveScroll>
+        <RemoveScroll allowPinchZoom={allowPinchZoom}>
           <PopoverContentImpl
             {...contentModalProps}
             ref={composedRefs}

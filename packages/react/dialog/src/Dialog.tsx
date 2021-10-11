@@ -178,12 +178,19 @@ DialogContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
+type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 type DialogContentTypeElement = DialogContentImplElement;
 interface DialogContentTypeProps
-  extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {}
+  extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {
+  /**
+   * @see https://github.com/theKashey/react-remove-scroll#usage
+   */
+  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
+}
 
 const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
   (props, forwardedRef) => {
+    const { allowPinchZoom, ...contentModalProps } = props;
     const context = useDialogContext(CONTENT_NAME);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
@@ -196,9 +203,9 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
 
     return (
       <Portal>
-        <RemoveScroll>
+        <RemoveScroll allowPinchZoom={allowPinchZoom}>
           <DialogContentImpl
-            {...props}
+            {...contentModalProps}
             ref={composedRefs}
             // we make sure focus isn't trapped once `DialogContent` has been closed
             // (closed !== unmounted when animating out)

@@ -378,6 +378,7 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 type MenuContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
@@ -402,6 +403,11 @@ interface MenuContentImplProps
    * Can be prevented.
    */
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+
+  /**
+   * @see https://github.com/theKashey/react-remove-scroll#usage
+   */
+  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
 
   /**
    * Whether scrolling outside the `MenuContent` should be prevented
@@ -442,6 +448,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       onInteractOutside,
       onDismiss,
       disableOutsideScroll,
+      allowPinchZoom,
       portalled,
       ...contentProps
     } = props;
@@ -459,6 +466,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
 
     const PortalWrapper = portalled ? Portal : React.Fragment;
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
+    const scrollLockWrapperProps = disableOutsideScroll ? { allowPinchZoom } : undefined;
 
     const handleTypeaheadSearch = (key: string) => {
       const search = searchRef.current + key;
@@ -500,7 +508,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
 
     return (
       <PortalWrapper>
-        <ScrollLockWrapper>
+        <ScrollLockWrapper {...scrollLockWrapperProps}>
           <MenuContentProvider
             searchRef={searchRef}
             onItemEnter={React.useCallback(

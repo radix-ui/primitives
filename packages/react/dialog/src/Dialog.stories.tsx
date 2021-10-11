@@ -179,6 +179,20 @@ export const ForcedMount = () => (
   </Dialog>
 );
 
+export const AllowPinchZoom = () => (
+  <div style={{ display: 'grid', placeItems: 'center', height: '200vh' }}>
+    <Dialog>
+      <DialogTrigger className={triggerClass}>open</DialogTrigger>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent className={contentClass} allowPinchZoom>
+        <DialogTitle>Booking info</DialogTitle>
+        <DialogDescription>Please enter the info for your booking below.</DialogDescription>
+        <DialogClose className={closeClass}>close</DialogClose>
+      </DialogContent>
+    </Dialog>
+  </div>
+);
+
 export const Chromatic = () => (
   <div
     style={{
