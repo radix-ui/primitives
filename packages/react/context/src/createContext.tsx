@@ -1,7 +1,5 @@
 import * as React from 'react';
 
-const $$DefaultContext = Symbol.for('radix-ui.defaultContext');
-
 function createContext<ContextValueType extends object | null>(
   rootComponentName: string,
   defaultContext?: ContextValueType
@@ -40,7 +38,7 @@ interface CreateScope {
 }
 
 function createContextScope(scopeName: string, createContextScopeDeps: CreateScope[] = []) {
-  let baseContexts: React.Context<any>[] = [];
+  let defaultContexts: any[] = [];
 
   /* -----------------------------------------------------------------------------------------------
    * createContext
@@ -51,26 +49,23 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
     defaultContext?: ContextValueType
   ) {
     const BaseContext = React.createContext<ContextValueType | undefined>(defaultContext);
-    const index = baseContexts.length;
-
-    // We attach the defaultContext to each context so we can clone later
-    (BaseContext as any)[$$DefaultContext] = defaultContext;
-    baseContexts = [...baseContexts, BaseContext];
+    const index = defaultContexts.length;
+    defaultContexts = [...defaultContexts, defaultContext];
 
     function Provider(
       props: ContextValueType & { scope: Scope<ContextValueType>; children: React.ReactNode }
     ) {
       const { scope, children, ...context } = props;
-      const Context = scope?.[scopeName][index] || baseContexts[index];
+      const Context = scope?.[scopeName][index] || BaseContext;
       // Only re-memoize when prop values change
       // eslint-disable-next-line react-hooks/exhaustive-deps
       const value = React.useMemo(() => context, Object.values(context)) as ContextValueType;
       return <Context.Provider value={value}>{children}</Context.Provider>;
     }
 
-    function useContext(consumerName: string, scope: Scope<ContextValueType>) {
-      const Context = scope?.[scopeName]?.[index] || baseContexts[index];
-      const context = React.useContext(Context) as ContextValueType | undefined;
+    function useContext(consumerName: string, scope: Scope<ContextValueType | undefined>) {
+      const Context = scope?.[scopeName][index] || BaseContext;
+      const context = React.useContext(Context);
       if (context) return context;
       if (defaultContext !== undefined) return defaultContext;
       // if a defaultContext wasn't specified, it's a required context.
@@ -86,10 +81,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
    * ---------------------------------------------------------------------------------------------*/
 
   const createScope: CreateScope = () => {
-    const scopeContexts = baseContexts.map((BaseContext) => {
-      const defaultContext = (BaseContext as any)[$$DefaultContext];
-      return React.createContext(defaultContext);
-    });
+    const scopeContexts = defaultContexts.map(React.createContext);
     return function useScope(scope: Scope) {
       const contexts = scope?.[scopeName] || scopeContexts;
       return React.useMemo(
@@ -122,8 +114,8 @@ function composeContextScopes(...scopes: CreateScope[]) {
         // We are calling a hook inside a callback which React warns against to avoid inconsistent
         // renders, however, scoping doesn't have render side effects so we ignore the rule.
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        const ScopedProps = useScope(overrideScopes);
-        const currentScope = ScopedProps[`__scope${scopeName}`];
+        const scopeProps = useScope(overrideScopes);
+        const currentScope = scopeProps[`__scope${scopeName}`];
         return { ...nextScopes, ...currentScope };
       }, {});
 
