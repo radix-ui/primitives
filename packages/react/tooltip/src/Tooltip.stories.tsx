@@ -507,6 +507,35 @@ export const Animated = () => {
   );
 };
 
+export const AnimatedControlled = () => {
+  const [open1, setOpen1] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+  return (
+    <div style={{ padding: 100 }}>
+      <SimpleTooltip open={false} className={animatedContentClass} label="Hello world 1">
+        <TooltipTrigger style={{ marginRight: 10 }}>Shouldn't open</TooltipTrigger>
+      </SimpleTooltip>
+      <SimpleTooltip
+        open={open1}
+        onOpenChange={setOpen1}
+        className={animatedContentClass}
+        label="Hello world 1"
+      >
+        <TooltipTrigger style={{ marginRight: 10 }}>Should open</TooltipTrigger>
+      </SimpleTooltip>
+      <SimpleTooltip
+        open={open2}
+        onOpenChange={setOpen2}
+        className={animatedContentClass}
+        label="Hello world 2"
+        side="top"
+      >
+        <TooltipTrigger>Should open</TooltipTrigger>
+      </SimpleTooltip>
+    </div>
+  );
+};
+
 export const SlottableContent = () => (
   <Tooltip>
     <TooltipTrigger className={triggerClass}>Hover or Focus me</TooltipTrigger>

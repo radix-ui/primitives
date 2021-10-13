@@ -68,8 +68,12 @@ const tooltipStateChart: TooltipStateChart = {
       entry: [startDelayTimer, setId, setDelayed],
       exit: [cancelDelayTimer],
       on: {
+        OPEN: { target: 'open' },
         DELAY_TIMER_END: { target: 'open' },
-        CLOSE: { target: 'closed' },
+        CLOSE: {
+          target: 'closing',
+          cond: (context, event) => context.id === (event as any).id,
+        },
       },
     },
 

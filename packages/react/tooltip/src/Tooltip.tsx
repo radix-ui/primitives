@@ -4,7 +4,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useRect } from '@radix-ui/react-use-rect';
 import { Presence } from '@radix-ui/react-presence';
@@ -74,80 +73,68 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
   } = props;
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
   const contentId = useId();
+  const isFocusedRef = React.useRef(false);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const [stateAttribute, setStateAttribute] = React.useState<StateAttribute>(
-    openProp ? 'instant-open' : 'closed'
-  );
 
-  // control open state using state machine subscription
+  const [machine, setMachine] = React.useState({
+    state: open ? 'open' : 'closed',
+    context: stateMachine.getContext(),
+  });
+
+  const stateAttribute = React.useMemo(() => {
+    if (machine.context.id === contentId && machine.state === 'open') {
+      return machine.context.delayed ? 'delayed-open' : 'instant-open';
+    } else {
+      return 'closed';
+    }
+  }, [machine, contentId]);
+
+  // Subscribe to state machine changes before any state machine events are fired.
   React.useEffect(() => {
-    const unsubscribe = stateMachine.subscribe(({ state, context }) => {
-      if (state === 'open' && context.id === contentId) {
-        setOpen(true);
-      } else {
-        setOpen(false);
-      }
+    return stateMachine.subscribe((machine) => {
+      setMachine(machine);
+      // Close this tooltip if it's not the active tooltip
+      if (machine.context.id !== contentId) setOpen(false);
+      // Sync the state if the machine moves to open state internally (e.g. after a timer)
+      else if (machine.state === 'open') setOpen(true);
     });
-
-    return unsubscribe;
   }, [contentId, setOpen]);
 
-  // sync state attribute with using state machine subscription
+  // Sync machine with `useControlledState` because the latter should be
+  // the source of truth for the state machine where possible.
   React.useEffect(() => {
-    const unsubscribe = stateMachine.subscribe(({ state, context }) => {
-      if (context.id === contentId) {
-        if (state === 'open') {
-          setStateAttribute(context.delayed ? 'delayed-open' : 'instant-open');
-        } else {
-          setStateAttribute('closed');
-        }
-      } else {
-        setStateAttribute('closed');
-      }
-    });
-
-    return unsubscribe;
-  }, [contentId]);
-
-  const handleFocus = React.useCallback(
-    () => stateMachine.send({ type: 'FOCUS', id: contentId }),
-    [contentId]
-  );
-  const handleOpen = React.useCallback(
-    () => stateMachine.send({ type: 'OPEN', id: contentId, delayDuration }),
-    [contentId, delayDuration]
-  );
-  const handleClose = React.useCallback(
-    () => stateMachine.send({ type: 'CLOSE', id: contentId, skipDelayDuration }),
-    [skipDelayDuration, contentId]
-  );
+    if (open) {
+      const event = isFocusedRef.current
+        ? ({ type: 'FOCUS', id: contentId } as const)
+        : ({ type: 'OPEN', id: contentId, delayDuration } as const);
+      stateMachine.send(event);
+    } else {
+      stateMachine.send({ type: 'CLOSE', id: contentId, skipDelayDuration });
+    }
+    isFocusedRef.current = false;
+  }, [contentId, defaultOpen, open, delayDuration, skipDelayDuration]);
 
   // send transition if the component unmounts
-  React.useEffect(() => () => handleClose(), [handleClose]);
-
-  // if we're controlling the component
-  // put the state machine in the appropriate state
-  useLayoutEffect(() => {
-    if (openProp === true) {
-      stateMachine.send({ type: 'OPEN', id: contentId });
-    }
-  }, [contentId, openProp]);
+  React.useEffect(() => () => setOpen(false), [setOpen]);
 
   return (
     <PopperPrimitive.Root>
       <TooltipProvider
         contentId={contentId}
-        open={open}
+        open={machine.context.id === contentId && machine.state === 'open'}
         stateAttribute={stateAttribute}
         trigger={trigger}
         onTriggerChange={setTrigger}
-        onFocus={handleFocus}
-        onOpen={handleOpen}
-        onClose={handleClose}
+        onOpen={React.useCallback(() => setOpen(true), [setOpen])}
+        onClose={React.useCallback(() => setOpen(false), [setOpen])}
+        onFocus={React.useCallback(() => {
+          setOpen(true);
+          isFocusedRef.current = true;
+        }, [setOpen])}
       >
         {children}
       </TooltipProvider>
