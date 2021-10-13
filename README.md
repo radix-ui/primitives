@@ -14,6 +14,10 @@ Radix Primitives is a low-level UI component library with a focus on accessibili
 
 For full documentation, visit [radix-ui.com/docs/primitives](https://radix-ui.com/docs/primitives).
 
+## Releases
+
+For changelog, visit [radix-ui.com/docs/primitives/overview/releases](https://radix-ui.com/docs/primitives/overview/releases).
+
 ## Contributing
 
 Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
