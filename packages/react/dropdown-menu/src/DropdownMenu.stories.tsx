@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuArrow,
 } from './DropdownMenu';
+import * as Tooltip from '@radix-ui/react-tooltip';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 import * as Dialog from '@radix-ui/react-dialog';
 import { css } from '../../../../stitches.config';
@@ -605,6 +606,38 @@ export const PreventClosing = () => (
           }}
         >
           I won't close
+        </DropdownMenuItem>
+        <DropdownMenuArrow />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </div>
+);
+
+export const WithTooltip = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}>
+    <DropdownMenu>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
+        </Tooltip.Trigger>
+        <Tooltip.Content>Tooltip content</Tooltip.Content>
+      </Tooltip.Root>
+      <DropdownMenuContent className={contentClass} sideOffset={5}>
+        <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+          Undo
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+          Redo
+        </DropdownMenuItem>
+        <DropdownMenuSeparator className={separatorClass} />
+        <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+          Cut
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+          Copy
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+          Paste
         </DropdownMenuItem>
         <DropdownMenuArrow />
       </DropdownMenuContent>

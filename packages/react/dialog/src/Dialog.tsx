@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext } from '@radix-ui/react-context';
+import { createContext, createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -14,12 +14,16 @@ import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 
 import type * as Radix from '@radix-ui/react-primitive';
+import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
  * Dialog
  * -----------------------------------------------------------------------------------------------*/
 
 const DIALOG_NAME = 'Dialog';
+
+type ScopedProps<P> = P & { __scopeDialog?: Scope };
+const [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME);
 
 type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
@@ -32,17 +36,25 @@ type DialogContextValue = {
   modal: boolean;
 };
 
-const [DialogProvider, useDialogContext] = createContext<DialogContextValue>(DIALOG_NAME);
+const [DialogProvider, useDialogContext] = createDialogContext<DialogContextValue>(DIALOG_NAME);
 
 interface DialogProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
   modal?: boolean;
+  children?: React.ReactNode;
 }
 
-const Dialog: React.FC<DialogProps> = (props) => {
-  const { children, open: openProp, defaultOpen, onOpenChange, modal = true } = props;
+const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
+  const {
+    __scopeDialog,
+    children,
+    open: openProp,
+    defaultOpen,
+    onOpenChange,
+    modal = true,
+  } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -52,6 +64,7 @@ const Dialog: React.FC<DialogProps> = (props) => {
 
   return (
     <DialogProvider
+      scope={__scopeDialog}
       triggerRef={triggerRef}
       contentId={useId()}
       titleId={useId()}
@@ -79,8 +92,9 @@ type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.butt
 interface DialogTriggerProps extends PrimitiveButtonProps {}
 
 const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>(
-  (props, forwardedRef) => {
-    const context = useDialogContext(TRIGGER_NAME);
+  (props: ScopedProps<DialogTriggerProps>, forwardedRef) => {
+    const { __scopeDialog, ...triggerProps } = props;
+    const context = useDialogContext(TRIGGER_NAME, __scopeDialog);
     const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
     return (
       <Primitive.button
@@ -89,7 +103,7 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
         aria-expanded={context.open}
         aria-controls={context.contentId}
         data-state={getState(context.open)}
-        {...props}
+        {...triggerProps}
         ref={composedTriggerRef}
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
       />
@@ -115,9 +129,9 @@ interface DialogOverlayProps extends DialogOverlayImplProps {
 }
 
 const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
-  (props, forwardedRef) => {
+  (props: ScopedProps<DialogOverlayProps>, forwardedRef) => {
     const { forceMount, ...overlayProps } = props;
-    const context = useDialogContext(OVERLAY_NAME);
+    const context = useDialogContext(OVERLAY_NAME, props.__scopeDialog);
     return context.modal ? (
       <Presence present={forceMount || context.open}>
         <DialogOverlayImpl {...overlayProps} ref={forwardedRef} />
@@ -133,11 +147,12 @@ type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
 const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
-  (props, forwardedRef) => {
-    const context = useDialogContext(OVERLAY_NAME);
+  (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
+    const { __scopeDialog, ...overlayProps } = props;
+    const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
     return (
       <Portal>
-        <Primitive.div data-state={getState(context.open)} {...props} ref={forwardedRef} />
+        <Primitive.div data-state={getState(context.open)} {...overlayProps} ref={forwardedRef} />
       </Portal>
     );
   }
@@ -159,9 +174,9 @@ interface DialogContentProps extends DialogContentTypeProps {
 }
 
 const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>(
-  (props, forwardedRef) => {
+  (props: ScopedProps<DialogContentProps>, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
-    const context = useDialogContext(CONTENT_NAME);
+    const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     return (
       <Presence present={forceMount || context.open}>
         {context.modal ? (
@@ -189,9 +204,9 @@ interface DialogContentTypeProps
 }
 
 const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
-  (props, forwardedRef) => {
+  (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
     const { allowPinchZoom, ...contentModalProps } = props;
-    const context = useDialogContext(CONTENT_NAME);
+    const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
@@ -239,8 +254,8 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
 /* -----------------------------------------------------------------------------------------------*/
 
 const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
-  (props, forwardedRef) => {
-    const context = useDialogContext(CONTENT_NAME);
+  (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
+    const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const hasInteractedOutsideRef = React.useRef(false);
 
     return (
@@ -309,8 +324,9 @@ interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'
 }
 
 const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(
-  (props, forwardedRef) => {
+  (props: ScopedProps<DialogContentImplProps>, forwardedRef) => {
     const {
+      __scopeDialog,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       'aria-describedby': ariaDescribedBy,
@@ -319,7 +335,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
       onCloseAutoFocus,
       ...contentProps
     } = props;
-    const context = useDialogContext(CONTENT_NAME);
+    const context = useDialogContext(CONTENT_NAME, __scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
@@ -368,9 +384,10 @@ type PrimitiveHeading2Props = Radix.ComponentPropsWithoutRef<typeof Primitive.h2
 interface DialogTitleProps extends PrimitiveHeading2Props {}
 
 const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
-  (props, forwardedRef) => {
-    const context = useDialogContext(TITLE_NAME);
-    return <Primitive.h2 id={context.titleId} {...props} ref={forwardedRef} />;
+  (props: ScopedProps<DialogTitleProps>, forwardedRef) => {
+    const { __scopeDialog, ...titleProps } = props;
+    const context = useDialogContext(TITLE_NAME, __scopeDialog);
+    return <Primitive.h2 id={context.titleId} {...titleProps} ref={forwardedRef} />;
   }
 );
 
@@ -387,9 +404,10 @@ type PrimitiveParagraphProps = Radix.ComponentPropsWithoutRef<typeof Primitive.p
 interface DialogDescriptionProps extends PrimitiveParagraphProps {}
 
 const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescriptionProps>(
-  (props, forwardedRef) => {
-    const context = useDialogContext(DESCRIPTION_NAME);
-    return <Primitive.p id={context.descriptionId} {...props} ref={forwardedRef} />;
+  (props: ScopedProps<DialogDescriptionProps>, forwardedRef) => {
+    const { __scopeDialog, ...descriptionProps } = props;
+    const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
+    return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
   }
 );
 
@@ -405,12 +423,13 @@ type DialogCloseElement = React.ElementRef<typeof Primitive.button>;
 interface DialogCloseProps extends PrimitiveButtonProps {}
 
 const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
-  (props, forwardedRef) => {
-    const context = useDialogContext(CLOSE_NAME);
+  (props: ScopedProps<DialogCloseProps>, forwardedRef) => {
+    const { __scopeDialog, ...closeProps } = props;
+    const context = useDialogContext(CLOSE_NAME, __scopeDialog);
     return (
       <Primitive.button
         type="button"
-        {...props}
+        {...closeProps}
         ref={forwardedRef}
         onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
       />
@@ -426,20 +445,20 @@ function getState(open: boolean) {
   return open ? 'open' : 'closed';
 }
 
-const LabelWarningContext = React.createContext({
+const LABEL_WARNING_NAME = 'DialogLabelWarning';
+
+const [LabelWarningProvider, useLabelWarningContext] = createContext(LABEL_WARNING_NAME, {
   contentName: CONTENT_NAME,
   titleName: TITLE_NAME,
   docsSlug: 'dialog',
 });
-
-const LabelWarningProvider = LabelWarningContext.Provider;
 
 type LabelWarningProps = {
   contentRef: React.RefObject<DialogContentElement>;
 };
 
 const LabelWarning: React.FC<LabelWarningProps> = ({ contentRef }) => {
-  const labelWarningContext = React.useContext(LabelWarningContext);
+  const labelWarningContext = useLabelWarningContext(LABEL_WARNING_NAME);
 
   const MESSAGE = `\`${labelWarningContext.contentName}\` requires a label for the component to be accessible for screen reader users.
 
@@ -469,6 +488,8 @@ const Description = DialogDescription;
 const Close = DialogClose;
 
 export {
+  createDialogScope,
+  //
   Dialog,
   DialogTrigger,
   DialogOverlay,

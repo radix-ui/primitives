@@ -25,6 +25,7 @@ function observeElementRect(
   } else {
     // only add a callback for this element as it's already observed
     observedData.callbacks.push(callback);
+    callback(elementToObserve.getBoundingClientRect());
   }
 
   return () => {

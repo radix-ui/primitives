@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { createDialogScope } from '@radix-ui/react-dialog';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { Slottable } from '@radix-ui/react-slot';
 
 import type * as Radix from '@radix-ui/react-primitive';
+import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
@@ -13,12 +15,20 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const ROOT_NAME = 'AlertDialog';
 
+type ScopedProps<P> = P & { __scopeAlertDialog?: Scope };
+const [createAlertDialogContext, createAlertDialogScope] = createContextScope(ROOT_NAME, [
+  createDialogScope,
+]);
+const useDialogScope = createDialogScope();
+
 type DialogProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Root>;
 interface AlertDialogProps extends Omit<DialogProps, 'modal'> {}
 
-const AlertDialog: React.FC<AlertDialogProps> = (props) => (
-  <DialogPrimitive.Root {...props} modal={true} />
-);
+const AlertDialog: React.FC<AlertDialogProps> = (props: ScopedProps<AlertDialogProps>) => {
+  const { __scopeAlertDialog, ...alertDialogProps } = props;
+  const dialogScope = useDialogScope(__scopeAlertDialog);
+  return <DialogPrimitive.Root {...dialogScope} {...alertDialogProps} modal={true} />;
+};
 
 AlertDialog.displayName = ROOT_NAME;
 
@@ -32,7 +42,11 @@ type DialogTriggerProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.
 interface AlertDialogTriggerProps extends DialogTriggerProps {}
 
 const AlertDialogTrigger = React.forwardRef<AlertDialogTriggerElement, AlertDialogTriggerProps>(
-  (props, forwardedRef) => <DialogPrimitive.Trigger {...props} ref={forwardedRef} />
+  (props: ScopedProps<AlertDialogTriggerProps>, forwardedRef) => {
+    const { __scopeAlertDialog, ...triggerProps } = props;
+    const dialogScope = useDialogScope(__scopeAlertDialog);
+    return <DialogPrimitive.Trigger {...dialogScope} {...triggerProps} ref={forwardedRef} />;
+  }
 );
 
 AlertDialogTrigger.displayName = TRIGGER_NAME;
@@ -48,7 +62,11 @@ type DialogOverlayProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.
 interface AlertDialogOverlayProps extends DialogOverlayProps {}
 
 const AlertDialogOverlay = React.forwardRef<AlertDialogOverlayElement, AlertDialogOverlayProps>(
-  (props, forwardedRef) => <DialogPrimitive.Overlay {...props} ref={forwardedRef} />
+  (props: ScopedProps<AlertDialogOverlayProps>, forwardedRef) => {
+    const { __scopeAlertDialog, ...overlayProps } = props;
+    const dialogScope = useDialogScope(__scopeAlertDialog);
+    return <DialogPrimitive.Overlay {...dialogScope} {...overlayProps} ref={forwardedRef} />;
+  }
 );
 
 AlertDialogOverlay.displayName = OVERLAY_NAME;
@@ -64,7 +82,7 @@ type AlertDialogContentContextValue = {
 };
 
 const [AlertDialogContentProvider, useAlertDialogContentContext] =
-  createContext<AlertDialogContentContextValue>(CONTENT_NAME);
+  createAlertDialogContext<AlertDialogContentContextValue>(CONTENT_NAME);
 
 type AlertDialogContentElement = React.ElementRef<typeof DialogPrimitive.Content>;
 type DialogContentProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>;
@@ -72,22 +90,23 @@ interface AlertDialogContentProps
   extends Omit<DialogContentProps, 'onPointerDownOutside' | 'onInteractOutside'> {}
 
 const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDialogContentProps>(
-  (props, forwardedRef) => {
-    const { children, ...contentProps } = props;
+  (props: ScopedProps<AlertDialogContentProps>, forwardedRef) => {
+    const { __scopeAlertDialog, children, ...contentProps } = props;
+    const dialogScope = useDialogScope(__scopeAlertDialog);
     const contentRef = React.useRef<AlertDialogContentElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
     const cancelRef = React.useRef<AlertDialogCancelElement | null>(null);
 
     return (
       <DialogPrimitive.LabelWarningProvider
-        value={React.useMemo(
-          () => ({ contentName: CONTENT_NAME, titleName: TITLE_NAME, docsSlug: 'alert-dialog' }),
-          []
-        )}
+        contentName={CONTENT_NAME}
+        titleName={TITLE_NAME}
+        docsSlug="alert-dialog"
       >
-        <AlertDialogContentProvider cancelRef={cancelRef}>
+        <AlertDialogContentProvider scope={__scopeAlertDialog} cancelRef={cancelRef}>
           <DialogPrimitive.Content
             role="alertdialog"
+            {...dialogScope}
             {...contentProps}
             ref={composedRefs}
             onOpenAutoFocus={composeEventHandlers(contentProps.onOpenAutoFocus, (event) => {
@@ -127,7 +146,11 @@ type DialogTitleProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Ti
 interface AlertDialogTitleProps extends DialogTitleProps {}
 
 const AlertDialogTitle = React.forwardRef<AlertDialogTitleElement, AlertDialogTitleProps>(
-  (props, forwardedRef) => <DialogPrimitive.Title {...props} ref={forwardedRef} />
+  (props: ScopedProps<AlertDialogTitleProps>, forwardedRef) => {
+    const { __scopeAlertDialog, ...titleProps } = props;
+    const dialogScope = useDialogScope(__scopeAlertDialog);
+    return <DialogPrimitive.Title {...dialogScope} {...titleProps} ref={forwardedRef} />;
+  }
 );
 
 AlertDialogTitle.displayName = TITLE_NAME;
@@ -145,7 +168,11 @@ interface AlertDialogDescriptionProps extends DialogDescriptionProps {}
 const AlertDialogDescription = React.forwardRef<
   AlertDialogDescriptionElement,
   AlertDialogDescriptionProps
->((props, forwardedRef) => <DialogPrimitive.Description {...props} ref={forwardedRef} />);
+>((props: ScopedProps<AlertDialogDescriptionProps>, forwardedRef) => {
+  const { __scopeAlertDialog, ...descriptionProps } = props;
+  const dialogScope = useDialogScope(__scopeAlertDialog);
+  return <DialogPrimitive.Description {...dialogScope} {...descriptionProps} ref={forwardedRef} />;
+});
 
 AlertDialogDescription.displayName = DESCRIPTION_NAME;
 
@@ -160,7 +187,11 @@ type DialogCloseProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Cl
 interface AlertDialogActionProps extends DialogCloseProps {}
 
 const AlertDialogAction = React.forwardRef<AlertDialogActionElement, AlertDialogActionProps>(
-  (props, forwardedRef) => <DialogPrimitive.Close {...props} ref={forwardedRef} />
+  (props: ScopedProps<AlertDialogActionProps>, forwardedRef) => {
+    const { __scopeAlertDialog, ...actionProps } = props;
+    const dialogScope = useDialogScope(__scopeAlertDialog);
+    return <DialogPrimitive.Close {...dialogScope} {...actionProps} ref={forwardedRef} />;
+  }
 );
 
 AlertDialogAction.displayName = ACTION_NAME;
@@ -175,10 +206,12 @@ type AlertDialogCancelElement = React.ElementRef<typeof DialogPrimitive.Close>;
 interface AlertDialogCancelProps extends DialogCloseProps {}
 
 const AlertDialogCancel = React.forwardRef<AlertDialogCancelElement, AlertDialogCancelProps>(
-  (props, forwardedRef) => {
-    const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME);
+  (props: ScopedProps<AlertDialogCancelProps>, forwardedRef) => {
+    const { __scopeAlertDialog, ...cancelProps } = props;
+    const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME, __scopeAlertDialog);
+    const dialogScope = useDialogScope(__scopeAlertDialog);
     const ref = useComposedRefs(forwardedRef, cancelRef);
-    return <DialogPrimitive.Close {...props} ref={ref} />;
+    return <DialogPrimitive.Close {...dialogScope} {...cancelProps} ref={ref} />;
   }
 );
 
@@ -219,6 +252,8 @@ const Title = AlertDialogTitle;
 const Description = AlertDialogDescription;
 
 export {
+  createAlertDialogScope,
+  //
   AlertDialog,
   AlertDialogTrigger,
   AlertDialogOverlay,

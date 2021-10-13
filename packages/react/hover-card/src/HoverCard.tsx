@@ -1,20 +1,29 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createContext } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as PopperPrimitive from '@radix-ui/react-popper';
+import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
+
 import type * as Radix from '@radix-ui/react-primitive';
+import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
  * HoverCard
  * -----------------------------------------------------------------------------------------------*/
 
 const HOVERCARD_NAME = 'HoverCard';
+
+type ScopedProps<P> = P & { __scopeHoverCard?: Scope };
+const [createHoverCardContext, createHoverCardScope] = createContextScope(HOVERCARD_NAME, [
+  createPopperScope,
+]);
+const usePopperScope = createPopperScope();
 
 type HoverCardContextValue = {
   open: boolean;
@@ -24,7 +33,7 @@ type HoverCardContextValue = {
 };
 
 const [HoverCardProvider, useHoverCardContext] =
-  createContext<HoverCardContextValue>(HOVERCARD_NAME);
+  createHoverCardContext<HoverCardContextValue>(HOVERCARD_NAME);
 
 interface HoverCardProps {
   open?: boolean;
@@ -32,10 +41,12 @@ interface HoverCardProps {
   onOpenChange?: (open: boolean) => void;
   openDelay?: number;
   closeDelay?: number;
+  children?: React.ReactNode;
 }
 
-const HoverCard: React.FC<HoverCardProps> = (props) => {
+const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>) => {
   const {
+    __scopeHoverCard,
     children,
     open: openProp,
     defaultOpen,
@@ -43,6 +54,7 @@ const HoverCard: React.FC<HoverCardProps> = (props) => {
     openDelay = 700,
     closeDelay = 300,
   } = props;
+  const popperScope = usePopperScope(__scopeHoverCard);
   const openTimerRef = React.useRef(0);
   const closeTimerRef = React.useRef(0);
 
@@ -71,8 +83,14 @@ const HoverCard: React.FC<HoverCardProps> = (props) => {
   }, []);
 
   return (
-    <HoverCardProvider open={open} onOpenChange={setOpen} onOpen={handleOpen} onClose={handleClose}>
-      <PopperPrimitive.Root>{children}</PopperPrimitive.Root>
+    <HoverCardProvider
+      scope={__scopeHoverCard}
+      open={open}
+      onOpenChange={setOpen}
+      onOpen={handleOpen}
+      onClose={handleClose}
+    >
+      <PopperPrimitive.Root {...popperScope}>{children}</PopperPrimitive.Root>
     </HoverCardProvider>
   );
 };
@@ -90,13 +108,15 @@ type PrimitiveLinkProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface HoverCardTriggerProps extends PrimitiveLinkProps {}
 
 const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
-  (props, forwardedRef) => {
-    const context = useHoverCardContext(TRIGGER_NAME);
+  (props: ScopedProps<HoverCardTriggerProps>, forwardedRef) => {
+    const { __scopeHoverCard, ...triggerProps } = props;
+    const context = useHoverCardContext(TRIGGER_NAME, __scopeHoverCard);
+    const popperScope = usePopperScope(__scopeHoverCard);
     return (
-      <PopperPrimitive.Anchor asChild>
+      <PopperPrimitive.Anchor asChild {...popperScope}>
         <Primitive.a
           data-state={context.open ? 'open' : 'closed'}
-          {...props}
+          {...triggerProps}
           ref={forwardedRef}
           onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
           onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
@@ -128,9 +148,9 @@ interface HoverCardContentProps extends HoverCardContentImplProps {
 }
 
 const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardContentProps>(
-  (props, forwardedRef) => {
+  (props: ScopedProps<HoverCardContentProps>, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
-    const context = useHoverCardContext(CONTENT_NAME);
+    const context = useHoverCardContext(CONTENT_NAME, props.__scopeHoverCard);
     return (
       <Presence present={forceMount || context.open}>
         <HoverCardContentImpl
@@ -162,9 +182,10 @@ interface HoverCardContentImplProps extends PopperContentProps {
 const HoverCardContentImpl = React.forwardRef<
   HoverCardContentImplElement,
   HoverCardContentImplProps
->((props, forwardedRef) => {
-  const { portalled = true, ...contentProps } = props;
-  const context = useHoverCardContext(CONTENT_NAME);
+>((props: ScopedProps<HoverCardContentImplProps>, forwardedRef) => {
+  const { __scopeHoverCard, portalled = true, ...contentProps } = props;
+  const context = useHoverCardContext(CONTENT_NAME, __scopeHoverCard);
+  const popperScope = usePopperScope(__scopeHoverCard);
   const ref = React.useRef<HoverCardContentImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const PortalWrapper = portalled ? Portal : React.Fragment;
@@ -181,6 +202,7 @@ const HoverCardContentImpl = React.forwardRef<
   return (
     <PortalWrapper>
       <PopperPrimitive.Content
+        {...popperScope}
         {...contentProps}
         ref={composedRefs}
         style={{
@@ -205,7 +227,11 @@ type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Ar
 interface HoverCardArrowProps extends PopperArrowProps {}
 
 const HoverCardArrow = React.forwardRef<HoverCardArrowElement, HoverCardArrowProps>(
-  (props, forwardedRef) => <PopperPrimitive.Arrow {...props} ref={forwardedRef} />
+  (props: ScopedProps<HoverCardArrowProps>, forwardedRef) => {
+    const { __scopeHoverCard, ...arrowProps } = props;
+    const popperScope = usePopperScope(__scopeHoverCard);
+    return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
+  }
 );
 
 HoverCardArrow.displayName = ARROW_NAME;
@@ -241,6 +267,8 @@ const Content = HoverCardContent;
 const Arrow = HoverCardArrow;
 
 export {
+  createHoverCardScope,
+  //
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
