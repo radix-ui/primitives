@@ -31,7 +31,7 @@ Our documentation is in a [separate repository](https://github.com/radix-ui/webs
 
 1. Write and update the [change log](https://github.com/radix-ui/website/blob/main/data/primitives/overview/releases.mdx)
 2. Bump package version/s and create / update the pages for each version change
-3. Perform documentation updates
+3. Perform documentation updates and remove live demos from previous versions
 
 Steps 2 and 3 are typically raised as separate pull requests to make changes easier to review.
 
