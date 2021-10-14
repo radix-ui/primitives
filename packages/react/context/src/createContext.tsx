@@ -81,7 +81,9 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
    * ---------------------------------------------------------------------------------------------*/
 
   const createScope: CreateScope = () => {
-    const scopeContexts = defaultContexts.map(React.createContext);
+    const scopeContexts = defaultContexts.map((defaultContext) => {
+      return React.createContext(defaultContext);
+    });
     return function useScope(scope: Scope) {
       const contexts = scope?.[scopeName] || scopeContexts;
       return React.useMemo(
