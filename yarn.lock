@@ -3330,6 +3330,7 @@ __metadata:
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-dialog": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
     react: ">=16.8"
@@ -3905,6 +3906,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-separator": "workspace:*"
     "@radix-ui/react-toggle-group": "workspace:*"
