@@ -219,7 +219,8 @@ function getTabbableCandidates(container: HTMLElement) {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
-      if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
+      const isAnchor = node.tagName === 'A';
+      if (node.disabled || node.hidden || isHiddenInput || isAnchor) return NodeFilter.FILTER_SKIP;
       // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
       // runtime's understanding of tabbability, so this automatically accounts
       // for any kind of element that could be tabbed to.

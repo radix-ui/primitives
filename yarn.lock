@@ -3565,12 +3565,12 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
-    "@radix-ui/react-use-escape-keydown": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
     react-dom: ^16.8 || ^17.0

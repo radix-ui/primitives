@@ -2,13 +2,13 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
+import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -30,6 +30,7 @@ type HoverCardContextValue = {
   onOpenChange(open: boolean): void;
   onOpen(): void;
   onClose(): void;
+  onDismiss(): void;
 };
 
 const [HoverCardProvider, useHoverCardContext] =
@@ -74,6 +75,8 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
     closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay);
   }, [closeDelay, setOpen]);
 
+  const handleDismiss = React.useCallback(() => setOpen(false), [setOpen]);
+
   // cleanup any queued state updates on unmount
   React.useEffect(() => {
     return () => {
@@ -89,6 +92,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
       onOpenChange={setOpen}
       onOpen={handleOpen}
       onClose={handleClose}
+      onDismiss={handleDismiss}
     >
       <PopperPrimitive.Root {...popperScope}>{children}</PopperPrimitive.Root>
     </HoverCardProvider>
@@ -190,8 +194,6 @@ const HoverCardContentImpl = React.forwardRef<
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const PortalWrapper = portalled ? Portal : React.Fragment;
 
-  useEscapeKeydown(() => context.onClose());
-
   React.useEffect(() => {
     if (ref.current) {
       const tabbables = getTabbableNodes(ref.current);
@@ -201,17 +203,19 @@ const HoverCardContentImpl = React.forwardRef<
 
   return (
     <PortalWrapper>
-      <PopperPrimitive.Content
-        {...popperScope}
-        {...contentProps}
-        ref={composedRefs}
-        style={{
-          ...contentProps.style,
-          // re-namespace exposed content custom property
-          ['--radix-hover-card-content-transform-origin' as any]:
-            'var(--radix-popper-transform-origin)',
-        }}
-      />
+      <DismissableLayer asChild onDismiss={context.onDismiss}>
+        <PopperPrimitive.Content
+          {...popperScope}
+          {...contentProps}
+          ref={composedRefs}
+          style={{
+            ...contentProps.style,
+            // re-namespace exposed content custom property
+            ['--radix-hover-card-content-transform-origin' as any]:
+              'var(--radix-popper-transform-origin)',
+          }}
+        />
+      </DismissableLayer>
     </PortalWrapper>
   );
 });
