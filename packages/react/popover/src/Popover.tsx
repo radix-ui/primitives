@@ -200,7 +200,7 @@ PopoverContent.displayName = CONTENT_NAME;
 type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 type PopoverContentTypeElement = PopoverContentImplElement;
 interface PopoverContentTypeProps
-  extends Omit<PopoverContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {
+  extends Omit<PopoverContentImplProps, 'disableOutsidePointerEvents'> {
   /**
    * @see https://github.com/theKashey/react-remove-scroll#usage
    */
@@ -347,19 +347,12 @@ type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLa
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface PopoverContentImplProps
   extends PopperContentProps,
-    Omit<DismissableLayerProps, 'onDismiss'> {
-  /**
-   * Whether focus should be trapped within the `Popover`
-   * (default: false)
-   */
-  trapFocus?: FocusScopeProps['trapped'];
-}
+    Omit<DismissableLayerProps, 'onDismiss'> {}
 
 const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverContentImplProps>(
   (props: ScopedProps<PopoverContentImplProps>, forwardedRef) => {
     const {
       __scopePopover,
-      trapFocus,
       disableOutsidePointerEvents,
       onEscapeKeyDown,
       onPointerDownOutside,
