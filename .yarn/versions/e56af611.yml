@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-alert-dialog": patch
+  "@radix-ui/react-toolbar": patch
+
+declined:
+  - primitives
