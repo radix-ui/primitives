@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   Dialog,
   DialogTrigger,
+  DialogPortal,
   DialogOverlay,
   DialogContent,
   DialogTitle,
@@ -15,12 +16,14 @@ export default { title: 'Components/Dialog' };
 export const Styled = () => (
   <Dialog>
     <DialogTrigger className={triggerClass}>open</DialogTrigger>
-    <DialogOverlay className={overlayClass} />
-    <DialogContent className={contentClass}>
-      <DialogTitle>Booking info</DialogTitle>
-      <DialogDescription>Please enter the info for your booking below.</DialogDescription>
-      <DialogClose className={closeClass}>close</DialogClose>
-    </DialogContent>
+    <DialogPortal>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent className={contentClass}>
+        <DialogTitle>Booking info</DialogTitle>
+        <DialogDescription>Please enter the info for your booking below.</DialogDescription>
+        <DialogClose className={closeClass}>close</DialogClose>
+      </DialogContent>
+    </DialogPortal>
   </Dialog>
 );
 
@@ -28,14 +31,16 @@ export const NonModal = () => (
   <>
     <Dialog modal={false}>
       <DialogTrigger className={triggerClass}>open (non-modal)</DialogTrigger>
-      <DialogOverlay className={overlayClass} />
-      <DialogContent
-        className={contentSheetClass}
-        onInteractOutside={(event) => event.preventDefault()}
-      >
-        <DialogTitle>Booking info</DialogTitle>
-        <DialogClose className={closeClass}>close</DialogClose>
-      </DialogContent>
+      <DialogPortal>
+        <DialogOverlay className={overlayClass} />
+        <DialogContent
+          className={contentSheetClass}
+          onInteractOutside={(event) => event.preventDefault()}
+        >
+          <DialogTitle>Booking info</DialogTitle>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+      </DialogPortal>
     </Dialog>
 
     {Array.from({ length: 5 }, (_, i) => (
@@ -54,11 +59,13 @@ export const Controlled = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>{open ? 'close' : 'open'}</DialogTrigger>
-      <DialogOverlay className={overlayClass} />
-      <DialogContent className={contentClass}>
-        <DialogTitle>Title</DialogTitle>
-        <DialogClose>close</DialogClose>
-      </DialogContent>
+      <DialogPortal>
+        <DialogOverlay className={overlayClass} />
+        <DialogContent className={contentClass}>
+          <DialogTitle>Title</DialogTitle>
+          <DialogClose>close</DialogClose>
+        </DialogContent>
+      </DialogPortal>
     </Dialog>
   );
 };
@@ -67,20 +74,22 @@ export const FocusTrap = () => (
   <>
     <Dialog>
       <DialogTrigger>open</DialogTrigger>
-      <DialogOverlay className={overlayClass} />
-      <DialogContent className={contentClass}>
-        <DialogClose>close</DialogClose>
-        <DialogTitle>Title</DialogTitle>
-        <div>
-          <label htmlFor="firstName">First Name</label>
-          <input type="text" id="firstName" placeholder="John" />
+      <DialogPortal>
+        <DialogOverlay className={overlayClass} />
+        <DialogContent className={contentClass}>
+          <DialogClose>close</DialogClose>
+          <DialogTitle>Title</DialogTitle>
+          <div>
+            <label htmlFor="firstName">First Name</label>
+            <input type="text" id="firstName" placeholder="John" />
 
-          <label htmlFor="lastName">Last Name</label>
-          <input type="text" id="lastName" placeholder="Doe" />
+            <label htmlFor="lastName">Last Name</label>
+            <input type="text" id="lastName" placeholder="Doe" />
 
-          <button type="submit">Send</button>
-        </div>
-      </DialogContent>
+            <button type="submit">Send</button>
+          </div>
+        </DialogContent>
+      </DialogPortal>
     </Dialog>
 
     <p>These elements can't be focused when the dialog is opened.</p>
@@ -96,32 +105,34 @@ export const CustomFocus = () => {
     <>
       <Dialog>
         <DialogTrigger>open</DialogTrigger>
-        <DialogOverlay className={overlayClass} />
-        <DialogContent
-          className={contentClass}
-          onOpenAutoFocus={(event) => {
-            event.preventDefault();
-            firstNameRef.current?.focus();
-          }}
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            searchFieldRef.current?.focus();
-          }}
-        >
-          <DialogClose>close</DialogClose>
+        <DialogPortal>
+          <DialogOverlay className={overlayClass} />
+          <DialogContent
+            className={contentClass}
+            onOpenAutoFocus={(event) => {
+              event.preventDefault();
+              firstNameRef.current?.focus();
+            }}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault();
+              searchFieldRef.current?.focus();
+            }}
+          >
+            <DialogClose>close</DialogClose>
 
-          <div>
-            <DialogTitle>Title</DialogTitle>
-            <p>The first name input will receive the focus after opening the dialog.</p>
-            <label htmlFor="firstName">First Name</label>
-            <input type="text" id="firstName" placeholder="John" ref={firstNameRef} />
+            <div>
+              <DialogTitle>Title</DialogTitle>
+              <p>The first name input will receive the focus after opening the dialog.</p>
+              <label htmlFor="firstName">First Name</label>
+              <input type="text" id="firstName" placeholder="John" ref={firstNameRef} />
 
-            <label htmlFor="lastName">Last Name</label>
-            <input type="text" id="lastName" placeholder="Doe" />
+              <label htmlFor="lastName">Last Name</label>
+              <input type="text" id="lastName" placeholder="Doe" />
 
-            <button type="submit">Send</button>
-          </div>
-        </DialogContent>
+              <button type="submit">Send</button>
+            </div>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
 
       <div>
@@ -135,47 +146,74 @@ export const CustomFocus = () => {
 export const NoEscapeDismiss = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogOverlay className={overlayClass} />
-    <DialogContent className={contentClass} onEscapeKeyDown={(event) => event.preventDefault()}>
-      <DialogTitle>Title</DialogTitle>
-      <DialogClose>close</DialogClose>
-    </DialogContent>
+    <DialogPortal>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent className={contentClass} onEscapeKeyDown={(event) => event.preventDefault()}>
+        <DialogTitle>Title</DialogTitle>
+        <DialogClose>close</DialogClose>
+      </DialogContent>
+    </DialogPortal>
   </Dialog>
 );
 
 export const NoPointerDownOutsideDismiss = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogOverlay className={overlayClass} />
-    <DialogContent
-      className={contentClass}
-      onPointerDownOutside={(event) => event.preventDefault()}
-    >
-      <DialogTitle>Title</DialogTitle>
-      <DialogClose>close</DialogClose>
-    </DialogContent>
+    <DialogPortal>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent
+        className={contentClass}
+        onPointerDownOutside={(event) => event.preventDefault()}
+      >
+        <DialogTitle>Title</DialogTitle>
+        <DialogClose>close</DialogClose>
+      </DialogContent>
+    </DialogPortal>
   </Dialog>
 );
+
+export const WithPortalContainer = () => {
+  const [portalContainer, setPortalContainer] = React.useState<HTMLDivElement | null>(null);
+  return (
+    <>
+      <Dialog>
+        <DialogTrigger>open</DialogTrigger>
+        <DialogPortal container={portalContainer}>
+          <DialogOverlay className={overlayClass} />
+          <DialogContent className={contentClass}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
+      <div data-portal-container="" ref={setPortalContainer} />
+    </>
+  );
+};
 
 export const Animated = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogOverlay className={animatedOverlayClass} />
-    <DialogContent className={animatedContentClass}>
-      <DialogTitle>Title</DialogTitle>
-      <DialogClose>close</DialogClose>
-    </DialogContent>
+    <DialogPortal>
+      <DialogOverlay className={animatedOverlayClass} />
+      <DialogContent className={animatedContentClass}>
+        <DialogTitle>Title</DialogTitle>
+        <DialogClose>close</DialogClose>
+      </DialogContent>
+    </DialogPortal>
   </Dialog>
 );
 
 export const ForcedMount = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogOverlay className={overlayClass} forceMount />
-    <DialogContent className={contentClass} forceMount>
-      <DialogTitle>Title</DialogTitle>
-      <DialogClose>close</DialogClose>
-    </DialogContent>
+    <DialogPortal>
+      <DialogOverlay className={overlayClass} forceMount />
+      <DialogContent className={contentClass} forceMount>
+        <DialogTitle>Title</DialogTitle>
+        <DialogClose>close</DialogClose>
+      </DialogContent>
+    </DialogPortal>
   </Dialog>
 );
 
@@ -183,12 +221,14 @@ export const AllowPinchZoom = () => (
   <div style={{ display: 'grid', placeItems: 'center', height: '200vh' }}>
     <Dialog>
       <DialogTrigger className={triggerClass}>open</DialogTrigger>
-      <DialogOverlay className={overlayClass} />
-      <DialogContent className={contentClass} allowPinchZoom>
-        <DialogTitle>Booking info</DialogTitle>
-        <DialogDescription>Please enter the info for your booking below.</DialogDescription>
-        <DialogClose className={closeClass}>close</DialogClose>
-      </DialogContent>
+      <DialogPortal>
+        <DialogOverlay className={overlayClass} />
+        <DialogContent className={contentClass} allowPinchZoom>
+          <DialogTitle>Booking info</DialogTitle>
+          <DialogDescription>Please enter the info for your booking below.</DialogDescription>
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+      </DialogPortal>
     </Dialog>
   </div>
 );
@@ -207,21 +247,28 @@ export const Chromatic = () => (
       <h2>Closed</h2>
       <Dialog>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogOverlay className={overlayClass} />
-        <DialogContent className={chromaticContentClass}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay className={overlayClass} />
+          <DialogContent className={chromaticContentClass}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
 
       <h2>Open</h2>
       <Dialog defaultOpen>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogOverlay className={overlayClass} style={{ left: 0, bottom: '50%', width: '25%' }} />
-        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '12%' }}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay
+            className={overlayClass}
+            style={{ left: 0, bottom: '50%', width: '25%' }}
+          />
+          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '12%' }}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
     </div>
 
@@ -229,24 +276,28 @@ export const Chromatic = () => (
       <h1>Uncontrolled with reordered parts</h1>
       <h2>Closed</h2>
       <Dialog>
-        <DialogOverlay className={overlayClass} />
-        <DialogContent className={chromaticContentClass}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay className={overlayClass} />
+          <DialogContent className={chromaticContentClass}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
       </Dialog>
 
       <h2>Open</h2>
       <Dialog defaultOpen>
-        <DialogOverlay
-          className={overlayClass}
-          style={{ left: '25%', bottom: '50%', width: '25%' }}
-        />
-        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '37%' }}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay
+            className={overlayClass}
+            style={{ left: '25%', bottom: '50%', width: '25%' }}
+          />
+          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '37%' }}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
       </Dialog>
     </div>
@@ -256,24 +307,28 @@ export const Chromatic = () => (
       <h2>Closed</h2>
       <Dialog open={false}>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogOverlay className={overlayClass} />
-        <DialogContent className={chromaticContentClass}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay className={overlayClass} />
+          <DialogContent className={chromaticContentClass}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
 
       <h2>Open</h2>
       <Dialog open>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogOverlay
-          className={overlayClass}
-          style={{ left: '50%', bottom: '50%', width: '25%' }}
-        />
-        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '62%' }}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay
+            className={overlayClass}
+            style={{ left: '50%', bottom: '50%', width: '25%' }}
+          />
+          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '62%' }}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
     </div>
 
@@ -281,24 +336,28 @@ export const Chromatic = () => (
       <h1>Controlled with reordered parts</h1>
       <h2>Closed</h2>
       <Dialog open={false}>
-        <DialogOverlay className={overlayClass} />
-        <DialogContent className={chromaticContentClass}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay className={overlayClass} />
+          <DialogContent className={chromaticContentClass}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
       </Dialog>
 
       <h2>Open</h2>
       <Dialog open>
-        <DialogOverlay
-          className={overlayClass}
-          style={{ left: '75%', bottom: '50%', width: '25%' }}
-        />
-        <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '88%' }}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay
+            className={overlayClass}
+            style={{ left: '75%', bottom: '50%', width: '25%' }}
+          />
+          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '88%' }}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
       </Dialog>
     </div>
@@ -308,21 +367,25 @@ export const Chromatic = () => (
       <h2>Closed</h2>
       <Dialog>
         <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
-        <DialogOverlay className={overlayAttrClass} />
-        <DialogContent className={contentAttrClass}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeAttrClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay className={overlayAttrClass} />
+          <DialogContent className={contentAttrClass}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeAttrClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
 
       <h2>Open</h2>
       <Dialog defaultOpen>
         <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
-        <DialogOverlay className={overlayAttrClass} style={{ top: '50%' }} />
-        <DialogContent className={contentAttrClass} style={{ top: '75%' }}>
-          <DialogTitle>Title</DialogTitle>
-          <DialogClose className={closeAttrClass}>close</DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay className={overlayAttrClass} style={{ top: '50%' }} />
+          <DialogContent className={contentAttrClass} style={{ top: '75%' }}>
+            <DialogTitle>Title</DialogTitle>
+            <DialogClose className={closeAttrClass}>close</DialogClose>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
     </div>
   </div>
@@ -390,6 +453,11 @@ const fadeOut = css.keyframes({
   to: { opacity: 0 },
 });
 
+const scaleIn = css.keyframes({
+  from: { transform: 'translate(-50%, -50%) scale(0)' },
+  to: { transform: 'translate(-50%, -50%) scale(1)' },
+});
+
 const animatedOverlayClass = css(overlayClass, {
   '&[data-state="open"]': {
     animation: `${fadeIn} 300ms ease-out`,
@@ -401,7 +469,7 @@ const animatedOverlayClass = css(overlayClass, {
 
 const animatedContentClass = css(contentClass, {
   '&[data-state="open"]': {
-    animation: `${fadeIn} 300ms ease-out`,
+    animation: `${fadeIn} ${scaleIn} 300ms ease-out`,
   },
   '&[data-state="closed"]': {
     animation: `${fadeOut} 300ms ease-in`,

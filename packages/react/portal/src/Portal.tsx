@@ -66,13 +66,31 @@ const Portal = React.forwardRef<PortalElement, PortalProps>((props, forwardedRef
 
 Portal.displayName = PORTAL_NAME;
 
+/* -------------------------------------------------------------------------------------------------
+ * UnstablePortal
+ * -----------------------------------------------------------------------------------------------*/
+
+const UNSTABLE_PORTAL_NAME = 'Portal';
+
+interface UnstablePortalProps {
+  container?: HTMLElement | null;
+}
+
+const UnstablePortal: React.FC<UnstablePortalProps> = (props) => {
+  const { container = globalThis?.document?.body, children } = props;
+  return container ? ReactDOM.createPortal(<>{children}</>, container) : null;
+};
+
+Portal.displayName = UNSTABLE_PORTAL_NAME;
+
 /* -----------------------------------------------------------------------------------------------*/
 
 const Root = Portal;
 
 export {
   Portal,
+  UnstablePortal,
   //
   Root,
 };
-export type { PortalProps };
+export type { PortalProps, UnstablePortalProps };
