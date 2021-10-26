@@ -115,22 +115,19 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
 DialogTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * DialogOverlay
+ * DialogPortal
  * -----------------------------------------------------------------------------------------------*/
 
 const PORTAL_NAME = 'DialogPortal';
 
-type DialogPortalElement = React.ElementRef<typeof UnstablePortal>;
 type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
 interface DialogPortalProps extends PortalProps {}
 
-const DialogPortal = React.forwardRef<DialogPortalElement, DialogPortalProps>(
-  (props: ScopedProps<DialogPortalProps>, forwardedRef) => {
-    const { __scopeDialog, ...portalProps } = props;
-    const context = useDialogContext(TRIGGER_NAME, __scopeDialog);
-    return context.open ? <UnstablePortal {...portalProps} ref={forwardedRef} /> : null;
-  }
-);
+const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPortalProps>) => {
+  const { __scopeDialog, ...portalProps } = props;
+  const context = useDialogContext(PORTAL_NAME, __scopeDialog);
+  return context.open ? <UnstablePortal {...portalProps} /> : null;
+};
 
 DialogPortal.displayName = PORTAL_NAME;
 

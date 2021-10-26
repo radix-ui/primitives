@@ -72,19 +72,14 @@ Portal.displayName = PORTAL_NAME;
 
 const UNSTABLE_PORTAL_NAME = 'Portal';
 
-type UnstablePortalElement = React.ElementRef<typeof Primitive.div>;
-interface UnstablePortalProps extends PrimitiveDivProps {
+interface UnstablePortalProps {
   container?: HTMLElement | null;
 }
 
-const UnstablePortal = React.forwardRef<UnstablePortalElement, UnstablePortalProps>(
-  (props, forwardedRef) => {
-    const { container = globalThis?.document?.body, ...portalProps } = props;
-    return container
-      ? ReactDOM.createPortal(<Primitive.div {...portalProps} ref={forwardedRef} />, container)
-      : null;
-  }
-);
+const UnstablePortal: React.FC<UnstablePortalProps> = (props) => {
+  const { container = globalThis?.document?.body, children } = props;
+  return container ? ReactDOM.createPortal(<>{children}</>, container) : null;
+};
 
 Portal.displayName = UNSTABLE_PORTAL_NAME;
 

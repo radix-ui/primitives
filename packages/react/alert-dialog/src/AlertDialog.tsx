@@ -57,17 +57,16 @@ AlertDialogTrigger.displayName = TRIGGER_NAME;
 
 const PORTAL_NAME = 'AlertDialogPortal';
 
-type AlertDialogPortalElement = React.ElementRef<typeof DialogPrimitive.Portal>;
 type DialogPortalProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Portal>;
 interface AlertDialogPortalProps extends DialogPortalProps {}
 
-const AlertDialogPortal = React.forwardRef<AlertDialogPortalElement, AlertDialogPortalProps>(
-  (props: ScopedProps<AlertDialogPortalProps>, forwardedRef) => {
-    const { __scopeAlertDialog, ...portalProps } = props;
-    const dialogScope = useDialogScope(__scopeAlertDialog);
-    return <DialogPrimitive.Portal {...dialogScope} {...portalProps} ref={forwardedRef} />;
-  }
-);
+const AlertDialogPortal: React.FC<AlertDialogPortalProps> = (
+  props: ScopedProps<AlertDialogPortalProps>
+) => {
+  const { __scopeAlertDialog, ...portalProps } = props;
+  const dialogScope = useDialogScope(__scopeAlertDialog);
+  return <DialogPrimitive.Portal {...dialogScope} {...portalProps} />;
+};
 
 AlertDialogPortal.displayName = PORTAL_NAME;
 
