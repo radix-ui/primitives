@@ -52,6 +52,26 @@ const AlertDialogTrigger = React.forwardRef<AlertDialogTriggerElement, AlertDial
 AlertDialogTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
+ * AlertDialogPortal
+ * -----------------------------------------------------------------------------------------------*/
+
+const PORTAL_NAME = 'AlertDialogPortal';
+
+type AlertDialogPortalElement = React.ElementRef<typeof DialogPrimitive.Portal>;
+type DialogPortalProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Portal>;
+interface AlertDialogPortalProps extends DialogPortalProps {}
+
+const AlertDialogPortal = React.forwardRef<AlertDialogPortalElement, AlertDialogPortalProps>(
+  (props: ScopedProps<AlertDialogPortalProps>, forwardedRef) => {
+    const { __scopeAlertDialog, ...portalProps } = props;
+    const dialogScope = useDialogScope(__scopeAlertDialog);
+    return <DialogPrimitive.Portal {...dialogScope} {...portalProps} ref={forwardedRef} />;
+  }
+);
+
+AlertDialogPortal.displayName = PORTAL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * AlertDialogOverlay
  * -----------------------------------------------------------------------------------------------*/
 
@@ -244,6 +264,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/alert-
 
 const Root = AlertDialog;
 const Trigger = AlertDialogTrigger;
+const Portal = AlertDialogPortal;
 const Overlay = AlertDialogOverlay;
 const Content = AlertDialogContent;
 const Action = AlertDialogAction;
@@ -256,6 +277,7 @@ export {
   //
   AlertDialog,
   AlertDialogTrigger,
+  AlertDialogPortal,
   AlertDialogOverlay,
   AlertDialogContent,
   AlertDialogAction,
@@ -265,6 +287,7 @@ export {
   //
   Root,
   Trigger,
+  Portal,
   Overlay,
   Content,
   Action,
@@ -275,6 +298,7 @@ export {
 export type {
   AlertDialogProps,
   AlertDialogTriggerProps,
+  AlertDialogPortalProps,
   AlertDialogOverlayProps,
   AlertDialogContentProps,
   AlertDialogActionProps,

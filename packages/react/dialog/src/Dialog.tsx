@@ -6,9 +6,10 @@ import { useId } from '@radix-ui/react-id';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
-import { Portal } from '@radix-ui/react-portal';
+import { UnstablePortal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
+import { Slot } from '@radix-ui/react-slot';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
@@ -117,6 +118,26 @@ DialogTrigger.displayName = TRIGGER_NAME;
  * DialogOverlay
  * -----------------------------------------------------------------------------------------------*/
 
+const PORTAL_NAME = 'DialogPortal';
+
+type DialogPortalElement = React.ElementRef<typeof UnstablePortal>;
+type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+interface DialogPortalProps extends PortalProps {}
+
+const DialogPortal = React.forwardRef<DialogPortalElement, DialogPortalProps>(
+  (props: ScopedProps<DialogPortalProps>, forwardedRef) => {
+    const { __scopeDialog, ...portalProps } = props;
+    const context = useDialogContext(TRIGGER_NAME, __scopeDialog);
+    return context.open ? <UnstablePortal {...portalProps} ref={forwardedRef} /> : null;
+  }
+);
+
+DialogPortal.displayName = PORTAL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * DialogOverlay
+ * -----------------------------------------------------------------------------------------------*/
+
 const OVERLAY_NAME = 'DialogOverlay';
 
 type DialogOverlayElement = DialogOverlayImplElement;
@@ -151,9 +172,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
     return (
-      <Portal>
-        <Primitive.div data-state={getState(context.open)} {...overlayProps} ref={forwardedRef} />
-      </Portal>
+      <Primitive.div data-state={getState(context.open)} {...overlayProps} ref={forwardedRef} />
     );
   }
 );
@@ -217,36 +236,34 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
     }, []);
 
     return (
-      <Portal>
-        <RemoveScroll allowPinchZoom={allowPinchZoom}>
-          <DialogContentImpl
-            {...contentModalProps}
-            ref={composedRefs}
-            // we make sure focus isn't trapped once `DialogContent` has been closed
-            // (closed !== unmounted when animating out)
-            trapFocus={context.open}
-            disableOutsidePointerEvents
-            onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-              event.preventDefault();
-              context.triggerRef.current?.focus();
-            })}
-            onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
-              const originalEvent = event.detail.originalEvent;
-              const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-              const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+      <RemoveScroll as={Slot} allowPinchZoom={allowPinchZoom}>
+        <DialogContentImpl
+          {...contentModalProps}
+          ref={composedRefs}
+          // we make sure focus isn't trapped once `DialogContent` has been closed
+          // (closed !== unmounted when animating out)
+          trapFocus={context.open}
+          disableOutsidePointerEvents
+          onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+            event.preventDefault();
+            context.triggerRef.current?.focus();
+          })}
+          onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
+            const originalEvent = event.detail.originalEvent;
+            const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+            const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
 
-              // If the event is a right-click, we shouldn't close because
-              // it is effectively as if we right-clicked the `Overlay`.
-              if (isRightClick) event.preventDefault();
-            })}
-            // When focus is trapped, a `focusout` event may still happen.
-            // We make sure we don't trigger our `onDismiss` in such case.
-            onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
-              event.preventDefault()
-            )}
-          />
-        </RemoveScroll>
-      </Portal>
+            // If the event is a right-click, we shouldn't close because
+            // it is effectively as if we right-clicked the `Overlay`.
+            if (isRightClick) event.preventDefault();
+          })}
+          // When focus is trapped, a `focusout` event may still happen.
+          // We make sure we don't trigger our `onDismiss` in such case.
+          onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
+            event.preventDefault()
+          )}
+        />
+      </RemoveScroll>
     );
   }
 );
@@ -259,40 +276,38 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
     const hasInteractedOutsideRef = React.useRef(false);
 
     return (
-      <Portal>
-        <DialogContentImpl
-          {...props}
-          ref={forwardedRef}
-          trapFocus={false}
-          disableOutsidePointerEvents={false}
-          onCloseAutoFocus={(event) => {
-            props.onCloseAutoFocus?.(event);
+      <DialogContentImpl
+        {...props}
+        ref={forwardedRef}
+        trapFocus={false}
+        disableOutsidePointerEvents={false}
+        onCloseAutoFocus={(event) => {
+          props.onCloseAutoFocus?.(event);
 
-            if (!event.defaultPrevented) {
-              if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
-              // Always prevent auto focus because we either focus manually or want user agent focus
-              event.preventDefault();
-            }
+          if (!event.defaultPrevented) {
+            if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
+            // Always prevent auto focus because we either focus manually or want user agent focus
+            event.preventDefault();
+          }
 
-            hasInteractedOutsideRef.current = false;
-          }}
-          onInteractOutside={(event) => {
-            props.onInteractOutside?.(event);
+          hasInteractedOutsideRef.current = false;
+        }}
+        onInteractOutside={(event) => {
+          props.onInteractOutside?.(event);
 
-            if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
+          if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
 
-            // Prevent dismissing when clicking the trigger.
-            // As the trigger is already setup to close, without doing so would
-            // cause it to close and immediately open.
-            //
-            // We use `onInteractOutside` as some browsers also
-            // focus on pointer down, creating the same issue.
-            const target = event.target as HTMLElement;
-            const targetIsTrigger = context.triggerRef.current?.contains(target);
-            if (targetIsTrigger) event.preventDefault();
-          }}
-        />
-      </Portal>
+          // Prevent dismissing when clicking the trigger.
+          // As the trigger is already setup to close, without doing so would
+          // cause it to close and immediately open.
+          //
+          // We use `onInteractOutside` as some browsers also
+          // focus on pointer down, creating the same issue.
+          const target = event.target as HTMLElement;
+          const targetIsTrigger = context.triggerRef.current?.contains(target);
+          if (targetIsTrigger) event.preventDefault();
+        }}
+      />
     );
   }
 );
@@ -481,6 +496,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${labe
 
 const Root = Dialog;
 const Trigger = DialogTrigger;
+const Portal = DialogPortal;
 const Overlay = DialogOverlay;
 const Content = DialogContent;
 const Title = DialogTitle;
@@ -492,6 +508,7 @@ export {
   //
   Dialog,
   DialogTrigger,
+  DialogPortal,
   DialogOverlay,
   DialogContent,
   DialogTitle,
@@ -500,6 +517,7 @@ export {
   //
   Root,
   Trigger,
+  Portal,
   Overlay,
   Content,
   Title,
@@ -511,6 +529,7 @@ export {
 export type {
   DialogProps,
   DialogTriggerProps,
+  DialogPortalProps,
   DialogOverlayProps,
   DialogContentProps,
   DialogTitleProps,
