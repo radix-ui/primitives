@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Portal } from './Portal';
+import { Portal, UnstablePortal } from './Portal';
 
 export default { title: 'Components/Portal' };
 
@@ -110,3 +110,100 @@ export const Chromatic = () => {
   );
 };
 Chromatic.parameters = { chromatic: { disable: false } };
+
+export const ChromaticUnstablePortal = () => {
+  const [portalContainer, setPortalContainer] = React.useState<HTMLDivElement | null>(null);
+
+  return (
+    <div style={{ padding: 150 }}>
+      <h1>Default (append to body)</h1>
+      <div style={{ padding: 10, margin: 10, border: '1px solid blue' }}>
+        <p>Container A</p>
+
+        <UnstablePortal>
+          <div
+            style={{
+              padding: 10,
+              margin: 10,
+              border: '1px solid blue',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 9999999,
+            }}
+          >
+            <p>This content is rendered in a portal (another DOM tree)</p>
+            <p>
+              Because of the portal, it can appear in a different DOM tree from the main one (by
+              default a new element inside the body), even though it is part of the same React tree.
+            </p>
+          </div>
+        </UnstablePortal>
+      </div>
+
+      <h1>Custom container</h1>
+      <div style={{ padding: 10, margin: 10, border: '1px solid green' }}>
+        <p>Container B</p>
+        <UnstablePortal container={portalContainer}>
+          <div style={{ padding: 10, margin: 10, border: '1px solid green' }}>
+            <p>
+              This content is rendered in a portal inside Container B but appears inside Container C
+              because we have used Container C as a container element for the Portal.
+            </p>
+          </div>
+        </UnstablePortal>
+      </div>
+
+      <div ref={setPortalContainer} style={{ padding: 10, margin: 10, border: '1px solid' }}>
+        <p>Container C</p>
+      </div>
+
+      <h1>zIndex and order</h1>
+      <p>See squares in the top-left</p>
+      <UnstablePortal>
+        <div
+          style={{
+            width: 20,
+            height: 20,
+            backgroundColor: 'red',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 9999999,
+          }}
+        />
+      </UnstablePortal>
+      <UnstablePortal>
+        <div
+          style={{
+            width: 20,
+            height: 20,
+            backgroundColor: 'green',
+            marginLeft: 10,
+            marginTop: 10,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 9999999,
+          }}
+        />
+      </UnstablePortal>
+      <UnstablePortal>
+        <div
+          style={{
+            width: 20,
+            height: 20,
+            backgroundColor: 'blue',
+            marginLeft: 20,
+            marginTop: 20,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 9999999,
+          }}
+        />
+      </UnstablePortal>
+    </div>
+  );
+};
+ChromaticUnstablePortal.parameters = { chromatic: { disable: false } };
