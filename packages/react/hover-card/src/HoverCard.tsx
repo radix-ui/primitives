@@ -174,8 +174,11 @@ HoverCardContent.displayName = CONTENT_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type HoverCardContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
-interface HoverCardContentImplProps extends PopperContentProps {
+interface HoverCardContentImplProps
+  extends Omit<DismissableLayerProps, 'onDismiss'>,
+    PopperContentProps {
   /**
    * Whether the `HoverCard` should render in a `Portal`
    * (default: `true`)
@@ -187,7 +190,16 @@ const HoverCardContentImpl = React.forwardRef<
   HoverCardContentImplElement,
   HoverCardContentImplProps
 >((props: ScopedProps<HoverCardContentImplProps>, forwardedRef) => {
-  const { __scopeHoverCard, portalled = true, ...contentProps } = props;
+  const {
+    __scopeHoverCard,
+    portalled = true,
+    disableOutsidePointerEvents,
+    onEscapeKeyDown,
+    onPointerDownOutside,
+    onFocusOutside,
+    onInteractOutside,
+    ...contentProps
+  } = props;
   const context = useHoverCardContext(CONTENT_NAME, __scopeHoverCard);
   const popperScope = usePopperScope(__scopeHoverCard);
   const ref = React.useRef<HoverCardContentImplElement>(null);
@@ -203,7 +215,15 @@ const HoverCardContentImpl = React.forwardRef<
 
   return (
     <PortalWrapper>
-      <DismissableLayer asChild onDismiss={context.onDismiss}>
+      <DismissableLayer
+        asChild
+        disableOutsidePointerEvents={disableOutsidePointerEvents}
+        onInteractOutside={onInteractOutside}
+        onEscapeKeyDown={onEscapeKeyDown}
+        onPointerDownOutside={onPointerDownOutside}
+        onFocusOutside={onFocusOutside}
+        onDismiss={context.onDismiss}
+      >
         <PopperPrimitive.Content
           {...popperScope}
           {...contentProps}
