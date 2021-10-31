@@ -311,6 +311,8 @@ function getPlacementStylesForPoint(point: Point): CSS.Properties {
     minWidth: 'max-content',
     willChange: 'transform',
     transform: `translate3d(${x}px, ${y}px, 0)`,
+    '--radix-popper-translate-x': `${x}px`,
+    '--radix-popper-translate-y': `${y}px`,
   };
 }
 
