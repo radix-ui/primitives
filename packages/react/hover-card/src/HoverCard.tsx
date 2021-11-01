@@ -176,9 +176,28 @@ HoverCardContent.displayName = CONTENT_NAME;
 type HoverCardContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
-interface HoverCardContentImplProps
-  extends Omit<DismissableLayerProps, 'onDismiss'>,
-    PopperContentProps {
+interface HoverCardContentImplProps extends PopperContentProps {
+  /**
+   * Event handler called when the escape key is down.
+   * Can be prevented.
+   */
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  /**
+   * Event handler called when the a `pointerdown` event happens outside of the `HoverCard`.
+   * Can be prevented.
+   */
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
+  /**
+   * Event handler called when the focus moves outside of the `HoverCard`.
+   * Can be prevented.
+   */
+  onFocusOutside?: DismissableLayerProps['onFocusOutside'];
+  /**
+   * Event handler called when an interaction happens outside the `HoverCard`.
+   * Specifically, when a `pointerdown` event happens outside or focus moves outside of it.
+   * Can be prevented.
+   */
+  onInteractOutside?: DismissableLayerProps['onInteractOutside'];
   /**
    * Whether the `HoverCard` should render in a `Portal`
    * (default: `true`)
@@ -193,7 +212,6 @@ const HoverCardContentImpl = React.forwardRef<
   const {
     __scopeHoverCard,
     portalled = true,
-    disableOutsidePointerEvents,
     onEscapeKeyDown,
     onPointerDownOutside,
     onFocusOutside,
@@ -217,7 +235,7 @@ const HoverCardContentImpl = React.forwardRef<
     <PortalWrapper>
       <DismissableLayer
         asChild
-        disableOutsidePointerEvents={disableOutsidePointerEvents}
+        disableOutsidePointerEvents={false}
         onInteractOutside={onInteractOutside}
         onEscapeKeyDown={onEscapeKeyDown}
         onPointerDownOutside={onPointerDownOutside}
