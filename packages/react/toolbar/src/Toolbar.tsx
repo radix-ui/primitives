@@ -106,7 +106,7 @@ const ToolbarButton = React.forwardRef<ToolbarButtonElement, ToolbarButtonProps>
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToolbar);
     return (
       <RovingFocusGroup.Item asChild {...rovingFocusGroupScope} focusable={!props.disabled}>
-        <Primitive.button role="toolbaritem" {...buttonProps} ref={forwardedRef} />
+        <Primitive.button {...buttonProps} ref={forwardedRef} />
       </RovingFocusGroup.Item>
     );
   }
@@ -131,7 +131,6 @@ const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
     return (
       <RovingFocusGroup.Item asChild {...rovingFocusGroupScope} focusable>
         <Primitive.a
-          role="toolbaritem"
           {...linkProps}
           ref={forwardedRef}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
