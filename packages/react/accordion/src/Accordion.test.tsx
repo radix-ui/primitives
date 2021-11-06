@@ -216,6 +216,32 @@ describe('given a multiple Accordion', () => {
   });
 });
 
+describe('given a multiple Accordion with mismatchProps', () => {
+  let handleValueChange: jest.Mock;
+  let rendered: RenderResult;
+
+  beforeEach(() => {
+    handleValueChange = jest.fn();
+    rendered = render(
+      // @ts-ignore-next-line
+      <AccordionTest type="multiple" onValueChange={handleValueChange} defaultValue={ITEMS[0]} />
+    );
+  });
+
+  describe('when clicking a trigger', () => {
+    let trigger: HTMLElement;
+
+    beforeEach(() => {
+      trigger = rendered.getByText(/Trigger One/);
+      fireEvent.click(trigger);
+    });
+
+    it('should gracefully handle mismatched defaultValue props', () => {
+      expect(rendered.container).toBeInTheDocument();
+    });
+  });
+});
+
 function AccordionTest(props: React.ComponentProps<typeof Accordion.Root>) {
   return (
     <Accordion.Root data-testid="container" {...props}>
