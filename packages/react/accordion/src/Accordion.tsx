@@ -42,7 +42,12 @@ const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | Acco
     }
 
     if (type === 'multiple') {
-      const multipleProps = accordionProps as AccordionImplMultipleProps;
+      const multipleProps = (
+        Array.isArray(accordionProps?.defaultValue)
+          ? accordionProps
+          : { ...accordionProps, defaultValue: [] }
+      ) as AccordionMultipleProps;
+
       return <AccordionImplMultiple {...multipleProps} ref={forwardedRef} />;
     }
 
