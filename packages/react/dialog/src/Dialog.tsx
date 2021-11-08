@@ -9,7 +9,6 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { UnstablePortal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Slot } from '@radix-ui/react-slot';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
@@ -177,7 +176,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
     return (
-      <RemoveScroll as={Slot} allowPinchZoom={context.allowPinchZoom}>
+      <RemoveScroll forwardProps allowPinchZoom={context.allowPinchZoom}>
         <Primitive.div
           data-state={getState(context.open)}
           {...overlayProps}
