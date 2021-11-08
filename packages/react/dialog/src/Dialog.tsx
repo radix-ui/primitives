@@ -9,7 +9,6 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { UnstablePortal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Slot } from '@radix-ui/react-slot';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
@@ -35,15 +34,21 @@ type DialogContextValue = {
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   modal: boolean;
+  allowPinchZoom: DialogProps['allowPinchZoom'];
 };
 
 const [DialogProvider, useDialogContext] = createDialogContext<DialogContextValue>(DIALOG_NAME);
 
+type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 interface DialogProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
   modal?: boolean;
+  /**
+   * @see https://github.com/theKashey/react-remove-scroll#usage
+   */
+  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
   children?: React.ReactNode;
 }
 
@@ -55,6 +60,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     defaultOpen,
     onOpenChange,
     modal = true,
+    allowPinchZoom,
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [open = false, setOpen] = useControllableState({
@@ -74,6 +80,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
+      allowPinchZoom={allowPinchZoom}
     >
       {children}
     </DialogProvider>
@@ -169,7 +176,15 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
     return (
-      <Primitive.div data-state={getState(context.open)} {...overlayProps} ref={forwardedRef} />
+      <RemoveScroll forwardProps allowPinchZoom={context.allowPinchZoom}>
+        <Primitive.div
+          data-state={getState(context.open)}
+          {...overlayProps}
+          ref={forwardedRef}
+          // We re-enable pointer-events prevented by `Dialog.Content` to allow scrolling the overlay.
+          style={{ pointerEvents: 'auto', ...overlayProps.style }}
+        />
+      </RemoveScroll>
     );
   }
 );
@@ -209,19 +224,12 @@ DialogContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 type DialogContentTypeElement = DialogContentImplElement;
 interface DialogContentTypeProps
-  extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {
-  /**
-   * @see https://github.com/theKashey/react-remove-scroll#usage
-   */
-  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
-}
+  extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {}
 
 const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
   (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
-    const { allowPinchZoom, ...contentModalProps } = props;
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
@@ -233,34 +241,32 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
     }, []);
 
     return (
-      <RemoveScroll as={Slot} allowPinchZoom={allowPinchZoom}>
-        <DialogContentImpl
-          {...contentModalProps}
-          ref={composedRefs}
-          // we make sure focus isn't trapped once `DialogContent` has been closed
-          // (closed !== unmounted when animating out)
-          trapFocus={context.open}
-          disableOutsidePointerEvents
-          onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-            event.preventDefault();
-            context.triggerRef.current?.focus();
-          })}
-          onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
-            const originalEvent = event.detail.originalEvent;
-            const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-            const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+      <DialogContentImpl
+        {...props}
+        ref={composedRefs}
+        // we make sure focus isn't trapped once `DialogContent` has been closed
+        // (closed !== unmounted when animating out)
+        trapFocus={context.open}
+        disableOutsidePointerEvents
+        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+          event.preventDefault();
+          context.triggerRef.current?.focus();
+        })}
+        onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
+          const originalEvent = event.detail.originalEvent;
+          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
 
-            // If the event is a right-click, we shouldn't close because
-            // it is effectively as if we right-clicked the `Overlay`.
-            if (isRightClick) event.preventDefault();
-          })}
-          // When focus is trapped, a `focusout` event may still happen.
-          // We make sure we don't trigger our `onDismiss` in such case.
-          onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
-            event.preventDefault()
-          )}
-        />
-      </RemoveScroll>
+          // If the event is a right-click, we shouldn't close because
+          // it is effectively as if we right-clicked the `Overlay`.
+          if (isRightClick) event.preventDefault();
+        })}
+        // When focus is trapped, a `focusout` event may still happen.
+        // We make sure we don't trigger our `onDismiss` in such case.
+        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
+          event.preventDefault()
+        )}
+      />
     );
   }
 );

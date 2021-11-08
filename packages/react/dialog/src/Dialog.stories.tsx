@@ -18,7 +18,7 @@ export const Styled = () => (
     <DialogTrigger className={triggerClass}>open</DialogTrigger>
     <DialogPortal>
       <DialogOverlay className={overlayClass} />
-      <DialogContent className={contentClass}>
+      <DialogContent className={contentDefaultClass}>
         <DialogTitle>Booking info</DialogTitle>
         <DialogDescription>Please enter the info for your booking below.</DialogDescription>
         <DialogClose className={closeClass}>close</DialogClose>
@@ -61,7 +61,7 @@ export const Controlled = () => {
       <DialogTrigger>{open ? 'close' : 'open'}</DialogTrigger>
       <DialogPortal>
         <DialogOverlay className={overlayClass} />
-        <DialogContent className={contentClass}>
+        <DialogContent className={contentDefaultClass}>
           <DialogTitle>Title</DialogTitle>
           <DialogClose>close</DialogClose>
         </DialogContent>
@@ -76,7 +76,7 @@ export const FocusTrap = () => (
       <DialogTrigger>open</DialogTrigger>
       <DialogPortal>
         <DialogOverlay className={overlayClass} />
-        <DialogContent className={contentClass}>
+        <DialogContent className={contentDefaultClass}>
           <DialogClose>close</DialogClose>
           <DialogTitle>Title</DialogTitle>
           <div>
@@ -108,7 +108,7 @@ export const CustomFocus = () => {
         <DialogPortal>
           <DialogOverlay className={overlayClass} />
           <DialogContent
-            className={contentClass}
+            className={contentDefaultClass}
             onOpenAutoFocus={(event) => {
               event.preventDefault();
               firstNameRef.current?.focus();
@@ -148,7 +148,10 @@ export const NoEscapeDismiss = () => (
     <DialogTrigger>open</DialogTrigger>
     <DialogPortal>
       <DialogOverlay className={overlayClass} />
-      <DialogContent className={contentClass} onEscapeKeyDown={(event) => event.preventDefault()}>
+      <DialogContent
+        className={contentDefaultClass}
+        onEscapeKeyDown={(event) => event.preventDefault()}
+      >
         <DialogTitle>Title</DialogTitle>
         <DialogClose>close</DialogClose>
       </DialogContent>
@@ -162,7 +165,7 @@ export const NoPointerDownOutsideDismiss = () => (
     <DialogPortal>
       <DialogOverlay className={overlayClass} />
       <DialogContent
-        className={contentClass}
+        className={contentDefaultClass}
         onPointerDownOutside={(event) => event.preventDefault()}
       >
         <DialogTitle>Title</DialogTitle>
@@ -180,7 +183,7 @@ export const WithPortalContainer = () => {
         <DialogTrigger>open</DialogTrigger>
         <DialogPortal container={portalContainer}>
           <DialogOverlay className={overlayClass} />
-          <DialogContent className={contentClass}>
+          <DialogContent className={contentDefaultClass}>
             <DialogTitle>Title</DialogTitle>
             <DialogClose>close</DialogClose>
           </DialogContent>
@@ -209,7 +212,7 @@ export const ForcedMount = () => (
     <DialogTrigger>open</DialogTrigger>
     <DialogPortal>
       <DialogOverlay className={overlayClass} forceMount />
-      <DialogContent className={contentClass} forceMount>
+      <DialogContent className={contentDefaultClass} forceMount>
         <DialogTitle>Title</DialogTitle>
         <DialogClose>close</DialogClose>
       </DialogContent>
@@ -219,11 +222,11 @@ export const ForcedMount = () => (
 
 export const AllowPinchZoom = () => (
   <div style={{ display: 'grid', placeItems: 'center', height: '200vh' }}>
-    <Dialog>
+    <Dialog allowPinchZoom>
       <DialogTrigger className={triggerClass}>open</DialogTrigger>
       <DialogPortal>
         <DialogOverlay className={overlayClass} />
-        <DialogContent className={contentClass} allowPinchZoom>
+        <DialogContent className={contentDefaultClass}>
           <DialogTitle>Booking info</DialogTitle>
           <DialogDescription>Please enter the info for your booking below.</DialogDescription>
           <DialogClose className={closeClass}>close</DialogClose>
@@ -231,6 +234,23 @@ export const AllowPinchZoom = () => (
       </DialogPortal>
     </Dialog>
   </div>
+);
+
+export const OuterScrollable = () => (
+  <Dialog>
+    <DialogTrigger className={triggerClass}>open</DialogTrigger>
+    <div style={{ backgroundColor: '#eee', width: 300, height: 1000 }} />
+    <DialogPortal>
+      <DialogOverlay className={scrollableOverlayClass}>
+        <DialogContent className={contentInScrollableOverlayClass}>
+          <DialogTitle>Booking info</DialogTitle>
+          <DialogDescription>Please enter the info for your booking below.</DialogDescription>
+          <div style={{ backgroundColor: '#eee', height: 500 }} />
+          <DialogClose className={closeClass}>close</DialogClose>
+        </DialogContent>
+      </DialogOverlay>
+    </DialogPortal>
+  </Dialog>
 );
 
 export const Chromatic = () => (
@@ -408,6 +428,13 @@ const overlayClass = css({
   backgroundColor: 'rgba(0,0,0,0.2)',
 });
 
+const scrollableOverlayClass = css(overlayClass, {
+  overflow: 'auto',
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'center',
+});
+
 const RECOMMENDED_CSS__DIALOG__CONTENT: any = {
   // ensures good default position for content
   position: 'fixed',
@@ -415,11 +442,7 @@ const RECOMMENDED_CSS__DIALOG__CONTENT: any = {
   left: 0,
 };
 
-const contentClass = css({
-  ...RECOMMENDED_CSS__DIALOG__CONTENT,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+const contentStyles = css({
   minWidth: 300,
   minHeight: 150,
   padding: 50,
@@ -428,17 +451,26 @@ const contentClass = css({
   boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
 });
 
-const contentSheetClass = css({
+const contentDefaultClass = css(contentStyles, {
+  ...RECOMMENDED_CSS__DIALOG__CONTENT,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+});
+
+const contentInScrollableOverlayClass = css(contentStyles, {
+  marginTop: 50,
+  marginBottom: 50,
+});
+
+const contentSheetClass = css(contentStyles, {
   ...RECOMMENDED_CSS__DIALOG__CONTENT,
   left: undefined,
   right: 0,
   minWidth: 300,
   minHeight: '100vh',
-  padding: 50,
-  borderTopLeftRadius: 10,
-  borderBottomLeftRadius: 10,
-  backgroundColor: 'white',
-  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
+  borderTopRightRadius: 0,
+  borderBottomRightRadius: 0,
 });
 
 const closeClass = css({});
@@ -467,7 +499,7 @@ const animatedOverlayClass = css(overlayClass, {
   },
 });
 
-const animatedContentClass = css(contentClass, {
+const animatedContentClass = css(contentDefaultClass, {
   '&[data-state="open"]': {
     animation: `${fadeIn} ${scaleIn} 300ms ease-out`,
   },
@@ -476,7 +508,7 @@ const animatedContentClass = css(contentClass, {
   },
 });
 
-const chromaticContentClass = css(contentClass, {
+const chromaticContentClass = css(contentDefaultClass, {
   padding: 10,
   minWidth: 'auto',
   minHeight: 'auto',
