@@ -182,7 +182,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
           data-state={getState(context.open)}
           {...overlayProps}
           ref={forwardedRef}
-          // We re-enable pointerEvents on the Overlay to enable scrolling
+          // We re-enable pointer-events prevented by `Dialog.Content` to allow scrolling the overlay.
           style={{ pointerEvents: 'auto', ...overlayProps.style }}
         />
       </RemoveScroll>
