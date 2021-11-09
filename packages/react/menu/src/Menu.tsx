@@ -596,8 +596,9 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                 >
                   <PopperPrimitive.Content
                     role="menu"
-                    dir={context.dir}
+                    aria-orientation="vertical"
                     data-state={getOpenState(context.open)}
+                    dir={context.dir}
                     {...popperScope}
                     {...contentProps}
                     ref={composedRefs}

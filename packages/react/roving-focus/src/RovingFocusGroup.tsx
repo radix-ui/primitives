@@ -142,7 +142,6 @@ const RovingFocusGroupImpl = React.forwardRef<
     >
       <Primitive.div
         tabIndex={isTabbingBackOut ? -1 : 0}
-        aria-orientation={orientation}
         data-orientation={orientation}
         {...groupProps}
         ref={composedRefs}

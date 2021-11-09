@@ -45,6 +45,28 @@ export const Single = () => {
   );
 };
 
+export const Vertical = () => {
+  return (
+    <ToggleGroup
+      type="single"
+      orientation="vertical"
+      className={rootClass}
+      aria-label="Options"
+      defaultValue="1"
+    >
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass}>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+  );
+};
+
 export const Multiple = () => {
   const [value, setValue] = React.useState<string[]>([]);
   return (
@@ -233,9 +255,12 @@ export const Chromatic = () => (
 Chromatic.parameters = { chromatic: { disable: false } };
 
 const rootClass = css({
-  display: 'flex',
+  display: 'inline-flex',
   gap: 5,
   padding: 5,
+  '&[data-orientation="vertical"]': {
+    flexDirection: 'column',
+  },
 });
 
 const itemClass = css({
