@@ -90,6 +90,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
         >
           <Primitive.div
             role="radiogroup"
+            aria-orientation={orientation}
             aria-labelledby={labelledBy}
             dir={dir}
             {...groupProps}

@@ -120,7 +120,13 @@ const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
         dir={context.dir}
         loop={loop}
       >
-        <Primitive.div role="tablist" dir={context.dir} {...listProps} ref={forwardedRef} />
+        <Primitive.div
+          role="tablist"
+          aria-orientation={context.orientation}
+          dir={context.dir}
+          {...listProps}
+          ref={forwardedRef}
+        />
       </RovingFocusGroup.Root>
     );
   }

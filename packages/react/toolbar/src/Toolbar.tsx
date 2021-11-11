@@ -57,7 +57,13 @@ const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
           dir={dir}
           loop={loop}
         >
-          <Primitive.div role="toolbar" dir={dir} {...toolbarProps} ref={forwardedRef} />
+          <Primitive.div
+            role="toolbar"
+            aria-orientation={orientation}
+            dir={dir}
+            {...toolbarProps}
+            ref={forwardedRef}
+          />
         </RovingFocusGroup.Root>
       </ToolbarProvider>
     );
