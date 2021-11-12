@@ -152,7 +152,7 @@ interface DropdownMenuTriggerProps extends PrimitiveButtonProps {}
 
 const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, DropdownMenuTriggerProps>(
   (props: ScopedProps<DropdownMenuTriggerProps>, forwardedRef) => {
-    const { __scopeDropdownMenu, ...triggerProps } = props;
+    const { __scopeDropdownMenu, disabled = false, ...triggerProps } = props;
     const context = useDropdownMenuContext(TRIGGER_NAME, __scopeDropdownMenu);
     const menuScope = useMenuScope(__scopeDropdownMenu);
     return context.isRootMenu ? (
@@ -164,12 +164,14 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           aria-expanded={context.open ? true : undefined}
           aria-controls={context.open ? context.contentId : undefined}
           data-state={context.open ? 'open' : 'closed'}
+          data-disabled={disabled ? '' : undefined}
+          disabled={disabled}
           {...triggerProps}
           ref={composeRefs(forwardedRef, context.triggerRef)}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
-            if (event.button === 0 && event.ctrlKey === false) {
+            if (!disabled && event.button === 0 && event.ctrlKey === false) {
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
               if (!context.open) event.preventDefault();
@@ -177,7 +179,7 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
             }
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event: React.KeyboardEvent) => {
-            if ([' ', 'Enter', 'ArrowDown'].includes(event.key)) {
+            if (!disabled && [' ', 'Enter', 'ArrowDown'].includes(event.key)) {
               event.preventDefault();
               context.onOpenChange(true);
             }
