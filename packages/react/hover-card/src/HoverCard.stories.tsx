@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { HoverCard, HoverCardTrigger, HoverCardContent, HoverCardArrow } from './HoverCard';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import * as Dialog from '@radix-ui/react-dialog';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/HoverCard' };
@@ -115,6 +116,38 @@ export const Controlled = () => {
     </div>
   );
 };
+
+export const Layerable = () => (
+  <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
+    <Dialog.Root>
+      <Dialog.Trigger>Open</Dialog.Trigger>
+      <Dialog.Content
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'white',
+          border: '1px solid',
+          borderRadius: 4,
+          padding: 20,
+        }}
+      >
+        Some dialog content with a{' '}
+        <HoverCard>
+          <HoverCardTrigger href="/" className={triggerClass}>
+            trigger
+          </HoverCardTrigger>
+          <HoverCardContent className={contentClass} sideOffset={5}>
+            <HoverCardArrow className={arrowClass} width={20} height={10} />
+            <CardContentPlaceholder />
+          </HoverCardContent>
+        </HoverCard>{' '}
+        <Dialog.Close>Close</Dialog.Close>
+      </Dialog.Content>
+    </Dialog.Root>
+  </div>
+);
 
 export const Animated = () => {
   return (

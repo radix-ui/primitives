@@ -111,7 +111,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
         container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
         container.dispatchEvent(mountEvent);
         if (!mountEvent.defaultPrevented) {
-          focusFirst(getTabbableCandidates(container), { select: true });
+          focusFirst(removeLinks(getTabbableCandidates(container)), { select: true });
           if (document.activeElement === previouslyFocusedElement) {
             focus(container);
           }
@@ -307,6 +307,10 @@ function arrayRemove<T>(array: T[], item: T) {
     updatedArray.splice(index, 1);
   }
   return updatedArray;
+}
+
+function removeLinks(items: HTMLElement[]) {
+  return items.filter((item) => item.tagName !== 'A');
 }
 
 const Root = FocusScope;
