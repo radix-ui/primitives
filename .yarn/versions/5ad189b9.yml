@@ -1,3 +1,5 @@
 releases:
   "@radix-ui/react-accordion": patch
-  primitives: patch
+
+declined:
+  - primitives
