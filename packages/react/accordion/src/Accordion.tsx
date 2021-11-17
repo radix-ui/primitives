@@ -43,6 +43,7 @@ const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | Acco
 
     if (type === 'multiple') {
       const multipleProps = accordionProps as AccordionImplMultipleProps;
+
       return <AccordionImplMultiple {...multipleProps} ref={forwardedRef} />;
     }
 
@@ -51,6 +52,23 @@ const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | Acco
 );
 
 Accordion.displayName = ACCORDION_NAME;
+
+Accordion.propTypes = {
+  type(props) {
+    const value = props.value || props.defaultValue;
+    if (props.type === 'multiple' && typeof value === 'string') {
+      return new Error(
+        'Invalid prop `type` of value `multiple` supplied to `Accordion`. Expects `single` when `defaultValue` or `value` is type `string`.'
+      );
+    }
+    if (props.type === 'single' && Array.isArray(value)) {
+      return new Error(
+        'Invalid prop `type` of value `single` supplied to `Accordion`. Expects `multiple` when `defaultValue` or `value` is type `string[]`.'
+      );
+    }
+    return null;
+  },
+};
 
 /* -----------------------------------------------------------------------------------------------*/
 
