@@ -55,7 +55,10 @@ interface TabsProps extends PrimitiveDivProps {
    * @defaultValue ltr
    */
   dir?: RovingFocusGroupProps['dir'];
-  /** Whether a tab is activated automatically or manually (default: automatic) */
+  /** 
+   * Whether a tab is activated automatically or manually.
+   * @defaultValue automatic
+   * */
   activationMode?: 'automatic' | 'manual';
 }
 
