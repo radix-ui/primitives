@@ -168,6 +168,7 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           disabled={disabled}
           {...triggerProps}
           ref={composeRefs(forwardedRef, context.triggerRef)}
+          onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(true))}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
@@ -178,8 +179,8 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
               context.onOpenToggle();
             }
           })}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event: React.KeyboardEvent) => {
-            if (!disabled && [' ', 'Enter', 'ArrowDown'].includes(event.key)) {
+          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+            if (!disabled && event.key === 'ArrowDown') {
               event.preventDefault();
               context.onOpenChange(true);
             }
