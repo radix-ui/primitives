@@ -168,6 +168,8 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           disabled={disabled}
           {...triggerProps}
           ref={composeRefs(forwardedRef, context.triggerRef)}
+          // Handle anything that the browser considers a click for the element type if
+          // not using pointer e.g. Space keyup and Enter keydown
           onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(true))}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)

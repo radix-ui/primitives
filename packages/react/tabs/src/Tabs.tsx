@@ -173,6 +173,8 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
           id={triggerId}
           {...triggerProps}
           ref={forwardedRef}
+          // Handle anything that the browser considers a click for the element type if
+          // not using pointer e.g. Space keyup and Enter keydown
           onClick={composeEventHandlers(props.onClick, handleTabChange)}
           onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
