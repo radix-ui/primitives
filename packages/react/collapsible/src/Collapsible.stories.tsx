@@ -25,12 +25,23 @@ export const Controlled = () => {
 
 export const Animated = () => {
   return (
-    <Collapsible className={rootClass}>
-      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={animatedContentClass}>
-        <div style={{ padding: 10 }}>Content 1</div>
-      </CollapsibleContent>
-    </Collapsible>
+    <>
+      <h1>Closed by default</h1>
+      <Collapsible className={rootClass}>
+        <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
+        <CollapsibleContent className={animatedContentClass}>
+          <div style={{ padding: 10 }}>Content 1</div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <h1>Open by default</h1>
+      <Collapsible defaultOpen className={rootClass}>
+        <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
+        <CollapsibleContent className={animatedContentClass}>
+          <div style={{ padding: 10 }}>Content 1</div>
+        </CollapsibleContent>
+      </Collapsible>
+    </>
   );
 };
 

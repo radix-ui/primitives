@@ -274,7 +274,28 @@ export const Animated = () => {
       </label>
       <br />
       <br />
+      <h1>Closed by default</h1>
       <Accordion type="single" className={rootClass}>
+        {values.map((value) => (
+          <AccordionItem key={value} value={value} className={itemClass}>
+            <AccordionHeader className={headerClass}>
+              <AccordionTrigger className={triggerClass}>{value}</AccordionTrigger>
+            </AccordionHeader>
+            <AccordionContent className={animatedContentClass}>
+              {[...Array(count)].map((_, index) => (
+                <div style={{ padding: 10 }} key={index}>
+                  Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+                  viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque
+                  quam suscipit habitant sed.
+                </div>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      <h1>Open by default</h1>
+      <Accordion type="single" className={rootClass} defaultValue="One">
         {values.map((value) => (
           <AccordionItem key={value} value={value} className={itemClass}>
             <AccordionHeader className={headerClass}>
@@ -308,13 +329,13 @@ export const Animated2D = () => {
               <AccordionTrigger className={triggerClass}>{value}</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent className={animated2DContentClass}>
-                <div style={{ padding: 10, background: 'whitesmoke', overflow: 'hidden'}}>
-                  <div style={{width: 'calc(20em - 20px)', height: 100}}>
-                    Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
-                    viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque
-                    quam suscipit habitant sed.
-                  </div>
+              <div style={{ padding: 10, background: 'whitesmoke', overflow: 'hidden' }}>
+                <div style={{ width: 'calc(20em - 20px)', height: 100 }}>
+                  Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
+                  viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque
+                  quam suscipit habitant sed.
                 </div>
+              </div>
             </AccordionContent>
           </AccordionItem>
         ))}
@@ -322,7 +343,6 @@ export const Animated2D = () => {
     </>
   );
 };
-
 
 export const OutsideViewport = () => (
   <>
@@ -689,11 +709,11 @@ const open2D = css.keyframes({
 const close2D = css.keyframes({
   from: {
     width: 'var(--radix-accordion-content-width)',
-    height: 'var(--radix-accordion-content-height)'
+    height: 'var(--radix-accordion-content-height)',
   },
   to: {
     width: 0,
-    height: 0
+    height: 0,
   },
 });
 
