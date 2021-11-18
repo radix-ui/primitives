@@ -295,7 +295,7 @@ export const Animated = () => {
       </Accordion>
 
       <h1>Open by default</h1>
-      <Accordion type="single" className={rootClass} value="One">
+      <Accordion type="single" className={rootClass} defaultValue="One">
         {values.map((value) => (
           <AccordionItem key={value} value={value} className={itemClass}>
             <AccordionHeader className={headerClass}>
