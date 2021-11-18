@@ -143,10 +143,10 @@ TabsList.displayName = TAB_LIST_NAME;
 
 const TRIGGER_NAME = 'TabsTrigger';
 
-type TabsTriggerElement = React.ElementRef<typeof Primitive.div>;
-interface TabsTriggerProps extends PrimitiveDivProps {
+type TabsTriggerElement = React.ElementRef<typeof Primitive.button>;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+interface TabsTriggerProps extends PrimitiveButtonProps {
   value: string;
-  disabled?: boolean;
 }
 
 const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
@@ -165,21 +165,20 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
         focusable={!disabled}
         active={isSelected}
       >
-        <Primitive.div
+        <Primitive.button
+          type="button"
           role="tab"
           aria-selected={isSelected}
           aria-controls={contentId}
-          aria-disabled={disabled || undefined}
           data-state={isSelected ? 'active' : 'inactive'}
           data-disabled={disabled ? '' : undefined}
+          disabled={disabled}
           id={triggerId}
           {...triggerProps}
           ref={forwardedRef}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if (!disabled && (event.key === ' ' || event.key === 'Enter')) {
-              handleTabChange();
-            }
-          })}
+          // Handle anything that the browser considers a click for the element type if
+          // not using pointer e.g. Space keyup and Enter keydown
+          onClick={composeEventHandlers(props.onClick, handleTabChange)}
           onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
