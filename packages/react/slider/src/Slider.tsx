@@ -29,9 +29,9 @@ const BACK_KEYS: Record<Direction, string[]> = {
 
 const SLIDER_NAME = 'Slider';
 
-const [Collection, useCollection, createCollectionScope] = createCollection<SliderThumbElement, {}>(
-  SLIDER_NAME
-);
+const [Collection, useCollection, createCollectionScope] =
+  createCollection<SliderThumbElement>(SLIDER_NAME);
+
 type ScopedProps<P> = P & { __scopeSlider?: Scope };
 const [createSliderContext, createSliderScope] = createContextScope(SLIDER_NAME, [
   createCollectionScope,

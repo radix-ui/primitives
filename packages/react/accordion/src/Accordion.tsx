@@ -1,5 +1,6 @@
 import React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
+import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
@@ -18,8 +19,12 @@ import type { Scope } from '@radix-ui/react-context';
 const ACCORDION_NAME = 'Accordion';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp'];
 
+const [Collection, useCollection, createCollectionScope] =
+  createCollection<AccordionTriggerElement>(ACCORDION_NAME);
+
 type ScopedProps<P> = P & { __scopeAccordion?: Scope };
 const [createAccordionContext, createAccordionScope] = createContextScope(ACCORDION_NAME, [
+  createCollectionScope,
   createCollapsibleScope,
 ]);
 const useCollapsibleScope = createCollapsibleScope();
@@ -33,20 +38,19 @@ interface AccordionMultipleProps extends AccordionImplMultipleProps {
 }
 
 const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | AccordionMultipleProps>(
-  (props, forwardedRef) => {
+  (props: ScopedProps<AccordionSingleProps | AccordionMultipleProps>, forwardedRef) => {
     const { type, ...accordionProps } = props;
-
-    if (type === 'single') {
-      const singleProps = accordionProps as AccordionImplSingleProps;
-      return <AccordionImplSingle {...singleProps} ref={forwardedRef} />;
-    }
-
-    if (type === 'multiple') {
-      const multipleProps = accordionProps as AccordionImplMultipleProps;
-      return <AccordionImplMultiple {...multipleProps} ref={forwardedRef} />;
-    }
-
-    throw new Error(`Missing prop \`type\` expected on \`${ACCORDION_NAME}\``);
+    const singleProps = accordionProps as AccordionImplSingleProps;
+    const multipleProps = accordionProps as AccordionImplMultipleProps;
+    return (
+      <Collection.Provider scope={props.__scopeAccordion}>
+        {type === 'multiple' ? (
+          <AccordionImplMultiple {...multipleProps} ref={forwardedRef} />
+        ) : (
+          <AccordionImplSingle {...singleProps} ref={forwardedRef} />
+        )}
+      </Collection.Provider>
+    );
   }
 );
 
@@ -55,14 +59,19 @@ Accordion.displayName = ACCORDION_NAME;
 Accordion.propTypes = {
   type(props) {
     const value = props.value || props.defaultValue;
+    if (props.type && !['single', 'multiple'].includes(props.type)) {
+      return new Error(
+        'Invalid prop `type` supplied to `Accordion`. Expected one of `single | multiple`.'
+      );
+    }
     if (props.type === 'multiple' && typeof value === 'string') {
       return new Error(
-        'Invalid prop `type` of value `multiple` supplied to `Accordion`. Expects `single` when `defaultValue` or `value` is type `string`.'
+        'Invalid prop `type` supplied to `Accordion`. Expected `single` when `defaultValue` or `value` is type `string`.'
       );
     }
     if (props.type === 'single' && Array.isArray(value)) {
       return new Error(
-        'Invalid prop `type` of value `single` supplied to `Accordion`. Expects `multiple` when `defaultValue` or `value` is type `string[]`.'
+        'Invalid prop `type` supplied to `Accordion`. Expected `multiple` when `defaultValue` or `value` is type `string[]`.'
       );
     }
     return null;
@@ -201,7 +210,6 @@ const AccordionImplMultiple = React.forwardRef<
 /* -----------------------------------------------------------------------------------------------*/
 
 type AccordionImplContextValue = {
-  triggerNodesRef: React.MutableRefObject<Set<HTMLElement | null>>;
   disabled?: boolean;
 };
 
@@ -222,21 +230,16 @@ interface AccordionImplProps extends PrimitiveDivProps {
 const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>(
   (props: ScopedProps<AccordionImplProps>, forwardedRef) => {
     const { __scopeAccordion, disabled, ...accordionProps } = props;
-    const triggerNodesRef = React.useRef<Set<AccordionTriggerElement>>(new Set());
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
+    const getItems = useCollection(__scopeAccordion);
 
     const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
+      if (!ACCORDION_KEYS.includes(event.key)) return;
       const target = event.target as HTMLElement;
-      const isAccordionKey = ACCORDION_KEYS.includes(event.key);
-
-      if (!isAccordionKey || !isButton(target)) {
-        return;
-      }
-
-      const triggerNodes = [...triggerNodesRef.current].filter((node) => !node?.disabled);
-      const triggerCount = triggerNodes.length;
-      const triggerIndex = triggerNodes.indexOf(target);
+      const triggerCollection = getItems().filter((item) => !item.ref.current?.disabled);
+      const triggerIndex = triggerCollection.findIndex((item) => item.ref.current === target);
+      const triggerCount = triggerCollection.length;
 
       if (triggerIndex === -1) return;
 
@@ -263,20 +266,18 @@ const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>
       }
 
       const clampedIndex = nextIndex % triggerCount;
-      triggerNodes[clampedIndex]?.focus();
+      triggerCollection[clampedIndex].ref.current?.focus();
     });
 
     return (
-      <AccordionImplProvider
-        scope={__scopeAccordion}
-        triggerNodesRef={triggerNodesRef}
-        disabled={disabled}
-      >
-        <Primitive.div
-          {...accordionProps}
-          ref={composedRefs}
-          onKeyDown={disabled ? undefined : handleKeyDown}
-        />
+      <AccordionImplProvider scope={__scopeAccordion} disabled={disabled}>
+        <Collection.Slot scope={__scopeAccordion}>
+          <Primitive.div
+            {...accordionProps}
+            ref={composedRefs}
+            onKeyDown={disabled ? undefined : handleKeyDown}
+          />
+        </Collection.Slot>
       </AccordionImplProvider>
     );
   }
@@ -398,34 +399,19 @@ interface AccordionTriggerProps extends CollapsibleTriggerProps {}
 const AccordionTrigger = React.forwardRef<AccordionTriggerElement, AccordionTriggerProps>(
   (props: ScopedProps<AccordionTriggerProps>, forwardedRef) => {
     const { __scopeAccordion, ...triggerProps } = props;
-    const { triggerNodesRef } = useAccordionContext(TRIGGER_NAME, __scopeAccordion);
     const itemContext = useAccordionItemContext(TRIGGER_NAME, __scopeAccordion);
     const collapsibleContext = useAccordionCollapsibleContext(TRIGGER_NAME, __scopeAccordion);
     const collapsibleScope = useCollapsibleScope(__scopeAccordion);
-    const ref = React.useRef<AccordionTriggerElement>(null);
-    const composedRefs = useComposedRefs(ref, forwardedRef);
-
-    React.useEffect(() => {
-      const triggerNodes = triggerNodesRef.current;
-      const triggerNode = ref.current;
-
-      if (triggerNode) {
-        triggerNodes.add(triggerNode);
-        return () => {
-          triggerNodes.delete(triggerNode);
-        };
-      }
-      return;
-    }, [triggerNodesRef]);
-
     return (
-      <CollapsiblePrimitive.Trigger
-        aria-disabled={(itemContext.open && !collapsibleContext.collapsible) || undefined}
-        id={itemContext.triggerId}
-        {...collapsibleScope}
-        {...triggerProps}
-        ref={composedRefs}
-      />
+      <Collection.ItemSlot scope={__scopeAccordion}>
+        <CollapsiblePrimitive.Trigger
+          aria-disabled={(itemContext.open && !collapsibleContext.collapsible) || undefined}
+          id={itemContext.triggerId}
+          {...collapsibleScope}
+          {...triggerProps}
+          ref={forwardedRef}
+        />
+      </Collection.ItemSlot>
     );
   }
 );
@@ -473,10 +459,6 @@ AccordionContent.displayName = CONTENT_NAME;
 
 function getState(open?: boolean) {
   return open ? 'open' : 'closed';
-}
-
-function isButton(element: HTMLElement): element is HTMLButtonElement {
-  return element instanceof HTMLButtonElement;
 }
 
 const Root = Accordion;
