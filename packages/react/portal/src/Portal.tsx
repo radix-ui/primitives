@@ -81,7 +81,7 @@ const UnstablePortal: React.FC<UnstablePortalProps> = (props) => {
   return container ? ReactDOM.createPortal(<>{children}</>, container) : null;
 };
 
-Portal.displayName = UNSTABLE_PORTAL_NAME;
+UnstablePortal.displayName = UNSTABLE_PORTAL_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
