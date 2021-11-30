@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Label, useLabelContext } from './Label';
-import { IdProvider } from '@radix-ui/react-id';
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { css } from '../../../../stitches.config';
 
@@ -80,7 +79,7 @@ export const WithControl = () => {
 };
 
 export const Chromatic = () => (
-  <IdProvider>
+  <>
     <h1>Auto generated id</h1>
     <Label className={chromaticRootClass}>
       <Control />
@@ -97,7 +96,7 @@ export const Chromatic = () => (
       This should add an `aria-labelledby` to the control
     </Label>
     <Control id="two" />
-  </IdProvider>
+  </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
 
