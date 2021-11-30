@@ -1,16 +1,13 @@
 import * as React from 'react';
-import { IdProvider, useId } from '@radix-ui/react-id';
+import { useId } from '@radix-ui/react-id';
 
 export default function IdPage() {
   return (
     <>
       <Foo />
       <Foo />
-
-      <IdProvider>
-        <Foo />
-        <Foo />
-      </IdProvider>
+      <Foo />
+      <Foo />
     </>
   );
 }
