@@ -14,6 +14,7 @@ import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Slottable } from '@radix-ui/react-slot';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useId } from '@radix-ui/react-id';
 import { createStateMachine } from './createStateMachine';
 import { tooltipStateChart } from './tooltipStateChart';
@@ -133,10 +134,9 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     () => stateMachine.send({ type: 'OPEN', id: contentId, delayDuration }),
     [contentId, delayDuration]
   );
-  const handleClose = React.useCallback(
-    () => stateMachine.send({ type: 'CLOSE', id: contentId, skipDelayDuration }),
-    [skipDelayDuration, contentId]
-  );
+  const handleClose = useCallbackRef(() => {
+    stateMachine.send({ type: 'CLOSE', id: contentId, skipDelayDuration });
+  });
 
   // send transition if the component unmounts
   React.useEffect(() => () => handleClose(), [handleClose]);
