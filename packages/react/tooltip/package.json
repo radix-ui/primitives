@@ -26,10 +26,8 @@
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",
-    "@radix-ui/react-use-callback-ref": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "@radix-ui/react-use-escape-keydown": "workspace:*",
-    "@radix-ui/react-use-layout-effect": "workspace:*",
     "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-use-rect": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*"
