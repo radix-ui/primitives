@@ -189,7 +189,6 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     return (
       <PopperPrimitive.Anchor asChild {...popperScope}>
         <Primitive.button
-          type="button"
           aria-describedby={context.open ? context.contentId : undefined}
           data-state={context.stateAttribute}
           {...triggerProps}
