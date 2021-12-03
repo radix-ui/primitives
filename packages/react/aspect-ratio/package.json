@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-aspect-ratio",
-  "version": "0.1.1",
+  "version": "0.1.2-rc.1",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -29,5 +29,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "0.1.1"
 }
