@@ -189,7 +189,8 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     return (
       <PopperPrimitive.Anchor asChild {...popperScope}>
         <Primitive.button
-          type="button"
+          // We purposefully avoid adding `type=button` here because tooltip triggers are also
+          // commonly anchors and the anchor `type` attribute signifies MIME type.
           aria-describedby={context.open ? context.contentId : undefined}
           data-state={context.stateAttribute}
           {...triggerProps}
