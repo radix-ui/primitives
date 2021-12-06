@@ -18,6 +18,12 @@ import { useId } from '@radix-ui/react-id';
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
+type ScopedProps<P = {}> = P & { __scopeTooltip?: Scope };
+const [createTooltipContext, createTooltipScope] = createContextScope('Tooltip', [
+  createPopperScope,
+]);
+const usePopperScope = createPopperScope();
+
 /* -------------------------------------------------------------------------------------------------
  * TooltipProvider
  * -----------------------------------------------------------------------------------------------*/
@@ -26,12 +32,6 @@ const PROVIDER_NAME = 'TooltipProvider';
 const DEFAULT_DELAY_DURATION = 700;
 const TOOLTIP_OPEN = 'tooltip.open';
 
-type ScopedProps<P = {}> = P & { __scopeTooltipProvider?: Scope };
-const [createTooltipContext, createTooltipScope] = createContextScope(PROVIDER_NAME, [
-  createPopperScope,
-]);
-const usePopperScope = createPopperScope();
-
 type TooltipProviderContextValue = {
   isOpenDelayed: boolean;
   delayDuration: number;
@@ -39,7 +39,7 @@ type TooltipProviderContextValue = {
   onTooltipClose(): void;
 };
 
-const [TooltipProviderProvider, useTooltipProviderContext] =
+const [TooltipProviderContextProvider, useTooltipProviderContext] =
   createTooltipContext<TooltipProviderContextValue>(PROVIDER_NAME, {
     isOpenDelayed: true,
     delayDuration: DEFAULT_DELAY_DURATION,
@@ -65,7 +65,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   props: ScopedProps<TooltipProviderProps>
 ) => {
   const {
-    __scopeTooltipProvider,
+    __scopeTooltip,
     delayDuration = DEFAULT_DELAY_DURATION,
     skipDelayDuration = 300,
     children,
@@ -79,8 +79,8 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   }, []);
 
   return (
-    <TooltipProviderProvider
-      scope={__scopeTooltipProvider}
+    <TooltipProviderContextProvider
+      scope={__scopeTooltip}
       isOpenDelayed={isOpenDelayed}
       delayDuration={delayDuration}
       onTooltipOpen={React.useCallback(() => {
@@ -96,7 +96,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       }, [skipDelayDuration])}
     >
       {children}
-    </TooltipProviderProvider>
+    </TooltipProviderContextProvider>
   );
 };
 
@@ -119,7 +119,7 @@ type TooltipContextValue = {
   onClose(): void;
 };
 
-const [TooltipImplProvider, useTooltipContext] =
+const [TooltipContextProvider, useTooltipContext] =
   createTooltipContext<TooltipContextValue>(TOOLTIP_NAME);
 
 interface TooltipProps {
@@ -138,39 +138,43 @@ interface TooltipProps {
 
 const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const {
-    __scopeTooltipProvider,
+    __scopeTooltip,
     children,
     open: openProp,
     defaultOpen = false,
     onOpenChange,
     delayDuration: delayDurationProp,
   } = props;
-  const context = useTooltipProviderContext(TOOLTIP_NAME, __scopeTooltipProvider);
-  const popperScope = usePopperScope(__scopeTooltipProvider);
+  const context = useTooltipProviderContext(TOOLTIP_NAME, __scopeTooltip);
+  const popperScope = usePopperScope(__scopeTooltip);
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
   const contentId = useId();
   const openTimerRef = React.useRef(0);
+  const isFocusOpenRef = React.useRef(false);
   const delayDuration = delayDurationProp ?? context.delayDuration;
-  const openDelay = context.isOpenDelayed ? delayDuration : 0;
+  const openDelay = !isFocusOpenRef.current && context.isOpenDelayed ? delayDuration : 0;
   const wasOpenDelayed = usePrevious(Boolean(openDelay));
   const { onTooltipOpen, onTooltipClose } = context;
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
-    onChange: onOpenChange,
+    onChange: (open) => {
+      if (open) {
+        // we dispatch here so `TooltipProvider` isn't required to
+        // ensure other tooltips are aware of this one opening.
+        document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
+        onTooltipOpen();
+      } else {
+        isFocusOpenRef.current = false;
+        onTooltipClose();
+      }
+      onOpenChange?.(open);
+    },
   });
 
   const stateAttribute = React.useMemo(() => {
     return open ? (wasOpenDelayed ? 'delayed-open' : 'instant-open') : 'closed';
   }, [wasOpenDelayed, open]);
-
-  const handleOpen = React.useCallback(() => {
-    setOpen((prevOpen) => {
-      if (!prevOpen) document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
-      return true;
-    });
-    onTooltipOpen();
-  }, [setOpen, onTooltipOpen]);
 
   React.useEffect(() => {
     return () => window.clearTimeout(openTimerRef.current);
@@ -178,26 +182,28 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
 
   return (
     <PopperPrimitive.Root {...popperScope}>
-      <TooltipImplProvider
-        scope={__scopeTooltipProvider}
+      <TooltipContextProvider
+        scope={__scopeTooltip}
         contentId={contentId}
         open={open}
         stateAttribute={stateAttribute}
         trigger={trigger}
         onTriggerChange={setTrigger}
-        onFocus={React.useCallback(handleOpen, [handleOpen])}
+        onFocus={React.useCallback(() => {
+          isFocusOpenRef.current = true;
+          setOpen(true);
+        }, [setOpen])}
         onOpen={React.useCallback(() => {
           window.clearTimeout(openTimerRef.current);
-          openTimerRef.current = window.setTimeout(handleOpen, openDelay);
-        }, [openDelay, handleOpen])}
+          openTimerRef.current = window.setTimeout(() => setOpen(true), openDelay);
+        }, [openDelay, setOpen])}
         onClose={React.useCallback(() => {
           window.clearTimeout(openTimerRef.current);
           setOpen(false);
-          onTooltipClose();
-        }, [onTooltipClose, setOpen])}
+        }, [setOpen])}
       >
         {children}
-      </TooltipImplProvider>
+      </TooltipContextProvider>
     </PopperPrimitive.Root>
   );
 };
@@ -216,9 +222,9 @@ interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
 const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
   (props: ScopedProps<TooltipTriggerProps>, forwardedRef) => {
-    const { __scopeTooltipProvider, ...triggerProps } = props;
-    const context = useTooltipContext(TRIGGER_NAME, __scopeTooltipProvider);
-    const popperScope = usePopperScope(__scopeTooltipProvider);
+    const { __scopeTooltip, ...triggerProps } = props;
+    const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
+    const popperScope = usePopperScope(__scopeTooltip);
     const composedTriggerRef = useComposedRefs(forwardedRef, context.onTriggerChange);
     return (
       <PopperPrimitive.Anchor asChild {...popperScope}>
@@ -262,7 +268,7 @@ interface TooltipContentProps extends TooltipContentImplProps {
 const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentProps>(
   (props: ScopedProps<TooltipContentProps>, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
-    const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltipProvider);
+    const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
     return (
       <Presence present={forceMount || context.open}>
         <TooltipContentImpl ref={forwardedRef} {...contentProps} />
@@ -289,14 +295,14 @@ interface TooltipContentImplProps extends PopperContentProps {
 const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
   (props: ScopedProps<TooltipContentImplProps>, forwardedRef) => {
     const {
-      __scopeTooltipProvider,
+      __scopeTooltip,
       children,
       'aria-label': ariaLabel,
       portalled = true,
       ...contentProps
     } = props;
-    const context = useTooltipContext(CONTENT_NAME, __scopeTooltipProvider);
-    const popperScope = usePopperScope(__scopeTooltipProvider);
+    const context = useTooltipContext(CONTENT_NAME, __scopeTooltip);
+    const popperScope = usePopperScope(__scopeTooltip);
     const PortalWrapper = portalled ? Portal : React.Fragment;
     const { onClose } = context;
 
@@ -310,7 +316,7 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
 
     return (
       <PortalWrapper>
-        <CheckTriggerMoved __scopeTooltipProvider={__scopeTooltipProvider} />
+        <CheckTriggerMoved __scopeTooltip={__scopeTooltip} />
         <PopperPrimitive.Content
           data-state={context.stateAttribute}
           {...popperScope}
@@ -347,8 +353,8 @@ interface TooltipArrowProps extends PopperArrowProps {}
 
 const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
   (props: ScopedProps<TooltipArrowProps>, forwardedRef) => {
-    const { __scopeTooltipProvider, ...arrowProps } = props;
-    const popperScope = usePopperScope(__scopeTooltipProvider);
+    const { __scopeTooltip, ...arrowProps } = props;
+    const popperScope = usePopperScope(__scopeTooltip);
     return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
   }
 );
@@ -358,8 +364,8 @@ TooltipArrow.displayName = ARROW_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 function CheckTriggerMoved(props: ScopedProps<{}>) {
-  const { __scopeTooltipProvider } = props;
-  const context = useTooltipContext('CheckTriggerMoved', __scopeTooltipProvider);
+  const { __scopeTooltip } = props;
+  const context = useTooltipContext('CheckTriggerMoved', __scopeTooltip);
 
   const triggerRect = useRect(context.trigger);
   const triggerLeft = triggerRect?.left;
