@@ -12,6 +12,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
+import { Slot } from '@radix-ui/react-slot';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -128,13 +129,33 @@ DialogTrigger.displayName = TRIGGER_NAME;
 const PORTAL_NAME = 'DialogPortal';
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
-interface DialogPortalProps extends PortalProps {}
+type DialogPortalElement = React.ElementRef<typeof UnstablePortal>;
+interface DialogPortalProps extends PortalProps {
+  children?: React.ReactNode;
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
-const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPortalProps>) => {
-  const { __scopeDialog, ...portalProps } = props;
-  const context = useDialogContext(PORTAL_NAME, __scopeDialog);
-  return context.open ? <UnstablePortal {...portalProps} /> : null;
-};
+const DialogPortal = React.forwardRef<DialogPortalElement, DialogPortalProps>(
+  (props: ScopedProps<DialogPortalProps>, forwardedRef) => {
+    const { __scopeDialog, forceMount, children, ...portalProps } = props;
+    const context = useDialogContext(PORTAL_NAME, __scopeDialog);
+    return (
+      <>
+        {React.Children.map(children, (child) => (
+          <Presence present={forceMount || context.open}>
+            <UnstablePortal {...portalProps} asChild ref={forwardedRef}>
+              {child}
+            </UnstablePortal>
+          </Presence>
+        ))}
+      </>
+    );
+  }
+);
 
 DialogPortal.displayName = PORTAL_NAME;
 
@@ -176,7 +197,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
     return (
-      <RemoveScroll forwardProps allowPinchZoom={context.allowPinchZoom}>
+      <RemoveScroll as={Slot} allowPinchZoom={context.allowPinchZoom}>
         <Primitive.div
           data-state={getState(context.open)}
           {...overlayProps}
