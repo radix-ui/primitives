@@ -538,11 +538,33 @@ export const Animated = () => {
   return (
     <TooltipProvider>
       <div style={{ padding: 100 }}>
+        <h1>Not covering triggers</h1>
+
         <SimpleTooltip className={animatedContentClass} label="Hello world 1">
           <TooltipTrigger style={{ marginRight: 10 }}>Hello 1</TooltipTrigger>
         </SimpleTooltip>
 
         <SimpleTooltip className={animatedContentClass} label="Hello world 2" side="top">
+          <TooltipTrigger>Hello 2</TooltipTrigger>
+        </SimpleTooltip>
+
+        <h1>Covering triggers</h1>
+
+        <SimpleTooltip
+          className={animatedContentClass}
+          side="right"
+          sideOffset={5}
+          label="Hello world 1"
+        >
+          <TooltipTrigger style={{ marginRight: 10 }}>Hello 1</TooltipTrigger>
+        </SimpleTooltip>
+
+        <SimpleTooltip
+          className={animatedContentClass}
+          side="left"
+          label="Hello world 2"
+          sideOffset={5}
+        >
           <TooltipTrigger>Hello 2</TooltipTrigger>
         </SimpleTooltip>
       </div>

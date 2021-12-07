@@ -235,7 +235,7 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           data-state={context.stateAttribute}
           {...triggerProps}
           ref={composedTriggerRef}
-          onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onOpen)}
+          onMouseOver={composeEventHandlers(props.onMouseOver, context.onOpen)}
           onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onClose)}
           onMouseDown={composeEventHandlers(props.onMouseDown, context.onClose)}
           onFocus={composeEventHandlers(props.onFocus, context.onFocus)}
