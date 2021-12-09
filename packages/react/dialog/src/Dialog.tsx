@@ -130,7 +130,7 @@ const PORTAL_NAME = 'DialogPortal';
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
 type DialogPortalElement = React.ElementRef<typeof UnstablePortal>;
-interface DialogPortalProps extends PortalProps {
+interface DialogPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
   /**
    * Used to force mounting when more control is needed. Useful when
@@ -141,13 +141,13 @@ interface DialogPortalProps extends PortalProps {
 
 const DialogPortal = React.forwardRef<DialogPortalElement, DialogPortalProps>(
   (props: ScopedProps<DialogPortalProps>, forwardedRef) => {
-    const { __scopeDialog, forceMount, children, asChild = true, ...portalProps } = props;
+    const { __scopeDialog, forceMount, children, ...portalProps } = props;
     const context = useDialogContext(PORTAL_NAME, __scopeDialog);
     return (
       <>
         {React.Children.map(children, (child) => (
           <Presence present={forceMount || context.open}>
-            <UnstablePortal {...portalProps} asChild={asChild} ref={forwardedRef}>
+            <UnstablePortal {...portalProps} asChild ref={forwardedRef}>
               {child}
             </UnstablePortal>
           </Presence>
