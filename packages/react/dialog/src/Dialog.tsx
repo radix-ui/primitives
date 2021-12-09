@@ -141,13 +141,13 @@ interface DialogPortalProps extends PortalProps {
 
 const DialogPortal = React.forwardRef<DialogPortalElement, DialogPortalProps>(
   (props: ScopedProps<DialogPortalProps>, forwardedRef) => {
-    const { __scopeDialog, forceMount, children, ...portalProps } = props;
+    const { __scopeDialog, forceMount, children, asChild = true, ...portalProps } = props;
     const context = useDialogContext(PORTAL_NAME, __scopeDialog);
     return (
       <>
         {React.Children.map(children, (child) => (
           <Presence present={forceMount || context.open}>
-            <UnstablePortal {...portalProps} asChild ref={forwardedRef}>
+            <UnstablePortal {...portalProps} asChild={asChild} ref={forwardedRef}>
               {child}
             </UnstablePortal>
           </Presence>
