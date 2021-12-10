@@ -130,7 +130,7 @@ const PORTAL_NAME = 'DialogPortal';
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
 type DialogPortalElement = React.ElementRef<typeof UnstablePortal>;
-interface DialogPortalProps extends PortalProps {
+interface DialogPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
   /**
    * Used to force mounting when more control is needed. Useful when
