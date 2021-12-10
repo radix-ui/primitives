@@ -129,7 +129,6 @@ DialogTrigger.displayName = TRIGGER_NAME;
 const PORTAL_NAME = 'DialogPortal';
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
-type DialogPortalElement = React.ElementRef<typeof UnstablePortal>;
 interface DialogPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
   /**
@@ -139,23 +138,21 @@ interface DialogPortalProps extends Omit<PortalProps, 'asChild'> {
   forceMount?: true;
 }
 
-const DialogPortal = React.forwardRef<DialogPortalElement, DialogPortalProps>(
-  (props: ScopedProps<DialogPortalProps>, forwardedRef) => {
-    const { __scopeDialog, forceMount, children, ...portalProps } = props;
-    const context = useDialogContext(PORTAL_NAME, __scopeDialog);
-    return (
-      <>
-        {React.Children.map(children, (child) => (
-          <Presence present={forceMount || context.open}>
-            <UnstablePortal {...portalProps} asChild ref={forwardedRef}>
-              {child}
-            </UnstablePortal>
-          </Presence>
-        ))}
-      </>
-    );
-  }
-);
+const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPortalProps>) => {
+  const { __scopeDialog, forceMount, children, container } = props;
+  const context = useDialogContext(PORTAL_NAME, __scopeDialog);
+  return (
+    <>
+      {React.Children.map(children, (child) => (
+        <Presence present={forceMount || context.open}>
+          <UnstablePortal asChild container={container}>
+            {child}
+          </UnstablePortal>
+        </Presence>
+      ))}
+    </>
+  );
+};
 
 DialogPortal.displayName = PORTAL_NAME;
 
