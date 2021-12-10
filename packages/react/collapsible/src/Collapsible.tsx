@@ -23,7 +23,6 @@ const [createCollapsibleContext, createCollapsibleScope] = createContextScope(CO
 type CollapsibleContextValue = {
   contentId: string;
   disabled?: boolean;
-  isAnimationPrevented: boolean;
   open: boolean;
   onOpenToggle(): void;
 };
@@ -57,19 +56,13 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
       onChange: onOpenChange,
     });
 
-    const isAnimationPreventedRef = React.useRef(open);
-
     return (
       <CollapsibleProvider
         scope={__scopeCollapsible}
         disabled={disabled}
         contentId={useId()}
-        isAnimationPrevented={isAnimationPreventedRef.current}
         open={open}
-        onOpenToggle={React.useCallback(() => {
-          isAnimationPreventedRef.current = false;
-          setOpen((prevOpen) => !prevOpen);
-        }, [setOpen])}
+        onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       >
         <Primitive.div
           data-state={getState(open)}
@@ -169,6 +162,12 @@ const CollapsibleContentImpl = React.forwardRef<
   // when opening we want it to immediately open to retrieve dimensions
   // when closing we delay `present` to retrieve dimensions before closing
   const isOpen = context.open || isPresent;
+  const isMountAnimationPreventedRef = React.useRef(isOpen);
+
+  React.useEffect(() => {
+    const rAF = requestAnimationFrame(() => (isMountAnimationPreventedRef.current = false));
+    return () => cancelAnimationFrame(rAF);
+  }, []);
 
   useLayoutEffect(() => {
     const node = ref.current;
@@ -209,7 +208,7 @@ const CollapsibleContentImpl = React.forwardRef<
         [`--radix-collapsible-content-height` as any]: height ? `${height}px` : undefined,
         [`--radix-collapsible-content-width` as any]: width ? `${width}px` : undefined,
         // Prevent animations when mounted in open state to avoid unexpected layout shifts
-        animation: context.isAnimationPrevented ? 'none' : undefined,
+        animation: isMountAnimationPreventedRef.current ? 'none' : undefined,
         ...props.style,
       }}
     >
