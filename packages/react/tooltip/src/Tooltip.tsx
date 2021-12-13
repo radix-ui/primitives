@@ -35,16 +35,16 @@ const TOOLTIP_OPEN = 'tooltip.open';
 type TooltipProviderContextValue = {
   isOpenDelayed: boolean;
   delayDuration: number;
-  onTriggerEnter(): void;
-  onTriggerLeave(): void;
+  onOpen(): void;
+  onClose(): void;
 };
 
 const [TooltipProviderContextProvider, useTooltipProviderContext] =
   createTooltipContext<TooltipProviderContextValue>(PROVIDER_NAME, {
     isOpenDelayed: true,
     delayDuration: DEFAULT_DELAY_DURATION,
-    onTriggerEnter: () => {},
-    onTriggerLeave: () => {},
+    onOpen: () => {},
+    onClose: () => {},
   });
 
 interface TooltipProviderProps {
@@ -83,11 +83,11 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       scope={__scopeTooltip}
       isOpenDelayed={isOpenDelayed}
       delayDuration={delayDuration}
-      onTriggerEnter={React.useCallback(() => {
+      onOpen={React.useCallback(() => {
         window.clearTimeout(skipDelayTimerRef.current);
         setIsOpenDelayed(false);
       }, [])}
-      onTriggerLeave={React.useCallback(() => {
+      onClose={React.useCallback(() => {
         window.clearTimeout(skipDelayTimerRef.current);
         skipDelayTimerRef.current = window.setTimeout(
           () => setIsOpenDelayed(true),
@@ -114,9 +114,8 @@ type TooltipContextValue = {
   stateAttribute: 'closed' | 'delayed-open' | 'instant-open';
   trigger: TooltipTriggerElement | null;
   onTriggerChange(trigger: TooltipTriggerElement | null): void;
-  onTriggerFocus(): void;
   onTriggerEnter(): void;
-  onTriggerLeave(): void;
+  onOpen(): void;
   onClose(): void;
 };
 
@@ -151,11 +150,9 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
   const contentId = useId();
   const openTimerRef = React.useRef(0);
-  const isFocusOpenRef = React.useRef(false);
   const delayDuration = delayDurationProp ?? context.delayDuration;
-  const openDelay = !isFocusOpenRef.current && context.isOpenDelayed ? delayDuration : 0;
-  const wasOpenDelayed = usePrevious(Boolean(openDelay));
-  const { onTriggerEnter, onTriggerLeave } = context;
+  const wasOpenDelayedRef = React.useRef(false);
+  const { onOpen, onClose } = context;
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
@@ -164,17 +161,28 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
         // we dispatch here so `TooltipProvider` isn't required to
         // ensure other tooltips are aware of this one opening.
         document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
-      } else {
-        isFocusOpenRef.current = false;
+        onOpen();
       }
-      window.clearTimeout(openTimerRef.current);
       onOpenChange?.(open);
     },
   });
-
   const stateAttribute = React.useMemo(() => {
-    return open ? (wasOpenDelayed ? 'delayed-open' : 'instant-open') : 'closed';
-  }, [wasOpenDelayed, open]);
+    return open ? (wasOpenDelayedRef.current ? 'delayed-open' : 'instant-open') : 'closed';
+  }, [open]);
+
+  const handleOpen = React.useCallback(() => {
+    window.clearTimeout(openTimerRef.current);
+    wasOpenDelayedRef.current = false;
+    setOpen(true);
+  }, [setOpen]);
+
+  const handleDelayedOpen = React.useCallback(() => {
+    window.clearTimeout(openTimerRef.current);
+    openTimerRef.current = window.setTimeout(() => {
+      wasOpenDelayedRef.current = true;
+      setOpen(true);
+    }, delayDuration);
+  }, [delayDuration, setOpen]);
 
   React.useEffect(() => {
     return () => window.clearTimeout(openTimerRef.current);
@@ -189,22 +197,16 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
         stateAttribute={stateAttribute}
         trigger={trigger}
         onTriggerChange={setTrigger}
-        onTriggerFocus={React.useCallback(() => {
-          isFocusOpenRef.current = true;
-          setOpen(true);
-          onTriggerEnter();
-        }, [setOpen, onTriggerEnter])}
         onTriggerEnter={React.useCallback(() => {
-          openTimerRef.current = window.setTimeout(() => {
-            setOpen(true);
-            onTriggerEnter();
-          }, openDelay);
-        }, [openDelay, setOpen, onTriggerEnter])}
-        onTriggerLeave={React.useCallback(() => {
+          if (context.isOpenDelayed) handleDelayedOpen();
+          else handleOpen();
+        }, [context.isOpenDelayed, handleDelayedOpen, handleOpen])}
+        onOpen={React.useCallback(handleOpen, [handleOpen])}
+        onClose={React.useCallback(() => {
+          window.clearTimeout(openTimerRef.current);
           setOpen(false);
-          onTriggerLeave();
-        }, [setOpen, onTriggerLeave])}
-        onClose={React.useCallback(() => setOpen(false), [setOpen])}
+          onClose();
+        }, [setOpen, onClose])}
       >
         {children}
       </TooltipContextProvider>
@@ -230,6 +232,13 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
     const composedTriggerRef = useComposedRefs(forwardedRef, context.onTriggerChange);
+    const isMouseDownRef = React.useRef(false);
+    const handleMouseUp = React.useCallback(() => (isMouseDownRef.current = false), []);
+
+    React.useEffect(() => {
+      return () => document.removeEventListener('mouseup', handleMouseUp);
+    }, [handleMouseUp]);
+
     return (
       <PopperPrimitive.Anchor asChild {...popperScope}>
         <Primitive.button
@@ -240,13 +249,19 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           {...triggerProps}
           ref={composedTriggerRef}
           onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onTriggerEnter)}
-          onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onTriggerLeave)}
-          onMouseDown={composeEventHandlers(props.onMouseDown, context.onTriggerLeave)}
-          onFocus={composeEventHandlers(props.onFocus, context.onTriggerFocus)}
-          onBlur={composeEventHandlers(props.onBlur, context.onTriggerLeave)}
+          onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onClose)}
+          onMouseDown={composeEventHandlers(props.onMouseDown, () => {
+            context.onClose();
+            isMouseDownRef.current = true;
+            document.addEventListener('mouseup', handleMouseUp, { once: true });
+          })}
+          onFocus={composeEventHandlers(props.onFocus, () => {
+            if (!isMouseDownRef.current) context.onOpen();
+          })}
+          onBlur={composeEventHandlers(props.onBlur, context.onClose)}
           // Handle anything that the browser considers a click for the element type if
           // not using pointer e.g. Space keyup and Enter keydown
-          onClick={composeEventHandlers(props.onClick, context.onTriggerLeave)}
+          onClick={composeEventHandlers(props.onClick, context.onClose)}
         />
       </PopperPrimitive.Anchor>
     );
