@@ -14,6 +14,7 @@ function useId(deterministicId?: string): string {
   return deterministicId || (id ? `radix-${id}` : '');
 }
 
+// DEPRECATED
 function IdProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     console.warn(ID_PROVIDER_DEPRECATED);

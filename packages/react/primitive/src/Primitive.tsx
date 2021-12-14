@@ -47,6 +47,7 @@ const Primitive = NODES.reduce(
         (window as any)[Symbol.for('radix-ui')] = true;
       }, []);
 
+      // DEPRECATED
       if ((props as any).as) console.error(AS_ERROR);
       return <Comp {...primitiveProps} ref={forwardedRef} />;
     }),
