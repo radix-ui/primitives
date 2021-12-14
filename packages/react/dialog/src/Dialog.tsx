@@ -28,6 +28,7 @@ const [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME)
 
 type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
+  contentRef: React.RefObject<DialogContentElement>;
   contentId: string;
   titleId: string;
   descriptionId: string;
@@ -64,6 +65,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     allowPinchZoom,
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const contentRef = React.useRef<DialogContentElement>(null);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
@@ -74,6 +76,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     <DialogProvider
       scope={__scopeDialog}
       triggerRef={triggerRef}
+      contentRef={contentRef}
       contentId={useId()}
       titleId={useId()}
       descriptionId={useId()}
@@ -194,7 +197,9 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
     return (
-      <RemoveScroll as={Slot} allowPinchZoom={context.allowPinchZoom}>
+      // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
+      // ie. when `Overlay` and `Content` are siblings
+      <RemoveScroll as={Slot} allowPinchZoom={context.allowPinchZoom} shards={[context.contentRef]}>
         <Primitive.div
           data-state={getState(context.open)}
           {...overlayProps}
@@ -250,7 +255,7 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
   (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, contentRef);
+    const composedRefs = useComposedRefs(forwardedRef, context.contentRef, contentRef);
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {

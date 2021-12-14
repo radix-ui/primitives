@@ -236,6 +236,21 @@ export const AllowPinchZoom = () => (
   </div>
 );
 
+export const InnerScrollable = () => (
+  <Dialog>
+    <DialogTrigger className={triggerClass}>open</DialogTrigger>
+    <DialogPortal>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent className={contentScrollableClass}>
+        <DialogTitle>Booking info</DialogTitle>
+        <DialogDescription>Please enter the info for your booking below.</DialogDescription>
+        <div style={{ backgroundColor: '#eee', height: 500 }} />
+        <DialogClose className={closeClass}>close</DialogClose>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
+);
+
 export const OuterScrollable = () => (
   <Dialog>
     <DialogTrigger className={triggerClass}>open</DialogTrigger>
@@ -456,6 +471,11 @@ const contentDefaultClass = css(contentStyles, {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
+});
+
+const contentScrollableClass = css(contentDefaultClass, {
+  overflow: 'auto',
+  maxHeight: 300,
 });
 
 const contentInScrollableOverlayClass = css(contentStyles, {
