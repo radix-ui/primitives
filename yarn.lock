@@ -3311,6 +3311,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-collapsible": "workspace:*"
+    "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
