@@ -344,6 +344,52 @@ export const Animated2D = () => {
   );
 };
 
+export const AnimatedControlled = () => {
+  const [value, setValue] = React.useState(['one', 'two', 'three', 'four']);
+  return (
+    <Accordion type="multiple" value={value} onValueChange={setValue} className={rootClass}>
+      <AccordionItem className={itemClass} value="one">
+        <AccordionHeader className={headerClass}>
+          <AccordionTrigger className={triggerClass}>One</AccordionTrigger>
+        </AccordionHeader>
+        <AccordionContent className={animatedContentClass}>
+          Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
+          integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
+          habitant sed.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem className={itemClass} value="two">
+        <AccordionHeader className={headerClass}>
+          <AccordionTrigger className={triggerClass}>Two</AccordionTrigger>
+        </AccordionHeader>
+        <AccordionContent className={animatedContentClass}>
+          Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
+          porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem className={itemClass} value="three">
+        <AccordionHeader className={headerClass}>
+          <AccordionTrigger className={triggerClass}>Three</AccordionTrigger>
+        </AccordionHeader>
+        <AccordionContent className={animatedContentClass}>
+          Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
+          euismod magna, nec tempor pulvinar eu etiam mattis.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem className={itemClass} value="four">
+        <AccordionHeader className={headerClass}>
+          <AccordionTrigger className={triggerClass}>Four</AccordionTrigger>
+        </AccordionHeader>
+        <AccordionContent className={animatedContentClass}>
+          Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
+          dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
+          <button>Cool</button>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+};
+
 export const OutsideViewport = () => (
   <>
     <p>Scroll down to see tabs</p>
