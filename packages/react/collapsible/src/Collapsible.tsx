@@ -163,6 +163,7 @@ const CollapsibleContentImpl = React.forwardRef<
   // when closing we delay `present` to retrieve dimensions before closing
   const isOpen = context.open || isPresent;
   const isMountAnimationPreventedRef = React.useRef(isOpen);
+  const originalStylesRef = React.useRef<Record<string, string>>();
 
   React.useEffect(() => {
     const rAF = requestAnimationFrame(() => (isMountAnimationPreventedRef.current = false));
@@ -172,11 +173,14 @@ const CollapsibleContentImpl = React.forwardRef<
   useLayoutEffect(() => {
     const node = ref.current;
     if (node) {
-      const originalTransition = node.style.transition;
-      const originalAnimation = node.style.animation;
+      originalStylesRef.current = originalStylesRef.current || {
+        transition: node.style.transition,
+        animationName: node.style.animationName,
+        animationDuration: node.style.animationDuration,
+      };
       // block any animations/transitions so the element renders at its full dimensions
       node.style.transition = 'none';
-      node.style.animation = 'none';
+      node.style.animationName = 'none';
 
       // get width and height from full dimensions
       const rect = node.getBoundingClientRect();
@@ -184,8 +188,15 @@ const CollapsibleContentImpl = React.forwardRef<
       widthRef.current = rect.width;
 
       // kick off any animations/transitions that were originally set up
-      node.style.transition = originalTransition;
-      node.style.animation = originalAnimation;
+      node.style.transition = originalStylesRef.current.transition;
+      node.style.animationName = originalStylesRef.current.animationName;
+
+      if (isMountAnimationPreventedRef.current) {
+        node.style.animationDuration = '0s';
+      } else {
+        node.style.animationDuration = originalStylesRef.current.animationDuration;
+      }
+
       setIsPresent(present);
     }
     /**
@@ -207,8 +218,6 @@ const CollapsibleContentImpl = React.forwardRef<
       style={{
         [`--radix-collapsible-content-height` as any]: height ? `${height}px` : undefined,
         [`--radix-collapsible-content-width` as any]: width ? `${width}px` : undefined,
-        // Prevent animations when mounted in open state to avoid unexpected layout shifts
-        animation: isMountAnimationPreventedRef.current ? 'none' : undefined,
         ...props.style,
       }}
     >
