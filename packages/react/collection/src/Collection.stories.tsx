@@ -157,7 +157,7 @@ const MemoItem = React.memo(Item);
 const MemoItems = React.memo(WrappedItems);
 
 function LogItems({ name = 'items' }: { name?: string }) {
-  const getItems = useCollection({});
+  const getItems = useCollection(undefined);
   React.useEffect(() => console.log(name, getItems()));
   return null;
 }
