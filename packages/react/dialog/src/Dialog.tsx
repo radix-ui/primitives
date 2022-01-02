@@ -171,7 +171,7 @@ interface DialogOverlayProps extends DialogOverlayImplProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: boolean;
 }
 
 const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
@@ -224,7 +224,7 @@ interface DialogContentProps extends DialogContentTypeProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: boolean;
 }
 
 const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>(
