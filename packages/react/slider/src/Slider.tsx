@@ -364,8 +364,12 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
           if (event.key === 'Home') {
             onHomeKeyDown(event);
+            // Prevent scrolling to page start
+            event.preventDefault();
           } else if (event.key === 'End') {
             onEndKeyDown(event);
+            // Prevent scrolling to page end
+            event.preventDefault();
           } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(event.key)) {
             onStepKeyDown(event);
             // Prevent scrolling for directional key presses
