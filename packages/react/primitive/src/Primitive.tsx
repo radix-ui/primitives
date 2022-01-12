@@ -48,7 +48,10 @@ const Primitive = NODES.reduce(
       }, []);
 
       // DEPRECATED
-      if ((props as any).as) console.error(AS_ERROR);
+      if (process.env.NODE_ENV === 'development' && (props as any).as) {
+        console.warn(AS_ERROR);
+      }
+
       return <Comp {...primitiveProps} ref={forwardedRef} />;
     }),
   }),
