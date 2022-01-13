@@ -175,8 +175,6 @@ const DismissableLayerImpl = React.forwardRef<
   // on inheritence. This is because layers may be rendered in different portals where
   // inheritence wouldn't apply, so we need to set it explicity on its children too.
   const isBodyPointerEventsDisabled = totalLayerCountWithDisabledOutsidePointerEvents > 0;
-  const shouldReEnablePointerEvents =
-    isBodyPointerEventsDisabled && !containsChildLayerWithDisabledOutsidePointerEvents;
 
   return (
     <RunningLayerCountProvider runningCount={runningLayerCount}>
@@ -187,7 +185,11 @@ const DismissableLayerImpl = React.forwardRef<
           {...layerProps}
           ref={forwardedRef}
           style={{
-            pointerEvents: shouldReEnablePointerEvents ? 'auto' : undefined,
+            pointerEvents: isBodyPointerEventsDisabled
+              ? containsChildLayerWithDisabledOutsidePointerEvents
+                ? 'none'
+                : 'auto'
+              : undefined,
             ...layerProps.style,
           }}
           onPointerDownCapture={composeEventHandlers(
