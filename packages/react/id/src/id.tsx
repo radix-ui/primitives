@@ -17,7 +17,9 @@ function useId(deterministicId?: string): string {
 // DEPRECATED
 function IdProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
-    console.warn(ID_PROVIDER_DEPRECATED);
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(ID_PROVIDER_DEPRECATED);
+    }
   }, []);
   return <>{children}</>;
 }
