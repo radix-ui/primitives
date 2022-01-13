@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-toggle",
-  "version": "0.1.4-rc.1",
+  "version": "0.1.4-rc.2",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
