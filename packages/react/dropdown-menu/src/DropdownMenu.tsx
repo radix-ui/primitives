@@ -259,6 +259,7 @@ const DropdownMenuRootContent = React.forwardRef<
   const { __scopeDropdownMenu, portalled = true, ...contentProps } = props;
   const context = useDropdownMenuContext(CONTENT_NAME, __scopeDropdownMenu);
   const menuScope = useMenuScope(__scopeDropdownMenu);
+  const isRightClickOutsideRef = React.useRef(false);
   return context.isRootMenu ? (
     <MenuPrimitive.Content
       id={context.contentId}
@@ -267,14 +268,18 @@ const DropdownMenuRootContent = React.forwardRef<
       {...contentProps}
       ref={forwardedRef}
       portalled={portalled}
-      onCloseAutoFocus={(event) => {
-        props.onCloseAutoFocus?.(event);
-        if (!event.defaultPrevented) {
-          if (context.modal) context.triggerRef.current?.focus();
-          // Always prevent auto focus because we either focus manually or want user agent focus
-          event.preventDefault();
-        }
-      }}
+      onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+        if (context.modal && !isRightClickOutsideRef.current) context.triggerRef.current?.focus();
+        isRightClickOutsideRef.current = false;
+        // Always prevent auto focus because we either focus manually or want user agent focus
+        event.preventDefault();
+      })}
+      onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
+        const originalEvent = event.detail.originalEvent as PointerEvent;
+        const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+        const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+        isRightClickOutsideRef.current = isRightClick;
+      })}
     />
   ) : null;
 });
