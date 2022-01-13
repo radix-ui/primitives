@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-accordion": patch
+  "@radix-ui/react-collapsible": patch
+
+declined:
+  - primitives

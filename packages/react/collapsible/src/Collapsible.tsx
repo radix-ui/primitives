@@ -93,6 +93,7 @@ const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, Collapsib
     const context = useCollapsibleContext(TRIGGER_NAME, __scopeCollapsible);
     return (
       <Primitive.button
+        type="button"
         aria-controls={context.contentId}
         aria-expanded={context.open || false}
         data-state={getState(context.open)}
