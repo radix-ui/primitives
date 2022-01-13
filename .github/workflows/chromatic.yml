@@ -22,6 +22,6 @@ jobs:
         uses: chromaui/action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          projectToken: 63f2bd83c33c
           exitOnceUploaded: true
           exitZeroOnChanges: true
