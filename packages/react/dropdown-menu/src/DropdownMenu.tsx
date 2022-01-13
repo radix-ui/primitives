@@ -168,9 +168,6 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           disabled={disabled}
           {...triggerProps}
           ref={composeRefs(forwardedRef, context.triggerRef)}
-          // Handle anything that the browser considers a click for the element type if
-          // not using pointer e.g. Space keyup and Enter keydown
-          onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(true))}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
@@ -178,8 +175,14 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
               if (!context.open) event.preventDefault();
-              context.onOpenToggle();
+              context.onOpenChange(true);
             }
+          })}
+          onClick={composeEventHandlers(props.onClick, (event) => {
+            // Handle anything that the browser considers a click for the element type if
+            // not using pointer e.g. Space keyup and Enter keydown
+            const isPointerClick = event.detail > 0;
+            if (!isPointerClick) context.onOpenChange(true);
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             if (!disabled && event.key === 'ArrowDown') {
@@ -256,8 +259,6 @@ const DropdownMenuRootContent = React.forwardRef<
   const { __scopeDropdownMenu, portalled = true, ...contentProps } = props;
   const context = useDropdownMenuContext(CONTENT_NAME, __scopeDropdownMenu);
   const menuScope = useMenuScope(__scopeDropdownMenu);
-  const hasInteractedOutsideRef = React.useRef(false);
-
   return context.isRootMenu ? (
     <MenuPrimitive.Content
       id={context.contentId}
@@ -268,35 +269,11 @@ const DropdownMenuRootContent = React.forwardRef<
       portalled={portalled}
       onCloseAutoFocus={(event) => {
         props.onCloseAutoFocus?.(event);
-
         if (!event.defaultPrevented) {
-          if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
+          if (context.modal) context.triggerRef.current?.focus();
           // Always prevent auto focus because we either focus manually or want user agent focus
           event.preventDefault();
         }
-
-        hasInteractedOutsideRef.current = false;
-      }}
-      onInteractOutside={(event) => {
-        props.onInteractOutside?.(event);
-
-        if (!event.defaultPrevented) {
-          const originalEvent = event.detail.originalEvent as PointerEvent;
-          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
-
-          if (!context.modal || isRightClick) hasInteractedOutsideRef.current = true;
-        }
-
-        // Prevent dismissing when clicking the trigger.
-        // As the trigger is already setup to close, without doing so would
-        // cause it to close and immediately open.
-        //
-        // We use `onInteractOutside` as some browsers also
-        // focus on pointer down, creating the same issue.
-        const target = event.target as HTMLElement;
-        const targetIsTrigger = context.triggerRef.current?.contains(target);
-        if (targetIsTrigger) event.preventDefault();
       }}
     />
   ) : null;
