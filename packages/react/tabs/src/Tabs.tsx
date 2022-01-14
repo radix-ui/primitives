@@ -181,11 +181,8 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
               context.onValueChange(value);
             }
           })}
-          onClick={composeEventHandlers(props.onClick, (event) => {
-            // Handle anything that the browser considers a click for the element type if
-            // not using pointer e.g. Space keyup and Enter keydown
-            const isPointerClick = event.detail > 0;
-            if (!isPointerClick) context.onValueChange(value);
+          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+            if ([' ', 'Enter'].includes(event.key)) context.onValueChange(value);
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
             // handle "automatic" activation if necessary

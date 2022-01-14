@@ -175,19 +175,16 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
               if (!context.open) event.preventDefault();
+              // trigger always opens, and content click outside closes. since trigger is
+              // considered outside content, clicking trigger when open will close the content.
               context.onOpenChange(true);
             }
           })}
-          onClick={composeEventHandlers(props.onClick, (event) => {
-            // Handle anything that the browser considers a click for the element type if
-            // not using pointer e.g. Space keyup and Enter keydown
-            const isPointerClick = event.detail > 0;
-            if (!isPointerClick) context.onOpenChange(true);
-          })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if (!disabled && event.key === 'ArrowDown') {
-              event.preventDefault();
+            if (!disabled && ['ArrowDown', 'Enter', ' '].includes(event.key)) {
               context.onOpenChange(true);
+              // Prevent keypresses from scrolling window
+              event.preventDefault();
             }
           })}
         />
@@ -259,7 +256,7 @@ const DropdownMenuRootContent = React.forwardRef<
   const { __scopeDropdownMenu, portalled = true, ...contentProps } = props;
   const context = useDropdownMenuContext(CONTENT_NAME, __scopeDropdownMenu);
   const menuScope = useMenuScope(__scopeDropdownMenu);
-  const isRightClickOutsideRef = React.useRef(false);
+  const hasInteractedOutsideRef = React.useRef(false);
   return context.isRootMenu ? (
     <MenuPrimitive.Content
       id={context.contentId}
@@ -269,16 +266,16 @@ const DropdownMenuRootContent = React.forwardRef<
       ref={forwardedRef}
       portalled={portalled}
       onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-        if (context.modal && !isRightClickOutsideRef.current) context.triggerRef.current?.focus();
-        isRightClickOutsideRef.current = false;
+        if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
+        hasInteractedOutsideRef.current = false;
         // Always prevent auto focus because we either focus manually or want user agent focus
         event.preventDefault();
       })}
-      onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
+      onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
         const originalEvent = event.detail.originalEvent as PointerEvent;
         const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
         const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
-        isRightClickOutsideRef.current = isRightClick;
+        if (!context.modal || isRightClick) hasInteractedOutsideRef.current = true;
       })}
     />
   ) : null;
