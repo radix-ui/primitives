@@ -131,6 +131,11 @@ DialogTrigger.displayName = TRIGGER_NAME;
 
 const PORTAL_NAME = 'DialogPortal';
 
+type PortalContextValue = { forceMount?: true };
+const [PortalProvider, usePortalContext] = createDialogContext<PortalContextValue>(PORTAL_NAME, {
+  forceMount: undefined,
+});
+
 type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
 interface DialogPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
@@ -145,7 +150,7 @@ const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPort
   const { __scopeDialog, forceMount, children, container } = props;
   const context = useDialogContext(PORTAL_NAME, __scopeDialog);
   return (
-    <>
+    <PortalProvider scope={__scopeDialog} forceMount={forceMount}>
       {React.Children.map(children, (child) => (
         <Presence present={forceMount || context.open}>
           <UnstablePortal asChild container={container}>
@@ -153,7 +158,7 @@ const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPort
           </UnstablePortal>
         </Presence>
       ))}
-    </>
+    </PortalProvider>
   );
 };
 
@@ -176,7 +181,8 @@ interface DialogOverlayProps extends DialogOverlayImplProps {
 
 const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
   (props: ScopedProps<DialogOverlayProps>, forwardedRef) => {
-    const { forceMount, ...overlayProps } = props;
+    const portalContext = usePortalContext(OVERLAY_NAME, props.__scopeDialog);
+    const { forceMount = portalContext.forceMount, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, props.__scopeDialog);
     return context.modal ? (
       <Presence present={forceMount || context.open}>
@@ -229,7 +235,8 @@ interface DialogContentProps extends DialogContentTypeProps {
 
 const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>(
   (props: ScopedProps<DialogContentProps>, forwardedRef) => {
-    const { forceMount, ...contentProps } = props;
+    const portalContext = usePortalContext(CONTENT_NAME, props.__scopeDialog);
+    const { forceMount = portalContext.forceMount, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     return (
       <Presence present={forceMount || context.open}>

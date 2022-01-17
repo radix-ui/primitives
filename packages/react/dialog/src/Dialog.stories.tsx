@@ -210,15 +210,16 @@ export const Animated = () => (
 export const ForcedMount = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogPortal>
-      <DialogOverlay className={overlayClass} forceMount />
-      <DialogContent className={contentDefaultClass} forceMount>
+    <DialogPortal forceMount>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent className={contentDefaultClass}>
         <DialogTitle>Title</DialogTitle>
         <DialogClose>close</DialogClose>
       </DialogContent>
     </DialogPortal>
   </Dialog>
 );
+ForcedMount.parameters = { chromatic: { disable: false } };
 
 export const AllowPinchZoom = () => (
   <div style={{ display: 'grid', placeItems: 'center', height: '200vh' }}>
