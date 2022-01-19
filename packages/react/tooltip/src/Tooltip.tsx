@@ -85,7 +85,10 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       delayDuration={delayDuration}
       onOpen={React.useCallback(() => {
         window.clearTimeout(skipDelayTimerRef.current);
-        setIsOpenDelayed(false);
+
+        if (skipDelayDuration !== 0) {
+          setIsOpenDelayed(false);
+        }
       }, [])}
       onClose={React.useCallback(() => {
         window.clearTimeout(skipDelayTimerRef.current);
