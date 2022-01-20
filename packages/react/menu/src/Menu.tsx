@@ -608,11 +608,12 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                       const target = event.target as HTMLElement;
                       const isKeyDownInside = event.currentTarget.contains(target);
                       const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-                      if (isKeyDownInside && !isModifierKey && event.key.length === 1) {
-                        handleTypeaheadSearch(event.key);
+                      const isCharacterKey = event.key.length === 1;
+                      if (isKeyDownInside) {
+                        // menus should not be navigated using tab key so we prevent it
+                        if (event.key === 'Tab') event.preventDefault();
+                        if (!isModifierKey && isCharacterKey) handleTypeaheadSearch(event.key);
                       }
-                      // menus should not be navigated using tab key so we prevent it
-                      if (event.key === 'Tab') event.preventDefault();
                       // focus first/last item based on key pressed
                       const content = contentRef.current;
                       if (event.target !== content) return;
