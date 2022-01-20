@@ -81,6 +81,10 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
           value={value}
           {...checkboxProps}
           ref={composedRefs}
+          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+            // According to WAI ARIA, Checkboxes don't activate on enter keypress
+            if (event.key === 'Enter') event.preventDefault();
+          })}
           onClick={composeEventHandlers(props.onClick, (event) => {
             setChecked((prevChecked) => (isIndeterminate(prevChecked) ? true : !prevChecked));
             if (isFormControl) {
