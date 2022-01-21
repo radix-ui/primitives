@@ -175,15 +175,15 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
               if (!context.open) event.preventDefault();
-              // trigger always opens, and content click outside closes. since trigger is
-              // considered outside content, clicking trigger when open will close the content.
-              context.onOpenChange(true);
+              context.onOpenToggle();
             }
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if (!disabled && ['ArrowDown', 'Enter', ' '].includes(event.key)) {
+            if (disabled) return;
+            if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
+            if (event.key === 'ArrowDown') {
               context.onOpenChange(true);
-              // Prevent keypresses from scrolling window
+              // prevent arrow keypress from scrolling window
               event.preventDefault();
             }
           })}
