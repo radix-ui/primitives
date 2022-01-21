@@ -42,11 +42,11 @@ function useSize(element: HTMLElement | SVGElement | null) {
       resizeObserver.observe(element, { box: 'border-box' });
 
       return () => {
-        setSize(undefined);
         resizeObserver.unobserve(element);
       };
+    } else {
+      setSize(undefined);
     }
-    return;
   }, [element]);
 
   return size;
