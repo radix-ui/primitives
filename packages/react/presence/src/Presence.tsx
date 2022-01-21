@@ -117,6 +117,9 @@ function usePresence(present: boolean) {
         node.removeEventListener('animationcancel', handleAnimationEnd);
         node.removeEventListener('animationend', handleAnimationEnd);
       };
+    } else {
+      // Transition to the unmounted state if the node is removed prematurely
+      send('ANIMATION_END');
     }
   }, [node, send]);
 
