@@ -160,6 +160,10 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
           name={context.name}
           ref={composedRefs}
           onCheck={() => context.onValueChange(itemProps.value)}
+          onKeyDown={composeEventHandlers((event) => {
+            // According to WAI ARIA, radio groups don't activate items on enter keypress
+            if (event.key === 'Enter') event.preventDefault();
+          })}
           onFocus={composeEventHandlers(itemProps.onFocus, () => {
             /**
              * Our `RovingFocusGroup` will focus the radio when navigating with arrow keys
