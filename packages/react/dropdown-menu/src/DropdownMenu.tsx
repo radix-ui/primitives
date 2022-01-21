@@ -181,11 +181,9 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             if (disabled) return;
             if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
-            if (event.key === 'ArrowDown') {
-              context.onOpenChange(true);
-              // prevent arrow keypress from scrolling window
-              event.preventDefault();
-            }
+            if (event.key === 'ArrowDown') context.onOpenChange(true);
+            // prevent keypresses from scrolling window
+            if ([' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
           })}
         />
       </MenuPrimitive.Anchor>
