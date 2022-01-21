@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
@@ -55,7 +54,7 @@ interface TabsProps extends PrimitiveDivProps {
    * @defaultValue ltr
    */
   dir?: RovingFocusGroupProps['dir'];
-  /** 
+  /**
    * Whether a tab is activated automatically or manually.
    * @defaultValue automatic
    * */
@@ -157,7 +156,6 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
     const isSelected = value === context.value;
-    const handleTabChange = useCallbackRef(() => context.onValueChange(value));
     return (
       <RovingFocusGroup.Item
         asChild
@@ -176,22 +174,22 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
           id={triggerId}
           {...triggerProps}
           ref={forwardedRef}
-          // Handle anything that the browser considers a click for the element type if
-          // not using pointer e.g. Space keyup and Enter keydown
-          onClick={composeEventHandlers(props.onClick, handleTabChange)}
           onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
-              handleTabChange();
+              context.onValueChange(value);
             }
+          })}
+          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+            if ([' ', 'Enter'].includes(event.key)) context.onValueChange(value);
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
             // handle "automatic" activation if necessary
             // ie. activate tab following focus
             const isAutomaticActivation = context.activationMode !== 'manual';
             if (!isSelected && !disabled && isAutomaticActivation) {
-              handleTabChange();
+              context.onValueChange(value);
             }
           })}
         />

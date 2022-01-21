@@ -168,9 +168,6 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           disabled={disabled}
           {...triggerProps}
           ref={composeRefs(forwardedRef, context.triggerRef)}
-          // Handle anything that the browser considers a click for the element type if
-          // not using pointer e.g. Space keyup and Enter keydown
-          onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(true))}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
@@ -182,10 +179,11 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
             }
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if (!disabled && event.key === 'ArrowDown') {
-              event.preventDefault();
-              context.onOpenChange(true);
-            }
+            if (disabled) return;
+            if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
+            if (event.key === 'ArrowDown') context.onOpenChange(true);
+            // prevent keypresses from scrolling window
+            if ([' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
           })}
         />
       </MenuPrimitive.Anchor>
@@ -257,7 +255,6 @@ const DropdownMenuRootContent = React.forwardRef<
   const context = useDropdownMenuContext(CONTENT_NAME, __scopeDropdownMenu);
   const menuScope = useMenuScope(__scopeDropdownMenu);
   const hasInteractedOutsideRef = React.useRef(false);
-
   return context.isRootMenu ? (
     <MenuPrimitive.Content
       id={context.contentId}
@@ -266,38 +263,18 @@ const DropdownMenuRootContent = React.forwardRef<
       {...contentProps}
       ref={forwardedRef}
       portalled={portalled}
-      onCloseAutoFocus={(event) => {
-        props.onCloseAutoFocus?.(event);
-
-        if (!event.defaultPrevented) {
-          if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
-          // Always prevent auto focus because we either focus manually or want user agent focus
-          event.preventDefault();
-        }
-
+      onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+        if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
         hasInteractedOutsideRef.current = false;
-      }}
-      onInteractOutside={(event) => {
-        props.onInteractOutside?.(event);
-
-        if (!event.defaultPrevented) {
-          const originalEvent = event.detail.originalEvent as PointerEvent;
-          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
-
-          if (!context.modal || isRightClick) hasInteractedOutsideRef.current = true;
-        }
-
-        // Prevent dismissing when clicking the trigger.
-        // As the trigger is already setup to close, without doing so would
-        // cause it to close and immediately open.
-        //
-        // We use `onInteractOutside` as some browsers also
-        // focus on pointer down, creating the same issue.
-        const target = event.target as HTMLElement;
-        const targetIsTrigger = context.triggerRef.current?.contains(target);
-        if (targetIsTrigger) event.preventDefault();
-      }}
+        // Always prevent auto focus because we either focus manually or want user agent focus
+        event.preventDefault();
+      })}
+      onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
+        const originalEvent = event.detail.originalEvent as PointerEvent;
+        const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+        const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+        if (!context.modal || isRightClick) hasInteractedOutsideRef.current = true;
+      })}
     />
   ) : null;
 });
