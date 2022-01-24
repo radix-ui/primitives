@@ -41,12 +41,12 @@ function useSize(element: HTMLElement | SVGElement | null) {
 
       resizeObserver.observe(element, { box: 'border-box' });
 
-      return () => {
-        setSize(undefined);
-        resizeObserver.unobserve(element);
-      };
+      return () => resizeObserver.unobserve(element);
+    } else {
+      // We only want to reset to `undefined` when the element becomes `null`,
+      // not if it changes to another element.
+      setSize(undefined);
     }
-    return;
   }, [element]);
 
   return size;
