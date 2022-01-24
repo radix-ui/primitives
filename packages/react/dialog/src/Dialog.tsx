@@ -404,8 +404,8 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
         </FocusScope>
         {process.env.NODE_ENV !== 'production' && (
           <>
-            <TitleWarning contentRef={contentRef} />
-            <DescriptionWarning contentRef={contentRef} />
+            <TitleWarning titleId={context.titleId} />
+            <DescriptionWarning contentRef={contentRef} descriptionId={context.descriptionId} />
           </>
         )}
       </>
@@ -493,11 +493,9 @@ const [WarningProvider, useWarningContext] = createContext(TITLE_WARNING_NAME, {
   docsSlug: 'dialog',
 });
 
-type WarningProps = {
-  contentRef: React.RefObject<DialogContentElement>;
-};
+type TitleWarningProps = { titleId?: string };
 
-const TitleWarning: React.FC<WarningProps> = ({ contentRef }) => {
+const TitleWarning: React.FC<TitleWarningProps> = ({ titleId }) => {
   const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
 
   const MESSAGE = `\`${titleWarningContext.contentName}\` requires a \`${titleWarningContext.titleName}\` for the component to be accessible for screen reader users.
@@ -507,30 +505,34 @@ If you want to hide the \`${titleWarningContext.titleName}\`, you can wrap it wi
 For more information, see https://radix-ui.com/primitives/docs/components/${titleWarningContext.docsSlug}`;
 
   React.useEffect(() => {
-    const hasLabel =
-      contentRef.current?.getAttribute('aria-label') ||
-      document.getElementById(contentRef.current?.getAttribute('aria-labelledby')!);
-
-    if (!hasLabel) throw new Error(MESSAGE);
-  }, [MESSAGE, contentRef]);
+    if (titleId) {
+      const hasTitle = document.getElementById(titleId);
+      if (!hasTitle) throw new Error(MESSAGE);
+    }
+  }, [MESSAGE, titleId]);
 
   return null;
 };
 
 const DESCRIPTION_WARNING_NAME = 'DialogDescriptionWarning';
 
-const DescriptionWarning: React.FC<WarningProps> = ({ contentRef }) => {
-  const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
+type DescriptionWarningProps = {
+  contentRef: React.RefObject<DialogContentElement>;
+  descriptionId?: string;
+};
 
+const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef, descriptionId }) => {
+  const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
   const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
 
   React.useEffect(() => {
     const describedById = contentRef.current?.getAttribute('aria-describedby');
-    if (describedById) {
-      const hasDescription = document.getElementById(describedById);
-      if (describedById && !hasDescription) console.warn(MESSAGE);
+    // if we have an id and the user hasn't set aria-describedby={undefined}
+    if (descriptionId && describedById) {
+      const hasDescription = document.getElementById(descriptionId);
+      if (!hasDescription) console.warn(MESSAGE);
     }
-  }, [MESSAGE, contentRef]);
+  }, [MESSAGE, contentRef, descriptionId]);
 
   return null;
 };

@@ -35,6 +35,7 @@ export const NonModal = () => (
         <DialogOverlay className={overlayClass} />
         <DialogContent
           className={contentSheetClass}
+          aria-describedby={undefined}
           onInteractOutside={(event) => event.preventDefault()}
         >
           <DialogTitle>Booking info</DialogTitle>
@@ -61,7 +62,7 @@ export const Controlled = () => {
       <DialogTrigger>{open ? 'close' : 'open'}</DialogTrigger>
       <DialogPortal>
         <DialogOverlay className={overlayClass} />
-        <DialogContent className={contentDefaultClass}>
+        <DialogContent className={contentDefaultClass} aria-describedby={undefined}>
           <DialogTitle>Title</DialogTitle>
           <DialogClose>close</DialogClose>
         </DialogContent>
@@ -76,7 +77,7 @@ export const FocusTrap = () => (
       <DialogTrigger>open</DialogTrigger>
       <DialogPortal>
         <DialogOverlay className={overlayClass} />
-        <DialogContent className={contentDefaultClass}>
+        <DialogContent className={contentDefaultClass} aria-describedby={undefined}>
           <DialogClose>close</DialogClose>
           <DialogTitle>Title</DialogTitle>
           <div>
@@ -109,6 +110,7 @@ export const CustomFocus = () => {
           <DialogOverlay className={overlayClass} />
           <DialogContent
             className={contentDefaultClass}
+            aria-describedby={undefined}
             onOpenAutoFocus={(event) => {
               event.preventDefault();
               firstNameRef.current?.focus();
@@ -150,6 +152,7 @@ export const NoEscapeDismiss = () => (
       <DialogOverlay className={overlayClass} />
       <DialogContent
         className={contentDefaultClass}
+        aria-describedby={undefined}
         onEscapeKeyDown={(event) => event.preventDefault()}
       >
         <DialogTitle>Title</DialogTitle>
@@ -166,6 +169,7 @@ export const NoPointerDownOutsideDismiss = () => (
       <DialogOverlay className={overlayClass} />
       <DialogContent
         className={contentDefaultClass}
+        aria-describedby={undefined}
         onPointerDownOutside={(event) => event.preventDefault()}
       >
         <DialogTitle>Title</DialogTitle>
@@ -183,7 +187,7 @@ export const WithPortalContainer = () => {
         <DialogTrigger>open</DialogTrigger>
         <DialogPortal container={portalContainer}>
           <DialogOverlay className={overlayClass} />
-          <DialogContent className={contentDefaultClass}>
+          <DialogContent className={contentDefaultClass} aria-describedby={undefined}>
             <DialogTitle>Title</DialogTitle>
             <DialogClose>close</DialogClose>
           </DialogContent>
@@ -199,7 +203,7 @@ export const Animated = () => (
     <DialogTrigger>open</DialogTrigger>
     <DialogPortal>
       <DialogOverlay className={animatedOverlayClass} />
-      <DialogContent className={animatedContentClass}>
+      <DialogContent className={animatedContentClass} aria-describedby={undefined}>
         <DialogTitle>Title</DialogTitle>
         <DialogClose>close</DialogClose>
       </DialogContent>
@@ -212,14 +216,14 @@ export const ForcedMount = () => (
     <DialogTrigger>open</DialogTrigger>
     <DialogPortal forceMount>
       <DialogOverlay className={overlayClass} />
-      <DialogContent className={contentDefaultClass}>
+      <DialogContent className={contentDefaultClass} aria-describedby={undefined}>
         <DialogTitle>Title</DialogTitle>
         <DialogClose>close</DialogClose>
       </DialogContent>
     </DialogPortal>
   </Dialog>
 );
-ForcedMount.parameters = { chromatic: { disable: false } };
+ForcedMount.parameters = { chromatic: { disable: false, delay: 1000 } };
 
 export const AllowPinchZoom = () => (
   <div style={{ display: 'grid', placeItems: 'center', height: '200vh' }}>
@@ -285,7 +289,7 @@ export const Chromatic = () => (
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
         <DialogPortal>
           <DialogOverlay className={overlayClass} />
-          <DialogContent className={chromaticContentClass}>
+          <DialogContent className={chromaticContentClass} aria-describedby={undefined}>
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeClass}>close</DialogClose>
           </DialogContent>
@@ -300,7 +304,11 @@ export const Chromatic = () => (
             className={overlayClass}
             style={{ left: 0, bottom: '50%', width: '25%' }}
           />
-          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '12%' }}>
+          <DialogContent
+            className={chromaticContentClass}
+            style={{ top: '25%', left: '12%' }}
+            aria-describedby={undefined}
+          >
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeClass}>close</DialogClose>
           </DialogContent>
@@ -314,7 +322,7 @@ export const Chromatic = () => (
       <Dialog>
         <DialogPortal>
           <DialogOverlay className={overlayClass} />
-          <DialogContent className={chromaticContentClass}>
+          <DialogContent className={chromaticContentClass} aria-describedby={undefined}>
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeClass}>close</DialogClose>
           </DialogContent>
@@ -329,7 +337,11 @@ export const Chromatic = () => (
             className={overlayClass}
             style={{ left: '25%', bottom: '50%', width: '25%' }}
           />
-          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '37%' }}>
+          <DialogContent
+            className={chromaticContentClass}
+            style={{ top: '25%', left: '37%' }}
+            aria-describedby={undefined}
+          >
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeClass}>close</DialogClose>
           </DialogContent>
@@ -345,7 +357,7 @@ export const Chromatic = () => (
         <DialogTrigger className={triggerClass}>open</DialogTrigger>
         <DialogPortal>
           <DialogOverlay className={overlayClass} />
-          <DialogContent className={chromaticContentClass}>
+          <DialogContent className={chromaticContentClass} aria-describedby={undefined}>
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeClass}>close</DialogClose>
           </DialogContent>
@@ -360,7 +372,11 @@ export const Chromatic = () => (
             className={overlayClass}
             style={{ left: '50%', bottom: '50%', width: '25%' }}
           />
-          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '62%' }}>
+          <DialogContent
+            className={chromaticContentClass}
+            aria-describedby={undefined}
+            style={{ top: '25%', left: '62%' }}
+          >
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeClass}>close</DialogClose>
           </DialogContent>
@@ -374,7 +390,7 @@ export const Chromatic = () => (
       <Dialog open={false}>
         <DialogPortal>
           <DialogOverlay className={overlayClass} />
-          <DialogContent className={chromaticContentClass}>
+          <DialogContent className={chromaticContentClass} aria-describedby={undefined}>
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeClass}>close</DialogClose>
           </DialogContent>
@@ -389,7 +405,11 @@ export const Chromatic = () => (
             className={overlayClass}
             style={{ left: '75%', bottom: '50%', width: '25%' }}
           />
-          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '88%' }}>
+          <DialogContent
+            className={chromaticContentClass}
+            aria-describedby={undefined}
+            style={{ top: '25%', left: '88%' }}
+          >
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeClass}>close</DialogClose>
           </DialogContent>
@@ -405,7 +425,7 @@ export const Chromatic = () => (
         <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
         <DialogPortal>
           <DialogOverlay className={overlayAttrClass} />
-          <DialogContent className={contentAttrClass}>
+          <DialogContent className={contentAttrClass} aria-describedby={undefined}>
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeAttrClass}>close</DialogClose>
           </DialogContent>
@@ -417,7 +437,11 @@ export const Chromatic = () => (
         <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
         <DialogPortal>
           <DialogOverlay className={overlayAttrClass} style={{ top: '50%' }} />
-          <DialogContent className={contentAttrClass} style={{ top: '75%' }}>
+          <DialogContent
+            className={contentAttrClass}
+            aria-describedby={undefined}
+            style={{ top: '75%' }}
+          >
             <DialogTitle>Title</DialogTitle>
             <DialogClose className={closeAttrClass}>close</DialogClose>
           </DialogContent>
