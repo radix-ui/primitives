@@ -6,7 +6,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useDirection } from '@radix-ui/react-use-direction';
+import { useDirection } from '@radix-ui/react-direction';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
@@ -80,13 +80,13 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
     const [scrollbarXEnabled, setScrollbarXEnabled] = React.useState(false);
     const [scrollbarYEnabled, setScrollbarYEnabled] = React.useState(false);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setScrollArea(node));
-    const computedDirection = useDirection(scrollArea, scrollAreaProps.dir);
+    const direction = useDirection(props.dir) || 'ltr';
 
     return (
       <ScrollAreaProvider
         scope={__scopeScrollArea}
         type={type}
-        dir={computedDirection}
+        dir={direction}
         scrollHideDelay={scrollHideDelay}
         scrollArea={scrollArea}
         viewport={viewport}

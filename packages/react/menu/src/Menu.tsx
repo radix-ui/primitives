@@ -14,7 +14,7 @@ import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
-import { useDirection } from '@radix-ui/react-use-direction';
+import { useDirection } from '@radix-ui/react-direction';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { useId } from '@radix-ui/react-id';
@@ -96,7 +96,7 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
   const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
-  const computedDirection = useDirection(content, props.dir);
+  const direction = useDirection(props.dir) || 'ltr';
 
   React.useEffect(() => {
     // Capture phase ensures we set the boolean before any side effects execute
@@ -121,7 +121,7 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
         scope={__scopeMenu}
         isSubmenu={false}
         isUsingKeyboardRef={isUsingKeyboardRef}
-        dir={computedDirection}
+        dir={direction}
         open={open}
         onOpenChange={handleOpenChange}
         content={content}
