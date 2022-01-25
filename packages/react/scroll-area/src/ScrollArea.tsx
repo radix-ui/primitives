@@ -69,7 +69,13 @@ interface ScrollAreaProps extends PrimitiveDivProps {
 
 const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
   (props: ScopedProps<ScrollAreaProps>, forwardedRef) => {
-    const { __scopeScrollArea, type = 'hover', scrollHideDelay = 600, ...scrollAreaProps } = props;
+    const {
+      __scopeScrollArea,
+      type = 'hover',
+      dir,
+      scrollHideDelay = 600,
+      ...scrollAreaProps
+    } = props;
     const [scrollArea, setScrollArea] = React.useState<ScrollAreaElement | null>(null);
     const [viewport, setViewport] = React.useState<ScrollAreaViewportElement | null>(null);
     const [content, setContent] = React.useState<HTMLDivElement | null>(null);
@@ -80,13 +86,13 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
     const [scrollbarXEnabled, setScrollbarXEnabled] = React.useState(false);
     const [scrollbarYEnabled, setScrollbarYEnabled] = React.useState(false);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setScrollArea(node));
-    const direction = useDirection(props.dir) || 'ltr';
+    const direction = useDirection(dir);
 
     return (
       <ScrollAreaProvider
         scope={__scopeScrollArea}
         type={type}
-        dir={direction}
+        dir={direction || 'ltr'}
         scrollHideDelay={scrollHideDelay}
         scrollArea={scrollArea}
         viewport={viewport}
@@ -105,6 +111,7 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
         onCornerHeightChange={setCornerHeight}
       >
         <Primitive.div
+          dir={direction}
           {...scrollAreaProps}
           ref={composedRefs}
           style={{

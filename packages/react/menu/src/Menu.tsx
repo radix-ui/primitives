@@ -91,12 +91,12 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
-  const { __scopeMenu, open = false, children, onOpenChange, modal = true } = props;
+  const { __scopeMenu, open = false, children, dir, onOpenChange, modal = true } = props;
   const popperScope = usePopperScope(__scopeMenu);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
   const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
-  const direction = useDirection(props.dir) || 'ltr';
+  const direction = useDirection(dir);
 
   React.useEffect(() => {
     // Capture phase ensures we set the boolean before any side effects execute
@@ -121,7 +121,7 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
         scope={__scopeMenu}
         isSubmenu={false}
         isUsingKeyboardRef={isUsingKeyboardRef}
-        dir={direction}
+        dir={direction || 'ltr'}
         open={open}
         onOpenChange={handleOpenChange}
         content={content}
@@ -440,7 +440,6 @@ interface MenuContentImplProps
 
   /**
    * The direction of navigation between menu items.
-   * @defaultValue ltr
    */
   dir?: RovingFocusGroupProps['dir'];
 

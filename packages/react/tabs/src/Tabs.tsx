@@ -6,6 +6,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { useId } from '@radix-ui/react-id';
+import { useDirection } from '@radix-ui/react-direction';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -51,7 +52,6 @@ interface TabsProps extends PrimitiveDivProps {
   orientation?: RovingFocusGroupProps['orientation'];
   /**
    * The direction of navigation between toolbar items.
-   * @defaultValue ltr
    */
   dir?: RovingFocusGroupProps['dir'];
   /**
@@ -69,11 +69,11 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
       onValueChange,
       defaultValue,
       orientation = 'horizontal',
-      dir = 'ltr',
+      dir,
       activationMode = 'automatic',
       ...tabsProps
     } = props;
-
+    const direction = useDirection(dir);
     const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: onValueChange,
@@ -87,7 +87,7 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
         value={value}
         onValueChange={setValue}
         orientation={orientation}
-        dir={dir}
+        dir={direction}
         activationMode={activationMode}
       >
         <Primitive.div data-orientation={orientation} {...tabsProps} ref={forwardedRef} />
@@ -230,6 +230,7 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
         hidden={!isSelected}
         id={contentId}
         tabIndex={0}
+        dir={context.dir}
         {...contentProps}
         ref={forwardedRef}
       >

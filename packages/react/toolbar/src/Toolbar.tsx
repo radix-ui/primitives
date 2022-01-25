@@ -7,6 +7,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import * as SeparatorPrimitive from '@radix-ui/react-separator';
 import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group';
 import { createToggleGroupScope } from '@radix-ui/react-toggle-group';
+import { useDirection } from '@radix-ui/react-direction';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -40,27 +41,22 @@ interface ToolbarProps extends PrimitiveDivProps {
 
 const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
   (props: ScopedProps<ToolbarProps>, forwardedRef) => {
-    const {
-      __scopeToolbar,
-      orientation = 'horizontal',
-      dir = 'ltr',
-      loop = true,
-      ...toolbarProps
-    } = props;
+    const { __scopeToolbar, orientation = 'horizontal', dir, loop = true, ...toolbarProps } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToolbar);
+    const direction = useDirection(dir);
     return (
       <ToolbarProvider scope={__scopeToolbar} orientation={orientation}>
         <RovingFocusGroup.Root
           asChild
           {...rovingFocusGroupScope}
           orientation={orientation}
-          dir={dir}
+          dir={direction}
           loop={loop}
         >
           <Primitive.div
             role="toolbar"
             aria-orientation={orientation}
-            dir={dir}
+            dir={direction}
             {...toolbarProps}
             ref={forwardedRef}
           />

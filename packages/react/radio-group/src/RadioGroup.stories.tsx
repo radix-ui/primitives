@@ -3,6 +3,7 @@ import { Label as LabelPrimitive } from '@radix-ui/react-label';
 import { RadioGroup, RadioGroupItem, RadioGroupIndicator } from './RadioGroup';
 import { css } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
+import { DirectionProvider } from '@radix-ui/react-direction';
 
 export default { title: 'Components/RadioGroup' };
 
@@ -285,6 +286,35 @@ export const Chromatic = () => {
           <RadioGroupIndicator className={indicatorClass} forceMount />
         </RadioGroupItem>
       </RadioGroup>
+
+      <h1>Direction</h1>
+      <h2>Prop</h2>
+      <RadioGroup className={rootClass} defaultValue="1" dir="rtl">
+        <RadioGroupItem className={itemClass} value="1">
+          <RadioGroupIndicator className={indicatorClass} />
+        </RadioGroupItem>
+        <RadioGroupItem className={itemClass} value="2">
+          <RadioGroupIndicator className={indicatorClass} />
+        </RadioGroupItem>
+        <RadioGroupItem className={itemClass} value="3">
+          <RadioGroupIndicator className={indicatorClass} />
+        </RadioGroupItem>
+      </RadioGroup>
+
+      <h2>Inherited</h2>
+      <DirectionProvider dir="rtl">
+        <RadioGroup className={rootClass} defaultValue="1">
+          <RadioGroupItem className={itemClass} value="1">
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+          <RadioGroupItem className={itemClass} value="2">
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+          <RadioGroupItem className={itemClass} value="3">
+            <RadioGroupIndicator className={indicatorClass} />
+          </RadioGroupItem>
+        </RadioGroup>
+      </DirectionProvider>
 
       <h1>State attributes</h1>
       <h2>Default</h2>

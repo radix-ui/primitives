@@ -220,8 +220,8 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
     const rectRef = React.useRef<ClientRect>();
-    const direction = useDirection(dir) || 'ltr';
-    const isDirectionLTR = direction === 'ltr';
+    const direction = useDirection(dir);
+    const isDirectionLTR = !direction || direction === 'ltr';
 
     function getValueFromPointer(pointerPosition: number) {
       const rect = rectRef.current || slider!.getBoundingClientRect();
@@ -259,7 +259,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
           }}
           onSlideEnd={() => (rectRef.current = undefined)}
           onStepKeyDown={(event) => {
-            const isBackKey = BACK_KEYS[direction].includes(event.key);
+            const isBackKey = BACK_KEYS[direction || 'ltr'].includes(event.key);
             onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
           }}
         />

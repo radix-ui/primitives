@@ -7,6 +7,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useDirection } from '@radix-ui/react-direction';
 import { Radio, RadioIndicator, createRadioScope } from './Radio';
 
 import type * as Radix from '@radix-ui/react-primitive';
@@ -61,7 +62,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
       value: valueProp,
       required = false,
       orientation,
-      dir = 'ltr',
+      dir,
       loop = true,
       onValueChange,
       ...groupProps
@@ -69,6 +70,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
     const labelId = useLabelContext();
     const labelledBy = ariaLabelledby || labelId;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
+    const direction = useDirection(dir);
     const [value, setValue] = useControllableState({
       prop: valueProp,
       defaultProp: defaultValue,
@@ -87,14 +89,14 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
           asChild
           {...rovingFocusGroupScope}
           orientation={orientation}
-          dir={dir}
+          dir={direction}
           loop={loop}
         >
           <Primitive.div
             role="radiogroup"
             aria-orientation={orientation}
             aria-labelledby={labelledBy}
-            dir={dir}
+            dir={direction}
             {...groupProps}
             ref={forwardedRef}
           />
