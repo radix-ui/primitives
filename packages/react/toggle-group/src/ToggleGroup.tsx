@@ -278,8 +278,7 @@ const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleG
   (props: ScopedProps<ToggleGroupItemImplProps>, forwardedRef) => {
     const { __scopeToggleGroup, value, ...itemProps } = props;
     const valueContext = useToggleGroupValueContext(ITEM_NAME, __scopeToggleGroup);
-    const pressed = valueContext.value.includes(value);
-    const singleProps = { role: 'radio', 'aria-checked': pressed, 'aria-pressed': undefined };
+    const singleProps = { role: 'radio', 'aria-checked': props.pressed, 'aria-pressed': undefined };
     const typeProps = valueContext.type === 'single' ? singleProps : undefined;
     return (
       <Toggle
