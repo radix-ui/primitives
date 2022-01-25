@@ -179,6 +179,9 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
             // but not when the control key is pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
               context.onValueChange(value);
+            } else {
+              // prevent focus to avoid accidental activation
+              event.preventDefault();
             }
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
