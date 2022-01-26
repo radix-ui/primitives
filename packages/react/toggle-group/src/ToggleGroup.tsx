@@ -53,6 +53,7 @@ ToggleGroup.displayName = TOGGLE_GROUP_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type ToggleGroupValueContextValue = {
+  type: 'single' | 'multiple';
   value: string[];
   onItemActivate(value: string): void;
   onItemDeactivate(value: string): void;
@@ -98,6 +99,7 @@ const ToggleGroupImplSingle = React.forwardRef<
   return (
     <ToggleGroupValueProvider
       scope={props.__scopeToggleGroup}
+      type="single"
       value={value ? [value] : []}
       onItemActivate={setValue}
       onItemDeactivate={React.useCallback(() => setValue(''), [setValue])}
@@ -154,6 +156,7 @@ const ToggleGroupImplMultiple = React.forwardRef<
   return (
     <ToggleGroupValueProvider
       scope={props.__scopeToggleGroup}
+      type="multiple"
       value={value}
       onItemActivate={handleButtonActivate}
       onItemDeactivate={handleButtonDeactivate}
@@ -275,8 +278,11 @@ const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleG
   (props: ScopedProps<ToggleGroupItemImplProps>, forwardedRef) => {
     const { __scopeToggleGroup, value, ...itemProps } = props;
     const valueContext = useToggleGroupValueContext(ITEM_NAME, __scopeToggleGroup);
+    const singleProps = { role: 'radio', 'aria-checked': props.pressed, 'aria-pressed': undefined };
+    const typeProps = valueContext.type === 'single' ? singleProps : undefined;
     return (
       <Toggle
+        {...typeProps}
         {...itemProps}
         ref={forwardedRef}
         onPressedChange={(pressed) => {
