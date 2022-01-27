@@ -220,7 +220,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
     const rectRef = React.useRef<ClientRect>();
-    const direction = useDirection(dir);
+    const direction = useDirection() || dir;
     const isDirectionLTR = !direction || direction === 'ltr';
 
     function getValueFromPointer(pointerPosition: number) {
@@ -242,6 +242,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
         size="width"
       >
         <SliderImpl
+          dir={direction}
           data-orientation="horizontal"
           {...sliderProps}
           ref={composedRefs}

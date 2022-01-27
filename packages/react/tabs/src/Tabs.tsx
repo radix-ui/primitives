@@ -73,7 +73,7 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
       activationMode = 'automatic',
       ...tabsProps
     } = props;
-    const direction = useDirection(dir);
+    const direction = useDirection() || dir;
     const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: onValueChange,
@@ -90,7 +90,12 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
         dir={direction}
         activationMode={activationMode}
       >
-        <Primitive.div data-orientation={orientation} {...tabsProps} ref={forwardedRef} />
+        <Primitive.div
+          dir={direction}
+          data-orientation={orientation}
+          {...tabsProps}
+          ref={forwardedRef}
+        />
       </TabsProvider>
     );
   }
@@ -125,7 +130,6 @@ const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
         <Primitive.div
           role="tablist"
           aria-orientation={context.orientation}
-          dir={context.dir}
           {...listProps}
           ref={forwardedRef}
         />
@@ -230,7 +234,6 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
         hidden={!isSelected}
         id={contentId}
         tabIndex={0}
-        dir={context.dir}
         {...contentProps}
         ref={forwardedRef}
       >

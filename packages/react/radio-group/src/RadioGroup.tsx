@@ -70,7 +70,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
     const labelId = useLabelContext();
     const labelledBy = ariaLabelledby || labelId;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
-    const direction = useDirection(dir);
+    const direction = useDirection() || dir;
     const [value, setValue] = useControllableState({
       prop: valueProp,
       defaultProp: defaultValue,

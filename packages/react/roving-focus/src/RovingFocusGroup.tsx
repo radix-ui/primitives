@@ -109,7 +109,7 @@ const RovingFocusGroupImpl = React.forwardRef<
   } = props;
   const ref = React.useRef<RovingFocusGroupImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
-  const direction = useDirection(dir);
+  const direction = useDirection() || dir;
   const [currentTabStopId = null, setCurrentTabStopId] = useControllableState({
     prop: currentTabStopIdProp,
     defaultProp: defaultCurrentTabStopId,

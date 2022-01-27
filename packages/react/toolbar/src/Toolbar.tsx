@@ -43,7 +43,7 @@ const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
   (props: ScopedProps<ToolbarProps>, forwardedRef) => {
     const { __scopeToolbar, orientation = 'horizontal', dir, loop = true, ...toolbarProps } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToolbar);
-    const direction = useDirection(dir);
+    const direction = useDirection() || dir;
     return (
       <ToolbarProvider scope={__scopeToolbar} orientation={orientation}>
         <RovingFocusGroup.Root

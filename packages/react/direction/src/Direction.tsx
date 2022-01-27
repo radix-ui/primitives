@@ -17,9 +17,8 @@ const DirectionProvider: React.FC<DirectionProviderProps> = (props) => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function useDirection(directionProp?: Direction) {
-  const direction = React.useContext(DirectionContext);
-  return directionProp || direction;
+function useDirection() {
+  return React.useContext(DirectionContext);
 }
 
 const Provider = DirectionProvider;
