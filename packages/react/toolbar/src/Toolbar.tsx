@@ -70,6 +70,8 @@ const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
   }
 );
 
+Toolbar.displayName = TOOLBAR_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * ToolbarSeparator
  * -----------------------------------------------------------------------------------------------*/
