@@ -7,7 +7,7 @@ export default { title: 'Components/Tabs' };
 export const Styled = () => (
   <>
     <h1>Horizontal (automatic activation)</h1>
-    <Tabs defaultValue="tab1" className={rootClass}>
+    <Tabs defaultValue="tab1" renderAll className={rootClass}>
       <TabsList aria-label="tabs example" className={listClass}>
         <TabsTrigger value="tab1" className={triggerClass}>
           Tab 1
