@@ -29,6 +29,7 @@ type TabsContextValue = {
   orientation?: TabsProps['orientation'];
   dir?: TabsProps['dir'];
   activationMode?: TabsProps['activationMode'];
+  renderAllTabs?: boolean;
 };
 
 const [TabsProvider, useTabsContext] = createTabsContext<TabsContextValue>(TABS_NAME);
@@ -59,6 +60,11 @@ interface TabsProps extends PrimitiveDivProps {
    * @defaultValue automatic
    * */
   activationMode?: 'automatic' | 'manual';
+  /**
+   * Renders all tab content for SEO purposes regardless of tab active state
+   * @defaultValue false
+   */
+  renderAllTabs?: boolean;
 }
 
 const Tabs = React.forwardRef<TabsElement, TabsProps>(
@@ -71,6 +77,7 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
       orientation = 'horizontal',
       dir = 'ltr',
       activationMode = 'automatic',
+      renderAllTabs = false,
       ...tabsProps
     } = props;
 
@@ -89,6 +96,7 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
         orientation={orientation}
         dir={dir}
         activationMode={activationMode}
+        renderAllTabs={renderAllTabs}
       >
         <Primitive.div data-orientation={orientation} {...tabsProps} ref={forwardedRef} />
       </TabsProvider>
@@ -221,6 +229,8 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
     const isSelected = value === context.value;
+    const forceRender = context.renderAllTabs;
+
     return (
       <Primitive.div
         data-state={isSelected ? 'active' : 'inactive'}
@@ -233,7 +243,7 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
         {...contentProps}
         ref={forwardedRef}
       >
-        {isSelected && children}
+        {(isSelected || forceRender) && children}
       </Primitive.div>
     );
   }
