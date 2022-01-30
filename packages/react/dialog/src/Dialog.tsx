@@ -231,18 +231,6 @@ const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>
   (props: ScopedProps<DialogContentProps>, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
-
-    React.useEffect(() => {
-      if (process.env.NODE_ENV !== 'development') {
-        const description = document.getElementById(context.descriptionId);
-        if (!description) {
-          console.warn(
-            'Warning: Missing `Description` or `aria-describedby={undefined}` for `Dialog.Content`.'
-          );
-        }
-      }
-    }, [context.descriptionId]);
-
     return (
       <Presence present={forceMount || context.open}>
         {context.modal ? (
@@ -420,7 +408,12 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
             onDismiss={() => context.onOpenChange(false)}
           />
         </FocusScope>
-        {process.env.NODE_ENV === 'development' && <LabelWarning contentRef={contentRef} />}
+        {process.env.NODE_ENV === 'test' && (
+          <>
+            <LabelWarning contentRef={contentRef} />
+            <DescriptionWarning contentRef={contentRef} />
+          </>
+        )}
       </>
     );
   }
@@ -500,18 +493,18 @@ function getState(open: boolean) {
 
 const LABEL_WARNING_NAME = 'DialogLabelWarning';
 
-const [LabelWarningProvider, useLabelWarningContext] = createContext(LABEL_WARNING_NAME, {
+const [WarningProvider, useWarningContext] = createContext(LABEL_WARNING_NAME, {
   contentName: CONTENT_NAME,
   titleName: TITLE_NAME,
   docsSlug: 'dialog',
 });
 
-type LabelWarningProps = {
+type WarningProps = {
   contentRef: React.RefObject<DialogContentElement>;
 };
 
-const LabelWarning: React.FC<LabelWarningProps> = ({ contentRef }) => {
-  const labelWarningContext = useLabelWarningContext(LABEL_WARNING_NAME);
+const LabelWarning: React.FC<WarningProps> = ({ contentRef }) => {
+  const labelWarningContext = useWarningContext(LABEL_WARNING_NAME);
 
   const MESSAGE = `\`${labelWarningContext.contentName}\` requires a label for the component to be accessible for screen reader users.
 
@@ -527,6 +520,23 @@ For more information, see https://radix-ui.com/primitives/docs/components/${labe
       document.getElementById(contentRef.current?.getAttribute('aria-labelledby')!);
 
     if (!hasLabel) console.warn(MESSAGE);
+  }, [MESSAGE, contentRef]);
+
+  return null;
+};
+
+const DESCRIPTION_WARNING_NAME = 'DialogDescriptionWarning';
+
+const DescriptionWarning: React.FC<WarningProps> = ({ contentRef }) => {
+  const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
+
+  const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
+
+  React.useEffect(() => {
+    const hasDescription = document.getElementById(
+      contentRef.current?.getAttribute('aria-describedby')!
+    );
+    if (!hasDescription) console.warn(MESSAGE);
   }, [MESSAGE, contentRef]);
 
   return null;
@@ -562,7 +572,7 @@ export {
   Description,
   Close,
   //
-  LabelWarningProvider,
+  WarningProvider,
 };
 export type {
   DialogProps,
