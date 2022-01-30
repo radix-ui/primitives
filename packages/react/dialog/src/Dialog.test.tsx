@@ -21,14 +21,33 @@ describe('given a default Dialog', () => {
   let rendered: RenderResult;
   let trigger: HTMLElement;
   let closeButton: HTMLElement;
+  let consoleWarnMock: jest.SpyInstance;
+  let consoleWarnMockFunction: jest.Mock;
 
   beforeEach(() => {
+    // This surpresses React error boundary logs for testing intentionally
+    // thrown errors, like in some test cases in this suite. See discussion of
+    // this here: https://github.com/facebook/react/issues/11098
+    consoleWarnMockFunction = jest.fn();
+    consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation(consoleWarnMockFunction);
+
     rendered = render(<DialogTest />);
     trigger = rendered.getByText(OPEN_TEXT);
   });
 
+  afterEach(() => {
+    consoleWarnMock.mockRestore();
+    consoleWarnMockFunction.mockClear();
+  });
+
   it('should have no accessibility violations in default state', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
+  });
+
+  describe('when no description has been provided', () => {
+    it('should warn to the console', () => {
+      expect(consoleWarnMockFunction).toHaveBeenCalled();
+    });
   });
 
   describe('after clicking the trigger', () => {
