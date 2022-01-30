@@ -44,16 +44,16 @@ describe('given a default Dialog', () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
-  describe('when no description has been provided', () => {
-    it('should warn to the console', () => {
-      expect(consoleWarnMockFunction).toHaveBeenCalled();
-    });
-  });
-
   describe('after clicking the trigger', () => {
     beforeEach(() => {
       fireEvent.click(trigger);
       closeButton = rendered.getByText(CLOSE_TEXT);
+    });
+
+    describe('when no valid label and description have been provided', () => {
+      it('should warn to the console', () => {
+        expect(consoleWarnMockFunction).toHaveBeenCalledTimes(2);
+      });
     });
 
     it('should open the content', () => {
