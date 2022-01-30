@@ -408,7 +408,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
             onDismiss={() => context.onOpenChange(false)}
           />
         </FocusScope>
-        {process.env.NODE_ENV === 'test' && (
+        {process.env.NODE_ENV === 'development' && (
           <>
             <LabelWarning contentRef={contentRef} />
             <DescriptionWarning contentRef={contentRef} />
