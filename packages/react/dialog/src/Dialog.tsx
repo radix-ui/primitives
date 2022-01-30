@@ -231,6 +231,18 @@ const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>
   (props: ScopedProps<DialogContentProps>, forwardedRef) => {
     const { forceMount, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
+
+    React.useEffect(() => {
+      if (process.env.NODE_ENV !== 'development') {
+        const description = document.getElementById(context.descriptionId);
+        if (!description) {
+          console.warn(
+            'Warning: Missing `Description` or `aria-describedby={undefined}` for `Dialog.Content`.'
+          );
+        }
+      }
+    }, [context.descriptionId]);
+
     return (
       <Presence present={forceMount || context.open}>
         {context.modal ? (
