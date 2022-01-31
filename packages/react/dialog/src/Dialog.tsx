@@ -533,10 +533,9 @@ const DescriptionWarning: React.FC<WarningProps> = ({ contentRef }) => {
   const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
 
   React.useEffect(() => {
-    const hasDescription = document.getElementById(
-      contentRef.current?.getAttribute('aria-describedby')!
-    );
-    if (!hasDescription) console.warn(MESSAGE);
+    const describedById = contentRef.current?.getAttribute('aria-describedby');
+    const hasDescription = document.getElementById(describedById);
+    if (describedById && !hasDescription) console.warn(MESSAGE);
   }, [MESSAGE, contentRef]);
 
   return null;
