@@ -493,11 +493,9 @@ type WarningProps = {
 const TitleWarning: React.FC<WarningProps> = ({ contentRef }) => {
   const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
 
-  const MESSAGE = `\`${titleWarningContext.contentName}\` requires a label for the component to be accessible for screen reader users.
+  const MESSAGE = `\`${titleWarningContext.contentName}\` requires a \`${titleWarningContext.titleName}\` for the component to be accessible for screen reader users.
 
-You can label the \`${titleWarningContext.contentName}\` by passing a \`${titleWarningContext.titleName}\` component as a child, which also benefits sighted users by adding visible context to the dialog. Note that if you still want to hide the \`${titleWarningContext.titleName}\`, you can wrap it with our VisuallyHidden component.
-
-Alternatively, you can use your own component as a title by assigning it an \`id\` and passing the same value to the \`aria-labelledby\` prop in \`${titleWarningContext.contentName}\`. If the label is confusing or duplicative for sighted users, you can also pass a label directly by using the \`aria-label\` prop.
+If you want to hide the \`${titleWarningContext.titleName}\`, you can wrap it with our VisuallyHidden component.
 
 For more information, see https://radix-ui.com/primitives/docs/components/${titleWarningContext.docsSlug}`;
 
