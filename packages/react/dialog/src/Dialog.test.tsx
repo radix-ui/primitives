@@ -1,13 +1,13 @@
 import React from 'react';
 import { axe } from 'jest-axe';
-import { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, RenderResult, cleanup, screen } from '@testing-library/react';
 import * as Dialog from './Dialog';
 
 const OPEN_TEXT = 'Open';
 const CLOSE_TEXT = 'Close';
+const TITLE_TEXT = 'Title';
 
-const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
+const NoLabelDialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
   <Dialog.Root {...props}>
     <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
     <Dialog.Overlay />
@@ -16,6 +16,32 @@ const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
     </Dialog.Content>
   </Dialog.Root>
 );
+
+const UndefinedDescribedByDialog = (props: React.ComponentProps<typeof Dialog.Root>) => (
+  <Dialog.Root {...props}>
+    <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+    <Dialog.Overlay />
+    <Dialog.Content aria-describedby={undefined}>
+      <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+      <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+    </Dialog.Content>
+  </Dialog.Root>
+);
+
+const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
+  <Dialog.Root {...props}>
+    <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+    <Dialog.Overlay />
+    <Dialog.Content>
+      <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+      <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+    </Dialog.Content>
+  </Dialog.Root>
+);
+
+function renderAndClickDialogTrigger(Dialog: any) {
+  fireEvent.click(render(Dialog).getByText(OPEN_TEXT));
+}
 
 describe('given a default Dialog', () => {
   let rendered: RenderResult;
@@ -50,9 +76,28 @@ describe('given a default Dialog', () => {
       closeButton = rendered.getByText(CLOSE_TEXT);
     });
 
-    describe('when no valid label and description have been provided', () => {
+    describe('when no description has been provided', () => {
       it('should warn to the console', () => {
-        expect(consoleWarnMockFunction).toHaveBeenCalledTimes(2);
+        expect(consoleWarnMockFunction).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('when no title has been provided', () => {
+      it('should throw an error', () =>
+        expect(() => {
+          renderAndClickDialogTrigger(<NoLabelDialogTest />);
+        }).toThrowError());
+    });
+
+    describe('when aria-describedby is set to undefined', () => {
+      beforeEach(() => {
+        cleanup();
+      });
+      it('should not warn to the console', () => {
+        consoleWarnMockFunction.mockClear();
+
+        renderAndClickDialogTrigger(<UndefinedDescribedByDialog />);
+        expect(consoleWarnMockFunction).not.toHaveBeenCalled();
       });
     });
 
