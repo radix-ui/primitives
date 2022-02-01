@@ -366,16 +366,7 @@ interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'
 
 const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(
   (props: ScopedProps<DialogContentImplProps>, forwardedRef) => {
-    const {
-      __scopeDialog,
-      'aria-label': ariaLabel,
-      'aria-labelledby': ariaLabelledBy,
-      'aria-describedby': ariaDescribedBy,
-      trapFocus,
-      onOpenAutoFocus,
-      onCloseAutoFocus,
-      ...contentProps
-    } = props;
+    const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
@@ -396,21 +387,17 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
           <DismissableLayer
             role="dialog"
             id={context.contentId}
-            aria-describedby={ariaDescribedBy || context.descriptionId}
-            // If `aria-label` is set, ensure `aria-labelledby` is undefined as to avoid confusion.
-            // Otherwise fallback to an explicit `aria-labelledby` or the ID used in the
-            // `DialogTitle`
-            aria-labelledby={ariaLabel ? undefined : ariaLabelledBy || context.titleId}
-            aria-label={ariaLabel || undefined}
+            aria-describedby={context.descriptionId}
+            aria-labelledby={context.titleId}
             data-state={getState(context.open)}
             {...contentProps}
             ref={composedRefs}
             onDismiss={() => context.onOpenChange(false)}
           />
         </FocusScope>
-        {process.env.NODE_ENV === 'development' && (
+        {['development', 'test'].includes(process.env.NODE_ENV!) && (
           <>
-            <LabelWarning contentRef={contentRef} />
+            <TitleWarning contentRef={contentRef} />
             <DescriptionWarning contentRef={contentRef} />
           </>
         )}
@@ -491,9 +478,9 @@ function getState(open: boolean) {
   return open ? 'open' : 'closed';
 }
 
-const LABEL_WARNING_NAME = 'DialogLabelWarning';
+const TITLE_WARNING_NAME = 'DialogTitleWarning';
 
-const [WarningProvider, useWarningContext] = createContext(LABEL_WARNING_NAME, {
+const [WarningProvider, useWarningContext] = createContext(TITLE_WARNING_NAME, {
   contentName: CONTENT_NAME,
   titleName: TITLE_NAME,
   docsSlug: 'dialog',
@@ -503,23 +490,23 @@ type WarningProps = {
   contentRef: React.RefObject<DialogContentElement>;
 };
 
-const LabelWarning: React.FC<WarningProps> = ({ contentRef }) => {
-  const labelWarningContext = useWarningContext(LABEL_WARNING_NAME);
+const TitleWarning: React.FC<WarningProps> = ({ contentRef }) => {
+  const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
 
-  const MESSAGE = `\`${labelWarningContext.contentName}\` requires a label for the component to be accessible for screen reader users.
+  const MESSAGE = `\`${titleWarningContext.contentName}\` requires a label for the component to be accessible for screen reader users.
 
-You can label the \`${labelWarningContext.contentName}\` by passing a \`${labelWarningContext.titleName}\` component as a child, which also benefits sighted users by adding visible context to the dialog. Note that if you still want to hide the \`${labelWarningContext.titleName}\`, you can wrap it with our VisuallyHidden component.
+You can label the \`${titleWarningContext.contentName}\` by passing a \`${titleWarningContext.titleName}\` component as a child, which also benefits sighted users by adding visible context to the dialog. Note that if you still want to hide the \`${titleWarningContext.titleName}\`, you can wrap it with our VisuallyHidden component.
 
-Alternatively, you can use your own component as a title by assigning it an \`id\` and passing the same value to the \`aria-labelledby\` prop in \`${labelWarningContext.contentName}\`. If the label is confusing or duplicative for sighted users, you can also pass a label directly by using the \`aria-label\` prop.
+Alternatively, you can use your own component as a title by assigning it an \`id\` and passing the same value to the \`aria-labelledby\` prop in \`${titleWarningContext.contentName}\`. If the label is confusing or duplicative for sighted users, you can also pass a label directly by using the \`aria-label\` prop.
 
-For more information, see https://radix-ui.com/primitives/docs/components/${labelWarningContext.docsSlug}`;
+For more information, see https://radix-ui.com/primitives/docs/components/${titleWarningContext.docsSlug}`;
 
   React.useEffect(() => {
     const hasLabel =
       contentRef.current?.getAttribute('aria-label') ||
       document.getElementById(contentRef.current?.getAttribute('aria-labelledby')!);
 
-    if (!hasLabel) console.warn(MESSAGE);
+    if (!hasLabel) throw new Error(MESSAGE);
   }, [MESSAGE, contentRef]);
 
   return null;
@@ -530,12 +517,14 @@ const DESCRIPTION_WARNING_NAME = 'DialogDescriptionWarning';
 const DescriptionWarning: React.FC<WarningProps> = ({ contentRef }) => {
   const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
 
-  const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
+  const MESSAGE = `Warning: Missing \`Description\` for {${descriptionWarningContext.contentName}}.`;
 
   React.useEffect(() => {
     const describedById = contentRef.current?.getAttribute('aria-describedby');
-    const hasDescription = document.getElementById(describedById);
-    if (describedById && !hasDescription) console.warn(MESSAGE);
+    if (describedById) {
+      const hasDescription = document.getElementById(describedById);
+      if (describedById && !hasDescription) console.warn(MESSAGE);
+    }
   }, [MESSAGE, contentRef]);
 
   return null;
