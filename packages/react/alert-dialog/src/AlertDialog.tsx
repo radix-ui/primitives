@@ -117,7 +117,7 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
     const cancelRef = React.useRef<AlertDialogCancelElement | null>(null);
 
     return (
-      <DialogPrimitive.LabelWarningProvider
+      <DialogPrimitive.WarningProvider
         contentName={CONTENT_NAME}
         titleName={TITLE_NAME}
         docsSlug="alert-dialog"
@@ -147,7 +147,7 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
             )}
           </DialogPrimitive.Content>
         </AlertDialogContentProvider>
-      </DialogPrimitive.LabelWarningProvider>
+      </DialogPrimitive.WarningProvider>
     );
   }
 );
