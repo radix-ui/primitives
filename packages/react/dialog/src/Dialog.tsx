@@ -515,7 +515,7 @@ const DESCRIPTION_WARNING_NAME = 'DialogDescriptionWarning';
 const DescriptionWarning: React.FC<WarningProps> = ({ contentRef }) => {
   const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
 
-  const MESSAGE = `Warning: Missing \`Description\` for {${descriptionWarningContext.contentName}}.`;
+  const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
 
   React.useEffect(() => {
     const describedById = contentRef.current?.getAttribute('aria-describedby');
