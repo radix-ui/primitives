@@ -37,7 +37,7 @@ const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) =
       const label = ref.current;
       if (label && element) {
         const getAriaLabel = () => element.getAttribute('aria-labelledby');
-        const ariaLabelledBy = [getAriaLabel(), id].filter(Boolean).join(' ');
+        const ariaLabelledBy = [id, getAriaLabel()].filter(Boolean).join(' ');
         element.setAttribute('aria-labelledby', ariaLabelledBy);
         controlRef.current = element;
         return () => {
