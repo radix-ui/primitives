@@ -395,7 +395,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
             onDismiss={() => context.onOpenChange(false)}
           />
         </FocusScope>
-        {['development', 'test'].includes(process.env.NODE_ENV!) && (
+        {process.env.NODE_ENV !== 'production' && (
           <>
             <TitleWarning contentRef={contentRef} />
             <DescriptionWarning contentRef={contentRef} />
