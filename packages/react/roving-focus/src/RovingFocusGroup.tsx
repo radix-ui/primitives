@@ -51,6 +51,11 @@ interface RovingFocusGroupOptions {
    * @defaultValue false
    */
   loop?: boolean;
+  /**
+   * Whether it should focus the last item instead of the default first
+   * @defaultValue false
+   */
+  focusLast?: boolean;
 }
 
 type RovingContextValue = RovingFocusGroupOptions & {
@@ -101,6 +106,7 @@ const RovingFocusGroupImpl = React.forwardRef<
     orientation,
     dir = 'ltr',
     loop = false,
+    focusLast = false,
     currentTabStopId: currentTabStopIdProp,
     defaultCurrentTabStopId,
     onCurrentTabStopIdChange,
@@ -168,6 +174,7 @@ const RovingFocusGroupImpl = React.forwardRef<
                 Boolean
               ) as typeof items;
               const candidateNodes = candidateItems.map((item) => item.ref.current!);
+              if (focusLast) candidateNodes.reverse();
               focusFirst(candidateNodes);
             }
           }
