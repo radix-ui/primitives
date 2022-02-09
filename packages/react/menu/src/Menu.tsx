@@ -68,6 +68,7 @@ type MenuRootContextValue = {
   onContentChange(content: MenuContentElement | null): void;
   onRootClose(): void;
   modal: boolean;
+  focusLast?: boolean;
 };
 
 type MenuSubContextValue = Omit<MenuRootContextValue, 'isSubmenu'> & {
@@ -94,12 +95,16 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const { __scopeMenu, open = false, children, onOpenChange, modal = true } = props;
   const popperScope = usePopperScope(__scopeMenu);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
+  const [focusLast, setFocusLast] = React.useState<boolean>(false);
   const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
   const computedDirection = useDirection(content, props.dir);
 
   React.useEffect(() => {
-    const handleKeyDown = () => (isUsingKeyboardRef.current = true);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      isUsingKeyboardRef.current = true;
+      event.key === 'ArrowUp' ? setFocusLast(true) : setFocusLast(false);
+    };
     const handlePointer = () => (isUsingKeyboardRef.current = false);
     // Capture phase ensures we set the boolean before any side effects execute
     // in response to the key or pointer event as they might depend on this value.
@@ -126,6 +131,7 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
         onContentChange={setContent}
         onRootClose={React.useCallback(() => handleOpenChange(false), [handleOpenChange])}
         modal={modal}
+        focusLast={focusLast}
       >
         {children}
       </MenuProvider>
@@ -587,6 +593,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                   dir={context.dir}
                   orientation="vertical"
                   loop={loop}
+                  focusLast={context.focusLast}
                   currentTabStopId={currentItemId}
                   onCurrentTabStopIdChange={setCurrentItemId}
                   onEntryFocus={(event) => {
