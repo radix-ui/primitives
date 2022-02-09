@@ -182,7 +182,7 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
             }
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if (!disabled && event.key === 'ArrowDown') {
+            if (!disabled && ['ArrowDown', 'ArrowUp'].includes(event.key)) {
               event.preventDefault();
               context.onOpenChange(true);
             }
