@@ -70,6 +70,8 @@ const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
   }
 );
 
+Toolbar.displayName = TOOLBAR_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * ToolbarSeparator
  * -----------------------------------------------------------------------------------------------*/
@@ -112,7 +114,7 @@ const ToolbarButton = React.forwardRef<ToolbarButtonElement, ToolbarButtonProps>
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToolbar);
     return (
       <RovingFocusGroup.Item asChild {...rovingFocusGroupScope} focusable={!props.disabled}>
-        <Primitive.button {...buttonProps} ref={forwardedRef} />
+        <Primitive.button type="button" {...buttonProps} ref={forwardedRef} />
       </RovingFocusGroup.Item>
     );
   }

@@ -189,7 +189,7 @@ const animatedContentClass = css({
     animation: `${slideDown} 300ms ease-out`,
   },
   '&[data-state="closed"]': {
-    animation: `${slideUp} 300ms ease-in`,
+    animation: `${slideUp} 300ms ease-in forwards`,
   },
 });
 
@@ -199,7 +199,7 @@ const animatedWidthContentClass = css({
     animation: `${openRight} 300ms ease-out`,
   },
   '&[data-state="closed"]': {
-    animation: `${closeRight} 300ms ease-in`,
+    animation: `${closeRight} 300ms ease-in forwards`,
   },
 });
 
