@@ -1,14 +1,26 @@
 describe('DropdownMenu', () => {
+  beforeEach(() => {
+    cy.visitStory('dropdownmenu--submenus');
+  });
+
+  describe('when trigger is focused', () => {
+    it('should open and focus first item when pressing down arrow', () => {
+      cy.findByText('Open').trigger('keydown', { key: 'ArrowDown' });
+      cy.findByText('New Tab').should('be.focused');
+    });
+
+    it('should open and focus last item when pressing up arrow', () => {
+      cy.findByText('Open').trigger('keydown', { key: 'ArrowUp' });
+      cy.findByText('Find…').should('be.focused');
+    });
+  });
+
   describe('given submenu user', () => {
     beforeEach(() => {
-      cy.visitStory('dropdownmenu--submenus');
+      cy.findByText('Open').click();
     });
 
     describe('when using pointer', () => {
-      beforeEach(() => {
-        cy.findByText('Open').click();
-      });
-
       it('should open submenu and not focus first item when moving pointer over trigger', () => {
         pointerOver('Bookmarks →');
         cy.findByText('Inbox').should('not.be.focused');
@@ -111,126 +123,110 @@ describe('DropdownMenu', () => {
     });
 
     describe('When using keyboard', () => {
-      it('should open and focus first item when pressing down arrow', () => {
-        cy.findByText('Open').trigger('keydown', { key: 'ArrowDown' });
-        cy.findByText('New Tab').should('be.focused');
+      it('should not open submenu when moving focus to trigger', () => {
+        cy.findByText('Bookmarks →').focus();
+        cy.findByText('Inbox').should('not.exist');
       });
 
-      it('should open and focus last item when pressing up arrow', () => {
-        cy.findByText('Open').trigger('keydown', { key: 'ArrowUp' });
-        cy.findByText('Find…').should('be.focused');
-      });
-
-      describe('When menu is opened', () => {
-        beforeEach(() => {
-          cy.findByText('Open').click();
-        });
-
-        it('should not open submenu when moving focus to trigger', () => {
-          cy.findByText('Bookmarks →').focus();
-          cy.findByText('Inbox').should('not.exist');
-        });
-
-        it('should open submenu and focus first item when pressing right arrow, enter or space key', () => {
-          function shouldOpenOnKeydown(key: string) {
-            cy.findByText('Bookmarks →').trigger('keydown', { key });
-            cy.findByText('Inbox').should('be.focused').trigger('keydown', { key: 'ArrowLeft' });
-          }
-
-          shouldOpenOnKeydown(' ');
-          shouldOpenOnKeydown('Enter');
-          shouldOpenOnKeydown('ArrowRight');
-        });
-
-        it('should close only the focused submenu when pressing left arrow key', () => {
-          cy.findByText('Bookmarks →').type('{enter}');
-          cy.findByText('Modulz →').type('{enter}');
-          cy.findByText('Stitches').type('{leftarrow}').should('not.exist');
-          cy.findByText('Modulz →').should('be.visible');
-          cy.findByText('New Window').should('be.visible');
-        });
-
-        it('should close all menus when pressing escape, enter or space key on any item', () => {
-          // Test close on root menu
-          cy.findByText('New Window').type('{esc}').should('not.exist');
-
-          // Reopen menu and test keys from within the submenu
-          cy.findByText('Open').click();
-          cy.findByText('Bookmarks →').type('{enter}');
-          cy.findByText('Inbox').type('{esc}').should('not.exist');
-          cy.findByText('New Window').should('not.exist');
-        });
-
-        it('should scope typeahead behaviour to the active menu', () => {
-          // Matching items outside of the active menu should not become focused
-          pointerOver('Bookmarks →');
-          pointerOver('Modulz →');
-          cy.findByText('Stitches').focus().type('Inbox');
-          cy.findByText('Inbox').should('not.have.focus');
-
-          // Matching items inside of active menu should become focused
-          pointerOver('Notion').focus().type('Inbox');
-          cy.findByText('Inbox').should('have.focus');
-        });
-      });
-    });
-
-    describe('When using pointer in RTL', () => {
-      beforeEach(() => {
-        cy.findByText('Right-to-left').click({ force: true });
-        cy.findByText('Open').click();
-      });
-
-      it(
-        'should close submenu when pointer moves away but remain open when moving towards',
-        {
-          viewportWidth: 550,
-        },
-        () => {
-          // Moving away
-          pointerOver('Bookmarks →');
-          cy.findByText('Inbox').should('be.visible');
-          pointerExitLeftToRight('Bookmarks →');
-          cy.findByText('Inbox').should('not.exist');
-
-          // Moving towards
-          pointerOver('Bookmarks →');
-          cy.findByText('Inbox').should('be.visible');
-          pointerExitRightToLeft('Bookmarks →');
-          cy.findByText('Inbox').should('be.visible');
-
-          // Test at collision edge
-          // Moving away
-          pointerOver('Modulz →');
-          cy.findByText('Radix').should('be.visible');
-          pointerExitRightToLeft('Modulz →');
-          cy.findByText('Radix').should('not.exist');
-
-          // Moving towards
-          pointerOver('Modulz →');
-          cy.findByText('Radix').should('be.visible');
-          pointerExitLeftToRight('Modulz →');
-          cy.findByText('Radix').should('be.visible');
+      it('should open submenu and focus first item when pressing right arrow, enter or space key', () => {
+        function shouldOpenOnKeydown(key: string) {
+          cy.findByText('Bookmarks →').trigger('keydown', { key });
+          cy.findByText('Inbox').should('be.focused').trigger('keydown', { key: 'ArrowLeft' });
         }
-      );
+
+        shouldOpenOnKeydown(' ');
+        shouldOpenOnKeydown('Enter');
+        shouldOpenOnKeydown('ArrowRight');
+      });
+
+      it('should close only the focused submenu when pressing left arrow key', () => {
+        cy.findByText('Bookmarks →').type('{enter}');
+        cy.findByText('Modulz →').type('{enter}');
+        cy.findByText('Stitches').type('{leftarrow}').should('not.exist');
+        cy.findByText('Modulz →').should('be.visible');
+        cy.findByText('New Window').should('be.visible');
+      });
+
+      it('should close all menus when pressing escape, enter or space key on any item', () => {
+        // Test close on root menu
+        cy.findByText('New Window').type('{esc}').should('not.exist');
+
+        // Reopen menu and test keys from within the submenu
+        cy.findByText('Open').click();
+        cy.findByText('Bookmarks →').type('{enter}');
+        cy.findByText('Inbox').type('{esc}').should('not.exist');
+        cy.findByText('New Window').should('not.exist');
+      });
+
+      it('should scope typeahead behaviour to the active menu', () => {
+        // Matching items outside of the active menu should not become focused
+        pointerOver('Bookmarks →');
+        pointerOver('Modulz →');
+        cy.findByText('Stitches').focus().type('Inbox');
+        cy.findByText('Inbox').should('not.have.focus');
+
+        // Matching items inside of active menu should become focused
+        pointerOver('Notion').focus().type('Inbox');
+        cy.findByText('Inbox').should('have.focus');
+      });
+    });
+  });
+
+  describe('When using pointer in RTL', () => {
+    beforeEach(() => {
+      cy.findByText('Right-to-left').click({ force: true });
+      cy.findByText('Open').click();
     });
 
-    describe('When using keyboard in RTL', () => {
-      beforeEach(() => {
-        cy.findByText('Right-to-left').click({ force: true });
-        cy.findByText('Open').click();
-      });
+    it(
+      'should close submenu when pointer moves away but remain open when moving towards',
+      {
+        viewportWidth: 550,
+      },
+      () => {
+        // Moving away
+        pointerOver('Bookmarks →');
+        cy.findByText('Inbox').should('be.visible');
+        pointerExitLeftToRight('Bookmarks →');
+        cy.findByText('Inbox').should('not.exist');
 
-      it('should open submenu and focus first item when pressing left arrow key but close when pressing right arrow key', () => {
-        cy.findByText('Bookmarks →').trigger('keydown', { key: 'ArrowLeft' });
-        cy.findByText('Inbox')
-          .should('be.focused')
-          .trigger('keydown', { key: 'ArrowRight' })
-          .and('not.exist');
+        // Moving towards
+        pointerOver('Bookmarks →');
+        cy.findByText('Inbox').should('be.visible');
+        pointerExitRightToLeft('Bookmarks →');
+        cy.findByText('Inbox').should('be.visible');
 
-        // Root level menu should remain open
-        cy.findByText('New Tab').should('be.visible');
-      });
+        // Test at collision edge
+        // Moving away
+        pointerOver('Modulz →');
+        cy.findByText('Radix').should('be.visible');
+        pointerExitRightToLeft('Modulz →');
+        cy.findByText('Radix').should('not.exist');
+
+        // Moving towards
+        pointerOver('Modulz →');
+        cy.findByText('Radix').should('be.visible');
+        pointerExitLeftToRight('Modulz →');
+        cy.findByText('Radix').should('be.visible');
+      }
+    );
+  });
+
+  describe('When using keyboard in RTL', () => {
+    beforeEach(() => {
+      cy.findByText('Right-to-left').click({ force: true });
+      cy.findByText('Open').click();
+    });
+
+    it('should open submenu and focus first item when pressing left arrow key but close when pressing right arrow key', () => {
+      cy.findByText('Bookmarks →').trigger('keydown', { key: 'ArrowLeft' });
+      cy.findByText('Inbox')
+        .should('be.focused')
+        .trigger('keydown', { key: 'ArrowRight' })
+        .and('not.exist');
+
+      // Root level menu should remain open
+      cy.findByText('New Tab').should('be.visible');
     });
   });
 
