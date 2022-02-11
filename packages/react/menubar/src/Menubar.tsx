@@ -33,6 +33,7 @@ const useDropdownMenuScope = createDropdownMenuScope();
 const useRovingFocusGroupScope = createRovingFocusGroupScope();
 
 type MenubarRootContextValue = {
+  direction: Direction;
   setCurrentTabId(id: string | null): void;
   currentTabId: null | string;
   setCurrentTabId(id: string): void;
@@ -42,16 +43,18 @@ const [MenubarProvider, useMenubarContext] =
   createMenubarContext<MenubarRootContextValue>(MENUBAR_NAME);
 
 interface MenubarProps {
+  direction?: Direction;
   children?: React.ReactNode;
 }
 
 const Menubar: React.FC<MenubarProps> = (props: ScopedProps<MenubarProps>) => {
-  const { __scopeMenubar, children, ...MenubarProps } = props;
+  const { __scopeMenubar, direction = 'ltr', children, ...MenubarProps } = props;
   const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenubar);
   const [currentTabId, setCurrentTabId] = React.useState<string | null>(null);
 
   return (
     <MenubarProvider
+      direction={direction}
       scope={__scopeMenubar}
       currentTabId={currentTabId}
       setCurrentTabId={setCurrentTabId}
@@ -104,6 +107,7 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
           {...dropdownMenuScope}
           open={open}
           onOpenChange={setOpen}
+          dir={context.direction}
           modal={false}
           {...menuProps}
         />
@@ -183,9 +187,6 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
             <DropdownMenuPrimitive.Trigger
               {...dropdownMenuScope}
               ref={useComposedRefs(forwardedRef, ref)}
-              onMouseOver={() => {
-                context.setCurrentTabId(ref.current?.getAttribute('id')!);
-              }}
               onKeyDown={(event: React.KeyboardEvent) => {
                 // submenu key events bubble through portals. We only care about keys in this menu.
                 const target = event.target as HTMLElement;
@@ -237,8 +238,8 @@ const MenubarSubMenuTrigger = React.forwardRef<
       ref={forwardedRef}
       disabled={disabled}
       onKeyDown={(event: React.KeyboardEvent) => {
-        // TODO implement direction aware logic
-        if (['ArrowLeft'].includes(event.key)) {
+        const prevMenuNavKey = context.direction === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+        if (event.key === prevMenuNavKey) {
           const items = getItems().filter((item) => !item.disabled);
           const candidateNodes = items.map((item) => item.ref.current!);
           const currentIndex = candidateNodes.indexOf(
