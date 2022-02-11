@@ -95,6 +95,7 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
   const [open, setOpen] = React.useState<boolean>(false);
 
   React.useEffect(() => {
+    // @ts-ignore
     if (ref.current?.querySelector(`#${context.currentTabId}`)) {
       setOpen(true);
     }
@@ -243,10 +244,10 @@ const MenubarSubMenuTrigger = React.forwardRef<
           const items = getItems().filter((item) => !item.disabled);
           const candidateNodes = items.map((item) => item.ref.current!);
           const currentIndex = candidateNodes.indexOf(
+            // @ts-ignore
             document.querySelector(`#${context.currentTabId}`)!
           );
-          // TODO implement direction aware logic
-          const focusIntent = getFocusIntent(event, 'horizontal', 'ltr')!;
+          const focusIntent = getFocusIntent(event, 'horizontal', context.direction)!;
           const candidate = getFocusIndex(currentIndex, candidateNodes.length - 1, focusIntent);
           return context.setCurrentTabId(candidateNodes[candidate!].id);
         }
@@ -324,6 +325,7 @@ const MenubarItem = React.forwardRef<MenubarItemElement, MenubarItemProps>(
             const items = getItems().filter((item) => !item.disabled);
             const candidateNodes = items.map((item) => item.ref.current!);
             const currentIndex = candidateNodes.indexOf(
+              // @ts-ignore
               document.querySelector(`#${context.currentTabId}`)!
             );
             const focusIntent = getFocusIntent(event, 'horizontal', 'ltr')!;
