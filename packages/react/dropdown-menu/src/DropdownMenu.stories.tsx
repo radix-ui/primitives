@@ -187,7 +187,7 @@ export const Submenus = () => {
                 Bookmarks →
               </DropdownMenuTriggerItem>
               <DropdownMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
-                <DropdownMenuItem className={itemClass} onSelect={() => console.log('index')}>
+                <DropdownMenuItem className={itemClass} onSelect={() => console.log('inbox')}>
                   Inbox
                 </DropdownMenuItem>
                 <DropdownMenuItem className={itemClass} onSelect={() => console.log('calendar')}>

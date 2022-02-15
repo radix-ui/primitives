@@ -140,6 +140,13 @@ describe('ContextMenu', () => {
         cy.findByText('New Window').should('be.visible');
       });
 
+      it('should focus first item when pressing right arrow key after opening submenu with mouse', () => {
+        pointerOver('Bookmarks →');
+        cy.findByText('Inbox').should('be.visible');
+        cy.findByText('Bookmarks →').type('{rightarrow}');
+        cy.findByText('Inbox').should('be.focused');
+      });
+
       it('should close all menus when pressing escape, enter or space key on any item', () => {
         // Test close on root menu
         cy.findByText('Bookmarks →').type('{esc}').should('not.exist');
