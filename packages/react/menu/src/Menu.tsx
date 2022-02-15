@@ -99,13 +99,15 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const computedDirection = useDirection(content, props.dir);
 
   React.useEffect(() => {
-    const handleKeyDown = () => (isUsingKeyboardRef.current = true);
-    const handlePointer = () => (isUsingKeyboardRef.current = false);
     // Capture phase ensures we set the boolean before any side effects execute
     // in response to the key or pointer event as they might depend on this value.
+    const handleKeyDown = () => {
+      isUsingKeyboardRef.current = true;
+      document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
+      document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+    };
+    const handlePointer = () => (isUsingKeyboardRef.current = false);
     document.addEventListener('keydown', handleKeyDown, { capture: true });
-    document.addEventListener('pointerdown', handlePointer, { capture: true });
-    document.addEventListener('pointermove', handlePointer, { capture: true });
     return () => {
       document.removeEventListener('keydown', handleKeyDown, { capture: true });
       document.removeEventListener('pointerdown', handlePointer, { capture: true });

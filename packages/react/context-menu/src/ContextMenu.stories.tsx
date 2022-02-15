@@ -258,7 +258,7 @@ export const Submenus = () => {
                 Bookmarks →
               </ContextMenuTriggerItem>
               <ContextMenuContent className={contentClass} sideOffset={12} alignOffset={-6}>
-                <ContextMenuItem className={itemClass} onSelect={() => console.log('index')}>
+                <ContextMenuItem className={itemClass} onSelect={() => console.log('inbox')}>
                   Inbox
                 </ContextMenuItem>
                 <ContextMenuItem className={itemClass} onSelect={() => console.log('calendar')}>
