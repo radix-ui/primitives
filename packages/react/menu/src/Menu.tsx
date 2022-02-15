@@ -783,6 +783,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
     const contentContext = useMenuContentContext(SUB_TRIGGER_NAME, props.__scopeMenu);
     const openTimerRef = React.useRef<number | null>(null);
     const { pointerGraceTimerRef, onPointerGraceIntentChange } = contentContext;
+    const scope = { __scopeMenu: props.__scopeMenu };
 
     const clearOpenTimer = React.useCallback(() => {
       if (openTimerRef.current) window.clearTimeout(openTimerRef.current);
@@ -800,7 +801,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
     }, [pointerGraceTimerRef, onPointerGraceIntentChange]);
 
     return context.isSubmenu ? (
-      <MenuAnchor asChild {...props}>
+      <MenuAnchor asChild {...scope}>
         <MenuItemImpl
           id={context.triggerId}
           aria-haspopup="menu"
