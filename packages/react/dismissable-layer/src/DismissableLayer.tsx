@@ -19,7 +19,7 @@ const FOCUS_OUTSIDE = 'dismissableLayer.focusOutside';
 
 const DismissableLayerContext = React.createContext({
   layers: new Set<DismissableLayerElement>(),
-  modals: new Set<DismissableLayerElement>(),
+  layersWithOutsidePointerEventsDisabled: new Set<DismissableLayerElement>(),
 });
 
 type DismissableLayerElement = React.ElementRef<typeof Primitive.div>;
@@ -73,13 +73,15 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     const [node, setNode] = React.useState<DismissableLayerElement | null>(null);
     const [, force] = React.useState({});
     const composedRefs = useComposedRefs(forwardedRef, (node) => setNode(node));
-    const [highestModal] = [...context.modals].slice(-1);
-    const highestModalIndex = [...context.layers].indexOf(highestModal);
-    const layerIndex = node ? [...context.layers].indexOf(node) : -1;
-    const hasPointerEvents = layerIndex >= highestModalIndex;
+    const layers = Array.from(context.layers);
+    const [highestLayerWithOutsidePointerEventsDisabled] = [...context.layersWithOutsidePointerEventsDisabled].slice(-1); // prettier-ignore
+    const highestLayerWithOutsidePointerEventsDisabledIndex = layers.indexOf(highestLayerWithOutsidePointerEventsDisabled); // prettier-ignore
+    const index = node ? layers.indexOf(node) : -1;
+    const isBodyPointerEventsDisabled = context.layersWithOutsidePointerEventsDisabled.size > 0;
+    const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
 
     const pointerDownOutside = usePointerDownOutside((event) => {
-      if (!hasPointerEvents) return;
+      if (!isPointerEventsEnabled) return;
       onPointerDownOutside?.(event);
       onInteractOutside?.(event);
       if (!event.defaultPrevented) onDismiss?.();
@@ -92,7 +94,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     });
 
     useEscapeKeydown((event) => {
-      const isHighestLayer = layerIndex === context.layers.size - 1;
+      const isHighestLayer = index === context.layers.size - 1;
       if (!isHighestLayer) return;
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented) onDismiss?.();
@@ -102,16 +104,22 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
 
     React.useEffect(() => {
       if (!node) return;
-      if (disableOutsidePointerEvents) context.modals.add(node);
+      if (disableOutsidePointerEvents) context.layersWithOutsidePointerEventsDisabled.add(node);
       context.layers.add(node);
       dispatchUpdate();
     }, [node, disableOutsidePointerEvents, context]);
 
+    /**
+     * We purposefully prevent combining this effect with the `disableOutsidePointerEvents` effect
+     * because a change to `disableOutsidePointerEvents` would remove this layer from the stack
+     * and add it to the end again so the layering order wouldn't be _creation order_.
+     * We only want them to be removed from context stacks when unmounted.
+     */
     React.useEffect(() => {
       return () => {
         if (!node) return;
         context.layers.delete(node);
-        context.modals.delete(node);
+        context.layersWithOutsidePointerEventsDisabled.delete(node);
         dispatchUpdate();
       };
     }, [node, context]);
@@ -127,7 +135,11 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
         {...layerProps}
         ref={composedRefs}
         style={{
-          pointerEvents: context.modals.size > 0 ? (hasPointerEvents ? 'auto' : 'none') : undefined,
+          pointerEvents: isBodyPointerEventsDisabled
+            ? isPointerEventsEnabled
+              ? 'auto'
+              : 'none'
+            : undefined,
           ...props.style,
         }}
         onFocusCapture={composeEventHandlers(props.onFocusCapture, focusOutside.onFocusCapture)}
