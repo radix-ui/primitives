@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-collection",
-  "version": "0.1.4-rc.14",
+  "version": "0.1.4-rc.15",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
