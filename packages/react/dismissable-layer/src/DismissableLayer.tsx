@@ -20,6 +20,7 @@ const FOCUS_OUTSIDE = 'dismissableLayer.focusOutside';
 const DismissableLayerContext = React.createContext({
   layers: new Set<DismissableLayerElement>(),
   layersWithOutsidePointerEventsDisabled: new Set<DismissableLayerElement>(),
+  branches: new Set<DismissableLayerBranchElement>(),
 });
 
 type DismissableLayerElement = React.ElementRef<typeof Primitive.div>;
@@ -81,13 +82,18 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
 
     const pointerDownOutside = usePointerDownOutside((event) => {
-      if (!isPointerEventsEnabled) return;
+      const target = event.target as HTMLElement;
+      const isPointerDownOnBranch = [...context.branches].some((branch) => branch.contains(target));
+      if (!isPointerEventsEnabled || isPointerDownOnBranch) return;
       onPointerDownOutside?.(event);
       onInteractOutside?.(event);
       if (!event.defaultPrevented) onDismiss?.();
     });
 
     const focusOutside = useFocusOutside((event) => {
+      const target = event.target as HTMLElement;
+      const isFocusInBranch = [...context.branches].some((branch) => branch.contains(target));
+      if (isFocusInBranch) return;
       onFocusOutside?.(event);
       onInteractOutside?.(event);
       if (!event.defaultPrevented) onDismiss?.();
@@ -154,6 +160,38 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
 );
 
 DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * DismissableLayerBranch
+ * -----------------------------------------------------------------------------------------------*/
+
+const BRANCH_NAME = 'DismissableLayerBranch';
+
+type DismissableLayerBranchElement = React.ElementRef<typeof Primitive.div>;
+interface DismissableLayerBranchProps extends PrimitiveDivProps {}
+
+const DismissableLayerBranch = React.forwardRef<
+  DismissableLayerBranchElement,
+  DismissableLayerBranchProps
+>((props, forwardedRef) => {
+  const context = React.useContext(DismissableLayerContext);
+  const ref = React.useRef<DismissableLayerBranchElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+
+  React.useEffect(() => {
+    const node = ref.current;
+    if (node) {
+      context.branches.add(node);
+      return () => {
+        context.branches.delete(node);
+      };
+    }
+  }, [context.branches]);
+
+  return <Primitive.div {...props} ref={composedRefs} />;
+});
+
+DismissableLayerBranch.displayName = BRANCH_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -247,10 +285,13 @@ function dispatchCustomEvent<E extends CustomEvent, OriginalEvent extends Event>
 }
 
 const Root = DismissableLayer;
+const Branch = DismissableLayerBranch;
 
 export {
   DismissableLayer,
+  DismissableLayerBranch,
   //
   Root,
+  Branch,
 };
 export type { DismissableLayerProps };
