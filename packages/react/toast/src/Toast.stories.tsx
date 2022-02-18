@@ -1,23 +1,15 @@
 import * as React from 'react';
-import {
-  ToastProvider,
-  ToastViewport,
-  Toast,
-  ToastTitle,
-  ToastDescription,
-  ToastAction,
-  ToastClose,
-} from './Toast';
 import * as Dialog from '@radix-ui/react-dialog';
 import { css } from '../../../../stitches.config';
+import * as Toast from './Toast';
 
 export default { title: 'Components/Toast' };
 
 export const Styled = () => (
-  <ToastProvider>
+  <Toast.Provider>
     <ToastUpgradeAvailable />
-    <ToastViewport className={viewportClass} />
-  </ToastProvider>
+    <Toast.Viewport className={viewportClass} />
+  </Toast.Provider>
 );
 
 export const Controlled = () => {
@@ -34,7 +26,7 @@ export const Controlled = () => {
   }, [hasUpgrade]);
 
   return (
-    <ToastProvider>
+    <Toast.Provider>
       <button onClick={() => setIsSubscribed(true)}>subscribe</button>
       <button onClick={() => setErrorCount((count) => count + 1)}>error</button>
       <button onClick={() => setSavedCount((count) => count + 1)}>save</button>
@@ -42,33 +34,33 @@ export const Controlled = () => {
       <ToastSubscribeSuccess open={isSubscribed} onOpenChange={setIsSubscribed} />
 
       {[...Array(errorCount)].map((_, index) => (
-        <Toast key={index} className={errorRootClass}>
-          <ToastDescription>There was an error</ToastDescription>
-          <ToastAction
+        <Toast.Root key={index} className={errorRootClass}>
+          <Toast.Description>There was an error</Toast.Description>
+          <Toast.Action
             className={buttonClass}
             altText="Resubmit the form to try again."
             onClick={() => console.log('try again')}
           >
             Try again
-          </ToastAction>
-        </Toast>
+          </Toast.Action>
+        </Toast.Root>
       ))}
 
       {[...Array(savedCount)].map((_, index) => (
-        <Toast key={index} className={rootClass}>
-          <ToastDescription>Successfully saved</ToastDescription>
-        </Toast>
+        <Toast.Root key={index} className={rootClass}>
+          <Toast.Description>Successfully saved</Toast.Description>
+        </Toast.Root>
       ))}
 
-      <ToastViewport className={viewportClass} />
-    </ToastProvider>
+      <Toast.Viewport className={viewportClass} />
+    </Toast.Provider>
   );
 };
 
 export const FromDialog = () => {
   const [open, setOpen] = React.useState(false);
   return (
-    <ToastProvider>
+    <Toast.Provider>
       <Dialog.Root>
         <Dialog.Trigger>Open</Dialog.Trigger>
         <Dialog.Overlay />
@@ -80,19 +72,19 @@ export const FromDialog = () => {
         </Dialog.Content>
       </Dialog.Root>
 
-      <Toast open={open} onOpenChange={setOpen} className={errorRootClass}>
-        <ToastDescription>There was an error</ToastDescription>
-        <ToastAction
+      <Toast.Root open={open} onOpenChange={setOpen} className={errorRootClass}>
+        <Toast.Description>There was an error</Toast.Description>
+        <Toast.Action
           className={buttonClass}
           altText="Resubmit the form to try again."
           onClick={() => console.log('try again')}
         >
           Try again
-        </ToastAction>
-      </Toast>
+        </Toast.Action>
+      </Toast.Root>
 
-      <ToastViewport className={viewportClass} />
-    </ToastProvider>
+      <Toast.Viewport className={viewportClass} />
+    </Toast.Provider>
   );
 };
 
@@ -108,7 +100,7 @@ export const Promise = () => {
   }, [saving]);
 
   return (
-    <ToastProvider>
+    <Toast.Provider>
       <form
         onSubmit={(event) => {
           setSaving(true);
@@ -117,32 +109,32 @@ export const Promise = () => {
         }}
       >
         <button>Save</button>
-        <Toast
+        <Toast.Root
           className={rootClass}
           duration={saving ? Infinity : 2000}
           open={open}
           onOpenChange={setOpen}
         >
           {saving ? (
-            <ToastDescription>Saving&hellip;</ToastDescription>
+            <Toast.Description>Saving&hellip;</Toast.Description>
           ) : (
-            <ToastDescription>Saved!</ToastDescription>
+            <Toast.Description>Saved!</Toast.Description>
           )}
-        </Toast>
+        </Toast.Root>
       </form>
 
-      <ToastViewport className={viewportClass} />
-    </ToastProvider>
+      <Toast.Viewport className={viewportClass} />
+    </Toast.Provider>
   );
 };
 
-type Direction = React.ComponentProps<typeof ToastProvider>['swipeDirection'];
+type Direction = React.ComponentProps<typeof Toast.Provider>['swipeDirection'];
 
 export const Animated = () => {
   const [open, setOpen] = React.useState(false);
   const [swipeDirection, setSwipeDirection] = React.useState<Direction>('right');
   return (
-    <ToastProvider
+    <Toast.Provider
       duration={Infinity}
       swipeDirection={swipeDirection}
       swipeThreshold={(['up', 'down'] as Direction[]).includes(swipeDirection) ? 25 : undefined}
@@ -160,12 +152,12 @@ export const Animated = () => {
         <option value="up">Slide up</option>
         <option value="down">Slide down</option>
       </select>
-      <Toast className={animatedRootClass} open={open} onOpenChange={setOpen}>
-        <ToastDescription>Swipe me {swipeDirection}</ToastDescription>
-        <ToastClose className={buttonClass}>Dismiss</ToastClose>
-      </Toast>
-      <ToastViewport className={viewportClass} />
-    </ToastProvider>
+      <Toast.Root className={animatedRootClass} open={open} onOpenChange={setOpen}>
+        <Toast.Description>Swipe me {swipeDirection}</Toast.Description>
+        <Toast.Close className={buttonClass}>Dismiss</Toast.Close>
+      </Toast.Root>
+      <Toast.Viewport className={viewportClass} />
+    </Toast.Provider>
   );
 };
 
@@ -176,173 +168,173 @@ export const Chromatic = () => {
   return (
     <>
       <h1>Stacking</h1>
-      <ToastProvider duration={Infinity}>
-        <Toast type="foreground" className={rootClass}>
+      <Toast.Provider duration={Infinity}>
+        <Toast.Root type="foreground" className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Stacking foreground</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Stacking foreground</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <Toast type="background" className={rootClass}>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Root type="background" className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Stacking background</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Stacking background</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h1>Uncontrolled</h1>
       <h2>Background open</h2>
-      <ToastProvider>
-        <Toast type="background" duration={Infinity} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="background" duration={Infinity} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Uncontrolled background open</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Uncontrolled background open</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Background closed</h2>
-      <ToastProvider>
-        <Toast type="background" defaultOpen={false} duration={Infinity} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="background" defaultOpen={false} duration={Infinity} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Uncontrolled background closed</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Uncontrolled background closed</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Foreground open</h2>
-      <ToastProvider>
-        <Toast type="foreground" duration={Infinity} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="foreground" duration={Infinity} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Uncontrolled foreground open</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Uncontrolled foreground open</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Foreground closed</h2>
-      <ToastProvider>
-        <Toast type="foreground" defaultOpen={false} duration={Infinity} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="foreground" defaultOpen={false} duration={Infinity} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Title</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Title</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>
+          <Toast.Description className={descriptionClass}>
             Uncontrolled foreground closed
-          </ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          </Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h1>Controlled</h1>
       <h2>Background open</h2>
-      <ToastProvider>
-        <Toast type="background" open duration={Infinity} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="background" open duration={Infinity} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Controlled background open</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Controlled background open</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Background closed</h2>
-      <ToastProvider>
-        <Toast type="background" open={false} duration={Infinity} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="background" open={false} duration={Infinity} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Controlled background closed</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Controlled background closed</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>{' '}
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Foreground open</h2>
-      <ToastProvider>
-        <Toast type="foreground" open duration={Infinity} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="foreground" open duration={Infinity} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Controlled foreground open</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Controlled foreground open</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>{' '}
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Foreground closed</h2>
-      <ToastProvider>
-        <Toast type="foreground" open={false} duration={Infinity} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="foreground" open={false} duration={Infinity} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Controlled foreground closed</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Controlled foreground closed</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h1>Dismissed</h1>
       <h2>Background uncontrolled</h2>
-      <ToastProvider>
-        <Toast type="background" duration={SNAPSHOT_DELAY - 100} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="background" duration={SNAPSHOT_DELAY - 100} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Dismissed background uncontrolled</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Dismissed background uncontrolled</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Background controlled</h2>
-      <ToastProvider>
-        <Toast
+      <Toast.Provider>
+        <Toast.Root
           type="background"
           duration={SNAPSHOT_DELAY - 100}
           open={dismissedBackgroundOpen}
@@ -350,35 +342,35 @@ export const Chromatic = () => {
           className={rootClass}
         >
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Dismissed background controlled</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Dismissed background controlled</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Foreground uncontrolled</h2>
-      <ToastProvider>
-        <Toast type="foreground" duration={SNAPSHOT_DELAY - 100} className={rootClass}>
+      <Toast.Provider>
+        <Toast.Root type="foreground" duration={SNAPSHOT_DELAY - 100} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Dismissed foreground uncontrolled</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Dismissed foreground uncontrolled</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Foreground controlled</h2>
-      <ToastProvider>
-        <Toast
+      <Toast.Provider>
+        <Toast.Root
           type="foreground"
           duration={SNAPSHOT_DELAY - 100}
           open={dismissedForegroundOpen}
@@ -386,47 +378,47 @@ export const Chromatic = () => {
           className={rootClass}
         >
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Dismissed foreground controlled</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Dismissed foreground controlled</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h1>Provider</h1>
       <h2>Duration</h2>
-      <ToastProvider duration={SNAPSHOT_DELAY - 100}>
-        <Toast className={rootClass}>
+      <Toast.Provider duration={SNAPSHOT_DELAY - 100}>
+        <Toast.Root className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Provider duration</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Provider duration</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
 
       <h2>Duration overidden</h2>
-      <ToastProvider duration={Infinity}>
-        <Toast duration={SNAPSHOT_DELAY - 100} className={rootClass}>
+      <Toast.Provider duration={Infinity}>
+        <Toast.Root duration={SNAPSHOT_DELAY - 100} className={rootClass}>
           <div className={headerClass}>
-            <ToastTitle className={titleClass}>Provider duration overidden</ToastTitle>
-            <ToastClose className={closeClass}>×</ToastClose>
+            <Toast.Title className={titleClass}>Provider duration overidden</Toast.Title>
+            <Toast.Close className={closeClass}>×</Toast.Close>
           </div>
-          <ToastDescription className={descriptionClass}>Description</ToastDescription>
-          <ToastAction altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
+          <Toast.Description className={descriptionClass}>Description</Toast.Description>
+          <Toast.Action altText="alternative" className={buttonClass} style={{ marginTop: 10 }}>
             Action
-          </ToastAction>
-        </Toast>
-        <ToastViewport className={chromaticViewport}></ToastViewport>
-      </ToastProvider>
+          </Toast.Action>
+        </Toast.Root>
+        <Toast.Viewport className={chromaticViewport}></Toast.Viewport>
+      </Toast.Provider>
     </>
   );
 };
@@ -434,39 +426,39 @@ Chromatic.parameters = { chromatic: { disable: false, delay: SNAPSHOT_DELAY } };
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const ToastUpgradeAvailable = (props: React.ComponentProps<typeof Toast>) => (
-  <Toast type="background" className={rootClass} {...props}>
+const ToastUpgradeAvailable = (props: React.ComponentProps<typeof Toast.Root>) => (
+  <Toast.Root type="background" className={rootClass} {...props}>
     <div className={headerClass}>
-      <ToastTitle className={titleClass}>Upgrade available</ToastTitle>
-      <ToastClose className={closeClass} aria-label="Close">
+      <Toast.Title className={titleClass}>Upgrade available</Toast.Title>
+      <Toast.Close className={closeClass} aria-label="Close">
         <span aria-hidden>×</span>
-      </ToastClose>
+      </Toast.Close>
     </div>
-    <ToastDescription className={descriptionClass}>
+    <Toast.Description className={descriptionClass}>
       We've just released Radix version 3.0
-    </ToastDescription>
-    <ToastAction
+    </Toast.Description>
+    <Toast.Action
       altText="Goto account settings to upgrade"
       className={buttonClass}
       style={{ marginTop: 10 }}
     >
       Upgrade
-    </ToastAction>
-  </Toast>
+    </Toast.Action>
+  </Toast.Root>
 );
 
-const ToastSubscribeSuccess = (props: React.ComponentProps<typeof Toast>) => (
-  <Toast type="foreground" className={rootClass} {...props}>
+const ToastSubscribeSuccess = (props: React.ComponentProps<typeof Toast.Root>) => (
+  <Toast.Root type="foreground" className={rootClass} {...props}>
     <div className={successHeaderClass}>
-      <ToastTitle className={titleClass}>Success!</ToastTitle>
-      <ToastClose className={closeClass} aria-label="Close">
+      <Toast.Title className={titleClass}>Success!</Toast.Title>
+      <Toast.Close className={closeClass} aria-label="Close">
         <span aria-hidden>×</span>
-      </ToastClose>
+      </Toast.Close>
     </div>
-    <ToastDescription className={descriptionClass}>
+    <Toast.Description className={descriptionClass}>
       You have subscribed. We'll be in touch.
-    </ToastDescription>
-  </Toast>
+    </Toast.Description>
+  </Toast.Root>
 );
 
 const VIEWPORT_PADDING = 10;
