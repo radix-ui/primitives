@@ -344,6 +344,10 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     });
 
     React.useEffect(() => {
+      closeTimerRemainingTimeRef.current = duration;
+    }, [duration]);
+
+    React.useEffect(() => {
       if (!context.isClosePaused && duration !== Infinity) {
         const closeTimerStartTime = new Date().getTime();
         const closeTimerRemainingTime = closeTimerRemainingTimeRef.current;
