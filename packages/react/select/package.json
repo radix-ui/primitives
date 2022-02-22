@@ -1,0 +1,52 @@
+{
+  "name": "@radix-ui/react-select",
+  "version": "0.0.0",
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.module.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "clean": "rm -rf dist",
+    "prepublish": "yarn clean",
+    "version": "yarn version"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.13.10",
+    "@radix-ui/number": "workspace:*",
+    "@radix-ui/primitive": "workspace:*",
+    "@radix-ui/react-collection": "workspace:*",
+    "@radix-ui/react-compose-refs": "workspace:*",
+    "@radix-ui/react-context": "workspace:*",
+    "@radix-ui/react-dismissable-layer": "workspace:*",
+    "@radix-ui/react-focus-scope": "workspace:*",
+    "@radix-ui/react-id": "workspace:*",
+    "@radix-ui/react-label": "workspace:*",
+    "@radix-ui/react-portal": "workspace:*",
+    "@radix-ui/react-primitive": "workspace:*",
+    "@radix-ui/react-use-callback-ref": "workspace:*",
+    "@radix-ui/react-use-controllable-state": "workspace:*",
+    "@radix-ui/react-use-layout-effect": "workspace:*",
+    "@radix-ui/react-use-previous": "workspace:*",
+    "@radix-ui/react-visually-hidden": "workspace:*",
+    "aria-hidden": "^1.1.1",
+    "react-remove-scroll": "^2.4.0"
+  },
+  "peerDependencies": {
+    "react": "^16.8 || ^17.0",
+    "react-dom": "^16.8 || ^17.0"
+  },
+  "homepage": "https://radix-ui.com/primitives",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radix-ui/primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/radix-ui/primitives/issues"
+  }
+}

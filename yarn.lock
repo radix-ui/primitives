@@ -3792,6 +3792,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@radix-ui/react-select@workspace:packages/react/select":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-select@workspace:packages/react/select"
+  dependencies:
+    "@babel/runtime": ^7.13.10
+    "@radix-ui/number": "workspace:*"
+    "@radix-ui/primitive": "workspace:*"
+    "@radix-ui/react-collection": "workspace:*"
+    "@radix-ui/react-compose-refs": "workspace:*"
+    "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-dismissable-layer": "workspace:*"
+    "@radix-ui/react-focus-scope": "workspace:*"
+    "@radix-ui/react-id": "workspace:*"
+    "@radix-ui/react-label": "workspace:*"
+    "@radix-ui/react-portal": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
+    "@radix-ui/react-use-previous": "workspace:*"
+    "@radix-ui/react-visually-hidden": "workspace:*"
+    aria-hidden: ^1.1.1
+    react-remove-scroll: ^2.4.0
+  peerDependencies:
+    react: ^16.8 || ^17.0
+    react-dom: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@radix-ui/react-separator@workspace:*, @radix-ui/react-separator@workspace:packages/react/separator":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-separator@workspace:packages/react/separator"
