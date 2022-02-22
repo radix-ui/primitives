@@ -339,7 +339,8 @@ type NavigationMenuItemContextValue = {
   focusProxyRef: React.RefObject<FocusProxyElement>;
   onEntryKeyDown(): void;
   onFocusProxyEnter(side: 'start' | 'end'): void;
-  onViewportContentFocusOutside(): void;
+  onRootContentClose(): void;
+  onContentFocusOutside(): void;
 };
 
 const [NavigationMenuItemContextProvider, useNavigationMenuItemContext] =
@@ -360,11 +361,18 @@ const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, Navigatio
     const focusProxyRef = React.useRef<FocusProxyElement>(null);
     const restoreContentTabOrderRef = React.useRef(() => {});
 
-    const handleEntry = React.useCallback((side = 'start') => {
+    const handleContentEntry = React.useCallback((side = 'start') => {
       if (contentRef.current) {
         restoreContentTabOrderRef.current();
         const candidates = getTabbableCandidates(contentRef.current);
         if (candidates.length) focusFirst(side === 'start' ? candidates : candidates.reverse());
+      }
+    }, []);
+
+    const handleContentExit = React.useCallback(() => {
+      if (contentRef.current) {
+        const candidates = getTabbableCandidates(contentRef.current);
+        if (candidates.length) restoreContentTabOrderRef.current = removeFromTabOrder(candidates);
       }
     }, []);
 
@@ -375,16 +383,10 @@ const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, Navigatio
         triggerRef={triggerRef}
         contentRef={contentRef}
         focusProxyRef={focusProxyRef}
-        onEntryKeyDown={handleEntry}
-        onFocusProxyEnter={handleEntry}
-        onViewportContentFocusOutside={React.useCallback(() => {
-          if (contentRef.current) {
-            const candidates = getTabbableCandidates(contentRef.current);
-            if (candidates.length) {
-              restoreContentTabOrderRef.current = removeFromTabOrder(candidates);
-            }
-          }
-        }, [])}
+        onEntryKeyDown={handleContentEntry}
+        onFocusProxyEnter={handleContentEntry}
+        onRootContentClose={handleContentExit}
+        onContentFocusOutside={handleContentExit}
       >
         <Primitive.li {...itemProps} ref={forwardedRef} />
       </NavigationMenuItemContextProvider>
@@ -462,8 +464,8 @@ const NavigationMenuTrigger = React.forwardRef<
         </FocusGroupItem>
       </Collection.ItemSlot>
 
-      {/* Proxy tab order between trigger and content when viewport is in use */}
-      {open && context.viewport && (
+      {/* Proxy tab order between trigger and content */}
+      {open && (
         <>
           <VisuallyHiddenPrimitive.Root
             aria-hidden
@@ -480,7 +482,9 @@ const NavigationMenuTrigger = React.forwardRef<
               }
             }}
           />
-          <span aria-owns={contentId} />
+
+          {/* Restructure a11y tree to make content accessible to screen reader when using the viewport */}
+          {context.viewport && <span aria-owns={contentId} />}
         </>
       )}
     </>
@@ -649,6 +653,9 @@ const NavigationMenuContent = React.forwardRef<
   const commonProps = {
     value: itemContext.value,
     triggerRef: itemContext.triggerRef,
+    focusProxyRef: itemContext.focusProxyRef,
+    onContentFocusOutside: itemContext.onContentFocusOutside,
+    onRootContentClose: itemContext.onRootContentClose,
     ...contentProps,
   };
 
@@ -670,38 +677,7 @@ const NavigationMenuContent = React.forwardRef<
       />
     </Presence>
   ) : (
-    <ViewportContentMounter
-      forceMount={forceMount}
-      {...commonProps}
-      ref={composedRefs}
-      onFocusOutside={composeEventHandlers(props.onFocusOutside, () => {
-        // Proxy tab order between viewport content and trigger
-        itemContext.onViewportContentFocusOutside();
-      })}
-      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        const isMetaKey = event.altKey || event.ctrlKey || event.metaKey;
-        const isTabKey = event.key === 'Tab' && !isMetaKey;
-        if (isTabKey) {
-          const candidates = getTabbableCandidates(event.currentTarget);
-          const focusedElement = document.activeElement;
-          const index = candidates.findIndex((candidate) => candidate === focusedElement);
-          const isMovingBackwards = event.shiftKey;
-          const nextCandidates = isMovingBackwards
-            ? candidates.slice(0, index).reverse()
-            : candidates.slice(index + 1, candidates.length);
-
-          if (focusFirst(nextCandidates)) {
-            // prevent browser tab keydown because we've handled focus
-            event.preventDefault();
-          } else {
-            // If we can't focus that means we're at the edges
-            // so focus the proxy and let browser handle
-            // tab/shift+tab keypress on the proxy instead
-            itemContext.focusProxyRef.current?.focus();
-          }
-        }
-      })}
-    />
+    <ViewportContentMounter forceMount={forceMount} {...commonProps} ref={composedRefs} />
   );
 });
 
@@ -751,6 +727,9 @@ type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLa
 interface NavigationMenuContentImplPrivateProps {
   value: string;
   triggerRef: React.RefObject<NavigationMenuTriggerElement>;
+  focusProxyRef: React.RefObject<FocusProxyElement>;
+  onContentFocusOutside(): void;
+  onRootContentClose(): void;
 }
 interface NavigationMenuContentImplProps
   extends Omit<DismissableLayerProps, 'onDismiss'>,
@@ -760,7 +739,15 @@ const NavigationMenuContentImpl = React.forwardRef<
   NavigationMenuContentImplElement,
   NavigationMenuContentImplProps
 >((props: ScopedProps<NavigationMenuContentImplProps>, forwardedRef) => {
-  const { __scopeNavigationMenu, value, triggerRef, ...contentProps } = props;
+  const {
+    __scopeNavigationMenu,
+    value,
+    triggerRef,
+    focusProxyRef,
+    onRootContentClose,
+    onContentFocusOutside,
+    ...contentProps
+  } = props;
   const context = useNavigationMenuContext(CONTENT_NAME, __scopeNavigationMenu);
   const ref = React.useRef<NavigationMenuContentImplElement>(null);
   const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -778,12 +765,13 @@ const NavigationMenuContentImpl = React.forwardRef<
     if (context.isRootMenu && content) {
       const handleClose = () => {
         onItemDismiss();
+        onRootContentClose();
         if (content.contains(document.activeElement)) triggerRef.current?.focus();
       };
       content.addEventListener(CONTENT_DISMISS, handleClose);
       return () => content.removeEventListener(CONTENT_DISMISS, handleClose);
     }
-  }, [context.isRootMenu, props.value, triggerRef, onItemDismiss]);
+  }, [context.isRootMenu, props.value, triggerRef, onItemDismiss, onRootContentClose]);
 
   const motionAttribute = React.useMemo(() => {
     const items = getItems();
@@ -832,6 +820,7 @@ const NavigationMenuContentImpl = React.forwardRef<
           ref.current?.dispatchEvent(contentDismissEvent);
         }}
         onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
+          onContentFocusOutside();
           const target = event.target as HTMLElement;
           // Only dismiss content when focus moves outside of the menu
           if (context.rootNavigationMenu?.contains(target)) event.preventDefault();
@@ -841,6 +830,29 @@ const NavigationMenuContentImpl = React.forwardRef<
           const isTrigger = triggerRef.current?.contains(target);
           const isRootViewport = context.isRootMenu && context.viewport?.contains(target);
           if (isTrigger || isRootViewport || !context.isRootMenu) event.preventDefault();
+        })}
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          const isMetaKey = event.altKey || event.ctrlKey || event.metaKey;
+          const isTabKey = event.key === 'Tab' && !isMetaKey;
+          if (isTabKey) {
+            const candidates = getTabbableCandidates(event.currentTarget);
+            const focusedElement = document.activeElement;
+            const index = candidates.findIndex((candidate) => candidate === focusedElement);
+            const isMovingBackwards = event.shiftKey;
+            const nextCandidates = isMovingBackwards
+              ? candidates.slice(0, index).reverse()
+              : candidates.slice(index + 1, candidates.length);
+
+            if (focusFirst(nextCandidates)) {
+              // prevent browser tab keydown because we've handled focus
+              event.preventDefault();
+            } else {
+              // If we can't focus that means we're at the edges
+              // so focus the proxy and let browser handle
+              // tab/shift+tab keypress on the proxy instead
+              focusProxyRef.current?.focus();
+            }
+          }
         })}
       />
     </FocusGroup>
