@@ -3884,7 +3884,6 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
-    "@radix-ui/react-use-escape-keydown": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
