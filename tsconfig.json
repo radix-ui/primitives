@@ -38,6 +38,7 @@
       "@radix-ui/react-radio-group": ["./packages/react/radio-group/src"],
       "@radix-ui/react-roving-focus": ["./packages/react/roving-focus/src"],
       "@radix-ui/react-scroll-area": ["./packages/react/scroll-area/src"],
+      "@radix-ui/react-select": ["./packages/react/select/src"],
       "@radix-ui/react-separator": ["./packages/react/separator/src"],
       "@radix-ui/react-slider": ["./packages/react/slider/src"],
       "@radix-ui/react-slot": ["./packages/react/slot/src"],
