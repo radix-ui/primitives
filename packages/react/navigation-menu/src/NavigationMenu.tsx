@@ -355,7 +355,8 @@ interface NavigationMenuItemProps extends PrimitiveListItemProps {
 const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, NavigationMenuItemProps>(
   (props: ScopedProps<NavigationMenuItemProps>, forwardedRef) => {
     const { __scopeNavigationMenu, value: valueProp, ...itemProps } = props;
-    const value = valueProp || String(Math.random());
+    const autoValue = React.useMemo(() => String(Math.random()), []);
+    const value = valueProp || autoValue;
     const contentRef = React.useRef<NavigationMenuContentElement>(null);
     const triggerRef = React.useRef<NavigationMenuTriggerElement>(null);
     const focusProxyRef = React.useRef<FocusProxyElement>(null);
