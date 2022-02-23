@@ -37,6 +37,9 @@ export default function HomePage() {
           <Link href="/scroll-area">ScrollArea</Link>
         </li>
         <li>
+          <Link href="/select">Select</Link>
+        </li>
+        <li>
           <Link href="/slider">Slider</Link>
         </li>
         <li>
