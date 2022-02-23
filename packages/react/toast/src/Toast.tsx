@@ -35,6 +35,7 @@ type ToastProviderContextValue = {
   onCloseResume(): void;
   onToastAdd(): void;
   onToastRemove(): void;
+  isFocusedToastEscapeKeyDownRef: React.MutableRefObject<boolean>;
 };
 
 type ScopedProps<P> = P & { __scopeToast?: Scope };
@@ -79,6 +80,7 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
   const [viewport, setViewport] = React.useState<ToastViewportElement | null>(null);
   const [isClosePaused, setIsClosePaused] = React.useState(false);
   const [toastCount, setToastCount] = React.useState(0);
+  const isFocusedToastEscapeKeyDownRef = React.useRef(false);
   return (
     <ToastProviderProvider
       scope={__scopeToast}
@@ -94,6 +96,7 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
       onCloseResume={React.useCallback(() => setIsClosePaused(false), [])}
       onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
       onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
+      isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
     >
       {children}
     </ToastProviderProvider>
@@ -321,6 +324,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       type = 'foreground',
       duration: durationProp,
       onClose,
+      onEscapeKeyDown,
       onSwipeStart,
       onSwipeMove,
       onSwipeCancel,
@@ -383,7 +387,10 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
           {ReactDOM.createPortal(
             <DismissableLayer.Root
               asChild
-              onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, handleClose)}
+              onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
+                if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
+                context.isFocusedToastEscapeKeyDownRef.current = false;
+              })}
             >
               <Primitive.li
                 role="status"
@@ -394,6 +401,14 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                 {...toastProps}
                 ref={composedRefs}
                 style={{ userSelect: 'none', touchAction: 'none', ...props.style }}
+                onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+                  if (event.key !== 'Escape') return;
+                  onEscapeKeyDown?.(event.nativeEvent);
+                  if (!event.nativeEvent.defaultPrevented) {
+                    context.isFocusedToastEscapeKeyDownRef.current = true;
+                    handleClose();
+                  }
+                })}
                 onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
                   if (event.button !== 0) return;
                   pointerStartRef.current = { x: event.clientX, y: event.clientY };

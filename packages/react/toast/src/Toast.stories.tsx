@@ -478,7 +478,7 @@ const viewportClass = css({
 });
 
 const rootClass = css({
-  all: 'unset',
+  listStyle: 'none',
   width: 230,
   borderRadius: 4,
   border: '1px solid black',
