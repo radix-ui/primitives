@@ -297,11 +297,15 @@ interface SelectContentProps extends SelectContentImplProps {}
 const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>(
   (props: ScopedProps<SelectContentProps>, forwardedRef) => {
     const context = useSelectContext(CONTENT_NAME, props.__scopeSelect);
-    const fragmentRef = React.useRef(new DocumentFragment());
+    const [fragment, setFragment] = React.useState<DocumentFragment>();
+
+    useLayoutEffect(() => {
+      setFragment(new DocumentFragment());
+    }, []);
 
     return context.open ? (
       <SelectContentImpl {...props} ref={forwardedRef} />
-    ) : (
+    ) : fragment ? (
       ReactDOM.createPortal(
         <Collection.Slot scope={props.__scopeSelect}>
           {/* @ts-ignore: This is to avoid the "SelectViewport must be inside "SelectContent" error */}
@@ -309,9 +313,9 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
             <div>{props.children}</div>
           </SelectContentContextProvider>
         </Collection.Slot>,
-        fragmentRef.current as any
+        fragment as any
       )
-    );
+    ) : null;
   }
 );
 

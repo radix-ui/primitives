@@ -3,7 +3,7 @@ import * as Select from '@radix-ui/react-select';
 
 export default function SelectPage() {
   return (
-    <Select.Root>
+    <Select.Root defaultValue="1">
       <Select.Trigger>
         <Select.Value />
         <Select.Icon>▼</Select.Icon>
