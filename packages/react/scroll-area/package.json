@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-scroll-area",
-  "version": "0.1.4-rc.20",
+  "version": "0.1.4-rc.21",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
