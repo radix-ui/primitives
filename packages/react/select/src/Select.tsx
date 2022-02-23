@@ -307,12 +307,12 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
       <SelectContentImpl {...props} ref={forwardedRef} />
     ) : fragment ? (
       ReactDOM.createPortal(
-        <Collection.Slot scope={props.__scopeSelect}>
-          {/* @ts-ignore: This is to avoid the "SelectViewport must be inside "SelectContent" error */}
-          <SelectContentContextProvider scope={props.__scopeSelect}>
+        // @ts-ignore: This is to avoid the "SelectViewport must be inside "SelectContent" error
+        <SelectContentContextProvider scope={props.__scopeSelect}>
+          <Collection.Slot scope={props.__scopeSelect}>
             <div>{props.children}</div>
-          </SelectContentContextProvider>
-        </Collection.Slot>,
+          </Collection.Slot>
+        </SelectContentContextProvider>,
         fragment as any
       )
     ) : null;
