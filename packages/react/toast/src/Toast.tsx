@@ -400,7 +400,6 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                 })}
                 onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
                   if (!pointerStartRef.current) return;
-                  (event.target as HTMLElement).setPointerCapture(event.pointerId);
                   const x = event.clientX - pointerStartRef.current.x;
                   const y = event.clientY - pointerStartRef.current.y;
                   const hasSwipeMoveStarted = Boolean(swipeDeltaRef.current);
@@ -419,6 +418,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                   } else if (isDeltaInDirection(delta, context.swipeDirection, moveStartBuffer)) {
                     swipeDeltaRef.current = delta;
                     dispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail);
+                    (event.target as HTMLElement).setPointerCapture(event.pointerId);
                   } else if (Math.abs(x) > moveStartBuffer || Math.abs(y) > moveStartBuffer) {
                     // User is swiping in wrong direction so we disable swipe gesture
                     // for the current pointer down interaction
