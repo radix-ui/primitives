@@ -437,14 +437,20 @@ const NavigationMenuTrigger = React.forwardRef<
             onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
               wasClickCloseRef.current = false;
             })}
-            onPointerMove={composeEventHandlers(props.onPointerMove, () => {
-              if (disabled || wasClickCloseRef.current) return;
-              context.onItemOver(itemContext.value);
-            })}
-            onPointerLeave={composeEventHandlers(props.onPointerLeave, () => {
-              if (disabled) return;
-              context.onItemLeave();
-            })}
+            onPointerMove={composeEventHandlers(
+              props.onPointerMove,
+              whenMouse(() => {
+                if (disabled || wasClickCloseRef.current) return;
+                context.onItemOver(itemContext.value);
+              })
+            )}
+            onPointerLeave={composeEventHandlers(
+              props.onPointerLeave,
+              whenMouse(() => {
+                if (disabled) return;
+                context.onItemLeave();
+              })
+            )}
             onClick={composeEventHandlers(props.onClick, () => {
               context.onItemSelect(itemContext.value);
               wasClickCloseRef.current = open;
@@ -669,7 +675,7 @@ const NavigationMenuContent = React.forwardRef<
         onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
           context.onItemOver(itemContext.value);
         })}
-        onPointerLeave={composeEventHandlers(props.onPointerLeave, context.onItemLeave)}
+        onPointerLeave={composeEventHandlers(props.onPointerLeave, whenMouse(context.onItemLeave))}
         style={{
           // Prevent interaction when animating out
           pointerEvents: !open && context.isRootMenu ? 'none' : undefined,
@@ -828,7 +834,7 @@ const NavigationMenuContentImpl = React.forwardRef<
         })}
         onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
           const target = event.target as HTMLElement;
-          const isTrigger = triggerRef.current?.contains(target);
+          const isTrigger = getItems().some((item) => item.ref.current?.contains(target));
           const isRootViewport = context.isRootMenu && context.viewport?.contains(target);
           if (isTrigger || isRootViewport || !context.isRootMenu) event.preventDefault();
         })}
@@ -936,7 +942,7 @@ const NavigationMenuViewportImpl = React.forwardRef<
       onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
         context.onItemOver(activeContentValue);
       })}
-      onPointerLeave={composeEventHandlers(props.onPointerLeave, context.onItemLeave)}
+      onPointerLeave={composeEventHandlers(props.onPointerLeave, whenMouse(context.onItemLeave))}
     >
       {Array.from(viewportContentContext.items).map(([value, { ref, forceMount, ...props }]) => {
         const isActive = activeContentValue === value;
@@ -1111,6 +1117,10 @@ function makeTriggerId(baseId: string, value: string) {
 
 function makeContentId(baseId: string, value: string) {
   return `${baseId}-content-${value}`;
+}
+
+function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
+  return (event) => (event.pointerType === 'mouse' ? handler(event) : undefined);
 }
 
 /* -----------------------------------------------------------------------------------------------*/
