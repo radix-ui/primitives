@@ -1,16 +1,16 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { createContextScope } from '@radix-ui/react-context';
+import * as DismissableLayer from '@radix-ui/react-dismissable-layer';
+import { UnstablePortal } from '@radix-ui/react-portal';
+import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { Primitive } from '@radix-ui/react-primitive';
-import * as DismissableLayer from '@radix-ui/react-dismissable-layer';
-import { Presence } from '@radix-ui/react-presence';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { UnstablePortal } from '@radix-ui/react-portal';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
