@@ -639,16 +639,14 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                   const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
                   if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
 
-                  const focusIntent = MAP_KEY_TO_FOCUS_INTENT[event.key];
-                  if (focusIntent !== undefined) {
-                    event.preventDefault();
+                  if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
                     const items = getItems().filter((item) => !item.disabled);
                     let candidateNodes = items.map((item) => item.ref.current!);
 
-                    if (['prev', 'last'].includes(focusIntent)) {
+                    if (['ArrowUp', 'End'].includes(event.key)) {
                       candidateNodes = candidateNodes.slice().reverse();
                     }
-                    if (['prev', 'next'].includes(focusIntent)) {
+                    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
                       const currentElement = event.target as SelectItemElement;
                       const currentIndex = candidateNodes.indexOf(currentElement);
                       candidateNodes = candidateNodes.slice(currentIndex + 1);
@@ -659,6 +657,8 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                      * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
                      */
                     setTimeout(() => focusFirst(candidateNodes));
+
+                    event.preventDefault();
                   }
                 })}
               >
@@ -1209,15 +1209,6 @@ const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWit
     );
   }
 );
-
-type FocusIntent = 'first' | 'last' | 'prev' | 'next';
-
-const MAP_KEY_TO_FOCUS_INTENT: Record<string, FocusIntent> = {
-  ArrowUp: 'prev',
-  ArrowDown: 'next',
-  Home: 'first',
-  End: 'last',
-};
 
 function useTypeaheadSearch(onSearchChange: (search: string) => void) {
   const handleSearchChange = useCallbackRef(onSearchChange);
