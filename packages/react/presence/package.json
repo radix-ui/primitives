@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-presence",
-  "version": "0.1.2-rc.14",
+  "version": "0.1.2-rc.15",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
