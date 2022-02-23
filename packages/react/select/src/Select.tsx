@@ -299,6 +299,7 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
     const context = useSelectContext(CONTENT_NAME, props.__scopeSelect);
     const [fragment, setFragment] = React.useState<DocumentFragment>();
 
+    // setting the fragment in `useLayoutEffect` as `DocumentFragment` doesn't exist on the server
     useLayoutEffect(() => {
       setFragment(new DocumentFragment());
     }, []);
