@@ -10,6 +10,7 @@ const NODES = [
   'img',
   'li',
   'nav',
+  'ol',
   'p',
   'span',
   'svg',

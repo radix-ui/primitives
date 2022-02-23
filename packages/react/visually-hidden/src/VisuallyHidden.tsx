@@ -20,7 +20,6 @@ const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenPro
         {...props}
         ref={forwardedRef}
         style={{
-          ...props.style,
           // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
           position: 'absolute',
           border: 0,
@@ -32,6 +31,7 @@ const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenPro
           clip: 'rect(0, 0, 0, 0)',
           whiteSpace: 'nowrap',
           wordWrap: 'normal',
+          ...props.style,
         }}
       />
     );
