@@ -94,25 +94,23 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
     const composedRef = useComposedRefs(forwardedRef, (node) => setNavigationMenu(node));
 
     return (
-      <Collection.Provider scope={__scopeNavigationMenu}>
-        <NavigationMenuProvider
-          scope={__scopeNavigationMenu}
-          isRootMenu={true}
-          value={value}
-          onValueChange={onValueChange}
-          defaultValue={defaultValue}
-          dir={useDirection(navigationMenu, props.dir)}
-          orientation={orientation}
-          rootNavigationMenu={navigationMenu}
-        >
-          <Primitive.nav
-            aria-label="Main"
-            data-orientation={orientation}
-            {...NavigationMenuProps}
-            ref={composedRef}
-          />
-        </NavigationMenuProvider>
-      </Collection.Provider>
+      <NavigationMenuProvider
+        scope={__scopeNavigationMenu}
+        isRootMenu={true}
+        value={value}
+        onValueChange={onValueChange}
+        defaultValue={defaultValue}
+        dir={useDirection(navigationMenu, props.dir)}
+        orientation={orientation}
+        rootNavigationMenu={navigationMenu}
+      >
+        <Primitive.nav
+          aria-label="Main"
+          data-orientation={orientation}
+          {...NavigationMenuProps}
+          ref={composedRef}
+        />
+      </NavigationMenuProvider>
     );
   }
 );
@@ -125,70 +123,44 @@ NavigationMenu.displayName = NAVIGATION_MENU_NAME;
 
 const SUB_NAME = 'NavigationMenuSub';
 
-type NavigationMenuSubElement = NavigationMenuSubImplElement;
-interface NavigationMenuSubProps extends NavigationMenuSubImplProps {}
-
-const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationMenuSubProps>(
-  (props: ScopedProps<NavigationMenuSubProps>, forwardedRef) => {
-    return (
-      <Collection.Provider scope={props.__scopeNavigationMenu}>
-        <NavigationMenuSubImpl {...props} ref={forwardedRef} />
-      </Collection.Provider>
-    );
-  }
-);
-
-NavigationMenuSub.displayName = SUB_NAME;
-
-type NavigationMenuSubImplElement = React.ElementRef<typeof Primitive.div>;
+type NavigationMenuSubElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
-
-interface NavigationMenuSubImplProps
+interface NavigationMenuSubProps
   extends Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
     Omit<PrimitiveDivProps, 'defaultValue'> {
   orientation?: Orientation;
 }
 
-const NavigationMenuSubImpl = React.forwardRef<
-  NavigationMenuSubImplElement,
-  NavigationMenuSubImplProps
->((props: ScopedProps<NavigationMenuSubImplProps>, forwardedRef) => {
-  const {
-    __scopeNavigationMenu,
-    value: valueProp,
-    onValueChange,
-    defaultValue,
-    orientation = 'horizontal',
-    ...subProps
-  } = props;
-  const context = useNavigationMenuContext(SUB_NAME, __scopeNavigationMenu);
-  const getItems = useCollection(__scopeNavigationMenu);
-  const [value = '', setValue] = useControllableState({
-    prop: valueProp,
-    onChange: onValueChange,
-    defaultProp: defaultValue,
-  });
+const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationMenuSubProps>(
+  (props: ScopedProps<NavigationMenuSubProps>, forwardedRef) => {
+    const {
+      __scopeNavigationMenu,
+      value,
+      onValueChange,
+      defaultValue,
+      orientation = 'horizontal',
+      ...subProps
+    } = props;
+    const context = useNavigationMenuContext(SUB_NAME, __scopeNavigationMenu);
 
-  React.useEffect(() => {
-    const [firstItem] = getItems();
-    setValue((defaultValue) => defaultValue || firstItem.value);
-  }, [setValue, getItems]);
+    return (
+      <NavigationMenuProvider
+        scope={__scopeNavigationMenu}
+        isRootMenu={false}
+        value={value}
+        onValueChange={onValueChange}
+        defaultValue={defaultValue}
+        dir={context.dir}
+        orientation={orientation}
+        rootNavigationMenu={context.rootNavigationMenu}
+      >
+        <Primitive.div data-orientation={orientation} {...subProps} ref={forwardedRef} />
+      </NavigationMenuProvider>
+    );
+  }
+);
 
-  return (
-    <NavigationMenuProvider
-      scope={__scopeNavigationMenu}
-      isRootMenu={false}
-      value={value}
-      onValueChange={setValue}
-      defaultValue={defaultValue}
-      dir={context.dir}
-      orientation={orientation}
-      rootNavigationMenu={context.rootNavigationMenu}
-    >
-      <Primitive.div data-orientation={orientation} {...subProps} ref={forwardedRef} />
-    </NavigationMenuProvider>
-  );
-});
+NavigationMenuSub.displayName = SUB_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -285,9 +257,11 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
         });
       }, [])}
     >
-      <ViewportContentProvider scope={scope} items={viewportContent}>
-        {children}
-      </ViewportContentProvider>
+      <Collection.Provider scope={scope}>
+        <ViewportContentProvider scope={scope} items={viewportContent}>
+          {children}
+        </ViewportContentProvider>
+      </Collection.Provider>
     </NavigationMenuProviderImpl>
   );
 };
@@ -354,8 +328,10 @@ interface NavigationMenuItemProps extends PrimitiveListItemProps {
 const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, NavigationMenuItemProps>(
   (props: ScopedProps<NavigationMenuItemProps>, forwardedRef) => {
     const { __scopeNavigationMenu, value: valueProp, ...itemProps } = props;
-    const autoValue = React.useMemo(() => String(Math.random()), []);
-    const value = valueProp || autoValue;
+    const autoValue = useId();
+    // We need to provide an initial deterministic value as `useId` will return
+    // empty string on the first render and we don't want to match our internal "closed" value.
+    const value = valueProp || autoValue || 'LEGACY_REACT_AUTO_VALUE';
     const contentRef = React.useRef<NavigationMenuContentElement>(null);
     const triggerRef = React.useRef<NavigationMenuTriggerElement>(null);
     const focusProxyRef = React.useRef<FocusProxyElement>(null);
