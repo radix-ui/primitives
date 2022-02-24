@@ -1,6 +1,0 @@
-releases:
-  "@radix-ui/react-checkbox": patch
-  "@radix-ui/react-radio-group": patch
-
-declined:
-  - primitives

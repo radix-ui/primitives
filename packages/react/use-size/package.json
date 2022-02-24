@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-use-size",
-  "version": "0.1.1-rc.18",
+  "version": "0.1.1",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -31,6 +31,5 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10"
-  },
-  "stableVersion": "0.1.0"
+  }
 }

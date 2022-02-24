@@ -1,6 +1,0 @@
-releases:
-  "@radix-ui/react-select": patch
-  "@radix-ui/react-toast": patch
-
-declined:
-  - primitives
