@@ -30,12 +30,10 @@ type ToastProviderContextValue = {
   toastCount: number;
   viewport: ToastViewportElement | null;
   onViewportChange(viewport: ToastViewportElement): void;
-  isClosePaused: boolean;
-  onClosePause(): void;
-  onCloseResume(): void;
   onToastAdd(): void;
   onToastRemove(): void;
   isFocusedToastEscapeKeyDownRef: React.MutableRefObject<boolean>;
+  isClosePausedRef: React.MutableRefObject<boolean>;
 };
 
 type ScopedProps<P> = P & { __scopeToast?: Scope };
@@ -78,9 +76,9 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
     children,
   } = props;
   const [viewport, setViewport] = React.useState<ToastViewportElement | null>(null);
-  const [isClosePaused, setIsClosePaused] = React.useState(false);
   const [toastCount, setToastCount] = React.useState(0);
   const isFocusedToastEscapeKeyDownRef = React.useRef(false);
+  const isClosePausedRef = React.useRef(false);
   return (
     <ToastProviderProvider
       scope={__scopeToast}
@@ -91,12 +89,10 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
       toastCount={toastCount}
       viewport={viewport}
       onViewportChange={setViewport}
-      isClosePaused={isClosePaused}
-      onClosePause={React.useCallback(() => setIsClosePaused(true), [])}
-      onCloseResume={React.useCallback(() => setIsClosePaused(false), [])}
       onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
       onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
       isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
+      isClosePausedRef={isClosePausedRef}
     >
       {children}
     </ToastProviderProvider>
@@ -111,6 +107,8 @@ ToastProvider.displayName = PROVIDER_NAME;
 
 const VIEWPORT_NAME = 'ToastViewport';
 const VIEWPORT_DEFAULT_HOTKEY = ['F8'];
+const VIEWPORT_PAUSE = 'toast.viewportPause';
+const VIEWPORT_RESUME = 'toast.viewportResume';
 
 type ToastViewportElement = React.ElementRef<typeof Primitive.ol>;
 type PrimitiveOrderedListProps = Radix.ComponentPropsWithoutRef<typeof Primitive.ol>;
@@ -155,24 +153,35 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
 
     React.useEffect(() => {
       const wrapper = wrapperRef.current;
-      if (wrapper) {
+      const viewport = ref.current;
+      if (wrapper && viewport) {
+        const handlePause = () => {
+          const pauseEvent = new Event(VIEWPORT_PAUSE);
+          viewport.dispatchEvent(pauseEvent);
+          context.isClosePausedRef.current = true;
+        };
+        const handleResume = () => {
+          const resumeEvent = new Event(VIEWPORT_RESUME);
+          viewport.dispatchEvent(resumeEvent);
+          context.isClosePausedRef.current = false;
+        };
         // Toasts are not in the viewport React tree so we need to bind DOM events
-        wrapper.addEventListener('focusin', context.onClosePause);
-        wrapper.addEventListener('focusout', context.onCloseResume);
-        wrapper.addEventListener('pointerenter', context.onClosePause);
-        wrapper.addEventListener('pointerleave', context.onCloseResume);
-        window.addEventListener('blur', context.onClosePause);
-        window.addEventListener('focus', context.onCloseResume);
+        wrapper.addEventListener('focusin', handlePause);
+        wrapper.addEventListener('focusout', handleResume);
+        wrapper.addEventListener('pointerenter', handlePause);
+        wrapper.addEventListener('pointerleave', handleResume);
+        window.addEventListener('blur', handlePause);
+        window.addEventListener('focus', handleResume);
         return () => {
-          wrapper.removeEventListener('focusin', context.onClosePause);
-          wrapper.removeEventListener('focusout', context.onCloseResume);
-          wrapper.removeEventListener('pointerenter', context.onClosePause);
-          wrapper.removeEventListener('pointerleave', context.onCloseResume);
-          window.removeEventListener('blur', context.onClosePause);
-          window.removeEventListener('focus', context.onCloseResume);
+          wrapper.removeEventListener('focusin', handlePause);
+          wrapper.removeEventListener('focusout', handleResume);
+          wrapper.removeEventListener('pointerenter', handlePause);
+          wrapper.removeEventListener('pointerleave', handleResume);
+          window.removeEventListener('blur', handlePause);
+          window.removeEventListener('focus', handleResume);
         };
       }
-    }, [context.onCloseResume, context.onClosePause]);
+    }, [context.isClosePausedRef]);
 
     React.useEffect(() => {
       const viewport = ref.current;
@@ -250,7 +259,7 @@ const Toast = React.forwardRef<ToastElement, ToastProps>(
     return (
       <Presence present={forceMount || open}>
         <ToastImpl
-          data-state={open ? 'open' : 'closed'}
+          open={open}
           {...toastProps}
           ref={forwardedRef}
           onClose={() => setOpen(false)}
@@ -301,7 +310,7 @@ const [ToastInteractiveProvider, useToastInteractiveContext] = createToastContex
 
 type ToastImplElement = React.ElementRef<typeof Primitive.li>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer.Root>;
-type ToastImplPrivateProps = { onClose(): void };
+type ToastImplPrivateProps = { open: boolean; onClose(): void };
 type PrimitiveListItemProps = Radix.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
   type?: 'foreground' | 'background';
@@ -323,6 +332,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       __scopeToast,
       type = 'foreground',
       duration: durationProp,
+      open,
       onClose,
       onEscapeKeyDown,
       onSwipeStart,
@@ -337,7 +347,9 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const pointerStartRef = React.useRef<{ x: number; y: number } | null>(null);
     const swipeDeltaRef = React.useRef<{ x: number; y: number } | null>(null);
     const duration = durationProp || context.duration;
+    const closeTimerStartTimeRef = React.useRef(0);
     const closeTimerRemainingTimeRef = React.useRef(duration);
+    const closeTimerRef = React.useRef(0);
     const { onToastAdd, onToastRemove } = context;
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
@@ -347,22 +359,42 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       onClose();
     });
 
-    React.useEffect(() => {
-      closeTimerRemainingTimeRef.current = duration;
-    }, [duration]);
+    const startTimer = React.useCallback(
+      (duration) => {
+        if (!duration || duration === Infinity) return;
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerStartTimeRef.current = new Date().getTime();
+        closeTimerRef.current = window.setTimeout(handleClose, duration);
+      },
+      [handleClose]
+    );
 
     React.useEffect(() => {
-      if (!context.isClosePaused && duration !== Infinity) {
-        const closeTimerStartTime = new Date().getTime();
-        const closeTimerRemainingTime = closeTimerRemainingTimeRef.current;
-        const closeTimer = window.setTimeout(handleClose, closeTimerRemainingTime);
+      const viewport = context.viewport;
+      if (viewport) {
+        const handleResume = () => {
+          startTimer(closeTimerRemainingTimeRef.current);
+        };
+        const handlePause = () => {
+          const elapsedTime = new Date().getTime() - closeTimerStartTimeRef.current;
+          closeTimerRemainingTimeRef.current = closeTimerRemainingTimeRef.current - elapsedTime;
+          window.clearTimeout(closeTimerRef.current);
+        };
+        viewport.addEventListener(VIEWPORT_PAUSE, handlePause);
+        viewport.addEventListener(VIEWPORT_RESUME, handleResume);
         return () => {
-          const elapsedTime = new Date().getTime() - closeTimerStartTime;
-          closeTimerRemainingTimeRef.current = closeTimerRemainingTime - elapsedTime;
-          window.clearTimeout(closeTimer);
+          viewport.removeEventListener(VIEWPORT_PAUSE, handlePause);
+          viewport.removeEventListener(VIEWPORT_RESUME, handleResume);
         };
       }
-    }, [duration, context.isClosePaused, handleClose]);
+    }, [context.viewport, duration, startTimer]);
+
+    // start timer when toast opens or duration changes.
+    // we include `open` in deps because closed !== unmounted when animating
+    // so it could reopen before being completely unmounted
+    React.useEffect(() => {
+      if (open && !context.isClosePausedRef.current) startTimer(duration);
+    }, [open, duration, context.isClosePausedRef, startTimer]);
 
     React.useEffect(() => {
       onToastAdd();
@@ -397,6 +429,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                 aria-live="off"
                 aria-atomic
                 tabIndex={0}
+                data-state={open ? 'open' : 'closed'}
                 data-swipe-direction={context.swipeDirection}
                 {...toastProps}
                 ref={composedRefs}
