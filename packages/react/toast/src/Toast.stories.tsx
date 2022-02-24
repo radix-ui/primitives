@@ -133,13 +133,21 @@ type Direction = React.ComponentProps<typeof Toast.Provider>['swipeDirection'];
 export const Animated = () => {
   const [open, setOpen] = React.useState(false);
   const [swipeDirection, setSwipeDirection] = React.useState<Direction>('right');
+  const timerRef = React.useRef(0);
   return (
     <Toast.Provider
-      duration={Infinity}
       swipeDirection={swipeDirection}
       swipeThreshold={(['up', 'down'] as Direction[]).includes(swipeDirection) ? 25 : undefined}
     >
-      <button onClick={() => setOpen(true)}>Open</button>
+      <button
+        onClick={() => {
+          setOpen(false);
+          window.clearTimeout(timerRef.current);
+          timerRef.current = window.setTimeout(() => setOpen(true), 150);
+        }}
+      >
+        Open
+      </button>
       {/* eslint-disable-next-line jsx-a11y/no-onchange */}
       <select
         value={swipeDirection}
