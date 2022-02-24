@@ -925,7 +925,7 @@ const NavigationMenuViewportImpl = React.forwardRef<
 
   /**
    * Update viewport size to match the active content node.
-   * We prefer offsetWidth and height over `getBoundingClientRect` as the latter returns values after transform.
+   * We prefer offset dimensions over `getBoundingClientRect` as the latter respects CSS transform. For example, if content animates in from `scale(0.5)` the dimensions would be anything from `0.5` to `1` of the intended size.
    */
   const handleSizeChange = () => {
     if (content) setSize({ width: content.offsetWidth, height: content.offsetHeight });
