@@ -9,7 +9,6 @@ import { useDirection } from '@radix-ui/react-use-direction';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
 import { createCollection } from '@radix-ui/react-collection';
-import { useSize } from '@radix-ui/react-use-size';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -915,16 +914,23 @@ const NavigationMenuViewportImpl = React.forwardRef<
     CONTENT_NAME,
     props.__scopeNavigationMenu
   );
-  const [activeContent, setActiveContent] = React.useState<NavigationMenuContentElement | null>(
-    null
-  );
-  const contentSize = useSize(activeContent);
-  const viewportWidth = contentSize ? contentSize?.width + 'px' : undefined;
-  const viewportHeight = contentSize ? contentSize?.height + 'px' : undefined;
+  const [size, setSize] = React.useState<{ width: number; height: number } | null>(null);
+  const [contentNode, setContentNode] = React.useState<NavigationMenuContentElement | null>(null);
+  const viewportWidth = size ? size?.width + 'px' : undefined;
+  const viewportHeight = size ? size?.height + 'px' : undefined;
   const open = Boolean(context.value);
   // We persist the last active content value as the viewport may be animating out
   // and we want the content to remain mounted for the lifecycle of the viewport.
   const activeContentValue = open ? context.value : context.previousValue;
+
+  /**
+   * Update viewport size to match the active content node.
+   * We prefer offsetWidth and height over `getBoundingClientRect` as the latter returns values after transform.
+   */
+  const handleSizeChange = () => {
+    if (contentNode) setSize({ width: contentNode.offsetWidth, height: contentNode.offsetHeight });
+  };
+  useResizeObserver(contentNode, handleSizeChange);
 
   return (
     <Primitive.div
@@ -953,7 +959,7 @@ const NavigationMenuViewportImpl = React.forwardRef<
               ref={composeRefs(ref, (node) => {
                 // We only want to update the stored node when another is available
                 // as we need to smoothly transition between them.
-                if (isActive && node) setActiveContent(node);
+                if (isActive && node) setContentNode(node);
               })}
             />
           </Presence>
