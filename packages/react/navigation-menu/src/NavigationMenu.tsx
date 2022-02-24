@@ -915,7 +915,7 @@ const NavigationMenuViewportImpl = React.forwardRef<
     props.__scopeNavigationMenu
   );
   const [size, setSize] = React.useState<{ width: number; height: number } | null>(null);
-  const [contentNode, setContentNode] = React.useState<NavigationMenuContentElement | null>(null);
+  const [content, setContent] = React.useState<NavigationMenuContentElement | null>(null);
   const viewportWidth = size ? size?.width + 'px' : undefined;
   const viewportHeight = size ? size?.height + 'px' : undefined;
   const open = Boolean(context.value);
@@ -928,9 +928,9 @@ const NavigationMenuViewportImpl = React.forwardRef<
    * We prefer offsetWidth and height over `getBoundingClientRect` as the latter returns values after transform.
    */
   const handleSizeChange = () => {
-    if (contentNode) setSize({ width: contentNode.offsetWidth, height: contentNode.offsetHeight });
+    if (content) setSize({ width: content.offsetWidth, height: content.offsetHeight });
   };
-  useResizeObserver(contentNode, handleSizeChange);
+  useResizeObserver(content, handleSizeChange);
 
   return (
     <Primitive.div
@@ -959,7 +959,7 @@ const NavigationMenuViewportImpl = React.forwardRef<
               ref={composeRefs(ref, (node) => {
                 // We only want to update the stored node when another is available
                 // as we need to smoothly transition between them.
-                if (isActive && node) setContentNode(node);
+                if (isActive && node) setContent(node);
               })}
             />
           </Presence>
