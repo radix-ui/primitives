@@ -642,6 +642,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                 onDismiss={() => context.onOpenChange(false)}
                 onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
                   const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+
+                  // select should not be navigated using tab key so we prevent it
+                  if (event.key === 'Tab') event.preventDefault();
+
                   if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
 
                   if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
