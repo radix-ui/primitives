@@ -194,26 +194,28 @@ export const WithGroups = () => (
             {foodGroups.map((foodGroup, index) => {
               const hasLabel = foodGroup.label !== undefined;
               return (
-                <Select.Group key={index} className={groupStyles}>
-                  {hasLabel && (
-                    <Select.Label className={labelClass} key={foodGroup.label}>
-                      {foodGroup.label}
-                    </Select.Label>
-                  )}
-                  {foodGroup.foods.map((food) => (
-                    <Select.Item
-                      key={food.value}
-                      className={hasLabel ? itemInGroupClass : itemClass}
-                      value={food.value}
-                    >
-                      <Select.ItemText>{food.label}</Select.ItemText>
-                      <Select.ItemIndicator className={indicatorClass}>
-                        <TickIcon />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
+                <React.Fragment key={index}>
+                  <Select.Group className={groupStyles}>
+                    {hasLabel && (
+                      <Select.Label className={labelClass} key={foodGroup.label}>
+                        {foodGroup.label}
+                      </Select.Label>
+                    )}
+                    {foodGroup.foods.map((food) => (
+                      <Select.Item
+                        key={food.value}
+                        className={hasLabel ? itemInGroupClass : itemClass}
+                        value={food.value}
+                      >
+                        <Select.ItemText>{food.label}</Select.ItemText>
+                        <Select.ItemIndicator className={indicatorClass}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
                   {index < foodGroups.length - 1 && <Select.Separator className={separatorClass} />}
-                </Select.Group>
+                </React.Fragment>
               );
             })}
           </Select.Viewport>

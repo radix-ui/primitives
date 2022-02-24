@@ -1161,14 +1161,7 @@ interface SelectSeparatorProps extends PrimitiveDivProps {}
 const SelectSeparator = React.forwardRef<SelectSeparatorElement, SelectSeparatorProps>(
   (props: ScopedProps<SelectSeparatorProps>, forwardedRef) => {
     const { __scopeSelect, ...separatorProps } = props;
-    return (
-      <Primitive.div
-        role="separator"
-        aria-orientation="horizontal"
-        {...separatorProps}
-        ref={forwardedRef}
-      />
-    );
+    return <Primitive.div aria-hidden {...separatorProps} ref={forwardedRef} />;
   }
 );
 
