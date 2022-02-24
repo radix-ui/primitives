@@ -155,9 +155,9 @@ export const Submenus = () => {
           <NavigationMenu.Item>
             <TriggerWithIndicator>Products</TriggerWithIndicator>
             <NavigationMenu.Content className={submenusContentClass}>
-              <NavigationMenu.Sub className={submenusRootClass}>
+              <NavigationMenu.Sub className={submenusRootClass} defaultValue="extensibility">
                 <NavigationMenu.List className={mainListClass}>
-                  <NavigationMenu.Item>
+                  <NavigationMenu.Item value="extensibility">
                     <NavigationMenu.Trigger className={submenusSubTriggerClass}>
                       Extensibility
                     </NavigationMenu.Trigger>
@@ -178,7 +178,7 @@ export const Submenus = () => {
                     </NavigationMenu.Content>
                   </NavigationMenu.Item>
 
-                  <NavigationMenu.Item>
+                  <NavigationMenu.Item value="security">
                     <NavigationMenu.Trigger className={submenusSubTriggerClass}>
                       Security
                     </NavigationMenu.Trigger>
@@ -203,7 +203,7 @@ export const Submenus = () => {
                     </NavigationMenu.Content>
                   </NavigationMenu.Item>
 
-                  <NavigationMenu.Item>
+                  <NavigationMenu.Item value="authentication">
                     <NavigationMenu.Trigger className={submenusSubTriggerClass}>
                       Authentication
                     </NavigationMenu.Trigger>
@@ -235,9 +235,13 @@ export const Submenus = () => {
           <NavigationMenu.Item>
             <TriggerWithIndicator>Company</TriggerWithIndicator>
             <NavigationMenu.Content className={submenusContentClass}>
-              <NavigationMenu.Sub className={submenusRootClass} orientation="vertical">
+              <NavigationMenu.Sub
+                className={submenusRootClass}
+                orientation="vertical"
+                defaultValue="customers"
+              >
                 <NavigationMenu.List className={mainListClass}>
-                  <NavigationMenu.Item>
+                  <NavigationMenu.Item value="customers">
                     <NavigationMenu.Trigger className={submenusSubTriggerClass}>
                       Customers
                     </NavigationMenu.Trigger>
@@ -255,7 +259,7 @@ export const Submenus = () => {
                     </NavigationMenu.Content>
                   </NavigationMenu.Item>
 
-                  <NavigationMenu.Item>
+                  <NavigationMenu.Item value="partners">
                     <NavigationMenu.Trigger className={submenusSubTriggerClass}>
                       Partners
                     </NavigationMenu.Trigger>
@@ -279,7 +283,7 @@ export const Submenus = () => {
                     </NavigationMenu.Content>
                   </NavigationMenu.Item>
 
-                  <NavigationMenu.Item>
+                  <NavigationMenu.Item value="enterprise">
                     <NavigationMenu.Trigger className={submenusSubTriggerClass}>
                       Enterprise
                     </NavigationMenu.Trigger>
