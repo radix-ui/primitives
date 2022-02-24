@@ -30,7 +30,6 @@
     "@radix-ui/react-use-direction": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*",
     "@radix-ui/react-use-previous": "workspace:*",
-    "@radix-ui/react-use-size": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*"
   },
   "peerDependencies": {
