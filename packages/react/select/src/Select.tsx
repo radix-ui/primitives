@@ -493,8 +493,6 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
         setIsPositioned(true);
 
-        focusFirst([selectedItem, content]);
-
         // we don't want the initial scroll position adjustment to trigger "expand on scroll"
         // so we explicitly turn it on only after they've registered.
         requestAnimationFrame(() => (shouldExpandOnScrollRef.current = true));
@@ -507,11 +505,23 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       viewport,
       selectedItem,
       selectedItemText,
-      focusFirst,
       context.dir,
     ]);
 
     useLayoutEffect(() => position(), [position]);
+
+    const focusSelectedItem = React.useCallback(
+      () => focusFirst([selectedItem, content]),
+      [focusFirst, selectedItem, content]
+    );
+
+    // Since this is not dependent on layout, we want to ensure this runs at the same time as
+    // other effects across components. Hence why we don't call `focusSelectedItem` inside `position`.
+    React.useEffect(() => {
+      if (isPositioned) {
+        focusSelectedItem();
+      }
+    }, [isPositioned, focusSelectedItem]);
 
     // When the viewport becomes scrollable at the top, the scroll up button will mount.
     // Because it is part of the normal flow, it will push down the viewport, thus throwing our
@@ -521,10 +531,11 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       (node) => {
         if (node && shouldRepositionRef.current === true) {
           position();
+          focusSelectedItem();
           shouldRepositionRef.current = false;
         }
       },
-      [position]
+      [position, focusSelectedItem]
     );
 
     // prevent selecting items on `pointerup` in some cases after opening from `pointerdown`

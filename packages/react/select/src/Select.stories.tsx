@@ -2,6 +2,7 @@ import * as React from 'react';
 import { css } from '../../../../stitches.config';
 import * as Select from './Select';
 import { Label } from '@radix-ui/react-label';
+import * as Dialog from '@radix-ui/react-dialog';
 import { foodGroups } from '../../../../test-data/foods';
 
 export default { title: 'Components/Select' };
@@ -393,6 +394,39 @@ export const WithinForm = () => {
     </form>
   );
 };
+
+export const WithinDialog = () => (
+  <Dialog.Root>
+    <Dialog.Trigger>Open Dialog</Dialog.Trigger>
+    <Dialog.Content aria-describedby={undefined}>
+      <Dialog.Title>A select in a dialog</Dialog.Title>
+      <Label>
+        Choose a number:
+        <Select.Root defaultValue="2">
+          <Select.Trigger className={triggerClass}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Content className={contentClass}>
+            <Select.ScrollUpButton className={scrollUpButtonClass}>▲</Select.ScrollUpButton>
+            <Select.Viewport className={viewportClass}>
+              {Array.from({ length: 30 }, (_, i) => (
+                <Select.Item key={i} className={itemClass} value={String(i)}>
+                  <Select.ItemText>Item {i}</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              ))}
+            </Select.Viewport>
+            <Select.ScrollDownButton className={scrollDownButtonClass}>▼</Select.ScrollDownButton>
+          </Select.Content>
+        </Select.Root>
+      </Label>
+      <Dialog.Close>Close Dialog</Dialog.Close>
+    </Dialog.Content>
+  </Dialog.Root>
+);
 
 const triggerClass = css({
   display: 'flex',
