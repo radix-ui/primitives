@@ -58,7 +58,7 @@ type SelectContextValue = {
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   bubbleSelect: HTMLSelectElement | null;
-  triggerPointerDownRef: React.MutableRefObject<{ x: number; y: number } | null>;
+  triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
 };
 
 const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
@@ -106,7 +106,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   // We set this to true by default so that events bubble to forms without JS (SSR)
   const isFormControl = trigger ? Boolean(trigger.closest('form')) : true;
   const [bubbleSelect, setBubbleSelect] = React.useState<HTMLSelectElement | null>(null);
-  const triggerPointerDownRef = React.useRef<{ x: number; y: number } | null>(null);
+  const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
   return (
     <SelectProvider
@@ -124,7 +124,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
       onOpenChange={setOpen}
       dir={dir}
       bubbleSelect={bubbleSelect}
-      triggerPointerDownRef={triggerPointerDownRef}
+      triggerPointerDownPosRef={triggerPointerDownPosRef}
     >
       <Collection.Provider scope={__scopeSelect}>{children}</Collection.Provider>
       {isFormControl ? (
@@ -208,7 +208,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
           // but not when the control key is pressed (avoiding MacOS right click)
           if (event.button === 0 && event.ctrlKey === false) {
             handleOpen();
-            context.triggerPointerDownRef.current = {
+            context.triggerPointerDownPosRef.current = {
               x: Math.round(event.pageX),
               y: Math.round(event.pageY),
             };
@@ -547,15 +547,15 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     // prevent selecting items on `pointerup` in some cases after opening from `pointerdown`
     // and close on `pointerup` outside.
-    const { onOpenChange, triggerPointerDownRef } = context;
+    const { onOpenChange, triggerPointerDownPosRef } = context;
     React.useEffect(() => {
       if (content) {
         let pointerMoveDelta = { x: 0, y: 0 };
 
         const handlePointerMove = (event: PointerEvent) => {
           pointerMoveDelta = {
-            x: Math.abs(Math.round(event.pageX) - (triggerPointerDownRef.current?.x ?? 0)),
-            y: Math.abs(Math.round(event.pageY) - (triggerPointerDownRef.current?.y ?? 0)),
+            x: Math.abs(Math.round(event.pageX) - (triggerPointerDownPosRef.current?.x ?? 0)),
+            y: Math.abs(Math.round(event.pageY) - (triggerPointerDownPosRef.current?.y ?? 0)),
           };
         };
         const handlePointerUp = (event: PointerEvent) => {
@@ -569,10 +569,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
             }
           }
           document.removeEventListener('pointermove', handlePointerMove);
-          triggerPointerDownRef.current = null;
+          triggerPointerDownPosRef.current = null;
         };
 
-        if (triggerPointerDownRef.current !== null) {
+        if (triggerPointerDownPosRef.current !== null) {
           document.addEventListener('pointermove', handlePointerMove);
           document.addEventListener('pointerup', handlePointerUp, { capture: true, once: true });
         }
@@ -582,7 +582,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
           document.removeEventListener('pointerup', handlePointerUp, { capture: true });
         };
       }
-    }, [content, onOpenChange, triggerPointerDownRef]);
+    }, [content, onOpenChange, triggerPointerDownPosRef]);
 
     React.useEffect(() => {
       const close = () => onOpenChange(false);
