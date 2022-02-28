@@ -58,6 +58,7 @@ type SelectContextValue = {
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   bubbleSelect: HTMLSelectElement | null;
+  triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
 };
 
 const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
@@ -105,6 +106,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   // We set this to true by default so that events bubble to forms without JS (SSR)
   const isFormControl = trigger ? Boolean(trigger.closest('form')) : true;
   const [bubbleSelect, setBubbleSelect] = React.useState<HTMLSelectElement | null>(null);
+  const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
   return (
     <SelectProvider
@@ -122,6 +124,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
       onOpenChange={setOpen}
       dir={dir}
       bubbleSelect={bubbleSelect}
+      triggerPointerDownPosRef={triggerPointerDownPosRef}
     >
       <Collection.Provider scope={__scopeSelect}>{children}</Collection.Provider>
       {isFormControl ? (
@@ -205,6 +208,10 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
           // but not when the control key is pressed (avoiding MacOS right click)
           if (event.button === 0 && event.ctrlKey === false) {
             handleOpen();
+            context.triggerPointerDownPosRef.current = {
+              x: Math.round(event.pageX),
+              y: Math.round(event.pageY),
+            };
             // prevent trigger from stealing focus from the active item after opening.
             event.preventDefault();
           }
@@ -540,16 +547,15 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     // prevent selecting items on `pointerup` in some cases after opening from `pointerdown`
     // and close on `pointerup` outside.
-    const { onOpenChange } = context;
+    const { onOpenChange, triggerPointerDownPosRef } = context;
     React.useEffect(() => {
       if (content) {
-        let pointerDownPos = { x: 0, y: 0 };
         let pointerMoveDelta = { x: 0, y: 0 };
 
         const handlePointerMove = (event: PointerEvent) => {
           pointerMoveDelta = {
-            x: Math.abs(Math.round(event.pageX) - pointerDownPos.x),
-            y: Math.abs(Math.round(event.pageY) - pointerDownPos.y),
+            x: Math.abs(Math.round(event.pageX) - (triggerPointerDownPosRef.current?.x ?? 0)),
+            y: Math.abs(Math.round(event.pageY) - (triggerPointerDownPosRef.current?.y ?? 0)),
           };
         };
         const handlePointerUp = (event: PointerEvent) => {
@@ -558,29 +564,25 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
             event.preventDefault();
           } else {
             // otherwise, if the event was outside the content, close.
-            if (!content.contains(event.target as HTMLElement)) onOpenChange(false);
+            if (!content.contains(event.target as HTMLElement)) {
+              onOpenChange(false);
+            }
           }
           document.removeEventListener('pointermove', handlePointerMove);
+          triggerPointerDownPosRef.current = null;
         };
-        const handlePointerDown = (event: PointerEvent) => {
-          pointerDownPos = { x: Math.round(event.pageX), y: Math.round(event.pageY) };
+
+        if (triggerPointerDownPosRef.current !== null) {
           document.addEventListener('pointermove', handlePointerMove);
           document.addEventListener('pointerup', handlePointerUp, { capture: true, once: true });
-        };
-        const handleKeyDown = () => {
-          document.removeEventListener('pointerdown', handlePointerDown);
-        };
-        document.addEventListener('pointerdown', handlePointerDown, { once: true });
-        document.addEventListener('keydown', handleKeyDown, { once: true });
+        }
 
         return () => {
-          document.removeEventListener('pointerdown', handlePointerDown);
-          document.removeEventListener('keydown', handleKeyDown);
           document.removeEventListener('pointermove', handlePointerMove);
           document.removeEventListener('pointerup', handlePointerUp, { capture: true });
         };
       }
-    }, [content, onOpenChange]);
+    }, [content, onOpenChange, triggerPointerDownPosRef]);
 
     React.useEffect(() => {
       const close = () => onOpenChange(false);
