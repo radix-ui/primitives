@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-alert-dialog",
-  "version": "0.1.7-rc.1",
+  "version": "0.1.7",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -35,6 +35,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "0.1.6"
+  }
 }

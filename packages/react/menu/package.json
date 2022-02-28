@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-menu",
-  "version": "0.1.6-rc.1",
+  "version": "0.1.6",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -46,6 +46,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "0.1.5"
+  }
 }
