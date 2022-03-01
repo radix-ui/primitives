@@ -739,6 +739,7 @@ const MenuItem = React.forwardRef<MenuItemElement, MenuItemProps>(
         ref={composedRefs}
         disabled={disabled}
         onClick={composeEventHandlers(props.onClick, handleSelect)}
+        onContextMenu={composeEventHandlers(props.onContextMenu, handleSelect)}
         onPointerDown={(event) => {
           props.onPointerDown?.(event);
           isPointerDownRef.current = true;
@@ -822,6 +823,12 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
              * and we rely heavily on `onFocusOutside` for submenus to close when switching
              * between separate submenus.
              */
+            event.currentTarget.focus();
+            if (!context.open) context.onOpenChange(true);
+          }}
+          onContextMenu={(event) => {
+            props.onContextMenu?.(event);
+            if (props.disabled || event.defaultPrevented) return;
             event.currentTarget.focus();
             if (!context.open) context.onOpenChange(true);
           }}
