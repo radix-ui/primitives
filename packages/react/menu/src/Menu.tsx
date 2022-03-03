@@ -604,7 +604,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                     {...popperScope}
                     {...contentProps}
                     ref={composedRefs}
-                    style={{ outline: 'none', ...contentProps.style }}
+                    style={{ ...contentProps.style }}
                     onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
                       // submenu key events bubble through portals. We only care about keys in this menu.
                       const target = event.target as HTMLElement;
