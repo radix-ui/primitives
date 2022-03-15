@@ -365,7 +365,7 @@ interface SelectContentImplProps
 
 const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectContentImplProps>(
   (props: ScopedProps<SelectContentImplProps>, forwardedRef) => {
-    const { __scopeSelect, onCloseAutoFocus, children, ...contentProps } = props;
+    const { __scopeSelect, onCloseAutoFocus, ...contentProps } = props;
     const context = useSelectContext(CONTENT_NAME, __scopeSelect);
     const [contentWrapper, setContentWrapper] = React.useState<HTMLDivElement | null>(null);
     const [content, setContent] = React.useState<SelectContentImplElement | null>(null);
@@ -610,103 +610,101 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
 
     return (
-      <Portal>
-        <RemoveScroll>
-          <div
-            ref={setContentWrapper}
-            style={{ display: 'flex', flexDirection: 'column', position: 'fixed', zIndex: 0 }}
-          >
-            <FocusScope
-              asChild
-              // we make sure we're not trapping once it's been closed
-              // (closed !== unmounted when animating out)
-              trapped={context.open}
-              onMountAutoFocus={(event) => {
-                // we prevent open autofocus because we manually focus the selected item
-                event.preventDefault();
-              }}
-              onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
-                context.trigger?.focus({ preventScroll: true });
-                event.preventDefault();
-              })}
+      <SelectContentContextProvider
+        scope={__scopeSelect}
+        contentWrapper={contentWrapper}
+        content={content}
+        viewport={viewport}
+        onViewportChange={setViewport}
+        selectedItem={selectedItem}
+        onSelectedItemChange={setSelectedItem}
+        selectedItemText={selectedItemText}
+        onSelectedItemTextChange={setSelectedItemText}
+        onScrollButtonChange={handleScrollButtonChange}
+        onItemLeave={handleItemLeave}
+        isPositioned={isPositioned}
+        shouldExpandOnScrollRef={shouldExpandOnScrollRef}
+        searchRef={searchRef}
+      >
+        <Portal>
+          <RemoveScroll>
+            <div
+              ref={setContentWrapper}
+              style={{ display: 'flex', flexDirection: 'column', position: 'fixed', zIndex: 0 }}
             >
-              <DismissableLayer
-                role="listbox"
-                id={context.contentId}
-                data-state={context.open ? 'open' : 'closed'}
-                dir={context.dir}
-                onContextMenu={(event) => event.preventDefault()}
-                {...contentProps}
-                ref={composedRefs}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  // When we get the height of the content, it includes borders. If we were to set
-                  // the height without having `boxSizing: 'border-box'` it would be too big.
-                  boxSizing: 'border-box',
-                  maxHeight: '100%',
-                  outline: 'none',
-                  ...contentProps.style,
+              <FocusScope
+                asChild
+                // we make sure we're not trapping once it's been closed
+                // (closed !== unmounted when animating out)
+                trapped={context.open}
+                onMountAutoFocus={(event) => {
+                  // we prevent open autofocus because we manually focus the selected item
+                  event.preventDefault();
                 }}
-                disableOutsidePointerEvents
-                // When focus is trapped, a focusout event may still happen.
-                // We make sure we don't trigger our `onDismiss` in such case.
-                onFocusOutside={(event) => event.preventDefault()}
-                onDismiss={() => context.onOpenChange(false)}
-                onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
-                  const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-
-                  // select should not be navigated using tab key so we prevent it
-                  if (event.key === 'Tab') event.preventDefault();
-
-                  if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
-
-                  if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
-                    const items = getItems().filter((item) => !item.disabled);
-                    let candidateNodes = items.map((item) => item.ref.current!);
-
-                    if (['ArrowUp', 'End'].includes(event.key)) {
-                      candidateNodes = candidateNodes.slice().reverse();
-                    }
-                    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                      const currentElement = event.target as SelectItemElement;
-                      const currentIndex = candidateNodes.indexOf(currentElement);
-                      candidateNodes = candidateNodes.slice(currentIndex + 1);
-                    }
-
-                    /**
-                     * Imperative focus during keydown is risky so we prevent React's batching updates
-                     * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
-                     */
-                    setTimeout(() => focusFirst(candidateNodes));
-
-                    event.preventDefault();
-                  }
+                onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+                  context.trigger?.focus({ preventScroll: true });
+                  event.preventDefault();
                 })}
               >
-                <SelectContentContextProvider
-                  scope={__scopeSelect}
-                  contentWrapper={contentWrapper}
-                  content={content}
-                  viewport={viewport}
-                  onViewportChange={setViewport}
-                  selectedItem={selectedItem}
-                  onSelectedItemChange={setSelectedItem}
-                  selectedItemText={selectedItemText}
-                  onSelectedItemTextChange={setSelectedItemText}
-                  onScrollButtonChange={handleScrollButtonChange}
-                  onItemLeave={handleItemLeave}
-                  isPositioned={isPositioned}
-                  shouldExpandOnScrollRef={shouldExpandOnScrollRef}
-                  searchRef={searchRef}
-                >
-                  {children}
-                </SelectContentContextProvider>
-              </DismissableLayer>
-            </FocusScope>
-          </div>
-        </RemoveScroll>
-      </Portal>
+                <DismissableLayer
+                  role="listbox"
+                  id={context.contentId}
+                  data-state={context.open ? 'open' : 'closed'}
+                  dir={context.dir}
+                  onContextMenu={(event) => event.preventDefault()}
+                  {...contentProps}
+                  ref={composedRefs}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    // When we get the height of the content, it includes borders. If we were to set
+                    // the height without having `boxSizing: 'border-box'` it would be too big.
+                    boxSizing: 'border-box',
+                    maxHeight: '100%',
+                    outline: 'none',
+                    ...contentProps.style,
+                  }}
+                  disableOutsidePointerEvents
+                  // When focus is trapped, a focusout event may still happen.
+                  // We make sure we don't trigger our `onDismiss` in such case.
+                  onFocusOutside={(event) => event.preventDefault()}
+                  onDismiss={() => context.onOpenChange(false)}
+                  onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+                    const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+
+                    // select should not be navigated using tab key so we prevent it
+                    if (event.key === 'Tab') event.preventDefault();
+
+                    if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+
+                    if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+                      const items = getItems().filter((item) => !item.disabled);
+                      let candidateNodes = items.map((item) => item.ref.current!);
+
+                      if (['ArrowUp', 'End'].includes(event.key)) {
+                        candidateNodes = candidateNodes.slice().reverse();
+                      }
+                      if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                        const currentElement = event.target as SelectItemElement;
+                        const currentIndex = candidateNodes.indexOf(currentElement);
+                        candidateNodes = candidateNodes.slice(currentIndex + 1);
+                      }
+
+                      /**
+                       * Imperative focus during keydown is risky so we prevent React's batching updates
+                       * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+                       */
+                      setTimeout(() => focusFirst(candidateNodes));
+
+                      event.preventDefault();
+                    }
+                  })}
+                />
+              </FocusScope>
+            </div>
+          </RemoveScroll>
+        </Portal>
+      </SelectContentContextProvider>
     );
   }
 );
