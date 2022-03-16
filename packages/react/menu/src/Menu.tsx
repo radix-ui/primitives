@@ -42,48 +42,52 @@ const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
  * -----------------------------------------------------------------------------------------------*/
 
 const createInputMethodProvider = () => {
-  const listeners: ((newValue: boolean) => void)[] = [];
+  const listeners = new Map<string, (newValue: boolean) => void>();
   let mounted = false;
-  let isUsingKeyboard = false;
+
+  const setValues = (newValue: boolean) => {
+    [...listeners.values()].map((listener) => listener(newValue));
+  };
+
+  const handlePointer = () => setValues(false);
+
+  // Capture phase ensures we set the boolean before any side effects execute
+  // in response to the key or pointer event as they might depend on this value.
+  const handleKeyDown = () => {
+    setValues(true);
+    document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
+    document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+  };
+
+  const removeEventListeners = () => {
+    document.removeEventListener('keydown', handleKeyDown, { capture: true });
+    document.removeEventListener('pointerdown', handlePointer, { capture: true });
+    document.removeEventListener('pointermove', handlePointer, { capture: true });
+    mounted = false;
+  };
 
   return function useInputMethod() {
     const isUsingKeyboardRef = React.useRef<boolean>(false);
+    const listenerId = useId();
 
     React.useEffect(() => {
-      if (mounted) {
-        return;
+      if (!mounted) {
+        mounted = true;
+        document.addEventListener('keydown', handleKeyDown, { capture: true });
       }
 
-      mounted = true;
-      // Capture phase ensures we set the boolean before any side effects execute
-      // in response to the key or pointer event as they might depend on this value.
-      const handleKeyDown = () => {
-        isUsingKeyboard = true;
-        listeners.map((listener) => listener(isUsingKeyboard));
-        document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-        document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
-      };
-
-      const handlePointer = () => {
-        isUsingKeyboard = false;
-        listeners.map((listener) => listener(isUsingKeyboard));
-      };
-
-      document.addEventListener('keydown', handleKeyDown, { capture: true });
-
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown, { capture: true });
-        document.removeEventListener('pointerdown', handlePointer, { capture: true });
-        document.removeEventListener('pointermove', handlePointer, { capture: true });
-        mounted = false;
-      };
-    }, []);
-
-    React.useEffect(() => {
-      listeners.push((newValue: boolean) => {
+      listeners.set(listenerId, (newValue) => {
         isUsingKeyboardRef.current = newValue;
       });
-    }, []);
+
+      return () => {
+        listeners.delete(listenerId);
+
+        if (listeners.size === 0) {
+          removeEventListeners();
+        }
+      };
+    }, [listenerId]);
 
     return isUsingKeyboardRef;
   };
