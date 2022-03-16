@@ -38,6 +38,60 @@ const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
 };
 
 /* -------------------------------------------------------------------------------------------------
+ * useInputMethod
+ * -----------------------------------------------------------------------------------------------*/
+
+const createInputMethodProvider = () => {
+  const listeners: ((newValue: boolean) => void)[] = [];
+  let mounted = false;
+  let isUsingKeyboard = false;
+
+  return function useInputMethod() {
+    const isUsingKeyboardRef = React.useRef<boolean>(false);
+
+    React.useEffect(() => {
+      if (mounted) {
+        return;
+      }
+
+      mounted = true;
+      // Capture phase ensures we set the boolean before any side effects execute
+      // in response to the key or pointer event as they might depend on this value.
+      const handleKeyDown = () => {
+        isUsingKeyboard = true;
+        listeners.map((listener) => listener(isUsingKeyboard));
+        document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
+        document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+      };
+
+      const handlePointer = () => {
+        isUsingKeyboard = false;
+        listeners.map((listener) => listener(isUsingKeyboard));
+      };
+
+      document.addEventListener('keydown', handleKeyDown, { capture: true });
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown, { capture: true });
+        document.removeEventListener('pointerdown', handlePointer, { capture: true });
+        document.removeEventListener('pointermove', handlePointer, { capture: true });
+        mounted = false;
+      };
+    }, []);
+
+    React.useEffect(() => {
+      listeners.push((newValue: boolean) => {
+        isUsingKeyboardRef.current = newValue;
+      });
+    }, []);
+
+    return isUsingKeyboardRef;
+  };
+};
+
+const useInputMethod = createInputMethodProvider();
+
+/* -------------------------------------------------------------------------------------------------
  * Menu
  * -----------------------------------------------------------------------------------------------*/
 
@@ -94,26 +148,9 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const { __scopeMenu, open = false, children, onOpenChange, modal = true } = props;
   const popperScope = usePopperScope(__scopeMenu);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
-  const isUsingKeyboardRef = React.useRef(false);
+  const isUsingKeyboardRef = useInputMethod();
   const handleOpenChange = useCallbackRef(onOpenChange);
   const computedDirection = useDirection(content, props.dir);
-
-  React.useEffect(() => {
-    // Capture phase ensures we set the boolean before any side effects execute
-    // in response to the key or pointer event as they might depend on this value.
-    const handleKeyDown = () => {
-      isUsingKeyboardRef.current = true;
-      document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-      document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
-    };
-    const handlePointer = () => (isUsingKeyboardRef.current = false);
-    document.addEventListener('keydown', handleKeyDown, { capture: true });
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown, { capture: true });
-      document.removeEventListener('pointerdown', handlePointer, { capture: true });
-      document.removeEventListener('pointermove', handlePointer, { capture: true });
-    };
-  }, []);
 
   return (
     <PopperPrimitive.Root {...popperScope}>
