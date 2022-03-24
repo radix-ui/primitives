@@ -1219,7 +1219,7 @@ const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWit
      */
     return (
       <VisuallyHidden asChild>
-        <select {...selectProps} ref={composedRefs} defaultValue={value} />
+        <select {...selectProps} ref={composedRefs} value={value} />
       </VisuallyHidden>
     );
   }
