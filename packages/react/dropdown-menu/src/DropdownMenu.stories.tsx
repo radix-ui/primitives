@@ -645,6 +645,33 @@ export const WithTooltip = () => (
   </div>
 );
 
+export const Animated = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}>
+    <DropdownMenu>
+      <DropdownMenuTrigger className={triggerClass}>Open</DropdownMenuTrigger>
+      <DropdownMenuContent className={`${animatedContentClass} ${contentClass}`} sideOffset={5}>
+        <DropdownMenuItem className={itemClass} onSelect={() => console.log('undo')}>
+          Undo
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} onSelect={() => console.log('redo')}>
+          Redo
+        </DropdownMenuItem>
+        <DropdownMenuSeparator className={separatorClass} />
+        <DropdownMenuItem className={itemClass} disabled onSelect={() => console.log('cut')}>
+          Cut
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} onSelect={() => console.log('copy')}>
+          Copy
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} onSelect={() => console.log('paste')}>
+          Paste
+        </DropdownMenuItem>
+        <DropdownMenuArrow />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </div>
+);
+
 // change order slightly for more pleasing visual
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
 
@@ -1386,3 +1413,22 @@ const radioGroupAttrClass = css(styles);
 const radioItemAttrClass = css(styles);
 const separatorAttrClass = css(styles);
 const arrowAttrClass = css(styles);
+
+const animateIn = css.keyframes({
+  from: { transform: 'scale(0.95)', opacity: 0 },
+  to: { transform: 'scale(1)', opacity: 1 },
+});
+
+const animateOut = css.keyframes({
+  from: { transform: 'scale(1)', opacity: 1 },
+  to: { transform: 'scale(0.95)', opacity: 0 },
+});
+
+const animatedContentClass = css(contentClass, {
+  '&[data-state="open"]': {
+    animation: `${animateIn} 300ms ease`,
+  },
+  '&[data-state="closed"]': {
+    animation: `${animateOut} 300ms ease`,
+  },
+});

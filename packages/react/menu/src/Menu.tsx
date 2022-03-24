@@ -911,6 +911,7 @@ interface MenuItemImplProps extends PrimitiveDivProps {
 const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
   (props: ScopedProps<MenuItemImplProps>, forwardedRef) => {
     const { __scopeMenu, disabled = false, textValue, ...itemProps } = props;
+    const menuContext = useMenuContext(CONTENT_NAME, __scopeMenu);
     const contentContext = useMenuContentContext(ITEM_NAME, __scopeMenu);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenu);
     const ref = React.useRef<HTMLDivElement>(null);
@@ -952,6 +953,10 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
             onPointerMove={composeEventHandlers(
               props.onPointerMove,
               whenMouse((event) => {
+                if (!menuContext.open) {
+                  return;
+                }
+
                 if (disabled) {
                   contentContext.onItemLeave(event);
                 } else {
