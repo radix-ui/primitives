@@ -365,14 +365,14 @@ export const WithinForm = () => {
           </Select.Trigger>
           <Select.Content className={contentClass}>
             <Select.Viewport className={viewportClass}>
-              <Select.Item className={itemClass} value="fr">
-                <Select.ItemText>France</Select.ItemText>
+              <Select.Item className={itemClass} value="uk">
+                <Select.ItemText>United Kingdom</Select.ItemText>
                 <Select.ItemIndicator className={indicatorClass}>
                   <TickIcon />
                 </Select.ItemIndicator>
               </Select.Item>
-              <Select.Item className={itemClass} value="uk">
-                <Select.ItemText>United Kingdom</Select.ItemText>
+              <Select.Item className={itemClass} value="fr">
+                <Select.ItemText>France</Select.ItemText>
                 <Select.ItemIndicator className={indicatorClass}>
                   <TickIcon />
                 </Select.ItemIndicator>
