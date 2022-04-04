@@ -112,7 +112,7 @@ const VIEWPORT_RESUME = 'toast.viewportResume';
 
 type ToastViewportElement = React.ElementRef<typeof Primitive.ol>;
 type PrimitiveOrderedListProps = Radix.ComponentPropsWithoutRef<typeof Primitive.ol>;
-interface ToastViewportProps extends Omit<PrimitiveOrderedListProps, 'children'> {
+interface ToastViewportProps extends PrimitiveOrderedListProps {
   /**
    * The keys to use as the keyboard shortcut that will move focus to the toast viewport.
    * @defaultValue ['F8']
