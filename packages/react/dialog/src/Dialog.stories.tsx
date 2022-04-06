@@ -426,7 +426,7 @@ export const Chromatic = () => (
       }}
     >
       <div>
-        <h1>Forced Mount</h1>
+        <h1>Forced mount</h1>
         <Dialog>
           <DialogTrigger className={triggerClass}>open</DialogTrigger>
           <DialogPortal forceMount>
@@ -487,7 +487,7 @@ Chromatic.parameters = { chromatic: { disable: false } };
 const triggerClass = css({});
 
 const RECOMMENDED_CSS__DIALOG__OVERLAY: any = {
-  // ensures overlay is positionned correctly
+  // ensures overlay is positioned correctly
   position: 'fixed',
   top: 0,
   right: 0,
