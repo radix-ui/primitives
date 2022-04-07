@@ -38,6 +38,7 @@ export const NonModal = () => (
           onInteractOutside={(event) => event.preventDefault()}
         >
           <DialogTitle>Booking info</DialogTitle>
+          <DialogDescription>Description</DialogDescription>
           <DialogClose className={closeClass}>close</DialogClose>
         </DialogContent>
       </DialogPortal>
@@ -63,6 +64,7 @@ export const Controlled = () => {
         <DialogOverlay className={overlayClass} />
         <DialogContent className={contentDefaultClass}>
           <DialogTitle>Title</DialogTitle>
+          <DialogDescription>Description</DialogDescription>
           <DialogClose>close</DialogClose>
         </DialogContent>
       </DialogPortal>
@@ -79,6 +81,7 @@ export const FocusTrap = () => (
         <DialogContent className={contentDefaultClass}>
           <DialogClose>close</DialogClose>
           <DialogTitle>Title</DialogTitle>
+          <DialogDescription>Description</DialogDescription>
           <div>
             <label htmlFor="firstName">First Name</label>
             <input type="text" id="firstName" placeholder="John" />
@@ -122,7 +125,10 @@ export const CustomFocus = () => {
 
             <div>
               <DialogTitle>Title</DialogTitle>
-              <p>The first name input will receive the focus after opening the dialog.</p>
+              <DialogDescription>
+                The first name input will receive the focus after opening the dialog.
+              </DialogDescription>
+
               <label htmlFor="firstName">First Name</label>
               <input type="text" id="firstName" placeholder="John" ref={firstNameRef} />
 
@@ -153,6 +159,9 @@ export const NoEscapeDismiss = () => (
         onEscapeKeyDown={(event) => event.preventDefault()}
       >
         <DialogTitle>Title</DialogTitle>
+        <DialogDescription>
+          The first name input will receive the focus after opening the dialog.
+        </DialogDescription>
         <DialogClose>close</DialogClose>
       </DialogContent>
     </DialogPortal>
@@ -169,6 +178,7 @@ export const NoPointerDownOutsideDismiss = () => (
         onPointerDownOutside={(event) => event.preventDefault()}
       >
         <DialogTitle>Title</DialogTitle>
+        <DialogDescription>Description</DialogDescription>
         <DialogClose>close</DialogClose>
       </DialogContent>
     </DialogPortal>
@@ -185,6 +195,7 @@ export const WithPortalContainer = () => {
           <DialogOverlay className={overlayClass} />
           <DialogContent className={contentDefaultClass}>
             <DialogTitle>Title</DialogTitle>
+            <DialogDescription>Description</DialogDescription>
             <DialogClose>close</DialogClose>
           </DialogContent>
         </DialogPortal>
@@ -201,6 +212,7 @@ export const Animated = () => (
       <DialogOverlay className={animatedOverlayClass} />
       <DialogContent className={animatedContentClass}>
         <DialogTitle>Title</DialogTitle>
+        <DialogDescription>Description</DialogDescription>
         <DialogClose>close</DialogClose>
       </DialogContent>
     </DialogPortal>
@@ -210,10 +222,11 @@ export const Animated = () => (
 export const ForcedMount = () => (
   <Dialog>
     <DialogTrigger>open</DialogTrigger>
-    <DialogPortal>
-      <DialogOverlay className={overlayClass} forceMount />
-      <DialogContent className={contentDefaultClass} forceMount>
+    <DialogPortal forceMount>
+      <DialogOverlay className={overlayClass} />
+      <DialogContent className={contentDefaultClass}>
         <DialogTitle>Title</DialogTitle>
+        <DialogDescription>Description</DialogDescription>
         <DialogClose>close</DialogClose>
       </DialogContent>
     </DialogPortal>
@@ -269,168 +282,208 @@ export const OuterScrollable = () => (
 );
 
 export const Chromatic = () => (
-  <div
-    style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(4, 1fr)',
-      gridTemplateRows: 'repeat(2, 1fr)',
-      height: '100vh',
-    }}
-  >
-    <div>
-      <h1>Uncontrolled</h1>
-      <h2>Closed</h2>
-      <Dialog>
-        <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogPortal>
-          <DialogOverlay className={overlayClass} />
-          <DialogContent className={chromaticContentClass}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-      </Dialog>
+  <>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        height: '50vh',
+      }}
+    >
+      <div>
+        <h1>Uncontrolled</h1>
+        <h2>Closed</h2>
+        <Dialog>
+          <DialogTrigger className={triggerClass}>open</DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay className={overlayClass} />
+            <DialogContent className={chromaticContentClass}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
 
-      <h2>Open</h2>
-      <Dialog defaultOpen>
-        <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogPortal>
-          <DialogOverlay
-            className={overlayClass}
-            style={{ left: 0, bottom: '50%', width: '25%' }}
-          />
-          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '12%' }}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-      </Dialog>
+        <h2>Open</h2>
+        <Dialog defaultOpen>
+          <DialogTrigger className={triggerClass}>open</DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay
+              className={overlayClass}
+              style={{ left: 0, bottom: '50%', width: '25%' }}
+            />
+            <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '12%' }}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+      </div>
+
+      <div>
+        <h1>Uncontrolled with reordered parts</h1>
+        <h2>Closed</h2>
+        <Dialog>
+          <DialogPortal>
+            <DialogOverlay className={overlayClass} />
+            <DialogContent className={chromaticContentClass}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+          <DialogTrigger className={triggerClass}>open</DialogTrigger>
+        </Dialog>
+
+        <h2>Open</h2>
+        <Dialog defaultOpen>
+          <DialogPortal>
+            <DialogOverlay
+              className={overlayClass}
+              style={{ left: '25%', bottom: '50%', width: '25%' }}
+            />
+            <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '37%' }}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+          <DialogTrigger className={triggerClass}>open</DialogTrigger>
+        </Dialog>
+      </div>
+
+      <div>
+        <h1>Controlled</h1>
+        <h2>Closed</h2>
+        <Dialog open={false}>
+          <DialogTrigger className={triggerClass}>open</DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay className={overlayClass} />
+            <DialogContent className={chromaticContentClass}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+
+        <h2>Open</h2>
+        <Dialog open>
+          <DialogTrigger className={triggerClass}>open</DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay
+              className={overlayClass}
+              style={{ left: '50%', bottom: '50%', width: '25%' }}
+            />
+            <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '62%' }}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+      </div>
+
+      <div>
+        <h1>Controlled with reordered parts</h1>
+        <h2>Closed</h2>
+        <Dialog open={false}>
+          <DialogPortal>
+            <DialogOverlay className={overlayClass} />
+            <DialogContent className={chromaticContentClass}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+          <DialogTrigger className={triggerClass}>open</DialogTrigger>
+        </Dialog>
+
+        <h2>Open</h2>
+        <Dialog open>
+          <DialogPortal>
+            <DialogOverlay
+              className={overlayClass}
+              style={{ left: '75%', bottom: '50%', width: '25%' }}
+            />
+            <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '88%' }}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+          <DialogTrigger className={triggerClass}>open</DialogTrigger>
+        </Dialog>
+      </div>
     </div>
 
-    <div>
-      <h1>Uncontrolled with reordered parts</h1>
-      <h2>Closed</h2>
-      <Dialog>
-        <DialogPortal>
-          <DialogOverlay className={overlayClass} />
-          <DialogContent className={chromaticContentClass}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-        <DialogTrigger className={triggerClass}>open</DialogTrigger>
-      </Dialog>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        height: '50vh',
+      }}
+    >
+      <div>
+        <h1>Forced mount</h1>
+        <Dialog>
+          <DialogTrigger className={triggerClass}>open</DialogTrigger>
+          <DialogPortal forceMount>
+            <DialogOverlay
+              className={overlayClass}
+              style={{
+                top: '50%',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              }}
+            />
+            <DialogContent className={chromaticContentClass} style={{ left: '25%', top: '75%' }}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+      </div>
 
-      <h2>Open</h2>
-      <Dialog defaultOpen>
-        <DialogPortal>
-          <DialogOverlay
-            className={overlayClass}
-            style={{ left: '25%', bottom: '50%', width: '25%' }}
-          />
-          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '37%' }}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-        <DialogTrigger className={triggerClass}>open</DialogTrigger>
-      </Dialog>
+      <div>
+        <h1>State attributes</h1>
+        <h2>Closed</h2>
+        <Dialog>
+          <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay className={overlayAttrClass} />
+            <DialogContent className={contentAttrClass}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeAttrClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+
+        <h2>Open</h2>
+        <Dialog defaultOpen>
+          <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay className={overlayAttrClass} style={{ left: '50%', top: '50%' }} />
+            <DialogContent className={contentAttrClass} style={{ left: '75%', top: '75%' }}>
+              <DialogTitle>Title</DialogTitle>
+              <DialogDescription>Description</DialogDescription>
+              <DialogClose className={closeAttrClass}>close</DialogClose>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+      </div>
     </div>
-
-    <div>
-      <h1>Controlled</h1>
-      <h2>Closed</h2>
-      <Dialog open={false}>
-        <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogPortal>
-          <DialogOverlay className={overlayClass} />
-          <DialogContent className={chromaticContentClass}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-      </Dialog>
-
-      <h2>Open</h2>
-      <Dialog open>
-        <DialogTrigger className={triggerClass}>open</DialogTrigger>
-        <DialogPortal>
-          <DialogOverlay
-            className={overlayClass}
-            style={{ left: '50%', bottom: '50%', width: '25%' }}
-          />
-          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '62%' }}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-      </Dialog>
-    </div>
-
-    <div>
-      <h1>Controlled with reordered parts</h1>
-      <h2>Closed</h2>
-      <Dialog open={false}>
-        <DialogPortal>
-          <DialogOverlay className={overlayClass} />
-          <DialogContent className={chromaticContentClass}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-        <DialogTrigger className={triggerClass}>open</DialogTrigger>
-      </Dialog>
-
-      <h2>Open</h2>
-      <Dialog open>
-        <DialogPortal>
-          <DialogOverlay
-            className={overlayClass}
-            style={{ left: '75%', bottom: '50%', width: '25%' }}
-          />
-          <DialogContent className={chromaticContentClass} style={{ top: '25%', left: '88%' }}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-        <DialogTrigger className={triggerClass}>open</DialogTrigger>
-      </Dialog>
-    </div>
-
-    <div>
-      <h1>State attributes</h1>
-      <h2>Closed</h2>
-      <Dialog>
-        <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
-        <DialogPortal>
-          <DialogOverlay className={overlayAttrClass} />
-          <DialogContent className={contentAttrClass}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeAttrClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-      </Dialog>
-
-      <h2>Open</h2>
-      <Dialog defaultOpen>
-        <DialogTrigger className={triggerAttrClass}>open</DialogTrigger>
-        <DialogPortal>
-          <DialogOverlay className={overlayAttrClass} style={{ top: '50%' }} />
-          <DialogContent className={contentAttrClass} style={{ top: '75%' }}>
-            <DialogTitle>Title</DialogTitle>
-            <DialogClose className={closeAttrClass}>close</DialogClose>
-          </DialogContent>
-        </DialogPortal>
-      </Dialog>
-    </div>
-  </div>
+  </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
 
 const triggerClass = css({});
 
 const RECOMMENDED_CSS__DIALOG__OVERLAY: any = {
-  // ensures overlay is positionned correctly
+  // ensures overlay is positioned correctly
   position: 'fixed',
   top: 0,
   right: 0,
