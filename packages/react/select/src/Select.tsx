@@ -467,7 +467,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
         const selectedItemHalfHeight = selectedItem.offsetHeight / 2;
         const itemOffsetMiddle = selectedItem.offsetTop + selectedItemHalfHeight;
-        const contentTopToItemMiddle = contentBorderTopWidth + itemOffsetMiddle;
+        const contentTopToItemMiddle = contentBorderTopWidth + contentPaddingTop + itemOffsetMiddle;
         const itemMiddleToContentBottom = fullContentHeight - contentTopToItemMiddle;
 
         const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
