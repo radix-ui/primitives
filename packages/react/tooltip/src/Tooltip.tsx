@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -157,13 +158,15 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: (open) => {
-      if (open) {
-        // we dispatch here so `TooltipProvider` isn't required to
-        // ensure other tooltips are aware of this one opening.
-        document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
-        onOpen();
-      }
-      onOpenChange?.(open);
+      ReactDOM.flushSync(() => {
+        if (open) {
+          // we dispatch here so `TooltipProvider` isn't required to
+          // ensure other tooltips are aware of this one opening.
+          document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
+          onOpen();
+        }
+        onOpenChange?.(open);
+      });
     },
   });
   const stateAttribute = React.useMemo(() => {

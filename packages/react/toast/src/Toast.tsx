@@ -663,7 +663,7 @@ function dispatchCustomEvent<E extends CustomEvent, ReactEvent extends React.Syn
   const currentTarget = detail.originalEvent.currentTarget as HTMLElement;
   const event = new CustomEvent(name, { bubbles: true, cancelable: true, detail });
   if (handler) currentTarget.addEventListener(name, handler as EventListener, { once: true });
-  currentTarget.dispatchEvent(event);
+  ReactDOM.flushSync(() => currentTarget.dispatchEvent(event));
 }
 
 const isDeltaInDirection = (
