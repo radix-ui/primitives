@@ -207,7 +207,7 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
       ...toggleGroupProps
     } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToggleGroup);
-    const direction = useDirection() || dir;
+    const direction = useDirection(dir);
     const commonProps = { role: 'group', dir: direction, ...toggleGroupProps };
     return (
       <ToggleGroupContext scope={__scopeToggleGroup} rovingFocus={rovingFocus} disabled={disabled}>

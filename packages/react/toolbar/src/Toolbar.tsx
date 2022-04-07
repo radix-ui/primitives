@@ -27,7 +27,10 @@ const useRovingFocusGroupScope = createRovingFocusGroupScope();
 const useToggleGroupScope = createToggleGroupScope();
 
 type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
-type ToolbarContextValue = { orientation: RovingFocusGroupProps['orientation'] };
+type ToolbarContextValue = {
+  orientation: RovingFocusGroupProps['orientation'];
+  dir: RovingFocusGroupProps['dir'];
+};
 const [ToolbarProvider, useToolbarContext] =
   createToolbarContext<ToolbarContextValue>(TOOLBAR_NAME);
 
@@ -43,9 +46,9 @@ const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
   (props: ScopedProps<ToolbarProps>, forwardedRef) => {
     const { __scopeToolbar, orientation = 'horizontal', dir, loop = true, ...toolbarProps } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToolbar);
-    const direction = useDirection() || dir;
+    const direction = useDirection(dir);
     return (
-      <ToolbarProvider scope={__scopeToolbar} orientation={orientation}>
+      <ToolbarProvider scope={__scopeToolbar} orientation={orientation} dir={direction}>
         <RovingFocusGroup.Root
           asChild
           {...rovingFocusGroupScope}
@@ -173,6 +176,7 @@ const ToolbarToggleGroup = React.forwardRef<
     return (
       <ToggleGroupPrimitive.Root
         data-orientation={context.orientation}
+        dir={context.dir}
         {...toggleGroupScope}
         {...toggleGroupProps}
         ref={forwardedRef}

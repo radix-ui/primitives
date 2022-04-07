@@ -7,7 +7,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
-import { useDirection } from '@radix-ui/react-use-direction';
+import { useDirection } from '@radix-ui/react-direction';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
 import { createCollection } from '@radix-ui/react-collection';
@@ -90,10 +90,12 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
       onValueChange,
       defaultValue,
       orientation = 'horizontal',
+      dir,
       ...NavigationMenuProps
     } = props;
     const [navigationMenu, setNavigationMenu] = React.useState<NavigationMenuElement | null>(null);
     const composedRef = useComposedRefs(forwardedRef, (node) => setNavigationMenu(node));
+    const direction = useDirection(dir);
 
     return (
       <NavigationMenuProvider
@@ -102,13 +104,14 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         value={value}
         onValueChange={onValueChange}
         defaultValue={defaultValue}
-        dir={useDirection(navigationMenu, props.dir)}
+        dir={direction}
         orientation={orientation}
         rootNavigationMenu={navigationMenu}
       >
         <Primitive.nav
           aria-label="Main"
           data-orientation={orientation}
+          dir={direction}
           {...NavigationMenuProps}
           ref={composedRef}
         />

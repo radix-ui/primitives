@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as NavigationMenu from './NavigationMenu';
+import { DirectionProvider } from '@radix-ui/react-direction';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/NavigationMenu' };
@@ -350,38 +351,40 @@ const StoryFrame: React.FC = ({ children }) => {
           Right-to-left
         </label>
       </div>
-      <div dir={rtl ? 'rtl' : 'ltr'}>
-        <div
-          style={{
-            position: 'relative',
-            display: 'flex',
-            boxSizing: 'border-box',
-            alignItems: 'center',
-            padding: '15px 20px',
-            justifyContent: 'space-between',
-            width: '100%',
-            backgroundColor: 'white',
-            boxShadow: '0 50px 100px -20px rgba(50,50,93,0.1),0 30px 60px -30px rgba(0,0,0,0.2)',
-          }}
-        >
-          <button>Logo</button>
-          {children}
-          <button>Login</button>
-        </div>
-        <div style={{ maxWidth: 800, margin: 'auto', lineHeight: 1.5, paddingTop: 25 }}>
-          <h2>Test page content</h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam purus odio, vestibulum
-            in dictum et, <a href="/">sagittis vel nibh</a>. Fusce placerat arcu lorem, a
-            scelerisque odio fringilla sit amet. Suspendisse volutpat sed diam ut cursus. Nulla
-            facilisi. Ut at volutpat nibh. Nullam justo mi, elementum vitae ex eu,{' '}
-            <a href="/">gravida dictum metus</a>. Morbi vulputate consectetur cursus. Fusce vitae
-            nisi nunc. Suspendisse pellentesque aliquet tincidunt. Aenean molestie pulvinar ipsum.
-          </p>
+      <DirectionProvider dir={rtl ? 'rtl' : 'ltr'}>
+        <div dir={rtl ? 'rtl' : 'ltr'}>
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              boxSizing: 'border-box',
+              alignItems: 'center',
+              padding: '15px 20px',
+              justifyContent: 'space-between',
+              width: '100%',
+              backgroundColor: 'white',
+              boxShadow: '0 50px 100px -20px rgba(50,50,93,0.1),0 30px 60px -30px rgba(0,0,0,0.2)',
+            }}
+          >
+            <button>Logo</button>
+            {children}
+            <button>Login</button>
+          </div>
+          <div style={{ maxWidth: 800, margin: 'auto', lineHeight: 1.5, paddingTop: 25 }}>
+            <h2>Test page content</h2>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam purus odio, vestibulum
+              in dictum et, <a href="/">sagittis vel nibh</a>. Fusce placerat arcu lorem, a
+              scelerisque odio fringilla sit amet. Suspendisse volutpat sed diam ut cursus. Nulla
+              facilisi. Ut at volutpat nibh. Nullam justo mi, elementum vitae ex eu,{' '}
+              <a href="/">gravida dictum metus</a>. Morbi vulputate consectetur cursus. Fusce vitae
+              nisi nunc. Suspendisse pellentesque aliquet tincidunt. Aenean molestie pulvinar ipsum.
+            </p>
 
-          <button>Button</button>
+            <button>Button</button>
+          </div>
         </div>
-      </div>
+      </DirectionProvider>
     </div>
   );
 };

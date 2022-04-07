@@ -86,13 +86,13 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
     const [scrollbarXEnabled, setScrollbarXEnabled] = React.useState(false);
     const [scrollbarYEnabled, setScrollbarYEnabled] = React.useState(false);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setScrollArea(node));
-    const direction = useDirection() || dir;
+    const direction = useDirection(dir);
 
     return (
       <ScrollAreaProvider
         scope={__scopeScrollArea}
         type={type}
-        dir={direction || 'ltr'}
+        dir={direction}
         scrollHideDelay={scrollHideDelay}
         scrollArea={scrollArea}
         viewport={viewport}

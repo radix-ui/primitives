@@ -96,7 +96,7 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
   const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
-  const direction = useDirection() || dir || 'ltr';
+  const direction = useDirection(dir);
 
   React.useEffect(() => {
     // Capture phase ensures we set the boolean before any side effects execute
