@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { flushSync } from 'react-dom';
+import * as ReactDOM from 'react-dom';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -282,7 +282,7 @@ function dispatchCustomEvent<E extends CustomEvent, OriginalEvent extends Event>
   const target = detail.originalEvent.target as HTMLElement;
   const event = new CustomEvent(name, { bubbles: false, cancelable: true, detail });
   if (handler) target.addEventListener(name, handler as EventListener, { once: true });
-  return flushSync(() => !target.dispatchEvent(event));
+  return ReactDOM.flushSync(() => !target.dispatchEvent(event));
 }
 
 const Root = DismissableLayer;
