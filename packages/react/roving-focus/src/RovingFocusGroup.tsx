@@ -7,6 +7,7 @@ import { useId } from '@radix-ui/react-id';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useDirection } from '@radix-ui/react-direction';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -43,7 +44,6 @@ interface RovingFocusGroupOptions {
   orientation?: Orientation;
   /**
    * The direction of navigation between items.
-   * @defaultValue ltr
    */
   dir?: Direction;
   /**
@@ -99,8 +99,8 @@ const RovingFocusGroupImpl = React.forwardRef<
   const {
     __scopeRovingFocusGroup,
     orientation,
-    dir = 'ltr',
     loop = false,
+    dir,
     currentTabStopId: currentTabStopIdProp,
     defaultCurrentTabStopId,
     onCurrentTabStopIdChange,
@@ -109,6 +109,7 @@ const RovingFocusGroupImpl = React.forwardRef<
   } = props;
   const ref = React.useRef<RovingFocusGroupImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
+  const direction = useDirection(dir);
   const [currentTabStopId = null, setCurrentTabStopId] = useControllableState({
     prop: currentTabStopIdProp,
     defaultProp: defaultCurrentTabStopId,
@@ -131,7 +132,7 @@ const RovingFocusGroupImpl = React.forwardRef<
     <RovingFocusProvider
       scope={__scopeRovingFocusGroup}
       orientation={orientation}
-      dir={dir}
+      dir={direction}
       loop={loop}
       currentTabStopId={currentTabStopId}
       onItemFocus={React.useCallback(

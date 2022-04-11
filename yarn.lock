@@ -3501,6 +3501,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@radix-ui/react-direction@workspace:*, @radix-ui/react-direction@workspace:packages/react/direction":
+  version: 0.0.0-use.local
+  resolution: "@radix-ui/react-direction@workspace:packages/react/direction"
+  dependencies:
+    "@babel/runtime": ^7.13.10
+  peerDependencies:
+    react: ^16.8 || ^17.0
+  languageName: unknown
+  linkType: soft
+
 "@radix-ui/react-dismissable-layer@workspace:*, @radix-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-dismissable-layer@workspace:packages/react/dismissable-layer"
@@ -3613,6 +3623,7 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-focus-guards": "workspace:*"
     "@radix-ui/react-focus-scope": "workspace:*"
@@ -3623,7 +3634,6 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
-    "@radix-ui/react-use-direction": "workspace:*"
     aria-hidden: ^1.1.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
@@ -3641,13 +3651,13 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
-    "@radix-ui/react-use-direction": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
@@ -3767,6 +3777,7 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -3788,6 +3799,7 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
@@ -3806,10 +3818,10 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
-    "@radix-ui/react-use-direction": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
@@ -3827,6 +3839,7 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-focus-scope": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
@@ -3867,9 +3880,9 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
-    "@radix-ui/react-use-direction": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
@@ -3916,6 +3929,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
@@ -3954,6 +3968,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-toggle": "workspace:*"
@@ -3983,6 +3998,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-separator": "workspace:*"
@@ -4042,16 +4058,6 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
-  peerDependencies:
-    react: ^16.8 || ^17.0
-  languageName: unknown
-  linkType: soft
-
-"@radix-ui/react-use-direction@workspace:*, @radix-ui/react-use-direction@workspace:packages/react/use-direction":
-  version: 0.0.0-use.local
-  resolution: "@radix-ui/react-use-direction@workspace:packages/react/use-direction"
-  dependencies:
-    "@babel/runtime": ^7.13.10
   peerDependencies:
     react: ^16.8 || ^17.0
   languageName: unknown

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { DirectionProvider } from '@radix-ui/react-direction';
 import {
   Toolbar,
   ToolbarSeparator,
@@ -34,11 +35,20 @@ export const Chromatic = () => (
     <h1>Example</h1>
     <ToolbarExample />
     <ToolbarExample orientation="vertical" />
+
+    <h1>Direction</h1>
+    <h2>Prop</h2>
+    <ToolbarExample dir="rtl" />
+
+    <h2>Inherited</h2>
+    <DirectionProvider dir="rtl">
+      <ToolbarExample />
+    </DirectionProvider>
   </div>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
 
-const ToolbarExample = ({ title, orientation }: any) => (
+const ToolbarExample = ({ title, dir, orientation }: any) => (
   <div style={{ padding: 1, margin: -1 }}>
     <h1>{title}</h1>
     <Toolbar
@@ -46,6 +56,7 @@ const ToolbarExample = ({ title, orientation }: any) => (
       orientation={orientation}
       loop={true}
       aria-label={`${title} toolbar`}
+      dir={dir}
     >
       <ToolbarButton className={toolbarItemClass}>Button</ToolbarButton>
       <ToolbarButton className={toolbarItemClass} disabled>

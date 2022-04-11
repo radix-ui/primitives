@@ -6,7 +6,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useDirection } from '@radix-ui/react-use-direction';
+import { useDirection } from '@radix-ui/react-direction';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
@@ -69,7 +69,13 @@ interface ScrollAreaProps extends PrimitiveDivProps {
 
 const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
   (props: ScopedProps<ScrollAreaProps>, forwardedRef) => {
-    const { __scopeScrollArea, type = 'hover', scrollHideDelay = 600, ...scrollAreaProps } = props;
+    const {
+      __scopeScrollArea,
+      type = 'hover',
+      dir,
+      scrollHideDelay = 600,
+      ...scrollAreaProps
+    } = props;
     const [scrollArea, setScrollArea] = React.useState<ScrollAreaElement | null>(null);
     const [viewport, setViewport] = React.useState<ScrollAreaViewportElement | null>(null);
     const [content, setContent] = React.useState<HTMLDivElement | null>(null);
@@ -80,13 +86,13 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
     const [scrollbarXEnabled, setScrollbarXEnabled] = React.useState(false);
     const [scrollbarYEnabled, setScrollbarYEnabled] = React.useState(false);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setScrollArea(node));
-    const computedDirection = useDirection(scrollArea, scrollAreaProps.dir);
+    const direction = useDirection(dir);
 
     return (
       <ScrollAreaProvider
         scope={__scopeScrollArea}
         type={type}
-        dir={computedDirection}
+        dir={direction}
         scrollHideDelay={scrollHideDelay}
         scrollArea={scrollArea}
         viewport={viewport}
@@ -105,6 +111,7 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
         onCornerHeightChange={setCornerHeight}
       >
         <Primitive.div
+          dir={direction}
           {...scrollAreaProps}
           ref={composedRefs}
           style={{
