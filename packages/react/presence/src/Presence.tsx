@@ -8,7 +8,7 @@ interface PresenceProps {
   children: React.ReactElement | ((props: { present: boolean }) => React.ReactElement);
 }
 
-const Presence: React.FC<PresenceProps> = (props) => {
+const Presence: React.FC<React.PropsWithChildren<PresenceProps>> = (props) => {
   const { present, children } = props;
   const presence = usePresence(present);
 

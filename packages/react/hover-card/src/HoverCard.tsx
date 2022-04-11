@@ -45,7 +45,9 @@ interface HoverCardProps {
   children?: React.ReactNode;
 }
 
-const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>) => {
+const HoverCard: React.FC<React.PropsWithChildren<HoverCardProps>> = (
+  props: ScopedProps<HoverCardProps>
+) => {
   const {
     __scopeHoverCard,
     children,

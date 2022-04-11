@@ -12,7 +12,10 @@ interface AccessibleIconProps {
   label: string;
 }
 
-const AccessibleIcon: React.FC<AccessibleIconProps> = ({ children, label }) => {
+const AccessibleIcon: React.FC<React.PropsWithChildren<AccessibleIconProps>> = ({
+  children,
+  label,
+}) => {
   const child = React.Children.only(children);
   return (
     <>

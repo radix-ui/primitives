@@ -57,7 +57,9 @@ interface DropdownMenuProps {
   children?: React.ReactNode;
 }
 
-const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMenuProps>) => {
+const DropdownMenu: React.FC<React.PropsWithChildren<DropdownMenuProps>> = (
+  props: ScopedProps<DropdownMenuProps>
+) => {
   const { __scopeDropdownMenu, children, open: openProp, defaultOpen, onOpenChange } = props;
   const contentContext = useContentContext(DROPDOWN_MENU_NAME, __scopeDropdownMenu);
   const menuScope = useMenuScope(__scopeDropdownMenu);
@@ -101,7 +103,7 @@ interface DropdownMenuRootProps {
   children?: React.ReactNode;
 }
 
-const DropdownMenuRoot: React.FC<DropdownMenuRootProps> = (
+const DropdownMenuRoot: React.FC<React.PropsWithChildren<DropdownMenuRootProps>> = (
   props: ScopedProps<DropdownMenuRootProps>
 ) => {
   const {

@@ -30,7 +30,9 @@ const [PopperProvider, usePopperContext] = createPopperContext<PopperContextValu
 interface PopperProps {
   children?: React.ReactNode;
 }
-const Popper: React.FC<PopperProps> = (props: ScopedProps<PopperProps>) => {
+const Popper: React.FC<React.PropsWithChildren<PopperProps>> = (
+  props: ScopedProps<PopperProps>
+) => {
   const { __scopePopper, children } = props;
   const [anchor, setAnchor] = React.useState<Measurable | null>(null);
   return (

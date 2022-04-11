@@ -181,7 +181,7 @@ interface NavigationMenuProviderProps extends NavigationMenuProviderPrivateProps
   onValueChange?: (value: string) => void;
 }
 
-const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
+const NavigationMenuProvider: React.FC<React.PropsWithChildren<NavigationMenuProviderProps>> = (
   props: ScopedProps<NavigationMenuProviderProps>
 ) => {
   const {

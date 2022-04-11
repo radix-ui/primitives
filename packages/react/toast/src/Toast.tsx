@@ -66,7 +66,9 @@ interface ToastProviderProps {
   children?: React.ReactNode;
 }
 
-const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastProviderProps>) => {
+const ToastProvider: React.FC<React.PropsWithChildren<ToastProviderProps>> = (
+  props: ScopedProps<ToastProviderProps>
+) => {
   const {
     __scopeToast,
     label = 'Notification',
@@ -519,7 +521,9 @@ interface ToastAnnounceProps
   extends React.ComponentPropsWithoutRef<'div'>,
     ScopedProps<{ children?: ToastImplProps['children'] }> {}
 
-const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnnounceProps>) => {
+const ToastAnnounce: React.FC<React.PropsWithChildren<ToastAnnounceProps>> = (
+  props: ScopedProps<ToastAnnounceProps>
+) => {
   const { __scopeToast, ...announceProps } = props;
   const context = useToastProviderContext(TOAST_NAME, __scopeToast);
   const [renderChildren, setRenderChildren] = React.useState(false);

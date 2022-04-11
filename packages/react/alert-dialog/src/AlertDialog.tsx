@@ -24,7 +24,9 @@ const useDialogScope = createDialogScope();
 type DialogProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Root>;
 interface AlertDialogProps extends Omit<DialogProps, 'modal'> {}
 
-const AlertDialog: React.FC<AlertDialogProps> = (props: ScopedProps<AlertDialogProps>) => {
+const AlertDialog: React.FC<React.PropsWithChildren<AlertDialogProps>> = (
+  props: ScopedProps<AlertDialogProps>
+) => {
   const { __scopeAlertDialog, ...alertDialogProps } = props;
   const dialogScope = useDialogScope(__scopeAlertDialog);
   return <DialogPrimitive.Root {...dialogScope} {...alertDialogProps} modal={true} />;
@@ -60,7 +62,7 @@ const PORTAL_NAME = 'AlertDialogPortal';
 type DialogPortalProps = Radix.ComponentPropsWithoutRef<typeof DialogPrimitive.Portal>;
 interface AlertDialogPortalProps extends DialogPortalProps {}
 
-const AlertDialogPortal: React.FC<AlertDialogPortalProps> = (
+const AlertDialogPortal: React.FC<React.PropsWithChildren<AlertDialogPortalProps>> = (
   props: ScopedProps<AlertDialogPortalProps>
 ) => {
   const { __scopeAlertDialog, ...portalProps } = props;
@@ -242,7 +244,9 @@ type DescriptionWarningProps = {
   contentRef: React.RefObject<AlertDialogContentElement>;
 };
 
-const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef }) => {
+const DescriptionWarning: React.FC<React.PropsWithChildren<DescriptionWarningProps>> = ({
+  contentRef,
+}) => {
   const MESSAGE = `\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
 
 You can add a description to the \`${CONTENT_NAME}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.

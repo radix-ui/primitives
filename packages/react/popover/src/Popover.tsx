@@ -53,7 +53,9 @@ interface PopoverProps {
   children?: React.ReactNode;
 }
 
-const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
+const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = (
+  props: ScopedProps<PopoverProps>
+) => {
   const {
     __scopePopover,
     children,

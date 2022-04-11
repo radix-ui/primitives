@@ -90,7 +90,7 @@ interface MenuProps {
   children?: React.ReactNode;
 }
 
-const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
+const Menu: React.FC<React.PropsWithChildren<MenuProps>> = (props: ScopedProps<MenuProps>) => {
   const { __scopeMenu, open = false, children, onOpenChange, modal = true } = props;
   const popperScope = usePopperScope(__scopeMenu);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
@@ -147,7 +147,9 @@ interface MenuSubProps {
   children?: React.ReactNode;
 }
 
-const MenuSub: React.FC<MenuSubProps> = (props: ScopedProps<MenuSubProps>) => {
+const MenuSub: React.FC<React.PropsWithChildren<MenuSubProps>> = (
+  props: ScopedProps<MenuSubProps>
+) => {
   const { __scopeMenu, children, open = false, onOpenChange } = props;
   const parentMenuContext = useMenuContext(SUB_NAME, __scopeMenu);
   const popperScope = usePopperScope(__scopeMenu);

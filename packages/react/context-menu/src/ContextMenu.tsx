@@ -41,7 +41,9 @@ interface ContextMenuProps {
   children?: React.ReactNode;
 }
 
-const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuProps>) => {
+const ContextMenu: React.FC<React.PropsWithChildren<ContextMenuProps>> = (
+  props: ScopedProps<ContextMenuProps>
+) => {
   const { __scopeContextMenu, children, onOpenChange, dir, modal = true } = props;
   const [open, setOpen] = React.useState(false);
   const contentContext = useContentContext(CONTEXT_MENU_NAME, __scopeContextMenu);

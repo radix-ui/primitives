@@ -54,7 +54,9 @@ interface DialogProps {
   children?: React.ReactNode;
 }
 
-const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
+const Dialog: React.FC<React.PropsWithChildren<DialogProps>> = (
+  props: ScopedProps<DialogProps>
+) => {
   const {
     __scopeDialog,
     children,
@@ -146,7 +148,9 @@ interface DialogPortalProps extends Omit<PortalProps, 'asChild'> {
   forceMount?: true;
 }
 
-const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPortalProps>) => {
+const DialogPortal: React.FC<React.PropsWithChildren<DialogPortalProps>> = (
+  props: ScopedProps<DialogPortalProps>
+) => {
   const { __scopeDialog, forceMount, children, container } = props;
   const context = useDialogContext(PORTAL_NAME, __scopeDialog);
   return (
@@ -495,7 +499,7 @@ const [WarningProvider, useWarningContext] = createContext(TITLE_WARNING_NAME, {
 
 type TitleWarningProps = { titleId?: string };
 
-const TitleWarning: React.FC<TitleWarningProps> = ({ titleId }) => {
+const TitleWarning: React.FC<React.PropsWithChildren<TitleWarningProps>> = ({ titleId }) => {
   const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
 
   const MESSAGE = `\`${titleWarningContext.contentName}\` requires a \`${titleWarningContext.titleName}\` for the component to be accessible for screen reader users.
@@ -521,7 +525,10 @@ type DescriptionWarningProps = {
   descriptionId?: string;
 };
 
-const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef, descriptionId }) => {
+const DescriptionWarning: React.FC<React.PropsWithChildren<DescriptionWarningProps>> = ({
+  contentRef,
+  descriptionId,
+}) => {
   const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
   const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
 

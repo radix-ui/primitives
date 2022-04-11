@@ -335,7 +335,7 @@ export const Submenus = () => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const StoryFrame: React.FC = ({ children }) => {
+const StoryFrame: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const [rtl, setRtl] = React.useState(false);
 
   return (
@@ -386,7 +386,10 @@ const StoryFrame: React.FC = ({ children }) => {
   );
 };
 
-const TriggerWithIndicator: React.FC<{ disabled?: boolean }> = ({ children, disabled }) => {
+const TriggerWithIndicator: React.FC<React.PropsWithChildren<{ disabled?: boolean }>> = ({
+  children,
+  disabled,
+}) => {
   return (
     <NavigationMenu.Trigger className={triggerClass} disabled={disabled}>
       {children}
@@ -406,7 +409,7 @@ const CaretDownIcon = () => (
   </svg>
 );
 
-const LinkGroup: React.FC<{ items: string[]; bordered?: boolean }> = ({
+const LinkGroup: React.FC<React.PropsWithChildren<{ items: string[]; bordered?: boolean }>> = ({
   items,
   bordered = true,
 }) => {

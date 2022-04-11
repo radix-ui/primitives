@@ -61,7 +61,7 @@ interface TooltipProviderProps {
   children: React.ReactNode;
 }
 
-const TooltipProvider: React.FC<TooltipProviderProps> = (
+const TooltipProvider: React.FC<React.PropsWithChildren<TooltipProviderProps>> = (
   props: ScopedProps<TooltipProviderProps>
 ) => {
   const {
@@ -136,7 +136,9 @@ interface TooltipProps {
   children?: React.ReactNode;
 }
 
-const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
+const Tooltip: React.FC<React.PropsWithChildren<TooltipProps>> = (
+  props: ScopedProps<TooltipProps>
+) => {
   const {
     __scopeTooltip,
     children,

@@ -76,7 +76,9 @@ interface SelectProps {
   children?: React.ReactNode;
 }
 
-const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
+const Select: React.FC<React.PropsWithChildren<SelectProps>> = (
+  props: ScopedProps<SelectProps>
+) => {
   const {
     __scopeSelect,
     children,
