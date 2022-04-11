@@ -2,13 +2,17 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { AccessibleIcon } from './AccessibleIcon';
+import { AccessibleIcon, AccessibleIconProps } from './AccessibleIcon';
 
 const LABEL_TEXT = 'Close';
 
-const AccessibleIconTest = (props: Omit<React.ComponentProps<typeof AccessibleIcon>, 'label'>) => (
+const AccessibleIconTest = (props: Omit<AccessibleIconProps, 'label'>) => (
   <AccessibleIcon {...props} label={LABEL_TEXT} />
 );
+
+const AccessibleIconTestWithoutChildren = (
+  props: Omit<AccessibleIconProps, 'label' | 'children'>
+) => <AccessibleIcon {...props} label={LABEL_TEXT} />;
 
 describe('given a default AccessibleIcon', () => {
   let rendered: RenderResult;
@@ -66,6 +70,6 @@ describe('given an AccessibleIcon without children', () => {
   it('should error', () => {
     // Mock error to prevent it from logging to console
     spy.mockImplementation(() => ({ TypeError: () => {} }));
-    expect(() => render(<AccessibleIconTest />)).toThrowError();
+    expect(() => render(<AccessibleIconTestWithoutChildren />)).toThrowError();
   });
 });
