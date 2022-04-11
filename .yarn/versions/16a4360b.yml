@@ -1,0 +1,5 @@
+releases:
+  "@radix-ui/react-scroll-area": patch
+
+declined:
+  - primitives

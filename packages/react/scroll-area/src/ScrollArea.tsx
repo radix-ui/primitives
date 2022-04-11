@@ -259,6 +259,7 @@ const ScrollAreaScrollbarHover = React.forwardRef<
       scrollArea.addEventListener('pointerenter', handlePointerEnter);
       scrollArea.addEventListener('pointerleave', handlePointerLeave);
       return () => {
+        window.clearTimeout(hideTimer);
         scrollArea.removeEventListener('pointerenter', handlePointerEnter);
         scrollArea.removeEventListener('pointerleave', handlePointerLeave);
       };
