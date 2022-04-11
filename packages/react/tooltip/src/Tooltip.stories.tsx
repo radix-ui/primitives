@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, TooltipArrow } from './Tooltip';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import * as Dialog from '@radix-ui/react-dialog';
 import { css } from '../../../../stitches.config';
 
 export default { title: 'Components/Tooltip' };
@@ -563,6 +564,54 @@ export const SlottableContent = () => (
     </Tooltip>
   </TooltipProvider>
 );
+
+export const WithinDialog = () => (
+  <TooltipProvider>
+    <Dialog.Root>
+      <Dialog.Trigger>Open dialog</Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>Dialog title</Dialog.Title>
+        <Dialog.Description>Dialog description</Dialog.Description>
+        <Dialog.Close>Close dialog</Dialog.Close>
+        <Tooltip>
+          <TooltipTrigger className={triggerClass}>Hover or Focus me</TooltipTrigger>
+          <TooltipContent className={contentClass} sideOffset={5}>
+            Nicely done!
+            <TooltipArrow className={arrowClass} offset={10} />
+          </TooltipContent>
+        </Tooltip>
+      </Dialog.Content>
+    </Dialog.Root>
+  </TooltipProvider>
+);
+
+export const KeepOpenOnActivation = () => {
+  const triggerRef = React.useRef(null);
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger
+          ref={triggerRef}
+          className={triggerClass}
+          onClick={(event) => event.preventDefault()}
+        >
+          Hover or Focus me
+        </TooltipTrigger>
+        <TooltipContent
+          className={contentClass}
+          sideOffset={5}
+          onPointerDownOutside={(event) => {
+            if (event.target === triggerRef.current) event.preventDefault();
+          }}
+        >
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 // change order slightly for more pleasing visual
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);

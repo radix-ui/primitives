@@ -2,18 +2,18 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
-import { usePrevious } from '@radix-ui/react-use-previous';
-import { useRect } from '@radix-ui/react-use-rect';
-import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
+import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
+import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
 import { Slottable } from '@radix-ui/react-slot';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { usePrevious } from '@radix-ui/react-use-previous';
+import { useRect } from '@radix-ui/react-use-rect';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
-import { useId } from '@radix-ui/react-id';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -251,7 +251,6 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onTriggerEnter)}
           onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onClose)}
           onMouseDown={composeEventHandlers(props.onMouseDown, () => {
-            context.onClose();
             isMouseDownRef.current = true;
             document.addEventListener('mouseup', handleMouseUp, { once: true });
           })}
@@ -301,12 +300,24 @@ const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentPro
 );
 
 type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface TooltipContentImplProps extends PopperContentProps {
   /**
    * A more descriptive label for accessibility purpose
    */
   'aria-label'?: string;
+
+  /**
+   * Event handler called when the escape key is down.
+   * Can be prevented.
+   */
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  /**
+   * Event handler called when the a `pointerdown` event happens outside of the `Tooltip`.
+   * Can be prevented.
+   */
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 
   /**
    * Whether the Tooltip should render in a Portal
@@ -322,14 +333,14 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       children,
       'aria-label': ariaLabel,
       portalled = true,
+      onEscapeKeyDown,
+      onPointerDownOutside,
       ...contentProps
     } = props;
     const context = useTooltipContext(CONTENT_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
     const PortalWrapper = portalled ? Portal : React.Fragment;
     const { onClose } = context;
-
-    useEscapeKeydown(() => onClose());
 
     React.useEffect(() => {
       // Close this tooltip if another one opens
@@ -340,23 +351,32 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
     return (
       <PortalWrapper>
         <CheckTriggerMoved __scopeTooltip={__scopeTooltip} />
-        <PopperPrimitive.Content
-          data-state={context.stateAttribute}
-          {...popperScope}
-          {...contentProps}
-          ref={forwardedRef}
-          style={{
-            ...contentProps.style,
-            // re-namespace exposed content custom property
-            ['--radix-tooltip-content-transform-origin' as any]:
-              'var(--radix-popper-transform-origin)',
-          }}
+        <DismissableLayer
+          asChild
+          disableOutsidePointerEvents={false}
+          onEscapeKeyDown={onEscapeKeyDown}
+          onPointerDownOutside={onPointerDownOutside}
+          onFocusOutside={(event) => event.preventDefault()}
+          onDismiss={onClose}
         >
-          <Slottable>{children}</Slottable>
-          <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
-            {ariaLabel || children}
-          </VisuallyHiddenPrimitive.Root>
-        </PopperPrimitive.Content>
+          <PopperPrimitive.Content
+            data-state={context.stateAttribute}
+            {...popperScope}
+            {...contentProps}
+            ref={forwardedRef}
+            style={{
+              ...contentProps.style,
+              // re-namespace exposed content custom property
+              ['--radix-tooltip-content-transform-origin' as any]:
+                'var(--radix-popper-transform-origin)',
+            }}
+          >
+            <Slottable>{children}</Slottable>
+            <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
+              {ariaLabel || children}
+            </VisuallyHiddenPrimitive.Root>
+          </PopperPrimitive.Content>
+        </DismissableLayer>
       </PortalWrapper>
     );
   }
