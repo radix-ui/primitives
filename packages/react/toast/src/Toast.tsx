@@ -187,13 +187,23 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       const viewport = ref.current;
       // Re-order DOM so most recent toasts are at top of DOM structure to improve tab order
       if (viewport) {
-        let moved: Node[] = [];
+        const prepended: Set<Node> = new Set();
         const observer = new MutationObserver((mutations) => {
-          const [childListMutation] = mutations;
-          childListMutation.addedNodes.forEach((node) => {
-            if (!moved.includes(node)) {
+          const addedNodes = mutations
+            .map((mutation) => Array.from(mutation.addedNodes))
+            .reduce((a, b) => a.concat(b));
+
+          addedNodes.forEach((node) => {
+            // mutation will immediately fire again when we prepend so we only prepend if
+            // it hasn't just prepended.
+            if (!prepended.has(node)) {
               viewport.prepend(node);
-              moved = [...moved, node];
+              prepended.add(node);
+            } else {
+              // this else catches the case where the mutation fires immediately after prepend.
+              // we remove from cache after it prepends to allow observer to catch future updates
+              // to DOM order, e.g. if `key` changes for a toast and is reportalled to bottom.
+              prepended.delete(node);
             }
           });
         });
@@ -255,7 +265,6 @@ const Toast = React.forwardRef<ToastElement, ToastProps>(
       defaultProp: defaultOpen,
       onChange: onOpenChange,
     });
-
     return (
       <Presence present={forceMount || open}>
         <ToastImpl

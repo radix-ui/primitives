@@ -128,6 +128,32 @@ export const Promise = () => {
   );
 };
 
+export const KeyChange = () => {
+  const [toastOneCount, setToastOneCount] = React.useState(0);
+  const [toastTwoCount, setToastTwoCount] = React.useState(0);
+
+  return (
+    <Toast.Provider>
+      <button onClick={() => setToastOneCount((count) => count + 1)}>Open toast one</button>
+      <button onClick={() => setToastTwoCount((count) => count + 1)}>Open toast two</button>
+
+      {toastOneCount > 0 && (
+        <Toast.Root key={'one-' + String(toastOneCount)} className={rootClass}>
+          <Toast.Description>Toast one</Toast.Description>
+        </Toast.Root>
+      )}
+
+      {toastTwoCount > 0 && (
+        <Toast.Root key={'two-' + String(toastTwoCount)} className={rootClass}>
+          <Toast.Description>Toast two</Toast.Description>
+        </Toast.Root>
+      )}
+
+      <Toast.Viewport className={viewportClass} />
+    </Toast.Provider>
+  );
+};
+
 type Direction = React.ComponentProps<typeof Toast.Provider>['swipeDirection'];
 
 export const Animated = () => {
