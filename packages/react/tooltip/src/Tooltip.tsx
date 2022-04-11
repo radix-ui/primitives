@@ -347,17 +347,16 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
     }, [onClose]);
 
     // Close the tooltip if the trigger is scrolled
-    const { trigger } = context;
     React.useEffect(() => {
-      if (trigger) {
+      if (context.trigger) {
         const handleScroll = (event: Event) => {
           const target = event.target as HTMLElement;
-          if (target?.contains(trigger)) onClose();
+          if (target?.contains(context.trigger)) onClose();
         };
         window.addEventListener('scroll', handleScroll, { capture: true });
         return () => window.removeEventListener('scroll', handleScroll, { capture: true });
       }
-    }, [trigger, onClose]);
+    }, [context.trigger, onClose]);
 
     return (
       <PortalWrapper>
