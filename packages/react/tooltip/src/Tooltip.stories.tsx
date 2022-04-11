@@ -613,6 +613,43 @@ export const KeepOpenOnActivation = () => {
   );
 };
 
+export const WithinScrollable = () => (
+  <TooltipProvider>
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        height: 500,
+        width: 300,
+        border: '1px solid black',
+        overflow: 'auto',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 600 }}>
+        <Tooltip>
+          <TooltipTrigger className={triggerClass}>Hover or Focus me</TooltipTrigger>
+          <TooltipContent className={contentClass} sideOffset={5}>
+            Nicely done!
+            <TooltipArrow className={arrowClass} offset={10} />
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </div>
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '150vh' }}
+    >
+      <Tooltip>
+        <TooltipTrigger className={triggerClass}>Hover or Focus me</TooltipTrigger>
+        <TooltipContent className={contentClass} sideOffset={5}>
+          Nicely done!
+          <TooltipArrow className={arrowClass} offset={10} />
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  </TooltipProvider>
+);
+
 // change order slightly for more pleasing visual
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
 

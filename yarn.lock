@@ -4008,8 +4008,6 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
-    "@radix-ui/react-use-previous": "workspace:*"
-    "@radix-ui/react-use-rect": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0
