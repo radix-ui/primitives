@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {
   Dialog,
+  DialogTitle,
+  DialogDescription,
   DialogTrigger,
   DialogOverlay,
   DialogContent,
@@ -13,6 +15,8 @@ export default function DialogPage() {
       <DialogTrigger>open</DialogTrigger>
       <DialogOverlay />
       <DialogContent>
+        <DialogTitle>Title</DialogTitle>
+        <DialogDescription>Description</DialogDescription>
         <DialogClose>close</DialogClose>
       </DialogContent>
     </Dialog>
