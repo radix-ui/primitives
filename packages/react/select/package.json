@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-select",
-  "version": "0.1.2-rc.3",
+  "version": "0.1.2-rc.9",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -22,6 +22,7 @@
     "@radix-ui/react-collection": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
+    "@radix-ui/react-direction": "workspace:*",
     "@radix-ui/react-dismissable-layer": "workspace:*",
     "@radix-ui/react-focus-scope": "workspace:*",
     "@radix-ui/react-id": "workspace:*",

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { DirectionProvider } from '@radix-ui/react-direction';
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
 import { css } from '../../../../stitches.config';
 
@@ -109,7 +110,6 @@ export const Multiple = () => {
 export const Chromatic = () => (
   <>
     <h1>Single</h1>
-
     <h2>Off</h2>
     <ToggleGroup type="single" className={rootClass}>
       <ToggleGroupItem value="1" className={itemClass}>
@@ -201,6 +201,35 @@ export const Chromatic = () => (
         Option 3
       </ToggleGroupItem>
     </ToggleGroup>
+
+    <h1>Direction</h1>
+    <h2>Prop</h2>
+    <ToggleGroup type="single" className={rootClass} defaultValue="1" dir="rtl">
+      <ToggleGroupItem value="1" className={itemClass}>
+        Option 1
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2" className={itemClass}>
+        Option 2
+      </ToggleGroupItem>
+      <ToggleGroupItem value="3" className={itemClass} disabled>
+        Option 3
+      </ToggleGroupItem>
+    </ToggleGroup>
+
+    <h2>Inherited</h2>
+    <DirectionProvider dir="rtl">
+      <ToggleGroup type="single" className={rootClass} defaultValue="1">
+        <ToggleGroupItem value="1" className={itemClass}>
+          Option 1
+        </ToggleGroupItem>
+        <ToggleGroupItem value="2" className={itemClass}>
+          Option 2
+        </ToggleGroupItem>
+        <ToggleGroupItem value="3" className={itemClass} disabled>
+          Option 3
+        </ToggleGroupItem>
+      </ToggleGroup>
+    </DirectionProvider>
 
     <h1>State attributes</h1>
     <h2>Group disabled</h2>

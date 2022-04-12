@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { DirectionProvider } from '@radix-ui/react-direction';
 import * as ScrollArea from './ScrollArea';
 import { css } from '../../../../stitches.config';
 
@@ -285,13 +286,13 @@ export const Chromatic = () => (
     </ScrollAreaStory>
 
     <h2>Inherited</h2>
-    <div dir="rtl">
+    <DirectionProvider dir="rtl">
       <ScrollAreaStory type="always" vertical horizontal>
         {Array.from({ length: 10 }).map((_, index) => (
           <Copy key={index} />
         ))}
       </ScrollAreaStory>
-    </div>
+    </DirectionProvider>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };

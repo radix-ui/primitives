@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-tooltip",
-  "version": "0.1.7",
+  "version": "0.1.8-rc.5",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -20,6 +20,7 @@
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
+    "@radix-ui/react-dismissable-layer": "workspace:*",
     "@radix-ui/react-id": "workspace:*",
     "@radix-ui/react-popper": "workspace:*",
     "@radix-ui/react-portal": "workspace:*",
@@ -27,9 +28,6 @@
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
-    "@radix-ui/react-use-escape-keydown": "workspace:*",
-    "@radix-ui/react-use-previous": "workspace:*",
-    "@radix-ui/react-use-rect": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*"
   },
   "peerDependencies": {
@@ -43,5 +41,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "0.1.7"
 }

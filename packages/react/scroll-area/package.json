@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-scroll-area",
-  "version": "0.1.4",
+  "version": "0.1.5-rc.3",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -21,10 +21,10 @@
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
+    "@radix-ui/react-direction": "workspace:*",
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-direction": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
@@ -40,5 +40,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "0.1.4"
 }

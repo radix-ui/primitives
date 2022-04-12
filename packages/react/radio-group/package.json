@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-radio-group",
-  "version": "0.1.5",
+  "version": "0.1.6-rc.3",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -20,6 +20,7 @@
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
+    "@radix-ui/react-direction": "workspace:*",
     "@radix-ui/react-label": "workspace:*",
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
@@ -38,5 +39,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "0.1.5"
 }

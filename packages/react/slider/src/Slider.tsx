@@ -4,7 +4,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { useDirection } from '@radix-ui/react-use-direction';
+import { useDirection } from '@radix-ui/react-direction';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -220,7 +220,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
     const rectRef = React.useRef<ClientRect>();
-    const direction = useDirection(slider, dir);
+    const direction = useDirection(dir);
     const isDirectionLTR = direction === 'ltr';
 
     function getValueFromPointer(pointerPosition: number) {
@@ -242,6 +242,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
         size="width"
       >
         <SliderImpl
+          dir={direction}
           data-orientation="horizontal"
           {...sliderProps}
           ref={composedRefs}

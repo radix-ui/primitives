@@ -5,6 +5,7 @@ import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { Toggle } from '@radix-ui/react-toggle';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useDirection } from '@radix-ui/react-direction';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -201,12 +202,13 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
       disabled = false,
       rovingFocus = true,
       orientation,
-      dir = 'ltr',
+      dir,
       loop = true,
       ...toggleGroupProps
     } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToggleGroup);
-    const commonProps = { role: 'group', dir, ...toggleGroupProps };
+    const direction = useDirection(dir);
+    const commonProps = { role: 'group', dir: direction, ...toggleGroupProps };
     return (
       <ToggleGroupContext scope={__scopeToggleGroup} rovingFocus={rovingFocus} disabled={disabled}>
         {rovingFocus ? (
@@ -214,7 +216,7 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
             asChild
             {...rovingFocusGroupScope}
             orientation={orientation}
-            dir={dir}
+            dir={direction}
             loop={loop}
           >
             <Primitive.div {...commonProps} ref={forwardedRef} />

@@ -11,6 +11,7 @@ import { useId } from '@radix-ui/react-id';
 import { useLabelContext } from '@radix-ui/react-label';
 import { Portal } from '@radix-ui/react-portal';
 import { Primitive } from '@radix-ui/react-primitive';
+import { useDirection } from '@radix-ui/react-direction';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -95,6 +96,7 @@ const Select: React.FC<React.PropsWithChildren<SelectProps>> = (
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
   const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
   const [valueNodeHasChildren, setValueNodeHasChildren] = React.useState(false);
+  const direction = useDirection(dir);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
@@ -124,7 +126,7 @@ const Select: React.FC<React.PropsWithChildren<SelectProps>> = (
       onValueChange={setValue}
       open={open}
       onOpenChange={setOpen}
-      dir={dir}
+      dir={direction}
       bubbleSelect={bubbleSelect}
       triggerPointerDownPosRef={triggerPointerDownPosRef}
     >

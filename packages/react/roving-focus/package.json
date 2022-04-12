@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-roving-focus",
-  "version": "0.1.5",
+  "version": "0.1.6-rc.3",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -21,6 +21,7 @@
     "@radix-ui/react-collection": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
+    "@radix-ui/react-direction": "workspace:*",
     "@radix-ui/react-id": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
@@ -36,5 +37,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "0.1.5"
 }

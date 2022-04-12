@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { DirectionProvider } from '@radix-ui/react-direction';
 import { Slider, SliderTrack, SliderRange, SliderThumb } from './Slider';
 import { css } from '../../../../stitches.config';
 import serialize from 'form-serialize';
@@ -256,7 +257,8 @@ export const Chromatic = () => (
       <SliderThumb className={thumbClass} />
     </Slider>
 
-    <h2>RTL</h2>
+    <h1>Direction</h1>
+    <h2>Prop</h2>
     <Slider className={rootClass} value={[20]} dir="rtl">
       <SliderTrack className={trackClass}>
         <SliderRange className={rangeClass} />
@@ -270,6 +272,23 @@ export const Chromatic = () => (
       <SliderThumb className={thumbClass} />
       <SliderThumb className={thumbClass} />
     </Slider>
+
+    <h2>Inherited</h2>
+    <DirectionProvider dir="rtl">
+      <Slider className={rootClass} value={[20]}>
+        <SliderTrack className={trackClass}>
+          <SliderRange className={rangeClass} />
+        </SliderTrack>
+        <SliderThumb className={thumbClass} />
+      </Slider>
+      <Slider className={rootClass} value={[10, 30]}>
+        <SliderTrack className={trackClass}>
+          <SliderRange className={rangeClass} />
+        </SliderTrack>
+        <SliderThumb className={thumbClass} />
+        <SliderThumb className={thumbClass} />
+      </Slider>
+    </DirectionProvider>
 
     <h1>Scenarios</h1>
     <h2>Extremes</h2>
