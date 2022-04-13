@@ -35,10 +35,10 @@ const [ContextMenuProvider, useContextMenuContext] =
   createContextMenuContext<ContextMenuContextValue>(CONTEXT_MENU_NAME);
 
 interface ContextMenuProps {
+  children?: React.ReactNode;
   onOpenChange?(open: boolean): void;
   dir?: Direction;
   modal?: boolean;
-  children?: React.ReactNode;
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuProps>) => {
@@ -49,7 +49,7 @@ const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuP
   const handleOpenChangeProp = useCallbackRef(onOpenChange);
 
   const handleOpenChange = React.useCallback(
-    (open) => {
+    (open: boolean) => {
       setOpen(open);
       handleOpenChangeProp(open);
     },

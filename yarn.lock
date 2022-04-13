@@ -3214,7 +3214,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3232,7 +3232,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3248,8 +3248,8 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
-    react: ">=16.8"
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3262,8 +3262,8 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3274,7 +3274,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3285,7 +3285,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3299,7 +3299,7 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3318,7 +3318,7 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3336,7 +3336,7 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3350,7 +3350,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3360,7 +3360,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3375,8 +3375,8 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3386,7 +3386,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3410,8 +3410,8 @@ __metadata:
     aria-hidden: ^1.1.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3421,7 +3421,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3438,7 +3438,7 @@ __metadata:
     "@radix-ui/react-use-escape-keydown": "workspace:*"
     react-remove-scroll: ^2.4.0
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3455,8 +3455,8 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3466,7 +3466,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3479,7 +3479,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3498,8 +3498,8 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3510,7 +3510,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3524,7 +3524,7 @@ __metadata:
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3551,8 +3551,8 @@ __metadata:
     aria-hidden: ^1.1.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3576,8 +3576,8 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3587,7 +3587,7 @@ __metadata:
   dependencies:
     "@testing-library/react": ^10.4.8
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3611,8 +3611,8 @@ __metadata:
     aria-hidden: ^1.1.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3630,7 +3630,7 @@ __metadata:
     "@radix-ui/react-use-size": "workspace:*"
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3642,8 +3642,8 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3655,7 +3655,7 @@ __metadata:
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
-    react: ">=16.8"
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3667,7 +3667,7 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@testing-library/react": ^10.4.8
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3679,7 +3679,7 @@ __metadata:
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3700,7 +3700,7 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3719,7 +3719,7 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3739,7 +3739,7 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3768,8 +3768,8 @@ __metadata:
     aria-hidden: ^1.1.1
     react-remove-scroll: ^2.4.0
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3780,7 +3780,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3803,7 +3803,7 @@ __metadata:
     "@types/form-serialize": ^0
     form-serialize: ^0.7.2
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3814,7 +3814,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3832,7 +3832,7 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3849,7 +3849,7 @@ __metadata:
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3870,8 +3870,8 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3888,7 +3888,7 @@ __metadata:
     "@radix-ui/react-toggle": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3901,7 +3901,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3918,7 +3918,7 @@ __metadata:
     "@radix-ui/react-separator": "workspace:*"
     "@radix-ui/react-toggle-group": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3940,8 +3940,8 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
-    react-dom: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3952,7 +3952,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3962,7 +3962,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3973,7 +3973,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3984,7 +3984,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3994,7 +3994,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -4004,7 +4004,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -4015,7 +4015,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -4026,7 +4026,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -4037,7 +4037,7 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
-    react: ^16.8 || ^17.0
+    react: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -5165,6 +5165,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-dom@npm:^18.0.0":
+  version: 18.0.0
+  resolution: "@types/react-dom@npm:18.0.0"
+  dependencies:
+    "@types/react": "*"
+  checksum: 0d8c9cb3e72aefe0dd2b58a49845a200369f01ae92f3f11f642e04efc95dfd1c9380b6592d4273dd6113fb8707947d15b66d56c75c41f39f28bd897f0c08dfa9
+  languageName: node
+  linkType: hard
+
 "@types/react-syntax-highlighter@npm:11.0.4":
   version: 11.0.4
   resolution: "@types/react-syntax-highlighter@npm:11.0.4"
@@ -5202,6 +5211,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 8b3e543bcde1f244246dff0a73ef604880514799a9e8c0d1371d3ac79f0b6b1e5aef27fa28a5bb66991e28662764bc40bff926de07762e8d5ff480bb372dc1de
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.0.3":
+  version: 18.0.3
+  resolution: "@types/react@npm:18.0.3"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 4bd1f088b4650af95fa3c6f592221b5d151af96ea619d34536fdc4f8bbf7c0807a5154c4e75911ed851e654da3a99d7c138f5f14aa17e00d39d3258af89c0d98
   languageName: node
   linkType: hard
 
@@ -16573,8 +16593,8 @@ fsevents@~2.1.2:
     "@types/eslint": ^7.28.0
     "@types/jest": ^26.0.10
     "@types/jest-axe": ^3.5.0
-    "@types/react": ^17
-    "@types/react-dom": ^17
+    "@types/react": ^18.0.3
+    "@types/react-dom": ^18.0.0
     "@types/react-test-renderer": ^16.9.3
     "@typescript-eslint/eslint-plugin": ^4.29.2
     "@typescript-eslint/parser": ^4.29.2
@@ -16598,8 +16618,8 @@ fsevents@~2.1.2:
     parcel: 2.0.0-nightly.442
     prettier: ^2.0.5
     pretty-quick: ^2.0.1
-    react: ^17.0.1
-    react-dom: ^17.0.1
+    react: ^18.0.0
+    react-dom: ^18.0.0
     react-test-renderer: ^17.0.1
     replace-in-files: ^3.0.0
     start-server-and-test: ^1.12.5
@@ -17065,6 +17085,18 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"react-dom@npm:^18.0.0":
+  version: 18.0.0
+  resolution: "react-dom@npm:18.0.0"
+  dependencies:
+    loose-envify: ^1.1.0
+    scheduler: ^0.21.0
+  peerDependencies:
+    react: ^18.0.0
+  checksum: dd0ba9f2f31dd728076c892a95b2f5a8dfe79136431b0289afb46eec39d0ca6b6f0f40a60fd8aa6ef702c98ce7c26100d3d4dbc35c7c9e87429cd04f84cb58bd
+  languageName: node
+  linkType: hard
+
 "react-draggable@npm:^4.0.3":
   version: 4.4.3
   resolution: "react-draggable@npm:4.4.3"
@@ -17306,6 +17338,15 @@ fsevents@~2.1.2:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: b254cc17ce3011788330f7bbf383ab653c6848902d7936a87b09d835d091e3f295f7e9dd1597c6daac5dc80f90e778c8230218ba8ad599f74adcc11e33b9d61b
+  languageName: node
+  linkType: hard
+
+"react@npm:^18.0.0":
+  version: 18.0.0
+  resolution: "react@npm:18.0.0"
+  dependencies:
+    loose-envify: ^1.1.0
+  checksum: 293020b96536b3c7113ee57ca5c990a3f25649d1751b1c7a3aabd16dff0691fe9f1eed1206616d0906d05933536052037340a0c8d0941ff870b0eb469a2f975b
   languageName: node
   linkType: hard
 
@@ -17962,6 +18003,15 @@ resolve@^2.0.0-next.3:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: c4b35cf967c8f0d3e65753252d0f260271f81a81e427241295c5a7b783abf4ea9e905f22f815ab66676f5313be0a25f47be582254db8f9241b259213e999b8fc
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.21.0":
+  version: 0.21.0
+  resolution: "scheduler@npm:0.21.0"
+  dependencies:
+    loose-envify: ^1.1.0
+  checksum: 4f8285076041ed2c81acdd1faa987f1655fdbd30554bc667c1ea64743fc74fb3a04ca7d27454b3d678735df5a230137a3b84756061b43dc5796e80701b66d124
   languageName: node
   linkType: hard
 

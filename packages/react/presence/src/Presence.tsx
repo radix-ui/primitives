@@ -4,8 +4,8 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './useStateMachine';
 
 interface PresenceProps {
-  present: boolean;
   children: React.ReactElement | ((props: { present: boolean }) => React.ReactElement);
+  present: boolean;
 }
 
 const Presence: React.FC<PresenceProps> = (props) => {

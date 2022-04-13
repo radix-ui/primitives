@@ -49,12 +49,12 @@ const [DropdownMenuProvider, useDropdownMenuContext] = createDropdownMenuContext
 >(DROPDOWN_MENU_NAME);
 
 interface DropdownMenuProps {
+  children?: React.ReactNode;
   dir?: Direction;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
   modal?: boolean;
-  children?: React.ReactNode;
 }
 
 const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMenuProps>) => {
@@ -93,12 +93,12 @@ DropdownMenu.displayName = DROPDOWN_MENU_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 interface DropdownMenuRootProps {
+  children?: React.ReactNode;
   dir?: Direction;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   modal?: boolean;
-  children?: React.ReactNode;
 }
 
 const DropdownMenuRoot: React.FC<DropdownMenuRootProps> = (

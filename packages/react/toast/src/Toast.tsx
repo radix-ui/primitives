@@ -42,6 +42,7 @@ const [ToastProviderProvider, useToastProviderContext] =
   createToastContext<ToastProviderContextValue>(PROVIDER_NAME);
 
 interface ToastProviderProps {
+  children?: React.ReactNode;
   /**
    * An author-localized label for each toast. Used to help screen reader users
    * associate the interruption with a toast.
@@ -63,7 +64,6 @@ interface ToastProviderProps {
    * @defaultValue 50
    */
   swipeThreshold?: number;
-  children?: React.ReactNode;
 }
 
 const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastProviderProps>) => {
@@ -369,7 +369,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     });
 
     const startTimer = React.useCallback(
-      (duration) => {
+      (duration: number) => {
         if (!duration || duration === Infinity) return;
         window.clearTimeout(closeTimerRef.current);
         closeTimerStartTimeRef.current = new Date().getTime();

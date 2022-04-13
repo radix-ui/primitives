@@ -34,7 +34,7 @@
     "form-serialize": "^0.7.2"
   },
   "peerDependencies": {
-    "react": "^16.8 || ^17.0"
+    "react": "^16.8 || ^17.0 || ^18.0"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {

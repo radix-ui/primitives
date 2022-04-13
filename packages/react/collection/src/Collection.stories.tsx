@@ -129,7 +129,7 @@ const [Collection, useCollection] = createCollection<React.ElementRef<typeof Ite
   'List'
 );
 
-const List: React.FC = (props) => {
+const List: React.FC<{ children: React.ReactNode }> = (props) => {
   return (
     <Collection.Provider scope={undefined}>
       <Collection.Slot scope={undefined}>
