@@ -2,7 +2,6 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "paths": {
-      "*": ["node_modules/*"],
       "@radix-ui/number": ["./packages/core/number/src"],
       "@radix-ui/popper": ["./packages/core/popper/src"],
       "@radix-ui/primitive": ["./packages/core/primitive/src"],
