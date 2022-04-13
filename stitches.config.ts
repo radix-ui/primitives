@@ -1,22 +1,14 @@
-import { createStyled } from '@stitches/react';
+import { createStitches } from '@stitches/core';
 
-if (!(createStyled as any)._hmr) {
-  process.nextTick(() => {
-    (createStyled as any)._hmr = true;
-    (module as any).hot.invalidate();
-    (module as any).hot.apply({});
-  });
-}
-
-export const { styled, css } = createStyled({
-  tokens: {
+export const { css, keyframes } = createStitches({
+  theme: {
     colors: {
-      $white: '#fff',
-      $gray100: '#ccc',
-      $gray300: '#aaa',
-      $black: '#111',
-      $red: 'crimson',
-      $green: 'green',
+      white: '#fff',
+      gray100: '#ccc',
+      gray300: '#aaa',
+      black: '#111',
+      red: 'crimson',
+      green: 'green',
     },
   },
 });
