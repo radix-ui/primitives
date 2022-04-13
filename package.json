@@ -11,7 +11,7 @@
     "lint": "eslint packages --ext .js,.ts,.tsx",
     "types:check": "tsc --skipLibCheck --noEmit",
     "test": "jest",
-    "test:ci": "jest --ci && yarn cypress:ci",
+    "test:ci": "yarn types:check && jest --ci && yarn cypress:ci",
     "storybook": "start-storybook -p 9009 --ci",
     "cypress:ci": "start-server-and-test storybook http://localhost:9009 cypress:run",
     "cypress:run": "cypress run",
