@@ -559,7 +559,7 @@ const buttonClass = css({
   border: '1px solid black',
   borderRadius: 4,
   background: 'gainsboro',
-  font: 'inherit',
+  fontFamily: 'inherit',
   padding: '2px 5px',
   '&:hover, &:focus': {
     background: 'royalblue',
