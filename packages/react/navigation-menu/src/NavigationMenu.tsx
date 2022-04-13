@@ -70,8 +70,9 @@ type NavigationMenuContextValue = {
 const [NavigationMenuProviderImpl, useNavigationMenuContext] =
   createNavigationMenuContext<NavigationMenuContextValue>(NAVIGATION_MENU_NAME);
 
-const [ViewportContentProvider, useViewportContentContext] =
-  createNavigationMenuContext<{ items: Map<string, ContentData> }>(NAVIGATION_MENU_NAME);
+const [ViewportContentProvider, useViewportContentContext] = createNavigationMenuContext<{
+  items: Map<string, ContentData>;
+}>(NAVIGATION_MENU_NAME);
 
 type NavigationMenuElement = React.ElementRef<typeof Primitive.nav>;
 type PrimitiveNavProps = Radix.ComponentPropsWithoutRef<typeof Primitive.nav>;
@@ -534,16 +535,14 @@ const NavigationMenuIndicator = React.forwardRef<
   const context = useNavigationMenuContext(INDICATOR_NAME, props.__scopeNavigationMenu);
   const isVisible = Boolean(context.value);
 
-  return context.indicatorTrack ? (
-    <>
-      {ReactDOM.createPortal(
+  return context.indicatorTrack
+    ? ReactDOM.createPortal(
         <Presence present={forceMount || isVisible}>
           <NavigationMenuIndicatorImpl {...indicatorProps} ref={forwardedRef} />
         </Presence>,
         context.indicatorTrack
-      )}
-    </>
-  ) : null;
+      )
+    : null;
 });
 
 NavigationMenuIndicator.displayName = INDICATOR_NAME;
