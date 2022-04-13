@@ -33,30 +33,34 @@ const Portal = React.forwardRef<PortalElement, PortalProps>((props, forwardedRef
   }, []);
 
   if (hostElement) {
-    return ReactDOM.createPortal(
-      <Primitive.div
-        data-radix-portal=""
-        {...portalProps}
-        ref={forwardedRef}
-        style={
-          /**
-           * If the Portal is injected in `body`, we assume we want whatever is portalled
-           * to appear on top of everything. Ideally this would be handled by making sure the
-           * app root creates a new stacking context, however this is quite hard to automate.
-           * For this reason, we have opted for setting the max z-index on the portal itself.
-           */
-          hostElement === document.body
-            ? {
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                zIndex: MAX_Z_INDEX,
-                ...style,
-              }
-            : undefined
-        }
-      />,
-      hostElement
+    return (
+      <>
+        {ReactDOM.createPortal(
+          <Primitive.div
+            data-radix-portal=""
+            {...portalProps}
+            ref={forwardedRef}
+            style={
+              /**
+               * If the Portal is injected in `body`, we assume we want whatever is portalled
+               * to appear on top of everything. Ideally this would be handled by making sure the
+               * app root creates a new stacking context, however this is quite hard to automate.
+               * For this reason, we have opted for setting the max z-index on the portal itself.
+               */
+              hostElement === document.body
+                ? {
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: MAX_Z_INDEX,
+                    ...style,
+                  }
+                : undefined
+            }
+          />,
+          hostElement
+        )}
+      </>
     );
   }
 
@@ -80,9 +84,9 @@ interface UnstablePortalProps extends PrimitiveDivProps {
 const UnstablePortal = React.forwardRef<UnstablePortalElement, UnstablePortalProps>(
   (props, forwardedRef) => {
     const { container = globalThis?.document?.body, ...portalProps } = props;
-    return container
-      ? ReactDOM.createPortal(<Primitive.div {...portalProps} ref={forwardedRef} />, container)
-      : null;
+    return container ? (
+      <>{ReactDOM.createPortal(<Primitive.div {...portalProps} ref={forwardedRef} />, container)}</>
+    ) : null;
   }
 );
 
