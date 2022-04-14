@@ -37,12 +37,12 @@ const [HoverCardProvider, useHoverCardContext] =
   createHoverCardContext<HoverCardContextValue>(HOVERCARD_NAME);
 
 interface HoverCardProps {
+  children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   openDelay?: number;
   closeDelay?: number;
-  children?: React.ReactNode;
 }
 
 const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>) => {

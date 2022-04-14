@@ -83,11 +83,11 @@ const [MenuProvider, useMenuContext] = createMenuContext<
 >(MENU_NAME);
 
 interface MenuProps {
+  children?: React.ReactNode;
   open?: boolean;
   onOpenChange?(open: boolean): void;
   dir?: Direction;
   modal?: boolean;
-  children?: React.ReactNode;
 }
 
 const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
@@ -142,9 +142,9 @@ Menu.displayName = MENU_NAME;
 const SUB_NAME = 'MenuSub';
 
 interface MenuSubProps {
+  children?: React.ReactNode;
   open?: boolean;
   onOpenChange?(open: boolean): void;
-  children?: React.ReactNode;
 }
 
 const MenuSub: React.FC<MenuSubProps> = (props: ScopedProps<MenuSubProps>) => {

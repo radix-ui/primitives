@@ -65,6 +65,7 @@ type SelectContextValue = {
 const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
 
 interface SelectProps {
+  children?: React.ReactNode;
   value?: string;
   defaultValue?: string;
   onValueChange?(value: string): void;
@@ -74,7 +75,6 @@ interface SelectProps {
   dir?: Direction;
   name?: string;
   autoComplete?: string;
-  children?: React.ReactNode;
 }
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
@@ -537,7 +537,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     // trigger => selectedItem alignment off by the amount the viewport was pushed down.
     // We wait for this to happen and then re-run the positining logic one more time to account for it.
     const handleScrollButtonChange = React.useCallback(
-      (node) => {
+      (node: SelectScrollButtonImplElement) => {
         if (node && shouldRepositionRef.current === true) {
           position();
           focusSelectedItem();

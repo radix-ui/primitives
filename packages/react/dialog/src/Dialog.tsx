@@ -43,6 +43,7 @@ const [DialogProvider, useDialogContext] = createDialogContext<DialogContextValu
 
 type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 interface DialogProps {
+  children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
@@ -51,7 +52,6 @@ interface DialogProps {
    * @see https://github.com/theKashey/react-remove-scroll#usage
    */
   allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
-  children?: React.ReactNode;
 }
 
 const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {

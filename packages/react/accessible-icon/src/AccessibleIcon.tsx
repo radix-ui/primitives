@@ -4,6 +4,7 @@ import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 const NAME = 'AccessibleIcon';
 
 interface AccessibleIconProps {
+  children?: React.ReactNode;
   /**
    * The accessible label for the icon. This label will be visually hidden but announced to screen
    * reader users, similar to `alt` text for `img` tags.

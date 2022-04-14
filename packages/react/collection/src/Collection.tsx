@@ -34,7 +34,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
     { collectionRef: { current: null }, itemMap: new Map() }
   );
 
-  const CollectionProvider: React.FC<{ scope: any }> = (props) => {
+  const CollectionProvider: React.FC<{ children?: React.ReactNode; scope: any }> = (props) => {
     const { scope, children } = props;
     const ref = React.useRef<CollectionElement>(null);
     const itemMap = React.useRef<ContextValue['itemMap']>(new Map()).current;

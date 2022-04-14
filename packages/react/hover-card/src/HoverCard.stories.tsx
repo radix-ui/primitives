@@ -27,7 +27,7 @@ export const AsyncUpdate = () => {
   const [contentLoaded, setContentLoaded] = React.useState(false);
   const timerRef = React.useRef(0);
 
-  const handleOpenChange = React.useCallback((open) => {
+  const handleOpenChange = React.useCallback((open: boolean) => {
     clearTimeout(timerRef.current);
 
     if (open) {

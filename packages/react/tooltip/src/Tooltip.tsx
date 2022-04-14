@@ -46,6 +46,7 @@ const [TooltipProviderContextProvider, useTooltipProviderContext] =
   });
 
 interface TooltipProviderProps {
+  children: React.ReactNode;
   /**
    * The duration from when the mouse enters the trigger until the tooltip gets opened.
    * @defaultValue 700
@@ -56,7 +57,6 @@ interface TooltipProviderProps {
    * @defaultValue 300
    */
   skipDelayDuration?: number;
-  children: React.ReactNode;
 }
 
 const TooltipProvider: React.FC<TooltipProviderProps> = (
@@ -121,6 +121,7 @@ const [TooltipContextProvider, useTooltipContext] =
   createTooltipContext<TooltipContextValue>(TOOLTIP_NAME);
 
 interface TooltipProps {
+  children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -131,7 +132,6 @@ interface TooltipProps {
    * @defaultValue 700
    */
   delayDuration?: number;
-  children?: React.ReactNode;
 }
 
 const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {

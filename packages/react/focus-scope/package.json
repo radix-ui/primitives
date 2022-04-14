@@ -22,7 +22,7 @@
     "@radix-ui/react-use-callback-ref": "workspace:*"
   },
   "peerDependencies": {
-    "react": "^16.8 || ^17.0"
+    "react": "^16.8 || ^17.0 || ^18.0"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {

@@ -53,19 +53,14 @@ describe('given a default AccessibleIcon', () => {
 });
 
 describe('given an AccessibleIcon without children', () => {
-  let spy: jest.SpyInstance;
-
-  beforeEach(() => {
-    spy = jest.spyOn(global, 'window', 'get');
-  });
-
-  afterEach(() => {
-    spy.mockRestore();
-  });
-
   it('should error', () => {
-    // Mock error to prevent it from logging to console
-    spy.mockImplementation(() => ({ TypeError: () => {} }));
+    // Even though the error is caught, it still gets printed to the console
+    // so we mock that out to avoid the wall of red text.
+    const spy = jest.spyOn(console, 'error');
+    spy.mockImplementation(() => {});
+
     expect(() => render(<AccessibleIconTest />)).toThrowError();
+
+    spy.mockRestore();
   });
 });

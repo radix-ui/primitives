@@ -46,11 +46,11 @@ const [PopoverProvider, usePopoverContext] =
   createPopoverContext<PopoverContextValue>(POPOVER_NAME);
 
 interface PopoverProps {
+  children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   modal?: boolean;
-  children?: React.ReactNode;
 }
 
 const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {

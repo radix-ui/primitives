@@ -145,12 +145,13 @@ const ToggleGroupImplMultiple = React.forwardRef<
   });
 
   const handleButtonActivate = React.useCallback(
-    (itemValue) => setValue((prevValue = []) => [...prevValue, itemValue]),
+    (itemValue: string) => setValue((prevValue = []) => [...prevValue, itemValue]),
     [setValue]
   );
 
   const handleButtonDeactivate = React.useCallback(
-    (itemValue) => setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
+    (itemValue: string) =>
+      setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
     [setValue]
   );
 

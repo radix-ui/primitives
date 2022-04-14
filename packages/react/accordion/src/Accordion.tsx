@@ -184,12 +184,13 @@ const AccordionImplMultiple = React.forwardRef<
   });
 
   const handleItemOpen = React.useCallback(
-    (itemValue) => setValue((prevValue = []) => [...prevValue, itemValue]),
+    (itemValue: string) => setValue((prevValue = []) => [...prevValue, itemValue]),
     [setValue]
   );
 
   const handleItemClose = React.useCallback(
-    (itemValue) => setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
+    (itemValue: string) =>
+      setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
     [setValue]
   );
 

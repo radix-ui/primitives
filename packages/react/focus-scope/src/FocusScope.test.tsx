@@ -1,6 +1,6 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { FocusScope } from './FocusScope';
 import type { RenderResult } from '@testing-library/react';
 
@@ -43,7 +43,7 @@ describe('FocusScope', () => {
     it('should focus the last element in the scope on shift+tab from the first element in scope', () => {
       tabbableFirst.focus();
       userEvent.tab({ shift: true });
-      expect(tabbableLast).toHaveFocus();
+      waitFor(() => expect(tabbableLast).toHaveFocus());
     });
 
     it('should focus the first element in scope on tab from the last element in scope', async () => {
@@ -85,7 +85,7 @@ describe('FocusScope', () => {
     it('should skip the element with a negative tabindex on shift+tab', () => {
       tabbableSecond.focus();
       userEvent.tab({ shift: true });
-      expect(tabbableLast).toHaveFocus();
+      waitFor(() => expect(tabbableLast).toHaveFocus());
     });
   });
 
@@ -112,7 +112,7 @@ describe('FocusScope', () => {
       tabbableFirst.focus();
       userEvent.tab({ shift: true });
       userEvent.tab();
-      expect(handleLastFocusableElementBlur).toHaveBeenCalledTimes(1);
+      waitFor(() => expect(handleLastFocusableElementBlur).toHaveBeenCalledTimes(1));
     });
   });
 });

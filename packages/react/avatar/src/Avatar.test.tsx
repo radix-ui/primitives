@@ -1,7 +1,7 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import * as Avatar from './Avatar';
 
 const ROOT_TEST_ID = 'avatar-root';
@@ -31,7 +31,6 @@ describe('given an Avatar with fallback and a working image', () => {
   const orignalGlobalImage = window.Image;
 
   beforeAll(() => {
-    jest.useFakeTimers();
     (window.Image as any) = class MockImage {
       onload: () => void = () => {};
       src: string = '';
@@ -45,7 +44,6 @@ describe('given an Avatar with fallback and a working image', () => {
   });
 
   afterAll(() => {
-    jest.useRealTimers();
     window.Image = orignalGlobalImage;
   });
 
@@ -69,18 +67,12 @@ describe('given an Avatar with fallback and a working image', () => {
   });
 
   it('should render the image after it has loaded', async () => {
-    await waitFor(() => {
-      jest.advanceTimersByTime(DELAY);
-    });
-    image = rendered.queryByRole('img');
+    image = await rendered.findByRole('img');
     expect(image).toBeInTheDocument();
   });
 
   it('should have alt text on the image', async () => {
-    await waitFor(() => {
-      jest.advanceTimersByTime(DELAY);
-    });
-    image = rendered.queryByAltText(IMAGE_ALT_TEXT);
+    image = await rendered.findByAltText(IMAGE_ALT_TEXT);
     expect(image).toBeInTheDocument();
   });
 });
@@ -88,10 +80,6 @@ describe('given an Avatar with fallback and a working image', () => {
 describe('given an Avatar with fallback and delayed render', () => {
   let rendered: RenderResult;
   let fallback: HTMLElement | null;
-
-  beforeAll(() => {
-    jest.useFakeTimers();
-  });
 
   beforeEach(() => {
     rendered = render(
@@ -101,20 +89,15 @@ describe('given an Avatar with fallback and delayed render', () => {
     );
   });
 
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
   it('should not render a fallback immediately', () => {
     fallback = rendered.queryByText(FALLBACK_TEXT);
     expect(fallback).not.toBeInTheDocument();
   });
 
   it('should render a fallback after the delay', async () => {
-    await waitFor(() => {
-      jest.advanceTimersByTime(DELAY);
-      fallback = rendered.queryByText(FALLBACK_TEXT);
-    });
+    fallback = rendered.queryByText(FALLBACK_TEXT);
+    expect(fallback).not.toBeInTheDocument();
+    fallback = await rendered.findByText(FALLBACK_TEXT);
     expect(fallback).toBeInTheDocument();
   });
 });

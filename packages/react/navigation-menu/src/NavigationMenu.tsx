@@ -70,8 +70,9 @@ type NavigationMenuContextValue = {
 const [NavigationMenuProviderImpl, useNavigationMenuContext] =
   createNavigationMenuContext<NavigationMenuContextValue>(NAVIGATION_MENU_NAME);
 
-const [ViewportContentProvider, useViewportContentContext] =
-  createNavigationMenuContext<{ items: Map<string, ContentData> }>(NAVIGATION_MENU_NAME);
+const [ViewportContentProvider, useViewportContentContext] = createNavigationMenuContext<{
+  items: Map<string, ContentData>;
+}>(NAVIGATION_MENU_NAME);
 
 type NavigationMenuElement = React.ElementRef<typeof Primitive.nav>;
 type PrimitiveNavProps = Radix.ComponentPropsWithoutRef<typeof Primitive.nav>;

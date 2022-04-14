@@ -11,7 +11,7 @@
     "lint": "eslint packages --ext .js,.ts,.tsx",
     "types:check": "tsc --skipLibCheck --noEmit",
     "test": "jest",
-    "test:ci": "jest --ci && yarn cypress:ci",
+    "test:ci": "yarn types:check && jest --ci && yarn cypress:ci",
     "storybook": "start-storybook -p 9009 --ci",
     "cypress:ci": "start-server-and-test storybook http://localhost:9009 cypress:run",
     "cypress:run": "cypress run",
@@ -33,8 +33,8 @@
     "bump:check": "yarn version check"
   },
   "dependencies": {
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
@@ -47,16 +47,16 @@
     "@storybook/addon-storysource": "6.1.0-beta.4",
     "@storybook/react": "6.1.0-beta.4",
     "@testing-library/cypress": "^7.0.6",
-    "@testing-library/jest-dom": "^5.11.3",
-    "@testing-library/react": "^10.4.8",
-    "@testing-library/user-event": "^12.6.0",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.0.1",
+    "@testing-library/user-event": "^14.1.0",
     "@types/babel__template": "^7",
     "@types/eslint": "^7.28.0",
-    "@types/jest": "^26.0.10",
-    "@types/jest-axe": "^3.5.0",
-    "@types/react": "^17",
-    "@types/react-dom": "^17",
-    "@types/react-test-renderer": "^16.9.3",
+    "@types/jest": "^27.4.1",
+    "@types/jest-axe": "^3.5.3",
+    "@types/react": "^18.0.3",
+    "@types/react-dom": "^18.0.0",
+    "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "babel-eslint": "^10.1.0",
@@ -72,17 +72,17 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^4.3.6",
-    "jest": "^26.4.0",
-    "jest-axe": "^3.5.0",
-    "jest-watch-typeahead": "^0.6.0",
+    "jest": "^27.5.1",
+    "jest-axe": "^6.0.0",
+    "jest-watch-typeahead": "^1.0.0",
     "lint-staged": "^10.5.3",
     "parcel": "2.0.0-nightly.442",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
-    "react-test-renderer": "^17.0.1",
+    "react-test-renderer": "^18.0.0",
     "replace-in-files": "^3.0.0",
     "start-server-and-test": "^1.12.5",
-    "ts-jest": "^26.2.0",
+    "ts-jest": "^27.1.4",
     "typescript": "^3.9.7"
   },
   "resolutions": {
@@ -93,6 +93,7 @@
     "yarn": ">=2"
   },
   "jest": {
+    "testEnvironment": "jsdom",
     "roots": [
       "<rootDir>/packages"
     ],

@@ -336,7 +336,7 @@ export const Submenus = () => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const StoryFrame: React.FC = ({ children }) => {
+const StoryFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [rtl, setRtl] = React.useState(false);
 
   return (
@@ -389,7 +389,10 @@ const StoryFrame: React.FC = ({ children }) => {
   );
 };
 
-const TriggerWithIndicator: React.FC<{ disabled?: boolean }> = ({ children, disabled }) => {
+const TriggerWithIndicator: React.FC<{ children?: React.ReactNode; disabled?: boolean }> = ({
+  children,
+  disabled,
+}) => {
   return (
     <NavigationMenu.Trigger className={triggerClass} disabled={disabled}>
       {children}
