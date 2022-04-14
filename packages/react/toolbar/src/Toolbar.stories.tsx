@@ -1,24 +1,11 @@
 import * as React from 'react';
 import { DirectionProvider } from '@radix-ui/react-direction';
-import {
-  Toolbar,
-  ToolbarSeparator,
-  ToolbarButton,
-  ToolbarLink,
-  ToolbarToggleGroup,
-  ToolbarToggleItem,
-} from './Toolbar';
 import { css } from '../../../../stitches.config';
-import { Toggle } from '@radix-ui/react-toggle';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuArrow,
-} from '@radix-ui/react-dropdown-menu';
-
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { classes } from '../../menu/src/Menu.stories';
+import { Toggle } from '@radix-ui/react-toggle';
+import * as Toolbar from '@radix-ui/react-toolbar';
+
 const { contentClass: dropdownMenuContentClass, itemClass: dropdownMenuItemClass } = classes;
 
 export default { title: 'Components/Toolbar' };
@@ -51,53 +38,53 @@ Chromatic.parameters = { chromatic: { disable: false } };
 const ToolbarExample = ({ title, dir, orientation }: any) => (
   <div style={{ padding: 1, margin: -1 }}>
     <h1>{title}</h1>
-    <Toolbar
-      className={toolbarClass}
+    <Toolbar.Root
+      className={toolbarClass()}
       orientation={orientation}
       loop={true}
       aria-label={`${title} toolbar`}
       dir={dir}
     >
-      <ToolbarButton className={toolbarItemClass}>Button</ToolbarButton>
-      <ToolbarButton className={toolbarItemClass} disabled>
+      <Toolbar.Button className={toolbarItemClass()}>Button</Toolbar.Button>
+      <Toolbar.Button className={toolbarItemClass()} disabled>
         Button (disabled)
-      </ToolbarButton>
-      <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-      <ToolbarLink
-        className={toolbarLinkClass}
+      </Toolbar.Button>
+      <Toolbar.Separator className={toolbarSeparatorClass()}></Toolbar.Separator>
+      <Toolbar.Link
+        className={toolbarLinkClass()}
         href="https://www.w3.org/TR/2019/WD-wai-aria-practices-1.2-20191218/examples/toolbar/toolbar.html"
         target="_blank"
       >
         Link
-      </ToolbarLink>
-      <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-      <ToolbarButton className={toolbarToggleButtonClass} asChild>
+      </Toolbar.Link>
+      <Toolbar.Separator className={toolbarSeparatorClass()}></Toolbar.Separator>
+      <Toolbar.Button className={toolbarToggleButtonClass()} asChild>
         <Toggle>Toggle</Toggle>
-      </ToolbarButton>
-      <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-      <ToolbarToggleGroup type="single" className={toolbarToggleGroupClass}>
-        <ToolbarToggleItem value="left" className={toolbarToggleItemClass}>
+      </Toolbar.Button>
+      <Toolbar.Separator className={toolbarSeparatorClass()}></Toolbar.Separator>
+      <Toolbar.ToggleGroup type="single" className={toolbarToggleGroupClass()}>
+        <Toolbar.ToggleItem value="left" className={toolbarToggleItemClass()}>
           Left
-        </ToolbarToggleItem>
-        <ToolbarToggleItem value="center" className={toolbarToggleItemClass}>
+        </Toolbar.ToggleItem>
+        <Toolbar.ToggleItem value="center" className={toolbarToggleItemClass()}>
           Center
-        </ToolbarToggleItem>
-        <ToolbarToggleItem value="right" className={toolbarToggleItemClass}>
+        </Toolbar.ToggleItem>
+        <Toolbar.ToggleItem value="right" className={toolbarToggleItemClass()}>
           Right
-        </ToolbarToggleItem>
-      </ToolbarToggleGroup>
-      <ToolbarSeparator className={toolbarSeparatorClass}></ToolbarSeparator>
-      <DropdownMenu>
-        <ToolbarButton className={toolbarItemClass} asChild>
-          <DropdownMenuTrigger>Menu</DropdownMenuTrigger>
-        </ToolbarButton>
-        <DropdownMenuContent className={dropdownMenuContentClass} sideOffset={5}>
-          <DropdownMenuItem className={dropdownMenuItemClass}>Undo</DropdownMenuItem>
-          <DropdownMenuItem className={dropdownMenuItemClass}>Redo</DropdownMenuItem>
-          <DropdownMenuArrow />
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </Toolbar>
+        </Toolbar.ToggleItem>
+      </Toolbar.ToggleGroup>
+      <Toolbar.Separator className={toolbarSeparatorClass()}></Toolbar.Separator>
+      <DropdownMenu.Root>
+        <Toolbar.Button className={toolbarItemClass()} asChild>
+          <DropdownMenu.Trigger>Menu</DropdownMenu.Trigger>
+        </Toolbar.Button>
+        <DropdownMenu.Content className={dropdownMenuContentClass()} sideOffset={5}>
+          <DropdownMenu.Item className={dropdownMenuItemClass()}>Undo</DropdownMenu.Item>
+          <DropdownMenu.Item className={dropdownMenuItemClass()}>Redo</DropdownMenu.Item>
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </Toolbar.Root>
   </div>
 );
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from './Avatar';
 import { css } from '../../../../stitches.config';
+import * as Avatar from '@radix-ui/react-avatar';
 
 export default { title: 'Components/Avatar' };
 
@@ -10,55 +10,55 @@ const srcBroken = 'https://broken.link.com/broken-pic.jpg';
 export const Styled = () => (
   <>
     <h1>Without image & with fallback</h1>
-    <Avatar className={rootClass}>
-      <AvatarFallback className={fallbackClass}>JS</AvatarFallback>
-    </Avatar>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Fallback className={fallbackClass()}>JS</Avatar.Fallback>
+    </Avatar.Root>
 
     <h1>With image & with fallback</h1>
-    <Avatar className={rootClass}>
-      <AvatarImage className={imageClass} alt="John Smith" src={src} />
-      <AvatarFallback delayMs={300} className={fallbackClass}>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image className={imageClass()} alt="John Smith" src={src} />
+      <Avatar.Fallback delayMs={300} className={fallbackClass()}>
         JS
-      </AvatarFallback>
-    </Avatar>
+      </Avatar.Fallback>
+    </Avatar.Root>
 
     <h1>With image & with fallback (but broken src)</h1>
-    <Avatar className={rootClass}>
-      <AvatarImage
-        className={imageClass}
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image
+        className={imageClass()}
         alt="John Smith"
         src={srcBroken}
         onLoadingStatusChange={console.log}
       />
-      <AvatarFallback className={fallbackClass}>
+      <Avatar.Fallback className={fallbackClass()}>
         <AvatarIcon />
-      </AvatarFallback>
-    </Avatar>
+      </Avatar.Fallback>
+    </Avatar.Root>
   </>
 );
 
 export const Chromatic = () => (
   <>
     <h1>Without image & with fallback</h1>
-    <Avatar className={rootClass}>
-      <AvatarFallback className={fallbackClass}>JS</AvatarFallback>
-    </Avatar>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Fallback className={fallbackClass()}>JS</Avatar.Fallback>
+    </Avatar.Root>
 
     <h1>With image & with fallback</h1>
-    <Avatar className={rootClass}>
-      <AvatarImage className={imageClass} alt="John Smith" src={src} />
-      <AvatarFallback delayMs={300} className={fallbackClass}>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image className={imageClass()} alt="John Smith" src={src} />
+      <Avatar.Fallback delayMs={300} className={fallbackClass()}>
         JS
-      </AvatarFallback>
-    </Avatar>
+      </Avatar.Fallback>
+    </Avatar.Root>
 
     <h1>With image & with fallback (but broken src)</h1>
-    <Avatar className={rootClass}>
-      <AvatarImage className={imageClass} alt="John Smith" src={srcBroken} />
-      <AvatarFallback className={fallbackClass}>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image className={imageClass()} alt="John Smith" src={srcBroken} />
+      <Avatar.Fallback className={fallbackClass()}>
         <AvatarIcon />
-      </AvatarFallback>
-    </Avatar>
+      </Avatar.Fallback>
+    </Avatar.Root>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false, delay: 1000 } };

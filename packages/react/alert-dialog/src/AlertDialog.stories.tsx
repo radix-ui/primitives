@@ -1,34 +1,24 @@
 import * as React from 'react';
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogPortal,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel,
-} from './AlertDialog';
 import { css } from '../../../../stitches.config';
+import * as AlertDialog from '@radix-ui/react-alert-dialog';
 
 export default { title: 'Components/AlertDialog' };
 
 export const Styled = () => (
-  <AlertDialog>
-    <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-    <AlertDialogPortal>
-      <AlertDialogOverlay className={overlayClass} />
-      <AlertDialogContent className={contentClass}>
-        <AlertDialogTitle className={titleClass}>Are you sure?</AlertDialogTitle>
-        <AlertDialogDescription className={descriptionClass}>
+  <AlertDialog.Root>
+    <AlertDialog.Trigger className={triggerClass()}>delete everything</AlertDialog.Trigger>
+    <AlertDialog.Portal>
+      <AlertDialog.Overlay className={overlayClass()} />
+      <AlertDialog.Content className={contentClass()}>
+        <AlertDialog.Title className={titleClass()}>Are you sure?</AlertDialog.Title>
+        <AlertDialog.Description className={descriptionClass()}>
           This will do a very dangerous thing. Thar be dragons!
-        </AlertDialogDescription>
-        <AlertDialogAction className={actionClass}>yolo, do it</AlertDialogAction>
-        <AlertDialogCancel className={cancelClass}>maybe not</AlertDialogCancel>
-      </AlertDialogContent>
-    </AlertDialogPortal>
-  </AlertDialog>
+        </AlertDialog.Description>
+        <AlertDialog.Action className={actionClass()}>yolo, do it</AlertDialog.Action>
+        <AlertDialog.Cancel className={cancelClass()}>maybe not</AlertDialog.Cancel>
+      </AlertDialog.Content>
+    </AlertDialog.Portal>
+  </AlertDialog.Root>
 );
 
 export const Controlled = () => {
@@ -40,8 +30,8 @@ export const Controlled = () => {
       <div>
         <img src="https://i.ibb.co/K54hsKt/house.jpg" alt="a large white house with a red roof" />
       </div>
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogTrigger
+      <AlertDialog.Root open={open} onOpenChange={setOpen}>
+        <AlertDialog.Trigger
           onClick={(e) => {
             if (housePurchased) {
               e.preventDefault();
@@ -50,24 +40,24 @@ export const Controlled = () => {
           }}
         >
           {housePurchased ? 'You bought the house! Sell it!' : 'Buy this house'}
-        </AlertDialogTrigger>
-        <AlertDialogPortal>
-          <AlertDialogOverlay className={overlayClass} />
-          <AlertDialogContent className={contentClass}>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
+        </AlertDialog.Trigger>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay className={overlayClass()} />
+          <AlertDialog.Content className={contentClass()}>
+            <AlertDialog.Title>Are you sure?</AlertDialog.Title>
+            <AlertDialog.Description>
               Houses are very expensive and it looks like you only have €20 in the bank. Maybe
               consult with a financial advisor?
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionClass} onClick={() => setHousePurchased(true)}>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionClass()} onClick={() => setHousePurchased(true)}>
               buy it anyway
-            </AlertDialogAction>
-            <AlertDialogCancel className={cancelClass}>
+            </AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelClass()}>
               good point, I'll reconsider
-            </AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-      </AlertDialog>
+            </AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
     </div>
   );
 };
@@ -84,188 +74,200 @@ export const Chromatic = () => (
     <div>
       <h1>Uncontrolled</h1>
       <h2>Closed</h2>
-      <AlertDialog>
-        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-        <AlertDialogPortal>
-          <AlertDialogOverlay className={overlayClass} />
-          <AlertDialogContent className={chromaticContentClass}>
-            <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionClass}>
+      <AlertDialog.Root>
+        <AlertDialog.Trigger className={triggerClass()}>delete everything</AlertDialog.Trigger>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay className={overlayClass()} />
+          <AlertDialog.Content className={chromaticContentClass()}>
+            <AlertDialog.Title className={titleClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
 
       <h2>Open</h2>
-      <AlertDialog defaultOpen>
-        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-        <AlertDialogPortal>
-          <AlertDialogOverlay
-            className={overlayClass}
+      <AlertDialog.Root defaultOpen>
+        <AlertDialog.Trigger className={triggerClass()}>delete everything</AlertDialog.Trigger>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay
+            className={overlayClass()}
             style={{ left: 0, bottom: '50%', width: '25%' }}
           />
-          <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '12%' }}>
-            <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionClass}>
+          <AlertDialog.Content
+            className={chromaticContentClass()}
+            style={{ top: '25%', left: '12%' }}
+          >
+            <AlertDialog.Title className={titleClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
     </div>
 
     <div>
       <h1>Uncontrolled with reordered parts</h1>
       <h2>Closed</h2>
-      <AlertDialog>
-        <AlertDialogPortal>
-          <AlertDialogOverlay className={overlayClass} />
-          <AlertDialogContent className={chromaticContentClass}>
-            <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionClass}>
+      <AlertDialog.Root>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay className={overlayClass()} />
+          <AlertDialog.Content className={chromaticContentClass()}>
+            <AlertDialog.Title className={titleClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+        <AlertDialog.Trigger className={triggerClass()}>delete everything</AlertDialog.Trigger>
+      </AlertDialog.Root>
 
       <h2>Open</h2>
-      <AlertDialog defaultOpen>
-        <AlertDialogPortal>
-          <AlertDialogOverlay
-            className={overlayClass}
+      <AlertDialog.Root defaultOpen>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay
+            className={overlayClass()}
             style={{ left: '25%', bottom: '50%', width: '25%' }}
           />
-          <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '37%' }}>
-            <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionClass}>
+          <AlertDialog.Content
+            className={chromaticContentClass()}
+            style={{ top: '25%', left: '37%' }}
+          >
+            <AlertDialog.Title className={titleClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+        <AlertDialog.Trigger className={triggerClass()}>delete everything</AlertDialog.Trigger>
+      </AlertDialog.Root>
     </div>
 
     <div>
       <h1>Controlled</h1>
       <h2>Closed</h2>
-      <AlertDialog open={false}>
-        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-        <AlertDialogPortal>
-          <AlertDialogOverlay className={overlayClass} />
-          <AlertDialogContent className={chromaticContentClass}>
-            <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionClass}>
+      <AlertDialog.Root open={false}>
+        <AlertDialog.Trigger className={triggerClass()}>delete everything</AlertDialog.Trigger>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay className={overlayClass()} />
+          <AlertDialog.Content className={chromaticContentClass()}>
+            <AlertDialog.Title className={titleClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
 
       <h2>Open</h2>
-      <AlertDialog open>
-        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-        <AlertDialogPortal>
-          <AlertDialogOverlay
-            className={overlayClass}
+      <AlertDialog.Root open>
+        <AlertDialog.Trigger className={triggerClass()}>delete everything</AlertDialog.Trigger>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay
+            className={overlayClass()}
             style={{ left: '50%', bottom: '50%', width: '25%' }}
           />
-          <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '62%' }}>
-            <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionClass}>
+          <AlertDialog.Content
+            className={chromaticContentClass()}
+            style={{ top: '25%', left: '62%' }}
+          >
+            <AlertDialog.Title className={titleClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
     </div>
 
     <div>
       <h1>Controlled with reordered parts</h1>
       <h2>Closed</h2>
-      <AlertDialog open={false}>
-        <AlertDialogPortal>
-          <AlertDialogOverlay className={overlayClass} />
-          <AlertDialogContent className={chromaticContentClass}>
-            <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionClass}>
+      <AlertDialog.Root open={false}>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay className={overlayClass()} />
+          <AlertDialog.Content className={chromaticContentClass()}>
+            <AlertDialog.Title className={titleClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+        <AlertDialog.Trigger className={triggerClass()}>delete everything</AlertDialog.Trigger>
+      </AlertDialog.Root>
 
       <h2>Open</h2>
-      <AlertDialog open>
-        <AlertDialogPortal>
-          <AlertDialogOverlay
-            className={overlayClass}
+      <AlertDialog.Root open>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay
+            className={overlayClass()}
             style={{ left: '75%', bottom: '50%', width: '25%' }}
           />
-          <AlertDialogContent className={chromaticContentClass} style={{ top: '25%', left: '88%' }}>
-            <AlertDialogTitle className={titleClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionClass}>
+          <AlertDialog.Content
+            className={chromaticContentClass()}
+            style={{ top: '25%', left: '88%' }}
+          >
+            <AlertDialog.Title className={titleClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-        <AlertDialogTrigger className={triggerClass}>delete everything</AlertDialogTrigger>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+        <AlertDialog.Trigger className={triggerClass()}>delete everything</AlertDialog.Trigger>
+      </AlertDialog.Root>
     </div>
 
     <div>
       <h1>State attributes</h1>
       <h2>Closed</h2>
-      <AlertDialog>
-        <AlertDialogTrigger className={triggerAttrClass}>delete everything</AlertDialogTrigger>
-        <AlertDialogPortal>
-          <AlertDialogOverlay className={overlayAttrClass} />
-          <AlertDialogContent className={contentAttrClass}>
-            <AlertDialogTitle className={titleAttrClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionAttrClass}>
+      <AlertDialog.Root>
+        <AlertDialog.Trigger className={triggerAttrClass()}>delete everything</AlertDialog.Trigger>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay className={overlayAttrClass()} />
+          <AlertDialog.Content className={contentAttrClass()}>
+            <AlertDialog.Title className={titleAttrClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionAttrClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionAttrClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelAttrClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionAttrClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelAttrClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
 
       <h2>Open</h2>
-      <AlertDialog defaultOpen>
-        <AlertDialogTrigger className={triggerAttrClass}>delete everything</AlertDialogTrigger>
-        <AlertDialogPortal>
-          <AlertDialogOverlay className={overlayAttrClass} style={{ top: '50%' }} />
-          <AlertDialogContent className={contentAttrClass} style={{ top: '75%' }}>
-            <AlertDialogTitle className={titleAttrClass}>Title</AlertDialogTitle>
-            <AlertDialogDescription className={descriptionAttrClass}>
+      <AlertDialog.Root defaultOpen>
+        <AlertDialog.Trigger className={triggerAttrClass()}>delete everything</AlertDialog.Trigger>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay className={overlayAttrClass()} style={{ top: '50%' }} />
+          <AlertDialog.Content className={contentAttrClass()} style={{ top: '75%' }}>
+            <AlertDialog.Title className={titleAttrClass()}>Title</AlertDialog.Title>
+            <AlertDialog.Description className={descriptionAttrClass()}>
               Description
-            </AlertDialogDescription>
-            <AlertDialogAction className={actionAttrClass}>Confirm</AlertDialogAction>
-            <AlertDialogCancel className={cancelAttrClass}>Cancel</AlertDialogCancel>
-          </AlertDialogContent>
-        </AlertDialogPortal>
-      </AlertDialog>
+            </AlertDialog.Description>
+            <AlertDialog.Action className={actionAttrClass()}>Confirm</AlertDialog.Action>
+            <AlertDialog.Cancel className={cancelAttrClass()}>Cancel</AlertDialog.Cancel>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
     </div>
   </div>
 );

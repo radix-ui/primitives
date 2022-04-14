@@ -1,45 +1,31 @@
 import * as React from 'react';
-import {
-  Menu,
-  MenuSub,
-  MenuAnchor,
-  MenuSubTrigger,
-  MenuContent,
-  MenuGroup,
-  MenuLabel,
-  MenuItem,
-  MenuCheckboxItem,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuItemIndicator,
-  MenuSeparator,
-} from './Menu';
-import { css } from '../../../../stitches.config';
+import { css, keyframes } from '../../../../stitches.config';
+import * as Menu from '@radix-ui/react-menu';
 import { foodGroups } from '../../../../test-data/foods';
 
 export default {
   title: 'Components/Menu',
-  excludeStories: ['TickIcon', 'styledComponents', 'classes'],
+  excludeStories: ['TickIcon', 'classes'],
 };
 
 export const Styled = () => (
   <MenuWithAnchor>
-    <MenuItem className={itemClass} onSelect={() => window.alert('undo')}>
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('undo')}>
       Undo
-    </MenuItem>
-    <MenuItem className={itemClass} onSelect={() => window.alert('redo')}>
+    </Menu.Item>
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('redo')}>
       Redo
-    </MenuItem>
-    <MenuSeparator className={separatorClass} />
-    <MenuItem className={itemClass} disabled onSelect={() => window.alert('cut')}>
+    </Menu.Item>
+    <Menu.Separator className={separatorClass()} />
+    <Menu.Item className={itemClass()} disabled onSelect={() => window.alert('cut')}>
       Cut
-    </MenuItem>
-    <MenuItem className={itemClass} onSelect={() => window.alert('copy')}>
+    </Menu.Item>
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('copy')}>
       Copy
-    </MenuItem>
-    <MenuItem className={itemClass} onSelect={() => window.alert('paste')}>
+    </Menu.Item>
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('paste')}>
       Paste
-    </MenuItem>
+    </Menu.Item>
   </MenuWithAnchor>
 );
 
@@ -60,7 +46,7 @@ export const Submenus = () => {
 
   return (
     <>
-      <div style={{ marginBottom: 8, display: 'grid', gridAutoFlow: 'row', gridGap: 4 }}>
+      <div style={{ marginBottom: 8, display: 'grid', gridAutoFlow: 'row', gap: 4 }}>
         <label>
           <input
             type="checkbox"
@@ -79,76 +65,76 @@ export const Submenus = () => {
         </label>
       </div>
       <MenuWithAnchor>
-        <MenuItem className={itemClass} onSelect={() => window.alert('undo')}>
+        <Menu.Item className={itemClass()} onSelect={() => window.alert('undo')}>
           Undo
-        </MenuItem>
+        </Menu.Item>
         <Submenu open={open1} onOpenChange={setOpen1} animated={animated}>
-          <MenuItem className={itemClass} disabled>
+          <Menu.Item className={itemClass()} disabled>
             Disabled
-          </MenuItem>
-          <MenuItem className={itemClass} onSelect={() => window.alert('one')}>
+          </Menu.Item>
+          <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
             One
-          </MenuItem>
+          </Menu.Item>
           <Submenu open={open2} onOpenChange={setOpen2} animated={animated}>
-            <MenuItem className={itemClass} onSelect={() => window.alert('one')}>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
               One
-            </MenuItem>
-            <MenuItem className={itemClass} onSelect={() => window.alert('two')}>
+            </Menu.Item>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
               Two
-            </MenuItem>
-            <MenuItem className={itemClass} onSelect={() => window.alert('three')}>
+            </Menu.Item>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
               Three
-            </MenuItem>
-            <MenuItem className={itemClass} onSelect={() => window.alert('four')}>
+            </Menu.Item>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('four')}>
               Four
-            </MenuItem>
-            <MenuItem className={itemClass} onSelect={() => window.alert('five')}>
+            </Menu.Item>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('five')}>
               Five
-            </MenuItem>
-            <MenuItem className={itemClass} onSelect={() => window.alert('six')}>
+            </Menu.Item>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('six')}>
               Six
-            </MenuItem>
+            </Menu.Item>
           </Submenu>
           <Submenu heading="Sub Menu" open={open3} onOpenChange={setOpen3} animated={animated}>
-            <MenuItem className={itemClass} onSelect={() => window.alert('one')}>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
               One
-            </MenuItem>
-            <MenuItem className={itemClass} onSelect={() => window.alert('two')}>
+            </Menu.Item>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
               Two
-            </MenuItem>
-            <MenuItem className={itemClass} onSelect={() => window.alert('three')}>
+            </Menu.Item>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
               Three
-            </MenuItem>
+            </Menu.Item>
           </Submenu>
-          <MenuItem className={itemClass} onSelect={() => window.alert('two')}>
+          <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
             Two
-          </MenuItem>
+          </Menu.Item>
           <Submenu open={open4} onOpenChange={setOpen4} animated={animated} disabled>
-            <MenuItem className={itemClass} onSelect={() => window.alert('one')}>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
               One
-            </MenuItem>
-            <MenuItem className={itemClass} onSelect={() => window.alert('two')}>
+            </Menu.Item>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
               Two
-            </MenuItem>
-            <MenuItem className={itemClass} onSelect={() => window.alert('three')}>
+            </Menu.Item>
+            <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
               Three
-            </MenuItem>
+            </Menu.Item>
           </Submenu>
-          <MenuItem className={itemClass} onSelect={() => window.alert('three')}>
+          <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
             Three
-          </MenuItem>
+          </Menu.Item>
         </Submenu>
 
-        <MenuSeparator className={separatorClass} />
-        <MenuItem className={itemClass} disabled onSelect={() => window.alert('cut')}>
+        <Menu.Separator className={separatorClass()} />
+        <Menu.Item className={itemClass()} disabled onSelect={() => window.alert('cut')}>
           Cut
-        </MenuItem>
-        <MenuItem className={itemClass} onSelect={() => window.alert('copy')}>
+        </Menu.Item>
+        <Menu.Item className={itemClass()} onSelect={() => window.alert('copy')}>
           Copy
-        </MenuItem>
-        <MenuItem className={itemClass} onSelect={() => window.alert('paste')}>
+        </Menu.Item>
+        <Menu.Item className={itemClass()} onSelect={() => window.alert('paste')}>
           Paste
-        </MenuItem>
+        </Menu.Item>
       </MenuWithAnchor>
     </>
   );
@@ -157,24 +143,24 @@ export const Submenus = () => {
 export const WithLabels = () => (
   <MenuWithAnchor>
     {foodGroups.map((foodGroup, index) => (
-      <MenuGroup key={index}>
+      <Menu.Group key={index}>
         {foodGroup.label && (
-          <MenuLabel className={labelClass} key={foodGroup.label}>
+          <Menu.Label className={labelClass()} key={foodGroup.label}>
             {foodGroup.label}
-          </MenuLabel>
+          </Menu.Label>
         )}
         {foodGroup.foods.map((food) => (
-          <MenuItem
+          <Menu.Item
             key={food.value}
-            className={itemClass}
+            className={itemClass()}
             disabled={food.disabled}
             onSelect={() => window.alert(food.label)}
           >
             {food.label}
-          </MenuItem>
+          </Menu.Item>
         ))}
-        {index < foodGroups.length - 1 && <MenuSeparator className={separatorClass} />}
-      </MenuGroup>
+        {index < foodGroups.length - 1 && <Menu.Separator className={separatorClass()} />}
+      </Menu.Group>
     ))}
   </MenuWithAnchor>
 );
@@ -219,12 +205,12 @@ export const Typeahead = () => (
         <p>(relying on `.textContent` — default)</p>
         <MenuWithAnchor>
           {suits.map((suit) => (
-            <MenuItem key={suit.emoji} className={itemClass}>
+            <Menu.Item key={suit.emoji} className={itemClass()}>
               {suit.label}
               <span role="img" aria-label={suit.label}>
                 {suit.emoji}
               </span>
-            </MenuItem>
+            </Menu.Item>
           ))}
         </MenuWithAnchor>
       </div>
@@ -234,12 +220,12 @@ export const Typeahead = () => (
         <p>(with explicit `textValue` prop)</p>
         <MenuWithAnchor>
           {suits.map((suit) => (
-            <MenuItem key={suit.emoji} className={itemClass} textValue={suit.label}>
+            <Menu.Item key={suit.emoji} className={itemClass()} textValue={suit.label}>
               <span role="img" aria-label={suit.label}>
                 {suit.emoji}
               </span>
               {suit.label}
-            </MenuItem>
+            </Menu.Item>
           ))}
         </MenuWithAnchor>
       </div>
@@ -257,29 +243,29 @@ export const CheckboxItems = () => {
 
   return (
     <MenuWithAnchor>
-      <MenuItem className={itemClass} onSelect={() => window.alert('show')}>
+      <Menu.Item className={itemClass()} onSelect={() => window.alert('show')}>
         Show fonts
-      </MenuItem>
-      <MenuItem className={itemClass} onSelect={() => window.alert('bigger')}>
+      </Menu.Item>
+      <Menu.Item className={itemClass()} onSelect={() => window.alert('bigger')}>
         Bigger
-      </MenuItem>
-      <MenuItem className={itemClass} onSelect={() => window.alert('smaller')}>
+      </Menu.Item>
+      <Menu.Item className={itemClass()} onSelect={() => window.alert('smaller')}>
         Smaller
-      </MenuItem>
-      <MenuSeparator className={separatorClass} />
+      </Menu.Item>
+      <Menu.Separator className={separatorClass()} />
       {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
-        <MenuCheckboxItem
+        <Menu.CheckboxItem
           key={label}
-          className={itemClass}
+          className={itemClass()}
           checked={checked}
           onCheckedChange={setChecked}
           disabled={disabled}
         >
           {label}
-          <MenuItemIndicator>
+          <Menu.ItemIndicator>
             <TickIcon />
-          </MenuItemIndicator>
-        </MenuCheckboxItem>
+          </Menu.ItemIndicator>
+        </Menu.CheckboxItem>
       ))}
     </MenuWithAnchor>
   );
@@ -291,26 +277,26 @@ export const RadioItems = () => {
 
   return (
     <MenuWithAnchor>
-      <MenuItem className={itemClass} onSelect={() => window.alert('minimize')}>
+      <Menu.Item className={itemClass()} onSelect={() => window.alert('minimize')}>
         Minimize window
-      </MenuItem>
-      <MenuItem className={itemClass} onSelect={() => window.alert('zoom')}>
+      </Menu.Item>
+      <Menu.Item className={itemClass()} onSelect={() => window.alert('zoom')}>
         Zoom
-      </MenuItem>
-      <MenuItem className={itemClass} onSelect={() => window.alert('smaller')}>
+      </Menu.Item>
+      <Menu.Item className={itemClass()} onSelect={() => window.alert('smaller')}>
         Smaller
-      </MenuItem>
-      <MenuSeparator className={separatorClass} />
-      <MenuRadioGroup value={file} onValueChange={setFile}>
+      </Menu.Item>
+      <Menu.Separator className={separatorClass()} />
+      <Menu.RadioGroup value={file} onValueChange={setFile}>
         {files.map((file) => (
-          <MenuRadioItem key={file} className={itemClass} value={file}>
+          <Menu.RadioItem key={file} className={itemClass()} value={file}>
             {file}
-            <MenuItemIndicator>
+            <Menu.ItemIndicator>
               <TickIcon />
-            </MenuItemIndicator>
-          </MenuRadioItem>
+            </Menu.ItemIndicator>
+          </Menu.RadioItem>
         ))}
-      </MenuRadioGroup>
+      </Menu.RadioGroup>
     </MenuWithAnchor>
   );
 };
@@ -334,38 +320,38 @@ export const Animated = () => {
       </label>
       <br />
       <br />
-      <MenuWithAnchor className={animatedContentClass} open={open}>
+      <MenuWithAnchor className={animatedContentClass()} open={open}>
         {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
-          <MenuCheckboxItem
+          <Menu.CheckboxItem
             key={label}
-            className={itemClass}
+            className={itemClass()}
             checked={checked}
             onCheckedChange={setChecked}
             disabled={disabled}
           >
             {label}
-            <MenuItemIndicator className={animatedItemIndicatorClass}>
+            <Menu.ItemIndicator className={animatedItemIndicatorClass()}>
               <TickIcon />
-            </MenuItemIndicator>
-          </MenuCheckboxItem>
+            </Menu.ItemIndicator>
+          </Menu.CheckboxItem>
         ))}
-        <MenuRadioGroup value={file} onValueChange={setFile}>
+        <Menu.RadioGroup value={file} onValueChange={setFile}>
           {files.map((file) => (
-            <MenuRadioItem key={file} className={itemClass} value={file}>
+            <Menu.RadioItem key={file} className={itemClass()} value={file}>
               {file}
-              <MenuItemIndicator className={animatedItemIndicatorClass}>
+              <Menu.ItemIndicator className={animatedItemIndicatorClass()}>
                 <TickIcon />
-              </MenuItemIndicator>
-            </MenuRadioItem>
+              </Menu.ItemIndicator>
+            </Menu.RadioItem>
           ))}
-        </MenuRadioGroup>
+        </Menu.RadioGroup>
       </MenuWithAnchor>
     </>
   );
 };
 
 type MenuProps = Omit<
-  React.ComponentProps<typeof Menu> & React.ComponentProps<typeof MenuContent>,
+  React.ComponentProps<typeof Menu.Root> & React.ComponentProps<typeof Menu.Content>,
   | 'portalled'
   | 'trapFocus'
   | 'onCloseAutoFocus'
@@ -376,19 +362,19 @@ type MenuProps = Omit<
 const MenuWithAnchor: React.FC<MenuProps> = (props) => {
   const { open = true, children, ...contentProps } = props;
   return (
-    <Menu open={open} onOpenChange={() => {}} modal={false}>
+    <Menu.Root open={open} onOpenChange={() => {}} modal={false}>
       {/* inline-block allows anchor to move when rtl changes on document */}
-      <MenuAnchor style={{ display: 'inline-block' }} />
-      <MenuContent
-        className={contentClass}
+      <Menu.Anchor style={{ display: 'inline-block' }} />
+      <Menu.Content
+        className={contentClass()}
         portalled
         onCloseAutoFocus={(event) => event.preventDefault()}
         align="start"
         {...contentProps}
       >
         {children}
-      </MenuContent>
-    </Menu>
+      </Menu.Content>
+    </Menu.Root>
   );
 };
 
@@ -405,14 +391,17 @@ const Submenu: React.FC<MenuProps & { animated: boolean; disabled?: boolean; hea
     ...contentProps
   } = props;
   return (
-    <MenuSub open={open} onOpenChange={onOpenChange}>
-      <MenuSubTrigger className={subTriggerClass} disabled={disabled}>
+    <Menu.Sub open={open} onOpenChange={onOpenChange}>
+      <Menu.SubTrigger className={subTriggerClass()} disabled={disabled}>
         {heading} →
-      </MenuSubTrigger>
-      <MenuContent className={animated ? animatedContentClass : contentClass} {...contentProps}>
+      </Menu.SubTrigger>
+      <Menu.Content
+        className={animated ? animatedContentClass() : contentClass()}
+        {...contentProps}
+      >
         {children}
-      </MenuContent>
-    </MenuSub>
+      </Menu.Content>
+    </Menu.Sub>
   );
 };
 
@@ -466,7 +455,7 @@ const itemClass = css({
 });
 
 const subTriggerClass = css(itemClass, {
-  '&[data-state="open"]': {
+  '&:not(:focus)[data-state="open"]': {
     backgroundColor: '$gray100',
     color: '$black',
   },
@@ -478,12 +467,12 @@ const separatorClass = css({
   backgroundColor: '$gray100',
 });
 
-const animateIn = css.keyframes({
+const animateIn = keyframes({
   from: { transform: 'scale(0.95)', opacity: 0 },
   to: { transform: 'scale(1)', opacity: 1 },
 });
 
-const animateOut = css.keyframes({
+const animateOut = keyframes({
   from: { transform: 'scale(1)', opacity: 1 },
   to: { transform: 'scale(0.95)', opacity: 0 },
 });

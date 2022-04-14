@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Progress, ProgressIndicator } from './Progress';
 import { css } from '../../../../stitches.config';
+import * as Progress from '@radix-ui/react-progress';
 
 export default {
   title: 'Components/Progress',
@@ -12,12 +12,12 @@ export const Styled = () => {
   const toggleIndeterminate = useIndeterminateToggle(value, setValue);
   return (
     <div>
-      <Progress className={rootClass} value={value} max={max}>
-        <ProgressIndicator
-          className={indicatorClass}
+      <Progress.Root className={rootClass()} value={value} max={max}>
+        <Progress.Indicator
+          className={indicatorClass()}
           style={{ width: percentage != null ? `${percentage}%` : undefined }}
         />
-      </Progress>
+      </Progress.Root>
       <hr />
       <button onClick={toggleIndeterminate}>Toggle Indeterminate</button>
       <ProgressRange value={value} setValue={setValue} max={max} />
@@ -28,40 +28,40 @@ export const Styled = () => {
 export const Chromatic = () => (
   <>
     <h1>Loading (not started)</h1>
-    <Progress className={rootClass} value={0}>
-      <ProgressIndicator className={chromaticIndicatorClass}>/</ProgressIndicator>
-    </Progress>
+    <Progress.Root className={rootClass()} value={0}>
+      <Progress.Indicator className={chromaticIndicatorClass()}>/</Progress.Indicator>
+    </Progress.Root>
 
     <h1>Loading (started)</h1>
-    <Progress className={rootClass} value={30}>
-      <ProgressIndicator className={chromaticIndicatorClass}>/</ProgressIndicator>
-    </Progress>
+    <Progress.Root className={rootClass()} value={30}>
+      <Progress.Indicator className={chromaticIndicatorClass()}>/</Progress.Indicator>
+    </Progress.Root>
 
     <h1>Indeterminate</h1>
-    <Progress className={rootClass} value={null}>
-      <ProgressIndicator className={chromaticIndicatorClass}>/</ProgressIndicator>
-    </Progress>
+    <Progress.Root className={rootClass()} value={null}>
+      <Progress.Indicator className={chromaticIndicatorClass()}>/</Progress.Indicator>
+    </Progress.Root>
 
     <h1>Complete</h1>
-    <Progress className={rootClass} value={100}>
-      <ProgressIndicator className={chromaticIndicatorClass}>/</ProgressIndicator>
-    </Progress>
+    <Progress.Root className={rootClass()} value={100}>
+      <Progress.Indicator className={chromaticIndicatorClass()}>/</Progress.Indicator>
+    </Progress.Root>
 
     <h1>State attributes</h1>
     <h2>Loading (started)</h2>
-    <Progress className={rootAttrClass} value={30}>
-      <ProgressIndicator className={indicatorAttrClass}>/</ProgressIndicator>
-    </Progress>
+    <Progress.Root className={rootAttrClass()} value={30}>
+      <Progress.Indicator className={indicatorAttrClass()}>/</Progress.Indicator>
+    </Progress.Root>
 
     <h2>Indeterminate</h2>
-    <Progress className={rootAttrClass} value={null}>
-      <ProgressIndicator className={indicatorAttrClass}>/</ProgressIndicator>
-    </Progress>
+    <Progress.Root className={rootAttrClass()} value={null}>
+      <Progress.Indicator className={indicatorAttrClass()}>/</Progress.Indicator>
+    </Progress.Root>
 
     <h2>Complete</h2>
-    <Progress className={rootAttrClass} value={100}>
-      <ProgressIndicator className={indicatorAttrClass}>/</ProgressIndicator>
-    </Progress>
+    <Progress.Root className={rootAttrClass()} value={100}>
+      <Progress.Indicator className={indicatorAttrClass()}>/</Progress.Indicator>
+    </Progress.Root>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };

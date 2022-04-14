@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { Arrow } from './Arrow';
+import { Arrow } from '@radix-ui/react-arrow';
 
 const WIDTH = 40;
 const HEIGHT = 30;

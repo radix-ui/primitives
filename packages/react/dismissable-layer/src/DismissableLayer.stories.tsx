@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { FocusScope } from '@radix-ui/react-focus-scope';
-import { Popper, PopperAnchor, PopperContent, PopperArrow } from '@radix-ui/react-popper';
+import * as Popper from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
-import { DismissableLayer } from './DismissableLayer';
+import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
@@ -572,12 +572,12 @@ function DummyPopover({
   const openButtonRef = React.useRef(null);
   const ScrollContainer = preventScroll ? RemoveScroll : React.Fragment;
   return (
-    <Popper>
-      <PopperAnchor asChild>
+    <Popper.Root>
+      <Popper.Anchor asChild>
         <button type="button" ref={openButtonRef} onClick={() => setOpen((prevOpen) => !prevOpen)}>
           {openLabel}
         </button>
-      </PopperAnchor>
+      </Popper.Anchor>
       {open ? (
         <FocusGuards>
           <Portal>
@@ -608,7 +608,7 @@ function DummyPopover({
                     setSkipUnmountAutoFocus(false);
                   }}
                 >
-                  <PopperContent
+                  <Popper.Content
                     style={{
                       filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.12))',
                       display: 'flex',
@@ -629,14 +629,14 @@ function DummyPopover({
                       {closeLabel}
                     </button>
                     <input type="text" defaultValue="hello world" />
-                    <PopperArrow width={10} height={4} style={{ fill: color }} offset={20} />
-                  </PopperContent>
+                    <Popper.Arrow width={10} height={4} style={{ fill: color }} offset={20} />
+                  </Popper.Content>
                 </FocusScope>
               </DismissableLayer>
             </ScrollContainer>
           </Portal>
         </FocusGuards>
       ) : null}
-    </Popper>
+    </Popper.Root>
   );
 }

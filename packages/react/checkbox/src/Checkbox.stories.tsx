@@ -1,8 +1,8 @@
 import * as React from 'react';
+import { css, keyframes } from '../../../../stitches.config';
 import { Label as LabelPrimitive } from '@radix-ui/react-label';
-import { Checkbox, CheckboxIndicator } from './Checkbox';
-import { css } from '../../../../stitches.config';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
+import * as Checkbox from '@radix-ui/react-checkbox';
 
 export default { title: 'Components/Checkbox' };
 
@@ -13,9 +13,9 @@ export const Styled = () => (
     <h1>Custom label</h1>
     <Label>
       Label{' '}
-      <Checkbox className={rootClass}>
-        <CheckboxIndicator className={indicatorClass} />
-      </Checkbox>
+      <Checkbox.Root className={rootClass()}>
+        <Checkbox.Indicator className={indicatorClass()} />
+      </Checkbox.Root>
     </Label>
 
     <br />
@@ -24,9 +24,9 @@ export const Styled = () => (
     <h1>Native label</h1>
     <label>
       Label{' '}
-      <Checkbox className={rootClass}>
-        <CheckboxIndicator className={indicatorClass} />
-      </Checkbox>
+      <Checkbox.Root className={rootClass()}>
+        <Checkbox.Indicator className={indicatorClass()} />
+      </Checkbox.Root>
     </label>
 
     <h1>Native label + native checkbox</h1>
@@ -36,18 +36,18 @@ export const Styled = () => (
 
     <h1>Custom label + htmlFor</h1>
     <Label htmlFor="one">Label</Label>
-    <Checkbox className={rootClass} id="one">
-      <CheckboxIndicator className={indicatorClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootClass()} id="one">
+      <Checkbox.Indicator className={indicatorClass()} />
+    </Checkbox.Root>
 
     <br />
     <br />
 
     <h1>Native label + htmlFor</h1>
     <label htmlFor="two">Label</label>
-    <Checkbox className={rootClass} id="two">
-      <CheckboxIndicator className={indicatorClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootClass()} id="two">
+      <Checkbox.Indicator className={indicatorClass()} />
+    </Checkbox.Root>
 
     <h1>Native label + native checkbox</h1>
     <label htmlFor="three">Label</label>
@@ -62,9 +62,14 @@ export const Controlled = () => {
     <>
       <p>This checkbox is placed adjacent to its label. The state is controlled.</p>
       <Label htmlFor="randBox">Label</Label>{' '}
-      <Checkbox className={rootClass} checked={checked} onCheckedChange={setChecked} id="randBox">
-        <CheckboxIndicator className={indicatorClass} />
-      </Checkbox>
+      <Checkbox.Root
+        className={rootClass()}
+        checked={checked}
+        onCheckedChange={setChecked}
+        id="randBox"
+      >
+        <Checkbox.Indicator className={indicatorClass()} />
+      </Checkbox.Root>
     </>
   );
 };
@@ -75,9 +80,9 @@ export const Indeterminate = () => {
   return (
     <>
       <p>
-        <Checkbox className={rootClass} checked={checked} onCheckedChange={setChecked}>
-          <CheckboxIndicator className={indicatorClass} />
-        </Checkbox>
+        <Checkbox.Root className={rootClass()} checked={checked} onCheckedChange={setChecked}>
+          <Checkbox.Indicator className={indicatorClass()} />
+        </Checkbox.Root>
       </p>
 
       <button
@@ -109,14 +114,14 @@ export const WithinForm = () => {
       <fieldset>
         <legend>optional checked: {String(data.optional)}</legend>
         <label>
-          <Checkbox
-            className={rootClass}
+          <Checkbox.Root
+            className={rootClass()}
             name="optional"
             checked={checked}
             onCheckedChange={setChecked}
           >
-            <CheckboxIndicator className={indicatorClass} />
-          </Checkbox>{' '}
+            <Checkbox.Indicator className={indicatorClass()} />
+          </Checkbox.Root>{' '}
           with label
         </label>
         <br />
@@ -139,9 +144,9 @@ export const WithinForm = () => {
 
       <fieldset>
         <legend>required checked: {String(data.required)}</legend>
-        <Checkbox className={rootClass} name="required" required>
-          <CheckboxIndicator className={indicatorClass} />
-        </Checkbox>
+        <Checkbox.Root className={rootClass()} name="required" required>
+          <Checkbox.Indicator className={indicatorClass()} />
+        </Checkbox.Root>
       </fieldset>
 
       <br />
@@ -149,13 +154,13 @@ export const WithinForm = () => {
 
       <fieldset>
         <legend>stop propagation checked: {String(data.stopprop)}</legend>
-        <Checkbox
-          className={rootClass}
+        <Checkbox.Root
+          className={rootClass()}
           name="stopprop"
           onClick={(event) => event.stopPropagation()}
         >
-          <CheckboxIndicator className={indicatorClass} />
-        </Checkbox>
+          <Checkbox.Indicator className={indicatorClass()} />
+        </Checkbox.Root>
       </fieldset>
 
       <br />
@@ -172,9 +177,9 @@ export const Animated = () => {
   return (
     <>
       <p>
-        <Checkbox className={rootClass} checked={checked} onCheckedChange={setChecked}>
-          <CheckboxIndicator className={animatedIndicatorClass} />
-        </Checkbox>
+        <Checkbox.Root className={rootClass()} checked={checked} onCheckedChange={setChecked}>
+          <Checkbox.Indicator className={animatedIndicatorClass()} />
+        </Checkbox.Root>
       </p>
 
       <button
@@ -195,66 +200,66 @@ export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
     <h2>Unchecked</h2>
-    <Checkbox className={rootClass}>
-      <CheckboxIndicator className={indicatorClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootClass()}>
+      <Checkbox.Indicator className={indicatorClass()} />
+    </Checkbox.Root>
 
     <h2>Checked</h2>
-    <Checkbox className={rootClass} defaultChecked>
-      <CheckboxIndicator className={indicatorClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootClass()} defaultChecked>
+      <Checkbox.Indicator className={indicatorClass()} />
+    </Checkbox.Root>
 
     <h1>Controlled</h1>
     <h2>Unchecked</h2>
-    <Checkbox className={rootClass} checked={false}>
-      <CheckboxIndicator className={indicatorClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootClass()} checked={false}>
+      <Checkbox.Indicator className={indicatorClass()} />
+    </Checkbox.Root>
 
     <h2>Checked</h2>
-    <Checkbox className={rootClass} checked>
-      <CheckboxIndicator className={indicatorClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootClass()} checked>
+      <Checkbox.Indicator className={indicatorClass()} />
+    </Checkbox.Root>
 
     <h1>Indeterminate</h1>
-    <Checkbox className={rootClass} checked="indeterminate">
-      <CheckboxIndicator className={indicatorClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootClass()} checked="indeterminate">
+      <Checkbox.Indicator className={indicatorClass()} />
+    </Checkbox.Root>
 
     <h1>Disabled</h1>
-    <Checkbox className={rootClass} defaultChecked disabled>
-      <CheckboxIndicator className={indicatorClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootClass()} defaultChecked disabled>
+      <Checkbox.Indicator className={indicatorClass()} />
+    </Checkbox.Root>
 
     <h1>Force mounted indicator</h1>
-    <Checkbox className={rootClass}>
-      <CheckboxIndicator className={indicatorClass} forceMount style={{ height: 20 }} />
-    </Checkbox>
+    <Checkbox.Root className={rootClass()}>
+      <Checkbox.Indicator className={indicatorClass()} forceMount style={{ height: 20 }} />
+    </Checkbox.Root>
 
     <h1>State attributes</h1>
     <h2>Unchecked</h2>
-    <Checkbox className={rootAttrClass}>
-      <CheckboxIndicator className={indicatorAttrClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootAttrClass()}>
+      <Checkbox.Indicator className={indicatorAttrClass()} />
+    </Checkbox.Root>
 
     <h2>Checked</h2>
-    <Checkbox className={rootAttrClass} defaultChecked>
-      <CheckboxIndicator className={indicatorAttrClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootAttrClass()} defaultChecked>
+      <Checkbox.Indicator className={indicatorAttrClass()} />
+    </Checkbox.Root>
 
     <h2>Indeterminate</h2>
-    <Checkbox className={rootAttrClass} checked="indeterminate">
-      <CheckboxIndicator className={indicatorAttrClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootAttrClass()} checked="indeterminate">
+      <Checkbox.Indicator className={indicatorAttrClass()} />
+    </Checkbox.Root>
 
     <h2>Disabled</h2>
-    <Checkbox className={rootAttrClass} defaultChecked disabled>
-      <CheckboxIndicator className={indicatorAttrClass} />
-    </Checkbox>
+    <Checkbox.Root className={rootAttrClass()} defaultChecked disabled>
+      <Checkbox.Indicator className={indicatorAttrClass()} />
+    </Checkbox.Root>
 
     <h2>Force mounted indicator</h2>
-    <Checkbox className={rootAttrClass}>
-      <CheckboxIndicator className={indicatorAttrClass} forceMount style={{ height: 20 }} />
-    </Checkbox>
+    <Checkbox.Root className={rootAttrClass()}>
+      <Checkbox.Indicator className={indicatorAttrClass()} forceMount style={{ height: 20 }} />
+    </Checkbox.Root>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -276,7 +281,7 @@ const rootClass = css({
   '&:focus': {
     outline: 'none',
     borderColor: '$red',
-    boxShadow: '0 0 0 1px $red',
+    boxShadow: '0 0 0 1px $colors$red',
   },
 
   '&[data-disabled]': {
@@ -295,12 +300,12 @@ const indicatorClass = css({
   },
 });
 
-const fadeIn = css.keyframes({
+const fadeIn = keyframes({
   from: { opacity: 0 },
   to: { opacity: 1 },
 });
 
-const fadeOut = css.keyframes({
+const fadeOut = keyframes({
   from: { opacity: 1 },
   to: { opacity: 0 },
 });

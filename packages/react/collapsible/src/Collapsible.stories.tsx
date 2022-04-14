@@ -1,25 +1,27 @@
 import * as React from 'react';
-import { css } from '../../../../stitches.config';
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './Collapsible';
+import { css, keyframes } from '../../../../stitches.config';
+import * as Collapsible from '@radix-ui/react-collapsible';
 
 export default { title: 'Components/Collapsible' };
 
 export const Styled = () => (
-  <Collapsible className={rootClass}>
-    <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-    <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
-  </Collapsible>
+  <Collapsible.Root className={rootClass()}>
+    <Collapsible.Trigger className={triggerClass()}>Trigger</Collapsible.Trigger>
+    <Collapsible.Content className={contentClass()}>Content 1</Collapsible.Content>
+  </Collapsible.Root>
 );
 
 export const Controlled = () => {
   const [open, setOpen] = React.useState(false);
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className={rootClass}>
-      <CollapsibleTrigger className={triggerClass}>{open ? 'close' : 'open'}</CollapsibleTrigger>
-      <CollapsibleContent className={contentClass} asChild>
+    <Collapsible.Root open={open} onOpenChange={setOpen} className={rootClass()}>
+      <Collapsible.Trigger className={triggerClass()}>
+        {open ? 'close' : 'open'}
+      </Collapsible.Trigger>
+      <Collapsible.Content className={contentClass()} asChild>
         <article>Content 1</article>
-      </CollapsibleContent>
-    </Collapsible>
+      </Collapsible.Content>
+    </Collapsible.Root>
   );
 };
 
@@ -27,32 +29,32 @@ export const Animated = () => {
   return (
     <>
       <h1>Closed by default</h1>
-      <Collapsible className={rootClass}>
-        <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-        <CollapsibleContent className={animatedContentClass}>
+      <Collapsible.Root className={rootClass()}>
+        <Collapsible.Trigger className={triggerClass()}>Trigger</Collapsible.Trigger>
+        <Collapsible.Content className={animatedContentClass()}>
           <div style={{ padding: 10 }}>Content 1</div>
-        </CollapsibleContent>
-      </Collapsible>
+        </Collapsible.Content>
+      </Collapsible.Root>
 
       <h1>Open by default</h1>
-      <Collapsible defaultOpen className={rootClass}>
-        <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-        <CollapsibleContent className={animatedContentClass}>
+      <Collapsible.Root defaultOpen className={rootClass()}>
+        <Collapsible.Trigger className={triggerClass()}>Trigger</Collapsible.Trigger>
+        <Collapsible.Content className={animatedContentClass()}>
           <div style={{ padding: 10 }}>Content 1</div>
-        </CollapsibleContent>
-      </Collapsible>
+        </Collapsible.Content>
+      </Collapsible.Root>
     </>
   );
 };
 
 export const AnimatedHorizontal = () => {
   return (
-    <Collapsible className={rootClass}>
-      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={animatedWidthContentClass}>
+    <Collapsible.Root className={rootClass()}>
+      <Collapsible.Trigger className={triggerClass()}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={animatedWidthContentClass()}>
         <div style={{ padding: 10 }}>Content</div>
-      </CollapsibleContent>
-    </Collapsible>
+      </Collapsible.Content>
+    </Collapsible.Root>
   );
 };
 
@@ -60,54 +62,54 @@ export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
     <h2>Closed</h2>
-    <Collapsible className={rootClass}>
-      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
-    </Collapsible>
+    <Collapsible.Root className={rootClass()}>
+      <Collapsible.Trigger className={triggerClass()}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={contentClass()}>Content 1</Collapsible.Content>
+    </Collapsible.Root>
 
     <h2>Open</h2>
-    <Collapsible className={rootClass} defaultOpen>
-      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
-    </Collapsible>
+    <Collapsible.Root className={rootClass()} defaultOpen>
+      <Collapsible.Trigger className={triggerClass()}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={contentClass()}>Content 1</Collapsible.Content>
+    </Collapsible.Root>
 
     <h1>Controlled</h1>
     <h2>Closed</h2>
-    <Collapsible className={rootClass} open={false}>
-      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
-    </Collapsible>
+    <Collapsible.Root className={rootClass()} open={false}>
+      <Collapsible.Trigger className={triggerClass()}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={contentClass()}>Content 1</Collapsible.Content>
+    </Collapsible.Root>
 
     <h2>Open</h2>
-    <Collapsible className={rootClass} open>
-      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
-    </Collapsible>
+    <Collapsible.Root className={rootClass()} open>
+      <Collapsible.Trigger className={triggerClass()}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={contentClass()}>Content 1</Collapsible.Content>
+    </Collapsible.Root>
 
     <h1>Disabled</h1>
-    <Collapsible className={rootClass} disabled>
-      <CollapsibleTrigger className={triggerClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={contentClass}>Content 1</CollapsibleContent>
-    </Collapsible>
+    <Collapsible.Root className={rootClass()} disabled>
+      <Collapsible.Trigger className={triggerClass()}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={contentClass()}>Content 1</Collapsible.Content>
+    </Collapsible.Root>
 
     <h1>State attributes</h1>
     <h2>Closed</h2>
-    <Collapsible className={rootAttrClass}>
-      <CollapsibleTrigger className={triggerAttrClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={contentAttrClass}>Content 1</CollapsibleContent>
-    </Collapsible>
+    <Collapsible.Root className={rootAttrClass()}>
+      <Collapsible.Trigger className={triggerAttrClass()}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={contentAttrClass()}>Content 1</Collapsible.Content>
+    </Collapsible.Root>
 
     <h2>Open</h2>
-    <Collapsible className={rootAttrClass} defaultOpen>
-      <CollapsibleTrigger className={triggerAttrClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={contentAttrClass}>Content 1</CollapsibleContent>
-    </Collapsible>
+    <Collapsible.Root className={rootAttrClass()} defaultOpen>
+      <Collapsible.Trigger className={triggerAttrClass()}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={contentAttrClass()}>Content 1</Collapsible.Content>
+    </Collapsible.Root>
 
     <h2>Disabled</h2>
-    <Collapsible className={rootAttrClass} defaultOpen disabled>
-      <CollapsibleTrigger className={triggerAttrClass}>Trigger</CollapsibleTrigger>
-      <CollapsibleContent className={contentAttrClass}>Content 1</CollapsibleContent>
-    </Collapsible>
+    <Collapsible.Root className={rootAttrClass()} defaultOpen disabled>
+      <Collapsible.Trigger className={triggerAttrClass()}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={contentAttrClass()}>Content 1</Collapsible.Content>
+    </Collapsible.Root>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -163,22 +165,22 @@ const contentClass = css({
   lineHeight: 1.5,
 });
 
-const slideDown = css.keyframes({
+const slideDown = keyframes({
   from: { height: 0 },
   to: { height: 'var(--radix-collapsible-content-height)' },
 });
 
-const slideUp = css.keyframes({
+const slideUp = keyframes({
   from: { height: 'var(--radix-collapsible-content-height)' },
   to: { height: 0 },
 });
 
-const openRight = css.keyframes({
+const openRight = keyframes({
   from: { width: 0 },
   to: { width: 'var(--radix-collapsible-content-width)' },
 });
 
-const closeRight = css.keyframes({
+const closeRight = keyframes({
   from: { width: 'var(--radix-collapsible-content-width)' },
   to: { width: 0 },
 });

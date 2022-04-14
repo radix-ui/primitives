@@ -1,23 +1,23 @@
 import * as React from 'react';
-import { HoverCard, HoverCardTrigger, HoverCardContent, HoverCardArrow } from './HoverCard';
-import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import { css, keyframes } from '../../../../stitches.config';
 import * as Dialog from '@radix-ui/react-dialog';
-import { css } from '../../../../stitches.config';
+import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import * as HoverCard from '@radix-ui/react-hover-card';
 
 export default { title: 'Components/HoverCard' };
 
 export const Basic = () => {
   return (
     <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
-      <HoverCard>
-        <HoverCardTrigger href="/" className={triggerClass}>
+      <HoverCard.Root>
+        <HoverCard.Trigger href="/" className={triggerClass()}>
           trigger
-        </HoverCardTrigger>
-        <HoverCardContent className={contentClass} sideOffset={5}>
-          <HoverCardArrow className={arrowClass} width={20} height={10} />
+        </HoverCard.Trigger>
+        <HoverCard.Content className={contentClass()} sideOffset={5}>
+          <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
           <CardContentPlaceholder />
-        </HoverCardContent>
-      </HoverCard>
+        </HoverCard.Content>
+      </HoverCard.Root>
     </div>
   );
 };
@@ -49,15 +49,15 @@ export const AsyncUpdate = () => {
 
   return (
     <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
-      <HoverCard open={open} onOpenChange={handleOpenChange}>
-        <HoverCardTrigger href="/" className={triggerClass}>
+      <HoverCard.Root open={open} onOpenChange={handleOpenChange}>
+        <HoverCard.Trigger href="/" className={triggerClass()}>
           trigger
-        </HoverCardTrigger>
-        <HoverCardContent className={contentClass} sideOffset={5}>
-          <HoverCardArrow className={arrowClass} width={20} height={10} />
+        </HoverCard.Trigger>
+        <HoverCard.Content className={contentClass()} sideOffset={5}>
+          <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
           {contentLoaded ? <CardContentPlaceholder /> : 'Loading...'}
-        </HoverCardContent>
-      </HoverCard>
+        </HoverCard.Content>
+      </HoverCard.Root>
     </div>
   );
 };
@@ -67,35 +67,35 @@ export const CustomDurations = () => (
     <h1>Delay duration</h1>
     <h2>Default (700ms open, 300ms close)</h2>
 
-    <HoverCard>
-      <HoverCardTrigger href="/" className={triggerClass}>
+    <HoverCard.Root>
+      <HoverCard.Trigger href="/" className={triggerClass()}>
         trigger
-      </HoverCardTrigger>
-      <HoverCardContent className={contentClass}>
+      </HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()}>
         <CardContentPlaceholder />
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
 
     <h2>Custom (instant, 0ms open, 0ms close)</h2>
-    <HoverCard openDelay={0} closeDelay={0}>
-      <HoverCardTrigger href="/" className={triggerClass}>
+    <HoverCard.Root openDelay={0} closeDelay={0}>
+      <HoverCard.Trigger href="/" className={triggerClass()}>
         trigger
-      </HoverCardTrigger>
-      <HoverCardContent className={contentClass}>
+      </HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()}>
         <CardContentPlaceholder />
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
 
     <h2>Custom (300ms open, 100ms close)</h2>
 
-    <HoverCard openDelay={300} closeDelay={100}>
-      <HoverCardTrigger href="/" className={triggerClass}>
+    <HoverCard.Root openDelay={300} closeDelay={100}>
+      <HoverCard.Trigger href="/" className={triggerClass()}>
         trigger
-      </HoverCardTrigger>
-      <HoverCardContent className={contentClass}>
+      </HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()}>
         <CardContentPlaceholder />
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
   </div>
 );
 
@@ -104,15 +104,15 @@ export const Controlled = () => {
 
   return (
     <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
-      <HoverCard open={open} onOpenChange={setOpen}>
-        <HoverCardTrigger href="/" className={triggerClass}>
+      <HoverCard.Root open={open} onOpenChange={setOpen}>
+        <HoverCard.Trigger href="/" className={triggerClass()}>
           trigger
-        </HoverCardTrigger>
-        <HoverCardContent className={contentClass}>
-          <HoverCardArrow className={arrowClass} width={20} height={10} />
+        </HoverCard.Trigger>
+        <HoverCard.Content className={contentClass()}>
+          <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
           <CardContentPlaceholder />
-        </HoverCardContent>
-      </HoverCard>
+        </HoverCard.Content>
+      </HoverCard.Root>
     </div>
   );
 };
@@ -134,15 +134,15 @@ export const Layerable = () => (
         }}
       >
         Some dialog content with a{' '}
-        <HoverCard>
-          <HoverCardTrigger href="/" className={triggerClass}>
+        <HoverCard.Root>
+          <HoverCard.Trigger href="/" className={triggerClass()}>
             trigger
-          </HoverCardTrigger>
-          <HoverCardContent className={contentClass} sideOffset={5}>
-            <HoverCardArrow className={arrowClass} width={20} height={10} />
+          </HoverCard.Trigger>
+          <HoverCard.Content className={contentClass()} sideOffset={5}>
+            <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
             <CardContentPlaceholder />
-          </HoverCardContent>
-        </HoverCard>{' '}
+          </HoverCard.Content>
+        </HoverCard.Root>{' '}
         <Dialog.Close>Close</Dialog.Close>
       </Dialog.Content>
     </Dialog.Root>
@@ -152,15 +152,15 @@ export const Layerable = () => (
 export const Animated = () => {
   return (
     <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
-      <HoverCard>
-        <HoverCardTrigger href="/" className={triggerClass}>
+      <HoverCard.Root>
+        <HoverCard.Trigger href="/" className={triggerClass()}>
           trigger
-        </HoverCardTrigger>
-        <HoverCardContent className={animatedContentClass} sideOffset={10}>
-          <HoverCardArrow className={arrowClass} width={20} height={10} />
+        </HoverCard.Trigger>
+        <HoverCard.Content className={animatedContentClass()} sideOffset={10}>
+          <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
           <CardContentPlaceholder />
-        </HoverCardContent>
-      </HoverCard>
+        </HoverCard.Content>
+      </HoverCard.Root>
     </div>
   );
 };
@@ -168,82 +168,82 @@ export const Animated = () => {
 export const ForcedMount = () => {
   return (
     <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
-      <HoverCard>
-        <HoverCardTrigger href="/" className={triggerClass}>
+      <HoverCard.Root>
+        <HoverCard.Trigger href="/" className={triggerClass()}>
           trigger
-        </HoverCardTrigger>
-        <HoverCardContent className={contentClass} sideOffset={10} forceMount>
-          <HoverCardArrow className={arrowClass} width={20} height={10} />
+        </HoverCard.Trigger>
+        <HoverCard.Content className={contentClass()} sideOffset={10} forceMount>
+          <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
           <CardContentPlaceholder />
-        </HoverCardContent>
-      </HoverCard>
+        </HoverCard.Content>
+      </HoverCard.Root>
     </div>
   );
 };
 
 export const Nested = () => {
   return (
-    <HoverCard>
-      <HoverCardTrigger href="/" className={triggerClass}>
+    <HoverCard.Root>
+      <HoverCard.Trigger href="/" className={triggerClass()}>
         trigger level 1
-      </HoverCardTrigger>
+      </HoverCard.Trigger>
 
-      <HoverCardContent
-        className={contentClass}
+      <HoverCard.Content
+        className={contentClass()}
         sideOffset={5}
         style={{ backgroundColor: 'crimson' }}
       >
-        <HoverCard>
-          <HoverCardTrigger href="/" className={triggerClass}>
+        <HoverCard.Root>
+          <HoverCard.Trigger href="/" className={triggerClass()}>
             trigger level 2
-          </HoverCardTrigger>
-          <HoverCardContent
-            className={contentClass}
+          </HoverCard.Trigger>
+          <HoverCard.Content
+            className={contentClass()}
             side="top"
             align="center"
             sideOffset={5}
             style={{ backgroundColor: 'green' }}
           >
-            <HoverCardArrow
-              className={arrowClass}
+            <HoverCard.Arrow
+              className={arrowClass()}
               width={20}
               height={10}
               offset={20}
               style={{ fill: 'green' }}
             />
-            <HoverCard>
-              <HoverCardTrigger href="/" className={triggerClass}>
+            <HoverCard.Root>
+              <HoverCard.Trigger href="/" className={triggerClass()}>
                 trigger level 3
-              </HoverCardTrigger>
-              <HoverCardContent
-                className={contentClass}
+              </HoverCard.Trigger>
+              <HoverCard.Content
+                className={contentClass()}
                 side="bottom"
                 align="start"
                 sideOffset={5}
                 style={{ backgroundColor: 'purple' }}
               >
-                <HoverCardArrow
-                  className={arrowClass}
+                <HoverCard.Arrow
+                  className={arrowClass()}
                   width={20}
                   height={10}
                   offset={20}
                   style={{ fill: 'purple' }}
                 />
                 level 3
-              </HoverCardContent>
-            </HoverCard>
-          </HoverCardContent>
-        </HoverCard>
+              </HoverCard.Content>
+            </HoverCard.Root>
+          </HoverCard.Content>
+        </HoverCard.Root>
 
-        <HoverCardArrow
-          className={arrowClass}
+        <HoverCard.Arrow
+          className={arrowClass()}
           width={20}
           height={10}
           offset={20}
           style={{ fill: 'crimson' }}
         />
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
   );
 };
 
@@ -251,16 +251,16 @@ export const NonPortal = () => {
   return (
     <div>
       <button>button</button>
-      <HoverCard>
-        <HoverCardTrigger href="/" className={triggerClass}>
+      <HoverCard.Root>
+        <HoverCard.Trigger href="/" className={triggerClass()}>
           trigger
-        </HoverCardTrigger>
-        <HoverCardContent portalled={false} className={contentClass} sideOffset={5}>
-          <HoverCardArrow className={arrowClass} width={20} height={10} offset={10} />
+        </HoverCard.Trigger>
+        <HoverCard.Content portalled={false} className={contentClass()} sideOffset={5}>
+          <HoverCard.Arrow className={arrowClass()} width={20} height={10} offset={10} />
           <a href="#link">Should not be able to focus me</a>
           <CardContentPlaceholder />
-        </HoverCardContent>
-      </HoverCard>
+        </HoverCard.Content>
+      </HoverCard.Root>
       <button>button</button>
     </div>
   );
@@ -268,32 +268,32 @@ export const NonPortal = () => {
 
 export const WithSlottedTrigger = () => {
   return (
-    <HoverCard>
-      <HoverCardTrigger asChild>
-        <button className={triggerClass} onClick={() => console.log('StyledTrigger click')}>
+    <HoverCard.Root>
+      <HoverCard.Trigger asChild>
+        <button className={triggerClass()} onClick={() => console.log('StyledTrigger click')}>
           trigger
         </button>
-      </HoverCardTrigger>
-      <HoverCardContent className={contentClass} sideOffset={5}>
-        <HoverCardArrow className={arrowClass} width={20} height={10} offset={10} />
+      </HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()} sideOffset={5}>
+        <HoverCard.Arrow className={arrowClass()} width={20} height={10} offset={10} />
         <CardContentPlaceholder />
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
   );
 };
 
 export const WithSlottedContent = () => (
-  <HoverCard>
-    <HoverCardTrigger href="/" className={triggerClass}>
+  <HoverCard.Root>
+    <HoverCard.Trigger href="/" className={triggerClass()}>
       trigger
-    </HoverCardTrigger>
-    <HoverCardContent asChild sideOffset={5}>
-      <div className={contentClass}>
-        <HoverCardArrow className={arrowClass} width={20} height={10} offset={10} />
+    </HoverCard.Trigger>
+    <HoverCard.Content asChild sideOffset={5}>
+      <div className={contentClass()}>
+        <HoverCard.Arrow className={arrowClass()} width={20} height={10} offset={10} />
         <CardContentPlaceholder />
       </div>
-    </HoverCardContent>
-  </HoverCard>
+    </HoverCard.Content>
+  </HoverCard.Root>
 );
 
 // change order slightly for more pleasing visual
@@ -303,79 +303,79 @@ export const Chromatic = () => (
   <div style={{ padding: 200 }}>
     <h1>Uncontrolled</h1>
     <h2>Closed</h2>
-    <HoverCard>
-      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
-      <HoverCardContent className={contentClass} sideOffset={5}>
-        <HoverCardArrow className={arrowClass} width={20} height={10} />
+    <HoverCard.Root>
+      <HoverCard.Trigger className={triggerClass()}>open</HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()} sideOffset={5}>
+        <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
         Some content
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
 
     <h2>Open</h2>
-    <HoverCard defaultOpen>
-      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
-      <HoverCardContent className={contentClass} sideOffset={5}>
-        <HoverCardArrow className={arrowClass} width={20} height={10} />
+    <HoverCard.Root defaultOpen>
+      <HoverCard.Trigger className={triggerClass()}>open</HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()} sideOffset={5}>
+        <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
         Some content
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
 
     <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
-    <HoverCard defaultOpen>
-      <HoverCardContent className={contentClass} sideOffset={5}>
+    <HoverCard.Root defaultOpen>
+      <HoverCard.Content className={contentClass()} sideOffset={5}>
         Some content
-        <HoverCardArrow className={arrowClass} offset={10} />
-      </HoverCardContent>
-      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
-    </HoverCard>
+        <HoverCard.Arrow className={arrowClass()} offset={10} />
+      </HoverCard.Content>
+      <HoverCard.Trigger className={triggerClass()}>open</HoverCard.Trigger>
+    </HoverCard.Root>
 
     <h1 style={{ marginTop: 100 }}>Controlled</h1>
     <h2>Closed</h2>
-    <HoverCard open={false}>
-      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
-      <HoverCardContent className={contentClass} sideOffset={5}>
-        <HoverCardArrow className={arrowClass} width={20} height={10} />
+    <HoverCard.Root open={false}>
+      <HoverCard.Trigger className={triggerClass()}>open</HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()} sideOffset={5}>
+        <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
         Some content
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
 
     <h2>Open</h2>
-    <HoverCard open>
-      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
-      <HoverCardContent className={contentClass} sideOffset={5}>
-        <HoverCardArrow className={arrowClass} width={20} height={10} />
+    <HoverCard.Root open>
+      <HoverCard.Trigger className={triggerClass()}>open</HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()} sideOffset={5}>
+        <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
         Some content
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
 
     <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
-    <HoverCard open>
-      <HoverCardContent className={contentClass} sideOffset={5}>
+    <HoverCard.Root open>
+      <HoverCard.Content className={contentClass()} sideOffset={5}>
         Some content
-        <HoverCardArrow className={arrowClass} offset={10} />
-      </HoverCardContent>
-      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
-    </HoverCard>
+        <HoverCard.Arrow className={arrowClass()} offset={10} />
+      </HoverCard.Content>
+      <HoverCard.Trigger className={triggerClass()}>open</HoverCard.Trigger>
+    </HoverCard.Root>
 
     <h1 style={{ marginTop: 100 }}>Force mounted content</h1>
-    <HoverCard>
-      <HoverCardTrigger className={triggerClass}>open</HoverCardTrigger>
-      <HoverCardContent className={contentClass} sideOffset={5} forceMount>
-        <HoverCardArrow className={arrowClass} width={20} height={10} />
+    <HoverCard.Root>
+      <HoverCard.Trigger className={triggerClass()}>open</HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()} sideOffset={5} forceMount>
+        <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
         Some content
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
 
     <h1 style={{ marginTop: 100 }}>Positioning</h1>
     <h2>No collisions</h2>
     <h3>Side & Align</h3>
-    <div className={gridClass}>
+    <div className={gridClass()}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
-          <HoverCard key={`${side}-${align}`} open>
-            <HoverCardTrigger className={chromaticTriggerClass} />
-            <HoverCardContent
-              className={chromaticContentClass}
+          <HoverCard.Root key={`${side}-${align}`} open>
+            <HoverCard.Trigger className={chromaticTriggerClass()} />
+            <HoverCard.Content
+              className={chromaticContentClass()}
               side={side}
               align={align}
               avoidCollisions={false}
@@ -385,22 +385,22 @@ export const Chromatic = () => (
                 <br />
                 {align}
               </p>
-              <HoverCardArrow className={chromaticArrowClass} width={20} height={10} />
-            </HoverCardContent>
-          </HoverCard>
+              <HoverCard.Arrow className={chromaticArrowClass()} width={20} height={10} />
+            </HoverCard.Content>
+          </HoverCard.Root>
         ))
       )}
     </div>
 
     <h3>Arrow offset</h3>
     <h4>Positive</h4>
-    <div className={gridClass}>
+    <div className={gridClass()}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
-          <HoverCard key={`${side}-${align}`} open>
-            <HoverCardTrigger className={chromaticTriggerClass} />
-            <HoverCardContent
-              className={chromaticContentClass}
+          <HoverCard.Root key={`${side}-${align}`} open>
+            <HoverCard.Trigger className={chromaticTriggerClass()} />
+            <HoverCard.Content
+              className={chromaticContentClass()}
               side={side}
               align={align}
               avoidCollisions={false}
@@ -410,20 +410,25 @@ export const Chromatic = () => (
                 <br />
                 {align}
               </p>
-              <HoverCardArrow className={chromaticArrowClass} width={20} height={10} offset={5} />
-            </HoverCardContent>
-          </HoverCard>
+              <HoverCard.Arrow
+                className={chromaticArrowClass()}
+                width={20}
+                height={10}
+                offset={5}
+              />
+            </HoverCard.Content>
+          </HoverCard.Root>
         ))
       )}
     </div>
     <h4>Negative</h4>
-    <div className={gridClass}>
+    <div className={gridClass()}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
-          <HoverCard key={`${side}-${align}`} open>
-            <HoverCardTrigger className={chromaticTriggerClass} />
-            <HoverCardContent
-              className={chromaticContentClass}
+          <HoverCard.Root key={`${side}-${align}`} open>
+            <HoverCard.Trigger className={chromaticTriggerClass()} />
+            <HoverCard.Content
+              className={chromaticContentClass()}
               side={side}
               align={align}
               avoidCollisions={false}
@@ -433,22 +438,27 @@ export const Chromatic = () => (
                 <br />
                 {align}
               </p>
-              <HoverCardArrow className={chromaticArrowClass} width={20} height={10} offset={-10} />
-            </HoverCardContent>
-          </HoverCard>
+              <HoverCard.Arrow
+                className={chromaticArrowClass()}
+                width={20}
+                height={10}
+                offset={-10}
+              />
+            </HoverCard.Content>
+          </HoverCard.Root>
         ))
       )}
     </div>
 
     <h3>Side offset</h3>
     <h4>Positive</h4>
-    <div className={gridClass}>
+    <div className={gridClass()}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
-          <HoverCard key={`${side}-${align}`} open>
-            <HoverCardTrigger className={chromaticTriggerClass} />
-            <HoverCardContent
-              className={chromaticContentClass}
+          <HoverCard.Root key={`${side}-${align}`} open>
+            <HoverCard.Trigger className={chromaticTriggerClass()} />
+            <HoverCard.Content
+              className={chromaticContentClass()}
               side={side}
               sideOffset={5}
               align={align}
@@ -459,20 +469,20 @@ export const Chromatic = () => (
                 <br />
                 {align}
               </p>
-              <HoverCardArrow className={chromaticArrowClass} width={20} height={10} />
-            </HoverCardContent>
-          </HoverCard>
+              <HoverCard.Arrow className={chromaticArrowClass()} width={20} height={10} />
+            </HoverCard.Content>
+          </HoverCard.Root>
         ))
       )}
     </div>
     <h4>Negative</h4>
-    <div className={gridClass}>
+    <div className={gridClass()}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
-          <HoverCard key={`${side}-${align}`} open>
-            <HoverCardTrigger className={chromaticTriggerClass} />
-            <HoverCardContent
-              className={chromaticContentClass}
+          <HoverCard.Root key={`${side}-${align}`} open>
+            <HoverCard.Trigger className={chromaticTriggerClass()} />
+            <HoverCard.Content
+              className={chromaticContentClass()}
               side={side}
               sideOffset={-10}
               align={align}
@@ -483,22 +493,22 @@ export const Chromatic = () => (
                 <br />
                 {align}
               </p>
-              <HoverCardArrow className={chromaticArrowClass} width={20} height={10} />
-            </HoverCardContent>
-          </HoverCard>
+              <HoverCard.Arrow className={chromaticArrowClass()} width={20} height={10} />
+            </HoverCard.Content>
+          </HoverCard.Root>
         ))
       )}
     </div>
 
     <h3>Align offset</h3>
     <h4>Positive</h4>
-    <div className={gridClass}>
+    <div className={gridClass()}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
-          <HoverCard key={`${side}-${align}`} open>
-            <HoverCardTrigger className={chromaticTriggerClass} />
-            <HoverCardContent
-              className={chromaticContentClass}
+          <HoverCard.Root key={`${side}-${align}`} open>
+            <HoverCard.Trigger className={chromaticTriggerClass()} />
+            <HoverCard.Content
+              className={chromaticContentClass()}
               side={side}
               align={align}
               alignOffset={20}
@@ -509,20 +519,20 @@ export const Chromatic = () => (
                 <br />
                 {align}
               </p>
-              <HoverCardArrow className={chromaticArrowClass} width={20} height={10} />
-            </HoverCardContent>
-          </HoverCard>
+              <HoverCard.Arrow className={chromaticArrowClass()} width={20} height={10} />
+            </HoverCard.Content>
+          </HoverCard.Root>
         ))
       )}
     </div>
     <h4>Negative</h4>
-    <div className={gridClass}>
+    <div className={gridClass()}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
-          <HoverCard key={`${side}-${align}`} open>
-            <HoverCardTrigger className={chromaticTriggerClass} />
-            <HoverCardContent
-              className={chromaticContentClass}
+          <HoverCard.Root key={`${side}-${align}`} open>
+            <HoverCard.Trigger className={chromaticTriggerClass()} />
+            <HoverCard.Content
+              className={chromaticContentClass()}
               side={side}
               align={align}
               alignOffset={-10}
@@ -533,9 +543,9 @@ export const Chromatic = () => (
                 <br />
                 {align}
               </p>
-              <HoverCardArrow className={chromaticArrowClass} width={20} height={10} />
-            </HoverCardContent>
-          </HoverCard>
+              <HoverCard.Arrow className={chromaticArrowClass()} width={20} height={10} />
+            </HoverCard.Content>
+          </HoverCard.Root>
         ))
       )}
     </div>
@@ -544,9 +554,9 @@ export const Chromatic = () => (
     <p>See instances on the periphery of the page.</p>
     {SIDES.map((side) =>
       ALIGN_OPTIONS.map((align) => (
-        <HoverCard key={`${side}-${align}`} open>
-          <HoverCardTrigger
-            className={chromaticTriggerClass}
+        <HoverCard.Root key={`${side}-${align}`} open>
+          <HoverCard.Trigger
+            className={chromaticTriggerClass()}
             style={{
               position: 'absolute',
               [side]: 10,
@@ -564,47 +574,47 @@ export const Chromatic = () => (
                   : { left: 10 })),
             }}
           />
-          <HoverCardContent className={chromaticContentClass} side={side} align={align}>
+          <HoverCard.Content className={chromaticContentClass()} side={side} align={align}>
             <p style={{ textAlign: 'center' }}>
               {side}
               <br />
               {align}
             </p>
-            <HoverCardArrow className={chromaticArrowClass} width={20} height={10} />
-          </HoverCardContent>
-        </HoverCard>
+            <HoverCard.Arrow className={chromaticArrowClass()} width={20} height={10} />
+          </HoverCard.Content>
+        </HoverCard.Root>
       ))
     )}
 
     <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
-    <HoverCard open>
-      <HoverCardTrigger asChild>
-        <button className={triggerClass}>open</button>
-      </HoverCardTrigger>
-      <HoverCardContent className={contentClass} sideOffset={5}>
-        <HoverCardArrow className={arrowClass} width={20} height={10} offset={10} />
+    <HoverCard.Root open>
+      <HoverCard.Trigger asChild>
+        <button className={triggerClass()}>open</button>
+      </HoverCard.Trigger>
+      <HoverCard.Content className={contentClass()} sideOffset={5}>
+        <HoverCard.Arrow className={arrowClass()} width={20} height={10} offset={10} />
         Some content
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
 
     <h1 style={{ marginTop: 100 }}>State attributes</h1>
     <h2>Closed</h2>
-    <HoverCard open={false}>
-      <HoverCardTrigger className={triggerAttrClass}>open</HoverCardTrigger>
-      <HoverCardContent className={contentAttrClass} sideOffset={5}>
-        <HoverCardArrow className={arrowAttrClass} width={20} height={10} />
+    <HoverCard.Root open={false}>
+      <HoverCard.Trigger className={triggerAttrClass()}>open</HoverCard.Trigger>
+      <HoverCard.Content className={contentAttrClass()} sideOffset={5}>
+        <HoverCard.Arrow className={arrowAttrClass()} width={20} height={10} />
         Some content
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
 
     <h2>Open</h2>
-    <HoverCard open>
-      <HoverCardTrigger className={triggerAttrClass}>open</HoverCardTrigger>
-      <HoverCardContent className={contentAttrClass} side="right" sideOffset={5}>
-        <HoverCardArrow className={arrowAttrClass} width={20} height={10} />
+    <HoverCard.Root open>
+      <HoverCard.Trigger className={triggerAttrClass()}>open</HoverCard.Trigger>
+      <HoverCard.Content className={contentAttrClass()} side="right" sideOffset={5}>
+        <HoverCard.Arrow className={arrowAttrClass()} width={20} height={10} />
         Some content
-      </HoverCardContent>
-    </HoverCard>
+      </HoverCard.Content>
+    </HoverCard.Root>
   </div>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -646,12 +656,12 @@ const arrowClass = css({
   fill: '$gray300',
 });
 
-const fadeIn = css.keyframes({
+const fadeIn = keyframes({
   from: { transform: 'scale(0.9)', opacity: 0 },
   to: { transform: 'scale(1)', opacity: 1 },
 });
 
-const fadeOut = css.keyframes({
+const fadeOut = keyframes({
   from: { transform: 'scale(1)', opacity: 1 },
   to: { transform: 'scale(0.9)', opacity: 0 },
 });

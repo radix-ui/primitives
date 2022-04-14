@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Popper, PopperAnchor, PopperContent, PopperArrow } from './Popper';
+import { css, keyframes } from '../../../../stitches.config';
 import { Portal } from '@radix-ui/react-portal';
-import { css } from '../../../../stitches.config';
+import * as Popper from '@radix-ui/react-popper';
 
 export default { title: 'Components/Popper' };
 
@@ -9,18 +9,18 @@ export const Styled = () => {
   const [open, setOpen] = React.useState(false);
   return (
     <Scrollable>
-      <Popper>
-        <PopperAnchor className={anchorClass} onClick={() => setOpen(true)}>
+      <Popper.Root>
+        <Popper.Anchor className={anchorClass()} onClick={() => setOpen(true)}>
           open
-        </PopperAnchor>
+        </Popper.Anchor>
 
         {open && (
-          <PopperContent className={contentClass} sideOffset={5}>
+          <Popper.Content className={contentClass()} sideOffset={5}>
             <button onClick={() => setOpen(false)}>close</button>
-            <PopperArrow className={arrowClass} width={20} height={10} />
-          </PopperContent>
+            <Popper.Arrow className={arrowClass()} width={20} height={10} />
+          </Popper.Content>
         )}
-      </Popper>
+      </Popper.Root>
     </Scrollable>
   );
 };
@@ -29,20 +29,20 @@ export const WithCustomArrow = () => {
   const [open, setOpen] = React.useState(false);
   return (
     <Scrollable>
-      <Popper>
-        <PopperAnchor className={anchorClass} onClick={() => setOpen(true)}>
+      <Popper.Root>
+        <Popper.Anchor className={anchorClass()} onClick={() => setOpen(true)}>
           open
-        </PopperAnchor>
+        </Popper.Anchor>
 
         {open && (
-          <PopperContent className={contentClass} side="right" sideOffset={5}>
+          <Popper.Content className={contentClass()} side="right" sideOffset={5}>
             <button onClick={() => setOpen(false)}>close</button>
-            <PopperArrow asChild offset={20}>
+            <Popper.Arrow asChild offset={20}>
               <CustomArrow width={20} height={10} />
-            </PopperArrow>
-          </PopperContent>
+            </Popper.Arrow>
+          </Popper.Content>
         )}
-      </Popper>
+      </Popper.Root>
     </Scrollable>
   );
 };
@@ -52,20 +52,20 @@ export const Animated = () => {
 
   return (
     <Scrollable>
-      <Popper>
-        <PopperAnchor className={anchorClass} onClick={() => setOpen(true)}>
+      <Popper.Root>
+        <Popper.Anchor className={anchorClass()} onClick={() => setOpen(true)}>
           open
-        </PopperAnchor>
+        </Popper.Anchor>
 
         {open && (
           <Portal>
-            <PopperContent className={animatedContentClass} sideOffset={5}>
+            <Popper.Content className={animatedContentClass()} sideOffset={5}>
               <button onClick={() => setOpen(false)}>close</button>
-              <PopperArrow className={arrowClass} width={20} height={10} offset={25} />
-            </PopperContent>
+              <Popper.Arrow className={arrowClass()} width={20} height={10} offset={25} />
+            </Popper.Content>
           </Portal>
         )}
-      </Popper>
+      </Popper.Root>
     </Scrollable>
   );
 };
@@ -74,20 +74,20 @@ export const WithPortal = () => {
   const [open, setOpen] = React.useState(false);
   return (
     <Scrollable>
-      <Popper>
-        <PopperAnchor className={anchorClass} onClick={() => setOpen(true)}>
+      <Popper.Root>
+        <Popper.Anchor className={anchorClass()} onClick={() => setOpen(true)}>
           open
-        </PopperAnchor>
+        </Popper.Anchor>
 
         {open && (
           <Portal>
-            <PopperContent className={contentClass} sideOffset={5}>
+            <Popper.Content className={contentClass()} sideOffset={5}>
               <button onClick={() => setOpen(false)}>close</button>
-              <PopperArrow className={arrowClass} width={20} height={10} />
-            </PopperContent>
+              <Popper.Arrow className={arrowClass()} width={20} height={10} />
+            </Popper.Content>
           </Portal>
         )}
-      </Popper>
+      </Popper.Root>
     </Scrollable>
   );
 };
@@ -107,10 +107,10 @@ export const WithVirtualElement = () => {
   }, []);
 
   return (
-    <Popper>
-      <PopperAnchor virtualRef={virtualRef} />
-      <PopperContent className={contentClass} align="start" />
-    </Popper>
+    <Popper.Root>
+      <Popper.Anchor virtualRef={virtualRef} />
+      <Popper.Content className={contentClass()} align="start" />
+    </Popper.Root>
   );
 };
 
@@ -158,7 +158,7 @@ const arrowClass = css({
   fill: '$gray100',
 });
 
-const rotateIn = css.keyframes({
+const rotateIn = keyframes({
   '0%': { transform: 'scale(0) rotateZ(calc(var(--direction, 0) * 45deg))' },
   '100%': { transform: 'scale(1)' },
 });

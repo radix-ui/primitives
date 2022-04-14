@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Switch, SwitchThumb } from './Switch';
-import { Label as LabelPrimitive } from '@radix-ui/react-label';
 import { css } from '../../../../stitches.config';
+import { Label as LabelPrimitive } from '@radix-ui/react-label';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
+import * as Switch from '@radix-ui/react-switch';
 
 export default { title: 'Components/Switch' };
 
@@ -11,9 +11,9 @@ export const Styled = () => (
     <p>This switch is nested inside a label. The state is uncontrolled.</p>
     <Label>
       This is the label{' '}
-      <Switch className={rootClass}>
-        <SwitchThumb className={thumbClass} />
-      </Switch>
+      <Switch.Root className={rootClass()}>
+        <Switch.Thumb className={thumbClass()} />
+      </Switch.Root>
     </Label>
   </>
 );
@@ -25,9 +25,14 @@ export const Controlled = () => {
     <>
       <p>This switch is placed adjacent to its label. The state is controlled.</p>
       <Label htmlFor="randBox">This is the label</Label>{' '}
-      <Switch className={rootClass} checked={checked} onCheckedChange={setChecked} id="randBox">
-        <SwitchThumb className={thumbClass} />
-      </Switch>
+      <Switch.Root
+        className={rootClass()}
+        checked={checked}
+        onCheckedChange={setChecked}
+        id="randBox"
+      >
+        <Switch.Thumb className={thumbClass()} />
+      </Switch.Root>
     </>
   );
 };
@@ -47,14 +52,14 @@ export const WithinForm = () => {
       <fieldset>
         <legend>optional checked: {String(data.optional)}</legend>
         <label>
-          <Switch
-            className={rootClass}
+          <Switch.Root
+            className={rootClass()}
             name="optional"
             checked={checked}
             onCheckedChange={setChecked}
           >
-            <SwitchThumb className={thumbClass} />
-          </Switch>{' '}
+            <Switch.Thumb className={thumbClass()} />
+          </Switch.Root>{' '}
           with label
         </label>
       </fieldset>
@@ -64,9 +69,9 @@ export const WithinForm = () => {
 
       <fieldset>
         <legend>required checked: {String(data.required)}</legend>
-        <Switch className={rootClass} name="required" required>
-          <SwitchThumb className={thumbClass} />
-        </Switch>
+        <Switch.Root className={rootClass()} name="required" required>
+          <Switch.Thumb className={thumbClass()} />
+        </Switch.Root>
       </fieldset>
 
       <br />
@@ -74,9 +79,13 @@ export const WithinForm = () => {
 
       <fieldset>
         <legend>stop propagation checked: {String(data.stopprop)}</legend>
-        <Switch className={rootClass} name="stopprop" onClick={(event) => event.stopPropagation()}>
-          <SwitchThumb className={thumbClass} />
-        </Switch>
+        <Switch.Root
+          className={rootClass()}
+          name="stopprop"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <Switch.Thumb className={thumbClass()} />
+        </Switch.Root>
       </fieldset>
 
       <br />
@@ -91,46 +100,46 @@ export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
     <h2>Off</h2>
-    <Switch className={rootClass}>
-      <SwitchThumb className={thumbClass} />
-    </Switch>
+    <Switch.Root className={rootClass()}>
+      <Switch.Thumb className={thumbClass()} />
+    </Switch.Root>
 
     <h2>On</h2>
-    <Switch className={rootClass} defaultChecked>
-      <SwitchThumb className={thumbClass} />
-    </Switch>
+    <Switch.Root className={rootClass()} defaultChecked>
+      <Switch.Thumb className={thumbClass()} />
+    </Switch.Root>
 
     <h1>Controlled</h1>
     <h2>Off</h2>
-    <Switch className={rootClass} checked={false}>
-      <SwitchThumb className={thumbClass} />
-    </Switch>
+    <Switch.Root className={rootClass()} checked={false}>
+      <Switch.Thumb className={thumbClass()} />
+    </Switch.Root>
 
     <h2>On</h2>
-    <Switch className={rootClass} checked>
-      <SwitchThumb className={thumbClass} />
-    </Switch>
+    <Switch.Root className={rootClass()} checked>
+      <Switch.Thumb className={thumbClass()} />
+    </Switch.Root>
 
     <h1>Disabled</h1>
-    <Switch className={rootClass} disabled>
-      <SwitchThumb className={thumbClass} />
-    </Switch>
+    <Switch.Root className={rootClass()} disabled>
+      <Switch.Thumb className={thumbClass()} />
+    </Switch.Root>
 
     <h1>State attributes</h1>
     <h2>Unchecked</h2>
-    <Switch className={rootAttrClass}>
-      <SwitchThumb className={thumbAttrClass} />
-    </Switch>
+    <Switch.Root className={rootAttrClass()}>
+      <Switch.Thumb className={thumbAttrClass()} />
+    </Switch.Root>
 
     <h2>Checked</h2>
-    <Switch className={rootAttrClass} defaultChecked>
-      <SwitchThumb className={thumbAttrClass} />
-    </Switch>
+    <Switch.Root className={rootAttrClass()} defaultChecked>
+      <Switch.Thumb className={thumbAttrClass()} />
+    </Switch.Root>
 
     <h2>Disabled</h2>
-    <Switch className={rootAttrClass} defaultChecked disabled>
-      <SwitchThumb className={thumbAttrClass} />
-    </Switch>
+    <Switch.Root className={rootAttrClass()} defaultChecked disabled>
+      <Switch.Thumb className={thumbAttrClass()} />
+    </Switch.Root>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -160,7 +169,7 @@ const rootClass = css({
 
   '&:focus': {
     outline: 'none',
-    boxShadow: '0 0 0 2px $black',
+    boxShadow: '0 0 0 2px $colors$black',
   },
 
   '&[data-state="checked"]': {

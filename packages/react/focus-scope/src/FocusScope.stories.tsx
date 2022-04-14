@@ -1,5 +1,5 @@
 import React from 'react';
-import { FocusScope } from './FocusScope';
+import { FocusScope } from '@radix-ui/react-focus-scope';
 
 export default { title: 'Components/FocusScope' };
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { AspectRatio } from './AspectRatio';
 import { css } from '../../../../stitches.config';
+import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 
 export default { title: 'Components/AspectRatio' };
 
@@ -14,7 +14,7 @@ const image = (
 
 export const Styled = () => (
   <div style={{ width: 500 }}>
-    <AspectRatio className={rootClass}>
+    <AspectRatio className={rootClass()}>
       <h1>Default ratio (1/1)</h1>
     </AspectRatio>
   </div>
@@ -43,7 +43,7 @@ export const Chromatic = () => (
   <>
     <h1>Default ratio</h1>
     <div style={{ width: 300 }}>
-      <AspectRatio className={rootClass}>
+      <AspectRatio className={rootClass()}>
         <p>Default ratio (1/1)</p>
       </AspectRatio>
     </div>

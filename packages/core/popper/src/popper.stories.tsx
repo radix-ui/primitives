@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRect } from '@radix-ui/react-use-rect';
 import { useSize } from '@radix-ui/react-use-size';
-import { getPlacementData, SIDE_OPTIONS, ALIGN_OPTIONS } from './popper';
+import { getPlacementData, SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
 
 export default { title: 'Core/popper' };
 

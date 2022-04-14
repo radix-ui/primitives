@@ -2,7 +2,7 @@ import * as React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent } from '@testing-library/react';
-import { Checkbox, CheckboxIndicator } from './Checkbox';
+import { Checkbox, CheckboxIndicator } from '@radix-ui/react-checkbox';
 
 const CHECKBOX_ROLE = 'checkbox';
 const INDICATOR_TEST_ID = 'checkbox-indicator';

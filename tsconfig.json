@@ -2,7 +2,6 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "paths": {
-      "*": ["node_modules/*"],
       "@radix-ui/number": ["./packages/core/number/src"],
       "@radix-ui/popper": ["./packages/core/popper/src"],
       "@radix-ui/primitive": ["./packages/core/primitive/src"],
@@ -49,6 +48,7 @@
       "@radix-ui/react-toast": ["./packages/react/toast/src"],
       "@radix-ui/react-toggle": ["./packages/react/toggle/src"],
       "@radix-ui/react-toggle-group": ["./packages/react/toggle-group/src"],
+      "@radix-ui/react-toolbar": ["./packages/react/toolbar/src"],
       "@radix-ui/react-tooltip": ["./packages/react/tooltip/src"],
       "@radix-ui/react-use-body-pointer-events": ["./packages/react/use-body-pointer-events/src"],
       "@radix-ui/react-use-callback-ref": ["./packages/react/use-callback-ref/src"],

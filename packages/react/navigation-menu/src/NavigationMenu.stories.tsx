@@ -1,7 +1,7 @@
 import * as React from 'react';
-import * as NavigationMenu from './NavigationMenu';
+import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { DirectionProvider } from '@radix-ui/react-direction';
-import { css } from '../../../../stitches.config';
+import { css, keyframes } from '../../../../stitches.config';
 
 export default { title: 'Components/NavigationMenu' };
 
@@ -9,10 +9,10 @@ export const Basic = () => {
   return (
     <StoryFrame>
       <NavigationMenu.Root>
-        <NavigationMenu.List className={mainListClass}>
-          <NavigationMenu.Item className={expandableItemClass}>
+        <NavigationMenu.List className={mainListClass()}>
+          <NavigationMenu.Item className={expandableItemClass()}>
             <TriggerWithIndicator>Products</TriggerWithIndicator>
-            <NavigationMenu.Content className={basicContentClass}>
+            <NavigationMenu.Content className={basicContentClass()}>
               <LinkGroup
                 bordered={false}
                 items={[
@@ -27,9 +27,9 @@ export const Basic = () => {
             </NavigationMenu.Content>
           </NavigationMenu.Item>
 
-          <NavigationMenu.Item className={expandableItemClass}>
+          <NavigationMenu.Item className={expandableItemClass()}>
             <TriggerWithIndicator>Company</TriggerWithIndicator>
-            <NavigationMenu.Content className={basicContentClass}>
+            <NavigationMenu.Content className={basicContentClass()}>
               <LinkGroup
                 bordered={false}
                 items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
@@ -37,15 +37,15 @@ export const Basic = () => {
             </NavigationMenu.Content>
           </NavigationMenu.Item>
 
-          <NavigationMenu.Item className={expandableItemClass}>
+          <NavigationMenu.Item className={expandableItemClass()}>
             <TriggerWithIndicator disabled>Developers</TriggerWithIndicator>
-            <NavigationMenu.Content className={basicContentClass}>
+            <NavigationMenu.Content className={basicContentClass()}>
               <LinkGroup bordered={false} items={['Aliquam porttitor', 'Pellentesque']} />
             </NavigationMenu.Content>
           </NavigationMenu.Item>
 
           <NavigationMenu.Item>
-            <NavigationMenu.Link href="/" className={linkClass}>
+            <NavigationMenu.Link href="/" className={linkClass()}>
               Link
             </NavigationMenu.Link>
           </NavigationMenu.Item>
@@ -59,11 +59,11 @@ export const Viewport = () => {
   return (
     <StoryFrame>
       <NavigationMenu.Root>
-        <NavigationMenu.List className={mainListClass}>
+        <NavigationMenu.List className={mainListClass()}>
           <NavigationMenu.Item>
             <TriggerWithIndicator>Products</TriggerWithIndicator>
             <NavigationMenu.Content
-              className={viewportContentClass}
+              className={viewportContentClass()}
               style={{
                 gridTemplateColumns: '1fr 2fr',
                 width: 600,
@@ -87,7 +87,7 @@ export const Viewport = () => {
           <NavigationMenu.Item>
             <TriggerWithIndicator>Company</TriggerWithIndicator>
             <NavigationMenu.Content
-              className={viewportContentClass}
+              className={viewportContentClass()}
               style={{
                 gridTemplateColumns: '1fr 1fr',
                 width: 450,
@@ -109,7 +109,7 @@ export const Viewport = () => {
           <NavigationMenu.Item>
             <TriggerWithIndicator disabled>Developers</TriggerWithIndicator>
             <NavigationMenu.Content
-              className={viewportContentClass}
+              className={viewportContentClass()}
               style={{
                 gridTemplateColumns: '1.6fr 1fr',
                 width: 650,
@@ -121,13 +121,13 @@ export const Viewport = () => {
           </NavigationMenu.Item>
 
           <NavigationMenu.Item>
-            <NavigationMenu.Link href="/" className={linkClass}>
+            <NavigationMenu.Link href="/" className={linkClass()}>
               Link
             </NavigationMenu.Link>
           </NavigationMenu.Item>
 
-          <NavigationMenu.Indicator className={viewportIndicatorClass}>
-            <div className={viewportInnerIndicatorClass} />
+          <NavigationMenu.Indicator className={viewportIndicatorClass()}>
+            <div className={viewportInnerIndicatorClass()} />
           </NavigationMenu.Indicator>
         </NavigationMenu.List>
 
@@ -141,7 +141,7 @@ export const Viewport = () => {
             left: 0,
           }}
         >
-          <NavigationMenu.Viewport className={viewportViewportClass} />
+          <NavigationMenu.Viewport className={viewportViewportClass()} />
         </div>
       </NavigationMenu.Root>
     </StoryFrame>
@@ -152,19 +152,19 @@ export const Submenus = () => {
   return (
     <StoryFrame>
       <NavigationMenu.Root>
-        <NavigationMenu.List className={mainListClass}>
+        <NavigationMenu.List className={mainListClass()}>
           <NavigationMenu.Item>
             <TriggerWithIndicator>Products</TriggerWithIndicator>
-            <NavigationMenu.Content className={submenusContentClass}>
-              <NavigationMenu.Sub className={submenusRootClass} defaultValue="extensibility">
-                <NavigationMenu.List className={mainListClass}>
+            <NavigationMenu.Content className={submenusContentClass()}>
+              <NavigationMenu.Sub className={submenusRootClass()} defaultValue="extensibility">
+                <NavigationMenu.List className={mainListClass()}>
                   <NavigationMenu.Item value="extensibility">
-                    <NavigationMenu.Trigger className={submenusSubTriggerClass}>
+                    <NavigationMenu.Trigger className={submenusSubTriggerClass()}>
                       Extensibility
                     </NavigationMenu.Trigger>
 
                     <NavigationMenu.Content
-                      className={submenusSubContentClass}
+                      className={submenusSubContentClass()}
                       style={{
                         gridTemplateColumns: '1.5fr 1fr 1fr',
                       }}
@@ -180,11 +180,11 @@ export const Submenus = () => {
                   </NavigationMenu.Item>
 
                   <NavigationMenu.Item value="security">
-                    <NavigationMenu.Trigger className={submenusSubTriggerClass}>
+                    <NavigationMenu.Trigger className={submenusSubTriggerClass()}>
                       Security
                     </NavigationMenu.Trigger>
                     <NavigationMenu.Content
-                      className={submenusSubContentClass}
+                      className={submenusSubContentClass()}
                       style={{
                         gridTemplateColumns: '1fr 1fr 1fr',
                       }}
@@ -205,12 +205,12 @@ export const Submenus = () => {
                   </NavigationMenu.Item>
 
                   <NavigationMenu.Item value="authentication">
-                    <NavigationMenu.Trigger className={submenusSubTriggerClass}>
+                    <NavigationMenu.Trigger className={submenusSubTriggerClass()}>
                       Authentication
                     </NavigationMenu.Trigger>
 
                     <NavigationMenu.Content
-                      className={submenusSubContentClass}
+                      className={submenusSubContentClass()}
                       style={{
                         gridTemplateColumns: '1.5fr 1fr 1fr',
                       }}
@@ -225,30 +225,30 @@ export const Submenus = () => {
                     </NavigationMenu.Content>
                   </NavigationMenu.Item>
 
-                  <NavigationMenu.Indicator className={submenusSubIndicatorClass} />
+                  <NavigationMenu.Indicator className={submenusSubIndicatorClass()} />
                 </NavigationMenu.List>
 
-                <NavigationMenu.Viewport className={submenusSubViewportClass} />
+                <NavigationMenu.Viewport className={submenusSubViewportClass()} />
               </NavigationMenu.Sub>
             </NavigationMenu.Content>
           </NavigationMenu.Item>
 
           <NavigationMenu.Item>
             <TriggerWithIndicator>Company</TriggerWithIndicator>
-            <NavigationMenu.Content className={submenusContentClass}>
+            <NavigationMenu.Content className={submenusContentClass()}>
               <NavigationMenu.Sub
-                className={submenusRootClass}
+                className={submenusRootClass()}
                 orientation="vertical"
                 defaultValue="customers"
               >
-                <NavigationMenu.List className={mainListClass}>
+                <NavigationMenu.List className={mainListClass()}>
                   <NavigationMenu.Item value="customers">
-                    <NavigationMenu.Trigger className={submenusSubTriggerClass}>
+                    <NavigationMenu.Trigger className={submenusSubTriggerClass()}>
                       Customers
                     </NavigationMenu.Trigger>
 
                     <NavigationMenu.Content
-                      className={submenusSubContentClass}
+                      className={submenusSubContentClass()}
                       style={{
                         gridTemplateColumns: '1.5fr 1fr',
                       }}
@@ -261,11 +261,11 @@ export const Submenus = () => {
                   </NavigationMenu.Item>
 
                   <NavigationMenu.Item value="partners">
-                    <NavigationMenu.Trigger className={submenusSubTriggerClass}>
+                    <NavigationMenu.Trigger className={submenusSubTriggerClass()}>
                       Partners
                     </NavigationMenu.Trigger>
                     <NavigationMenu.Content
-                      className={submenusSubContentClass}
+                      className={submenusSubContentClass()}
                       style={{
                         gridTemplateColumns: '1fr 1fr',
                       }}
@@ -285,12 +285,12 @@ export const Submenus = () => {
                   </NavigationMenu.Item>
 
                   <NavigationMenu.Item value="enterprise">
-                    <NavigationMenu.Trigger className={submenusSubTriggerClass}>
+                    <NavigationMenu.Trigger className={submenusSubTriggerClass()}>
                       Enterprise
                     </NavigationMenu.Trigger>
 
                     <NavigationMenu.Content
-                      className={submenusSubContentClass}
+                      className={submenusSubContentClass()}
                       style={{
                         gridTemplateColumns: '1.5fr 1fr',
                       }}
@@ -302,10 +302,10 @@ export const Submenus = () => {
                     </NavigationMenu.Content>
                   </NavigationMenu.Item>
 
-                  <NavigationMenu.Indicator className={submenusSubIndicatorClass} />
+                  <NavigationMenu.Indicator className={submenusSubIndicatorClass()} />
                 </NavigationMenu.List>
 
-                <NavigationMenu.Viewport className={submenusSubViewportClass} />
+                <NavigationMenu.Viewport className={submenusSubViewportClass()} />
               </NavigationMenu.Sub>
             </NavigationMenu.Content>
           </NavigationMenu.Item>
@@ -313,7 +313,7 @@ export const Submenus = () => {
           <NavigationMenu.Item>
             <TriggerWithIndicator disabled>Developers</TriggerWithIndicator>
             <NavigationMenu.Content
-              className={submenusSubContentClass}
+              className={submenusSubContentClass()}
               style={{ gridTemplateColumns: '1fr 1fr' }}
             >
               <LinkGroup items={['Donec quis dui', 'Vestibulum']} />
@@ -322,13 +322,13 @@ export const Submenus = () => {
           </NavigationMenu.Item>
 
           <NavigationMenu.Item>
-            <NavigationMenu.Link href="/" className={linkClass}>
+            <NavigationMenu.Link href="/" className={linkClass()}>
               Link
             </NavigationMenu.Link>
           </NavigationMenu.Item>
         </NavigationMenu.List>
 
-        <NavigationMenu.Viewport className={submenusViewportClass} />
+        <NavigationMenu.Viewport className={submenusViewportClass()} />
       </NavigationMenu.Root>
     </StoryFrame>
   );
@@ -394,7 +394,7 @@ const TriggerWithIndicator: React.FC<{ children?: React.ReactNode; disabled?: bo
   disabled,
 }) => {
   return (
-    <NavigationMenu.Trigger className={triggerClass} disabled={disabled}>
+    <NavigationMenu.Trigger className={triggerClass()} disabled={disabled}>
       {children}
       <CaretDownIcon />
     </NavigationMenu.Trigger>
@@ -417,7 +417,7 @@ const LinkGroup: React.FC<{ items: string[]; bordered?: boolean }> = ({
   bordered = true,
 }) => {
   return (
-    <ul className={bordered ? borderdListClass : listClass}>
+    <ul className={bordered ? borderdListClass() : listClass()}>
       {items.map((item, i) => (
         <li key={i}>
           <NavigationMenu.Link
@@ -457,14 +457,14 @@ const borderdListClass = css({
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const fadeIn = css.keyframes({
+const fadeIn = keyframes({
   from: {
     opacity: 0,
   },
   to: { opacity: 1 },
 });
 
-const fadeOut = css.keyframes({
+const fadeOut = keyframes({
   from: {
     opacity: 1,
   },
@@ -473,7 +473,7 @@ const fadeOut = css.keyframes({
   },
 });
 
-const scaleIn = css.keyframes({
+const scaleIn = keyframes({
   from: {
     transform: 'scale(0.9)',
     opacity: 0,
@@ -481,7 +481,7 @@ const scaleIn = css.keyframes({
   to: { transform: 'scale(1)', opacity: 1 },
 });
 
-const scaleOut = css.keyframes({
+const scaleOut = keyframes({
   from: {
     transform: 'scale(1)',
     opacity: 1,
@@ -492,22 +492,22 @@ const scaleOut = css.keyframes({
   },
 });
 
-const enterFromRight = css.keyframes({
+const enterFromRight = keyframes({
   from: { transform: 'translate3d(200px,0,0)', opacity: 0 },
   to: { transform: 'translate3d(0,0,0)', opacity: 1 },
 });
 
-const enterFromLeft = css.keyframes({
+const enterFromLeft = keyframes({
   from: { transform: 'translate3d(-200px,0,0)', opacity: 0 },
   to: { transform: 'translate3d(0,0,0)', opacity: 1 },
 });
 
-const exitToRight = css.keyframes({
+const exitToRight = keyframes({
   from: { transform: 'translate3d(0,0,0)', opacity: 1 },
   to: { transform: 'translate3d(200px,0,0)', opacity: 0 },
 });
 
-const exitToLeft = css.keyframes({
+const exitToLeft = keyframes({
   from: { transform: 'translate3d(0,0,0)', opacity: 1 },
   to: { transform: 'translate3d(-200px,0,0)', opacity: 0 },
 });
@@ -566,7 +566,7 @@ const basicContentClass = css({
   width: 'max-content',
   left: 0,
   marginTop: 5,
-  gridGap: 20,
+  gap: 20,
   borderRadius: 10,
   backgroundColor: 'white',
   padding: 20,
@@ -595,7 +595,7 @@ const viewportIndicatorClass = css({
   height: 10,
   bottom: -30,
   zIndex: 1,
-  transition: 'transform, width 250ms ease',
+  transition: 'transform, width, 250ms ease',
   overflow: 'hidden',
 
   '&[data-state="visible"]': {
@@ -619,7 +619,7 @@ const viewportInnerIndicatorClass = css({
 const viewportViewportClass = css({
   position: 'relative',
   backgroundColor: 'white',
-  transition: 'width, height 300ms ease',
+  transition: 'width, height, 300ms ease',
   width: 'var(--radix-navigation-menu-viewport-width)',
   height: 'var(--radix-navigation-menu-viewport-height)',
   transformOrigin: 'top center',
@@ -640,7 +640,7 @@ const viewportContentClass = css({
   top: 0,
   left: 0,
   display: 'grid',
-  gridGap: 20,
+  gap: 20,
   padding: 40,
 
   '&[data-motion="from-start"]': {
@@ -723,7 +723,7 @@ const submenusContentClass = css({
 
 const submenusSubContentClass = css({
   display: 'grid',
-  gridGap: 20,
+  gap: 20,
   width: '100%',
 });
 
@@ -753,7 +753,7 @@ const submenusSubIndicatorClass = css({
 
   '&[data-orientation="vertical"]': {
     width: 3,
-    transition: 'transform, height 250ms ease',
+    transition: 'transform, height, 250ms ease',
 
     "[dir='ltr'] &": {
       right: 0,
@@ -766,6 +766,6 @@ const submenusSubIndicatorClass = css({
   '&[data-orientation="horizontal"]': {
     height: 3,
     bottom: 0,
-    transition: 'transform, width 250ms ease',
+    transition: 'transform, width, 250ms ease',
   },
 });

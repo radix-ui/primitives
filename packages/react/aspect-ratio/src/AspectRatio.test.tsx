@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { AspectRatio } from './AspectRatio';
+import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 
 const RATIO = 1 / 2;
 

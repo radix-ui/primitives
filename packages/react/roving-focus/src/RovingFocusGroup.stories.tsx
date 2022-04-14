@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import * as RovingFocusGroup from './RovingFocusGroup';
+import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 
 type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup.Root>;
 

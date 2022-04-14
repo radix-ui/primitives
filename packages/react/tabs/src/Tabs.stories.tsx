@@ -1,234 +1,244 @@
 import * as React from 'react';
 import { DirectionProvider } from '@radix-ui/react-direction';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
 import { css } from '../../../../stitches.config';
+import * as Tabs from '@radix-ui/react-tabs';
 
 export default { title: 'Components/Tabs' };
 
 export const Styled = () => (
   <>
     <h1>Horizontal (automatic activation)</h1>
-    <Tabs defaultValue="tab1" className={rootClass}>
-      <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTrigger value="tab1" className={triggerClass}>
+    <Tabs.Root defaultValue="tab1" className={rootClass()}>
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
           Tab 1
-        </TabsTrigger>
-        <TabsTrigger value="tab2" disabled className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
           Tab 2
-        </TabsTrigger>
-        <TabsTrigger value="tab3" className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
           Tab 3
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="tab1" className={contentClass}>
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={contentClass()}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsContent>
-      <TabsContent value="tab2" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={contentClass()}>
         You'll never find me!
-      </TabsContent>
-      <TabsContent value="tab3" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={contentClass()}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsContent>
-    </Tabs>
+      </Tabs.Content>
+    </Tabs.Root>
 
     <h1>Vertical (manual activation)</h1>
-    <Tabs defaultValue="tab1" className={rootClass} orientation="vertical" activationMode="manual">
-      <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTrigger value="tab1" className={triggerClass}>
+    <Tabs.Root
+      defaultValue="tab1"
+      className={rootClass()}
+      orientation="vertical"
+      activationMode="manual"
+    >
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
           Tab 1
-        </TabsTrigger>
-        <TabsTrigger value="tab2" disabled className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
           Tab 2
-        </TabsTrigger>
-        <TabsTrigger value="tab3" className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
           Tab 3
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="tab1" className={contentClass}>
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={contentClass()}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsContent>
-      <TabsContent value="tab2" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={contentClass()}>
         You'll never find me!
-      </TabsContent>
-      <TabsContent value="tab3" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={contentClass()}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsContent>
-    </Tabs>
+      </Tabs.Content>
+    </Tabs.Root>
   </>
 );
 
 export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
-    <Tabs defaultValue="tab3" className={rootClass}>
-      <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTrigger value="tab1" className={triggerClass}>
+    <Tabs.Root defaultValue="tab3" className={rootClass()}>
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
           Tab 1
-        </TabsTrigger>
-        <TabsTrigger value="tab2" disabled className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
           Tab 2
-        </TabsTrigger>
-        <TabsTrigger value="tab3" className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
           Tab 3
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="tab1" className={contentClass}>
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={contentClass()}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsContent>
-      <TabsContent value="tab2" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={contentClass()}>
         You'll never find me!
-      </TabsContent>
-      <TabsContent value="tab3" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={contentClass()}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsContent>
-    </Tabs>
+      </Tabs.Content>
+    </Tabs.Root>
 
     <h1>Controlled</h1>
-    <Tabs value="tab3" className={rootClass}>
-      <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTrigger value="tab1" className={triggerClass}>
+    <Tabs.Root value="tab3" className={rootClass()}>
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
           Tab 1
-        </TabsTrigger>
-        <TabsTrigger value="tab2" disabled className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
           Tab 2
-        </TabsTrigger>
-        <TabsTrigger value="tab3" className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
           Tab 3
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="tab1" className={contentClass}>
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={contentClass()}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsContent>
-      <TabsContent value="tab2" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={contentClass()}>
         You'll never find me!
-      </TabsContent>
-      <TabsContent value="tab3" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={contentClass()}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsContent>
-    </Tabs>
+      </Tabs.Content>
+    </Tabs.Root>
 
     <h1>Vertical</h1>
-    <Tabs defaultValue="tab3" className={rootClass} orientation="vertical" activationMode="manual">
-      <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTrigger value="tab1" className={triggerClass}>
+    <Tabs.Root
+      defaultValue="tab3"
+      className={rootClass()}
+      orientation="vertical"
+      activationMode="manual"
+    >
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
           Tab 1
-        </TabsTrigger>
-        <TabsTrigger value="tab2" disabled className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
           Tab 2
-        </TabsTrigger>
-        <TabsTrigger value="tab3" className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
           Tab 3
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="tab1" className={contentClass}>
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={contentClass()}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsContent>
-      <TabsContent value="tab2" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={contentClass()}>
         You'll never find me!
-      </TabsContent>
-      <TabsContent value="tab3" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={contentClass()}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsContent>
-    </Tabs>
+      </Tabs.Content>
+    </Tabs.Root>
 
     <h1>Direction</h1>
     <h2>Prop</h2>
-    <Tabs defaultValue="tab3" dir="rtl" className={rootClass}>
-      <TabsList aria-label="tabs example" className={listClass}>
-        <TabsTrigger value="tab1" className={triggerClass}>
+    <Tabs.Root defaultValue="tab3" dir="rtl" className={rootClass()}>
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
           Tab 1
-        </TabsTrigger>
-        <TabsTrigger value="tab2" disabled className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
           Tab 2
-        </TabsTrigger>
-        <TabsTrigger value="tab3" className={triggerClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
           Tab 3
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="tab1" className={contentClass}>
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={contentClass()}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsContent>
-      <TabsContent value="tab2" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={contentClass()}>
         You'll never find me!
-      </TabsContent>
-      <TabsContent value="tab3" className={contentClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={contentClass()}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsContent>
-    </Tabs>
+      </Tabs.Content>
+    </Tabs.Root>
 
     <h2>Inherited</h2>
     <DirectionProvider dir="rtl">
-      <Tabs defaultValue="tab3" className={rootClass}>
-        <TabsList aria-label="tabs example" className={listClass}>
-          <TabsTrigger value="tab1" className={triggerClass}>
+      <Tabs.Root defaultValue="tab3" className={rootClass()}>
+        <Tabs.List aria-label="tabs example" className={listClass()}>
+          <Tabs.Trigger value="tab1" className={triggerClass()}>
             Tab 1
-          </TabsTrigger>
-          <TabsTrigger value="tab2" disabled className={triggerClass}>
+          </Tabs.Trigger>
+          <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
             Tab 2
-          </TabsTrigger>
-          <TabsTrigger value="tab3" className={triggerClass}>
+          </Tabs.Trigger>
+          <Tabs.Trigger value="tab3" className={triggerClass()}>
             Tab 3
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="tab1" className={contentClass}>
+          </Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="tab1" className={contentClass()}>
           Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem
           himenaeos integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida
           elementum pellentesque volutpat dictum ipsum.
-        </TabsContent>
-        <TabsContent value="tab2" className={contentClass}>
+        </Tabs.Content>
+        <Tabs.Content value="tab2" className={contentClass()}>
           You'll never find me!
-        </TabsContent>
-        <TabsContent value="tab3" className={contentClass}>
+        </Tabs.Content>
+        <Tabs.Content value="tab3" className={contentClass()}>
           Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
           quam tempus pretium.
-        </TabsContent>
-      </Tabs>
+        </Tabs.Content>
+      </Tabs.Root>
     </DirectionProvider>
 
     <h1>State attributes</h1>
-    <Tabs defaultValue="tab3" className={rootAttrClass}>
-      <TabsList aria-label="tabs example" className={listAttrClass}>
-        <TabsTrigger value="tab1" className={triggerAttrClass}>
+    <Tabs.Root defaultValue="tab3" className={rootAttrClass()}>
+      <Tabs.List aria-label="tabs example" className={listAttrClass()}>
+        <Tabs.Trigger value="tab1" className={triggerAttrClass()}>
           Tab 1
-        </TabsTrigger>
-        <TabsTrigger value="tab2" disabled className={triggerAttrClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerAttrClass()}>
           Tab 2
-        </TabsTrigger>
-        <TabsTrigger value="tab3" className={triggerAttrClass}>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerAttrClass()}>
           Tab 3
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="tab1" className={contentAttrClass}>
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={contentAttrClass()}>
         Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
         integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
         pellentesque volutpat dictum ipsum.
-      </TabsContent>
-      <TabsContent value="tab2" className={contentAttrClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={contentAttrClass()}>
         You'll never find me!
-      </TabsContent>
-      <TabsContent value="tab3" className={contentAttrClass}>
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={contentAttrClass()}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
-      </TabsContent>
-    </Tabs>
+      </Tabs.Content>
+    </Tabs.Root>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
