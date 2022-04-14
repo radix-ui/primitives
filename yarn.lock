@@ -3627,16 +3627,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/react-polymorphic@workspace:packages/react/polymorphic":
-  version: 0.0.0-use.local
-  resolution: "@radix-ui/react-polymorphic@workspace:packages/react/polymorphic"
-  dependencies:
-    "@testing-library/react": ^10.4.8
-  peerDependencies:
-    react: ^16.8 || ^17.0 || ^18.0
-  languageName: unknown
-  linkType: soft
-
 "@radix-ui/react-popover@workspace:packages/react/popover":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-popover@workspace:packages/react/popover"
