@@ -2,7 +2,7 @@ import * as React from 'react';
 import { DirectionProvider } from '@radix-ui/react-direction';
 import { css } from '../../../../stitches.config';
 import serialize from 'form-serialize';
-import * as Slider from './Slider';
+import * as Slider from '@radix-ui/react-slider';
 
 export default { title: 'Components/Slider' };
 

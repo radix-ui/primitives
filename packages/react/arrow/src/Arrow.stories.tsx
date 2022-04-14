@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Arrow } from './Arrow';
+import { Arrow } from '@radix-ui/react-arrow';
 
 export default { title: 'Components/Arrow' };
 

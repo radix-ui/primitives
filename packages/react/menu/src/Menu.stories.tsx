@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
-import * as Menu from './Menu';
+import * as Menu from '@radix-ui/react-menu';
 import { foodGroups } from '../../../../test-data/foods';
 
 export default {

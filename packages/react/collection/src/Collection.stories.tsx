@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createCollection } from './Collection';
+import { createCollection } from '@radix-ui/react-collection';
 
 export default { title: 'Components/Collection' };
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css } from '../../../../stitches.config';
 import { Label as LabelPrimitive } from '@radix-ui/react-label';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
-import * as Switch from './Switch';
+import * as Switch from '@radix-ui/react-switch';
 
 export default { title: 'Components/Switch' };
 

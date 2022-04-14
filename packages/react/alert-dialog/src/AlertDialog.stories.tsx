@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from '../../../../stitches.config';
-import * as AlertDialog from './AlertDialog';
+import * as AlertDialog from '@radix-ui/react-alert-dialog';
 
 export default { title: 'Components/AlertDialog' };
 

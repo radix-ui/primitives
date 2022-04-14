@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from '../../../../stitches.config';
-import { AspectRatio } from './AspectRatio';
+import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 
 export default { title: 'Components/AspectRatio' };
 

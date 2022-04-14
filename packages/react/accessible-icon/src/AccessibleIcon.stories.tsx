@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AccessibleIcon } from './AccessibleIcon';
+import { AccessibleIcon } from '@radix-ui/react-accessible-icon';
 
 export default { title: 'Components/AccessibleIcon' };
 

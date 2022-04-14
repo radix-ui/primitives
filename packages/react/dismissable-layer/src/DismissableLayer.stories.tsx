@@ -6,7 +6,7 @@ import * as Popper from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
-import { DismissableLayer } from './DismissableLayer';
+import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;

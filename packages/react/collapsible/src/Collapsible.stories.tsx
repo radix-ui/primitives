@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
-import * as Collapsible from './Collapsible';
+import * as Collapsible from '@radix-ui/react-collapsible';
 
 export default { title: 'Components/Collapsible' };
 

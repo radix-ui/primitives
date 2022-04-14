@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
-import { Presence } from './Presence';
+import { Presence } from '@radix-ui/react-presence';
 
 export default { title: 'Components/Presence' };
 

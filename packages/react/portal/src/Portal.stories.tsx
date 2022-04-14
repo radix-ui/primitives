@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Portal, UnstablePortal } from './Portal';
+import { Portal, UnstablePortal } from '@radix-ui/react-portal';
 
 export default { title: 'Components/Portal' };
 

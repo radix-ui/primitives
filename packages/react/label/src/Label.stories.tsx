@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from '../../../../stitches.config';
 import * as Checkbox from '@radix-ui/react-checkbox';
-import { Label, useLabelContext } from './Label';
+import { Label, useLabelContext } from '@radix-ui/react-label';
 
 export default { title: 'Components/Label', excludeStories: ['RECOMMENDED_CSS__LABEL__ROOT'] };
 

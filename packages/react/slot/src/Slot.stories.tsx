@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Slot, Slottable } from './Slot';
+import { Slot, Slottable } from '@radix-ui/react-slot';
 
 export default { title: 'Components/Slot' };
 

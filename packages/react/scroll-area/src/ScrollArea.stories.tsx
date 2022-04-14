@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { DirectionProvider } from '@radix-ui/react-direction';
 import { css } from '../../../../stitches.config';
-import * as ScrollArea from './ScrollArea';
+import * as ScrollArea from '@radix-ui/react-scroll-area';
 
 export default { title: 'Components/ScrollArea' };
 
