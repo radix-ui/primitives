@@ -212,9 +212,9 @@ export const Animated = () => (
 export const ForcedMount = () => (
   <Dialog.Root>
     <Dialog.Trigger>open</Dialog.Trigger>
-    <Dialog.Portal>
-      <Dialog.Overlay className={overlayClass()} forceMount />
-      <Dialog.Content className={contentDefaultClass()} forceMount>
+    <Dialog.Portal forceMount>
+      <Dialog.Overlay className={overlayClass()} />
+      <Dialog.Content className={contentDefaultClass()}>
         <Dialog.Title>Title</Dialog.Title>
         <Dialog.Description>Description</Dialog.Description>
         <Dialog.Close>close</Dialog.Close>
