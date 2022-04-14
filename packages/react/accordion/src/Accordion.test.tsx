@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { axe } from 'jest-axe';
 import { render, fireEvent, RenderResult } from '@testing-library/react';
-import * as Accordion from './Accordion';
+import * as Accordion from '@radix-ui/react-accordion';
 
 const ITEMS = ['One', 'Two', 'Three'];
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { AccessibleIcon } from './AccessibleIcon';
+import { AccessibleIcon } from '@radix-ui/react-accessible-icon';
 
 const LABEL_TEXT = 'Close';
 

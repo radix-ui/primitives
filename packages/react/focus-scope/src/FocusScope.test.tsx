@@ -1,7 +1,7 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, waitFor } from '@testing-library/react';
-import { FocusScope } from './FocusScope';
+import { FocusScope } from '@radix-ui/react-focus-scope';
 import type { RenderResult } from '@testing-library/react';
 
 const INNER_NAME_INPUT_LABEL = 'Name';

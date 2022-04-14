@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import * as Avatar from './Avatar';
+import * as Avatar from '@radix-ui/react-avatar';
 
 const ROOT_TEST_ID = 'avatar-root';
 const FALLBACK_TEXT = 'AB';

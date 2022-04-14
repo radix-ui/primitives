@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { axe } from 'jest-axe';
 import { render, fireEvent, RenderResult } from '@testing-library/react';
-import * as ToggleGroup from './ToggleGroup';
+import * as ToggleGroup from '@radix-ui/react-toggle-group';
 
 describe('given a single ToggleGroup', () => {
   let handleValueChange: jest.Mock;
