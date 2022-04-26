@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './useStateMachine';
@@ -100,7 +101,7 @@ function usePresence(present: boolean) {
         const currentAnimationName = getAnimationName(stylesRef.current);
         const isCurrentAnimation = currentAnimationName.includes(event.animationName);
         if (event.target === node && isCurrentAnimation) {
-          send('ANIMATION_END');
+          ReactDOM.flushSync(() => send('ANIMATION_END'));
         }
       };
       const handleAnimationStart = (event: AnimationEvent) => {
