@@ -496,6 +496,8 @@ interface NavigationMenuLinkProps extends PrimitiveLinkProps {
 const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, NavigationMenuLinkProps>(
   (props: ScopedProps<NavigationMenuLinkProps>, forwardedRef) => {
     const { __scopeNavigationMenu, active, ...linkProps } = props;
+    const ref = React.useRef<NavigationMenuLinkElement>(null);
+    const composedRefs = useComposedRefs(ref, forwardedRef);
 
     return (
       <FocusGroupItem asChild>
@@ -503,7 +505,14 @@ const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, Navigatio
           data-active={active ? '' : undefined}
           aria-current={active ? 'page' : undefined}
           {...linkProps}
-          ref={forwardedRef}
+          ref={composedRefs}
+          onClick={composeEventHandlers(props.onClick, () => {
+            const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
+              bubbles: true,
+              cancelable: true,
+            });
+            ref.current?.dispatchEvent(rootContentDismissEvent);
+          })}
         />
       </FocusGroupItem>
     );
@@ -706,7 +715,7 @@ const ViewportContentMounter = React.forwardRef<
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const CONTENT_DISMISS = 'navigationMenu.contentDismiss';
+const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
 
 type MotionAttribute = 'to-start' | 'to-end' | 'from-start' | 'from-end';
 type NavigationMenuContentImplElement = React.ElementRef<typeof DismissableLayer>;
@@ -756,8 +765,8 @@ const NavigationMenuContentImpl = React.forwardRef<
         onRootContentClose();
         if (content.contains(document.activeElement)) triggerRef.current?.focus();
       };
-      content.addEventListener(CONTENT_DISMISS, handleClose);
-      return () => content.removeEventListener(CONTENT_DISMISS, handleClose);
+      content.addEventListener(ROOT_CONTENT_DISMISS, handleClose);
+      return () => content.removeEventListener(ROOT_CONTENT_DISMISS, handleClose);
     }
   }, [context.isRootMenu, props.value, triggerRef, onItemDismiss, onRootContentClose]);
 
@@ -801,11 +810,11 @@ const NavigationMenuContentImpl = React.forwardRef<
         {...contentProps}
         ref={composedRefs}
         onDismiss={() => {
-          const contentDismissEvent = new Event(CONTENT_DISMISS, {
+          const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
             bubbles: true,
             cancelable: true,
           });
-          ref.current?.dispatchEvent(contentDismissEvent);
+          ref.current?.dispatchEvent(rootContentDismissEvent);
         }}
         onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
           onContentFocusOutside();
