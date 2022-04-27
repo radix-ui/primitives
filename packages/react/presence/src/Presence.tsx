@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './useStateMachine';
@@ -100,7 +101,10 @@ function usePresence(present: boolean) {
         const currentAnimationName = getAnimationName(stylesRef.current);
         const isCurrentAnimation = currentAnimationName.includes(event.animationName);
         if (event.target === node && isCurrentAnimation) {
-          send('ANIMATION_END');
+          // With React 18 concurrency this update is applied
+          // a frame after the animation ends, creating a flash of visible content.
+          // By manually flushing we ensure they sync within a frame, removing the flash.
+          ReactDOM.flushSync(() => send('ANIMATION_END'));
         }
       };
       const handleAnimationStart = (event: AnimationEvent) => {

@@ -3062,6 +3062,7 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3148,6 +3149,7 @@ __metadata:
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3166,6 +3168,7 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3475,6 +3478,7 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3520,6 +3524,7 @@ __metadata:
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3559,6 +3564,7 @@ __metadata:
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 

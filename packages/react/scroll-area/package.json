@@ -31,7 +31,8 @@
     "@types/resize-observer-browser": "^0.1.4"
   },
   "peerDependencies": {
-    "react": "^16.8 || ^17.0 || ^18.0"
+    "react": "^16.8 || ^17.0 || ^18.0",
+    "react-dom": "^16.8 || ^17.0 || ^18.0"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
