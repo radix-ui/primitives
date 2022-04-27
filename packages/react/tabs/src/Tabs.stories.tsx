@@ -341,7 +341,6 @@ Chromatic.parameters = { chromatic: { disable: false } };
 
 const RECOMMENDED_CSS__TABS__ROOT = {
   // ensures things are layed out correctly by default
-  border: '1px solid #eee',
   display: 'flex',
   '&[data-orientation="horizontal"]': {
     flexDirection: 'column',
@@ -350,6 +349,7 @@ const RECOMMENDED_CSS__TABS__ROOT = {
 
 const rootClass = css({
   ...RECOMMENDED_CSS__TABS__ROOT,
+  border: '1px solid #eee',
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
   maxWidth: '20rem',
