@@ -1,12 +1,15 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
+import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
-import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
-import { useId } from '@radix-ui/react-id';
 import { useDirection } from '@radix-ui/react-direction';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useId } from '@radix-ui/react-id';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -224,21 +227,52 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
     const context = useTabsContext(CONTENT_NAME, __scopeTabs);
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
+    const ref = React.useRef<TabsContentElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref);
     const isSelected = value === context.value;
+    const isMountAnimationPreventedRef = React.useRef(isSelected);
+    const originalStylesRef = React.useRef<Record<string, string>>();
+
+    useLayoutEffect(() => {
+      const node = ref.current;
+
+      if (node) {
+        originalStylesRef.current = originalStylesRef.current || {
+          animationDuration: node.style.animationDuration,
+        };
+
+        // Prevent animations from running if open when initially mounted
+        const originalDuration = originalStylesRef.current.animationDuration;
+        const animationPrevented = isMountAnimationPreventedRef.current;
+
+        node.style.animationDuration = animationPrevented ? '0s' : originalDuration;
+        isMountAnimationPreventedRef.current = false;
+      }
+
+      /**
+       * Depends on `isSelected` as we want to restore the original
+       * animation when navigating away from an initially open tab.
+       */
+    }, [isSelected]);
+
     return (
-      <Primitive.div
-        data-state={isSelected ? 'active' : 'inactive'}
-        data-orientation={context.orientation}
-        role="tabpanel"
-        aria-labelledby={triggerId}
-        hidden={!isSelected}
-        id={contentId}
-        tabIndex={0}
-        {...contentProps}
-        ref={forwardedRef}
-      >
-        {isSelected && children}
-      </Primitive.div>
+      <Presence present={isSelected}>
+        {({ present }) => (
+          <Primitive.div
+            data-state={isSelected ? 'active' : 'inactive'}
+            data-orientation={context.orientation}
+            role="tabpanel"
+            aria-labelledby={triggerId}
+            hidden={!present}
+            id={contentId}
+            tabIndex={0}
+            {...contentProps}
+            ref={composedRefs}
+          >
+            {present && children}
+          </Primitive.div>
+        )}
+      </Presence>
     );
   }
 );
