@@ -496,8 +496,6 @@ interface NavigationMenuLinkProps extends PrimitiveLinkProps {
 const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, NavigationMenuLinkProps>(
   (props: ScopedProps<NavigationMenuLinkProps>, forwardedRef) => {
     const { __scopeNavigationMenu, active, ...linkProps } = props;
-    const ref = React.useRef<NavigationMenuLinkElement>(null);
-    const composedRefs = useComposedRefs(ref, forwardedRef);
 
     return (
       <FocusGroupItem asChild>
@@ -505,13 +503,13 @@ const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, Navigatio
           data-active={active ? '' : undefined}
           aria-current={active ? 'page' : undefined}
           {...linkProps}
-          ref={composedRefs}
-          onClick={composeEventHandlers(props.onClick, () => {
+          ref={forwardedRef}
+          onClick={composeEventHandlers(props.onClick, (event) => {
             const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
               bubbles: true,
               cancelable: true,
             });
-            ref.current?.dispatchEvent(rootContentDismissEvent);
+            event.target.dispatchEvent(rootContentDismissEvent);
           })}
         />
       </FocusGroupItem>
