@@ -1,0 +1,5 @@
+releases:
+  "@radix-ui/react-navigation-menu": patch
+
+declined:
+  - primitives

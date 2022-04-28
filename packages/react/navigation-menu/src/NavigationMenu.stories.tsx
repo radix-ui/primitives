@@ -45,7 +45,7 @@ export const Basic = () => {
           </NavigationMenu.Item>
 
           <NavigationMenu.Item>
-            <NavigationMenu.Link href="/" className={linkClass()}>
+            <NavigationMenu.Link href="#example" className={linkClass()}>
               Link
             </NavigationMenu.Link>
           </NavigationMenu.Item>
@@ -121,7 +121,7 @@ export const Viewport = () => {
           </NavigationMenu.Item>
 
           <NavigationMenu.Item>
-            <NavigationMenu.Link href="/" className={linkClass()}>
+            <NavigationMenu.Link href="#example" className={linkClass()}>
               Link
             </NavigationMenu.Link>
           </NavigationMenu.Item>
@@ -322,7 +322,7 @@ export const Submenus = () => {
           </NavigationMenu.Item>
 
           <NavigationMenu.Item>
-            <NavigationMenu.Link href="/" className={linkClass()}>
+            <NavigationMenu.Link href="#example" className={linkClass()}>
               Link
             </NavigationMenu.Link>
           </NavigationMenu.Item>
@@ -374,11 +374,12 @@ const StoryFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <h2>Test page content</h2>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam purus odio, vestibulum
-              in dictum et, <a href="/">sagittis vel nibh</a>. Fusce placerat arcu lorem, a
+              in dictum et, <a href="#example">sagittis vel nibh</a>. Fusce placerat arcu lorem, a
               scelerisque odio fringilla sit amet. Suspendisse volutpat sed diam ut cursus. Nulla
               facilisi. Ut at volutpat nibh. Nullam justo mi, elementum vitae ex eu,{' '}
-              <a href="/">gravida dictum metus</a>. Morbi vulputate consectetur cursus. Fusce vitae
-              nisi nunc. Suspendisse pellentesque aliquet tincidunt. Aenean molestie pulvinar ipsum.
+              <a href="#example">gravida dictum metus</a>. Morbi vulputate consectetur cursus. Fusce
+              vitae nisi nunc. Suspendisse pellentesque aliquet tincidunt. Aenean molestie pulvinar
+              ipsum.
             </p>
 
             <button>Button</button>
@@ -421,7 +422,7 @@ const LinkGroup: React.FC<{ items: string[]; bordered?: boolean }> = ({
       {items.map((item, i) => (
         <li key={i}>
           <NavigationMenu.Link
-            href="/"
+            href="#example"
             style={{
               display: 'flex',
               alignItems: 'center',
