@@ -454,7 +454,6 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         // Vertical positioning
         // -----------------------------------------------------------------------------------------
         const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
-        const minContentHeight = selectedItem.offsetHeight * 5;
         const itemsHeight = viewport.scrollHeight;
 
         const contentStyles = window.getComputedStyle(content);
@@ -463,6 +462,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         const contentBorderBottomWidth = parseInt(contentStyles.borderBottomWidth, 10);
         const contentPaddingBottom = parseInt(contentStyles.paddingBottom, 10);
         const fullContentHeight = contentBorderTopWidth + contentPaddingTop + itemsHeight + contentPaddingBottom + contentBorderBottomWidth; // prettier-ignore
+        const minContentHeight = Math.min(selectedItem.offsetHeight * 5, fullContentHeight);
 
         const topEdgeToTriggerMiddle = triggerRect.top + triggerRect.height / 2 - CONTENT_MARGIN;
         const triggerMiddleToBottomEdge = availableHeight - topEdgeToTriggerMiddle;
