@@ -48,7 +48,7 @@ const [TooltipProviderContextProvider, useTooltipProviderContext] =
 interface TooltipProviderProps {
   children: React.ReactNode;
   /**
-   * The duration from when the mouse enters the trigger until the tooltip gets opened.
+   * The duration from when the pointer enters the trigger until the tooltip gets opened.
    * @defaultValue 700
    */
   delayDuration?: number;
@@ -127,7 +127,7 @@ interface TooltipProps {
   onOpenChange?: (open: boolean) => void;
 
   /**
-   * The duration from when the mouse enters the trigger until the tooltip gets opened. This will
+   * The duration from when the pointer enters the trigger until the tooltip gets opened. This will
    * override the prop with the same name passed to Provider.
    * @defaultValue 700
    */
@@ -230,12 +230,12 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
     const composedTriggerRef = useComposedRefs(forwardedRef, context.onTriggerChange);
-    const isMouseDownRef = React.useRef(false);
-    const handleMouseUp = React.useCallback(() => (isMouseDownRef.current = false), []);
+    const isPointerDownRef = React.useRef(false);
+    const handlePointerUp = React.useCallback(() => (isPointerDownRef.current = false), []);
 
     React.useEffect(() => {
-      return () => document.removeEventListener('mouseup', handleMouseUp);
-    }, [handleMouseUp]);
+      return () => document.removeEventListener('pointerup', handlePointerUp);
+    }, [handlePointerUp]);
 
     return (
       <PopperPrimitive.Anchor asChild {...popperScope}>
@@ -246,14 +246,16 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           data-state={context.stateAttribute}
           {...triggerProps}
           ref={composedTriggerRef}
-          onMouseEnter={composeEventHandlers(props.onMouseEnter, context.onTriggerEnter)}
-          onMouseLeave={composeEventHandlers(props.onMouseLeave, context.onClose)}
-          onMouseDown={composeEventHandlers(props.onMouseDown, () => {
-            isMouseDownRef.current = true;
-            document.addEventListener('mouseup', handleMouseUp, { once: true });
+          onPointerEnter={composeEventHandlers(props.onPointerEnter, (event) => {
+            if (event.pointerType !== 'touch') context.onTriggerEnter();
+          })}
+          onPointerLeave={composeEventHandlers(props.onPointerLeave, context.onClose)}
+          onPointerDown={composeEventHandlers(props.onPointerDown, () => {
+            isPointerDownRef.current = true;
+            document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
-            if (!isMouseDownRef.current) context.onOpen();
+            if (!isPointerDownRef.current) context.onOpen();
           })}
           onBlur={composeEventHandlers(props.onBlur, context.onClose)}
           onClick={composeEventHandlers(props.onClick, (event) => {
