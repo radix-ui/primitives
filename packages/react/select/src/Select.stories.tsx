@@ -430,6 +430,113 @@ export const WithinDialog = () => (
   </Dialog.Root>
 );
 
+export const Chromatic1 = () => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(5, 1fr)',
+      gridTemplateRows: 'repeat(3, 1fr)',
+      height: '100vh',
+      placeItems: 'center',
+    }}
+  >
+    <ChromaticSelect itemCount={9} selectedIndex={0} style={{ alignSelf: 'start' }} />
+    <ChromaticSelect itemCount={9} selectedIndex={2} style={{ alignSelf: 'start' }} />
+    <ChromaticSelect itemCount={9} selectedIndex={4} style={{ alignSelf: 'start' }} />
+    <ChromaticSelect itemCount={9} selectedIndex={6} style={{ alignSelf: 'start' }} />
+    <ChromaticSelect itemCount={9} selectedIndex={8} style={{ alignSelf: 'start' }} />
+
+    <ChromaticSelect itemCount={9} selectedIndex={0} />
+    <ChromaticSelect itemCount={9} selectedIndex={2} />
+    <ChromaticSelect itemCount={9} selectedIndex={4} />
+    <ChromaticSelect itemCount={9} selectedIndex={6} />
+    <ChromaticSelect itemCount={9} selectedIndex={8} />
+
+    <ChromaticSelect itemCount={9} selectedIndex={0} style={{ alignSelf: 'end' }} />
+    <ChromaticSelect itemCount={9} selectedIndex={2} style={{ alignSelf: 'end' }} />
+    <ChromaticSelect itemCount={9} selectedIndex={4} style={{ alignSelf: 'end' }} />
+    <ChromaticSelect itemCount={9} selectedIndex={6} style={{ alignSelf: 'end' }} />
+    <ChromaticSelect itemCount={9} selectedIndex={8} style={{ alignSelf: 'end' }} />
+  </div>
+);
+Chromatic1.parameters = { chromatic: { disable: false } };
+
+export const Chromatic2 = () => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(15, 1fr)',
+      gridTemplateRows: 'repeat(3, 1fr)',
+      height: '100vh',
+      placeItems: 'center',
+    }}
+  >
+    <ChromaticSelect itemCount={50} selectedIndex={0} style={{ alignSelf: 'start' }} />
+    <ChromaticSelect itemCount={50} selectedIndex={25} style={{ alignSelf: 'start' }} />
+    <ChromaticSelect itemCount={50} selectedIndex={49} style={{ alignSelf: 'start' }} />
+
+    <ChromaticSelect itemCount={50} selectedIndex={0} style={{ gridRow: 1, gridColumn: 4 }} />
+    <ChromaticSelect itemCount={50} selectedIndex={25} style={{ gridRow: 1, gridColumn: 5 }} />
+    <ChromaticSelect itemCount={50} selectedIndex={49} style={{ gridRow: 1, gridColumn: 6 }} />
+
+    <ChromaticSelect itemCount={50} selectedIndex={0} style={{ gridRow: 2, gridColumn: 7 }} />
+    <ChromaticSelect itemCount={50} selectedIndex={25} style={{ gridRow: 2, gridColumn: 8 }} />
+    <ChromaticSelect itemCount={50} selectedIndex={49} style={{ gridRow: 2, gridColumn: 9 }} />
+
+    <ChromaticSelect itemCount={50} selectedIndex={0} style={{ gridRow: 3, gridColumn: 10 }} />
+    <ChromaticSelect itemCount={50} selectedIndex={25} style={{ gridRow: 3, gridColumn: 11 }} />
+    <ChromaticSelect itemCount={50} selectedIndex={49} style={{ gridRow: 3, gridColumn: 12 }} />
+
+    <ChromaticSelect
+      itemCount={50}
+      selectedIndex={0}
+      style={{ gridRow: 3, gridColumn: 13, alignSelf: 'end' }}
+    />
+    <ChromaticSelect
+      itemCount={50}
+      selectedIndex={25}
+      style={{ gridRow: 3, gridColumn: 14, alignSelf: 'end' }}
+    />
+    <ChromaticSelect
+      itemCount={50}
+      selectedIndex={49}
+      style={{ gridRow: 3, gridColumn: 15, alignSelf: 'end' }}
+    />
+  </div>
+);
+Chromatic2.parameters = { chromatic: { disable: false } };
+
+interface ChromaticSelectProps extends React.ComponentProps<typeof Select.Trigger> {
+  itemCount: number;
+  selectedIndex: number;
+}
+
+const ChromaticSelect = React.forwardRef<
+  React.ElementRef<typeof Select.Trigger>,
+  ChromaticSelectProps
+>(({ itemCount, selectedIndex, ...props }, forwardedRef) => (
+  <Select.Root defaultValue={String(selectedIndex)} open>
+    <Select.Trigger className={triggerClass()} ref={forwardedRef} {...props}>
+      <Select.Value />
+      <Select.Icon />
+    </Select.Trigger>
+    <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
+      <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+      <Select.Viewport className={viewportClass()}>
+        {Array.from({ length: itemCount }, (_, i) => (
+          <Select.Item key={i} className={itemClass()} value={String(i)}>
+            <Select.ItemText>{i}</Select.ItemText>
+            <Select.ItemIndicator className={indicatorClass()}>
+              <TickIcon />
+            </Select.ItemIndicator>
+          </Select.Item>
+        ))}
+      </Select.Viewport>
+      <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+    </Select.Content>
+  </Select.Root>
+));
+
 const triggerClass = css({
   display: 'flex',
   alignItems: 'center',
