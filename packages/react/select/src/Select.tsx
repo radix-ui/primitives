@@ -453,6 +453,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         // -----------------------------------------------------------------------------------------
         // Vertical positioning
         // -----------------------------------------------------------------------------------------
+        const items = getItems();
         const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
         const itemsHeight = viewport.scrollHeight;
 
@@ -463,6 +464,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         const contentPaddingBottom = parseInt(contentStyles.paddingBottom, 10);
         const fullContentHeight = contentBorderTopWidth + contentPaddingTop + itemsHeight + contentPaddingBottom + contentBorderBottomWidth; // prettier-ignore
         const minContentHeight = Math.min(selectedItem.offsetHeight * 5, fullContentHeight);
+
+        const viewportStyles = window.getComputedStyle(viewport);
+        const viewportPaddingTop = parseInt(viewportStyles.paddingTop, 10);
+        const viewportPaddingBottom = parseInt(viewportStyles.paddingBottom, 10);
 
         const topEdgeToTriggerMiddle = triggerRect.top + triggerRect.height / 2 - CONTENT_MARGIN;
         const triggerMiddleToBottomEdge = availableHeight - topEdgeToTriggerMiddle;
@@ -475,9 +480,11 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
 
         if (willAlignWithoutTopOverflow) {
+          const isLastItem = selectedItem === items[items.length - 1].ref.current;
           contentWrapper.style.bottom = 0 + 'px';
+          const scrollClearance = isLastItem ? viewportPaddingBottom : 0;
           const viewportOffsetBottom =
-            content.clientHeight - viewport.offsetTop - viewport.offsetHeight;
+            content.clientHeight - viewport.offsetTop - viewport.offsetHeight + scrollClearance;
           const clampedTriggerMiddleToBottomEdge = Math.max(
             triggerMiddleToBottomEdge,
             selectedItemHalfHeight + viewportOffsetBottom + contentBorderBottomWidth
@@ -485,10 +492,13 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
           const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
           contentWrapper.style.height = height + 'px';
         } else {
+          const isFirstItem = selectedItem === items[0].ref.current;
           contentWrapper.style.top = 0 + 'px';
+          const scrollClearance = isFirstItem ? viewportPaddingTop : 0;
+          const viewportOffsetTop = scrollClearance + viewport.offsetTop;
           const clampedTopEdgeToTriggerMiddle = Math.max(
             topEdgeToTriggerMiddle,
-            contentBorderTopWidth + viewport.offsetTop + selectedItemHalfHeight
+            contentBorderTopWidth + viewportOffsetTop + selectedItemHalfHeight
           );
           const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
           contentWrapper.style.height = height + 'px';
@@ -507,6 +517,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         requestAnimationFrame(() => (shouldExpandOnScrollRef.current = true));
       }
     }, [
+      getItems,
       context.trigger,
       context.valueNode,
       contentWrapper,
@@ -1031,7 +1042,7 @@ const SelectScrollUpButton = React.forwardRef<
   const [canScrollUp, setCanScrollUp] = React.useState(false);
   const composedRefs = useComposedRefs(forwardedRef, contentContext.onScrollButtonChange);
 
-  React.useEffect(() => {
+  useLayoutEffect(() => {
     if (contentContext.viewport && contentContext.isPositioned) {
       const viewport = contentContext.viewport;
       function handleScroll() {
@@ -1077,7 +1088,7 @@ const SelectScrollDownButton = React.forwardRef<
   const [canScrollDown, setCanScrollDown] = React.useState(false);
   const composedRefs = useComposedRefs(forwardedRef, contentContext.onScrollButtonChange);
 
-  React.useEffect(() => {
+  useLayoutEffect(() => {
     if (contentContext.viewport && contentContext.isPositioned) {
       const viewport = contentContext.viewport;
       function handleScroll() {
