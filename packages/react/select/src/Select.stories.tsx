@@ -525,7 +525,7 @@ const ChromaticSelect = React.forwardRef<
       <Select.Viewport className={viewportClass()}>
         {Array.from({ length: itemCount }, (_, i) => (
           <Select.Item key={i} className={itemClass()} value={String(i)}>
-            <Select.ItemText>{i}</Select.ItemText>
+            <Select.ItemText>{String(i)}</Select.ItemText>
             <Select.ItemIndicator className={indicatorClass()}>
               <TickIcon />
             </Select.ItemIndicator>
