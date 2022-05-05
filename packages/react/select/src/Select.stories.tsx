@@ -430,7 +430,7 @@ export const WithinDialog = () => (
   </Dialog.Root>
 );
 
-export const Chromatic1 = () => (
+export const ChromaticShortOptions = () => (
   <div
     style={{
       display: 'grid',
@@ -459,9 +459,9 @@ export const Chromatic1 = () => (
     <ChromaticSelect itemCount={9} selectedIndex={8} style={{ alignSelf: 'end' }} />
   </div>
 );
-Chromatic1.parameters = { chromatic: { disable: false } };
+ChromaticShortOptions.parameters = { chromatic: { disable: false } };
 
-export const Chromatic2 = () => (
+export const ChromaticLongOptions = () => (
   <div
     style={{
       display: 'grid',
@@ -504,7 +504,7 @@ export const Chromatic2 = () => (
     />
   </div>
 );
-Chromatic2.parameters = { chromatic: { disable: false } };
+ChromaticLongOptions.parameters = { chromatic: { disable: false } };
 
 interface ChromaticSelectProps extends React.ComponentProps<typeof Select.Trigger> {
   itemCount: number;

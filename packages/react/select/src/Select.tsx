@@ -482,23 +482,28 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         if (willAlignWithoutTopOverflow) {
           const isLastItem = selectedItem === items[items.length - 1].ref.current;
           contentWrapper.style.bottom = 0 + 'px';
-          const scrollClearance = isLastItem ? viewportPaddingBottom : 0;
           const viewportOffsetBottom =
-            content.clientHeight - viewport.offsetTop - viewport.offsetHeight + scrollClearance;
+            content.clientHeight - viewport.offsetTop - viewport.offsetHeight;
           const clampedTriggerMiddleToBottomEdge = Math.max(
             triggerMiddleToBottomEdge,
-            selectedItemHalfHeight + viewportOffsetBottom + contentBorderBottomWidth
+            selectedItemHalfHeight +
+              // viewport might have padding bottom, include it to avoid a scrollable viewport
+              (isLastItem ? viewportPaddingBottom : 0) +
+              viewportOffsetBottom +
+              contentBorderBottomWidth
           );
           const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
           contentWrapper.style.height = height + 'px';
         } else {
           const isFirstItem = selectedItem === items[0].ref.current;
           contentWrapper.style.top = 0 + 'px';
-          const scrollClearance = isFirstItem ? viewportPaddingTop : 0;
-          const viewportOffsetTop = scrollClearance + viewport.offsetTop;
           const clampedTopEdgeToTriggerMiddle = Math.max(
             topEdgeToTriggerMiddle,
-            contentBorderTopWidth + viewportOffsetTop + selectedItemHalfHeight
+            contentBorderTopWidth +
+              viewport.offsetTop +
+              // viewport might have padding top, include it to avoid a scrollable viewport
+              (isFirstItem ? viewportPaddingTop : 0) +
+              selectedItemHalfHeight
           );
           const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
           contentWrapper.style.height = height + 'px';
