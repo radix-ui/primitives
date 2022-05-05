@@ -450,21 +450,19 @@ export const ChromaticLongOptionsPaddedViewport = () => (
 );
 ChromaticLongOptionsPaddedViewport.parameters = { chromatic: { disable: false } };
 
-export const ChromaticTopFirstPaddedContent = () => <SelectShort padding="content" selected={0} />;
+export const ChromaticTopFirstPaddedContent = () => <ChromaticStoryTopFirst padding="content" />;
 ChromaticTopFirstPaddedContent.parameters = { chromatic: { disable: false } };
 
-export const ChromaticTopFirstPaddedViewport = () => (
-  <SelectShort padding="viewport" selected={0} />
-);
+export const ChromaticTopFirstPaddedViewport = () => <ChromaticStoryTopFirst padding="viewport" />;
 ChromaticTopFirstPaddedViewport.parameters = { chromatic: { disable: false } };
 
 export const ChromaticBottomLastPaddedContent = () => (
-  <SelectShort padding="content" selected={8} style={{ marginTop: '100vh' }} />
+  <ChromaticStoryBottomLast padding="content" />
 );
 ChromaticBottomLastPaddedContent.parameters = { chromatic: { disable: false } };
 
 export const ChromaticBottomLastPaddedViewport = () => (
-  <SelectShort padding="viewport" selected={8} style={{ marginTop: '100vh' }} />
+  <ChromaticStoryBottomLast padding="viewport" />
 );
 ChromaticBottomLastPaddedViewport.parameters = { chromatic: { disable: false } };
 
@@ -600,6 +598,18 @@ const ChromaticStoryLongOptions = ({ padding }: { padding: PaddedElement }) => (
       selected={49}
       style={{ gridRow: 3, gridColumn: 15, alignSelf: 'end' }}
     />
+  </div>
+);
+
+const ChromaticStoryTopFirst = ({ padding }: { padding: PaddedElement }) => (
+  <div style={{ display: 'flex', height: '100vh' }}>
+    <SelectShort padding={padding} selected={0} />
+  </div>
+);
+
+const ChromaticStoryBottomLast = ({ padding }: { padding: PaddedElement }) => (
+  <div style={{ display: 'flex', height: '100vh', alignItems: 'flex-end' }}>
+    <SelectShort padding={padding} selected={8} />
   </div>
 );
 
