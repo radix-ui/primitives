@@ -17,8 +17,12 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   if (slottable) {
     const newElement = slottable.props.children;
     const newChildren = childrenArray.map((child) => {
-      if (isSlottable(child)) {
-        return child.props.children.props.children;
+      if (child === slottable) {
+        const slottableChildren = slottable.props.children as React.ReactNode;
+        if (React.Children.count(slottableChildren) > 1) return React.Children.only(null);
+        return React.isValidElement(slottableChildren)
+          ? (slottableChildren.props.children as React.ReactNode)
+          : null;
       } else {
         return child;
       }
@@ -26,7 +30,9 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
 
     return (
       <SlotClone {...slotProps} ref={forwardedRef}>
-        {React.cloneElement(newElement, { children: newChildren })}
+        {React.isValidElement(newElement)
+          ? React.cloneElement(newElement, undefined, newChildren)
+          : null}
       </SlotClone>
     );
   }
