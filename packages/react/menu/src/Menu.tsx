@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, dispatchDiscreteCustomEvent } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -720,9 +720,9 @@ const MenuItem = React.forwardRef<MenuItemElement, MenuItemProps>(
     const handleSelect = () => {
       const menuItem = ref.current;
       if (!disabled && menuItem) {
-        const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
+        const itemSelectEvent = new CustomEvent(ITEM_SELECT, { bubbles: true, cancelable: true });
         menuItem.addEventListener(ITEM_SELECT, (event) => onSelect?.(event), { once: true });
-        menuItem.dispatchEvent(itemSelectEvent);
+        dispatchDiscreteCustomEvent(menuItem, itemSelectEvent);
         if (itemSelectEvent.defaultPrevented) {
           isPointerDownRef.current = false;
         } else {

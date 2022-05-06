@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, dispatchDiscreteCustomEvent } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -158,7 +158,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
       if (open) {
         // we dispatch here so `TooltipProvider` isn't required to
         // ensure other tooltips are aware of this one opening.
-        document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
+        dispatchDiscreteCustomEvent(document, new CustomEvent(TOOLTIP_OPEN));
         onOpen();
       }
       onOpenChange?.(open);

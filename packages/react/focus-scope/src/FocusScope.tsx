@@ -107,7 +107,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
       const hasFocusedCandidate = container.contains(previouslyFocusedElement);
 
       if (!hasFocusedCandidate) {
-        const mountEvent = new Event(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
+        const mountEvent = new CustomEvent(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
         container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
         container.dispatchEvent(mountEvent);
         if (!mountEvent.defaultPrevented) {
@@ -125,7 +125,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
         // We need to delay the focus a little to get around it for now.
         // See: https://github.com/facebook/react/issues/17894
         setTimeout(() => {
-          const unmountEvent = new Event(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
+          const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
           container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
           container.dispatchEvent(unmountEvent);
           if (!unmountEvent.defaultPrevented) {

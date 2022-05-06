@@ -15,6 +15,9 @@
     "clean": "rm -rf dist",
     "version": "yarn version"
   },
+  "peerDependencies": {
+    "react-dom": "^16.8 || ^17.0 || ^18.0"
+  },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
     "type": "git",

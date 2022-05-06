@@ -1,3 +1,9 @@
+import * as ReactDOM from 'react-dom';
+
+function dispatchDiscreteCustomEvent(target: Document | HTMLElement, event: CustomEvent) {
+  ReactDOM.flushSync(() => target.dispatchEvent(event));
+}
+
 function composeEventHandlers<E>(
   originalEventHandler?: (event: E) => void,
   ourEventHandler?: (event: E) => void,
@@ -6,10 +12,10 @@ function composeEventHandlers<E>(
   return function handleEvent(event: E) {
     originalEventHandler?.(event);
 
-    if (checkForDefaultPrevented === false || !((event as unknown) as Event).defaultPrevented) {
+    if (checkForDefaultPrevented === false || !(event as unknown as Event).defaultPrevented) {
       return ourEventHandler?.(event);
     }
   };
 }
 
-export { composeEventHandlers };
+export { composeEventHandlers, dispatchDiscreteCustomEvent };

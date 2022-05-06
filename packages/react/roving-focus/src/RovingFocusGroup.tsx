@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, dispatchDiscreteCustomEvent } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -158,8 +158,8 @@ const RovingFocusGroupImpl = React.forwardRef<
           const isKeyboardFocus = !isClickFocusRef.current;
 
           if (event.target === event.currentTarget && isKeyboardFocus && !isTabbingBackOut) {
-            const entryFocusEvent = new Event(ENTRY_FOCUS, EVENT_OPTIONS);
-            event.currentTarget.dispatchEvent(entryFocusEvent);
+            const entryFocusEvent = new CustomEvent(ENTRY_FOCUS, EVENT_OPTIONS);
+            dispatchDiscreteCustomEvent(event.currentTarget, entryFocusEvent);
 
             if (!entryFocusEvent.defaultPrevented) {
               const items = getItems().filter((item) => item.focusable);

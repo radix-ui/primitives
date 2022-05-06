@@ -6,7 +6,7 @@ describe('ContextMenu', () => {
     });
 
     describe('when using pointer', () => {
-      it.skip('should close open submenus and reopen the root menu when right clicking trigger', () => {
+      it('should close open submenus and reopen the root menu when right clicking trigger', () => {
         pointerOver('Bookmarks →');
         cy.findByText('Inbox').should('be.visible');
         cy.findByText('Right Click Here').rightclick({ force: true });
