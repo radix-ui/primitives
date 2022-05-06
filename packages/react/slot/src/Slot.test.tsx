@@ -110,8 +110,8 @@ describe('given a slotted Trigger', () => {
 
 describe('given a Button with Slottable', () => {
   describe('without asChild', () => {
-    beforeEach(() => {
-      render(
+    it('should render a button with icon on the left/right', async () => {
+      const tree = render(
         <Button
           iconLeft={<span data-testid="left">left</span>}
           iconRight={<span data-testid="right">right</span>}
@@ -119,22 +119,14 @@ describe('given a Button with Slottable', () => {
           Click <em>me</em>!
         </Button>
       );
-    });
 
-    it('should render a button with icon on the left/right', async () => {
-      const button = screen.getByText(/click/i);
-      const iconLeft = screen.getByTestId('left');
-      const iconRight = screen.getByTestId('right');
-      expect(button.nodeName).toMatch(/button/i);
-      expect(button.childNodes.length).toBe(5);
-      expect(button.childNodes[0]).toBe(iconLeft);
-      expect(button.childNodes[button.childNodes.length - 1]).toBe(iconRight);
+      expect(tree.container).toMatchSnapshot();
     });
   });
 
   describe('with asChild', () => {
-    beforeEach(() => {
-      render(
+    it('should render a link with icon on the left/right', async () => {
+      const tree = render(
         <Button
           iconLeft={<span data-testid="left">left</span>}
           iconRight={<span data-testid="right">right</span>}
@@ -145,16 +137,8 @@ describe('given a Button with Slottable', () => {
           </a>
         </Button>
       );
-    });
 
-    it('should render a link with icon on the left/right', async () => {
-      const link = screen.getByText(/click/i);
-      const iconLeft = screen.getByTestId('left');
-      const iconRight = screen.getByTestId('right');
-      expect(link.nodeName).toMatch(/a/i);
-      expect(link.childNodes.length).toBe(5);
-      expect(link.childNodes[0]).toBe(iconLeft);
-      expect(link.childNodes[link.childNodes.length - 1]).toBe(iconRight);
+      expect(tree.container).toMatchSnapshot();
     });
   });
 });
