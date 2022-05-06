@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Slot } from '@radix-ui/react-slot';
+import { Slot, Slottable } from '@radix-ui/react-slot';
 
 describe('given a slotted Trigger', () => {
   describe('with onClick on itself', () => {
@@ -108,6 +108,52 @@ describe('given a slotted Trigger', () => {
   });
 });
 
+describe('given a Button with Slottable', () => {
+  describe('without asChild', () => {
+    it('should render a button with icon on the left/right', async () => {
+      const tree = render(
+        <Button iconLeft={<span>left</span>} iconRight={<span>right</span>}>
+          Button <em>text</em>
+        </Button>
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+  });
+
+  describe('with asChild', () => {
+    it('should render a link with icon on the left/right', async () => {
+      const tree = render(
+        <Button iconLeft={<span>left</span>} iconRight={<span>right</span>} asChild>
+          <a href="https://radix-ui.com">
+            Button <em>text</em>
+          </a>
+        </Button>
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+  });
+});
+
 type TriggerProps = React.ComponentProps<'button'> & { as: React.ElementType };
 
 const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...props} />;
+
+const Button = React.forwardRef<
+  React.ElementRef<'button'>,
+  React.ComponentProps<'button'> & {
+    asChild?: boolean;
+    iconLeft?: React.ReactNode;
+    iconRight?: React.ReactNode;
+  }
+>(({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) => {
+  const Comp = asChild ? Slot : 'button';
+  return (
+    <Comp {...props} ref={forwardedRef}>
+      {iconLeft}
+      <Slottable>{children}</Slottable>
+      {iconRight}
+    </Comp>
+  );
+});

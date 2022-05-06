@@ -53,6 +53,31 @@ export const WithComposedEvents = () => (
   </>
 );
 
+export const ButtonAsLink = () => (
+  <>
+    <h1>Button with left/right icons</h1>
+    <Button
+      iconLeft={<MockIcon color="tomato" />}
+      iconRight={<MockIcon color="royalblue" />}
+      ref={console.log}
+    >
+      Button <em>text</em>
+    </Button>
+
+    <h1>Button with left/right icons as link (asChild)</h1>
+    <Button
+      asChild
+      iconLeft={<MockIcon color="tomato" />}
+      iconRight={<MockIcon color="royalblue" />}
+      ref={console.log}
+    >
+      <a href="https://radix-ui.com">
+        Button <em>text</em>
+      </a>
+    </Button>
+  </>
+);
+
 export const Chromatic = () => (
   <>
     <h1>Without Slottable</h1>
@@ -184,6 +209,22 @@ export const Chromatic = () => (
     <ErrorBoundary>
       <SlotWithSlottable>{false}</SlotWithSlottable>
     </ErrorBoundary>
+
+    <h2>Button with left/right icons</h2>
+    <Button iconLeft={<MockIcon color="tomato" />} iconRight={<MockIcon color="royalblue" />}>
+      Button <em>text</em>
+    </Button>
+
+    <h2>Button with left/right icons as link (asChild)</h2>
+    <Button
+      asChild
+      iconLeft={<MockIcon color="tomato" />}
+      iconRight={<MockIcon color="royalblue" />}
+    >
+      <a href="https://radix-ui.com">
+        Button <em>text</em>
+      </a>
+    </Button>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -249,4 +290,53 @@ const SlotWithoutPreventableEvent = (props: any) => (
       console.log(event.target);
     }}
   />
+);
+
+const Button = React.forwardRef<
+  React.ElementRef<'button'>,
+  React.ComponentProps<'button'> & {
+    asChild?: boolean;
+    iconLeft?: React.ReactNode;
+    iconRight?: React.ReactNode;
+  }
+>(({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) => {
+  const Comp = asChild ? Slot : 'button';
+  return (
+    <Comp
+      {...props}
+      ref={forwardedRef}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        border: '1px solid black',
+        padding: 10,
+        backgroundColor: 'white',
+        fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
+        fontSize: 14,
+        borderRadius: 3,
+        ...props.style,
+      }}
+    >
+      {iconLeft}
+      <Slottable>{children}</Slottable>
+      {iconRight}
+    </Comp>
+  );
+});
+
+const MockIcon = React.forwardRef<React.ElementRef<'span'>, React.ComponentProps<'span'>>(
+  ({ color = 'tomato', ...props }, forwardedRef) => (
+    <span
+      ref={forwardedRef}
+      {...props}
+      style={{
+        display: 'inline-block',
+        width: 10,
+        height: 10,
+        backgroundColor: color,
+        ...props.style,
+      }}
+    />
+  )
 );
