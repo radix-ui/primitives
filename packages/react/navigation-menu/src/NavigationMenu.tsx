@@ -486,16 +486,18 @@ NavigationMenuTrigger.displayName = TRIGGER_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const LINK_NAME = 'NavigationMenuLink';
+const LINK_SELECT = 'navigationMenu.linkSelect';
 
 type NavigationMenuLinkElement = React.ElementRef<typeof Primitive.a>;
 type PrimitiveLinkProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
-interface NavigationMenuLinkProps extends PrimitiveLinkProps {
+interface NavigationMenuLinkProps extends Omit<PrimitiveLinkProps, 'onSelect'> {
   active?: boolean;
+  onSelect?: (event: Event) => void;
 }
 
 const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, NavigationMenuLinkProps>(
   (props: ScopedProps<NavigationMenuLinkProps>, forwardedRef) => {
-    const { __scopeNavigationMenu, active, ...linkProps } = props;
+    const { __scopeNavigationMenu, active, onSelect, ...linkProps } = props;
 
     return (
       <FocusGroupItem asChild>
@@ -504,13 +506,24 @@ const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, Navigatio
           aria-current={active ? 'page' : undefined}
           {...linkProps}
           ref={forwardedRef}
-          onClick={composeEventHandlers(props.onClick, (event) => {
-            const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
-              bubbles: true,
-              cancelable: true,
-            });
-            event.target.dispatchEvent(rootContentDismissEvent);
-          })}
+          onClick={composeEventHandlers(
+            props.onClick,
+            (event) => {
+              const target = event.target;
+              const linkSelectEvent = new Event(LINK_SELECT, { bubbles: true, cancelable: true });
+              target.addEventListener(LINK_SELECT, (event) => onSelect?.(event), { once: true });
+              target.dispatchEvent(linkSelectEvent);
+
+              if (!linkSelectEvent.defaultPrevented) {
+                const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
+                  bubbles: true,
+                  cancelable: true,
+                });
+                target.dispatchEvent(rootContentDismissEvent);
+              }
+            },
+            { checkForDefaultPrevented: false }
+          )}
         />
       </FocusGroupItem>
     );
