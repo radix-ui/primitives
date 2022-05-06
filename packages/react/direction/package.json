@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-direction",
-  "version": "0.1.0-rc.13",
+  "version": "0.1.0-rc.14",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
