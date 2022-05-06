@@ -11,20 +11,23 @@ interface SlotProps extends React.HTMLAttributes<HTMLElement> {
 
 const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
+  const childrenArray = React.Children.toArray(children);
+  const slottable = childrenArray.find(isSlottable);
 
-  if (React.Children.toArray(children).some(isSlottable)) {
+  if (slottable) {
+    const newElement = slottable.props.children;
+    const newChildren = childrenArray.map((child) => {
+      if (isSlottable(child)) {
+        return child.props.children.props.children;
+      } else {
+        return child;
+      }
+    });
+
     return (
-      <>
-        {React.Children.map(children, (child) => {
-          return isSlottable(child) ? (
-            <SlotClone {...slotProps} ref={forwardedRef}>
-              {child.props.children}
-            </SlotClone>
-          ) : (
-            child
-          );
-        })}
-      </>
+      <SlotClone {...slotProps} ref={forwardedRef}>
+        {React.cloneElement(newElement, { children: newChildren })}
+      </SlotClone>
     );
   }
 
