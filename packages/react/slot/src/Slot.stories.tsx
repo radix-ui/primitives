@@ -57,22 +57,22 @@ export const ButtonAsLink = () => (
   <>
     <h1>Button with left/right icons</h1>
     <Button
-      iconLeft={<FakeIcon color="tomato" />}
-      iconRight={<FakeIcon color="royalblue" />}
+      iconLeft={<MockIcon color="tomato" />}
+      iconRight={<MockIcon color="royalblue" />}
       ref={console.log}
     >
-      Click <em>me</em>!
+      Button <em>text</em>
     </Button>
 
     <h1>Button with left/right icons as link (asChild)</h1>
     <Button
       asChild
-      iconLeft={<FakeIcon color="tomato" />}
-      iconRight={<FakeIcon color="royalblue" />}
+      iconLeft={<MockIcon color="tomato" />}
+      iconRight={<MockIcon color="royalblue" />}
       ref={console.log}
     >
       <a href="https://radix-ui.com">
-        Click <em>me</em>!
+        Button <em>text</em>
       </a>
     </Button>
   </>
@@ -211,18 +211,18 @@ export const Chromatic = () => (
     </ErrorBoundary>
 
     <h2>Button with left/right icons</h2>
-    <Button iconLeft={<FakeIcon color="tomato" />} iconRight={<FakeIcon color="royalblue" />}>
-      Click <em>me</em>!
+    <Button iconLeft={<MockIcon color="tomato" />} iconRight={<MockIcon color="royalblue" />}>
+      Button <em>text</em>
     </Button>
 
     <h2>Button with left/right icons as link (asChild)</h2>
     <Button
       asChild
-      iconLeft={<FakeIcon color="tomato" />}
-      iconRight={<FakeIcon color="royalblue" />}
+      iconLeft={<MockIcon color="tomato" />}
+      iconRight={<MockIcon color="royalblue" />}
     >
       <a href="https://radix-ui.com">
-        Click <em>me</em>!
+        Button <em>text</em>
       </a>
     </Button>
   </>
@@ -325,7 +325,7 @@ const Button = React.forwardRef<
   );
 });
 
-const FakeIcon = React.forwardRef<React.ElementRef<'span'>, React.ComponentProps<'span'>>(
+const MockIcon = React.forwardRef<React.ElementRef<'span'>, React.ComponentProps<'span'>>(
   ({ color = 'tomato', ...props }, forwardedRef) => (
     <span
       ref={forwardedRef}

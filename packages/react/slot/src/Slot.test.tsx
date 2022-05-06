@@ -112,11 +112,8 @@ describe('given a Button with Slottable', () => {
   describe('without asChild', () => {
     it('should render a button with icon on the left/right', async () => {
       const tree = render(
-        <Button
-          iconLeft={<span data-testid="left">left</span>}
-          iconRight={<span data-testid="right">right</span>}
-        >
-          Click <em>me</em>!
+        <Button iconLeft={<span>left</span>} iconRight={<span>right</span>}>
+          Button <em>text</em>
         </Button>
       );
 
@@ -127,13 +124,9 @@ describe('given a Button with Slottable', () => {
   describe('with asChild', () => {
     it('should render a link with icon on the left/right', async () => {
       const tree = render(
-        <Button
-          iconLeft={<span data-testid="left">left</span>}
-          iconRight={<span data-testid="right">right</span>}
-          asChild
-        >
+        <Button iconLeft={<span>left</span>} iconRight={<span>right</span>} asChild>
           <a href="https://radix-ui.com">
-            Click <em>me</em>!
+            Button <em>text</em>
           </a>
         </Button>
       );

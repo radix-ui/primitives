@@ -5,19 +5,14 @@ exports[`given a Button with Slottable with asChild should render a link with ic
   <a
     href="https://radix-ui.com"
   >
-    <span
-      data-testid="left"
-    >
+    <span>
       left
     </span>
-    Click 
+    Button 
     <em>
-      me
+      text
     </em>
-    !
-    <span
-      data-testid="right"
-    >
+    <span>
       right
     </span>
   </a>
@@ -27,19 +22,14 @@ exports[`given a Button with Slottable with asChild should render a link with ic
 exports[`given a Button with Slottable without asChild should render a button with icon on the left/right 1`] = `
 <div>
   <button>
-    <span
-      data-testid="left"
-    >
+    <span>
       left
     </span>
-    Click 
+    Button 
     <em>
-      me
+      text
     </em>
-    !
-    <span
-      data-testid="right"
-    >
+    <span>
       right
     </span>
   </button>

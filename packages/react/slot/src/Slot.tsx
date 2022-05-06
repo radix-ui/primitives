@@ -15,13 +15,16 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const slottable = childrenArray.find(isSlottable);
 
   if (slottable) {
-    const newElement = slottable.props.children;
+    // the new element to render is the one passed as a child of `Slottable`
+    const newElement = slottable.props.children as React.ReactNode;
+
     const newChildren = childrenArray.map((child) => {
       if (child === slottable) {
-        const slottableChildren = slottable.props.children as React.ReactNode;
-        if (React.Children.count(slottableChildren) > 1) return React.Children.only(null);
-        return React.isValidElement(slottableChildren)
-          ? (slottableChildren.props.children as React.ReactNode)
+        // because the new element will be the one rendered, we are only interested
+        // in grabbing its children (`newElement.props.children`)
+        if (React.Children.count(newElement) > 1) return React.Children.only(null);
+        return React.isValidElement(newElement)
+          ? (newElement.props.children as React.ReactNode)
           : null;
       } else {
         return child;
