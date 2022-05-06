@@ -430,6 +430,201 @@ export const WithinDialog = () => (
   </Dialog.Root>
 );
 
+export const ChromaticShortOptionsPaddedContent = () => (
+  <ChromaticStoryShortOptions paddedElement="content" />
+);
+ChromaticShortOptionsPaddedContent.parameters = { chromatic: { disable: false } };
+
+export const ChromaticShortOptionsPaddedViewport = () => (
+  <ChromaticStoryShortOptions paddedElement="viewport" />
+);
+ChromaticShortOptionsPaddedViewport.parameters = { chromatic: { disable: false } };
+
+export const ChromaticLongOptionsPaddedContent = () => (
+  <ChromaticStoryLongOptions paddedElement="content" />
+);
+ChromaticLongOptionsPaddedContent.parameters = { chromatic: { disable: false } };
+
+export const ChromaticLongOptionsPaddedViewport = () => (
+  <ChromaticStoryLongOptions paddedElement="viewport" />
+);
+ChromaticLongOptionsPaddedViewport.parameters = { chromatic: { disable: false } };
+
+export const ChromaticTopFirstPaddedContent = () => (
+  <ChromaticStoryTopFirst paddedElement="content" />
+);
+ChromaticTopFirstPaddedContent.parameters = { chromatic: { disable: false } };
+
+export const ChromaticTopFirstPaddedViewport = () => (
+  <ChromaticStoryTopFirst paddedElement="viewport" />
+);
+ChromaticTopFirstPaddedViewport.parameters = { chromatic: { disable: false } };
+
+export const ChromaticBottomLastPaddedContent = () => (
+  <ChromaticStoryBottomLast paddedElement="content" />
+);
+ChromaticBottomLastPaddedContent.parameters = { chromatic: { disable: false } };
+
+export const ChromaticBottomLastPaddedViewport = () => (
+  <ChromaticStoryBottomLast paddedElement="viewport" />
+);
+ChromaticBottomLastPaddedViewport.parameters = { chromatic: { disable: false } };
+
+type PaddedElement = 'content' | 'viewport';
+
+interface ChromaticSelectProps extends React.ComponentProps<typeof Select.Trigger> {
+  count?: number;
+  paddedElement?: PaddedElement;
+  selected: number;
+}
+
+const ChromaticSelect = React.forwardRef<
+  React.ElementRef<typeof Select.Trigger>,
+  ChromaticSelectProps
+>(({ count = 5, paddedElement = 'content', selected, ...props }, forwardedRef) => (
+  <Select.Root defaultValue={String(selected)} open>
+    <Select.Trigger className={triggerClass()} ref={forwardedRef} {...props}>
+      <Select.Value />
+      <Select.Icon />
+    </Select.Trigger>
+    <Select.Content
+      className={paddedElement === 'content' ? contentClassWithPadding() : contentClass()}
+      style={{ opacity: 0.7 }}
+    >
+      <Select.ScrollUpButton
+        className={scrollUpButtonClass()}
+        style={paddedElement === 'content' ? { marginTop: -5 } : undefined}
+      >
+        ▲
+      </Select.ScrollUpButton>
+      <Select.Viewport className={paddedElement === 'viewport' ? viewportClass() : undefined}>
+        {Array.from({ length: count }, (_, i) => (
+          <Select.Item key={i} className={itemClass()} value={String(i)}>
+            <Select.ItemText>{String(i)}</Select.ItemText>
+            <Select.ItemIndicator className={indicatorClass()}>
+              <TickIcon />
+            </Select.ItemIndicator>
+          </Select.Item>
+        ))}
+      </Select.Viewport>
+      <Select.ScrollDownButton
+        className={scrollDownButtonClass()}
+        style={paddedElement === 'content' ? { marginBottom: -5 } : undefined}
+      >
+        ▼
+      </Select.ScrollDownButton>
+    </Select.Content>
+  </Select.Root>
+));
+
+const SelectShort = React.forwardRef<
+  React.ElementRef<typeof ChromaticSelect>,
+  React.ComponentProps<typeof ChromaticSelect>
+>(({ count = 9, ...props }, forwardedRef) => (
+  <ChromaticSelect count={count} {...props} ref={forwardedRef} />
+));
+
+const SelectLong = React.forwardRef<
+  React.ElementRef<typeof ChromaticSelect>,
+  React.ComponentProps<typeof ChromaticSelect>
+>(({ count = 50, ...props }, forwardedRef) => (
+  <ChromaticSelect count={count} {...props} ref={forwardedRef} />
+));
+
+const ChromaticStoryShortOptions = ({ paddedElement }: { paddedElement: PaddedElement }) => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(5, 1fr)',
+      gridTemplateRows: 'repeat(3, 1fr)',
+      height: '100vh',
+      placeItems: 'center',
+    }}
+  >
+    <SelectShort paddedElement={paddedElement} selected={0} style={{ alignSelf: 'start' }} />
+    <SelectShort paddedElement={paddedElement} selected={2} style={{ alignSelf: 'start' }} />
+    <SelectShort paddedElement={paddedElement} selected={4} style={{ alignSelf: 'start' }} />
+    <SelectShort paddedElement={paddedElement} selected={6} style={{ alignSelf: 'start' }} />
+    <SelectShort paddedElement={paddedElement} selected={8} style={{ alignSelf: 'start' }} />
+
+    <SelectShort paddedElement={paddedElement} selected={0} />
+    <SelectShort paddedElement={paddedElement} selected={2} />
+    <SelectShort paddedElement={paddedElement} selected={4} />
+    <SelectShort paddedElement={paddedElement} selected={6} />
+    <SelectShort paddedElement={paddedElement} selected={8} />
+
+    <SelectShort paddedElement={paddedElement} selected={0} style={{ alignSelf: 'end' }} />
+    <SelectShort paddedElement={paddedElement} selected={2} style={{ alignSelf: 'end' }} />
+    <SelectShort paddedElement={paddedElement} selected={4} style={{ alignSelf: 'end' }} />
+    <SelectShort paddedElement={paddedElement} selected={6} style={{ alignSelf: 'end' }} />
+    <SelectShort paddedElement={paddedElement} selected={8} style={{ alignSelf: 'end' }} />
+  </div>
+);
+
+const ChromaticStoryLongOptions = ({ paddedElement }: { paddedElement: PaddedElement }) => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(15, 1fr)',
+      gridTemplateRows: 'repeat(3, 1fr)',
+      height: '100vh',
+      placeItems: 'center',
+    }}
+  >
+    <SelectLong paddedElement={paddedElement} selected={0} style={{ alignSelf: 'start' }} />
+    <SelectLong paddedElement={paddedElement} selected={25} style={{ alignSelf: 'start' }} />
+    <SelectLong paddedElement={paddedElement} selected={49} style={{ alignSelf: 'start' }} />
+
+    <SelectLong paddedElement={paddedElement} selected={0} style={{ gridRow: 1, gridColumn: 4 }} />
+    <SelectLong paddedElement={paddedElement} selected={25} style={{ gridRow: 1, gridColumn: 5 }} />
+    <SelectLong paddedElement={paddedElement} selected={49} style={{ gridRow: 1, gridColumn: 6 }} />
+
+    <SelectLong paddedElement={paddedElement} selected={0} style={{ gridRow: 2, gridColumn: 7 }} />
+    <SelectLong paddedElement={paddedElement} selected={25} style={{ gridRow: 2, gridColumn: 8 }} />
+    <SelectLong paddedElement={paddedElement} selected={49} style={{ gridRow: 2, gridColumn: 9 }} />
+
+    <SelectLong paddedElement={paddedElement} selected={0} style={{ gridRow: 3, gridColumn: 10 }} />
+    <SelectLong
+      paddedElement={paddedElement}
+      selected={25}
+      style={{ gridRow: 3, gridColumn: 11 }}
+    />
+    <SelectLong
+      paddedElement={paddedElement}
+      selected={49}
+      style={{ gridRow: 3, gridColumn: 12 }}
+    />
+
+    <SelectLong
+      paddedElement={paddedElement}
+      selected={0}
+      style={{ gridRow: 3, gridColumn: 13, alignSelf: 'end' }}
+    />
+    <SelectLong
+      paddedElement={paddedElement}
+      selected={25}
+      style={{ gridRow: 3, gridColumn: 14, alignSelf: 'end' }}
+    />
+    <SelectLong
+      paddedElement={paddedElement}
+      selected={49}
+      style={{ gridRow: 3, gridColumn: 15, alignSelf: 'end' }}
+    />
+  </div>
+);
+
+const ChromaticStoryTopFirst = ({ paddedElement }: { paddedElement: PaddedElement }) => (
+  <div style={{ display: 'flex', height: '100vh' }}>
+    <SelectShort paddedElement={paddedElement} selected={0} />
+  </div>
+);
+
+const ChromaticStoryBottomLast = ({ paddedElement }: { paddedElement: PaddedElement }) => (
+  <div style={{ display: 'flex', height: '100vh', alignItems: 'flex-end' }}>
+    <SelectShort paddedElement={paddedElement} selected={8} />
+  </div>
+);
+
 const triggerClass = css({
   display: 'flex',
   alignItems: 'center',
@@ -457,6 +652,10 @@ const contentClass = css({
   position: 'relative',
   overflow: 'hidden',
   '&:focus-within': { borderColor: '$black' },
+});
+
+const contentClassWithPadding = css(contentClass, {
+  padding: 5,
 });
 
 const viewportClass = css({
