@@ -506,22 +506,24 @@ const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, Navigatio
           aria-current={active ? 'page' : undefined}
           {...linkProps}
           ref={forwardedRef}
-          onClick={(event) => {
-            props.onClick?.(event);
+          onClick={composeEventHandlers(
+            props.onClick,
+            (event) => {
+              const target = event.target;
+              const linkSelectEvent = new Event(LINK_SELECT, { bubbles: true, cancelable: true });
+              target.addEventListener(LINK_SELECT, (event) => onSelect?.(event), { once: true });
+              target.dispatchEvent(linkSelectEvent);
 
-            const target = event.target;
-            const linkSelectEvent = new Event(LINK_SELECT, { bubbles: true, cancelable: true });
-            target.addEventListener(LINK_SELECT, (event) => onSelect?.(event), { once: true });
-            target.dispatchEvent(linkSelectEvent);
-
-            if (!linkSelectEvent.defaultPrevented) {
-              const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
-                bubbles: true,
-                cancelable: true,
-              });
-              target.dispatchEvent(rootContentDismissEvent);
-            }
-          }}
+              if (!linkSelectEvent.defaultPrevented) {
+                const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
+                  bubbles: true,
+                  cancelable: true,
+                });
+                target.dispatchEvent(rootContentDismissEvent);
+              }
+            },
+            { checkForDefaultPrevented: false }
+          )}
         />
       </FocusGroupItem>
     );
