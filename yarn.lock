@@ -3040,6 +3040,8 @@ __metadata:
   resolution: "@radix-ui/primitive@workspace:packages/core/primitive"
   dependencies:
     "@babel/runtime": ^7.13.10
+  peerDependencies:
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3137,6 +3139,7 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3278,6 +3281,7 @@ __metadata:
     react-remove-scroll: ^2.4.0
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3319,6 +3323,7 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3460,6 +3465,7 @@ __metadata:
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3551,6 +3557,7 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3636,6 +3643,7 @@ __metadata:
     form-serialize: ^0.7.2
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3665,6 +3673,7 @@ __metadata:
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3682,6 +3691,7 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3721,6 +3731,7 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3734,6 +3745,7 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3751,6 +3763,7 @@ __metadata:
     "@radix-ui/react-toggle-group": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
