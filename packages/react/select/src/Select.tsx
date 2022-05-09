@@ -53,7 +53,7 @@ type SelectContextValue = {
   valueNodeHasChildren: boolean;
   onValueNodeHasChildrenChange(hasChildren: boolean): void;
   contentId: string;
-  value: string;
+  value: string | undefined;
   onValueChange(value: string): void;
   open: boolean;
   onOpenChange(open: boolean): void;
@@ -100,7 +100,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const [value = '', setValue] = useControllableState({
+  const [value, setValue] = useControllableState({
     prop: valueProp,
     defaultProp: defaultValue,
     onChange: onValueChange,
@@ -335,12 +335,12 @@ type SelectContentContextValue = {
   content?: SelectContentElement | null;
   viewport?: SelectViewportElement | null;
   onViewportChange?: (node: SelectViewportElement | null) => void;
+  onItemSeen?: (node: SelectItemElement | null, value: string, disabled: boolean) => void;
   selectedItem?: SelectItemElement | null;
-  onSelectedItemChange?: (node: SelectItemElement | null) => void;
-  selectedItemText?: SelectItemTextElement | null;
-  onSelectedItemTextChange?: (node: SelectItemTextElement | null) => void;
-  onScrollButtonChange?: (node: SelectScrollButtonImplElement | null) => void;
   onItemLeave?: () => void;
+  onItemTextSeen?: (node: SelectItemTextElement | null, value: string) => void;
+  selectedItemText?: SelectItemTextElement | null;
+  onScrollButtonChange?: (node: SelectScrollButtonImplElement | null) => void;
   isPositioned?: boolean;
   shouldExpandOnScrollRef?: React.RefObject<boolean>;
   searchRef?: React.RefObject<string>;
@@ -380,6 +380,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const [isPositioned, setIsPositioned] = React.useState(false);
     const shouldRepositionRef = React.useRef(true);
     const shouldExpandOnScrollRef = React.useRef(false);
+    const firstItemRef = React.useRef(false);
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
@@ -624,7 +625,25 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       }
     });
 
+    const handleItemSeen = React.useCallback(
+      (node: SelectItemElement | null, value: string, disabled: boolean) => {
+        const isFirstSeenValidItem = !firstItemRef.current && !disabled;
+        const isSelectedItem = context.value !== undefined && context.value === value;
+        if (isSelectedItem || isFirstSeenValidItem) {
+          setSelectedItem(node);
+          if (isFirstSeenValidItem) firstItemRef.current = true;
+        }
+      },
+      [context.value]
+    );
     const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
+    const handleItemTextSeen = React.useCallback(
+      (node: SelectItemTextElement | null, value: string) => {
+        const isSelectedItemText = context.value !== undefined && context.value === value;
+        if (isSelectedItemText || !firstItemRef?.current) setSelectedItemText(node);
+      },
+      [context.value]
+    );
 
     return (
       <SelectContentContextProvider
@@ -633,12 +652,12 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         content={content}
         viewport={viewport}
         onViewportChange={setViewport}
+        onItemSeen={handleItemSeen}
         selectedItem={selectedItem}
-        onSelectedItemChange={setSelectedItem}
-        selectedItemText={selectedItemText}
-        onSelectedItemTextChange={setSelectedItemText}
-        onScrollButtonChange={handleScrollButtonChange}
         onItemLeave={handleItemLeave}
+        onItemTextSeen={handleItemTextSeen}
+        selectedItemText={selectedItemText}
+        onScrollButtonChange={handleScrollButtonChange}
         isPositioned={isPositioned}
         shouldExpandOnScrollRef={shouldExpandOnScrollRef}
         searchRef={searchRef}
@@ -887,9 +906,8 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const isSelected = context.value === value;
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
-    const composedRefs = useComposedRefs(
-      forwardedRef,
-      isSelected ? contentContext.onSelectedItemChange : undefined
+    const composedRefs = useComposedRefs(forwardedRef, (node) =>
+      contentContext.onItemSeen?.(node, value, disabled)
     );
     const textId = useId();
 
@@ -977,11 +995,8 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
     const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
     const ref = React.useRef<SelectItemTextElement | null>(null);
-    const composedRefs = useComposedRefs(
-      forwardedRef,
-      ref,
-      itemContext.onItemTextChange,
-      itemContext.isSelected ? contentContext.onSelectedItemTextChange : undefined
+    const composedRefs = useComposedRefs(forwardedRef, ref, itemContext.onItemTextChange, (node) =>
+      contentContext.onItemTextSeen?.(node, itemContext.value)
     );
 
     return (

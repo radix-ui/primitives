@@ -118,7 +118,7 @@ export const Position = () => (
   >
     <Label>
       Choose an item:
-      <Select.Root defaultValue="item-25">
+      <Select.Root>
         <Select.Trigger className={triggerClass()}>
           <Select.Value />
           <Select.Icon />
@@ -133,7 +133,7 @@ export const Position = () => (
                   key={value}
                   className={itemClass()}
                   value={value}
-                  disabled={i > 5 && i < 9}
+                  disabled={i >= 0 && i < 9}
                 >
                   <Select.ItemText>item {i + 1}</Select.ItemText>
                   <Select.ItemIndicator className={indicatorClass()}>
@@ -505,6 +505,37 @@ export const ChromaticBottomLastPaddedViewport = () => (
   <ChromaticStoryBottomLast paddedElement="viewport" />
 );
 ChromaticBottomLastPaddedViewport.parameters = { chromatic: { disable: false } };
+
+export const ChromaticNoDefault = () => (
+  <div
+    style={{
+      display: 'grid',
+      height: '100vh',
+      placeItems: 'center',
+    }}
+  >
+    <Select.Root open>
+      <Select.Trigger className={triggerClass()}>
+        <Select.Value />
+        <Select.Icon />
+      </Select.Trigger>
+      <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
+        <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+        <Select.Viewport className={viewportClass()}>
+          {Array.from({ length: 10 }, (_, i) => (
+            <Select.Item key={i} className={itemClass()} value={String(i)} disabled={i < 5}>
+              <Select.ItemText>{String(i)}</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+          ))}
+        </Select.Viewport>
+        <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+      </Select.Content>
+    </Select.Root>
+  </div>
+);
 
 type PaddedElement = 'content' | 'viewport';
 
