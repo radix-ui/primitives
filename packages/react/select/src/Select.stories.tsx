@@ -150,6 +150,42 @@ export const Position = () => (
   </div>
 );
 
+export const NoDefault = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+    <Label>
+      Choose a number:
+      <Select.Root>
+        <Select.Trigger className={triggerClass()}>
+          <Select.Value />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Content className={contentClass()}>
+          <Select.Viewport className={viewportClass()}>
+            <Select.Item className={itemClass()} value="one" disabled>
+              <Select.ItemText>One</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+            <Select.Item className={itemClass()} value="two">
+              <Select.ItemText>Two</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+            <Select.Item className={itemClass()} value="three">
+              <Select.ItemText>Three</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Root>
+    </Label>
+  </div>
+);
+
 export const Typeahead = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300vh' }}>
     <Label>
