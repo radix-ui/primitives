@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
@@ -211,7 +211,11 @@ function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutside
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target && !isPointerInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
-        dispatchCustomEvent(POINTER_DOWN_OUTSIDE, handlePointerDownOutside, eventDetail);
+        handleAndDispatchDiscreteCustomEvent(
+          POINTER_DOWN_OUTSIDE,
+          handlePointerDownOutside,
+          eventDetail
+        );
       }
       isPointerInsideReactTreeRef.current = false;
     };
@@ -255,7 +259,7 @@ function useFocusOutside(onFocusOutside?: (event: FocusOutsideEvent) => void) {
     const handleFocus = (event: FocusEvent) => {
       if (event.target && !isFocusInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
-        dispatchCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail);
+        handleAndDispatchDiscreteCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail);
       }
     };
     document.addEventListener('focusin', handleFocus);
@@ -269,19 +273,19 @@ function useFocusOutside(onFocusOutside?: (event: FocusOutsideEvent) => void) {
 }
 
 function dispatchUpdate() {
-  const event = new Event(CONTEXT_UPDATE);
+  const event = new CustomEvent(CONTEXT_UPDATE);
   document.dispatchEvent(event);
 }
 
-function dispatchCustomEvent<E extends CustomEvent, OriginalEvent extends Event>(
+function handleAndDispatchDiscreteCustomEvent<E extends CustomEvent, OriginalEvent extends Event>(
   name: string,
   handler: ((event: E) => void) | undefined,
   detail: { originalEvent: OriginalEvent } & (E extends CustomEvent<infer D> ? D : never)
 ) {
-  const target = detail.originalEvent.target as HTMLElement;
+  const target = detail.originalEvent.target;
   const event = new CustomEvent(name, { bubbles: false, cancelable: true, detail });
   if (handler) target.addEventListener(name, handler as EventListener, { once: true });
-  return !target.dispatchEvent(event);
+  dispatchDiscreteCustomEvent(target, event);
 }
 
 const Root = DismissableLayer;

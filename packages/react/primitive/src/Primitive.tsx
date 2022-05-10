@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { Slot } from '@radix-ui/react-slot';
 
 const NODES = [
@@ -63,11 +64,54 @@ const Primitive = NODES.reduce(
 
 const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChild\`. For details, see https://radix-ui.com/docs/primitives/overview/styling#changing-the-rendered-element`;
 
+/* -------------------------------------------------------------------------------------------------
+ * Utils
+ * -----------------------------------------------------------------------------------------------*/
+
+/**
+ * Flush custom event dispatch
+ * https://github.com/radix-ui/primitives/pull/1378
+ *
+ * React batches *all* event handlers since version 18, this introduces certain considerations when using custom event types.
+ *
+ * Internally, React prioritises events in the following order:
+ *  - discrete
+ *  - continuous
+ *  - default
+ *
+ * `discrete` is an  important distinction as updates within these events are applied immediately.
+ * React however, is not able to infer the priority of custom event types due to how they are detected internally.
+ * Because of this, it's possible for updates from custom events to be unexpectedly batched when
+ * dispatched by another `discrete` event.
+ *
+ * In order to ensure that updates from custom events are applied predictably, we need to manually flush the batch.
+ * This utility should be used when dispatching a custom event from within another `discrete` event, this utility
+ * is not nessesary when dispatching known event types, or if dispatching a custom type inside a non-discrete event.
+ * For example:
+ *
+ * dispatching a known click 👎
+ * target.dispatchEvent(new Event(‘click’))
+ *
+ * dispatching a custom type within a non-discrete event 👎
+ * onScroll={(event) => event.target.dispatchEvent(new CustomEvent(‘customType’))}
+ *
+ * dispatching a custom type within a `discrete` event 👍
+ * onPointerDown={(event) => dispatchDiscreteCustomEvent(event.target, new CustomEvent(‘customType’))}
+ */
+
+function dispatchDiscreteCustomEvent<E extends CustomEvent>(target: E['target'], event: E) {
+  if (target) ReactDOM.flushSync(() => target.dispatchEvent(event));
+}
+
+/* -----------------------------------------------------------------------------------------------*/
+
 const Root = Primitive;
 
 export {
   Primitive,
   //
   Root,
+  //
+  dispatchDiscreteCustomEvent,
 };
 export type { ComponentPropsWithoutRef, PrimitivePropsWithRef };

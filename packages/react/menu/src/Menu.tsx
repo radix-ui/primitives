@@ -8,7 +8,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
@@ -720,9 +720,9 @@ const MenuItem = React.forwardRef<MenuItemElement, MenuItemProps>(
     const handleSelect = () => {
       const menuItem = ref.current;
       if (!disabled && menuItem) {
-        const itemSelectEvent = new Event(ITEM_SELECT, { bubbles: true, cancelable: true });
+        const itemSelectEvent = new CustomEvent(ITEM_SELECT, { bubbles: true, cancelable: true });
         menuItem.addEventListener(ITEM_SELECT, (event) => onSelect?.(event), { once: true });
-        menuItem.dispatchEvent(itemSelectEvent);
+        dispatchDiscreteCustomEvent(menuItem, itemSelectEvent);
         if (itemSelectEvent.defaultPrevented) {
           isPointerDownRef.current = false;
         } else {

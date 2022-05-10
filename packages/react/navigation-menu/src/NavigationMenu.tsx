@@ -4,7 +4,7 @@ import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useDirection } from '@radix-ui/react-direction';
@@ -509,17 +509,20 @@ const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, Navigatio
           onClick={composeEventHandlers(
             props.onClick,
             (event) => {
-              const target = event.target;
-              const linkSelectEvent = new Event(LINK_SELECT, { bubbles: true, cancelable: true });
+              const target = event.target as HTMLElement;
+              const linkSelectEvent = new CustomEvent(LINK_SELECT, {
+                bubbles: true,
+                cancelable: true,
+              });
               target.addEventListener(LINK_SELECT, (event) => onSelect?.(event), { once: true });
-              target.dispatchEvent(linkSelectEvent);
+              dispatchDiscreteCustomEvent(target, linkSelectEvent);
 
               if (!linkSelectEvent.defaultPrevented) {
-                const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
+                const rootContentDismissEvent = new CustomEvent(ROOT_CONTENT_DISMISS, {
                   bubbles: true,
                   cancelable: true,
                 });
-                target.dispatchEvent(rootContentDismissEvent);
+                dispatchDiscreteCustomEvent(target, rootContentDismissEvent);
               }
             },
             { checkForDefaultPrevented: false }
