@@ -3040,8 +3040,6 @@ __metadata:
   resolution: "@radix-ui/primitive@workspace:packages/core/primitive"
   dependencies:
     "@babel/runtime": ^7.13.10
-  peerDependencies:
-    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3053,6 +3051,7 @@ __metadata:
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3114,6 +3113,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3125,6 +3125,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3193,6 +3194,7 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3369,6 +3371,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3504,6 +3507,7 @@ __metadata:
     "@testing-library/react": ^10.4.8
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3516,6 +3520,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3620,6 +3625,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 
@@ -3883,6 +3889,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
   languageName: unknown
   linkType: soft
 

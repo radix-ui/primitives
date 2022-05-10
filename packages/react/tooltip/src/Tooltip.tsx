@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers, dispatchDiscreteCustomEvent } from '@radix-ui/primitive';
+import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -8,7 +8,7 @@ import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { Slottable } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';

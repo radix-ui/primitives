@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { composeEventHandlers, dispatchDiscreteCustomEvent } from '@radix-ui/primitive';
-import { Primitive } from '@radix-ui/react-primitive';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';

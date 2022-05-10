@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
-import { composeEventHandlers, dispatchDiscreteCustomEvent } from '@radix-ui/primitive';
+import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';

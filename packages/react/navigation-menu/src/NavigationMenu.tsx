@@ -3,8 +3,8 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { createContextScope } from '@radix-ui/react-context';
-import { composeEventHandlers, dispatchDiscreteCustomEvent } from '@radix-ui/primitive';
-import { Primitive } from '@radix-ui/react-primitive';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useDirection } from '@radix-ui/react-direction';
