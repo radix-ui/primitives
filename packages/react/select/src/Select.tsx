@@ -338,7 +338,7 @@ type SelectContentContextValue = {
   onItemSeen?: (node: SelectItemElement | null, value: string, disabled: boolean) => void;
   selectedItem?: SelectItemElement | null;
   onItemLeave?: () => void;
-  onItemTextSeen?: (node: SelectItemTextElement | null, value: string) => void;
+  onItemTextSeen?: (node: SelectItemTextElement | null, value: string, disabled: boolean) => void;
   selectedItemText?: SelectItemTextElement | null;
   onScrollButtonChange?: (node: SelectScrollButtonImplElement | null) => void;
   isPositioned?: boolean;
@@ -638,9 +638,12 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     );
     const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
     const handleItemTextSeen = React.useCallback(
-      (node: SelectItemTextElement | null, value: string) => {
-        const isSelectedItemText = context.value !== undefined && context.value === value;
-        if (isSelectedItemText || !firstValidItemFoundRef?.current) setSelectedItemText(node);
+      (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
+        const isFirstSeenValidItem = !firstValidItemFoundRef.current && !disabled;
+        const isSelectedItem = context.value !== undefined && context.value === value;
+        if (isSelectedItem || isFirstSeenValidItem) {
+          setSelectedItemText(node);
+        }
       },
       [context.value]
     );
@@ -877,6 +880,7 @@ const ITEM_NAME = 'SelectItem';
 
 type SelectItemContextValue = {
   value: string;
+  disabled: boolean;
   textId: string;
   isSelected: boolean;
   onItemTextChange(node: SelectItemTextElement | null): void;
@@ -922,6 +926,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
       <SelectItemContextProvider
         scope={__scopeSelect}
         value={value}
+        disabled={disabled}
         textId={textId}
         isSelected={isSelected}
         onItemTextChange={React.useCallback((node) => {
@@ -996,7 +1001,7 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
     const ref = React.useRef<SelectItemTextElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, itemContext.onItemTextChange, (node) =>
-      contentContext.onItemTextSeen?.(node, itemContext.value)
+      contentContext.onItemTextSeen?.(node, itemContext.value, itemContext.disabled)
     );
 
     return (
