@@ -93,7 +93,7 @@ const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChi
  * target.dispatchEvent(new Event(‘click’))
  *
  * dispatching a custom type within a non-discrete event 👎
- * onScroll={(event) => dispatchDiscreteCustomEvent(event.target, new CustomEvent(‘customType’))}
+ * onScroll={(event) => event.target.dispatchEvent(new CustomEvent(‘customType’))}
  *
  * dispatching a custom type within a `discrete` event 👍
  * onPointerDown={(event) => dispatchDiscreteCustomEvent(event.target, new CustomEvent(‘customType’))}
