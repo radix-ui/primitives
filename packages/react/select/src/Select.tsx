@@ -380,7 +380,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const [isPositioned, setIsPositioned] = React.useState(false);
     const shouldRepositionRef = React.useRef(true);
     const shouldExpandOnScrollRef = React.useRef(false);
-    const firstItemRef = React.useRef(false);
+    const firstValidItemFoundRef = React.useRef(false);
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
@@ -627,11 +627,11 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     const handleItemSeen = React.useCallback(
       (node: SelectItemElement | null, value: string, disabled: boolean) => {
-        const isFirstSeenValidItem = !firstItemRef.current && !disabled;
+        const isFirstSeenValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
         if (isSelectedItem || isFirstSeenValidItem) {
           setSelectedItem(node);
-          if (isFirstSeenValidItem) firstItemRef.current = true;
+          if (isFirstSeenValidItem) firstValidItemFoundRef.current = true;
         }
       },
       [context.value]
@@ -640,7 +640,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const handleItemTextSeen = React.useCallback(
       (node: SelectItemTextElement | null, value: string) => {
         const isSelectedItemText = context.value !== undefined && context.value === value;
-        if (isSelectedItemText || !firstItemRef?.current) setSelectedItemText(node);
+        if (isSelectedItemText || !firstValidItemFoundRef?.current) setSelectedItemText(node);
       },
       [context.value]
     );
