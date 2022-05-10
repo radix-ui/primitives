@@ -150,7 +150,7 @@ export const Position = () => (
   </div>
 );
 
-export const NoDefault = () => (
+export const NoDefaultValue = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
     <Label>
       Choose a number:
@@ -506,7 +506,7 @@ export const ChromaticBottomLastPaddedViewport = () => (
 );
 ChromaticBottomLastPaddedViewport.parameters = { chromatic: { disable: false } };
 
-export const ChromaticNoDefault = () => (
+export const ChromaticNoDefaultValue = () => (
   <div
     style={{
       display: 'grid',
@@ -536,6 +536,7 @@ export const ChromaticNoDefault = () => (
     </Select.Root>
   </div>
 );
+ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
 type PaddedElement = 'content' | 'viewport';
 

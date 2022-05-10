@@ -53,7 +53,7 @@ type SelectContextValue = {
   valueNodeHasChildren: boolean;
   onValueNodeHasChildrenChange(hasChildren: boolean): void;
   contentId: string;
-  value: string | undefined;
+  value?: string;
   onValueChange(value: string): void;
   open: boolean;
   onOpenChange(open: boolean): void;
