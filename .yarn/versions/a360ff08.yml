@@ -40,4 +40,3 @@ releases:
 
 declined:
   - primitives
-  - "@radix-ui/primitive"
