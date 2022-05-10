@@ -631,11 +631,11 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     const itemRefCallback = React.useCallback(
       (node: SelectItemElement | null, value: string, disabled: boolean) => {
-        const isFirstSeenValidItem = !firstValidItemFoundRef.current && !disabled;
+        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
-        if (isSelectedItem || isFirstSeenValidItem) {
+        if (isSelectedItem || isFirstValidItem) {
           setSelectedItem(node);
-          if (isFirstSeenValidItem) firstValidItemFoundRef.current = true;
+          if (isFirstValidItem) firstValidItemFoundRef.current = true;
         }
       },
       [context.value]
@@ -643,9 +643,9 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
     const itemTextRefCallback = React.useCallback(
       (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
-        const isFirstSeenValidItem = !firstValidItemFoundRef.current && !disabled;
+        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
-        if (isSelectedItem || isFirstSeenValidItem) {
+        if (isSelectedItem || isFirstValidItem) {
           setSelectedItemText(node);
         }
       },
