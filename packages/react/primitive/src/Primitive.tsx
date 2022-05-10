@@ -85,15 +85,17 @@ const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChi
  * dispatched by another `discrete` event.
  *
  * In order to ensure that updates from custom events are applied predictably, we need to manually flush the batch.
- * This utility should be used when dispatching a custom event from within another `discrete` event, for example:
+ * This utility should be used when dispatching a custom event from within another `discrete` event, this utility
+ * is not nessesary when dispatching known event types, or if dispatching a custom type inside a non-discrete event.
+ * For example:
  *
- * dispatching a click event:
+ * dispatching a known click 👎
  * target.dispatchEvent(new Event(‘click’))
  *
- * dispatching a custom event type:
- * target.dispatchEvent(new CustomEvent(‘customType’))
+ * dispatching a custom type within a non-discrete event 👎
+ * onScroll={(event) => dispatchDiscreteCustomEvent(event.target, new CustomEvent(‘customType’))}
  *
- * dispatching a custom event type from another `discrete` event
+ * dispatching a custom type within a `discrete` event 👍
  * onPointerDown={(event) => dispatchDiscreteCustomEvent(event.target, new CustomEvent(‘customType’))}
  */
 
