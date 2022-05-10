@@ -118,7 +118,7 @@ export const Position = () => (
   >
     <Label>
       Choose an item:
-      <Select.Root>
+      <Select.Root defaultValue="item-25">
         <Select.Trigger className={triggerClass()}>
           <Select.Value />
           <Select.Icon />
@@ -133,7 +133,7 @@ export const Position = () => (
                   key={value}
                   className={itemClass()}
                   value={value}
-                  disabled={i >= 0 && i < 9}
+                  disabled={i > 5 && i < 9}
                 >
                   <Select.ItemText>item {i + 1}</Select.ItemText>
                   <Select.ItemIndicator className={indicatorClass()}>
