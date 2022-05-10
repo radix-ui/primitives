@@ -197,8 +197,10 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         aria-autocomplete="none"
         aria-labelledby={labelledBy}
         dir={context.dir}
+        data-state={context.open ? 'open' : 'closed'}
         disabled={disabled}
         data-disabled={disabled ? '' : undefined}
+        data-placeholder={context.value === undefined ? '' : undefined}
         {...triggerProps}
         ref={composedRefs}
         onPointerDown={composeEventHandlers(triggerProps.onPointerDown, (event) => {
@@ -271,6 +273,30 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
 );
 
 SelectValue.displayName = VALUE_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * SelectPlaceholder
+ * -----------------------------------------------------------------------------------------------*/
+
+const PLACEHOLDER_NAME = 'SelectPlaceholder';
+
+interface SelectPlaceholderProps {
+  children?: React.ReactNode;
+}
+
+const SelectPlaceholder: React.FC<SelectPlaceholderProps> = (
+  props: ScopedProps<SelectPlaceholderProps>
+) => {
+  const { __scopeSelect, children } = props;
+  const context = useSelectContext(PLACEHOLDER_NAME, __scopeSelect);
+
+  /* Portal the placeholder into the trigger value node when there is no value */
+  return context.value === undefined && context.valueNode && !context.valueNodeHasChildren
+    ? ReactDOM.createPortal(children, context.valueNode)
+    : null;
+};
+
+SelectPlaceholder.displayName = PLACEHOLDER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SelectIcon
@@ -1341,6 +1367,7 @@ function wrapArray<T>(array: T[], startIndex: number) {
 const Root = Select;
 const Trigger = SelectTrigger;
 const Value = SelectValue;
+const Placeholder = SelectPlaceholder;
 const Icon = SelectIcon;
 const Content = SelectContent;
 const Viewport = SelectViewport;
@@ -1359,6 +1386,7 @@ export {
   Select,
   SelectTrigger,
   SelectValue,
+  SelectPlaceholder,
   SelectIcon,
   SelectContent,
   SelectViewport,
@@ -1374,6 +1402,7 @@ export {
   Root,
   Trigger,
   Value,
+  Placeholder,
   Icon,
   Content,
   Viewport,
@@ -1390,6 +1419,7 @@ export type {
   SelectProps,
   SelectTriggerProps,
   SelectValueProps,
+  SelectPlaceholderProps,
   SelectIconProps,
   SelectContentProps,
   SelectViewportProps,

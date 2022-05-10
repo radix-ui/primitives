@@ -157,6 +157,7 @@ export const NoDefaultValue = () => (
       <Select.Root>
         <Select.Trigger className={triggerClass()}>
           <Select.Value />
+          <Select.Placeholder>Pick an option</Select.Placeholder>
           <Select.Icon />
         </Select.Trigger>
         <Select.Content className={contentClass()}>
@@ -517,6 +518,7 @@ export const ChromaticNoDefaultValue = () => (
     <Select.Root open>
       <Select.Trigger className={triggerClass()}>
         <Select.Value />
+        <Select.Placeholder>Pick an option</Select.Placeholder>
         <Select.Icon />
       </Select.Trigger>
       <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
