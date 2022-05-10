@@ -335,10 +335,14 @@ type SelectContentContextValue = {
   content?: SelectContentElement | null;
   viewport?: SelectViewportElement | null;
   onViewportChange?: (node: SelectViewportElement | null) => void;
-  onItemSeen?: (node: SelectItemElement | null, value: string, disabled: boolean) => void;
+  itemRefCallback?: (node: SelectItemElement | null, value: string, disabled: boolean) => void;
   selectedItem?: SelectItemElement | null;
   onItemLeave?: () => void;
-  onItemTextSeen?: (node: SelectItemTextElement | null, value: string, disabled: boolean) => void;
+  itemTextRefCallback?: (
+    node: SelectItemTextElement | null,
+    value: string,
+    disabled: boolean
+  ) => void;
   selectedItemText?: SelectItemTextElement | null;
   onScrollButtonChange?: (node: SelectScrollButtonImplElement | null) => void;
   isPositioned?: boolean;
@@ -625,7 +629,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       }
     });
 
-    const handleItemSeen = React.useCallback(
+    const itemRefCallback = React.useCallback(
       (node: SelectItemElement | null, value: string, disabled: boolean) => {
         const isFirstSeenValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
@@ -637,7 +641,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       [context.value]
     );
     const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
-    const handleItemTextSeen = React.useCallback(
+    const itemTextRefCallback = React.useCallback(
       (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
         const isFirstSeenValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
@@ -655,10 +659,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         content={content}
         viewport={viewport}
         onViewportChange={setViewport}
-        onItemSeen={handleItemSeen}
+        itemRefCallback={itemRefCallback}
         selectedItem={selectedItem}
         onItemLeave={handleItemLeave}
-        onItemTextSeen={handleItemTextSeen}
+        itemTextRefCallback={itemTextRefCallback}
         selectedItemText={selectedItemText}
         onScrollButtonChange={handleScrollButtonChange}
         isPositioned={isPositioned}
@@ -911,7 +915,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
     const composedRefs = useComposedRefs(forwardedRef, (node) =>
-      contentContext.onItemSeen?.(node, value, disabled)
+      contentContext.itemRefCallback?.(node, value, disabled)
     );
     const textId = useId();
 
@@ -1001,7 +1005,7 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
     const ref = React.useRef<SelectItemTextElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, itemContext.onItemTextChange, (node) =>
-      contentContext.onItemTextSeen?.(node, itemContext.value, itemContext.disabled)
+      contentContext.itemTextRefCallback?.(node, itemContext.value, itemContext.disabled)
     );
 
     return (
