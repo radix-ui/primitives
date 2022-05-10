@@ -150,6 +150,42 @@ export const Position = () => (
   </div>
 );
 
+export const NoDefaultValue = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+    <Label>
+      Choose a number:
+      <Select.Root>
+        <Select.Trigger className={triggerClass()}>
+          <Select.Value />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Content className={contentClass()}>
+          <Select.Viewport className={viewportClass()}>
+            <Select.Item className={itemClass()} value="one" disabled>
+              <Select.ItemText>One</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+            <Select.Item className={itemClass()} value="two">
+              <Select.ItemText>Two</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+            <Select.Item className={itemClass()} value="three">
+              <Select.ItemText>Three</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Root>
+    </Label>
+  </div>
+);
+
 export const Typeahead = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300vh' }}>
     <Label>
@@ -469,6 +505,38 @@ export const ChromaticBottomLastPaddedViewport = () => (
   <ChromaticStoryBottomLast paddedElement="viewport" />
 );
 ChromaticBottomLastPaddedViewport.parameters = { chromatic: { disable: false } };
+
+export const ChromaticNoDefaultValue = () => (
+  <div
+    style={{
+      display: 'grid',
+      height: '100vh',
+      placeItems: 'center',
+    }}
+  >
+    <Select.Root open>
+      <Select.Trigger className={triggerClass()}>
+        <Select.Value />
+        <Select.Icon />
+      </Select.Trigger>
+      <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
+        <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+        <Select.Viewport className={viewportClass()}>
+          {Array.from({ length: 10 }, (_, i) => (
+            <Select.Item key={i} className={itemClass()} value={String(i)} disabled={i < 5}>
+              <Select.ItemText>{String(i)}</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+          ))}
+        </Select.Viewport>
+        <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+      </Select.Content>
+    </Select.Root>
+  </div>
+);
+ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
 type PaddedElement = 'content' | 'viewport';
 

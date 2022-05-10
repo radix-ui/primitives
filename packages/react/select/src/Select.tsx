@@ -53,7 +53,7 @@ type SelectContextValue = {
   valueNodeHasChildren: boolean;
   onValueNodeHasChildrenChange(hasChildren: boolean): void;
   contentId: string;
-  value: string;
+  value?: string;
   onValueChange(value: string): void;
   open: boolean;
   onOpenChange(open: boolean): void;
@@ -100,7 +100,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const [value = '', setValue] = useControllableState({
+  const [value, setValue] = useControllableState({
     prop: valueProp,
     defaultProp: defaultValue,
     onChange: onValueChange,
@@ -317,7 +317,6 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
       <SelectContentImpl {...props} ref={forwardedRef} />
     ) : fragment ? (
       ReactDOM.createPortal(
-        // @ts-ignore: This is to avoid the "SelectViewport must be inside "SelectContent" error
         <SelectContentContextProvider scope={props.__scopeSelect}>
           <Collection.Slot scope={props.__scopeSelect}>
             <div>{props.children}</div>
@@ -332,19 +331,23 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
 const CONTENT_MARGIN = 10;
 
 type SelectContentContextValue = {
-  contentWrapper: HTMLDivElement | null;
-  content: SelectContentElement | null;
-  viewport: SelectViewportElement | null;
-  onViewportChange(node: SelectViewportElement | null): void;
-  selectedItem: SelectItemElement | null;
-  onSelectedItemChange(node: SelectItemElement | null): void;
-  selectedItemText: SelectItemTextElement | null;
-  onSelectedItemTextChange(node: SelectItemTextElement | null): void;
-  onScrollButtonChange(node: SelectScrollButtonImplElement | null): void;
-  onItemLeave(): void;
-  isPositioned: boolean;
-  shouldExpandOnScrollRef: React.RefObject<boolean>;
-  searchRef: React.RefObject<string>;
+  contentWrapper?: HTMLDivElement | null;
+  content?: SelectContentElement | null;
+  viewport?: SelectViewportElement | null;
+  onViewportChange?: (node: SelectViewportElement | null) => void;
+  itemRefCallback?: (node: SelectItemElement | null, value: string, disabled: boolean) => void;
+  selectedItem?: SelectItemElement | null;
+  onItemLeave?: () => void;
+  itemTextRefCallback?: (
+    node: SelectItemTextElement | null,
+    value: string,
+    disabled: boolean
+  ) => void;
+  selectedItemText?: SelectItemTextElement | null;
+  onScrollButtonChange?: (node: SelectScrollButtonImplElement | null) => void;
+  isPositioned?: boolean;
+  shouldExpandOnScrollRef?: React.RefObject<boolean>;
+  searchRef?: React.RefObject<string>;
 };
 
 const [SelectContentContextProvider, useSelectContentContext] =
@@ -381,6 +384,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const [isPositioned, setIsPositioned] = React.useState(false);
     const shouldRepositionRef = React.useRef(true);
     const shouldExpandOnScrollRef = React.useRef(false);
+    const firstValidItemFoundRef = React.useRef(false);
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
@@ -553,7 +557,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     // trigger => selectedItem alignment off by the amount the viewport was pushed down.
     // We wait for this to happen and then re-run the positining logic one more time to account for it.
     const handleScrollButtonChange = React.useCallback(
-      (node: SelectScrollButtonImplElement) => {
+      (node: SelectScrollButtonImplElement | null) => {
         if (node && shouldRepositionRef.current === true) {
           position();
           focusSelectedItem();
@@ -625,7 +629,28 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       }
     });
 
+    const itemRefCallback = React.useCallback(
+      (node: SelectItemElement | null, value: string, disabled: boolean) => {
+        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
+        const isSelectedItem = context.value !== undefined && context.value === value;
+        if (isSelectedItem || isFirstValidItem) {
+          setSelectedItem(node);
+          if (isFirstValidItem) firstValidItemFoundRef.current = true;
+        }
+      },
+      [context.value]
+    );
     const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
+    const itemTextRefCallback = React.useCallback(
+      (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
+        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
+        const isSelectedItem = context.value !== undefined && context.value === value;
+        if (isSelectedItem || isFirstValidItem) {
+          setSelectedItemText(node);
+        }
+      },
+      [context.value]
+    );
 
     return (
       <SelectContentContextProvider
@@ -634,12 +659,12 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         content={content}
         viewport={viewport}
         onViewportChange={setViewport}
+        itemRefCallback={itemRefCallback}
         selectedItem={selectedItem}
-        onSelectedItemChange={setSelectedItem}
-        selectedItemText={selectedItemText}
-        onSelectedItemTextChange={setSelectedItemText}
-        onScrollButtonChange={handleScrollButtonChange}
         onItemLeave={handleItemLeave}
+        itemTextRefCallback={itemTextRefCallback}
+        selectedItemText={selectedItemText}
+        onScrollButtonChange={handleScrollButtonChange}
         isPositioned={isPositioned}
         shouldExpandOnScrollRef={shouldExpandOnScrollRef}
         searchRef={searchRef}
@@ -771,7 +796,7 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
             onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
               const viewport = event.currentTarget;
               const { contentWrapper, shouldExpandOnScrollRef } = contentContext;
-              if (shouldExpandOnScrollRef.current && contentWrapper) {
+              if (shouldExpandOnScrollRef?.current && contentWrapper) {
                 const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
                 if (scrolledBy > 0) {
                   const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
@@ -859,6 +884,7 @@ const ITEM_NAME = 'SelectItem';
 
 type SelectItemContextValue = {
   value: string;
+  disabled: boolean;
   textId: string;
   isSelected: boolean;
   onItemTextChange(node: SelectItemTextElement | null): void;
@@ -888,9 +914,8 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const isSelected = context.value === value;
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
-    const composedRefs = useComposedRefs(
-      forwardedRef,
-      isSelected ? contentContext.onSelectedItemChange : undefined
+    const composedRefs = useComposedRefs(forwardedRef, (node) =>
+      contentContext.itemRefCallback?.(node, value, disabled)
     );
     const textId = useId();
 
@@ -905,6 +930,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
       <SelectItemContextProvider
         scope={__scopeSelect}
         value={value}
+        disabled={disabled}
         textId={textId}
         isSelected={isSelected}
         onItemTextChange={React.useCallback((node) => {
@@ -933,7 +959,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             onPointerUp={composeEventHandlers(itemProps.onPointerUp, handleSelect)}
             onPointerMove={composeEventHandlers(itemProps.onPointerMove, (event) => {
               if (disabled) {
-                contentContext.onItemLeave();
+                contentContext.onItemLeave?.();
               } else {
                 // even though safari doesn't support this option, it's acceptable
                 // as it only means it might scroll a few pixels when using the pointer.
@@ -942,11 +968,11 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             })}
             onPointerLeave={composeEventHandlers(itemProps.onPointerLeave, (event) => {
               if (event.currentTarget === document.activeElement) {
-                contentContext.onItemLeave();
+                contentContext.onItemLeave?.();
               }
             })}
             onKeyDown={composeEventHandlers(itemProps.onKeyDown, (event) => {
-              const isTypingAhead = contentContext.searchRef.current !== '';
+              const isTypingAhead = contentContext.searchRef?.current !== '';
               if (isTypingAhead && event.key === ' ') return;
               if (SELECTION_KEYS.includes(event.key)) handleSelect();
               // prevent page scroll if using the space key to select an item
@@ -978,11 +1004,8 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
     const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
     const ref = React.useRef<SelectItemTextElement | null>(null);
-    const composedRefs = useComposedRefs(
-      forwardedRef,
-      ref,
-      itemContext.onItemTextChange,
-      itemContext.isSelected ? contentContext.onSelectedItemTextChange : undefined
+    const composedRefs = useComposedRefs(forwardedRef, ref, itemContext.onItemTextChange, (node) =>
+      contentContext.itemTextRefCallback?.(node, itemContext.value, itemContext.disabled)
     );
 
     return (
@@ -1166,7 +1189,7 @@ const SelectScrollButtonImpl = React.forwardRef<
       ref={forwardedRef}
       style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
       onPointerMove={composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
-        contentContext.onItemLeave();
+        contentContext.onItemLeave?.();
         if (autoScrollTimerRef.current === null) {
           autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
         }
