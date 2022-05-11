@@ -197,8 +197,10 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         aria-autocomplete="none"
         aria-labelledby={labelledBy}
         dir={context.dir}
+        data-state={context.open ? 'open' : 'closed'}
         disabled={disabled}
         data-disabled={disabled ? '' : undefined}
+        data-placeholder={context.value === undefined ? '' : undefined}
         {...triggerProps}
         ref={composedRefs}
         onPointerDown={composeEventHandlers(triggerProps.onPointerDown, (event) => {
@@ -243,18 +245,20 @@ const VALUE_NAME = 'SelectValue';
 
 type SelectValueElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
-interface SelectValueProps extends PrimitiveSpanProps {}
+interface SelectValueProps extends Omit<PrimitiveSpanProps, 'placeholder'> {
+  placeholder?: React.ReactNode;
+}
 
 const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
   (props: ScopedProps<SelectValueProps>, forwardedRef) => {
     // We ignore `className` and `style` as this part shouldn't be styled.
-    const { __scopeSelect, className, style, ...valueProps } = props;
+    const { __scopeSelect, className, style, children, placeholder, ...valueProps } = props;
     const context = useSelectContext(VALUE_NAME, __scopeSelect);
     const { onValueNodeHasChildrenChange } = context;
-    const hasChildren = props.children !== undefined;
+    const hasChildren = children !== undefined;
     const composedRefs = useComposedRefs(forwardedRef, context.onValueNodeChange);
 
-    React.useEffect(() => {
+    useLayoutEffect(() => {
       onValueNodeHasChildrenChange(hasChildren);
     }, [onValueNodeHasChildrenChange, hasChildren]);
 
@@ -265,7 +269,9 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
         // we don't want events from the portalled `SelectValue` children to bubble
         // through the item they came from
         style={{ pointerEvents: 'none' }}
-      />
+      >
+        {context.value === undefined && placeholder !== undefined ? placeholder : children}
+      </Primitive.span>
     );
   }
 );

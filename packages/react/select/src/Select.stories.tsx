@@ -156,7 +156,7 @@ export const NoDefaultValue = () => (
       Choose a number:
       <Select.Root>
         <Select.Trigger className={triggerClass()}>
-          <Select.Value />
+          <Select.Value placeholder="Pick an option" />
           <Select.Icon />
         </Select.Trigger>
         <Select.Content className={contentClass()}>
@@ -512,11 +512,33 @@ export const ChromaticNoDefaultValue = () => (
       display: 'grid',
       height: '100vh',
       placeItems: 'center',
+      gridTemplateColumns: 'repeat(2, 1fr)',
     }}
   >
     <Select.Root open>
       <Select.Trigger className={triggerClass()}>
         <Select.Value />
+        <Select.Icon />
+      </Select.Trigger>
+      <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
+        <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+        <Select.Viewport className={viewportClass()}>
+          {Array.from({ length: 10 }, (_, i) => (
+            <Select.Item key={i} className={itemClass()} value={String(i)} disabled={i < 5}>
+              <Select.ItemText>{String(i)}</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+          ))}
+        </Select.Viewport>
+        <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+      </Select.Content>
+    </Select.Root>
+
+    <Select.Root open>
+      <Select.Trigger className={triggerClass()}>
+        <Select.Value placeholder="Pick an option" />
         <Select.Icon />
       </Select.Trigger>
       <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
