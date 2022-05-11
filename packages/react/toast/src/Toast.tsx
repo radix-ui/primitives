@@ -161,7 +161,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           context.isClosePausedRef.current = true;
         };
 
-        const handleResumeEvent = ({ discrete }: { discrete: boolean }) => {
+        const dispatchResumeEvent = ({ discrete }: { discrete: boolean }) => {
           const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
 
           if (discrete) {
@@ -173,11 +173,11 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           context.isClosePausedRef.current = false;
         };
 
-        const handleResume = () => handleResumeEvent({ discrete: true });
+        const handleResume = () => dispatchResumeEvent({ discrete: true });
         // `focusout` is a special case as it can be unexpectedly triggered
         // during lifecycle due to browser behaviour when nodes are removed,
         // As such, we avoid dispatching as `discrete` to prevent flushing during render.
-        const handleFocusOutResume = () => handleResumeEvent({ discrete: false });
+        const handleFocusOutResume = () => dispatchResumeEvent({ discrete: false });
 
         // Toasts are not in the viewport React tree so we need to bind DOM events
         wrapper.addEventListener('focusin', handlePause);
