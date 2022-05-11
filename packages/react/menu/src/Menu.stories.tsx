@@ -442,9 +442,9 @@ const labelClass = css({
 
 const itemClass = css({
   ...itemStyles,
+  outline: 'none',
 
-  '&:focus': {
-    outline: 'none',
+  '&[data-active]': {
     backgroundColor: '$black',
     color: 'white',
   },
@@ -455,7 +455,7 @@ const itemClass = css({
 });
 
 const subTriggerClass = css(itemClass, {
-  '&:not(:focus)[data-state="open"]': {
+  '&:not([data-active])[data-state="open"]': {
     backgroundColor: '$gray100',
     color: '$black',
   },
