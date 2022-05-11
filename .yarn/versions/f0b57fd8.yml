@@ -11,4 +11,5 @@ releases:
   "@radix-ui/react-tooltip": patch
 
 declined:
+  - primitives
   - "@radix-ui/react-primitive"
