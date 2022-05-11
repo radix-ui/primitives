@@ -756,9 +756,9 @@ const labelClass = css({
 const itemClass = css({
   ...itemStyles,
   position: 'relative',
+  outline: 'none',
 
-  '&:focus': {
-    outline: 'none',
+  '&[data-highlighted]': {
     backgroundColor: '$black',
     color: 'white',
   },

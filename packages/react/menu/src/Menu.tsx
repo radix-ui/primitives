@@ -913,6 +913,7 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenu);
     const ref = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
+    const [isFocused, setIsFocused] = React.useState(false);
 
     // get the item's `.textContent` as default strategy for typeahead `textValue`
     const [textContent, setTextContent] = React.useState('');
@@ -932,6 +933,7 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
         <RovingFocusGroup.Item asChild {...rovingFocusGroupScope} focusable={!disabled}>
           <Primitive.div
             role="menuitem"
+            data-highlighted={isFocused ? '' : undefined}
             aria-disabled={disabled || undefined}
             data-disabled={disabled ? '' : undefined}
             {...itemProps}
@@ -965,6 +967,8 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
               props.onPointerLeave,
               whenMouse((event) => contentContext.onItemLeave(event))
             )}
+            onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
+            onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
           />
         </RovingFocusGroup.Item>
       </Collection.ItemSlot>
