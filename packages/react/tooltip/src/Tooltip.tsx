@@ -8,7 +8,7 @@ import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
+import { Primitive } from '@radix-ui/react-primitive';
 import { Slottable } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
@@ -158,7 +158,10 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
       if (open) {
         // we dispatch here so `TooltipProvider` isn't required to
         // ensure other tooltips are aware of this one opening.
-        dispatchDiscreteCustomEvent(document, new CustomEvent(TOOLTIP_OPEN));
+        //
+        // as `onChange` is called within a lifecycle method we
+        // avoid dispatching via `dispatchDiscreteCustomEvent`.
+        document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
         onOpen();
       }
       onOpenChange?.(open);

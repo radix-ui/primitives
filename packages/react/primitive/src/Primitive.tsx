@@ -97,6 +97,9 @@ const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChi
  *
  * dispatching a custom type within a `discrete` event 👍
  * onPointerDown={(event) => dispatchDiscreteCustomEvent(event.target, new CustomEvent(‘customType’))}
+ *
+ * Note: care should be taken with the `focusout` event as it's possible for handlers to be called
+ * implicitly during lifecycle, e.g. when focus is within the component as it is unmounted.
  */
 
 function dispatchDiscreteCustomEvent<E extends CustomEvent>(target: E['target'], event: E) {

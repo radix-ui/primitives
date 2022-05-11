@@ -160,21 +160,35 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           dispatchDiscreteCustomEvent(viewport, pauseEvent);
           context.isClosePausedRef.current = true;
         };
-        const handleResume = () => {
+
+        const handleResumeEvent = ({ discrete }: { discrete: boolean }) => {
           const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
-          dispatchDiscreteCustomEvent(viewport, resumeEvent);
+
+          if (discrete) {
+            dispatchDiscreteCustomEvent(viewport, resumeEvent);
+          } else {
+            viewport.dispatchEvent(resumeEvent);
+          }
+
           context.isClosePausedRef.current = false;
         };
+
+        const handleResume = () => handleResumeEvent({ discrete: true });
+        // `focusout` is a special case as it can be unexpectedly triggered
+        // during lifecycle due to browser behaviour when nodes are removed,
+        // As such, we avoid dispatching as `discrete` to prevent flushing during render.
+        const handleFocusOutResume = () => handleResumeEvent({ discrete: false });
+
         // Toasts are not in the viewport React tree so we need to bind DOM events
         wrapper.addEventListener('focusin', handlePause);
-        wrapper.addEventListener('focusout', handleResume);
+        wrapper.addEventListener('focusout', handleFocusOutResume);
         wrapper.addEventListener('pointerenter', handlePause);
         wrapper.addEventListener('pointerleave', handleResume);
         window.addEventListener('blur', handlePause);
         window.addEventListener('focus', handleResume);
         return () => {
           wrapper.removeEventListener('focusin', handlePause);
-          wrapper.removeEventListener('focusout', handleResume);
+          wrapper.removeEventListener('focusout', handleFocusOutResume);
           wrapper.removeEventListener('pointerenter', handlePause);
           wrapper.removeEventListener('pointerleave', handleResume);
           window.removeEventListener('blur', handlePause);
@@ -471,18 +485,14 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                   const eventDetail = { originalEvent: event, delta };
                   if (hasSwipeMoveStarted) {
                     swipeDeltaRef.current = delta;
-                    handleAndDispatchDiscreteCustomEvent(
-                      TOAST_SWIPE_MOVE,
-                      onSwipeMove,
-                      eventDetail
-                    );
+                    dispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
+                      discrete: false,
+                    });
                   } else if (isDeltaInDirection(delta, context.swipeDirection, moveStartBuffer)) {
                     swipeDeltaRef.current = delta;
-                    handleAndDispatchDiscreteCustomEvent(
-                      TOAST_SWIPE_START,
-                      onSwipeStart,
-                      eventDetail
-                    );
+                    dispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
+                      discrete: false,
+                    });
                     (event.target as HTMLElement).setPointerCapture(event.pointerId);
                   } else if (Math.abs(x) > moveStartBuffer || Math.abs(y) > moveStartBuffer) {
                     // User is swiping in wrong direction so we disable swipe gesture
@@ -499,17 +509,13 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                     const toast = event.currentTarget;
                     const eventDetail = { originalEvent: event, delta };
                     if (isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)) {
-                      handleAndDispatchDiscreteCustomEvent(
-                        TOAST_SWIPE_END,
-                        onSwipeEnd,
-                        eventDetail
-                      );
+                      dispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
+                        discrete: true,
+                      });
                     } else {
-                      handleAndDispatchDiscreteCustomEvent(
-                        TOAST_SWIPE_CANCEL,
-                        onSwipeCancel,
-                        eventDetail
-                      );
+                      dispatchCustomEvent(TOAST_SWIPE_CANCEL, onSwipeCancel, eventDetail, {
+                        discrete: true,
+                      });
                     }
                     // Prevent click event from triggering on items within the toast when
                     // pointer up is part of a swipe gesture
@@ -680,18 +686,21 @@ ToastClose.displayName = CLOSE_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function handleAndDispatchDiscreteCustomEvent<
-  E extends CustomEvent,
-  ReactEvent extends React.SyntheticEvent
->(
+function dispatchCustomEvent<E extends CustomEvent, ReactEvent extends React.SyntheticEvent>(
   name: string,
   handler: ((event: E) => void) | undefined,
-  detail: { originalEvent: ReactEvent } & (E extends CustomEvent<infer D> ? D : never)
+  detail: { originalEvent: ReactEvent } & (E extends CustomEvent<infer D> ? D : never),
+  { discrete }: { discrete: boolean }
 ) {
   const currentTarget = detail.originalEvent.currentTarget as HTMLElement;
   const event = new CustomEvent(name, { bubbles: true, cancelable: true, detail });
   if (handler) currentTarget.addEventListener(name, handler as EventListener, { once: true });
-  dispatchDiscreteCustomEvent(currentTarget, event);
+
+  if (discrete) {
+    dispatchDiscreteCustomEvent(currentTarget, event);
+  } else {
+    currentTarget.dispatchEvent(event);
+  }
 }
 
 const isDeltaInDirection = (
