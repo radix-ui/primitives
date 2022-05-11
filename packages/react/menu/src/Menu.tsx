@@ -933,7 +933,7 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
         <RovingFocusGroup.Item asChild {...rovingFocusGroupScope} focusable={!disabled}>
           <Primitive.div
             role="menuitem"
-            data-active={isFocused ? '' : undefined}
+            data-highlighted={isFocused ? '' : undefined}
             aria-disabled={disabled || undefined}
             data-disabled={disabled ? '' : undefined}
             {...itemProps}

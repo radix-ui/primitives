@@ -758,7 +758,7 @@ const itemClass = css({
   position: 'relative',
   outline: 'none',
 
-  '&[data-active]': {
+  '&[data-highlighted]': {
     backgroundColor: '$black',
     color: 'white',
   },
