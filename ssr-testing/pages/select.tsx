@@ -31,8 +31,7 @@ export default function SelectPage() {
 
       <Select.Root>
         <Select.Trigger>
-          <Select.Value />
-          <Select.Placeholder>Pick an option</Select.Placeholder>
+          <Select.Value placeholder="Pick an option" />
           <Select.Icon>▼</Select.Icon>
         </Select.Trigger>
         <Select.Content>

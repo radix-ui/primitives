@@ -245,18 +245,20 @@ const VALUE_NAME = 'SelectValue';
 
 type SelectValueElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
-interface SelectValueProps extends PrimitiveSpanProps {}
+interface SelectValueProps extends Omit<PrimitiveSpanProps, 'placeholder'> {
+  placeholder?: React.ReactNode;
+}
 
 const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
   (props: ScopedProps<SelectValueProps>, forwardedRef) => {
     // We ignore `className` and `style` as this part shouldn't be styled.
-    const { __scopeSelect, className, style, ...valueProps } = props;
+    const { __scopeSelect, className, style, children, placeholder, ...valueProps } = props;
     const context = useSelectContext(VALUE_NAME, __scopeSelect);
     const { onValueNodeHasChildrenChange } = context;
-    const hasChildren = props.children !== undefined;
+    const hasChildren = children !== undefined;
     const composedRefs = useComposedRefs(forwardedRef, context.onValueNodeChange);
 
-    React.useEffect(() => {
+    useLayoutEffect(() => {
       onValueNodeHasChildrenChange(hasChildren);
     }, [onValueNodeHasChildrenChange, hasChildren]);
 
@@ -267,36 +269,14 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
         // we don't want events from the portalled `SelectValue` children to bubble
         // through the item they came from
         style={{ pointerEvents: 'none' }}
-      />
+      >
+        {context.value === undefined && placeholder !== undefined ? placeholder : children}
+      </Primitive.span>
     );
   }
 );
 
 SelectValue.displayName = VALUE_NAME;
-
-/* -------------------------------------------------------------------------------------------------
- * SelectPlaceholder
- * -----------------------------------------------------------------------------------------------*/
-
-const PLACEHOLDER_NAME = 'SelectPlaceholder';
-
-interface SelectPlaceholderProps {
-  children?: React.ReactNode;
-}
-
-const SelectPlaceholder: React.FC<SelectPlaceholderProps> = (
-  props: ScopedProps<SelectPlaceholderProps>
-) => {
-  const { __scopeSelect, children } = props;
-  const context = useSelectContext(PLACEHOLDER_NAME, __scopeSelect);
-
-  /* Portal the placeholder into the trigger value node when there is no value */
-  return context.value === undefined && context.valueNode && !context.valueNodeHasChildren
-    ? ReactDOM.createPortal(children, context.valueNode)
-    : null;
-};
-
-SelectPlaceholder.displayName = PLACEHOLDER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SelectIcon
@@ -1367,7 +1347,6 @@ function wrapArray<T>(array: T[], startIndex: number) {
 const Root = Select;
 const Trigger = SelectTrigger;
 const Value = SelectValue;
-const Placeholder = SelectPlaceholder;
 const Icon = SelectIcon;
 const Content = SelectContent;
 const Viewport = SelectViewport;
@@ -1386,7 +1365,6 @@ export {
   Select,
   SelectTrigger,
   SelectValue,
-  SelectPlaceholder,
   SelectIcon,
   SelectContent,
   SelectViewport,
@@ -1402,7 +1380,6 @@ export {
   Root,
   Trigger,
   Value,
-  Placeholder,
   Icon,
   Content,
   Viewport,
@@ -1419,7 +1396,6 @@ export type {
   SelectProps,
   SelectTriggerProps,
   SelectValueProps,
-  SelectPlaceholderProps,
   SelectIconProps,
   SelectContentProps,
   SelectViewportProps,
