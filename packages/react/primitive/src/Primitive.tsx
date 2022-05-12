@@ -79,6 +79,8 @@ const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChi
  *  - continuous
  *  - default
  *
+ * https://github.com/facebook/react/blob/a8a4742f1c54493df00da648a3f9d26e3db9c8b5/packages/react-dom/src/events/ReactDOMEventListener.js#L294-L350
+ *
  * `discrete` is an  important distinction as updates within these events are applied immediately.
  * React however, is not able to infer the priority of custom event types due to how they are detected internally.
  * Because of this, it's possible for updates from custom events to be unexpectedly batched when
@@ -97,6 +99,10 @@ const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChi
  *
  * dispatching a custom type within a `discrete` event 👍
  * onPointerDown={(event) => dispatchDiscreteCustomEvent(event.target, new CustomEvent(‘customType’))}
+ *
+ * Note: though React classifies `focus`, `focusin` and `focusout` events as `discrete`, it's  not recommended to use
+ * this utility with them. This is because it's possible for those handlers to be called implicitly during render
+ * e.g. when focus is within a component as it is unmounted, or when managing focus on mount.
  */
 
 function dispatchDiscreteCustomEvent<E extends CustomEvent>(target: E['target'], event: E) {

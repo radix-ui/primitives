@@ -211,11 +211,9 @@ function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutside
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target && !isPointerInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
-        handleAndDispatchDiscreteCustomEvent(
-          POINTER_DOWN_OUTSIDE,
-          handlePointerDownOutside,
-          eventDetail
-        );
+        handleAndDispatchCustomEvent(POINTER_DOWN_OUTSIDE, handlePointerDownOutside, eventDetail, {
+          discrete: true,
+        });
       }
       isPointerInsideReactTreeRef.current = false;
     };
@@ -259,7 +257,9 @@ function useFocusOutside(onFocusOutside?: (event: FocusOutsideEvent) => void) {
     const handleFocus = (event: FocusEvent) => {
       if (event.target && !isFocusInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
-        handleAndDispatchDiscreteCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail);
+        handleAndDispatchCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail, {
+          discrete: false,
+        });
       }
     };
     document.addEventListener('focusin', handleFocus);
@@ -277,15 +277,21 @@ function dispatchUpdate() {
   document.dispatchEvent(event);
 }
 
-function handleAndDispatchDiscreteCustomEvent<E extends CustomEvent, OriginalEvent extends Event>(
+function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent extends Event>(
   name: string,
   handler: ((event: E) => void) | undefined,
-  detail: { originalEvent: OriginalEvent } & (E extends CustomEvent<infer D> ? D : never)
+  detail: { originalEvent: OriginalEvent } & (E extends CustomEvent<infer D> ? D : never),
+  { discrete }: { discrete: boolean }
 ) {
   const target = detail.originalEvent.target;
   const event = new CustomEvent(name, { bubbles: false, cancelable: true, detail });
   if (handler) target.addEventListener(name, handler as EventListener, { once: true });
-  dispatchDiscreteCustomEvent(target, event);
+
+  if (discrete) {
+    dispatchDiscreteCustomEvent(target, event);
+  } else {
+    target.dispatchEvent(event);
+  }
 }
 
 const Root = DismissableLayer;
