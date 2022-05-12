@@ -734,7 +734,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
  * ScrollAreaThumb
  * -----------------------------------------------------------------------------------------------*/
 
-const THUMB_NAME = 'ScrollbarThumb';
+const THUMB_NAME = 'ScrollAreaThumb';
 
 type ScrollAreaThumbElement = React.ElementRef<typeof Primitive.div>;
 interface ScrollAreaThumbProps extends PrimitiveDivProps {
