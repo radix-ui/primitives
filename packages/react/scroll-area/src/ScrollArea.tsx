@@ -789,6 +789,7 @@ const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumb
     return (
       <Presence present={forceMount || scrollbarContext.hasThumb}>
         <Primitive.div
+          data-state={scrollbarContext.hasThumb ? 'visible' : 'hidden'}
           {...thumbProps}
           ref={composedRef}
           style={{

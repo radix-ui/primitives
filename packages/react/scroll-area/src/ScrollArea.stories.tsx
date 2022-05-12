@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DirectionProvider } from '@radix-ui/react-direction';
-import { css } from '../../../../stitches.config';
+import { css, keyframes } from '../../../../stitches.config';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 
 export default { title: 'Components/ScrollArea' };
@@ -87,6 +87,18 @@ export const ContentChange = () => {
       <ScrollAreaStory type="always" style={{ width: 800, height: 800 }}>
         {Array.from({ length: verticalCount }).map((_, index) => (
           <Copy key={index} style={{ width: 300 * horizontalCount + 'px' }} />
+        ))}
+      </ScrollAreaStory>
+    </>
+  );
+};
+
+export const Animated = () => {
+  return (
+    <>
+      <ScrollAreaStory scrollAreaClassName={animatedThumbClass} style={{ width: 800, height: 800 }}>
+        {Array.from({ length: 30 }).map((_, index) => (
+          <Copy key={index} />
         ))}
       </ScrollAreaStory>
     </>
@@ -364,12 +376,12 @@ const ScrollAreaStory = ({ children, vertical = true, horizontal = true, ...prop
     <ScrollArea.Viewport className={scrollAreaViewportClass()}>{children}</ScrollArea.Viewport>
     {vertical && (
       <ScrollArea.Scrollbar className={scrollbarClass()} orientation="vertical">
-        <ScrollArea.Thumb className={thumbClass()} />
+        <ScrollArea.Thumb className={animatedThumbClass()} />
       </ScrollArea.Scrollbar>
     )}
     {horizontal && (
       <ScrollArea.Scrollbar className={scrollbarClass()} orientation="horizontal">
-        <ScrollArea.Thumb className={thumbClass()} />
+        <ScrollArea.Thumb className={animatedThumbClass()} />
       </ScrollArea.Scrollbar>
     )}
     <ScrollArea.Corner className={cornerClass()} />
@@ -478,5 +490,24 @@ const cornerClass = css({
     width: SCROLLBAR_SIZE,
     height: SCROLLBAR_SIZE,
     borderRadius: SCROLLBAR_SIZE,
+  },
+});
+
+const fadeIn = keyframes({
+  from: { transform: 'scale(0.2)', opacity: 0 },
+  to: { transform: 'scale(1)', opacity: 1 },
+});
+
+const fadeOut = keyframes({
+  from: { transform: 'scale(1)', opacity: 1 },
+  to: { transform: 'scale(0.2)', opacity: 0 },
+});
+
+const animatedThumbClass = css(thumbClass, {
+  '&[data-state="visible"]': {
+    animation: `${fadeIn} 300ms ease`,
+  },
+  '&[data-state="hidden"]': {
+    animation: `${fadeOut} 300ms ease`,
   },
 });
