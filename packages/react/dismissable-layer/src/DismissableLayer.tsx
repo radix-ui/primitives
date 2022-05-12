@@ -211,7 +211,7 @@ function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutside
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target && !isPointerInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
-        handeAndDispatchCustomEvent(POINTER_DOWN_OUTSIDE, handlePointerDownOutside, eventDetail, {
+        handleAndDispatchCustomEvent(POINTER_DOWN_OUTSIDE, handlePointerDownOutside, eventDetail, {
           discrete: true,
         });
       }
@@ -257,7 +257,7 @@ function useFocusOutside(onFocusOutside?: (event: FocusOutsideEvent) => void) {
     const handleFocus = (event: FocusEvent) => {
       if (event.target && !isFocusInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
-        handeAndDispatchCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail, {
+        handleAndDispatchCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail, {
           discrete: false,
         });
       }
@@ -277,7 +277,7 @@ function dispatchUpdate() {
   document.dispatchEvent(event);
 }
 
-function handeAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent extends Event>(
+function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent extends Event>(
   name: string,
   handler: ((event: E) => void) | undefined,
   detail: { originalEvent: OriginalEvent } & (E extends CustomEvent<infer D> ? D : never),

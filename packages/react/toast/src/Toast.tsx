@@ -473,12 +473,12 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                   const eventDetail = { originalEvent: event, delta };
                   if (hasSwipeMoveStarted) {
                     swipeDeltaRef.current = delta;
-                    handeAndDispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
+                    handleAndDispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
                       discrete: false,
                     });
                   } else if (isDeltaInDirection(delta, context.swipeDirection, moveStartBuffer)) {
                     swipeDeltaRef.current = delta;
-                    handeAndDispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
+                    handleAndDispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
                       discrete: false,
                     });
                     (event.target as HTMLElement).setPointerCapture(event.pointerId);
@@ -497,11 +497,11 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                     const toast = event.currentTarget;
                     const eventDetail = { originalEvent: event, delta };
                     if (isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)) {
-                      handeAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
+                      handleAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
                         discrete: true,
                       });
                     } else {
-                      handeAndDispatchCustomEvent(TOAST_SWIPE_CANCEL, onSwipeCancel, eventDetail, {
+                      handleAndDispatchCustomEvent(TOAST_SWIPE_CANCEL, onSwipeCancel, eventDetail, {
                         discrete: true,
                       });
                     }
@@ -674,7 +674,7 @@ ToastClose.displayName = CLOSE_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function handeAndDispatchCustomEvent<
+function handleAndDispatchCustomEvent<
   E extends CustomEvent,
   ReactEvent extends React.SyntheticEvent
 >(
