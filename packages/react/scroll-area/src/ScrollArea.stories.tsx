@@ -95,13 +95,11 @@ export const ContentChange = () => {
 
 export const Animated = () => {
   return (
-    <>
-      <ScrollAreaStory scrollAreaClassName={animatedThumbClass} style={{ width: 800, height: 800 }}>
-        {Array.from({ length: 30 }).map((_, index) => (
-          <Copy key={index} />
-        ))}
-      </ScrollAreaStory>
-    </>
+    <ScrollAreaStory scrollAreaClassName={animatedThumbClass} style={{ width: 800, height: 800 }}>
+      {Array.from({ length: 30 }).map((_, index) => (
+        <Copy key={index} />
+      ))}
+    </ScrollAreaStory>
   );
 };
 
