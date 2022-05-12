@@ -95,7 +95,7 @@ export const ContentChange = () => {
 
 export const Animated = () => {
   return (
-    <ScrollAreaStory style={{ width: 800, height: 800 }}>
+    <ScrollAreaStory animated style={{ width: 800, height: 800 }}>
       {Array.from({ length: 30 }).map((_, index) => (
         <Copy key={index} />
       ))}
@@ -365,7 +365,13 @@ ChromaticDynamicContentAfterLoaded.parameters = {
   chromatic: { disable: false, delay: DYNAMIC_CONTENT_DELAY },
 };
 
-const ScrollAreaStory = ({ children, vertical = true, horizontal = true, ...props }: any) => (
+const ScrollAreaStory = ({
+  children,
+  animated = false,
+  vertical = true,
+  horizontal = true,
+  ...props
+}: any) => (
   <ScrollArea.Root
     {...props}
     className={scrollAreaClass()}
@@ -374,12 +380,12 @@ const ScrollAreaStory = ({ children, vertical = true, horizontal = true, ...prop
     <ScrollArea.Viewport className={scrollAreaViewportClass()}>{children}</ScrollArea.Viewport>
     {vertical && (
       <ScrollArea.Scrollbar className={scrollbarClass()} orientation="vertical">
-        <ScrollArea.Thumb className={animatedThumbClass()} />
+        <ScrollArea.Thumb className={animated ? animatedThumbClass() : thumbClass()} />
       </ScrollArea.Scrollbar>
     )}
     {horizontal && (
       <ScrollArea.Scrollbar className={scrollbarClass()} orientation="horizontal">
-        <ScrollArea.Thumb className={animatedThumbClass()} />
+        <ScrollArea.Thumb className={animated ? animatedThumbClass() : thumbClass()} />
       </ScrollArea.Scrollbar>
     )}
     <ScrollArea.Corner className={cornerClass()} />
