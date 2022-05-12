@@ -159,10 +159,6 @@ const RovingFocusGroupImpl = React.forwardRef<
 
           if (event.target === event.currentTarget && isKeyboardFocus && !isTabbingBackOut) {
             const entryFocusEvent = new CustomEvent(ENTRY_FOCUS, EVENT_OPTIONS);
-
-            // we avoid dispatching via `dispatchDiscreteCustomEvent` as it's possible
-            // for focus to be triggered during lifecycle, this is most common when
-            // focus is triggered by `FocusScope` and the `onMountAutoFocus` prop
             event.currentTarget.dispatchEvent(entryFocusEvent);
 
             if (!entryFocusEvent.defaultPrevented) {

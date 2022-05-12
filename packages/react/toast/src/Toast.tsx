@@ -157,38 +157,26 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       if (wrapper && viewport) {
         const handlePause = () => {
           const pauseEvent = new CustomEvent(VIEWPORT_PAUSE);
-          dispatchDiscreteCustomEvent(viewport, pauseEvent);
+          viewport.dispatchEvent(pauseEvent);
           context.isClosePausedRef.current = true;
         };
 
-        const dispatchResumeEvent = ({ discrete }: { discrete: boolean }) => {
+        const handleResume = () => {
           const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
-
-          if (discrete) {
-            dispatchDiscreteCustomEvent(viewport, resumeEvent);
-          } else {
-            viewport.dispatchEvent(resumeEvent);
-          }
-
+          viewport.dispatchEvent(resumeEvent);
           context.isClosePausedRef.current = false;
         };
 
-        const handleResume = () => dispatchResumeEvent({ discrete: true });
-        // `focusout` is a special case as it can be unexpectedly triggered
-        // during lifecycle due to browser behaviour when nodes are removed,
-        // As such, we avoid dispatching as `discrete` to prevent flushing during render.
-        const handleFocusOutResume = () => dispatchResumeEvent({ discrete: false });
-
         // Toasts are not in the viewport React tree so we need to bind DOM events
         wrapper.addEventListener('focusin', handlePause);
-        wrapper.addEventListener('focusout', handleFocusOutResume);
+        wrapper.addEventListener('focusout', handleResume);
         wrapper.addEventListener('pointerenter', handlePause);
         wrapper.addEventListener('pointerleave', handleResume);
         window.addEventListener('blur', handlePause);
         window.addEventListener('focus', handleResume);
         return () => {
           wrapper.removeEventListener('focusin', handlePause);
-          wrapper.removeEventListener('focusout', handleFocusOutResume);
+          wrapper.removeEventListener('focusout', handleResume);
           wrapper.removeEventListener('pointerenter', handlePause);
           wrapper.removeEventListener('pointerleave', handleResume);
           window.removeEventListener('blur', handlePause);
@@ -485,12 +473,12 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                   const eventDetail = { originalEvent: event, delta };
                   if (hasSwipeMoveStarted) {
                     swipeDeltaRef.current = delta;
-                    dispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
+                    handeAndDispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
                       discrete: false,
                     });
                   } else if (isDeltaInDirection(delta, context.swipeDirection, moveStartBuffer)) {
                     swipeDeltaRef.current = delta;
-                    dispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
+                    handeAndDispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
                       discrete: false,
                     });
                     (event.target as HTMLElement).setPointerCapture(event.pointerId);
@@ -509,11 +497,11 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                     const toast = event.currentTarget;
                     const eventDetail = { originalEvent: event, delta };
                     if (isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)) {
-                      dispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
+                      handeAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
                         discrete: true,
                       });
                     } else {
-                      dispatchCustomEvent(TOAST_SWIPE_CANCEL, onSwipeCancel, eventDetail, {
+                      handeAndDispatchCustomEvent(TOAST_SWIPE_CANCEL, onSwipeCancel, eventDetail, {
                         discrete: true,
                       });
                     }
@@ -686,7 +674,10 @@ ToastClose.displayName = CLOSE_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function dispatchCustomEvent<E extends CustomEvent, ReactEvent extends React.SyntheticEvent>(
+function handeAndDispatchCustomEvent<
+  E extends CustomEvent,
+  ReactEvent extends React.SyntheticEvent
+>(
   name: string,
   handler: ((event: E) => void) | undefined,
   detail: { originalEvent: ReactEvent } & (E extends CustomEvent<infer D> ? D : never),
