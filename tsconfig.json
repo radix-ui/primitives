@@ -50,7 +50,6 @@
       "@radix-ui/react-toggle-group": ["./packages/react/toggle-group/src"],
       "@radix-ui/react-toolbar": ["./packages/react/toolbar/src"],
       "@radix-ui/react-tooltip": ["./packages/react/tooltip/src"],
-      "@radix-ui/react-use-body-pointer-events": ["./packages/react/use-body-pointer-events/src"],
       "@radix-ui/react-use-callback-ref": ["./packages/react/use-callback-ref/src"],
       "@radix-ui/react-use-controllable-state": ["./packages/react/use-controllable-state/src"],
       "@radix-ui/react-use-escape-keydown": ["./packages/react/use-escape-keydown/src"],
