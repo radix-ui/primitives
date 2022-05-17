@@ -82,12 +82,6 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     const isBodyPointerEventsDisabled = context.layersWithOutsidePointerEventsDisabled.size > 0;
     const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
 
-    const resetBodyPointerEvents = React.useCallback(() => {
-      if (!disableOutsidePointerEvents) return;
-      if (context.layersWithOutsidePointerEventsDisabled.size > 1) return;
-      document.body.style.pointerEvents = originalBodyPointerEvents;
-    }, [disableOutsidePointerEvents, context]);
-
     const pointerDownOutside = usePointerDownOutside((event) => {
       const target = event.target as HTMLElement;
       const isPointerDownOnBranch = [...context.branches].some((branch) => branch.contains(target));
@@ -125,9 +119,14 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       context.layers.add(node);
       dispatchUpdate();
       return () => {
-        resetBodyPointerEvents();
+        if (
+          disableOutsidePointerEvents &&
+          context.layersWithOutsidePointerEventsDisabled.size === 1
+        ) {
+          document.body.style.pointerEvents = originalBodyPointerEvents;
+        }
       };
-    }, [node, disableOutsidePointerEvents, resetBodyPointerEvents, context]);
+    }, [node, disableOutsidePointerEvents, context]);
 
     /**
      * We purposefully prevent combining this effect with the `disableOutsidePointerEvents` effect
