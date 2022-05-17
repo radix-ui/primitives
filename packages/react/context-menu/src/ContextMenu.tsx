@@ -25,20 +25,14 @@ const [createContextMenuContext, createContextMenuScope] = createContextScope(CO
 ]);
 const useMenuScope = createMenuScope();
 
-type ContextMenuRootContextValue = {
-  isRootMenu: true;
+type ContextMenuContextValue = {
   open: boolean;
   onOpenChange(open: boolean): void;
   modal: boolean;
 };
 
-type ContextMenuSubContextValue = {
-  isRootMenu: false;
-};
-
-const [ContextMenuProvider, useContextMenuContext] = createContextMenuContext<
-  ContextMenuRootContextValue | ContextMenuSubContextValue
->(CONTEXT_MENU_NAME);
+const [ContextMenuProvider, useContextMenuContext] =
+  createContextMenuContext<ContextMenuContextValue>(CONTEXT_MENU_NAME);
 
 interface ContextMenuProps {
   children?: React.ReactNode;
@@ -64,7 +58,6 @@ const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuP
   return (
     <ContextMenuProvider
       scope={__scopeContextMenu}
-      isRootMenu={true}
       open={open}
       onOpenChange={handleOpenChange}
       modal={modal}
@@ -83,39 +76,6 @@ const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuP
 };
 
 ContextMenu.displayName = CONTEXT_MENU_NAME;
-
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuSub
- * -----------------------------------------------------------------------------------------------*/
-
-const SUB_NAME = 'ContextMenuSub';
-
-interface ContextMenuSubProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
-}
-
-const ContextMenuSub: React.FC<ContextMenuSubProps> = (props: ScopedProps<ContextMenuSubProps>) => {
-  const { __scopeContextMenu, children, onOpenChange, open: openProp, defaultOpen } = props;
-  const menuScope = useMenuScope(__scopeContextMenu);
-  const [open, setOpen] = useControllableState({
-    prop: openProp,
-    defaultProp: defaultOpen,
-    onChange: onOpenChange,
-  });
-
-  return (
-    <ContextMenuProvider scope={__scopeContextMenu} isRootMenu={false}>
-      <MenuPrimitive.Sub {...menuScope} open={open} onOpenChange={setOpen}>
-        {children}
-      </MenuPrimitive.Sub>
-    </ContextMenuProvider>
-  );
-};
-
-ContextMenuSub.displayName = SUB_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuTrigger
@@ -141,13 +101,14 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
       () => window.clearTimeout(longPressTimerRef.current),
       []
     );
-    const handleOpenPointUpdate = (event: React.MouseEvent | React.PointerEvent) => {
+    const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
       pointRef.current = { x: event.clientX, y: event.clientY };
+      context.onOpenChange(true);
     };
 
     React.useEffect(() => clearLongPress, [clearLongPress]);
 
-    return context.isRootMenu ? (
+    return (
       <>
         <MenuPrimitive.Anchor {...menuScope} virtualRef={virtualRef} />
         <Primitive.span
@@ -159,8 +120,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
             // clearing the long press here because some platforms already support
             // long press to trigger a `contextmenu` event
             clearLongPress();
-            handleOpenPointUpdate(event);
-            context.onOpenChange(true);
+            handleOpen(event);
             event.preventDefault();
           })}
           onPointerDown={composeEventHandlers(
@@ -169,8 +129,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
               // clear the long press here in case there's multiple touch points
               clearLongPress();
               longPressTimerRef.current = window.setTimeout(() => {
-                handleOpenPointUpdate(event);
-                context.onOpenChange(true);
+                handleOpen(event);
               }, 700);
             })
           )}
@@ -182,32 +141,11 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
           onPointerUp={composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))}
         />
       </>
-    ) : null;
+    );
   }
 );
 
 ContextMenuTrigger.displayName = TRIGGER_NAME;
-
-/* -------------------------------------------------------------------------------------------------
- * ContextMenuSubTrigger
- * -----------------------------------------------------------------------------------------------*/
-
-const SUB_TRIGGER_NAME = 'ContextMenuSubTrigger';
-
-type ContextMenuSubTriggerElement = React.ElementRef<typeof MenuPrimitive.SubTrigger>;
-type MenuSubTriggerProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
-interface ContextMenuSubTriggerProps extends MenuSubTriggerProps {}
-
-const ContextMenuSubTrigger = React.forwardRef<
-  ContextMenuSubTriggerElement,
-  ContextMenuSubTriggerProps
->((props: ScopedProps<ContextMenuSubTriggerProps>, forwardedRef) => {
-  const { __scopeContextMenu, ...triggerItemProps } = props;
-  const menuScope = useMenuScope(__scopeContextMenu);
-  return <MenuPrimitive.SubTrigger {...menuScope} {...triggerItemProps} ref={forwardedRef} />;
-});
-
-ContextMenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuContent
@@ -224,71 +162,43 @@ const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMe
     const { __scopeContextMenu, ...contentProps } = props;
     const context = useContextMenuContext(CONTENT_NAME, __scopeContextMenu);
     const menuScope = useMenuScope(__scopeContextMenu);
+    const hasInteractedOutsideRef = React.useRef(false);
 
-    const commonProps = {
-      ...contentProps,
-      style: {
-        ...props.style,
-        // re-namespace exposed content custom property
-        ['--radix-context-menu-content-transform-origin' as any]:
-          'var(--radix-popper-transform-origin)',
-      },
-    };
-
-    return context.isRootMenu ? (
-      <ContextMenuRootContent
-        __scopeContextMenu={__scopeContextMenu}
-        {...commonProps}
+    return (
+      <MenuPrimitive.Content
+        {...menuScope}
+        {...contentProps}
         ref={forwardedRef}
+        portalled
+        side="right"
+        sideOffset={2}
+        align="start"
+        onCloseAutoFocus={(event) => {
+          props.onCloseAutoFocus?.(event);
+
+          if (!event.defaultPrevented && hasInteractedOutsideRef.current) {
+            event.preventDefault();
+          }
+
+          hasInteractedOutsideRef.current = false;
+        }}
+        onInteractOutside={(event) => {
+          props.onInteractOutside?.(event);
+
+          if (!event.defaultPrevented && !context.modal) hasInteractedOutsideRef.current = true;
+        }}
+        style={{
+          ...props.style,
+          // re-namespace exposed content custom property
+          ['--radix-context-menu-content-transform-origin' as any]:
+            'var(--radix-popper-transform-origin)',
+        }}
       />
-    ) : (
-      <MenuPrimitive.Content {...menuScope} {...commonProps} ref={forwardedRef} />
     );
   }
 );
 
 ContextMenuContent.displayName = CONTENT_NAME;
-
-/* ---------------------------------------------------------------------------------------------- */
-
-type ContextMenuRootContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-interface ContextMenuRootContentProps extends ScopedProps<MenuContentProps> {}
-
-const ContextMenuRootContent = React.forwardRef<
-  ContextMenuRootContentElement,
-  ContextMenuRootContentProps
->((props, forwardedRef) => {
-  const { __scopeContextMenu, ...contentProps } = props;
-  const context = useContextMenuContext(CONTENT_NAME, __scopeContextMenu);
-  const menuScope = useMenuScope(__scopeContextMenu);
-  const hasInteractedOutsideRef = React.useRef(false);
-
-  return context.isRootMenu ? (
-    <MenuPrimitive.Content
-      {...menuScope}
-      {...contentProps}
-      ref={forwardedRef}
-      portalled
-      side="right"
-      sideOffset={2}
-      align="start"
-      onCloseAutoFocus={(event) => {
-        props.onCloseAutoFocus?.(event);
-
-        if (!event.defaultPrevented && hasInteractedOutsideRef.current) {
-          event.preventDefault();
-        }
-
-        hasInteractedOutsideRef.current = false;
-      }}
-      onInteractOutside={(event) => {
-        props.onInteractOutside?.(event);
-
-        if (!event.defaultPrevented && !context.modal) hasInteractedOutsideRef.current = true;
-      }}
-    />
-  ) : null;
-});
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuGroup
@@ -475,6 +385,92 @@ const ContextMenuArrow = React.forwardRef<ContextMenuArrowElement, ContextMenuAr
 
 ContextMenuArrow.displayName = ARROW_NAME;
 
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuSub
+ * -----------------------------------------------------------------------------------------------*/
+
+const SUB_NAME = 'ContextMenuSub';
+
+interface ContextMenuSubProps {
+  children?: React.ReactNode;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?(open: boolean): void;
+}
+
+const ContextMenuSub: React.FC<ContextMenuSubProps> = (props: ScopedProps<ContextMenuSubProps>) => {
+  const { __scopeContextMenu, children, onOpenChange, open: openProp, defaultOpen } = props;
+  const menuScope = useMenuScope(__scopeContextMenu);
+  const [open, setOpen] = useControllableState({
+    prop: openProp,
+    defaultProp: defaultOpen,
+    onChange: onOpenChange,
+  });
+
+  return (
+    <MenuPrimitive.Sub {...menuScope} open={open} onOpenChange={setOpen}>
+      {children}
+    </MenuPrimitive.Sub>
+  );
+};
+
+ContextMenuSub.displayName = SUB_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuSubTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const SUB_TRIGGER_NAME = 'ContextMenuSubTrigger';
+
+type ContextMenuSubTriggerElement = React.ElementRef<typeof MenuPrimitive.SubTrigger>;
+type MenuSubTriggerProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
+interface ContextMenuSubTriggerProps extends MenuSubTriggerProps {}
+
+const ContextMenuSubTrigger = React.forwardRef<
+  ContextMenuSubTriggerElement,
+  ContextMenuSubTriggerProps
+>((props: ScopedProps<ContextMenuSubTriggerProps>, forwardedRef) => {
+  const { __scopeContextMenu, ...triggerItemProps } = props;
+  const menuScope = useMenuScope(__scopeContextMenu);
+  return <MenuPrimitive.SubTrigger {...menuScope} {...triggerItemProps} ref={forwardedRef} />;
+});
+
+ContextMenuSubTrigger.displayName = SUB_TRIGGER_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * ContextMenuSubContent
+ * -----------------------------------------------------------------------------------------------*/
+
+const SUB_CONTENT_NAME = 'ContextMenuSubContent';
+
+type ContextMenuSubContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
+interface ContextMenuSubContentProps
+  extends Omit<MenuContentProps, 'portalled' | 'side' | 'align'> {}
+
+const ContextMenuSubContent = React.forwardRef<
+  ContextMenuSubContentElement,
+  ContextMenuSubContentProps
+>((props: ScopedProps<ContextMenuSubContentProps>, forwardedRef) => {
+  const { __scopeContextMenu, ...subContentProps } = props;
+  const menuScope = useMenuScope(__scopeContextMenu);
+
+  return (
+    <MenuPrimitive.Content
+      {...menuScope}
+      {...subContentProps}
+      ref={forwardedRef}
+      style={{
+        ...props.style,
+        // re-namespace exposed content custom property
+        ['--radix-context-menu-sub-content-transform-origin' as any]:
+          'var(--radix-popper-transform-origin)',
+      }}
+    />
+  );
+});
+
+ContextMenuSubContent.displayName = SUB_CONTENT_NAME;
+
 /* -----------------------------------------------------------------------------------------------*/
 
 function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
@@ -482,27 +478,26 @@ function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.Pointer
 }
 
 const Root = ContextMenu;
-const Sub = ContextMenuSub;
 const Trigger = ContextMenuTrigger;
 const Content = ContextMenuContent;
 const Group = ContextMenuGroup;
 const Label = ContextMenuLabel;
 const Item = ContextMenuItem;
-const SubTrigger = ContextMenuSubTrigger;
 const CheckboxItem = ContextMenuCheckboxItem;
 const RadioGroup = ContextMenuRadioGroup;
 const RadioItem = ContextMenuRadioItem;
 const ItemIndicator = ContextMenuItemIndicator;
 const Separator = ContextMenuSeparator;
 const Arrow = ContextMenuArrow;
+const Sub = ContextMenuSub;
+const SubTrigger = ContextMenuSubTrigger;
+const SubContent = ContextMenuSubContent;
 
 export {
   createContextMenuScope,
   //
   ContextMenu,
-  ContextMenuSub,
   ContextMenuTrigger,
-  ContextMenuSubTrigger,
   ContextMenuContent,
   ContextMenuGroup,
   ContextMenuLabel,
@@ -513,11 +508,12 @@ export {
   ContextMenuItemIndicator,
   ContextMenuSeparator,
   ContextMenuArrow,
+  ContextMenuSub,
+  ContextMenuSubTrigger,
+  ContextMenuSubContent,
   //
   Root,
-  Sub,
   Trigger,
-  SubTrigger,
   Content,
   Group,
   Label,
@@ -528,11 +524,13 @@ export {
   ItemIndicator,
   Separator,
   Arrow,
+  Sub,
+  SubTrigger,
+  SubContent,
 };
 export type {
   ContextMenuProps,
   ContextMenuTriggerProps,
-  ContextMenuSubTriggerProps,
   ContextMenuContentProps,
   ContextMenuGroupProps,
   ContextMenuLabelProps,
@@ -543,4 +541,7 @@ export type {
   ContextMenuItemIndicatorProps,
   ContextMenuSeparatorProps,
   ContextMenuArrowProps,
+  ContextMenuSubProps,
+  ContextMenuSubTriggerProps,
+  ContextMenuSubContentProps,
 };

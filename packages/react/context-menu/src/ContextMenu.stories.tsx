@@ -79,7 +79,7 @@ export const Modality = () => {
                 <ContextMenu.SubTrigger className={subTriggerClass()}>
                   Submenu →
                 </ContextMenu.SubTrigger>
-                <ContextMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+                <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
                   <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
                     One
                   </ContextMenu.Item>
@@ -91,7 +91,7 @@ export const Modality = () => {
                     <ContextMenu.SubTrigger className={subTriggerClass()}>
                       Submenu →
                     </ContextMenu.SubTrigger>
-                    <ContextMenu.Content
+                    <ContextMenu.SubContent
                       className={contentClass()}
                       sideOffset={12}
                       alignOffset={-6}
@@ -109,14 +109,14 @@ export const Modality = () => {
                         Three
                       </ContextMenu.Item>
                       <ContextMenu.Arrow offset={14} />
-                    </ContextMenu.Content>
+                    </ContextMenu.SubContent>
                   </ContextMenu.Sub>
                   <ContextMenu.Separator className={separatorClass()} />
                   <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
                     Three
                   </ContextMenu.Item>
                   <ContextMenu.Arrow offset={14} />
-                </ContextMenu.Content>
+                </ContextMenu.SubContent>
               </ContextMenu.Sub>
               <ContextMenu.Separator className={separatorClass()} />
               <ContextMenu.Item
@@ -158,7 +158,7 @@ export const Modality = () => {
                 <ContextMenu.SubTrigger className={subTriggerClass()}>
                   Submenu →
                 </ContextMenu.SubTrigger>
-                <ContextMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+                <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
                   <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
                     One
                   </ContextMenu.Item>
@@ -170,7 +170,7 @@ export const Modality = () => {
                     <ContextMenu.SubTrigger className={subTriggerClass()}>
                       Submenu →
                     </ContextMenu.SubTrigger>
-                    <ContextMenu.Content
+                    <ContextMenu.SubContent
                       className={contentClass()}
                       sideOffset={12}
                       alignOffset={-6}
@@ -188,14 +188,14 @@ export const Modality = () => {
                         Three
                       </ContextMenu.Item>
                       <ContextMenu.Arrow offset={14} />
-                    </ContextMenu.Content>
+                    </ContextMenu.SubContent>
                   </ContextMenu.Sub>
                   <ContextMenu.Separator className={separatorClass()} />
                   <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
                     Three
                   </ContextMenu.Item>
                   <ContextMenu.Arrow offset={14} />
-                </ContextMenu.Content>
+                </ContextMenu.SubContent>
               </ContextMenu.Sub>
               <ContextMenu.Separator className={separatorClass()} />
               <ContextMenu.Item
@@ -265,7 +265,7 @@ export const Submenus = () => {
               <ContextMenu.SubTrigger className={subTriggerClass()}>
                 Bookmarks →
               </ContextMenu.SubTrigger>
-              <ContextMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+              <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
                 <ContextMenu.Item className={itemClass()} onSelect={() => console.log('index')}>
                   Inbox
                 </ContextMenu.Item>
@@ -277,7 +277,11 @@ export const Submenus = () => {
                   <ContextMenu.SubTrigger className={subTriggerClass()}>
                     Modulz →
                   </ContextMenu.SubTrigger>
-                  <ContextMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+                  <ContextMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
+                  >
                     <ContextMenu.Item
                       className={itemClass()}
                       onSelect={() => console.log('stitches')}
@@ -294,20 +298,20 @@ export const Submenus = () => {
                       Radix
                     </ContextMenu.Item>
                     <ContextMenu.Arrow offset={14} />
-                  </ContextMenu.Content>
+                  </ContextMenu.SubContent>
                 </ContextMenu.Sub>
                 <ContextMenu.Separator className={separatorClass()} />
                 <ContextMenu.Item className={itemClass()} onSelect={() => console.log('notion')}>
                   Notion
                 </ContextMenu.Item>
                 <ContextMenu.Arrow offset={14} />
-              </ContextMenu.Content>
+              </ContextMenu.SubContent>
             </ContextMenu.Sub>
             <ContextMenu.Sub>
               <ContextMenu.SubTrigger className={subTriggerClass()} disabled>
                 History →
               </ContextMenu.SubTrigger>
-              <ContextMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+              <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
                 <ContextMenu.Item className={itemClass()} onSelect={() => console.log('github')}>
                   Github
                 </ContextMenu.Item>
@@ -321,11 +325,11 @@ export const Submenus = () => {
                   Stack Overflow
                 </ContextMenu.Item>
                 <ContextMenu.Arrow offset={14} />
-              </ContextMenu.Content>
+              </ContextMenu.SubContent>
             </ContextMenu.Sub>
             <ContextMenu.Sub>
               <ContextMenu.SubTrigger className={subTriggerClass()}>Tools →</ContextMenu.SubTrigger>
-              <ContextMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+              <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
                 <ContextMenu.Item
                   className={itemClass()}
                   onSelect={() => console.log('extensions')}
@@ -345,7 +349,7 @@ export const Submenus = () => {
                   Developer Tools
                 </ContextMenu.Item>
                 <ContextMenu.Arrow offset={14} />
-              </ContextMenu.Content>
+              </ContextMenu.SubContent>
             </ContextMenu.Sub>
             <ContextMenu.Separator className={separatorClass()} />
             <ContextMenu.Item
@@ -599,7 +603,7 @@ export const Nested = () => (
               <ContextMenu.SubTrigger className={subTriggerClass()}>
                 Submenu →
               </ContextMenu.SubTrigger>
-              <ContextMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+              <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
                 <ContextMenu.Item
                   className={itemClass()}
                   onSelect={() => console.log('red sub action 1')}
@@ -613,7 +617,7 @@ export const Nested = () => (
                   Red sub action 2
                 </ContextMenu.Item>
                 <ContextMenu.Arrow offset={14} />
-              </ContextMenu.Content>
+              </ContextMenu.SubContent>
             </ContextMenu.Sub>
           </ContextMenu.Content>
         </ContextMenu.Root>
@@ -630,7 +634,7 @@ export const Nested = () => (
         <ContextMenu.Separator className={separatorClass()} />
         <ContextMenu.Sub>
           <ContextMenu.SubTrigger className={subTriggerClass()}>Submenu →</ContextMenu.SubTrigger>
-          <ContextMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+          <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
             <ContextMenu.Item
               className={itemClass()}
               onSelect={() => console.log('blue sub action 1')}
@@ -644,7 +648,7 @@ export const Nested = () => (
               Blue sub action 2
             </ContextMenu.Item>
             <ContextMenu.Arrow offset={14} />
-          </ContextMenu.Content>
+          </ContextMenu.SubContent>
         </ContextMenu.Sub>
       </ContextMenu.Content>
     </ContextMenu.Root>
