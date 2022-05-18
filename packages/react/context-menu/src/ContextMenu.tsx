@@ -444,7 +444,8 @@ ContextMenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 const SUB_CONTENT_NAME = 'ContextMenuSubContent';
 
 type ContextMenuSubContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-interface ContextMenuSubContentProps extends MenuContentProps {}
+type MenuSubContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubContent>;
+interface ContextMenuSubContentProps extends MenuSubContentProps {}
 
 const ContextMenuSubContent = React.forwardRef<
   ContextMenuSubContentElement,
@@ -454,7 +455,7 @@ const ContextMenuSubContent = React.forwardRef<
   const menuScope = useMenuScope(__scopeContextMenu);
 
   return (
-    <MenuPrimitive.Content
+    <MenuPrimitive.SubContent
       {...menuScope}
       {...subContentProps}
       ref={forwardedRef}
