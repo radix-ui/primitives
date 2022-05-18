@@ -751,7 +751,7 @@ const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumb
     const scrollbarContext = useScrollbarContext(THUMB_NAME, props.__scopeScrollArea);
     return (
       <Presence present={forceMount || scrollbarContext.hasThumb}>
-        <ScrollAreaThumbImpl ref={forwardedRef} {...contentProps} />
+        <ScrollAreaThumbImpl ref={forwardedRef} {...thumbProps} />
       </Presence>
     );
   }
