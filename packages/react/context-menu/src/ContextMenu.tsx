@@ -444,8 +444,7 @@ ContextMenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 const SUB_CONTENT_NAME = 'ContextMenuSubContent';
 
 type ContextMenuSubContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-interface ContextMenuSubContentProps
-  extends Omit<MenuContentProps, 'portalled' | 'side' | 'align'> {}
+interface ContextMenuSubContentProps extends MenuContentProps {}
 
 const ContextMenuSubContent = React.forwardRef<
   ContextMenuSubContentElement,
