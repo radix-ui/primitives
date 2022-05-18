@@ -736,8 +736,8 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
 
 const THUMB_NAME = 'ScrollAreaThumb';
 
-type ScrollAreaThumbElement = React.ElementRef<typeof Primitive.div>;
-interface ScrollAreaThumbProps extends PrimitiveDivProps {
+type ScrollAreaThumbElement = ScrollAreaThumbImplElement;
+interface ScrollAreaThumbProps extends ScrollAreaThumbImplProps {
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -747,7 +747,22 @@ interface ScrollAreaThumbProps extends PrimitiveDivProps {
 
 const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumbProps>(
   (props: ScopedProps<ScrollAreaThumbProps>, forwardedRef) => {
-    const { __scopeScrollArea, forceMount, style, ...thumbProps } = props;
+    const { forceMount, ...thumbProps } = props;
+    const scrollbarContext = useScrollbarContext(THUMB_NAME, props.__scopeScrollArea);
+    return (
+      <Presence present={forceMount || scrollbarContext.hasThumb}>
+        <ScrollAreaThumbImpl ref={forwardedRef} {...thumbProps} />
+      </Presence>
+    );
+  }
+);
+
+type ScrollAreaThumbImplElement = React.ElementRef<typeof Primitive.div>;
+interface ScrollAreaThumbImplProps extends PrimitiveDivProps {}
+
+const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollAreaThumbImplProps>(
+  (props: ScopedProps<ScrollAreaThumbImplProps>, forwardedRef) => {
+    const { __scopeScrollArea, style, ...thumbProps } = props;
     const scrollAreaContext = useScrollAreaContext(THUMB_NAME, __scopeScrollArea);
     const scrollbarContext = useScrollbarContext(THUMB_NAME, __scopeScrollArea);
     const { onThumbPositionChange } = scrollbarContext;
@@ -787,26 +802,24 @@ const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumb
     }, [scrollAreaContext.viewport, debounceScrollEnd, onThumbPositionChange]);
 
     return (
-      <Presence present={forceMount || scrollbarContext.hasThumb}>
-        <Primitive.div
-          data-state={scrollbarContext.hasThumb ? 'visible' : 'hidden'}
-          {...thumbProps}
-          ref={composedRef}
-          style={{
-            width: 'var(--radix-scroll-area-thumb-width)',
-            height: 'var(--radix-scroll-area-thumb-height)',
-            ...style,
-          }}
-          onPointerDownCapture={composeEventHandlers(props.onPointerDownCapture, (event) => {
-            const thumb = event.target as HTMLElement;
-            const thumbRect = thumb.getBoundingClientRect();
-            const x = event.clientX - thumbRect.left;
-            const y = event.clientY - thumbRect.top;
-            scrollbarContext.onThumbPointerDown({ x, y });
-          })}
-          onPointerUp={composeEventHandlers(props.onPointerUp, scrollbarContext.onThumbPointerUp)}
-        />
-      </Presence>
+      <Primitive.div
+        data-state={scrollbarContext.hasThumb ? 'visible' : 'hidden'}
+        {...thumbProps}
+        ref={composedRef}
+        style={{
+          width: 'var(--radix-scroll-area-thumb-width)',
+          height: 'var(--radix-scroll-area-thumb-height)',
+          ...style,
+        }}
+        onPointerDownCapture={composeEventHandlers(props.onPointerDownCapture, (event) => {
+          const thumb = event.target as HTMLElement;
+          const thumbRect = thumb.getBoundingClientRect();
+          const x = event.clientX - thumbRect.left;
+          const y = event.clientY - thumbRect.top;
+          scrollbarContext.onThumbPointerDown({ x, y });
+        })}
+        onPointerUp={composeEventHandlers(props.onPointerUp, scrollbarContext.onThumbPointerUp)}
+      />
     );
   }
 );
