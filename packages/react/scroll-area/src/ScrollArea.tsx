@@ -747,8 +747,8 @@ interface ScrollAreaThumbProps extends ScrollAreaThumbImplProps {
 
 const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumbProps>(
   (props: ScopedProps<ScrollAreaThumbProps>, forwardedRef) => {
-    const { forceMount, __scopeScrollArea, ...contentProps } = props;
-    const scrollbarContext = useScrollbarContext(THUMB_NAME, __scopeScrollArea);
+    const { forceMount, ...thumbProps } = props;
+    const scrollbarContext = useScrollbarContext(THUMB_NAME, props.__scopeScrollArea);
     return (
       <Presence present={forceMount || scrollbarContext.hasThumb}>
         <ScrollAreaThumbImpl ref={forwardedRef} {...contentProps} />
