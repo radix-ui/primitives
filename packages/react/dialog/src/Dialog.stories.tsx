@@ -480,7 +480,13 @@ export const Cypress = () => {
       <Dialog.Root modal={modal}>
         <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
         <Dialog.Portal>
-          <Dialog.Content className={animated ? animatedContentClass() : contentDefaultClass()}>
+          <Dialog.Content
+            className={
+              animated
+                ? animatedContentClass({ css: { animationDuration: '50ms !important' } })
+                : contentDefaultClass()
+            }
+          >
             <Dialog.Title>title</Dialog.Title>
             <Dialog.Description>description</Dialog.Description>
             <Dialog.Close className={closeClass()}>close</Dialog.Close>
@@ -497,7 +503,7 @@ export const Cypress = () => {
           checked={modal}
           onChange={(event) => setModal(Boolean(event.target.checked))}
         />{' '}
-        modal?
+        modal
       </label>
 
       <br />
@@ -508,7 +514,7 @@ export const Cypress = () => {
           checked={animated}
           onChange={(event) => setAnimated(Boolean(event.target.checked))}
         />{' '}
-        animated?
+        animated
       </label>
 
       <br />
