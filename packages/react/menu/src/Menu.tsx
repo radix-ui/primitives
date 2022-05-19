@@ -394,6 +394,8 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
   }
 );
 
+MenuSubContent.displayName = SUB_CONTENT_NAME;
+
 /* ---------------------------------------------------------------------------------------------- */
 
 type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
