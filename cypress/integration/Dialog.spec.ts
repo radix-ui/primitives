@@ -52,39 +52,42 @@ describe('Dialog', () => {
       shouldBeClosed();
     });
 
-    it('can be used with a mouse', () => {
-      // using mouse on open/close buttons
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByText('close').should('be.focused').realClick();
-      shouldBeClosed();
-      cy.findByText('open').should('be.focused');
+    Cypress._.times(100, () => {
+      it.only('can be used with a mouse', () => {
+        // using mouse on open/close buttons
+        // cy.findByText('open').realClick();
+        // shouldBeOpen();
+        // cy.findByText('close').should('be.focused').realClick();
+        // shouldBeClosed();
+        // cy.findByText('open').should('be.focused');
 
-      // using mouse inside dialog, then on a button outside
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByText('title').realClick();
-      shouldBeOpen();
-      shouldNotAllowOutsideButtonAction('click');
-      shouldBeClosed();
+        // using mouse inside dialog, then on a button outside
+        cy.findByText('open').click();
+        // shouldBeOpen();
+        // cy.findByText('title').realClick();
+        cy.findByText('title').should('exist');
+        // shouldNotAllowOutsideButtonAction('click');
+        cy.findByText('open').realClick();
+        cy.findByText('title').should('not.exist');
 
-      // using mouse on an input outside
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByPlaceholderText('name').realClick();
-      cy.findByPlaceholderText('name').should('not.be.focused');
-      shouldBeClosed();
+        // using mouse on an input outside
+        // cy.findByText('open').realClick();
+        // shouldBeOpen();
+        // cy.findByPlaceholderText('name').realClick();
+        // cy.findByPlaceholderText('name').should('not.be.focused');
+        // shouldBeClosed();
 
-      // using mouse on an input outside an animated dialog
-      cy.findByLabelText('animated?').realClick();
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByPlaceholderText('name').realClick();
-      cy.findByPlaceholderText('name').should('not.be.focused');
-      shouldBeClosed();
+        // using mouse on an input outside an animated dialog
+        // cy.findByLabelText('animated?').realClick();
+        // cy.findByText('open').realClick();
+        // shouldBeOpen();
+        // cy.findByPlaceholderText('name').realClick();
+        // cy.findByPlaceholderText('name').should('not.be.focused');
+        // shouldBeClosed();
 
-      // finally, make sure that we have no pointer-events regression
-      shouldAllowOutsideButtonAction('click');
+        // finally, make sure that we have no pointer-events regression
+        // shouldAllowOutsideButtonAction('click');
+      });
     });
 
     it('can be used with touch', () => {
@@ -104,19 +107,19 @@ describe('Dialog', () => {
       shouldBeClosed();
 
       // using touch on an input outside
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByPlaceholderText('name').realClick();
-      cy.findByPlaceholderText('name').should('not.be.focused');
-      shouldBeClosed();
+      // cy.findByText('open').realClick();
+      // shouldBeOpen();
+      // cy.findByPlaceholderText('name').realClick();
+      // cy.findByPlaceholderText('name').should('not.be.focused');
+      // shouldBeClosed();
 
       // using touch on an input outside an animated dialog
-      cy.findByLabelText('animated?').realClick();
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByPlaceholderText('name').realClick();
-      cy.findByPlaceholderText('name').should('not.be.focused');
-      shouldBeClosed();
+      // cy.findByLabelText('animated?').realClick();
+      // cy.findByText('open').realClick();
+      // shouldBeOpen();
+      // cy.findByPlaceholderText('name').realClick();
+      // cy.findByPlaceholderText('name').should('not.be.focused');
+      // shouldBeClosed();
 
       // finally, make sure that we have no pointer-events regression
       shouldAllowOutsideButtonAction('touch');
@@ -162,19 +165,19 @@ describe('Dialog', () => {
       shouldBeClosed();
 
       // using mouse on an input outside
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByPlaceholderText('name').realClick();
-      cy.findByPlaceholderText('name').should('be.focused');
-      shouldBeClosed();
+      // cy.findByText('open').realClick();
+      // shouldBeOpen();
+      // cy.findByPlaceholderText('name').realClick();
+      // cy.findByPlaceholderText('name').should('be.focused');
+      // shouldBeClosed();
 
       // using mouse on an input outside an animated dialog
-      cy.findByLabelText('animated?').realClick();
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByPlaceholderText('name').realClick();
-      cy.findByPlaceholderText('name').should('be.focused');
-      shouldBeClosed();
+      // cy.findByLabelText('animated?').realClick();
+      // cy.findByText('open').realClick();
+      // shouldBeOpen();
+      // cy.findByPlaceholderText('name').realClick();
+      // cy.findByPlaceholderText('name').should('be.focused');
+      // shouldBeClosed();
 
       // finally, make sure that we have no pointer-events regression
       shouldAllowOutsideButtonAction('click');
@@ -197,19 +200,19 @@ describe('Dialog', () => {
       shouldBeClosed();
 
       // using touch on an input outside
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByPlaceholderText('name').realClick();
-      cy.findByPlaceholderText('name').should('be.focused');
-      shouldBeClosed();
+      // cy.findByText('open').realClick();
+      // shouldBeOpen();
+      // cy.findByPlaceholderText('name').realClick();
+      // cy.findByPlaceholderText('name').should('be.focused');
+      // shouldBeClosed();
 
       // using touch on an input outside an animated dialog
-      cy.findByLabelText('animated?').realClick();
-      cy.findByText('open').realClick();
-      shouldBeOpen();
-      cy.findByPlaceholderText('name').realClick();
-      cy.findByPlaceholderText('name').should('be.focused');
-      shouldBeClosed();
+      // cy.findByLabelText('animated?').realClick();
+      // cy.findByText('open').realClick();
+      // shouldBeOpen();
+      // cy.findByPlaceholderText('name').realClick();
+      // cy.findByPlaceholderText('name').should('be.focused');
+      // shouldBeClosed();
 
       // finally, make sure that we have no pointer-events regression
       shouldAllowOutsideButtonAction('touch');
