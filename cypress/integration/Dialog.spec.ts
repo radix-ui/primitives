@@ -98,7 +98,7 @@ describe('Dialog', () => {
       cy.findByPlaceholderText('name').should('not.be.focused');
       shouldBeClosed();
 
-      // finally, make sure that we have no pointer-events regression
+      // finally, ensure that pointer-events have been reset and interactions restored
       shouldAllowOutsideInteraction('realClick');
 
       // using touch on an input outside an animated dialog
@@ -108,7 +108,7 @@ describe('Dialog', () => {
       cy.findByPlaceholderText('name').should('not.be.focused');
       shouldBeClosed();
 
-      // finally, make sure that we have no pointer-events regression
+      // finally, ensure that pointer-events have been reset and interactions restored
       shouldAllowOutsideInteraction('realTouch');
     });
   });
@@ -181,7 +181,7 @@ describe('Dialog', () => {
       cy.findByPlaceholderText('name').should('be.focused');
       shouldBeClosed();
 
-      // finally, make sure that we have no pointer-events regression
+      // finally, ensure that pointer-events have been reset and interactions restored
       shouldAllowOutsideInteraction('realClick');
 
       // using touch on an input outside an animated dialog
@@ -191,7 +191,7 @@ describe('Dialog', () => {
       cy.findByPlaceholderText('name').should('be.focused');
       shouldBeClosed();
 
-      // finally, make sure that we have no pointer-events regression
+      // finally, ensure that pointer-events have been reset and interactions restored
       shouldAllowOutsideInteraction('realTouch');
     });
   });
