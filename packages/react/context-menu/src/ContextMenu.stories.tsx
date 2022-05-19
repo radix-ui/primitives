@@ -253,7 +253,7 @@ export const Submenus = () => {
           >
             Right Click Here
           </ContextMenu.Trigger>
-          <ContextMenu.Content className={contentClass()} sideOffset={5}>
+          <ContextMenu.Content className={contentClass()}>
             <ContextMenu.Item className={itemClass()} onSelect={() => console.log('new-tab')}>
               New Tab
             </ContextMenu.Item>
