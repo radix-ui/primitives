@@ -30,7 +30,7 @@ describe('Dialog', () => {
         } else {
           cy.findByLabelText('count up').realTouch();
         }
-        cy.findByLabelText('count up').should('not.eq', count);
+        cy.findByLabelText('count up').should('not.have.text', count);
       });
   }
 
