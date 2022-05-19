@@ -2,7 +2,6 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { useBodyPointerEvents } from '@radix-ui/react-use-body-pointer-events';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 
@@ -16,6 +15,8 @@ const DISMISSABLE_LAYER_NAME = 'DismissableLayer';
 const CONTEXT_UPDATE = 'dismissableLayer.update';
 const POINTER_DOWN_OUTSIDE = 'dismissableLayer.pointerDownOutside';
 const FOCUS_OUTSIDE = 'dismissableLayer.focusOutside';
+
+let originalBodyPointerEvents: string;
 
 const DismissableLayerContext = React.createContext({
   layers: new Set<DismissableLayerElement>(),
@@ -106,13 +107,25 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       if (!event.defaultPrevented) onDismiss?.();
     });
 
-    useBodyPointerEvents({ disabled: disableOutsidePointerEvents });
-
     React.useEffect(() => {
       if (!node) return;
-      if (disableOutsidePointerEvents) context.layersWithOutsidePointerEventsDisabled.add(node);
+      if (disableOutsidePointerEvents) {
+        if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
+          originalBodyPointerEvents = document.body.style.pointerEvents;
+          document.body.style.pointerEvents = 'none';
+        }
+        context.layersWithOutsidePointerEventsDisabled.add(node);
+      }
       context.layers.add(node);
       dispatchUpdate();
+      return () => {
+        if (
+          disableOutsidePointerEvents &&
+          context.layersWithOutsidePointerEventsDisabled.size === 1
+        ) {
+          document.body.style.pointerEvents = originalBodyPointerEvents;
+        }
+      };
     }, [node, disableOutsidePointerEvents, context]);
 
     /**
@@ -206,14 +219,41 @@ type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
 function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutsideEvent) => void) {
   const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
+  const handleClickRef = React.useRef(() => {});
 
   React.useEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target && !isPointerInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
-        handleAndDispatchCustomEvent(POINTER_DOWN_OUTSIDE, handlePointerDownOutside, eventDetail, {
-          discrete: true,
-        });
+
+        function handleAndDispatchPointerDownOutsideEvent() {
+          handleAndDispatchCustomEvent(
+            POINTER_DOWN_OUTSIDE,
+            handlePointerDownOutside,
+            eventDetail,
+            { discrete: true }
+          );
+        }
+
+        /**
+         * On touch devices, we need to wait for a click event because browsers implement
+         * a ~350ms delay between the time the user stops touching the display and when the
+         * browser executres events. We need to ensure we don't reactivate pointer-events within
+         * this timeframe otherwise the browser may execute events that should have been prevented.
+         *
+         * Additionally, this also lets us deal automatically with cancellations when a click event
+         * isn't raised because the page was considered scrolled/drag-scrolled, long-pressed, etc.
+         *
+         * This is why we also continuously remove the previous listener, because we cannot be
+         * certain that it was raised, and therefore cleaned-up.
+         */
+        if (event.pointerType === 'touch') {
+          document.removeEventListener('click', handleClickRef.current);
+          handleClickRef.current = handleAndDispatchPointerDownOutsideEvent;
+          document.addEventListener('click', handleClickRef.current, { once: true });
+        } else {
+          handleAndDispatchPointerDownOutsideEvent();
+        }
       }
       isPointerInsideReactTreeRef.current = false;
     };
@@ -236,6 +276,7 @@ function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutside
     return () => {
       window.clearTimeout(timerId);
       document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('click', handleClickRef.current);
     };
   }, [handlePointerDownOutside]);
 
