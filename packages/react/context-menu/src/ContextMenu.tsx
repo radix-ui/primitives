@@ -128,9 +128,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
             whenTouchOrPen((event) => {
               // clear the long press here in case there's multiple touch points
               clearLongPress();
-              longPressTimerRef.current = window.setTimeout(() => {
-                handleOpen(event);
-              }, 700);
+              longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
             })
           )}
           onPointerMove={composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))}

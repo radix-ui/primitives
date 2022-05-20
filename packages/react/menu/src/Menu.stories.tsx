@@ -2,6 +2,7 @@ import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
 import * as Menu from '@radix-ui/react-menu';
 import { foodGroups } from '../../../../test-data/foods';
+import { DirectionProvider } from '@radix-ui/react-direction';
 
 export default {
   title: 'Components/Menu',
@@ -45,7 +46,7 @@ export const Submenus = () => {
   }, [rtl]);
 
   return (
-    <>
+    <DirectionProvider dir={rtl ? 'rtl' : 'ltr'}>
       <div style={{ marginBottom: 8, display: 'grid', gridAutoFlow: 'row', gap: 4 }}>
         <label>
           <input
@@ -136,7 +137,7 @@ export const Submenus = () => {
           Paste
         </Menu.Item>
       </MenuWithAnchor>
-    </>
+    </DirectionProvider>
   );
 };
 
@@ -395,12 +396,12 @@ const Submenu: React.FC<MenuProps & { animated: boolean; disabled?: boolean; hea
       <Menu.SubTrigger className={subTriggerClass()} disabled={disabled}>
         {heading} →
       </Menu.SubTrigger>
-      <Menu.Content
+      <Menu.SubContent
         className={animated ? animatedContentClass() : contentClass()}
         {...contentProps}
       >
         {children}
-      </Menu.Content>
+      </Menu.SubContent>
     </Menu.Sub>
   );
 };
