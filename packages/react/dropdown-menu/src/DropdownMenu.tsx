@@ -431,7 +431,8 @@ DropdownMenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 const SUB_CONTENT_NAME = 'DropdownMenuSubContent';
 
 type DropdownMenuSubContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-interface DropdownMenuSubContentProps extends MenuContentProps {}
+type MenuSubContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubContent>;
+interface DropdownMenuSubContentProps extends MenuSubContentProps {}
 
 const DropdownMenuSubContent = React.forwardRef<
   DropdownMenuSubContentElement,
@@ -441,7 +442,7 @@ const DropdownMenuSubContent = React.forwardRef<
   const menuScope = useMenuScope(__scopeDropdownMenu);
 
   return (
-    <MenuPrimitive.Content
+    <MenuPrimitive.SubContent
       {...menuScope}
       {...subContentProps}
       ref={forwardedRef}
