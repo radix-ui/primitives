@@ -3689,7 +3689,6 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
     "@radix-ui/primitive": "workspace:*"
-    "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
@@ -3697,7 +3696,6 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
-    "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
