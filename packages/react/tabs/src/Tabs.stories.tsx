@@ -405,15 +405,14 @@ const triggerClass = css({
 
 const RECOMMENDED_CSS__TABS__CONTENT = {
   flexGrow: 1,
-  padding: '1em',
-  fontWeight: '300',
-  fontSize: '0.85em',
-  lineHeight: '1.65',
 };
 
 const contentClass = css({
   ...RECOMMENDED_CSS__TABS__CONTENT,
-
+  padding: '1em',
+  fontWeight: '300',
+  fontSize: '0.85em',
+  lineHeight: '1.65',
   '&[data-orientation="horizontal"]': { borderTop: 'none' },
   '&[data-orientation="vertical"]': { borderLeft: 'none' },
 });
@@ -423,9 +422,7 @@ const show = keyframes({
   to: { opacity: 1, transform: 'translateY(0px)' },
 });
 
-const animatedContentClass = css({
-  ...RECOMMENDED_CSS__TABS__CONTENT,
-
+const animatedContentClass = css(contentClass, {
   '&[data-state="active"]': {
     animation: `${show} 400ms ease`,
   },
