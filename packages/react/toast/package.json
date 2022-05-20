@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-toast",
-  "version": "0.1.2-rc.30",
+  "version": "0.1.2-rc.31",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
