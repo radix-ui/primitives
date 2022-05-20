@@ -56,11 +56,15 @@ export const Modality = () => {
                 Redo
               </DropdownMenu.Item>
               <DropdownMenu.Separator className={separatorClass()} />
-              <DropdownMenu.Root>
-                <DropdownMenu.TriggerItem className={subTriggerClass()}>
+              <DropdownMenu.Sub>
+                <DropdownMenu.SubTrigger className={subTriggerClass()}>
                   Submenu →
-                </DropdownMenu.TriggerItem>
-                <DropdownMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+                </DropdownMenu.SubTrigger>
+                <DropdownMenu.SubContent
+                  className={contentClass()}
+                  sideOffset={12}
+                  alignOffset={-6}
+                >
                   <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
                     One
                   </DropdownMenu.Item>
@@ -71,8 +75,8 @@ export const Modality = () => {
                     Three
                   </DropdownMenu.Item>
                   <DropdownMenu.Arrow offset={14} />
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
+                </DropdownMenu.SubContent>
+              </DropdownMenu.Sub>
               <DropdownMenu.Separator className={separatorClass()} />
               <DropdownMenu.Item
                 className={itemClass()}
@@ -107,11 +111,15 @@ export const Modality = () => {
                 Redo
               </DropdownMenu.Item>
               <DropdownMenu.Separator className={separatorClass()} />
-              <DropdownMenu.Root>
-                <DropdownMenu.TriggerItem className={subTriggerClass()}>
+              <DropdownMenu.Sub>
+                <DropdownMenu.SubTrigger className={subTriggerClass()}>
                   Submenu →
-                </DropdownMenu.TriggerItem>
-                <DropdownMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+                </DropdownMenu.SubTrigger>
+                <DropdownMenu.SubContent
+                  className={contentClass()}
+                  sideOffset={12}
+                  alignOffset={-6}
+                >
                   <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
                     One
                   </DropdownMenu.Item>
@@ -122,8 +130,8 @@ export const Modality = () => {
                     Three
                   </DropdownMenu.Item>
                   <DropdownMenu.Arrow offset={14} />
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
+                </DropdownMenu.SubContent>
+              </DropdownMenu.Sub>
               <DropdownMenu.Separator className={separatorClass()} />
               <DropdownMenu.Item
                 className={itemClass()}
@@ -176,11 +184,11 @@ export const Submenus = () => {
               New Window
             </DropdownMenu.Item>
             <DropdownMenu.Separator className={separatorClass()} />
-            <DropdownMenu.Root>
-              <DropdownMenu.TriggerItem className={subTriggerClass()}>
+            <DropdownMenu.Sub>
+              <DropdownMenu.SubTrigger className={subTriggerClass()}>
                 Bookmarks →
-              </DropdownMenu.TriggerItem>
-              <DropdownMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+              </DropdownMenu.SubTrigger>
+              <DropdownMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
                 <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('index')}>
                   Inbox
                 </DropdownMenu.Item>
@@ -188,11 +196,15 @@ export const Submenus = () => {
                   Calendar
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator className={separatorClass()} />
-                <DropdownMenu.Root>
-                  <DropdownMenu.TriggerItem className={subTriggerClass()}>
+                <DropdownMenu.Sub>
+                  <DropdownMenu.SubTrigger className={subTriggerClass()}>
                     Modulz →
-                  </DropdownMenu.TriggerItem>
-                  <DropdownMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+                  </DropdownMenu.SubTrigger>
+                  <DropdownMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
+                  >
                     <DropdownMenu.Item
                       className={itemClass()}
                       onSelect={() => console.log('stitches')}
@@ -212,20 +224,20 @@ export const Submenus = () => {
                       Radix
                     </DropdownMenu.Item>
                     <DropdownMenu.Arrow offset={14} />
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
+                  </DropdownMenu.SubContent>
+                </DropdownMenu.Sub>
                 <DropdownMenu.Separator className={separatorClass()} />
                 <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('notion')}>
                   Notion
                 </DropdownMenu.Item>
                 <DropdownMenu.Arrow offset={14} />
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
-            <DropdownMenu.Root>
-              <DropdownMenu.TriggerItem className={subTriggerClass()} disabled>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Sub>
+            <DropdownMenu.Sub>
+              <DropdownMenu.SubTrigger className={subTriggerClass()} disabled>
                 History →
-              </DropdownMenu.TriggerItem>
-              <DropdownMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+              </DropdownMenu.SubTrigger>
+              <DropdownMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
                 <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('github')}>
                   Github
                 </DropdownMenu.Item>
@@ -239,13 +251,13 @@ export const Submenus = () => {
                   Stack Overflow
                 </DropdownMenu.Item>
                 <DropdownMenu.Arrow offset={14} />
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
-            <DropdownMenu.Root>
-              <DropdownMenu.TriggerItem className={subTriggerClass()}>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Sub>
+            <DropdownMenu.Sub>
+              <DropdownMenu.SubTrigger className={subTriggerClass()}>
                 Tools →
-              </DropdownMenu.TriggerItem>
-              <DropdownMenu.Content className={contentClass()} sideOffset={12} alignOffset={-6}>
+              </DropdownMenu.SubTrigger>
+              <DropdownMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
                 <DropdownMenu.Item
                   className={itemClass()}
                   onSelect={() => console.log('extensions')}
@@ -265,8 +277,8 @@ export const Submenus = () => {
                   Developer Tools
                 </DropdownMenu.Item>
                 <DropdownMenu.Arrow offset={14} />
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Sub>
             <DropdownMenu.Separator className={separatorClass()} />
             <DropdownMenu.Item
               className={itemClass()}
@@ -321,6 +333,59 @@ export const WithLabels = () => (
     </DropdownMenu.Root>
   </div>
 );
+
+export const NestedComposition = () => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+      }}
+    >
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Content className={contentClass()} sideOffset={5}>
+          <Dialog.Root>
+            <Dialog.Trigger className={itemClass()} asChild>
+              <DropdownMenu.Item onSelect={(event) => event.preventDefault()}>
+                Open dialog
+              </DropdownMenu.Item>
+            </Dialog.Trigger>
+
+            <Dialog.Portal>
+              <Dialog.Content className={dialogClass()} style={{ zIndex: 2147483647 }}>
+                <Dialog.Title>Nested dropdown</Dialog.Title>
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger
+                    className={triggerClass()}
+                    style={{ width: '100%', marginBottom: 20 }}
+                  >
+                    Open
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content className={contentClass()} sideOffset={5}>
+                    <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
+                      Undo
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
+                      Redo
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Arrow />
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+                <Dialog.Close>Close</Dialog.Close>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+          <DropdownMenu.Item className={itemClass()}>Test</DropdownMenu.Item>
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </div>
+  );
+};
 
 export const SingleItemAsDialogTrigger = () => {
   const dropdownTriggerRef = React.useRef<React.ElementRef<typeof DropdownMenu.Trigger>>(null);
@@ -835,11 +900,11 @@ export const Chromatic = () => {
             Redo
           </DropdownMenu.Item>
           <DropdownMenu.Separator className={separatorClass()} />
-          <DropdownMenu.Root open>
-            <DropdownMenu.TriggerItem className={subTriggerClass()}>
+          <DropdownMenu.Sub open>
+            <DropdownMenu.SubTrigger className={subTriggerClass()}>
               Submenu →
-            </DropdownMenu.TriggerItem>
-            <DropdownMenu.Content
+            </DropdownMenu.SubTrigger>
+            <DropdownMenu.SubContent
               className={contentClass()}
               sideOffset={12}
               alignOffset={-6}
@@ -853,11 +918,11 @@ export const Chromatic = () => {
                 Two
               </DropdownMenu.Item>
               <DropdownMenu.Separator className={separatorClass()} />
-              <DropdownMenu.Root open>
-                <DropdownMenu.TriggerItem className={subTriggerClass()}>
+              <DropdownMenu.Sub open>
+                <DropdownMenu.SubTrigger className={subTriggerClass()}>
                   Submenu →
-                </DropdownMenu.TriggerItem>
-                <DropdownMenu.Content
+                </DropdownMenu.SubTrigger>
+                <DropdownMenu.SubContent
                   className={contentClass()}
                   sideOffset={12}
                   alignOffset={-6}
@@ -873,15 +938,15 @@ export const Chromatic = () => {
                     Three
                   </DropdownMenu.Item>
                   <DropdownMenu.Arrow offset={14} />
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
+                </DropdownMenu.SubContent>
+              </DropdownMenu.Sub>
               <DropdownMenu.Separator className={separatorClass()} />
               <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
                 Three
               </DropdownMenu.Item>
               <DropdownMenu.Arrow offset={14} />
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
+            </DropdownMenu.SubContent>
+          </DropdownMenu.Sub>
           <DropdownMenu.Separator className={separatorClass()} />
           <DropdownMenu.Item className={itemClass()} disabled onSelect={() => console.log('cut')}>
             Cut
@@ -908,11 +973,11 @@ export const Chromatic = () => {
               Redo
             </DropdownMenu.Item>
             <DropdownMenu.Separator className={separatorClass()} />
-            <DropdownMenu.Root open>
-              <DropdownMenu.TriggerItem className={subTriggerClass()}>
+            <DropdownMenu.Sub open>
+              <DropdownMenu.SubTrigger className={subTriggerClass()}>
                 Submenu →
-              </DropdownMenu.TriggerItem>
-              <DropdownMenu.Content
+              </DropdownMenu.SubTrigger>
+              <DropdownMenu.SubContent
                 className={contentClass()}
                 sideOffset={12}
                 alignOffset={-6}
@@ -926,11 +991,11 @@ export const Chromatic = () => {
                   Two
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator className={separatorClass()} />
-                <DropdownMenu.Root open>
-                  <DropdownMenu.TriggerItem className={subTriggerClass()}>
+                <DropdownMenu.Sub open>
+                  <DropdownMenu.SubTrigger className={subTriggerClass()}>
                     Submenu →
-                  </DropdownMenu.TriggerItem>
-                  <DropdownMenu.Content
+                  </DropdownMenu.SubTrigger>
+                  <DropdownMenu.SubContent
                     className={contentClass()}
                     sideOffset={12}
                     alignOffset={-6}
@@ -949,15 +1014,15 @@ export const Chromatic = () => {
                       Three
                     </DropdownMenu.Item>
                     <DropdownMenu.Arrow offset={14} />
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
+                  </DropdownMenu.SubContent>
+                </DropdownMenu.Sub>
                 <DropdownMenu.Separator className={separatorClass()} />
                 <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
                   Three
                 </DropdownMenu.Item>
                 <DropdownMenu.Arrow offset={14} />
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Sub>
             <DropdownMenu.Separator className={separatorClass()} />
             <DropdownMenu.Item className={itemClass()} disabled onSelect={() => console.log('cut')}>
               Cut
@@ -1263,6 +1328,60 @@ export const Chromatic = () => {
               </DropdownMenu.RadioItem>
             ))}
           </DropdownMenu.RadioGroup>
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+
+      <h1 style={{ marginTop: 500 }}>Nested composition</h1>
+
+      <DropdownMenu.Root open modal={false}>
+        <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Content
+          className={contentClass()}
+          sideOffset={5}
+          avoidCollisions={false}
+          portalled={false}
+        >
+          <Dialog.Root open modal={false}>
+            <Dialog.Trigger className={itemClass()} asChild>
+              <DropdownMenu.Item onSelect={(event) => event.preventDefault()}>
+                Open dialog
+              </DropdownMenu.Item>
+            </Dialog.Trigger>
+
+            <Dialog.Content
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 150,
+                width: 300,
+                padding: 20,
+                backgroundColor: 'whitesmoke',
+                border: '1px solid black',
+              }}
+            >
+              <Dialog.Title style={{ marginTop: 0 }}>Dropdown in nested dialog</Dialog.Title>
+              <DropdownMenu.Root open modal={false}>
+                <DropdownMenu.Trigger className={triggerClass()} style={{ width: '100%' }}>
+                  Open
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content
+                  className={contentClass()}
+                  sideOffset={5}
+                  avoidCollisions={false}
+                >
+                  <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
+                    Undo
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
+                    Redo
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Arrow />
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </Dialog.Content>
+          </Dialog.Root>
+          <DropdownMenu.Item className={itemClass()}>Test</DropdownMenu.Item>
           <DropdownMenu.Arrow />
         </DropdownMenu.Content>
       </DropdownMenu.Root>

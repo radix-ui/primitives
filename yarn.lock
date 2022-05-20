@@ -3218,6 +3218,7 @@ __metadata:
     "@radix-ui/react-menu": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
