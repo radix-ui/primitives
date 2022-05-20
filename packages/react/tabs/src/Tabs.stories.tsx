@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DirectionProvider } from '@radix-ui/react-direction';
-import { css } from '../../../../stitches.config';
+import { css, keyframes } from '../../../../stitches.config';
 import * as Tabs from '@radix-ui/react-tabs';
 
 export default { title: 'Components/Tabs' };
@@ -61,6 +61,70 @@ export const Styled = () => (
         You'll never find me!
       </Tabs.Content>
       <Tabs.Content value="tab3" className={contentClass()}>
+        Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
+        quam tempus pretium.
+      </Tabs.Content>
+    </Tabs.Root>
+  </>
+);
+
+export const Animated = () => (
+  <>
+    <h1>Horizontal (automatic activation)</h1>
+    <Tabs.Root defaultValue="tab1" className={rootClass()}>
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
+          Tab 1
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
+          Tab 2
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
+          Tab 3
+        </Tabs.Trigger>
+      </Tabs.List>
+
+      <Tabs.Content value="tab1" className={animatedContentClass()}>
+        Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
+        integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
+        pellentesque volutpat dictum ipsum.
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={animatedContentClass()}>
+        You'll never find me!
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={animatedContentClass()}>
+        Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
+        quam tempus pretium.
+      </Tabs.Content>
+    </Tabs.Root>
+
+    <h1>Vertical (manual activation)</h1>
+    <Tabs.Root
+      defaultValue="tab1"
+      className={rootClass()}
+      orientation="vertical"
+      activationMode="manual"
+    >
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
+          Tab 1
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
+          Tab 2
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
+          Tab 3
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={animatedContentClass()}>
+        Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
+        integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
+        pellentesque volutpat dictum ipsum.
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={animatedContentClass()}>
+        You'll never find me!
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={animatedContentClass()}>
         Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
         quam tempus pretium.
       </Tabs.Content>
@@ -213,6 +277,38 @@ export const Chromatic = () => (
       </Tabs.Root>
     </DirectionProvider>
 
+    <h1>Animated</h1>
+    <p>Should not animate on initial mount</p>
+    <Tabs.Root value="tab1" className={rootClass()}>
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
+          Tab 1
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" disabled className={triggerClass()}>
+          Tab 2
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
+          Tab 3
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content
+        value="tab1"
+        className={animatedContentClass()}
+        style={{ animationDuration: '3000ms' }}
+      >
+        Dis metus rhoncus sit convallis sollicitudin vel cum, hac purus tincidunt eros sem himenaeos
+        integer, faucibus varius nullam nostra bibendum consectetur mollis, gravida elementum
+        pellentesque volutpat dictum ipsum.
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={animatedContentClass()}>
+        You'll never find me!
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={animatedContentClass()}>
+        Ut nisi elementum metus semper mauris dui fames accumsan aenean, maecenas ac sociis dolor
+        quam tempus pretium.
+      </Tabs.Content>
+    </Tabs.Root>
+
     <h1>State attributes</h1>
     <Tabs.Root defaultValue="tab3" className={rootAttrClass()}>
       <Tabs.List aria-label="tabs example" className={listAttrClass()}>
@@ -253,6 +349,7 @@ const RECOMMENDED_CSS__TABS__ROOT = {
 
 const rootClass = css({
   ...RECOMMENDED_CSS__TABS__ROOT,
+  border: '1px solid #eee',
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
   maxWidth: '20rem',
@@ -312,15 +409,23 @@ const RECOMMENDED_CSS__TABS__CONTENT = {
 
 const contentClass = css({
   ...RECOMMENDED_CSS__TABS__CONTENT,
-
   padding: '1em',
-  border: '1px solid #eee',
   fontWeight: '300',
   fontSize: '0.85em',
   lineHeight: '1.65',
-
   '&[data-orientation="horizontal"]': { borderTop: 'none' },
   '&[data-orientation="vertical"]': { borderLeft: 'none' },
+});
+
+const show = keyframes({
+  from: { opacity: 0, transform: 'translateY(10px)' },
+  to: { opacity: 1, transform: 'translateY(0px)' },
+});
+
+const animatedContentClass = css(contentClass, {
+  '&[data-state="active"]': {
+    animation: `${show} 400ms ease`,
+  },
 });
 
 const styles = {
