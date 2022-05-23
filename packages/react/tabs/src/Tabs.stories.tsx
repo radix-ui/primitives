@@ -309,6 +309,30 @@ export const Chromatic = () => (
       </Tabs.Content>
     </Tabs.Root>
 
+    <h1>Force mounted contents</h1>
+    <Tabs.Root className={rootClass()}>
+      <Tabs.List aria-label="tabs example" className={listClass()}>
+        <Tabs.Trigger value="tab1" className={triggerClass()}>
+          Tab 1
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" className={triggerClass()}>
+          Tab 2
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab3" className={triggerClass()}>
+          Tab 3
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={contentClass()} forceMount>
+        Tab 1 content
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={contentClass()} forceMount>
+        Tab 2 content
+      </Tabs.Content>
+      <Tabs.Content value="tab3" className={contentClass()} forceMount>
+        Tab 3 content
+      </Tabs.Content>
+    </Tabs.Root>
+
     <h1>State attributes</h1>
     <Tabs.Root defaultValue="tab3" className={rootAttrClass()}>
       <Tabs.List aria-label="tabs example" className={listAttrClass()}>
