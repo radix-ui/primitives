@@ -57,6 +57,7 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
         <Primitive.button
           type="button"
           role="radio"
+          aria-required={required}
           aria-checked={checked}
           aria-labelledby={labelledBy}
           data-state={getState(checked)}
