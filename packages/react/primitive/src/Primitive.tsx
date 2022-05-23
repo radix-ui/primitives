@@ -38,27 +38,27 @@ interface PrimitiveForwardRefComponent<E extends React.ElementType>
  * Primitive
  * -----------------------------------------------------------------------------------------------*/
 
-const Primitive = NODES.reduce(
-  (primitive, node) => ({
-    ...primitive,
-    [node]: React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
-      const { asChild, ...primitiveProps } = props;
-      const Comp: any = asChild ? Slot : node;
+const Primitive = NODES.reduce((primitive, node) => {
+  const Node = React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
+    const { asChild, ...primitiveProps } = props;
+    const Comp: any = asChild ? Slot : node;
 
-      React.useEffect(() => {
-        (window as any)[Symbol.for('radix-ui')] = true;
-      }, []);
+    React.useEffect(() => {
+      (window as any)[Symbol.for('radix-ui')] = true;
+    }, []);
 
-      // DEPRECATED
-      if (process.env.NODE_ENV === 'development' && (props as any).as) {
-        console.warn(AS_ERROR);
-      }
+    // DEPRECATED
+    if (process.env.NODE_ENV === 'development' && (props as any).as) {
+      console.warn(AS_ERROR);
+    }
 
-      return <Comp {...primitiveProps} ref={forwardedRef} />;
-    }),
-  }),
-  {} as Primitives
-);
+    return <Comp {...primitiveProps} ref={forwardedRef} />;
+  });
+
+  Node.displayName = `Primitive.${node}`;
+
+  return { ...primitive, [node]: Node };
+}, {} as Primitives);
 
 /* -----------------------------------------------------------------------------------------------*/
 
