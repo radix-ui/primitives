@@ -217,11 +217,17 @@ const CONTENT_NAME = 'TabsContent';
 type TabsContentElement = React.ElementRef<typeof Primitive.div>;
 interface TabsContentProps extends PrimitiveDivProps {
   value: string;
+
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
 }
 
 const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
   (props: ScopedProps<TabsContentProps>, forwardedRef) => {
-    const { __scopeTabs, value, children, ...contentProps } = props;
+    const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
     const context = useTabsContext(CONTENT_NAME, __scopeTabs);
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
@@ -234,7 +240,7 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
     }, []);
 
     return (
-      <Presence present={isSelected}>
+      <Presence present={forceMount || isSelected}>
         {({ present }) => (
           <Primitive.div
             data-state={isSelected ? 'active' : 'inactive'}
