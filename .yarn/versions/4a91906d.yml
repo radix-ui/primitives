@@ -1,5 +1,6 @@
 releases:
-  "@radix-ui/react-tabs": patch
+  "@radix-ui/react-radio-group": patch
 
 declined:
   - primitives
+  - "@radix-ui/react-tabs"
