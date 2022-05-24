@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-slot",
-  "version": "0.1.3-rc.23",
+  "version": "0.1.3-rc.24",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
