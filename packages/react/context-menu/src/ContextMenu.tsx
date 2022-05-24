@@ -467,7 +467,7 @@ const ContextMenuSubContent = React.forwardRef<
       style={{
         ...props.style,
         // re-namespace exposed content custom property
-        ['--radix-context-menu-sub-content-transform-origin' as any]:
+        ['--radix-context-menu-content-transform-origin' as any]:
           'var(--radix-popper-transform-origin)',
       }}
     />

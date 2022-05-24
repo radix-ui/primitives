@@ -462,7 +462,7 @@ const DropdownMenuSubContent = React.forwardRef<
       style={{
         ...props.style,
         // re-namespace exposed content custom property
-        ['--radix-dropdown-menu-sub-content-transform-origin' as any]:
+        ['--radix-dropdown-menu-content-transform-origin' as any]:
           'var(--radix-popper-transform-origin)',
       }}
     />
