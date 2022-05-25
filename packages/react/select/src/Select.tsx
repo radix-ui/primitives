@@ -335,9 +335,9 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
         }, [])}
         onNativeOptionRemove={React.useCallback((option) => {
           setNativeOptionsSet((prev) => {
-            const itemsSet = new Set(prev);
-            itemsSet.delete(option);
-            return itemsSet;
+            const optionsSet = new Set(prev);
+            optionsSet.delete(option);
+            return optionsSet;
           });
         }, [])}
       >
