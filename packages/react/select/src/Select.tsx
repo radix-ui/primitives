@@ -58,7 +58,8 @@ type SelectContextValue = {
   open: boolean;
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
-  bubbleSelect: HTMLSelectElement | null;
+  name: SelectProps['name'];
+  autoComplete: SelectProps['autoComplete'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
 };
 
@@ -105,9 +106,6 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     defaultProp: defaultValue,
     onChange: onValueChange,
   });
-  // We set this to true by default so that events bubble to forms without JS (SSR)
-  const isFormControl = trigger ? Boolean(trigger.closest('form')) : true;
-  const [bubbleSelect, setBubbleSelect] = React.useState<HTMLSelectElement | null>(null);
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
   return (
@@ -125,22 +123,11 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
       open={open}
       onOpenChange={setOpen}
       dir={direction}
-      bubbleSelect={bubbleSelect}
+      name={name}
+      autoComplete={autoComplete}
       triggerPointerDownPosRef={triggerPointerDownPosRef}
     >
       <Collection.Provider scope={__scopeSelect}>{children}</Collection.Provider>
-      {isFormControl ? (
-        <BubbleSelect
-          ref={setBubbleSelect}
-          aria-hidden
-          tabIndex={-1}
-          name={name}
-          autoComplete={autoComplete}
-          value={value}
-          // enable form autofill
-          onChange={(event) => setValue(event.target.value)}
-        />
-      ) : null}
     </SelectProvider>
   );
 };
@@ -306,6 +293,15 @@ SelectIcon.displayName = ICON_NAME;
 
 const CONTENT_NAME = 'SelectContent';
 
+type NativeOption = React.ReactElement<React.ComponentProps<'option'>>;
+
+type SelectNativeOptionsContextValue = {
+  onNativeOptionAdd(option: NativeOption): void;
+  onNativeOptionRemove(option: NativeOption): void;
+};
+const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
+  createSelectContext<SelectNativeOptionsContextValue>(CONTENT_NAME);
+
 type SelectContentElement = SelectContentImplElement;
 interface SelectContentProps extends SelectContentImplProps {}
 
@@ -313,26 +309,71 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
   (props: ScopedProps<SelectContentProps>, forwardedRef) => {
     const context = useSelectContext(CONTENT_NAME, props.__scopeSelect);
     const [fragment, setFragment] = React.useState<DocumentFragment>();
+    // We set this to true by default so that events bubble to forms without JS (SSR)
+    const isFormControl = context.trigger ? Boolean(context.trigger.closest('form')) : true;
+    const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<NativeOption>());
+
+    // The native `select` only associates the correct default value if the corresponding
+    // `option` is rendered as a child **at the same time** as itself.
+    // Because it might take a few renders for our items to gather the information to build
+    // the native `option`(s), we generate a key on the `select` to make sure React re-builds it
+    // each time the options change.
+    const nativeSelectKey = Array.from(nativeOptionsSet)
+      .map((option) => option.props.value)
+      .join(';');
 
     // setting the fragment in `useLayoutEffect` as `DocumentFragment` doesn't exist on the server
     useLayoutEffect(() => {
       setFragment(new DocumentFragment());
     }, []);
 
-    return context.open ? (
-      <SelectContentImpl {...props} ref={forwardedRef} />
-    ) : fragment ? (
-      ReactDOM.createPortal(
-        <SelectContentContextProvider scope={props.__scopeSelect}>
-          <Collection.Slot scope={props.__scopeSelect}>
-            <div>{props.children}</div>
-          </Collection.Slot>
-        </SelectContentContextProvider>,
-        fragment as any
-      )
-    ) : null;
+    return (
+      <SelectNativeOptionsProvider
+        scope={props.__scopeSelect}
+        onNativeOptionAdd={React.useCallback((option) => {
+          setNativeOptionsSet((prev) => new Set(prev).add(option));
+        }, [])}
+        onNativeOptionRemove={React.useCallback((option) => {
+          setNativeOptionsSet((prev) => {
+            const optionsSet = new Set(prev);
+            optionsSet.delete(option);
+            return optionsSet;
+          });
+        }, [])}
+      >
+        {isFormControl ? (
+          <BubbleSelect
+            key={nativeSelectKey}
+            aria-hidden
+            tabIndex={-1}
+            name={context.name}
+            autoComplete={context.autoComplete}
+            value={context.value}
+            // enable form autofill
+            onChange={(event) => context.onValueChange(event.target.value)}
+          >
+            {Array.from(nativeOptionsSet)}
+          </BubbleSelect>
+        ) : null}
+
+        {context.open ? (
+          <SelectContentImpl {...props} ref={forwardedRef} />
+        ) : fragment ? (
+          ReactDOM.createPortal(
+            <SelectContentProvider scope={props.__scopeSelect}>
+              <Collection.Slot scope={props.__scopeSelect}>
+                <div>{props.children}</div>
+              </Collection.Slot>
+            </SelectContentProvider>,
+            fragment as any
+          )
+        ) : null}
+      </SelectNativeOptionsProvider>
+    );
   }
 );
+
+SelectContent.displayName = CONTENT_NAME;
 
 const CONTENT_MARGIN = 10;
 
@@ -356,7 +397,7 @@ type SelectContentContextValue = {
   searchRef?: React.RefObject<string>;
 };
 
-const [SelectContentContextProvider, useSelectContentContext] =
+const [SelectContentProvider, useSelectContentContext] =
   createSelectContext<SelectContentContextValue>(CONTENT_NAME);
 
 type SelectContentImplElement = React.ElementRef<typeof DismissableLayer>;
@@ -659,7 +700,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     );
 
     return (
-      <SelectContentContextProvider
+      <SelectContentProvider
         scope={__scopeSelect}
         contentWrapper={contentWrapper}
         content={content}
@@ -753,12 +794,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
             </div>
           </RemoveScroll>
         </Portal>
-      </SelectContentContextProvider>
+      </SelectContentProvider>
     );
   }
 );
-
-SelectContentImpl.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SelectViewport
@@ -1010,10 +1049,30 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     const context = useSelectContext(ITEM_TEXT_NAME, __scopeSelect);
     const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
     const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
-    const ref = React.useRef<SelectItemTextElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref, itemContext.onItemTextChange, (node) =>
-      contentContext.itemTextRefCallback?.(node, itemContext.value, itemContext.disabled)
+    const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
+    const [itemTextNode, setItemTextNode] = React.useState<SelectItemTextElement | null>(null);
+    const composedRefs = useComposedRefs(
+      forwardedRef,
+      (node) => setItemTextNode(node),
+      itemContext.onItemTextChange,
+      (node) => contentContext.itemTextRefCallback?.(node, itemContext.value, itemContext.disabled)
     );
+
+    const textContent = itemTextNode?.textContent;
+    const nativeOption = React.useMemo(
+      () => (
+        <option key={itemContext.value} value={itemContext.value} disabled={itemContext.disabled}>
+          {textContent}
+        </option>
+      ),
+      [itemContext.disabled, itemContext.value, textContent]
+    );
+
+    const { onNativeOptionAdd, onNativeOptionRemove } = nativeOptionsContext;
+    useLayoutEffect(() => {
+      onNativeOptionAdd(nativeOption);
+      return () => onNativeOptionRemove(nativeOption);
+    }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
 
     return (
       <>
@@ -1022,15 +1081,6 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
         {/* Portal the select item text into the trigger value node */}
         {itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren
           ? ReactDOM.createPortal(itemTextProps.children, context.valueNode)
-          : null}
-
-        {/* Portal an option in the bubble select */}
-        {context.bubbleSelect
-          ? ReactDOM.createPortal(
-              // we use `.textContent` because `option` only support `string` or `number`
-              <option value={itemContext.value}>{ref.current?.textContent}</option>,
-              context.bubbleSelect
-            )
           : null}
       </>
     );
@@ -1270,6 +1320,8 @@ const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWit
     );
   }
 );
+
+BubbleSelect.displayName = 'BubbleSelect';
 
 function useTypeaheadSearch(onSearchChange: (search: string) => void) {
   const handleSearchChange = useCallbackRef(onSearchChange);

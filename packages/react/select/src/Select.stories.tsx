@@ -380,14 +380,20 @@ export const RightToLeft = () => (
 
 export const WithinForm = () => {
   const [data, setData] = React.useState({});
+
+  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    setData(Object.fromEntries((formData as any).entries()));
+  }
+
   return (
     <form
       style={{ padding: 50 }}
-      onSubmit={(event) => event.preventDefault()}
-      onChange={(event) => {
-        const formData = new FormData(event.currentTarget);
-        setData(Object.fromEntries((formData as any).entries()));
+      onSubmit={(event) => {
+        handleChange(event);
+        event.preventDefault();
       }}
+      onChange={handleChange}
     >
       <Label style={{ display: 'block' }}>
         Name
@@ -559,6 +565,62 @@ export const ChromaticNoDefaultValue = () => (
   </div>
 );
 ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
+
+export const Cypress = () => {
+  const [data, setData] = React.useState<{ size?: 'S' | 'M' | 'L' }>({});
+
+  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    setData(Object.fromEntries((formData as any).entries()));
+  }
+
+  return (
+    <>
+      <form
+        style={{ padding: 50 }}
+        onSubmit={(event) => {
+          handleChange(event);
+          event.preventDefault();
+        }}
+        onChange={handleChange}
+      >
+        <Label>
+          choose a size:
+          <Select.Root defaultValue="M" name="size">
+            <Select.Trigger className={triggerClass()}>
+              <Select.Value />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Content className={contentClass()}>
+              <Select.Viewport className={viewportClass()}>
+                <Select.Item className={itemClass()} value="S">
+                  <Select.ItemText>Small</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="M">
+                  <Select.ItemText>Medium</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="L">
+                  <Select.ItemText>Large</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Root>
+        </Label>
+        <button type="submit">buy</button>
+        {data.size ? <p>You picked t-shirt size {data.size}</p> : null}
+      </form>
+    </>
+  );
+};
 
 type PaddedElement = 'content' | 'viewport';
 
