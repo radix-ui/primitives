@@ -293,11 +293,11 @@ SelectIcon.displayName = ICON_NAME;
 
 const CONTENT_NAME = 'SelectContent';
 
-type ReactOption = React.ReactElement<React.ComponentProps<'option'>>;
+type NativeOption = React.ReactElement<React.ComponentProps<'option'>>;
 
 type SelectNativeOptionsContextValue = {
-  onNativeOptionAdd(option: ReactOption): void;
-  onNativeOptionRemove(option: ReactOption): void;
+  onNativeOptionAdd(option: NativeOption): void;
+  onNativeOptionRemove(option: NativeOption): void;
 };
 const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
   createSelectContext<SelectNativeOptionsContextValue>(CONTENT_NAME);
@@ -311,9 +311,14 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
     const [fragment, setFragment] = React.useState<DocumentFragment>();
     // We set this to true by default so that events bubble to forms without JS (SSR)
     const isFormControl = context.trigger ? Boolean(context.trigger.closest('form')) : true;
-    const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<ReactOption>());
+    const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<NativeOption>());
 
-    const nativeSelectKey = Array.from(nativeOptionsSet.values())
+    // The native `select` only associates the correct default value if the corresponding
+    // `option` is rendered as a child **at the same time** as itself.
+    // Because it might take a few renders for our items to gather the information to build
+    // the native `option`(s), we generate a key on the `select` to make sure React re-builds it
+    // each time the options change.
+    const nativeSelectKey = Array.from(nativeOptionsSet)
       .map((option) => option.props.value)
       .join(';');
 
@@ -347,7 +352,7 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
             // enable form autofill
             onChange={(event) => context.onValueChange(event.target.value)}
           >
-            {Array.from(nativeOptionsSet.values())}
+            {Array.from(nativeOptionsSet)}
           </BubbleSelect>
         ) : null}
 
@@ -1044,7 +1049,7 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     const context = useSelectContext(ITEM_TEXT_NAME, __scopeSelect);
     const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
     const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
-    const itemsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
+    const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
     const [itemTextNode, setItemTextNode] = React.useState<SelectItemTextElement | null>(null);
     const composedRefs = useComposedRefs(
       forwardedRef,
@@ -1063,7 +1068,7 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
       [itemContext.disabled, itemContext.value, textContent]
     );
 
-    const { onNativeOptionAdd, onNativeOptionRemove } = itemsContext;
+    const { onNativeOptionAdd, onNativeOptionRemove } = nativeOptionsContext;
     useLayoutEffect(() => {
       onNativeOptionAdd(nativeOption);
       return () => onNativeOptionRemove(nativeOption);

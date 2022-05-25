@@ -566,9 +566,8 @@ export const ChromaticNoDefaultValue = () => (
 );
 ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
-type FormData = { size?: 'S' | 'M' | 'L' };
 export const Cypress = () => {
-  const [data, setData] = React.useState<FormData>({});
+  const [data, setData] = React.useState<{ size?: 'S' | 'M' | 'L' }>({});
 
   function handleChange(event: React.FormEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
