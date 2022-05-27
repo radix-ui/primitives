@@ -153,6 +153,25 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
 DropdownMenuTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
+ * DropdownMenuPortal
+ * -----------------------------------------------------------------------------------------------*/
+
+const PORTAL_NAME = 'DropdownMenuPortal';
+
+type MenuPortalProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Portal>;
+interface DropdownMenuPortalProps extends MenuPortalProps {}
+
+const DropdownMenuPortal: React.FC<DropdownMenuPortalProps> = (
+  props: ScopedProps<DropdownMenuPortalProps>
+) => {
+  const { __scopeDropdownMenu, ...portalProps } = props;
+  const menuScope = useMenuScope(__scopeDropdownMenu);
+  return <MenuPrimitive.Portal {...menuScope} {...portalProps} />;
+};
+
+DropdownMenuPortal.displayName = PORTAL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * DropdownMenuContent
  * -----------------------------------------------------------------------------------------------*/
 
@@ -164,7 +183,7 @@ interface DropdownMenuContentProps extends MenuContentProps {}
 
 const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, DropdownMenuContentProps>(
   (props: ScopedProps<DropdownMenuContentProps>, forwardedRef) => {
-    const { __scopeDropdownMenu, portalled = true, ...contentProps } = props;
+    const { __scopeDropdownMenu, ...contentProps } = props;
     const context = useDropdownMenuContext(CONTENT_NAME, __scopeDropdownMenu);
     const menuScope = useMenuScope(__scopeDropdownMenu);
     const hasInteractedOutsideRef = React.useRef(false);
@@ -176,7 +195,6 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
         {...menuScope}
         {...contentProps}
         ref={forwardedRef}
-        portalled={portalled}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
           hasInteractedOutsideRef.current = false;
@@ -475,6 +493,7 @@ DropdownMenuSubContent.displayName = SUB_CONTENT_NAME;
 
 const Root = DropdownMenu;
 const Trigger = DropdownMenuTrigger;
+const Portal = DropdownMenuPortal;
 const Content = DropdownMenuContent;
 const Group = DropdownMenuGroup;
 const Label = DropdownMenuLabel;
@@ -494,6 +513,7 @@ export {
   //
   DropdownMenu,
   DropdownMenuTrigger,
+  DropdownMenuPortal,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
@@ -510,6 +530,7 @@ export {
   //
   Root,
   Trigger,
+  Portal,
   Content,
   Group,
   Label,
@@ -527,6 +548,7 @@ export {
 export type {
   DropdownMenuProps,
   DropdownMenuTriggerProps,
+  DropdownMenuPortalProps,
   DropdownMenuContentProps,
   DropdownMenuGroupProps,
   DropdownMenuLabelProps,

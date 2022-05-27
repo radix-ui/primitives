@@ -152,6 +152,25 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
 ContextMenuTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
+ * ContextMenuPortal
+ * -----------------------------------------------------------------------------------------------*/
+
+const PORTAL_NAME = 'ContextMenuPortal';
+
+type MenuPortalProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Portal>;
+interface ContextMenuPortalProps extends MenuPortalProps {}
+
+const ContextMenuPortal: React.FC<ContextMenuPortalProps> = (
+  props: ScopedProps<ContextMenuPortalProps>
+) => {
+  const { __scopeContextMenu, ...portalProps } = props;
+  const menuScope = useMenuScope(__scopeContextMenu);
+  return <MenuPrimitive.Portal {...menuScope} {...portalProps} />;
+};
+
+ContextMenuPortal.displayName = PORTAL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * ContextMenuContent
  * -----------------------------------------------------------------------------------------------*/
 
@@ -159,8 +178,7 @@ const CONTENT_NAME = 'ContextMenuContent';
 
 type ContextMenuContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
 type MenuContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
-interface ContextMenuContentProps
-  extends Omit<MenuContentProps, 'portalled' | 'side' | 'sideOffset' | 'align'> {}
+interface ContextMenuContentProps extends Omit<MenuContentProps, 'side' | 'sideOffset' | 'align'> {}
 
 const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMenuContentProps>(
   (props: ScopedProps<ContextMenuContentProps>, forwardedRef) => {
@@ -174,7 +192,6 @@ const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMe
         {...menuScope}
         {...contentProps}
         ref={forwardedRef}
-        portalled
         side="right"
         sideOffset={2}
         align="start"
@@ -484,6 +501,7 @@ function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.Pointer
 
 const Root = ContextMenu;
 const Trigger = ContextMenuTrigger;
+const Portal = ContextMenuPortal;
 const Content = ContextMenuContent;
 const Group = ContextMenuGroup;
 const Label = ContextMenuLabel;
@@ -503,6 +521,7 @@ export {
   //
   ContextMenu,
   ContextMenuTrigger,
+  ContextMenuPortal,
   ContextMenuContent,
   ContextMenuGroup,
   ContextMenuLabel,
@@ -519,6 +538,7 @@ export {
   //
   Root,
   Trigger,
+  Portal,
   Content,
   Group,
   Label,
@@ -536,6 +556,7 @@ export {
 export type {
   ContextMenuProps,
   ContextMenuTriggerProps,
+  ContextMenuPortalProps,
   ContextMenuContentProps,
   ContextMenuGroupProps,
   ContextMenuLabelProps,
