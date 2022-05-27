@@ -104,7 +104,10 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       const isHighestLayer = index === context.layers.size - 1;
       if (!isHighestLayer) return;
       onEscapeKeyDown?.(event);
-      if (!event.defaultPrevented) onDismiss?.();
+      if (!event.defaultPrevented && onDismiss) {
+        event.preventDefault();
+        onDismiss();
+      }
     });
 
     React.useEffect(() => {
