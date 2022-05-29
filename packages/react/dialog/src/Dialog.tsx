@@ -27,14 +27,14 @@ type ScopedProps<P> = P & { __scopeDialog?: Scope };
 const [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME);
 
 type DialogContextValue = {
-  triggerRef: React.RefObject<HTMLButtonElement>;
+  triggerElement?: HTMLButtonElement;
   contentRef: React.RefObject<DialogContentElement>;
   contentId: string;
   titleId: string;
   descriptionId: string;
   open: boolean;
   onOpenChange(open: boolean): void;
-  onOpenToggle(): void;
+  onOpenClicked?: React.MouseEventHandler<HTMLButtonElement>;
   modal: boolean;
   allowPinchZoom: DialogProps['allowPinchZoom'];
 };
@@ -64,7 +64,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     modal = true,
     allowPinchZoom,
   } = props;
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const [triggerElement, setTriggerElement] = React.useState<HTMLButtonElement | undefined>();
   const contentRef = React.useRef<DialogContentElement>(null);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -72,17 +72,25 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     onChange: onOpenChange,
   });
 
+  const onOpenClicked: React.MouseEventHandler<HTMLButtonElement> = React.useCallback(
+    (e) => {
+      setTriggerElement(e.target as HTMLButtonElement);
+      setOpen((prevOpen) => !prevOpen);
+    },
+    [setOpen, setTriggerElement]
+  );
+
   return (
     <DialogProvider
       scope={__scopeDialog}
-      triggerRef={triggerRef}
+      triggerElement={triggerElement}
       contentRef={contentRef}
       contentId={useId()}
       titleId={useId()}
       descriptionId={useId()}
       open={open}
       onOpenChange={setOpen}
-      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+      onOpenClicked={onOpenClicked}
       modal={modal}
       allowPinchZoom={allowPinchZoom}
     >
@@ -107,7 +115,6 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
   (props: ScopedProps<DialogTriggerProps>, forwardedRef) => {
     const { __scopeDialog, ...triggerProps } = props;
     const context = useDialogContext(TRIGGER_NAME, __scopeDialog);
-    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
     return (
       <Primitive.button
         type="button"
@@ -116,8 +123,8 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
         aria-controls={context.contentId}
         data-state={getState(context.open)}
         {...triggerProps}
-        ref={composedTriggerRef}
-        onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(props.onClick, context.onOpenClicked)}
       />
     );
   }
@@ -280,7 +287,7 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
         disableOutsidePointerEvents
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
-          context.triggerRef.current?.focus();
+          context.triggerElement?.focus();
         })}
         onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
           const originalEvent = event.detail.originalEvent;
@@ -318,7 +325,7 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
           props.onCloseAutoFocus?.(event);
 
           if (!event.defaultPrevented) {
-            if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
+            if (!hasInteractedOutsideRef.current) context.triggerElement?.focus();
             // Always prevent auto focus because we either focus manually or want user agent focus
             event.preventDefault();
           }
@@ -337,7 +344,7 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
           // We use `onInteractOutside` as some browsers also
           // focus on pointer down, creating the same issue.
           const target = event.target as HTMLElement;
-          const targetIsTrigger = context.triggerRef.current?.contains(target);
+          const targetIsTrigger = context.triggerElement?.contains(target);
           if (targetIsTrigger) event.preventDefault();
         }}
       />

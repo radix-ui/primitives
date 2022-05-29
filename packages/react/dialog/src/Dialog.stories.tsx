@@ -7,6 +7,8 @@ export default { title: 'Components/Dialog' };
 export const Styled = () => (
   <Dialog.Root>
     <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+    <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+    <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
     <Dialog.Portal>
       <Dialog.Overlay className={overlayClass()} />
       <Dialog.Content className={contentDefaultClass()}>

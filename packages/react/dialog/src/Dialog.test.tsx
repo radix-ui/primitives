@@ -1,6 +1,6 @@
 import React from 'react';
 import { axe } from 'jest-axe';
-import { render, fireEvent, RenderResult, cleanup } from '@testing-library/react';
+import { render, fireEvent, RenderResult, cleanup, waitFor } from '@testing-library/react';
 import * as Dialog from '@radix-ui/react-dialog';
 
 const OPEN_TEXT = 'Open';
@@ -39,6 +39,22 @@ const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
   </Dialog.Root>
 );
 
+const multipleTriggers = [1, 2, 3].map((v) => `${OPEN_TEXT}_${v}`);
+// Test in a different order to ensure this is working right.
+const multipleTriggersTestOrder = [2, 1, 3].map((v) => `${OPEN_TEXT}_${v}`);
+const MultipleTriggersDialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
+  <Dialog.Root {...props}>
+    {multipleTriggers.map((v) => (
+      <Dialog.Trigger key={v}>{v}</Dialog.Trigger>
+    ))}
+    <Dialog.Overlay />
+    <Dialog.Content>
+      <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+      <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+    </Dialog.Content>
+  </Dialog.Root>
+);
+
 function renderAndClickDialogTrigger(Dialog: any) {
   fireEvent.click(render(Dialog).getByText(OPEN_TEXT));
 }
@@ -68,6 +84,16 @@ describe('given a default Dialog', () => {
 
   it('should have no accessibility violations in default state', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
+  });
+
+  it('should restore focus to the clicked trigger', async () => {
+    render(<MultipleTriggersDialogTest />);
+    multipleTriggersTestOrder.forEach((text) => {
+      const trigger = rendered.getByText(text);
+      fireEvent.click(trigger);
+      fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
+      waitFor(() => expect(document.activeElement).toBe(trigger));
+    });
   });
 
   describe('after clicking the trigger', () => {
