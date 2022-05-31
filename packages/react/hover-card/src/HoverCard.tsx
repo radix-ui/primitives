@@ -5,7 +5,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
-import { Portal } from '@radix-ui/react-portal';
+import { UnstablePortal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -137,6 +137,45 @@ const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTrig
 HoverCardTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
+ * HoverCardPortal
+ * -----------------------------------------------------------------------------------------------*/
+
+const PORTAL_NAME = 'HoverCardPortal';
+
+type PortalContextValue = { forceMount?: true };
+const [PortalProvider, usePortalContext] = createHoverCardContext<PortalContextValue>(PORTAL_NAME, {
+  forceMount: undefined,
+});
+
+type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+interface HoverCardPortalProps extends Omit<PortalProps, 'asChild'> {
+  children?: React.ReactNode;
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
+
+const HoverCardPortal: React.FC<HoverCardPortalProps> = (
+  props: ScopedProps<HoverCardPortalProps>
+) => {
+  const { __scopeHoverCard, forceMount, children, container } = props;
+  const context = useHoverCardContext(PORTAL_NAME, __scopeHoverCard);
+  return (
+    <PortalProvider scope={__scopeHoverCard} forceMount={forceMount}>
+      <Presence present={forceMount || context.open}>
+        <UnstablePortal asChild container={container}>
+          {children}
+        </UnstablePortal>
+      </Presence>
+    </PortalProvider>
+  );
+};
+
+HoverCardPortal.displayName = PORTAL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * HoverCardContent
  * -----------------------------------------------------------------------------------------------*/
 
@@ -153,7 +192,8 @@ interface HoverCardContentProps extends HoverCardContentImplProps {
 
 const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardContentProps>(
   (props: ScopedProps<HoverCardContentProps>, forwardedRef) => {
-    const { forceMount, ...contentProps } = props;
+    const portalContext = usePortalContext(CONTENT_NAME, props.__scopeHoverCard);
+    const { forceMount = portalContext.forceMount, ...contentProps } = props;
     const context = useHoverCardContext(CONTENT_NAME, props.__scopeHoverCard);
     return (
       <Presence present={forceMount || context.open}>
@@ -198,11 +238,6 @@ interface HoverCardContentImplProps extends PopperContentProps {
    * Can be prevented.
    */
   onInteractOutside?: DismissableLayerProps['onInteractOutside'];
-  /**
-   * Whether the `HoverCard` should render in a `Portal`
-   * (default: `true`)
-   */
-  portalled?: boolean;
 }
 
 const HoverCardContentImpl = React.forwardRef<
@@ -211,7 +246,6 @@ const HoverCardContentImpl = React.forwardRef<
 >((props: ScopedProps<HoverCardContentImplProps>, forwardedRef) => {
   const {
     __scopeHoverCard,
-    portalled = true,
     onEscapeKeyDown,
     onPointerDownOutside,
     onFocusOutside,
@@ -222,7 +256,6 @@ const HoverCardContentImpl = React.forwardRef<
   const popperScope = usePopperScope(__scopeHoverCard);
   const ref = React.useRef<HoverCardContentImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
-  const PortalWrapper = portalled ? Portal : React.Fragment;
 
   React.useEffect(() => {
     if (ref.current) {
@@ -232,29 +265,27 @@ const HoverCardContentImpl = React.forwardRef<
   });
 
   return (
-    <PortalWrapper>
-      <DismissableLayer
-        asChild
-        disableOutsidePointerEvents={false}
-        onInteractOutside={onInteractOutside}
-        onEscapeKeyDown={onEscapeKeyDown}
-        onPointerDownOutside={onPointerDownOutside}
-        onFocusOutside={onFocusOutside}
-        onDismiss={context.onDismiss}
-      >
-        <PopperPrimitive.Content
-          {...popperScope}
-          {...contentProps}
-          ref={composedRefs}
-          style={{
-            ...contentProps.style,
-            // re-namespace exposed content custom property
-            ['--radix-hover-card-content-transform-origin' as any]:
-              'var(--radix-popper-transform-origin)',
-          }}
-        />
-      </DismissableLayer>
-    </PortalWrapper>
+    <DismissableLayer
+      asChild
+      disableOutsidePointerEvents={false}
+      onInteractOutside={onInteractOutside}
+      onEscapeKeyDown={onEscapeKeyDown}
+      onPointerDownOutside={onPointerDownOutside}
+      onFocusOutside={onFocusOutside}
+      onDismiss={context.onDismiss}
+    >
+      <PopperPrimitive.Content
+        {...popperScope}
+        {...contentProps}
+        ref={composedRefs}
+        style={{
+          ...contentProps.style,
+          // re-namespace exposed content custom property
+          ['--radix-hover-card-content-transform-origin' as any]:
+            'var(--radix-popper-transform-origin)',
+        }}
+      />
+    </DismissableLayer>
   );
 });
 
@@ -305,6 +336,7 @@ function getTabbableNodes(container: HTMLElement) {
 
 const Root = HoverCard;
 const Trigger = HoverCardTrigger;
+const Portal = HoverCardPortal;
 const Content = HoverCardContent;
 const Arrow = HoverCardArrow;
 
@@ -313,12 +345,20 @@ export {
   //
   HoverCard,
   HoverCardTrigger,
+  HoverCardPortal,
   HoverCardContent,
   HoverCardArrow,
   //
   Root,
   Trigger,
+  Portal,
   Content,
   Arrow,
 };
-export type { HoverCardProps, HoverCardTriggerProps, HoverCardContentProps, HoverCardArrowProps };
+export type {
+  HoverCardProps,
+  HoverCardTriggerProps,
+  HoverCardPortalProps,
+  HoverCardContentProps,
+  HoverCardArrowProps,
+};

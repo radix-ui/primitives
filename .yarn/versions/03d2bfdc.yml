@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-hover-card": patch
+
+declined:
+  - primitives
+  - ssr-testing
