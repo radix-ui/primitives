@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { getPlacementData } from '@radix-ui/popper';
+import * as ArrowPrimitive from '@radix-ui/react-arrow';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
+import { getPlacementData } from '@radix-ui/popper';
+import { Primitive } from '@radix-ui/react-primitive';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useRect } from '@radix-ui/react-use-rect';
 import { useSize } from '@radix-ui/react-use-size';
-import { Primitive } from '@radix-ui/react-primitive';
-import * as ArrowPrimitive from '@radix-ui/react-arrow';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -144,8 +145,13 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     });
     const isPlaced = placedSide !== undefined;
 
+    const [contentZIndex, setContentZIndex] = React.useState<string>();
+    useLayoutEffect(() => {
+      if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
+    }, [content]);
+
     return (
-      <div style={popperStyles} data-radix-popper-content-wrapper="">
+      <div style={{ ...popperStyles, zIndex: contentZIndex }} data-radix-popper-content-wrapper="">
         <PopperContentProvider
           scope={__scopePopper}
           arrowStyles={arrowStyles}
@@ -156,13 +162,13 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
             data-side={placedSide}
             data-align={placedAlign}
             {...contentProps}
+            ref={composedRefs}
             style={{
               ...contentProps.style,
               // if the PopperContent hasn't been placed yet (not all measurements done)
               // we prevent animations so that users's animation don't kick in too early referring wrong sides
               animation: !isPlaced ? 'none' : undefined,
             }}
-            ref={composedRefs}
           />
         </PopperContentProvider>
       </div>
