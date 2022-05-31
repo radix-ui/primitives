@@ -6,7 +6,7 @@ import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
-import { Portal } from '@radix-ui/react-portal';
+import { UnstablePortal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slottable } from '@radix-ui/react-slot';
@@ -276,6 +276,43 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
 TooltipTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
+ * TooltipPortal
+ * -----------------------------------------------------------------------------------------------*/
+
+const PORTAL_NAME = 'TooltipPortal';
+
+type PortalContextValue = { forceMount?: true };
+const [PortalProvider, usePortalContext] = createTooltipContext<PortalContextValue>(PORTAL_NAME, {
+  forceMount: undefined,
+});
+
+type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+interface TooltipPortalProps extends Omit<PortalProps, 'asChild'> {
+  children?: React.ReactNode;
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
+
+const TooltipPortal: React.FC<TooltipPortalProps> = (props: ScopedProps<TooltipPortalProps>) => {
+  const { __scopeTooltip, forceMount, children, container } = props;
+  const context = useTooltipContext(PORTAL_NAME, __scopeTooltip);
+  return (
+    <PortalProvider scope={__scopeTooltip} forceMount={forceMount}>
+      <Presence present={forceMount || context.open}>
+        <UnstablePortal asChild container={container}>
+          {children}
+        </UnstablePortal>
+      </Presence>
+    </PortalProvider>
+  );
+};
+
+TooltipPortal.displayName = PORTAL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * TooltipContent
  * -----------------------------------------------------------------------------------------------*/
 
@@ -292,7 +329,8 @@ interface TooltipContentProps extends TooltipContentImplProps {
 
 const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentProps>(
   (props: ScopedProps<TooltipContentProps>, forwardedRef) => {
-    const { forceMount, ...contentProps } = props;
+    const portalContext = usePortalContext(CONTENT_NAME, props.__scopeTooltip);
+    const { forceMount = portalContext.forceMount, ...contentProps } = props;
     const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
     return (
       <Presence present={forceMount || context.open}>
@@ -321,12 +359,6 @@ interface TooltipContentImplProps extends PopperContentProps {
    * Can be prevented.
    */
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
-
-  /**
-   * Whether the Tooltip should render in a Portal
-   * (default: `true`)
-   */
-  portalled?: boolean;
 }
 
 const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
@@ -335,14 +367,12 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       __scopeTooltip,
       children,
       'aria-label': ariaLabel,
-      portalled = true,
       onEscapeKeyDown,
       onPointerDownOutside,
       ...contentProps
     } = props;
     const context = useTooltipContext(CONTENT_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
-    const PortalWrapper = portalled ? Portal : React.Fragment;
     const { onClose } = context;
 
     // Close this tooltip if another one opens
@@ -364,34 +394,32 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
     }, [context.trigger, onClose]);
 
     return (
-      <PortalWrapper>
-        <DismissableLayer
-          asChild
-          disableOutsidePointerEvents={false}
-          onEscapeKeyDown={onEscapeKeyDown}
-          onPointerDownOutside={onPointerDownOutside}
-          onFocusOutside={(event) => event.preventDefault()}
-          onDismiss={onClose}
+      <DismissableLayer
+        asChild
+        disableOutsidePointerEvents={false}
+        onEscapeKeyDown={onEscapeKeyDown}
+        onPointerDownOutside={onPointerDownOutside}
+        onFocusOutside={(event) => event.preventDefault()}
+        onDismiss={onClose}
+      >
+        <PopperPrimitive.Content
+          data-state={context.stateAttribute}
+          {...popperScope}
+          {...contentProps}
+          ref={forwardedRef}
+          style={{
+            ...contentProps.style,
+            // re-namespace exposed content custom property
+            ['--radix-tooltip-content-transform-origin' as any]:
+              'var(--radix-popper-transform-origin)',
+          }}
         >
-          <PopperPrimitive.Content
-            data-state={context.stateAttribute}
-            {...popperScope}
-            {...contentProps}
-            ref={forwardedRef}
-            style={{
-              ...contentProps.style,
-              // re-namespace exposed content custom property
-              ['--radix-tooltip-content-transform-origin' as any]:
-                'var(--radix-popper-transform-origin)',
-            }}
-          >
-            <Slottable>{children}</Slottable>
-            <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
-              {ariaLabel || children}
-            </VisuallyHiddenPrimitive.Root>
-          </PopperPrimitive.Content>
-        </DismissableLayer>
-      </PortalWrapper>
+          <Slottable>{children}</Slottable>
+          <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
+            {ariaLabel || children}
+          </VisuallyHiddenPrimitive.Root>
+        </PopperPrimitive.Content>
+      </DismissableLayer>
     );
   }
 );
@@ -423,6 +451,7 @@ TooltipArrow.displayName = ARROW_NAME;
 const Provider = TooltipProvider;
 const Root = Tooltip;
 const Trigger = TooltipTrigger;
+const Portal = TooltipPortal;
 const Content = TooltipContent;
 const Arrow = TooltipArrow;
 
@@ -432,13 +461,21 @@ export {
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
+  TooltipPortal,
   TooltipContent,
   TooltipArrow,
   //
   Provider,
   Root,
   Trigger,
+  Portal,
   Content,
   Arrow,
 };
-export type { TooltipProps, TooltipTriggerProps, TooltipContentProps, TooltipArrowProps };
+export type {
+  TooltipProps,
+  TooltipTriggerProps,
+  TooltipPortalProps,
+  TooltipContentProps,
+  TooltipArrowProps,
+};
