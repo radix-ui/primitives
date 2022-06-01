@@ -198,7 +198,7 @@ export const Submenus = () => {
                 <DropdownMenu.Separator className={separatorClass()} />
                 <DropdownMenu.Sub>
                   <DropdownMenu.SubTrigger className={subTriggerClass()}>
-                    Modulz →
+                    WorkOS →
                   </DropdownMenu.SubTrigger>
                   <DropdownMenu.SubContent
                     className={contentClass()}

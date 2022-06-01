@@ -26,5 +26,4 @@ cypress/screenshots
 .idea
 
 # So devs can maintain their own todo lists in the project
-# modulz.slack.com/archives/GFU9U06DB/p1588189767003300
 TODO.md
