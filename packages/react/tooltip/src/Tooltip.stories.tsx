@@ -347,7 +347,7 @@ export const CustomContent = () => (
         <Tooltip.Trigger>Link</Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content className={contentClass()} sideOffset={5}>
-            View in <a href="https://modulz.app">Modulz</a>
+            View in <a href="https://workos.com">WorkOS</a>
             <Tooltip.Arrow className={arrowClass()} offset={10} />
           </Tooltip.Content>
         </Tooltip.Portal>
@@ -557,19 +557,19 @@ export const WithText = () => (
       Hello this is a test with{' '}
       <SimpleTooltip label="This is a tooltip">
         <Tooltip.Trigger asChild>
-          <a href="https://modulz.app">Tooltip.Root</a>
+          <a href="https://workos.com">Tooltip.Root</a>
         </Tooltip.Trigger>
       </SimpleTooltip>{' '}
       inside a Text Component{' '}
       <SimpleTooltip label="This is a tooltip" side="top">
         <Tooltip.Trigger asChild>
-          <a href="https://modulz.app">Tooltip.Root</a>
+          <a href="https://workos.com">Tooltip.Root</a>
         </Tooltip.Trigger>
       </SimpleTooltip>{' '}
       some more text{' '}
       <SimpleTooltip label="This is a tooltip" side="right" align="center">
         <Tooltip.Trigger asChild>
-          <a href="https://modulz.app">Tooltip.Root</a>
+          <a href="https://workos.com">Tooltip.Root</a>
         </Tooltip.Trigger>
       </SimpleTooltip>{' '}
     </p>

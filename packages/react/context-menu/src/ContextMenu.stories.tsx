@@ -275,7 +275,7 @@ export const Submenus = () => {
                 <ContextMenu.Separator className={separatorClass()} />
                 <ContextMenu.Sub>
                   <ContextMenu.SubTrigger className={subTriggerClass()}>
-                    Modulz →
+                    WorkOS →
                   </ContextMenu.SubTrigger>
                   <ContextMenu.SubContent
                     className={contentClass()}

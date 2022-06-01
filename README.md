@@ -24,10 +24,10 @@ Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 
 ## Authors
 
-- Benoit Grelard ([@benoitgrelard](https://twitter.com/benoitgrelard)) - [Modulz](https://modulz.app)
-- Jenna Smith ([@jjenzz](https://twitter.com/jjenzz)) - [Modulz](https://modulz.app)
-- Andy Hook ([@Andy_Hook](https://twitter.com/Andy_Hook)) - [Modulz](https://modulz.app)
-- Pedro Duarte ([@peduarte](https://twitter.com/peduarte)) - [Modulz](https://modulz.app)
+- Benoit Grelard ([@benoitgrelard](https://twitter.com/benoitgrelard)) - [WorkOS](https://workos.com)
+- Jenna Smith ([@jjenzz](https://twitter.com/jjenzz))
+- Andy Hook ([@Andy_Hook](https://twitter.com/Andy_Hook)) - [WorkOS](https://workos.com)
+- Pedro Duarte ([@peduarte](https://twitter.com/peduarte))
 - Chance Strickland ([@chancethedev](https://twitter.com/chancethedev))
 
 ## Contributors
@@ -39,8 +39,8 @@ Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 
 ## Community
 
-- Pedro Duarte ([@peduarte](https://twitter.com/peduarte)) - [Modulz](https://modulz.app)
-- Colm Tuite ([@colmtuite](https://twitter.com/colmtuite)) - [Modulz](https://modulz.app)
+- Pedro Duarte ([@peduarte](https://twitter.com/peduarte))
+- Colm Tuite ([@colmtuite](https://twitter.com/colmtuite)) - [WorkOS](https://workos.com)
 
 - [Discord](https://discord.com/invite/7Xb99uG) - To get involved with the Radix community, ask questions and share tips.
 - [Twitter](https://twitter.com/radix_ui) - To receive updates, announcements, blog posts, and general Radix tips.
@@ -55,6 +55,6 @@ Thanks to [Chromatic](https://www.chromatic.com/) for providing the visual testi
 
 ## License
 
-Licensed under the MIT License, Copyright © 2020-present [Modulz](https://modulz.app).
+Licensed under the MIT License, Copyright © 2022-present [WorkOS](https://workos.com).
 
 See [LICENSE](./LICENSE) for more information.

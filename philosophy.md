@@ -36,10 +36,6 @@ Our goal is to create a well-funded open-source component library that the commu
 
 - Components are feature-rich, with support for keyboard interaction, collision detection, focus trapping, dynamic resizing, scroll locking, native fallbacks, and more.
 
-### Interoperable
-
-- Components are fully interoperable with the Modulz Editor and compatible with Modulz design tool plugins.
-
 ### Composable
 
 - Components are designed with an open API that provides consumers with direct access to the underlying DOM node that is rendered to the page.

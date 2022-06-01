@@ -38,15 +38,15 @@ describe('DropdownMenu', () => {
 
           // Test at collision edge
           // Moving away
-          pointerOver('Modulz →');
+          pointerOver('WorkOS →');
           cy.findByText('Radix').should('be.visible');
-          pointerExitLeftToRight('Modulz →');
+          pointerExitLeftToRight('WorkOS →');
           cy.findByText('Radix').should('not.exist');
 
           // Moving towards
-          pointerOver('Modulz →');
+          pointerOver('WorkOS →');
           cy.findByText('Radix').should('be.visible');
-          pointerExitRightToLeft('Modulz →');
+          pointerExitRightToLeft('WorkOS →');
           cy.findByText('Radix').should('be.visible');
         }
       );
@@ -80,7 +80,7 @@ describe('DropdownMenu', () => {
       it('should close unassociated submenus when moving pointer back to the root trigger', () => {
         // Open multiple nested submenus and back to trigger in root menu
         pointerOver('Bookmarks →');
-        pointerOver('Modulz →');
+        pointerOver('WorkOS →');
         pointerOver('Radix');
         pointerOver('Bookmarks →');
 
@@ -126,9 +126,9 @@ describe('DropdownMenu', () => {
 
       it('should close only the focused submenu when pressing left arrow key', () => {
         cy.findByText('Bookmarks →').type('{enter}');
-        cy.findByText('Modulz →').type('{enter}');
+        cy.findByText('WorkOS →').type('{enter}');
         cy.findByText('Stitches').type('{leftarrow}').should('not.exist');
-        cy.findByText('Modulz →').should('be.visible');
+        cy.findByText('WorkOS →').should('be.visible');
         cy.findByText('New Window').should('be.visible');
       });
 
@@ -153,7 +153,7 @@ describe('DropdownMenu', () => {
       it('should scope typeahead behaviour to the active menu', () => {
         // Matching items outside of the active menu should not become focused
         pointerOver('Bookmarks →');
-        pointerOver('Modulz →');
+        pointerOver('WorkOS →');
         cy.findByText('Stitches').focus().type('Inbox');
         cy.findByText('Inbox').should('not.have.focus');
 
@@ -189,15 +189,15 @@ describe('DropdownMenu', () => {
 
           // Test at collision edge
           // Moving away
-          pointerOver('Modulz →');
+          pointerOver('WorkOS →');
           cy.findByText('Radix').should('be.visible');
-          pointerExitRightToLeft('Modulz →');
+          pointerExitRightToLeft('WorkOS →');
           cy.findByText('Radix').should('not.exist');
 
           // Moving towards
-          pointerOver('Modulz →');
+          pointerOver('WorkOS →');
           cy.findByText('Radix').should('be.visible');
-          pointerExitLeftToRight('Modulz →');
+          pointerExitLeftToRight('WorkOS →');
           cy.findByText('Radix').should('be.visible');
         }
       );
