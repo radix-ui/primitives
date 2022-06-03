@@ -121,6 +121,10 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
       return () => {
         container.removeEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
 
+        if (document.activeElement !== document.body) {
+          return;
+        }
+
         // We hit a react bug (fixed in v17) with focusing in unmount.
         // We need to delay the focus a little to get around it for now.
         // See: https://github.com/facebook/react/issues/17894
