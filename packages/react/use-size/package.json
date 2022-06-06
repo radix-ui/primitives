@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-use-size",
-  "version": "0.1.2-rc.31",
+  "version": "0.1.2-rc.32",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
