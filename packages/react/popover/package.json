@@ -30,7 +30,7 @@
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "aria-hidden": "^1.1.1",
-    "react-remove-scroll": "^2.4.0"
+    "react-remove-scroll": "2.5.4"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0 || ^18.0",
