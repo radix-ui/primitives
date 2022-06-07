@@ -7,6 +7,7 @@ import { Portal } from '@radix-ui/react-portal';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { Slot } from '@radix-ui/react-slot';
 
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
@@ -502,7 +503,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
             />
           </Portal>
           <Portal>
-            <RemoveScroll>
+            <RemoveScroll as={Slot}>
               <DismissableLayer
                 asChild
                 disableOutsidePointerEvents
