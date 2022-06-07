@@ -4,6 +4,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
+  DialogPortal,
   DialogOverlay,
   DialogContent,
   DialogClose,
@@ -13,12 +14,14 @@ export default function DialogPage() {
   return (
     <Dialog>
       <DialogTrigger>open</DialogTrigger>
-      <DialogOverlay />
-      <DialogContent>
-        <DialogTitle>Title</DialogTitle>
-        <DialogDescription>Description</DialogDescription>
-        <DialogClose>close</DialogClose>
-      </DialogContent>
+      <DialogPortal>
+        <DialogOverlay />
+        <DialogContent>
+          <DialogTitle>Title</DialogTitle>
+          <DialogDescription>Description</DialogDescription>
+          <DialogClose>close</DialogClose>
+        </DialogContent>
+      </DialogPortal>
     </Dialog>
   );
 }
