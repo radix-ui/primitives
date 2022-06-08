@@ -5,13 +5,14 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
+import { useDirection } from '@radix-ui/react-direction';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import { useLabelContext } from '@radix-ui/react-label';
 import { Portal } from '@radix-ui/react-portal';
 import { Primitive } from '@radix-ui/react-primitive';
-import { useDirection } from '@radix-ui/react-direction';
+import { Slot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -717,7 +718,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         searchRef={searchRef}
       >
         <Portal>
-          <RemoveScroll>
+          <RemoveScroll as={Slot}>
             <div
               ref={setContentWrapper}
               style={{ display: 'flex', flexDirection: 'column', position: 'fixed', zIndex: 0 }}

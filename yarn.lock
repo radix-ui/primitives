@@ -3394,6 +3394,7 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     aria-hidden: ^1.1.1
     react-remove-scroll: 2.5.4
@@ -3444,6 +3445,7 @@ __metadata:
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     aria-hidden: ^1.1.1
     react-remove-scroll: 2.5.4
@@ -3605,6 +3607,7 @@ __metadata:
     "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"

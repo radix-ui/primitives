@@ -1,23 +1,24 @@
 import * as React from 'react';
-import { RemoveScroll } from 'react-remove-scroll';
-import { hideOthers } from 'aria-hidden';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
+import { useDirection } from '@radix-ui/react-direction';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { FocusScope } from '@radix-ui/react-focus-scope';
-import { Presence } from '@radix-ui/react-presence';
-import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
+import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { UnstablePortal } from '@radix-ui/react-portal';
+import { Presence } from '@radix-ui/react-presence';
+import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
-import { useDirection } from '@radix-ui/react-direction';
+import { Slot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useFocusGuards } from '@radix-ui/react-focus-guards';
-import { useId } from '@radix-ui/react-id';
+import { hideOthers } from 'aria-hidden';
+import { RemoveScroll } from 'react-remove-scroll';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -398,7 +399,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
 
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
     const scrollLockWrapperProps = disableOutsideScroll
-      ? { allowPinchZoom: rootContext.allowPinchZoom }
+      ? { as: Slot, allowPinchZoom: rootContext.allowPinchZoom }
       : undefined;
 
     const handleTypeaheadSearch = (key: string) => {
@@ -440,35 +441,35 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     }, []);
 
     return (
-      <ScrollLockWrapper {...scrollLockWrapperProps}>
-        <MenuContentProvider
-          scope={__scopeMenu}
-          searchRef={searchRef}
-          onItemEnter={React.useCallback(
-            (event) => {
-              if (isPointerMovingToSubmenu(event)) event.preventDefault();
-            },
-            [isPointerMovingToSubmenu]
-          )}
-          onItemLeave={React.useCallback(
-            (event) => {
-              if (isPointerMovingToSubmenu(event)) return;
-              contentRef.current?.focus();
-              setCurrentItemId(null);
-            },
-            [isPointerMovingToSubmenu]
-          )}
-          onTriggerLeave={React.useCallback(
-            (event) => {
-              if (isPointerMovingToSubmenu(event)) event.preventDefault();
-            },
-            [isPointerMovingToSubmenu]
-          )}
-          pointerGraceTimerRef={pointerGraceTimerRef}
-          onPointerGraceIntentChange={React.useCallback((intent) => {
-            pointerGraceIntentRef.current = intent;
-          }, [])}
-        >
+      <MenuContentProvider
+        scope={__scopeMenu}
+        searchRef={searchRef}
+        onItemEnter={React.useCallback(
+          (event) => {
+            if (isPointerMovingToSubmenu(event)) event.preventDefault();
+          },
+          [isPointerMovingToSubmenu]
+        )}
+        onItemLeave={React.useCallback(
+          (event) => {
+            if (isPointerMovingToSubmenu(event)) return;
+            contentRef.current?.focus();
+            setCurrentItemId(null);
+          },
+          [isPointerMovingToSubmenu]
+        )}
+        onTriggerLeave={React.useCallback(
+          (event) => {
+            if (isPointerMovingToSubmenu(event)) event.preventDefault();
+          },
+          [isPointerMovingToSubmenu]
+        )}
+        pointerGraceTimerRef={pointerGraceTimerRef}
+        onPointerGraceIntentChange={React.useCallback((intent) => {
+          pointerGraceIntentRef.current = intent;
+        }, [])}
+      >
+        <ScrollLockWrapper {...scrollLockWrapperProps}>
           <FocusScope
             asChild
             trapped={trapFocus}
@@ -558,8 +559,8 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
               </RovingFocusGroup.Root>
             </DismissableLayer>
           </FocusScope>
-        </MenuContentProvider>
-      </ScrollLockWrapper>
+        </ScrollLockWrapper>
+      </MenuContentProvider>
     );
   }
 );
