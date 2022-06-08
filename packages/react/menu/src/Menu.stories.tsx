@@ -353,11 +353,7 @@ export const Animated = () => {
 
 type MenuProps = Omit<
   React.ComponentProps<typeof Menu.Root> & React.ComponentProps<typeof Menu.Content>,
-  | 'portalled'
-  | 'trapFocus'
-  | 'onCloseAutoFocus'
-  | 'disableOutsidePointerEvents'
-  | 'disableOutsideScroll'
+  'trapFocus' | 'onCloseAutoFocus' | 'disableOutsidePointerEvents' | 'disableOutsideScroll'
 >;
 
 const MenuWithAnchor: React.FC<MenuProps> = (props) => {
@@ -366,15 +362,16 @@ const MenuWithAnchor: React.FC<MenuProps> = (props) => {
     <Menu.Root open={open} onOpenChange={() => {}} modal={false}>
       {/* inline-block allows anchor to move when rtl changes on document */}
       <Menu.Anchor style={{ display: 'inline-block' }} />
-      <Menu.Content
-        className={contentClass()}
-        portalled
-        onCloseAutoFocus={(event) => event.preventDefault()}
-        align="start"
-        {...contentProps}
-      >
-        {children}
-      </Menu.Content>
+      <Menu.Portal>
+        <Menu.Content
+          className={contentClass()}
+          onCloseAutoFocus={(event) => event.preventDefault()}
+          align="start"
+          {...contentProps}
+        >
+          {children}
+        </Menu.Content>
+      </Menu.Portal>
     </Menu.Root>
   );
 };
@@ -396,12 +393,14 @@ const Submenu: React.FC<MenuProps & { animated: boolean; disabled?: boolean; hea
       <Menu.SubTrigger className={subTriggerClass()} disabled={disabled}>
         {heading} →
       </Menu.SubTrigger>
-      <Menu.SubContent
-        className={animated ? animatedContentClass() : contentClass()}
-        {...contentProps}
-      >
-        {children}
-      </Menu.SubContent>
+      <Menu.Portal>
+        <Menu.SubContent
+          className={animated ? animatedContentClass() : contentClass()}
+          {...contentProps}
+        >
+          {children}
+        </Menu.SubContent>
+      </Menu.Portal>
     </Menu.Sub>
   );
 };

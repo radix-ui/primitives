@@ -5,7 +5,6 @@ export default function HoverCardPage() {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger>Hover me</HoverCard.Trigger>
-
       <HoverCard.Portal>
         <HoverCard.Content>
           <HoverCard.Arrow width={20} height={10} />
