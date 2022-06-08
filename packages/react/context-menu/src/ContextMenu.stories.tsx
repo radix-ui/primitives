@@ -8,263 +8,235 @@ const { contentClass, itemClass, labelClass, separatorClass, subTriggerClass } =
 
 export default { title: 'Components/ContextMenu' };
 
-export const Styled = () => {
-  const [open, setOpen] = React.useState(false);
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '200vw',
-        height: '200vh',
-        gap: 20,
-      }}
-    >
-      <ContextMenu.Root onOpenChange={setOpen}>
-        <ContextMenu.Trigger
-          className={triggerClass()}
-          style={{ background: open ? 'lightblue' : undefined }}
-        >
-          Right click here
-        </ContextMenu.Trigger>
-        <ContextMenu.Portal>
-          <ContextMenu.Content className={contentClass()} alignOffset={-5}>
-            <ContextMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
-              Undo
-            </ContextMenu.Item>
-            <ContextMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
-              Redo
-            </ContextMenu.Item>
-            <ContextMenu.Separator className={separatorClass()} />
-            <ContextMenu.Item className={itemClass()} disabled onSelect={() => console.log('cut')}>
-              Cut
-            </ContextMenu.Item>
-            <ContextMenu.Item className={itemClass()} onSelect={() => console.log('copy')}>
-              Copy
-            </ContextMenu.Item>
-            <ContextMenu.Item className={itemClass()} onSelect={() => console.log('paste')}>
-              Paste
-            </ContextMenu.Item>
-          </ContextMenu.Content>
-        </ContextMenu.Portal>
-      </ContextMenu.Root>
-    </div>
-  );
-};
+export const Styled = () => (
+  <div
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '200vw',
+      height: '200vh',
+      gap: 20,
+    }}
+  >
+    <ContextMenu.Root>
+      <ContextMenu.Trigger className={triggerClass()}>Right click here</ContextMenu.Trigger>
+      <ContextMenu.Portal>
+        <ContextMenu.Content className={contentClass()} alignOffset={-5}>
+          <ContextMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
+            Undo
+          </ContextMenu.Item>
+          <ContextMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
+            Redo
+          </ContextMenu.Item>
+          <ContextMenu.Separator className={separatorClass()} />
+          <ContextMenu.Item className={itemClass()} disabled onSelect={() => console.log('cut')}>
+            Cut
+          </ContextMenu.Item>
+          <ContextMenu.Item className={itemClass()} onSelect={() => console.log('copy')}>
+            Copy
+          </ContextMenu.Item>
+          <ContextMenu.Item className={itemClass()} onSelect={() => console.log('paste')}>
+            Paste
+          </ContextMenu.Item>
+        </ContextMenu.Content>
+      </ContextMenu.Portal>
+    </ContextMenu.Root>
+  </div>
+);
 
-export const Modality = () => {
-  const [open1, setOpen1] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
-
-  return (
-    <div
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '110vh' }}
-    >
-      <div style={{ display: 'grid', gap: 50 }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
-          <h1>Modal (default)</h1>
-          <ContextMenu.Root onOpenChange={setOpen1}>
-            <ContextMenu.Trigger
-              className={triggerClass()}
-              style={{ background: open1 ? 'lightblue' : undefined }}
-            />
-            <ContextMenu.Portal>
-              <ContextMenu.Content className={contentClass()} alignOffset={-5}>
-                <ContextMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
-                  Undo
-                </ContextMenu.Item>
-                <ContextMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
-                  Redo
-                </ContextMenu.Item>
-                <ContextMenu.Separator className={separatorClass()} />
-                <ContextMenu.Sub>
-                  <ContextMenu.SubTrigger className={subTriggerClass()}>
-                    Submenu →
-                  </ContextMenu.SubTrigger>
-                  <ContextMenu.Portal>
-                    <ContextMenu.SubContent
-                      className={contentClass()}
-                      sideOffset={12}
-                      alignOffset={-6}
-                    >
-                      <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
-                        One
-                      </ContextMenu.Item>
-                      <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
-                        Two
-                      </ContextMenu.Item>
-                      <ContextMenu.Separator className={separatorClass()} />
-                      <ContextMenu.Sub>
-                        <ContextMenu.SubTrigger className={subTriggerClass()}>
-                          Submenu →
-                        </ContextMenu.SubTrigger>
-                        <ContextMenu.Portal>
-                          <ContextMenu.SubContent
-                            className={contentClass()}
-                            sideOffset={12}
-                            alignOffset={-6}
+export const Modality = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '110vh' }}>
+    <div style={{ display: 'grid', gap: 50 }}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+        <h1>Modal (default)</h1>
+        <ContextMenu.Root>
+          <ContextMenu.Trigger className={triggerClass()} />
+          <ContextMenu.Portal>
+            <ContextMenu.Content className={contentClass()} alignOffset={-5}>
+              <ContextMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
+                Undo
+              </ContextMenu.Item>
+              <ContextMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
+                Redo
+              </ContextMenu.Item>
+              <ContextMenu.Separator className={separatorClass()} />
+              <ContextMenu.Sub>
+                <ContextMenu.SubTrigger className={subTriggerClass()}>
+                  Submenu →
+                </ContextMenu.SubTrigger>
+                <ContextMenu.Portal>
+                  <ContextMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
+                  >
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
+                      One
+                    </ContextMenu.Item>
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
+                      Two
+                    </ContextMenu.Item>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Sub>
+                      <ContextMenu.SubTrigger className={subTriggerClass()}>
+                        Submenu →
+                      </ContextMenu.SubTrigger>
+                      <ContextMenu.Portal>
+                        <ContextMenu.SubContent
+                          className={contentClass()}
+                          sideOffset={12}
+                          alignOffset={-6}
+                        >
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('one')}
                           >
-                            <ContextMenu.Item
-                              className={itemClass()}
-                              onSelect={() => console.log('one')}
-                            >
-                              One
-                            </ContextMenu.Item>
-                            <ContextMenu.Item
-                              className={itemClass()}
-                              onSelect={() => console.log('two')}
-                            >
-                              Two
-                            </ContextMenu.Item>
-                            <ContextMenu.Item
-                              className={itemClass()}
-                              onSelect={() => console.log('three')}
-                            >
-                              Three
-                            </ContextMenu.Item>
-                            <ContextMenu.Arrow offset={14} />
-                          </ContextMenu.SubContent>
-                        </ContextMenu.Portal>
-                      </ContextMenu.Sub>
-                      <ContextMenu.Separator className={separatorClass()} />
-                      <ContextMenu.Item
-                        className={itemClass()}
-                        onSelect={() => console.log('three')}
-                      >
-                        Three
-                      </ContextMenu.Item>
-                      <ContextMenu.Arrow offset={14} />
-                    </ContextMenu.SubContent>
-                  </ContextMenu.Portal>
-                </ContextMenu.Sub>
-                <ContextMenu.Separator className={separatorClass()} />
-                <ContextMenu.Item
-                  className={itemClass()}
-                  disabled
-                  onSelect={() => console.log('cut')}
-                >
-                  Cut
-                </ContextMenu.Item>
-                <ContextMenu.Item className={itemClass()} onSelect={() => console.log('copy')}>
-                  Copy
-                </ContextMenu.Item>
-                <ContextMenu.Item className={itemClass()} onSelect={() => console.log('paste')}>
-                  Paste
-                </ContextMenu.Item>
-              </ContextMenu.Content>
-            </ContextMenu.Portal>
-          </ContextMenu.Root>
-          <textarea
-            style={{ width: 500, height: 100, marginTop: 10 }}
-            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
-          />
-        </div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
-          <h1>Non modal</h1>
-          <ContextMenu.Root onOpenChange={setOpen2} modal={false}>
-            <ContextMenu.Trigger
-              className={triggerClass()}
-              style={{ background: open2 ? 'lightblue' : undefined }}
-            />
-            <ContextMenu.Portal>
-              <ContextMenu.Content className={contentClass()} alignOffset={-5}>
-                <ContextMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
-                  Undo
-                </ContextMenu.Item>
-                <ContextMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
-                  Redo
-                </ContextMenu.Item>
-                <ContextMenu.Separator className={separatorClass()} />
-                <ContextMenu.Sub>
-                  <ContextMenu.SubTrigger className={subTriggerClass()}>
-                    Submenu →
-                  </ContextMenu.SubTrigger>
-                  <ContextMenu.Portal>
-                    <ContextMenu.SubContent
-                      className={contentClass()}
-                      sideOffset={12}
-                      alignOffset={-6}
-                    >
-                      <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
-                        One
-                      </ContextMenu.Item>
-                      <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
-                        Two
-                      </ContextMenu.Item>
-                      <ContextMenu.Separator className={separatorClass()} />
-                      <ContextMenu.Sub defaultOpen>
-                        <ContextMenu.SubTrigger className={subTriggerClass()}>
-                          Submenu →
-                        </ContextMenu.SubTrigger>
-                        <ContextMenu.Portal>
-                          <ContextMenu.SubContent
-                            className={contentClass()}
-                            sideOffset={12}
-                            alignOffset={-6}
+                            One
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('two')}
                           >
-                            <ContextMenu.Item
-                              className={itemClass()}
-                              onSelect={() => console.log('one')}
-                            >
-                              One
-                            </ContextMenu.Item>
-                            <ContextMenu.Item
-                              className={itemClass()}
-                              onSelect={() => console.log('two')}
-                            >
-                              Two
-                            </ContextMenu.Item>
-                            <ContextMenu.Item
-                              className={itemClass()}
-                              onSelect={() => console.log('three')}
-                            >
-                              Three
-                            </ContextMenu.Item>
-                            <ContextMenu.Arrow offset={14} />
-                          </ContextMenu.SubContent>
-                        </ContextMenu.Portal>
-                      </ContextMenu.Sub>
-                      <ContextMenu.Separator className={separatorClass()} />
-                      <ContextMenu.Item
-                        className={itemClass()}
-                        onSelect={() => console.log('three')}
-                      >
-                        Three
-                      </ContextMenu.Item>
-                      <ContextMenu.Arrow offset={14} />
-                    </ContextMenu.SubContent>
-                  </ContextMenu.Portal>
-                </ContextMenu.Sub>
-                <ContextMenu.Separator className={separatorClass()} />
-                <ContextMenu.Item
-                  className={itemClass()}
-                  disabled
-                  onSelect={() => console.log('cut')}
-                >
-                  Cut
-                </ContextMenu.Item>
-                <ContextMenu.Item className={itemClass()} onSelect={() => console.log('copy')}>
-                  Copy
-                </ContextMenu.Item>
-                <ContextMenu.Item className={itemClass()} onSelect={() => console.log('paste')}>
-                  Paste
-                </ContextMenu.Item>
-              </ContextMenu.Content>
-            </ContextMenu.Portal>
-          </ContextMenu.Root>
-          <textarea
-            style={{ width: 500, height: 100, marginTop: 10 }}
-            defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
-          />
-        </div>
+                            Two
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('three')}
+                          >
+                            Three
+                          </ContextMenu.Item>
+                          <ContextMenu.Arrow offset={14} />
+                        </ContextMenu.SubContent>
+                      </ContextMenu.Portal>
+                    </ContextMenu.Sub>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
+                      Three
+                    </ContextMenu.Item>
+                    <ContextMenu.Arrow offset={14} />
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
+              </ContextMenu.Sub>
+              <ContextMenu.Separator className={separatorClass()} />
+              <ContextMenu.Item
+                className={itemClass()}
+                disabled
+                onSelect={() => console.log('cut')}
+              >
+                Cut
+              </ContextMenu.Item>
+              <ContextMenu.Item className={itemClass()} onSelect={() => console.log('copy')}>
+                Copy
+              </ContextMenu.Item>
+              <ContextMenu.Item className={itemClass()} onSelect={() => console.log('paste')}>
+                Paste
+              </ContextMenu.Item>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>
+        <textarea
+          style={{ width: 500, height: 100, marginTop: 10 }}
+          defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+        />
+      </div>
+      <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+        <h1>Non modal</h1>
+        <ContextMenu.Root modal={false}>
+          <ContextMenu.Trigger className={triggerClass()} />
+          <ContextMenu.Portal>
+            <ContextMenu.Content className={contentClass()} alignOffset={-5}>
+              <ContextMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
+                Undo
+              </ContextMenu.Item>
+              <ContextMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
+                Redo
+              </ContextMenu.Item>
+              <ContextMenu.Separator className={separatorClass()} />
+              <ContextMenu.Sub>
+                <ContextMenu.SubTrigger className={subTriggerClass()}>
+                  Submenu →
+                </ContextMenu.SubTrigger>
+                <ContextMenu.Portal>
+                  <ContextMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
+                  >
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
+                      One
+                    </ContextMenu.Item>
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
+                      Two
+                    </ContextMenu.Item>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Sub defaultOpen>
+                      <ContextMenu.SubTrigger className={subTriggerClass()}>
+                        Submenu →
+                      </ContextMenu.SubTrigger>
+                      <ContextMenu.Portal>
+                        <ContextMenu.SubContent
+                          className={contentClass()}
+                          sideOffset={12}
+                          alignOffset={-6}
+                        >
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('one')}
+                          >
+                            One
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('two')}
+                          >
+                            Two
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('three')}
+                          >
+                            Three
+                          </ContextMenu.Item>
+                          <ContextMenu.Arrow offset={14} />
+                        </ContextMenu.SubContent>
+                      </ContextMenu.Portal>
+                    </ContextMenu.Sub>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
+                      Three
+                    </ContextMenu.Item>
+                    <ContextMenu.Arrow offset={14} />
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
+              </ContextMenu.Sub>
+              <ContextMenu.Separator className={separatorClass()} />
+              <ContextMenu.Item
+                className={itemClass()}
+                disabled
+                onSelect={() => console.log('cut')}
+              >
+                Cut
+              </ContextMenu.Item>
+              <ContextMenu.Item className={itemClass()} onSelect={() => console.log('copy')}>
+                Copy
+              </ContextMenu.Item>
+              <ContextMenu.Item className={itemClass()} onSelect={() => console.log('paste')}>
+                Paste
+              </ContextMenu.Item>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>
+        <textarea
+          style={{ width: 500, height: 100, marginTop: 10 }}
+          defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+        />
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export const Submenus = () => {
-  const [open, setOpen] = React.useState(false);
   const [rtl, setRtl] = React.useState(false);
 
   return (
@@ -286,13 +258,8 @@ export const Submenus = () => {
           />
           Right-to-left
         </label>
-        <ContextMenu.Root onOpenChange={setOpen} dir={rtl ? 'rtl' : 'ltr'}>
-          <ContextMenu.Trigger
-            className={triggerClass()}
-            style={{ background: open ? 'lightblue' : undefined }}
-          >
-            Right Click Here
-          </ContextMenu.Trigger>
+        <ContextMenu.Root dir={rtl ? 'rtl' : 'ltr'}>
+          <ContextMenu.Trigger className={triggerClass()}>Right Click Here</ContextMenu.Trigger>
           <ContextMenu.Portal>
             <ContextMenu.Content className={contentClass()}>
               <ContextMenu.Item className={itemClass()} onSelect={() => console.log('new-tab')}>
@@ -771,6 +738,10 @@ const triggerClass = css({
   '&:focus': {
     outline: 'none',
     boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.5)',
+  },
+
+  '&[data-state="open"]': {
+    backgroundColor: 'lightblue',
   },
 });
 
