@@ -7,6 +7,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import { useLabelContext } from '@radix-ui/react-label';
@@ -438,6 +439,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     React.useEffect(() => {
       if (content) return hideOthers(content);
     }, [content]);
+
+    // Make sure the whole tree has focus guards as our `Select` may be
+    // the last element in the DOM (because of the `Portal`)
+    useFocusGuards();
 
     const focusFirst = React.useCallback(
       (candidates: Array<HTMLElement | null>) => {
