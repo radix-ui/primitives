@@ -10,7 +10,7 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
@@ -181,7 +181,7 @@ const [PortalProvider, usePortalContext] = createMenuContext<PortalContextValue>
   forceMount: undefined,
 });
 
-type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface MenuPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
   /**
@@ -197,9 +197,9 @@ const MenuPortal: React.FC<MenuPortalProps> = (props: ScopedProps<MenuPortalProp
   return (
     <PortalProvider scope={__scopeMenu} forceMount={forceMount}>
       <Presence present={forceMount || context.open}>
-        <UnstablePortal asChild container={container}>
+        <PortalPrimitive asChild container={container}>
           {children}
-        </UnstablePortal>
+        </PortalPrimitive>
       </Presence>
     </PortalProvider>
   );

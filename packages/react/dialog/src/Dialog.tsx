@@ -6,7 +6,7 @@ import { useId } from '@radix-ui/react-id';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
@@ -136,7 +136,7 @@ const [PortalProvider, usePortalContext] = createDialogContext<PortalContextValu
   forceMount: undefined,
 });
 
-type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface DialogPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
   /**
@@ -153,9 +153,9 @@ const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPort
     <PortalProvider scope={__scopeDialog} forceMount={forceMount}>
       {React.Children.map(children, (child) => (
         <Presence present={forceMount || context.open}>
-          <UnstablePortal asChild container={container}>
+          <PortalPrimitive asChild container={container}>
             {child}
-          </UnstablePortal>
+          </PortalPrimitive>
         </Presence>
       ))}
     </PortalProvider>

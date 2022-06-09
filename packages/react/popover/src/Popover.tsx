@@ -8,7 +8,7 @@ import { FocusScope } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
@@ -183,7 +183,7 @@ const [PortalProvider, usePortalContext] = createPopoverContext<PortalContextVal
   forceMount: undefined,
 });
 
-type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface PopoverPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
   /**
@@ -199,9 +199,9 @@ const PopoverPortal: React.FC<PopoverPortalProps> = (props: ScopedProps<PopoverP
   return (
     <PortalProvider scope={__scopePopover} forceMount={forceMount}>
       <Presence present={forceMount || context.open}>
-        <UnstablePortal asChild container={container}>
+        <PortalPrimitive asChild container={container}>
           {children}
-        </UnstablePortal>
+        </PortalPrimitive>
       </Presence>
     </PortalProvider>
   );

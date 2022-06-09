@@ -3,7 +3,7 @@
 import React from 'react';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import * as Popper from '@radix-ui/react-popper';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal } from '@radix-ui/react-portal';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -488,7 +488,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
       </button>
       {open ? (
         <FocusGuards>
-          <UnstablePortal asChild>
+          <Portal asChild>
             <div
               style={{
                 position: 'fixed',
@@ -501,8 +501,8 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
                 opacity: 0.2,
               }}
             />
-          </UnstablePortal>
-          <UnstablePortal asChild>
+          </Portal>
+          <Portal asChild>
             <RemoveScroll as={Slot}>
               <DismissableLayer
                 asChild
@@ -537,7 +537,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
                 </FocusScope>
               </DismissableLayer>
             </RemoveScroll>
-          </UnstablePortal>
+          </Portal>
         </FocusGuards>
       ) : null}
     </>
@@ -584,7 +584,7 @@ function DummyPopover({
       {open ? (
         <FocusGuards>
           <ScrollContainer {...scrollLockWrapperProps}>
-            <UnstablePortal asChild>
+            <Portal asChild>
               <DismissableLayer
                 asChild
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
@@ -636,7 +636,7 @@ function DummyPopover({
                   </Popper.Content>
                 </FocusScope>
               </DismissableLayer>
-            </UnstablePortal>
+            </Portal>
           </ScrollContainer>
         </FocusGuards>
       ) : null}

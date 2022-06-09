@@ -5,7 +5,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -147,7 +147,7 @@ const [PortalProvider, usePortalContext] = createHoverCardContext<PortalContextV
   forceMount: undefined,
 });
 
-type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface HoverCardPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
   /**
@@ -165,9 +165,9 @@ const HoverCardPortal: React.FC<HoverCardPortalProps> = (
   return (
     <PortalProvider scope={__scopeHoverCard} forceMount={forceMount}>
       <Presence present={forceMount || context.open}>
-        <UnstablePortal asChild container={container}>
+        <PortalPrimitive asChild container={container}>
           {children}
-        </UnstablePortal>
+        </PortalPrimitive>
       </Presence>
     </PortalProvider>
   );

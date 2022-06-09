@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal } from '@radix-ui/react-portal';
 
 export default { title: 'Components/Portal' };
 
@@ -19,13 +19,13 @@ export const Base = () => (
       necessitatibus eius pariatur.
     </p>
 
-    <UnstablePortal>
+    <Portal>
       <h1>This content is rendered in a portal (another DOM tree)</h1>
       <p>
         Because of the portal, it can appear in a different DOM tree from the main one (by default a
         new element inside the body), even though it is part of the same React tree.
       </p>
-    </UnstablePortal>
+    </Portal>
   </div>
 );
 
@@ -36,12 +36,12 @@ export const CustomContainer = () => {
     <>
       <div style={{ maxWidth: 300, padding: 10, margin: 10, border: '1px solid' }}>
         <h1>Container A</h1>
-        <UnstablePortal asChild container={portalContainer}>
+        <Portal asChild container={portalContainer}>
           <p>
             This content is rendered in a portal inside Container A but appears inside Container B
             because we have used Container B as a container element for the Portal.
           </p>
-        </UnstablePortal>
+        </Portal>
       </div>
 
       <div
@@ -63,7 +63,7 @@ export const Chromatic = () => {
       <div style={{ padding: 10, margin: 10, border: '1px solid blue' }}>
         <p>Container A</p>
 
-        <UnstablePortal asChild>
+        <Portal asChild>
           <div
             style={{
               padding: 10,
@@ -81,20 +81,20 @@ export const Chromatic = () => {
               default a new element inside the body), even though it is part of the same React tree.
             </p>
           </div>
-        </UnstablePortal>
+        </Portal>
       </div>
 
       <h1>Custom container</h1>
       <div style={{ padding: 10, margin: 10, border: '1px solid green' }}>
         <p>Container B</p>
-        <UnstablePortal asChild container={portalContainer}>
+        <Portal asChild container={portalContainer}>
           <div style={{ padding: 10, margin: 10, border: '1px solid green' }}>
             <p>
               This content is rendered in a portal inside Container B but appears inside Container C
               because we have used Container C as a container element for the Portal.
             </p>
           </div>
-        </UnstablePortal>
+        </Portal>
       </div>
 
       <div ref={setPortalContainer} style={{ padding: 10, margin: 10, border: '1px solid' }}>
@@ -103,7 +103,7 @@ export const Chromatic = () => {
 
       <h1>zIndex and order</h1>
       <p>See squares in the top-left</p>
-      <UnstablePortal asChild>
+      <Portal asChild>
         <div
           style={{
             width: 20,
@@ -115,8 +115,8 @@ export const Chromatic = () => {
             zIndex: 9999999,
           }}
         />
-      </UnstablePortal>
-      <UnstablePortal asChild>
+      </Portal>
+      <Portal asChild>
         <div
           style={{
             width: 20,
@@ -130,8 +130,8 @@ export const Chromatic = () => {
             zIndex: 9999999,
           }}
         />
-      </UnstablePortal>
-      <UnstablePortal asChild>
+      </Portal>
+      <Portal asChild>
         <div
           style={{
             width: 20,
@@ -145,7 +145,7 @@ export const Chromatic = () => {
             zIndex: 9999999,
           }}
         />
-      </UnstablePortal>
+      </Portal>
     </div>
   );
 };
