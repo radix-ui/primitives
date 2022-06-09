@@ -834,6 +834,8 @@ const contentClass = css({
   position: 'relative',
   overflow: 'hidden',
   '&:focus-within': { borderColor: '$black' },
+
+  zIndex: 100,
 });
 
 const contentClassWithPadding = css(contentClass, {

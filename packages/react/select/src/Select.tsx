@@ -470,6 +470,11 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     // the last element in the DOM (because of the `Portal`)
     useFocusGuards();
 
+    const [contentZIndex, setContentZIndex] = React.useState<string>();
+    useLayoutEffect(() => {
+      if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
+    }, [content]);
+
     const focusFirst = React.useCallback(
       (candidates: Array<HTMLElement | null>) => {
         const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
@@ -751,7 +756,12 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         <RemoveScroll as={Slot} allowPinchZoom={context.allowPinchZoom}>
           <div
             ref={setContentWrapper}
-            style={{ display: 'flex', flexDirection: 'column', position: 'fixed', zIndex: 0 }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'fixed',
+              zIndex: contentZIndex,
+            }}
           >
             <FocusScope
               asChild
