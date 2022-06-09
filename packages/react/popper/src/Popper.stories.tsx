@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal } from '@radix-ui/react-portal';
 import * as Popper from '@radix-ui/react-popper';
 
 export default { title: 'Components/Popper' };
@@ -58,12 +58,12 @@ export const Animated = () => {
         </Popper.Anchor>
 
         {open && (
-          <UnstablePortal asChild>
+          <Portal asChild>
             <Popper.Content className={animatedContentClass()} sideOffset={5}>
               <button onClick={() => setOpen(false)}>close</button>
               <Popper.Arrow className={arrowClass()} width={20} height={10} offset={25} />
             </Popper.Content>
-          </UnstablePortal>
+          </Portal>
         )}
       </Popper.Root>
     </Scrollable>
@@ -80,12 +80,12 @@ export const WithPortal = () => {
         </Popper.Anchor>
 
         {open && (
-          <UnstablePortal asChild>
+          <Portal asChild>
             <Popper.Content className={contentClass()} sideOffset={5}>
               <button onClick={() => setOpen(false)}>close</button>
               <Popper.Arrow className={arrowClass()} width={20} height={10} />
             </Popper.Content>
-          </UnstablePortal>
+          </Portal>
         )}
       </Popper.Root>
     </Scrollable>

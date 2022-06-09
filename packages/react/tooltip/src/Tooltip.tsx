@@ -6,7 +6,7 @@ import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slottable } from '@radix-ui/react-slot';
@@ -286,7 +286,7 @@ const [PortalProvider, usePortalContext] = createTooltipContext<PortalContextVal
   forceMount: undefined,
 });
 
-type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface TooltipPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
   /**
@@ -302,9 +302,9 @@ const TooltipPortal: React.FC<TooltipPortalProps> = (props: ScopedProps<TooltipP
   return (
     <PortalProvider scope={__scopeTooltip} forceMount={forceMount}>
       <Presence present={forceMount || context.open}>
-        <UnstablePortal asChild container={container}>
+        <PortalPrimitive asChild container={container}>
           {children}
-        </UnstablePortal>
+        </PortalPrimitive>
       </Presence>
     </PortalProvider>
   );
