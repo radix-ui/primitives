@@ -16,34 +16,36 @@ export const Styled = () => (
           <Select.Value />
           <Select.Icon />
         </Select.Trigger>
-        <Select.Content className={contentClass()}>
-          <Select.Viewport className={viewportClass()}>
-            <Select.Item className={itemClass()} value="one">
-              <Select.ItemText>
-                One<span aria-hidden> 👍</span>
-              </Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-            <Select.Item className={itemClass()} value="two">
-              <Select.ItemText>
-                Two<span aria-hidden> 👌</span>
-              </Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-            <Select.Item className={itemClass()} value="three">
-              <Select.ItemText>
-                Three<span aria-hidden> 🤘</span>
-              </Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-          </Select.Viewport>
-        </Select.Content>
+        <Select.Portal>
+          <Select.Content className={contentClass()}>
+            <Select.Viewport className={viewportClass()}>
+              <Select.Item className={itemClass()} value="one">
+                <Select.ItemText>
+                  One<span aria-hidden> 👍</span>
+                </Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={itemClass()} value="two">
+                <Select.ItemText>
+                  Two<span aria-hidden> 👌</span>
+                </Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={itemClass()} value="three">
+                <Select.ItemText>
+                  Three<span aria-hidden> 🤘</span>
+                </Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
       </Select.Root>
     </Label>
   </div>
@@ -72,34 +74,36 @@ export const Controlled = () => {
             </Select.Value>
             <Select.Icon />
           </Select.Trigger>
-          <Select.Content className={contentClass()}>
-            <Select.Viewport className={viewportClass()}>
-              <Select.Item className={itemClass()} value="fr">
-                <Select.ItemText>
-                  France<span aria-hidden> 🇫🇷</span>
-                </Select.ItemText>
-                <Select.ItemIndicator className={indicatorClass()}>
-                  <TickIcon />
-                </Select.ItemIndicator>
-              </Select.Item>
-              <Select.Item className={itemClass()} value="uk">
-                <Select.ItemText>
-                  United Kingdom<span aria-hidden> 🇬🇧</span>
-                </Select.ItemText>
-                <Select.ItemIndicator className={indicatorClass()}>
-                  <TickIcon />
-                </Select.ItemIndicator>
-              </Select.Item>
-              <Select.Item className={itemClass()} value="es">
-                <Select.ItemText>
-                  Spain<span aria-hidden> 🇪🇸</span>
-                </Select.ItemText>
-                <Select.ItemIndicator className={indicatorClass()}>
-                  <TickIcon />
-                </Select.ItemIndicator>
-              </Select.Item>
-            </Select.Viewport>
-          </Select.Content>
+          <Select.Portal>
+            <Select.Content className={contentClass()}>
+              <Select.Viewport className={viewportClass()}>
+                <Select.Item className={itemClass()} value="fr">
+                  <Select.ItemText>
+                    France<span aria-hidden> 🇫🇷</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="uk">
+                  <Select.ItemText>
+                    United Kingdom<span aria-hidden> 🇬🇧</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="es">
+                  <Select.ItemText>
+                    Spain<span aria-hidden> 🇪🇸</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
         </Select.Root>
       </Label>
     </div>
@@ -123,28 +127,30 @@ export const Position = () => (
           <Select.Value />
           <Select.Icon />
         </Select.Trigger>
-        <Select.Content className={contentClass()}>
-          <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
-          <Select.Viewport className={viewportClass()}>
-            {Array.from({ length: 50 }, (_, i) => {
-              const value = `item-${i + 1}`;
-              return (
-                <Select.Item
-                  key={value}
-                  className={itemClass()}
-                  value={value}
-                  disabled={i > 5 && i < 9}
-                >
-                  <Select.ItemText>item {i + 1}</Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
-              );
-            })}
-          </Select.Viewport>
-          <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
-        </Select.Content>
+        <Select.Portal>
+          <Select.Content className={contentClass()}>
+            <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+            <Select.Viewport className={viewportClass()}>
+              {Array.from({ length: 50 }, (_, i) => {
+                const value = `item-${i + 1}`;
+                return (
+                  <Select.Item
+                    key={value}
+                    className={itemClass()}
+                    value={value}
+                    disabled={i > 5 && i < 9}
+                  >
+                    <Select.ItemText>item {i + 1}</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                );
+              })}
+            </Select.Viewport>
+            <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+          </Select.Content>
+        </Select.Portal>
       </Select.Root>
     </Label>
   </div>
@@ -159,28 +165,30 @@ export const NoDefaultValue = () => (
           <Select.Value placeholder="Pick an option" />
           <Select.Icon />
         </Select.Trigger>
-        <Select.Content className={contentClass()}>
-          <Select.Viewport className={viewportClass()}>
-            <Select.Item className={itemClass()} value="one" disabled>
-              <Select.ItemText>One</Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-            <Select.Item className={itemClass()} value="two">
-              <Select.ItemText>Two</Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-            <Select.Item className={itemClass()} value="three">
-              <Select.ItemText>Three</Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-          </Select.Viewport>
-        </Select.Content>
+        <Select.Portal>
+          <Select.Content className={contentClass()}>
+            <Select.Viewport className={viewportClass()}>
+              <Select.Item className={itemClass()} value="one" disabled>
+                <Select.ItemText>One</Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={itemClass()} value="two">
+                <Select.ItemText>Two</Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={itemClass()} value="three">
+                <Select.ItemText>Three</Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
       </Select.Root>
     </Label>
   </div>
@@ -195,22 +203,24 @@ export const Typeahead = () => (
           <Select.Value />
           <Select.Icon />
         </Select.Trigger>
-        <Select.Content className={contentClass()}>
-          <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
-          <Select.Viewport className={viewportClass()}>
-            {foodGroups.map((foodGroup) =>
-              foodGroup.foods.map((food) => (
-                <Select.Item key={food.value} className={itemClass()} value={food.value}>
-                  <Select.ItemText>{food.label}</Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
-              ))
-            )}
-          </Select.Viewport>
-          <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
-        </Select.Content>
+        <Select.Portal>
+          <Select.Content className={contentClass()}>
+            <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+            <Select.Viewport className={viewportClass()}>
+              {foodGroups.map((foodGroup) =>
+                foodGroup.foods.map((food) => (
+                  <Select.Item key={food.value} className={itemClass()} value={food.value}>
+                    <Select.ItemText>{food.label}</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                ))
+              )}
+            </Select.Viewport>
+            <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+          </Select.Content>
+        </Select.Portal>
       </Select.Root>
     </Label>
   </div>
@@ -225,41 +235,43 @@ export const WithGroups = () => (
           <Select.Value />
           <Select.Icon />
         </Select.Trigger>
-        <Select.Content className={contentClass()}>
-          <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
-          <Select.Viewport className={viewportClass()}>
-            {foodGroups.map((foodGroup, index) => {
-              const hasLabel = foodGroup.label !== undefined;
-              return (
-                <React.Fragment key={index}>
-                  <Select.Group className={groupStyles()}>
-                    {hasLabel && (
-                      <Select.Label className={labelClass()} key={foodGroup.label}>
-                        {foodGroup.label}
-                      </Select.Label>
+        <Select.Portal>
+          <Select.Content className={contentClass()}>
+            <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+            <Select.Viewport className={viewportClass()}>
+              {foodGroups.map((foodGroup, index) => {
+                const hasLabel = foodGroup.label !== undefined;
+                return (
+                  <React.Fragment key={index}>
+                    <Select.Group className={groupStyles()}>
+                      {hasLabel && (
+                        <Select.Label className={labelClass()} key={foodGroup.label}>
+                          {foodGroup.label}
+                        </Select.Label>
+                      )}
+                      {foodGroup.foods.map((food) => (
+                        <Select.Item
+                          key={food.value}
+                          className={hasLabel ? itemInGroupClass() : itemClass()}
+                          value={food.value}
+                        >
+                          <Select.ItemText>{food.label}</Select.ItemText>
+                          <Select.ItemIndicator className={indicatorClass()}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                      ))}
+                    </Select.Group>
+                    {index < foodGroups.length - 1 && (
+                      <Select.Separator className={separatorClass()} />
                     )}
-                    {foodGroup.foods.map((food) => (
-                      <Select.Item
-                        key={food.value}
-                        className={hasLabel ? itemInGroupClass() : itemClass()}
-                        value={food.value}
-                      >
-                        <Select.ItemText>{food.label}</Select.ItemText>
-                        <Select.ItemIndicator className={indicatorClass()}>
-                          <TickIcon />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                  {index < foodGroups.length - 1 && (
-                    <Select.Separator className={separatorClass()} />
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </Select.Viewport>
-          <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
-        </Select.Content>
+                  </React.Fragment>
+                );
+              })}
+            </Select.Viewport>
+            <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+          </Select.Content>
+        </Select.Portal>
       </Select.Root>
     </Label>
   </div>
@@ -267,28 +279,30 @@ export const WithGroups = () => (
 
 export const Labelling = () => {
   const content = (
-    <Select.Content className={contentClass()}>
-      <Select.Viewport className={viewportClass()}>
-        <Select.Item className={itemClass()} value="0-18">
-          <Select.ItemText>0 to 18</Select.ItemText>
-          <Select.ItemIndicator className={indicatorClass()}>
-            <TickIcon />
-          </Select.ItemIndicator>
-        </Select.Item>
-        <Select.Item className={itemClass()} value="18-40">
-          <Select.ItemText>18 to 40</Select.ItemText>
-          <Select.ItemIndicator className={indicatorClass()}>
-            <TickIcon />
-          </Select.ItemIndicator>
-        </Select.Item>
-        <Select.Item className={itemClass()} value="40+">
-          <Select.ItemText>Over 40</Select.ItemText>
-          <Select.ItemIndicator className={indicatorClass()}>
-            <TickIcon />
-          </Select.ItemIndicator>
-        </Select.Item>
-      </Select.Viewport>
-    </Select.Content>
+    <Select.Portal>
+      <Select.Content className={contentClass()}>
+        <Select.Viewport className={viewportClass()}>
+          <Select.Item className={itemClass()} value="0-18">
+            <Select.ItemText>0 to 18</Select.ItemText>
+            <Select.ItemIndicator className={indicatorClass()}>
+              <TickIcon />
+            </Select.ItemIndicator>
+          </Select.Item>
+          <Select.Item className={itemClass()} value="18-40">
+            <Select.ItemText>18 to 40</Select.ItemText>
+            <Select.ItemIndicator className={indicatorClass()}>
+              <TickIcon />
+            </Select.ItemIndicator>
+          </Select.Item>
+          <Select.Item className={itemClass()} value="40+">
+            <Select.ItemText>Over 40</Select.ItemText>
+            <Select.ItemIndicator className={indicatorClass()}>
+              <TickIcon />
+            </Select.ItemIndicator>
+          </Select.Item>
+        </Select.Viewport>
+      </Select.Content>
+    </Select.Portal>
   );
   return (
     <div style={{ padding: 50 }}>
@@ -345,34 +359,36 @@ export const RightToLeft = () => (
           <Select.Value />
           <Select.Icon />
         </Select.Trigger>
-        <Select.Content className={contentClass()}>
-          <Select.Viewport className={viewportClass()}>
-            <Select.Item className={itemClass()} value="one">
-              <Select.ItemText>
-                تفاح<span aria-hidden> 🍎</span>
-              </Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-            <Select.Item className={itemClass()} value="two">
-              <Select.ItemText>
-                حفنة من الموز<span aria-hidden> 🍌</span>
-              </Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-            <Select.Item className={itemClass()} value="three">
-              <Select.ItemText>
-                الفراولة<span aria-hidden> 🍓</span>
-              </Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-          </Select.Viewport>
-        </Select.Content>
+        <Select.Portal>
+          <Select.Content className={contentClass()}>
+            <Select.Viewport className={viewportClass()}>
+              <Select.Item className={itemClass()} value="one">
+                <Select.ItemText>
+                  تفاح<span aria-hidden> 🍎</span>
+                </Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={itemClass()} value="two">
+                <Select.ItemText>
+                  حفنة من الموز<span aria-hidden> 🍌</span>
+                </Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={itemClass()} value="three">
+                <Select.ItemText>
+                  الفراولة<span aria-hidden> 🍓</span>
+                </Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
       </Select.Root>
     </Label>
   </div>
@@ -407,28 +423,30 @@ export const WithinForm = () => {
             <Select.Value />
             <Select.Icon />
           </Select.Trigger>
-          <Select.Content className={contentClass()}>
-            <Select.Viewport className={viewportClass()}>
-              <Select.Item className={itemClass()} value="fr">
-                <Select.ItemText>France</Select.ItemText>
-                <Select.ItemIndicator className={indicatorClass()}>
-                  <TickIcon />
-                </Select.ItemIndicator>
-              </Select.Item>
-              <Select.Item className={itemClass()} value="uk">
-                <Select.ItemText>United Kingdom</Select.ItemText>
-                <Select.ItemIndicator className={indicatorClass()}>
-                  <TickIcon />
-                </Select.ItemIndicator>
-              </Select.Item>
-              <Select.Item className={itemClass()} value="es">
-                <Select.ItemText>Spain</Select.ItemText>
-                <Select.ItemIndicator className={indicatorClass()}>
-                  <TickIcon />
-                </Select.ItemIndicator>
-              </Select.Item>
-            </Select.Viewport>
-          </Select.Content>
+          <Select.Portal>
+            <Select.Content className={contentClass()}>
+              <Select.Viewport className={viewportClass()}>
+                <Select.Item className={itemClass()} value="fr">
+                  <Select.ItemText>France</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="uk">
+                  <Select.ItemText>United Kingdom</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="es">
+                  <Select.ItemText>Spain</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
         </Select.Root>
       </Label>
       <br />
@@ -451,20 +469,24 @@ export const WithinDialog = () => (
             <Select.Value />
             <Select.Icon />
           </Select.Trigger>
-          <Select.Content className={contentClass()}>
-            <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
-            <Select.Viewport className={viewportClass()}>
-              {Array.from({ length: 30 }, (_, i) => (
-                <Select.Item key={i} className={itemClass()} value={String(i)}>
-                  <Select.ItemText>Item {i}</Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
-              ))}
-            </Select.Viewport>
-            <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
-          </Select.Content>
+          <Select.Portal>
+            <Select.Content className={contentClass()}>
+              <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+              <Select.Viewport className={viewportClass()}>
+                {Array.from({ length: 30 }, (_, i) => (
+                  <Select.Item key={i} className={itemClass()} value={String(i)}>
+                    <Select.ItemText>Item {i}</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                ))}
+              </Select.Viewport>
+              <Select.ScrollDownButton className={scrollDownButtonClass()}>
+                ▼
+              </Select.ScrollDownButton>
+            </Select.Content>
+          </Select.Portal>
         </Select.Root>
       </Label>
       <Dialog.Close>Close Dialog</Dialog.Close>
@@ -526,20 +548,22 @@ export const ChromaticNoDefaultValue = () => (
         <Select.Value />
         <Select.Icon />
       </Select.Trigger>
-      <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
-        <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
-        <Select.Viewport className={viewportClass()}>
-          {Array.from({ length: 10 }, (_, i) => (
-            <Select.Item key={i} className={itemClass()} value={String(i)} disabled={i < 5}>
-              <Select.ItemText>{String(i)}</Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-          ))}
-        </Select.Viewport>
-        <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
-      </Select.Content>
+      <Select.Portal>
+        <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
+          <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+          <Select.Viewport className={viewportClass()}>
+            {Array.from({ length: 10 }, (_, i) => (
+              <Select.Item key={i} className={itemClass()} value={String(i)} disabled={i < 5}>
+                <Select.ItemText>{String(i)}</Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            ))}
+          </Select.Viewport>
+          <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+        </Select.Content>
+      </Select.Portal>
     </Select.Root>
 
     <Select.Root open>
@@ -547,20 +571,22 @@ export const ChromaticNoDefaultValue = () => (
         <Select.Value placeholder="Pick an option" />
         <Select.Icon />
       </Select.Trigger>
-      <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
-        <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
-        <Select.Viewport className={viewportClass()}>
-          {Array.from({ length: 10 }, (_, i) => (
-            <Select.Item key={i} className={itemClass()} value={String(i)} disabled={i < 5}>
-              <Select.ItemText>{String(i)}</Select.ItemText>
-              <Select.ItemIndicator className={indicatorClass()}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-          ))}
-        </Select.Viewport>
-        <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
-      </Select.Content>
+      <Select.Portal>
+        <Select.Content className={contentClass()} style={{ opacity: 0.7 }}>
+          <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+          <Select.Viewport className={viewportClass()}>
+            {Array.from({ length: 10 }, (_, i) => (
+              <Select.Item key={i} className={itemClass()} value={String(i)} disabled={i < 5}>
+                <Select.ItemText>{String(i)}</Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            ))}
+          </Select.Viewport>
+          <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+        </Select.Content>
+      </Select.Portal>
     </Select.Root>
   </div>
 );
@@ -591,28 +617,30 @@ export const Cypress = () => {
               <Select.Value />
               <Select.Icon />
             </Select.Trigger>
-            <Select.Content className={contentClass()}>
-              <Select.Viewport className={viewportClass()}>
-                <Select.Item className={itemClass()} value="S">
-                  <Select.ItemText>Small</Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item className={itemClass()} value="M">
-                  <Select.ItemText>Medium</Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item className={itemClass()} value="L">
-                  <Select.ItemText>Large</Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
-              </Select.Viewport>
-            </Select.Content>
+            <Select.Portal>
+              <Select.Content className={contentClass()}>
+                <Select.Viewport className={viewportClass()}>
+                  <Select.Item className={itemClass()} value="S">
+                    <Select.ItemText>Small</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="M">
+                    <Select.ItemText>Medium</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="L">
+                    <Select.ItemText>Large</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
           </Select.Root>
         </Label>
         <button type="submit">buy</button>
@@ -639,33 +667,35 @@ const ChromaticSelect = React.forwardRef<
       <Select.Value />
       <Select.Icon />
     </Select.Trigger>
-    <Select.Content
-      className={paddedElement === 'content' ? contentClassWithPadding() : contentClass()}
-      style={{ opacity: 0.7 }}
-    >
-      <Select.ScrollUpButton
-        className={scrollUpButtonClass()}
-        style={paddedElement === 'content' ? { marginTop: -5 } : undefined}
+    <Select.Portal>
+      <Select.Content
+        className={paddedElement === 'content' ? contentClassWithPadding() : contentClass()}
+        style={{ opacity: 0.7 }}
       >
-        ▲
-      </Select.ScrollUpButton>
-      <Select.Viewport className={paddedElement === 'viewport' ? viewportClass() : undefined}>
-        {Array.from({ length: count }, (_, i) => (
-          <Select.Item key={i} className={itemClass()} value={String(i)}>
-            <Select.ItemText>{String(i)}</Select.ItemText>
-            <Select.ItemIndicator className={indicatorClass()}>
-              <TickIcon />
-            </Select.ItemIndicator>
-          </Select.Item>
-        ))}
-      </Select.Viewport>
-      <Select.ScrollDownButton
-        className={scrollDownButtonClass()}
-        style={paddedElement === 'content' ? { marginBottom: -5 } : undefined}
-      >
-        ▼
-      </Select.ScrollDownButton>
-    </Select.Content>
+        <Select.ScrollUpButton
+          className={scrollUpButtonClass()}
+          style={paddedElement === 'content' ? { marginTop: -5 } : undefined}
+        >
+          ▲
+        </Select.ScrollUpButton>
+        <Select.Viewport className={paddedElement === 'viewport' ? viewportClass() : undefined}>
+          {Array.from({ length: count }, (_, i) => (
+            <Select.Item key={i} className={itemClass()} value={String(i)}>
+              <Select.ItemText>{String(i)}</Select.ItemText>
+              <Select.ItemIndicator className={indicatorClass()}>
+                <TickIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+          ))}
+        </Select.Viewport>
+        <Select.ScrollDownButton
+          className={scrollDownButtonClass()}
+          style={paddedElement === 'content' ? { marginBottom: -5 } : undefined}
+        >
+          ▼
+        </Select.ScrollDownButton>
+      </Select.Content>
+    </Select.Portal>
   </Select.Root>
 ));
 
