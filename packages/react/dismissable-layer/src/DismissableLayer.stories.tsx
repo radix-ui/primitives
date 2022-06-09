@@ -3,7 +3,7 @@
 import React from 'react';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import * as Popper from '@radix-ui/react-popper';
-import { Portal } from '@radix-ui/react-portal';
+import { UnstablePortal } from '@radix-ui/react-portal';
 import { FocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -488,7 +488,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
       </button>
       {open ? (
         <FocusGuards>
-          <Portal>
+          <UnstablePortal asChild>
             <div
               style={{
                 position: 'fixed',
@@ -501,8 +501,8 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
                 opacity: 0.2,
               }}
             />
-          </Portal>
-          <Portal>
+          </UnstablePortal>
+          <UnstablePortal asChild>
             <RemoveScroll as={Slot}>
               <DismissableLayer
                 asChild
@@ -537,7 +537,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
                 </FocusScope>
               </DismissableLayer>
             </RemoveScroll>
-          </Portal>
+          </UnstablePortal>
         </FocusGuards>
       ) : null}
     </>
@@ -572,6 +572,8 @@ function DummyPopover({
   const [open, setOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
   const ScrollContainer = preventScroll ? RemoveScroll : React.Fragment;
+  const scrollLockWrapperProps = preventScroll ? { as: Slot } : undefined;
+
   return (
     <Popper.Root>
       <Popper.Anchor asChild>
@@ -581,8 +583,8 @@ function DummyPopover({
       </Popper.Anchor>
       {open ? (
         <FocusGuards>
-          <Portal>
-            <ScrollContainer>
+          <ScrollContainer {...scrollLockWrapperProps}>
+            <UnstablePortal asChild>
               <DismissableLayer
                 asChild
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
@@ -634,8 +636,8 @@ function DummyPopover({
                   </Popper.Content>
                 </FocusScope>
               </DismissableLayer>
-            </ScrollContainer>
-          </Portal>
+            </UnstablePortal>
+          </ScrollContainer>
         </FocusGuards>
       ) : null}
     </Popper.Root>
