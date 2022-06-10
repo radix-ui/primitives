@@ -58,7 +58,7 @@ export const Animated = () => {
         </Popper.Anchor>
 
         {open && (
-          <Portal>
+          <Portal asChild>
             <Popper.Content className={animatedContentClass()} sideOffset={5}>
               <button onClick={() => setOpen(false)}>close</button>
               <Popper.Arrow className={arrowClass()} width={20} height={10} offset={25} />
@@ -80,7 +80,7 @@ export const WithPortal = () => {
         </Popper.Anchor>
 
         {open && (
-          <Portal>
+          <Portal asChild>
             <Popper.Content className={contentClass()} sideOffset={5}>
               <button onClick={() => setOpen(false)}>close</button>
               <Popper.Arrow className={arrowClass()} width={20} height={10} />

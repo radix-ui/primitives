@@ -3481,7 +3481,6 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
-    "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0

@@ -11,7 +11,7 @@ import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import { useLabelContext } from '@radix-ui/react-label';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
@@ -352,13 +352,13 @@ SelectIcon.displayName = ICON_NAME;
 
 const PORTAL_NAME = 'SelectPortal';
 
-type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface SelectPortalProps extends Omit<PortalProps, 'asChild'> {
   children?: React.ReactNode;
 }
 
 const SelectPortal: React.FC<SelectPortalProps> = (props: ScopedProps<SelectPortalProps>) => {
-  return <UnstablePortal asChild {...props} />;
+  return <PortalPrimitive asChild {...props} />;
 };
 
 SelectPortal.displayName = PORTAL_NAME;

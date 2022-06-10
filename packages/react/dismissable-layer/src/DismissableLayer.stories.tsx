@@ -488,7 +488,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
       </button>
       {open ? (
         <FocusGuards>
-          <Portal>
+          <Portal asChild>
             <div
               style={{
                 position: 'fixed',
@@ -502,7 +502,7 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
               }}
             />
           </Portal>
-          <Portal>
+          <Portal asChild>
             <RemoveScroll as={Slot}>
               <DismissableLayer
                 asChild
@@ -572,6 +572,8 @@ function DummyPopover({
   const [open, setOpen] = React.useState(false);
   const openButtonRef = React.useRef(null);
   const ScrollContainer = preventScroll ? RemoveScroll : React.Fragment;
+  const scrollLockWrapperProps = preventScroll ? { as: Slot } : undefined;
+
   return (
     <Popper.Root>
       <Popper.Anchor asChild>
@@ -581,8 +583,8 @@ function DummyPopover({
       </Popper.Anchor>
       {open ? (
         <FocusGuards>
-          <Portal>
-            <ScrollContainer>
+          <ScrollContainer {...scrollLockWrapperProps}>
+            <Portal asChild>
               <DismissableLayer
                 asChild
                 disableOutsidePointerEvents={disableOutsidePointerEvents}
@@ -634,8 +636,8 @@ function DummyPopover({
                   </Popper.Content>
                 </FocusScope>
               </DismissableLayer>
-            </ScrollContainer>
-          </Portal>
+            </Portal>
+          </ScrollContainer>
         </FocusGuards>
       ) : null}
     </Popper.Root>

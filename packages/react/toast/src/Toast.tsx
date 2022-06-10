@@ -4,7 +4,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import * as DismissableLayer from '@radix-ui/react-dismissable-layer';
-import { UnstablePortal } from '@radix-ui/react-portal';
+import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
@@ -553,7 +553,7 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
   }, []);
 
   return isAnnounced ? null : (
-    <UnstablePortal asChild>
+    <Portal asChild>
       <VisuallyHidden asChild>
         <div {...announceProps}>
           {renderChildren && (
@@ -563,7 +563,7 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
           )}
         </div>
       </VisuallyHidden>
-    </UnstablePortal>
+    </Portal>
   );
 };
 

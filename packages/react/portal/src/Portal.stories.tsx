@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Portal, UnstablePortal } from '@radix-ui/react-portal';
+import { Portal } from '@radix-ui/react-portal';
 
 export default { title: 'Components/Portal' };
 
@@ -19,7 +19,7 @@ export const Base = () => (
       necessitatibus eius pariatur.
     </p>
 
-    <Portal style={{ position: 'relative' }}>
+    <Portal>
       <h1>This content is rendered in a portal (another DOM tree)</h1>
       <p>
         Because of the portal, it can appear in a different DOM tree from the main one (by default a
@@ -30,13 +30,13 @@ export const Base = () => (
 );
 
 export const CustomContainer = () => {
-  const portalContainerRef = React.useRef<HTMLDivElement>(null);
+  const [portalContainer, setPortalContainer] = React.useState<HTMLDivElement | null>(null);
 
   return (
     <>
       <div style={{ maxWidth: 300, padding: 10, margin: 10, border: '1px solid' }}>
         <h1>Container A</h1>
-        <Portal containerRef={portalContainerRef}>
+        <Portal asChild container={portalContainer}>
           <p>
             This content is rendered in a portal inside Container A but appears inside Container B
             because we have used Container B as a container element for the Portal.
@@ -45,7 +45,7 @@ export const CustomContainer = () => {
       </div>
 
       <div
-        ref={portalContainerRef}
+        ref={setPortalContainer}
         style={{ maxWidth: 300, padding: 10, margin: 10, border: '1px solid' }}
       >
         <h1>Container B</h1>
@@ -55,63 +55,6 @@ export const CustomContainer = () => {
 };
 
 export const Chromatic = () => {
-  const portalContainerRef = React.useRef<HTMLDivElement>(null);
-
-  return (
-    <div style={{ padding: 150 }}>
-      <h1>Default (append to body)</h1>
-      <div style={{ padding: 10, margin: 10, border: '1px solid blue' }}>
-        <p>Container A</p>
-
-        <Portal>
-          <div style={{ padding: 10, margin: 10, border: '1px solid blue' }}>
-            <p>This content is rendered in a portal (another DOM tree)</p>
-            <p>
-              Because of the portal, it can appear in a different DOM tree from the main one (by
-              default a new element inside the body), even though it is part of the same React tree.
-            </p>
-          </div>
-        </Portal>
-      </div>
-
-      <h1>Custom container</h1>
-      <div style={{ padding: 10, margin: 10, border: '1px solid green' }}>
-        <p>Container B</p>
-        <Portal containerRef={portalContainerRef}>
-          <div style={{ padding: 10, margin: 10, border: '1px solid green' }}>
-            <p>
-              This content is rendered in a portal inside Container B but appears inside Container C
-              because we have used Container C as a container element for the Portal.
-            </p>
-          </div>
-        </Portal>
-      </div>
-
-      <div ref={portalContainerRef} style={{ padding: 10, margin: 10, border: '1px solid' }}>
-        <p>Container C</p>
-      </div>
-
-      <h1>zIndex and order</h1>
-      <p>See squares in the top-left</p>
-      <Portal>
-        <div style={{ width: 20, height: 20, backgroundColor: 'red' }} />
-      </Portal>
-      <Portal>
-        <div
-          style={{ width: 20, height: 20, backgroundColor: 'green', marginLeft: 10, marginTop: 10 }}
-        />
-      </Portal>
-      <Portal>
-        <div
-          style={{ width: 20, height: 20, backgroundColor: 'blue', marginLeft: 20, marginTop: 20 }}
-        />
-      </Portal>
-    </div>
-  );
-};
-Chromatic.parameters = { chromatic: { disable: false } };
-
-export const ChromaticUnstablePortal = () => {
   const [portalContainer, setPortalContainer] = React.useState<HTMLDivElement | null>(null);
 
   return (
@@ -120,7 +63,7 @@ export const ChromaticUnstablePortal = () => {
       <div style={{ padding: 10, margin: 10, border: '1px solid blue' }}>
         <p>Container A</p>
 
-        <UnstablePortal>
+        <Portal asChild>
           <div
             style={{
               padding: 10,
@@ -138,20 +81,20 @@ export const ChromaticUnstablePortal = () => {
               default a new element inside the body), even though it is part of the same React tree.
             </p>
           </div>
-        </UnstablePortal>
+        </Portal>
       </div>
 
       <h1>Custom container</h1>
       <div style={{ padding: 10, margin: 10, border: '1px solid green' }}>
         <p>Container B</p>
-        <UnstablePortal container={portalContainer}>
+        <Portal asChild container={portalContainer}>
           <div style={{ padding: 10, margin: 10, border: '1px solid green' }}>
             <p>
               This content is rendered in a portal inside Container B but appears inside Container C
               because we have used Container C as a container element for the Portal.
             </p>
           </div>
-        </UnstablePortal>
+        </Portal>
       </div>
 
       <div ref={setPortalContainer} style={{ padding: 10, margin: 10, border: '1px solid' }}>
@@ -160,7 +103,7 @@ export const ChromaticUnstablePortal = () => {
 
       <h1>zIndex and order</h1>
       <p>See squares in the top-left</p>
-      <UnstablePortal>
+      <Portal asChild>
         <div
           style={{
             width: 20,
@@ -172,8 +115,8 @@ export const ChromaticUnstablePortal = () => {
             zIndex: 9999999,
           }}
         />
-      </UnstablePortal>
-      <UnstablePortal>
+      </Portal>
+      <Portal asChild>
         <div
           style={{
             width: 20,
@@ -187,8 +130,8 @@ export const ChromaticUnstablePortal = () => {
             zIndex: 9999999,
           }}
         />
-      </UnstablePortal>
-      <UnstablePortal>
+      </Portal>
+      <Portal asChild>
         <div
           style={{
             width: 20,
@@ -202,8 +145,8 @@ export const ChromaticUnstablePortal = () => {
             zIndex: 9999999,
           }}
         />
-      </UnstablePortal>
+      </Portal>
     </div>
   );
 };
-ChromaticUnstablePortal.parameters = { chromatic: { disable: false } };
+Chromatic.parameters = { chromatic: { disable: false } };
