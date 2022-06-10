@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-popover",
-  "version": "0.1.7-rc.36",
+  "version": "0.1.7-rc.37",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
