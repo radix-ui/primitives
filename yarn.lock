@@ -3602,6 +3602,7 @@ __metadata:
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
+    "@radix-ui/react-focus-guards": "workspace:*"
     "@radix-ui/react-focus-scope": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-label": "workspace:*"

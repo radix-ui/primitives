@@ -7,10 +7,11 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import { useLabelContext } from '@radix-ui/react-label';
-import { Portal } from '@radix-ui/react-portal';
+import { UnstablePortal } from '@radix-ui/react-portal';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
@@ -59,13 +60,22 @@ type SelectContextValue = {
   open: boolean;
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
-  name: SelectProps['name'];
-  autoComplete: SelectProps['autoComplete'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
+  allowPinchZoom: SelectProps['allowPinchZoom'];
 };
 
 const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
 
+type NativeOption = React.ReactElement<React.ComponentProps<'option'>>;
+
+type SelectNativeOptionsContextValue = {
+  onNativeOptionAdd(option: NativeOption): void;
+  onNativeOptionRemove(option: NativeOption): void;
+};
+const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
+  createSelectContext<SelectNativeOptionsContextValue>(SELECT_NAME);
+
+type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 interface SelectProps {
   children?: React.ReactNode;
   value?: string;
@@ -77,6 +87,10 @@ interface SelectProps {
   dir?: Direction;
   name?: string;
   autoComplete?: string;
+  /**
+   * @see https://github.com/theKashey/react-remove-scroll#usage
+   */
+  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
 }
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
@@ -92,6 +106,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     dir,
     name,
     autoComplete,
+    allowPinchZoom,
   } = props;
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
   const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
@@ -109,6 +124,19 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   });
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
+  // We set this to true by default so that events bubble to forms without JS (SSR)
+  const isFormControl = trigger ? Boolean(trigger.closest('form')) : true;
+  const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<NativeOption>());
+
+  // The native `select` only associates the correct default value if the corresponding
+  // `option` is rendered as a child **at the same time** as itself.
+  // Because it might take a few renders for our items to gather the information to build
+  // the native `option`(s), we generate a key on the `select` to make sure React re-builds it
+  // each time the options change.
+  const nativeSelectKey = Array.from(nativeOptionsSet)
+    .map((option) => option.props.value)
+    .join(';');
+
   return (
     <SelectProvider
       scope={__scopeSelect}
@@ -124,11 +152,41 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
       open={open}
       onOpenChange={setOpen}
       dir={direction}
-      name={name}
-      autoComplete={autoComplete}
       triggerPointerDownPosRef={triggerPointerDownPosRef}
+      allowPinchZoom={allowPinchZoom}
     >
-      <Collection.Provider scope={__scopeSelect}>{children}</Collection.Provider>
+      <Collection.Provider scope={__scopeSelect}>
+        <SelectNativeOptionsProvider
+          scope={props.__scopeSelect}
+          onNativeOptionAdd={React.useCallback((option) => {
+            setNativeOptionsSet((prev) => new Set(prev).add(option));
+          }, [])}
+          onNativeOptionRemove={React.useCallback((option) => {
+            setNativeOptionsSet((prev) => {
+              const optionsSet = new Set(prev);
+              optionsSet.delete(option);
+              return optionsSet;
+            });
+          }, [])}
+        >
+          {children}
+        </SelectNativeOptionsProvider>
+      </Collection.Provider>
+
+      {isFormControl ? (
+        <BubbleSelect
+          key={nativeSelectKey}
+          aria-hidden
+          tabIndex={-1}
+          name={name}
+          autoComplete={autoComplete}
+          value={value}
+          // enable form autofill
+          onChange={(event) => setValue(event.target.value)}
+        >
+          {Array.from(nativeOptionsSet)}
+        </BubbleSelect>
+      ) : null}
     </SelectProvider>
   );
 };
@@ -289,19 +347,27 @@ const SelectIcon = React.forwardRef<SelectIconElement, SelectIconProps>(
 SelectIcon.displayName = ICON_NAME;
 
 /* -------------------------------------------------------------------------------------------------
+ * SelectPortal
+ * -----------------------------------------------------------------------------------------------*/
+
+const PORTAL_NAME = 'SelectPortal';
+
+type PortalProps = React.ComponentPropsWithoutRef<typeof UnstablePortal>;
+interface SelectPortalProps extends Omit<PortalProps, 'asChild'> {
+  children?: React.ReactNode;
+}
+
+const SelectPortal: React.FC<SelectPortalProps> = (props: ScopedProps<SelectPortalProps>) => {
+  return <UnstablePortal asChild {...props} />;
+};
+
+SelectPortal.displayName = PORTAL_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * SelectContent
  * -----------------------------------------------------------------------------------------------*/
 
 const CONTENT_NAME = 'SelectContent';
-
-type NativeOption = React.ReactElement<React.ComponentProps<'option'>>;
-
-type SelectNativeOptionsContextValue = {
-  onNativeOptionAdd(option: NativeOption): void;
-  onNativeOptionRemove(option: NativeOption): void;
-};
-const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
-  createSelectContext<SelectNativeOptionsContextValue>(CONTENT_NAME);
 
 type SelectContentElement = SelectContentImplElement;
 interface SelectContentProps extends SelectContentImplProps {}
@@ -310,18 +376,6 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
   (props: ScopedProps<SelectContentProps>, forwardedRef) => {
     const context = useSelectContext(CONTENT_NAME, props.__scopeSelect);
     const [fragment, setFragment] = React.useState<DocumentFragment>();
-    // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = context.trigger ? Boolean(context.trigger.closest('form')) : true;
-    const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<NativeOption>());
-
-    // The native `select` only associates the correct default value if the corresponding
-    // `option` is rendered as a child **at the same time** as itself.
-    // Because it might take a few renders for our items to gather the information to build
-    // the native `option`(s), we generate a key on the `select` to make sure React re-builds it
-    // each time the options change.
-    const nativeSelectKey = Array.from(nativeOptionsSet)
-      .map((option) => option.props.value)
-      .join(';');
 
     // setting the fragment in `useLayoutEffect` as `DocumentFragment` doesn't exist on the server
     useLayoutEffect(() => {
@@ -329,34 +383,7 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
     }, []);
 
     return (
-      <SelectNativeOptionsProvider
-        scope={props.__scopeSelect}
-        onNativeOptionAdd={React.useCallback((option) => {
-          setNativeOptionsSet((prev) => new Set(prev).add(option));
-        }, [])}
-        onNativeOptionRemove={React.useCallback((option) => {
-          setNativeOptionsSet((prev) => {
-            const optionsSet = new Set(prev);
-            optionsSet.delete(option);
-            return optionsSet;
-          });
-        }, [])}
-      >
-        {isFormControl ? (
-          <BubbleSelect
-            key={nativeSelectKey}
-            aria-hidden
-            tabIndex={-1}
-            name={context.name}
-            autoComplete={context.autoComplete}
-            value={context.value}
-            // enable form autofill
-            onChange={(event) => context.onValueChange(event.target.value)}
-          >
-            {Array.from(nativeOptionsSet)}
-          </BubbleSelect>
-        ) : null}
-
+      <>
         {context.open ? (
           <SelectContentImpl {...props} ref={forwardedRef} />
         ) : fragment ? (
@@ -369,7 +396,7 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
             fragment as any
           )
         ) : null}
-      </SelectNativeOptionsProvider>
+      </>
     );
   }
 );
@@ -437,6 +464,15 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
       if (content) return hideOthers(content);
+    }, [content]);
+
+    // Make sure the whole tree has focus guards as our `Select` may be
+    // the last element in the DOM (because of the `Portal`)
+    useFocusGuards();
+
+    const [contentZIndex, setContentZIndex] = React.useState<string>();
+    useLayoutEffect(() => {
+      if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
     }, [content]);
 
     const focusFirst = React.useCallback(
@@ -717,84 +753,87 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         shouldExpandOnScrollRef={shouldExpandOnScrollRef}
         searchRef={searchRef}
       >
-        <Portal>
-          <RemoveScroll as={Slot}>
-            <div
-              ref={setContentWrapper}
-              style={{ display: 'flex', flexDirection: 'column', position: 'fixed', zIndex: 0 }}
+        <RemoveScroll as={Slot} allowPinchZoom={context.allowPinchZoom}>
+          <div
+            ref={setContentWrapper}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'fixed',
+              zIndex: contentZIndex,
+            }}
+          >
+            <FocusScope
+              asChild
+              // we make sure we're not trapping once it's been closed
+              // (closed !== unmounted when animating out)
+              trapped={context.open}
+              onMountAutoFocus={(event) => {
+                // we prevent open autofocus because we manually focus the selected item
+                event.preventDefault();
+              }}
+              onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+                context.trigger?.focus({ preventScroll: true });
+                event.preventDefault();
+              })}
             >
-              <FocusScope
-                asChild
-                // we make sure we're not trapping once it's been closed
-                // (closed !== unmounted when animating out)
-                trapped={context.open}
-                onMountAutoFocus={(event) => {
-                  // we prevent open autofocus because we manually focus the selected item
-                  event.preventDefault();
+              <DismissableLayer
+                role="listbox"
+                id={context.contentId}
+                data-state={context.open ? 'open' : 'closed'}
+                dir={context.dir}
+                onContextMenu={(event) => event.preventDefault()}
+                {...contentProps}
+                ref={composedRefs}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  // When we get the height of the content, it includes borders. If we were to set
+                  // the height without having `boxSizing: 'border-box'` it would be too big.
+                  boxSizing: 'border-box',
+                  maxHeight: '100%',
+                  outline: 'none',
+                  ...contentProps.style,
                 }}
-                onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
-                  context.trigger?.focus({ preventScroll: true });
-                  event.preventDefault();
-                })}
-              >
-                <DismissableLayer
-                  role="listbox"
-                  id={context.contentId}
-                  data-state={context.open ? 'open' : 'closed'}
-                  dir={context.dir}
-                  onContextMenu={(event) => event.preventDefault()}
-                  {...contentProps}
-                  ref={composedRefs}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    // When we get the height of the content, it includes borders. If we were to set
-                    // the height without having `boxSizing: 'border-box'` it would be too big.
-                    boxSizing: 'border-box',
-                    maxHeight: '100%',
-                    outline: 'none',
-                    ...contentProps.style,
-                  }}
-                  disableOutsidePointerEvents
-                  // When focus is trapped, a focusout event may still happen.
-                  // We make sure we don't trigger our `onDismiss` in such case.
-                  onFocusOutside={(event) => event.preventDefault()}
-                  onDismiss={() => context.onOpenChange(false)}
-                  onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
-                    const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+                disableOutsidePointerEvents
+                // When focus is trapped, a focusout event may still happen.
+                // We make sure we don't trigger our `onDismiss` in such case.
+                onFocusOutside={(event) => event.preventDefault()}
+                onDismiss={() => context.onOpenChange(false)}
+                onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+                  const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
 
-                    // select should not be navigated using tab key so we prevent it
-                    if (event.key === 'Tab') event.preventDefault();
+                  // select should not be navigated using tab key so we prevent it
+                  if (event.key === 'Tab') event.preventDefault();
 
-                    if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+                  if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
 
-                    if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
-                      const items = getItems().filter((item) => !item.disabled);
-                      let candidateNodes = items.map((item) => item.ref.current!);
+                  if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+                    const items = getItems().filter((item) => !item.disabled);
+                    let candidateNodes = items.map((item) => item.ref.current!);
 
-                      if (['ArrowUp', 'End'].includes(event.key)) {
-                        candidateNodes = candidateNodes.slice().reverse();
-                      }
-                      if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                        const currentElement = event.target as SelectItemElement;
-                        const currentIndex = candidateNodes.indexOf(currentElement);
-                        candidateNodes = candidateNodes.slice(currentIndex + 1);
-                      }
-
-                      /**
-                       * Imperative focus during keydown is risky so we prevent React's batching updates
-                       * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
-                       */
-                      setTimeout(() => focusFirst(candidateNodes));
-
-                      event.preventDefault();
+                    if (['ArrowUp', 'End'].includes(event.key)) {
+                      candidateNodes = candidateNodes.slice().reverse();
                     }
-                  })}
-                />
-              </FocusScope>
-            </div>
-          </RemoveScroll>
-        </Portal>
+                    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                      const currentElement = event.target as SelectItemElement;
+                      const currentIndex = candidateNodes.indexOf(currentElement);
+                      candidateNodes = candidateNodes.slice(currentIndex + 1);
+                    }
+
+                    /**
+                     * Imperative focus during keydown is risky so we prevent React's batching updates
+                     * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+                     */
+                    setTimeout(() => focusFirst(candidateNodes));
+
+                    event.preventDefault();
+                  }
+                })}
+              />
+            </FocusScope>
+          </div>
+        </RemoveScroll>
       </SelectContentProvider>
     );
   }
@@ -1402,6 +1441,7 @@ const Root = Select;
 const Trigger = SelectTrigger;
 const Value = SelectValue;
 const Icon = SelectIcon;
+const Portal = SelectPortal;
 const Content = SelectContent;
 const Viewport = SelectViewport;
 const Group = SelectGroup;
@@ -1420,6 +1460,7 @@ export {
   SelectTrigger,
   SelectValue,
   SelectIcon,
+  SelectPortal,
   SelectContent,
   SelectViewport,
   SelectGroup,
@@ -1435,6 +1476,7 @@ export {
   Trigger,
   Value,
   Icon,
+  Portal,
   Content,
   Viewport,
   Group,
@@ -1451,6 +1493,7 @@ export type {
   SelectTriggerProps,
   SelectValueProps,
   SelectIconProps,
+  SelectPortalProps,
   SelectContentProps,
   SelectViewportProps,
   SelectGroupProps,
