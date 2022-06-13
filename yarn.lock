@@ -3936,10 +3936,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stitches/core@npm:^1.2.7":
-  version: 1.2.7
-  resolution: "@stitches/core@npm:1.2.7"
-  checksum: 362a3fa0ea3081c328ed1a3056a5b9e9e9d151d2f9276fa49112583d52314d8a9e47cf444600feed8f54ae52857e21d3a34ddb3174831b2470c1a40573268b7b
+"@stitches/core@npm:^1.2.8":
+  version: 1.2.8
+  resolution: "@stitches/core@npm:1.2.8"
+  checksum: 3a76a697b1d71ffb212e8b166f923c8f66ef99de93689dd417571f90fbba5692abb9a92220acd102baf5298896f0fdfeaa721da2d61adee1247531a26f67a15f
   languageName: node
   linkType: hard
 
@@ -14975,7 +14975,7 @@ fsevents@~2.1.2:
     "@parcel/babel-preset-env": ^2.4.1
     "@parcel/packager-ts": 2.4.1
     "@parcel/transformer-typescript-types": 2.4.1
-    "@stitches/core": ^1.2.7
+    "@stitches/core": ^1.2.8
     "@storybook/addon-storysource": ^6.5.0-alpha.63
     "@storybook/react": ^6.5.0-alpha.63
     "@testing-library/cypress": ^7.0.6
