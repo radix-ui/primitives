@@ -195,6 +195,49 @@ export const Animated = () => {
   );
 };
 
+export const Cypress = () => {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <Toast.Provider>
+      <button onClick={() => setCount((count) => count + 1)}>Add toast</button>
+
+      <div
+        style={{ display: 'flex', justifyContent: 'space-between', maxWidth: 700, margin: 'auto' }}
+      >
+        <button>Focusable before viewport</button>
+
+        {[...Array(count)].map((_, index) => {
+          const identifier = index + 1;
+          return (
+            <Toast.Root key={index} open className={rootClass()} data-cy={`toast-${identifier}`}>
+              <Toast.Title className={titleClass()}>Toast {identifier} title</Toast.Title>
+              <Toast.Description className={descriptionClass()}>
+                Toast {identifier} description
+              </Toast.Description>
+
+              <Toast.Close className={buttonClass()} aria-label="Close">
+                Toast {identifier} close
+              </Toast.Close>
+              <Toast.Action
+                altText="Go and perform an action"
+                className={buttonClass()}
+                style={{ marginTop: 10 }}
+              >
+                Toast {identifier} action
+              </Toast.Action>
+            </Toast.Root>
+          );
+        })}
+
+        <Toast.Viewport className={viewportClass()} />
+
+        <button>Focusable after viewport</button>
+      </div>
+    </Toast.Provider>
+  );
+};
+
 const SNAPSHOT_DELAY = 300;
 export const Chromatic = () => {
   const [dismissedBackgroundOpen, setDismissedBackgroundOpen] = React.useState(true);
