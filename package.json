@@ -45,7 +45,7 @@
     "@parcel/babel-preset-env": "^2.4.1",
     "@parcel/packager-ts": "2.4.1",
     "@parcel/transformer-typescript-types": "2.4.1",
-    "@stitches/core": "^1.2.7",
+    "@stitches/core": "^1.2.8",
     "@storybook/addon-storysource": "^6.5.0-alpha.63",
     "@storybook/react": "^6.5.0-alpha.63",
     "@testing-library/cypress": "^7.0.6",
