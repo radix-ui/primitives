@@ -4,9 +4,9 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import * as DismissableLayer from '@radix-ui/react-dismissable-layer';
-import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
+import { Slottable } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -97,6 +97,16 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
       {children}
     </ToastProviderProvider>
   );
+};
+
+ToastProvider.propTypes = {
+  label(props) {
+    if (props.label && typeof props.label === 'string' && !props.label.trim()) {
+      const error = `Invalid prop \`label\` supplied to \`${PROVIDER_NAME}\`. Expected non-empty \`string\`.`;
+      return new Error(error);
+    }
+    return null;
+  },
 };
 
 ToastProvider.displayName = PROVIDER_NAME;
@@ -341,6 +351,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
   (props: ScopedProps<ToastImplProps>, forwardedRef) => {
     const {
       __scopeToast,
+      children,
       type = 'foreground',
       duration: durationProp,
       open,
@@ -361,6 +372,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const closeTimerStartTimeRef = React.useRef(0);
     const closeTimerRemainingTimeRef = React.useRef(duration);
     const closeTimerRef = React.useRef(0);
+    const [renderLabel, setRenderLabel] = React.useState(false);
     const { onToastAdd, onToastRemove } = context;
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
@@ -412,20 +424,13 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       return () => onToastRemove();
     }, [onToastAdd, onToastRemove]);
 
+    // render label in the next frame to trigger toast announcement in NVDA
+    useNextFrame(() => setRenderLabel(true));
+
     if (!context.viewport) return null;
 
     return (
       <>
-        <ToastAnnounce
-          __scopeToast={__scopeToast}
-          // Toasts are always role=status to avoid stuttering issues with role=alert in SRs.
-          role="status"
-          aria-live={type === 'foreground' ? 'assertive' : 'polite'}
-          aria-atomic
-        >
-          {props.children}
-        </ToastAnnounce>
-
         <ToastInteractiveProvider scope={__scopeToast} isInteractive onClose={handleClose}>
           {ReactDOM.createPortal(
             <DismissableLayer.Root
@@ -437,8 +442,10 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
             >
               <Primitive.li
                 role="status"
-                aria-live="off"
+                aria-live={type === 'foreground' ? 'assertive' : 'polite'}
                 aria-atomic
+                // Prevent voice over from announcing before the label is rendered
+                aria-hidden={!renderLabel || undefined}
                 tabIndex={0}
                 data-state={open ? 'open' : 'closed'}
                 data-swipe-direction={context.swipeDirection}
@@ -512,7 +519,10 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                     });
                   }
                 })}
-              />
+              >
+                <VisuallyHidden>{renderLabel && context.label}</VisuallyHidden>
+                <Slottable>{children}</Slottable>
+              </Primitive.li>
             </DismissableLayer.Root>,
             context.viewport
           )}
@@ -526,45 +536,10 @@ ToastImpl.propTypes = {
   type(props) {
     if (props.type && !['foreground', 'background'].includes(props.type)) {
       const error = `Invalid prop \`type\` supplied to \`${TOAST_NAME}\`. Expected \`foreground | background\`.`;
-      throw new Error(error);
+      return new Error(error);
     }
     return null;
   },
-};
-
-/* -----------------------------------------------------------------------------------------------*/
-
-interface ToastAnnounceProps
-  extends React.ComponentPropsWithoutRef<'div'>,
-    ScopedProps<{ children?: ToastImplProps['children'] }> {}
-
-const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnnounceProps>) => {
-  const { __scopeToast, ...announceProps } = props;
-  const context = useToastProviderContext(TOAST_NAME, __scopeToast);
-  const [renderChildren, setRenderChildren] = React.useState(false);
-  const [isAnnounced, setIsAnnounced] = React.useState(false);
-
-  // render children in the next frame to ensure toast is announced in NVDA
-  useNextFrame(() => setRenderChildren(true));
-
-  React.useEffect(() => {
-    const timer = window.setTimeout(() => setIsAnnounced(true), 1000);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  return isAnnounced ? null : (
-    <Portal asChild>
-      <VisuallyHidden asChild>
-        <div {...announceProps}>
-          {renderChildren && (
-            <>
-              {context.label} {props.children}
-            </>
-          )}
-        </div>
-      </VisuallyHidden>
-    </Portal>
-  );
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -637,7 +612,7 @@ const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
 ToastAction.propTypes = {
   altText(props) {
     if (!props.altText) {
-      throw new Error(`Missing prop \`altText\` expected on \`${ACTION_NAME}\``);
+      return new Error(`Missing prop \`altText\` expected on \`${ACTION_NAME}\``);
     }
     return null;
   },
