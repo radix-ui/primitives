@@ -280,10 +280,10 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           <FocusProxy
             ref={headFocusProxyRef}
             onFocusFromOutsideViewport={() => {
-              const tabbleCandidates = getSortedTabbableCandidates({
+              const tabbableCandidates = getSortedTabbableCandidates({
                 tabbingDirection: 'forwards',
               });
-              focusFirst(tabbleCandidates);
+              focusFirst(tabbableCandidates);
             }}
           />
         )}
@@ -298,10 +298,10 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           <FocusProxy
             ref={tailFocusProxyRef}
             onFocusFromOutsideViewport={() => {
-              const tabbleCandidates = getSortedTabbableCandidates({
+              const tabbableCandidates = getSortedTabbableCandidates({
                 tabbingDirection: 'backwards',
               });
-              focusFirst(tabbleCandidates);
+              focusFirst(tabbableCandidates);
             }}
           />
         )}
