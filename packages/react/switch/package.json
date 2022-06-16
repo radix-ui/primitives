@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-switch",
-  "version": "0.1.6-rc.39",
+  "version": "0.1.6-rc.40",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",

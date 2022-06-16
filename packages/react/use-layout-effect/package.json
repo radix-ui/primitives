@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-use-layout-effect",
-  "version": "0.1.1-rc.39",
+  "version": "0.1.1-rc.40",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
