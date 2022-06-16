@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { createCollection } from '@radix-ui/react-collection';
 import { createContextScope } from '@radix-ui/react-context';
 import * as DismissableLayer from '@radix-ui/react-dismissable-layer';
 import { Presence } from '@radix-ui/react-presence';
@@ -21,6 +22,8 @@ import type { Scope } from '@radix-ui/react-context';
 
 const PROVIDER_NAME = 'ToastProvider';
 
+const [Collection, useCollection, createCollectionScope] = createCollection<ToastElement>('Toast');
+
 type SwipeDirection = 'up' | 'down' | 'left' | 'right';
 type ToastProviderContextValue = {
   label: string;
@@ -37,7 +40,7 @@ type ToastProviderContextValue = {
 };
 
 type ScopedProps<P> = P & { __scopeToast?: Scope };
-const [createToastContext, createToastScope] = createContextScope('Toast');
+const [createToastContext, createToastScope] = createContextScope('Toast', [createCollectionScope]);
 const [ToastProviderProvider, useToastProviderContext] =
   createToastContext<ToastProviderContextValue>(PROVIDER_NAME);
 
@@ -80,22 +83,24 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
   const isFocusedToastEscapeKeyDownRef = React.useRef(false);
   const isClosePausedRef = React.useRef(false);
   return (
-    <ToastProviderProvider
-      scope={__scopeToast}
-      label={label}
-      duration={duration}
-      swipeDirection={swipeDirection}
-      swipeThreshold={swipeThreshold}
-      toastCount={toastCount}
-      viewport={viewport}
-      onViewportChange={setViewport}
-      onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
-      onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
-      isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
-      isClosePausedRef={isClosePausedRef}
-    >
-      {children}
-    </ToastProviderProvider>
+    <Collection.Provider scope={__scopeToast}>
+      <ToastProviderProvider
+        scope={__scopeToast}
+        label={label}
+        duration={duration}
+        swipeDirection={swipeDirection}
+        swipeThreshold={swipeThreshold}
+        toastCount={toastCount}
+        viewport={viewport}
+        onViewportChange={setViewport}
+        onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
+        onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
+        isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
+        isClosePausedRef={isClosePausedRef}
+      >
+        {children}
+      </ToastProviderProvider>
+    </Collection.Provider>
   );
 };
 
@@ -145,10 +150,14 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       ...viewportProps
     } = props;
     const context = useToastProviderContext(VIEWPORT_NAME, __scopeToast);
+    const getItems = useCollection(__scopeToast);
     const wrapperRef = React.useRef<HTMLDivElement>(null);
+    const headFocusProxyRef = React.useRef<FocusProxyElement>(null);
+    const tailFocusProxyRef = React.useRef<FocusProxyElement>(null);
     const ref = React.useRef<ToastViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
     const hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
+    const hasToasts = context.toastCount > 0;
 
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
@@ -195,34 +204,66 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       }
     }, [context.isClosePausedRef]);
 
+    const getSortedTabbableCandidates = React.useCallback(
+      ({ tabbingDirection }: { tabbingDirection: 'forwards' | 'backwards' }) => {
+        const toastItems = getItems();
+        const tabbableCandidates = toastItems.map((toastItem) => {
+          const toastNode = toastItem.ref.current!;
+          const toastTabbableCandidates = [toastNode, ...getTabbableCandidates(toastNode)];
+          return tabbingDirection === 'forwards'
+            ? toastTabbableCandidates
+            : toastTabbableCandidates.reverse();
+        });
+        return (
+          tabbingDirection === 'forwards' ? tabbableCandidates.reverse() : tabbableCandidates
+        ).flat();
+      },
+      [getItems]
+    );
+
     React.useEffect(() => {
       const viewport = ref.current;
-      // Re-order DOM so most recent toasts are at top of DOM structure to improve tab order
+      // We programmatically manage tabbing as we are unable to influence
+      // the source order with portals, this allows us to reverse the
+      // tab order so that it runs from most recent toast to least
       if (viewport) {
-        const prepended: Set<Node> = new Set();
-        const observer = new MutationObserver((mutations) => {
-          const addedNodes = mutations
-            .map((mutation) => Array.from(mutation.addedNodes))
-            .reduce((a, b) => a.concat(b));
+        const handleKeyDown = (event: KeyboardEvent) => {
+          const isMetaKey = event.altKey || event.ctrlKey || event.metaKey;
+          const isTabKey = event.key === 'Tab' && !isMetaKey;
 
-          addedNodes.forEach((node) => {
-            // mutation will immediately fire again when we prepend so we only prepend if
-            // it hasn't just prepended.
-            if (!prepended.has(node)) {
-              viewport.prepend(node);
-              prepended.add(node);
-            } else {
-              // this else catches the case where the mutation fires immediately after prepend.
-              // we remove from cache after it prepends to allow observer to catch future updates
-              // to DOM order, e.g. if `key` changes for a toast and is reportalled to bottom.
-              prepended.delete(node);
+          if (isTabKey) {
+            const focusedElement = document.activeElement;
+            const isTabbingBackwards = event.shiftKey;
+            const targetIsViewport = event.target === viewport;
+
+            // If we're back tabbing after jumping to the viewport then we simply
+            // proxy focus out to the preceding document
+            if (targetIsViewport && isTabbingBackwards) {
+              headFocusProxyRef.current?.focus();
+              return;
             }
-          });
-        });
-        observer.observe(viewport, { childList: true });
-        return () => observer.disconnect();
+
+            const tabbingDirection = isTabbingBackwards ? 'backwards' : 'forwards';
+            const sortedCandidates = getSortedTabbableCandidates({ tabbingDirection });
+            const index = sortedCandidates.findIndex((candidate) => candidate === focusedElement);
+            if (focusFirst(sortedCandidates.slice(index + 1))) {
+              event.preventDefault();
+            } else {
+              // If we can't focus that means we're at the edges so we
+              // proxy to the corresponding exit point and let the browser handle
+              // tab/shift+tab keypress and implicitly pass focus to the next valid element in the document
+              isTabbingBackwards
+                ? headFocusProxyRef.current?.focus()
+                : tailFocusProxyRef.current?.focus();
+            }
+          }
+        };
+
+        // Toasts are not in the viewport React tree so we need to bind DOM events
+        viewport.addEventListener('keydown', handleKeyDown);
+        return () => viewport.removeEventListener('keydown', handleKeyDown);
       }
-    }, []);
+    }, [getItems, getSortedTabbableCandidates]);
 
     return (
       <DismissableLayer.Branch
@@ -233,19 +274,78 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         tabIndex={-1}
         // incase list has size when empty (e.g. padding), we remove pointer events so
         // it doesn't prevent interactions with page elements that it overlays
-        style={{ pointerEvents: context.toastCount > 0 ? undefined : 'none' }}
+        style={{ pointerEvents: hasToasts ? undefined : 'none' }}
       >
+        {hasToasts && (
+          <FocusProxy
+            ref={headFocusProxyRef}
+            onFocusFromOutsideViewport={() => {
+              const tabbableCandidates = getSortedTabbableCandidates({
+                tabbingDirection: 'forwards',
+              });
+              focusFirst(tabbableCandidates);
+            }}
+          />
+        )}
         {/**
          * tabindex on the the list so that it can be focused when items are removed. we focus
          * the list instead of the viewport so it announces number of items remaining.
          */}
-        <Primitive.ol tabIndex={-1} {...viewportProps} ref={composedRefs} />
+        <Collection.Slot scope={__scopeToast}>
+          <Primitive.ol tabIndex={-1} {...viewportProps} ref={composedRefs} />
+        </Collection.Slot>
+        {hasToasts && (
+          <FocusProxy
+            ref={tailFocusProxyRef}
+            onFocusFromOutsideViewport={() => {
+              const tabbableCandidates = getSortedTabbableCandidates({
+                tabbingDirection: 'backwards',
+              });
+              focusFirst(tabbableCandidates);
+            }}
+          />
+        )}
       </DismissableLayer.Branch>
     );
   }
 );
 
 ToastViewport.displayName = VIEWPORT_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
+
+const FOCUS_PROXY_NAME = 'ToastFocusProxy';
+
+type FocusProxyElement = React.ElementRef<typeof VisuallyHidden>;
+type VisuallyHiddenProps = Radix.ComponentPropsWithoutRef<typeof VisuallyHidden>;
+interface FocusProxyProps extends VisuallyHiddenProps {
+  onFocusFromOutsideViewport(): void;
+}
+
+const FocusProxy = React.forwardRef<FocusProxyElement, ScopedProps<FocusProxyProps>>(
+  (props, forwardedRef) => {
+    const { __scopeToast, onFocusFromOutsideViewport, ...proxyProps } = props;
+    const context = useToastProviderContext(FOCUS_PROXY_NAME, __scopeToast);
+
+    return (
+      <VisuallyHidden
+        aria-hidden
+        tabIndex={0}
+        {...proxyProps}
+        ref={forwardedRef}
+        // Avoid page scrolling when focus is on the focus proxy
+        style={{ position: 'fixed' }}
+        onFocus={(event) => {
+          const prevFocusedElement = event.relatedTarget as HTMLElement | null;
+          const isFocusFromOutsideViewport = !context.viewport?.contains(prevFocusedElement);
+          if (isFocusFromOutsideViewport) onFocusFromOutsideViewport();
+        }}
+      />
+    );
+  }
+);
+
+FocusProxy.displayName = FOCUS_PROXY_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * Toast
@@ -433,97 +533,106 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       <>
         <ToastInteractiveProvider scope={__scopeToast} isInteractive onClose={handleClose}>
           {ReactDOM.createPortal(
-            <DismissableLayer.Root
-              asChild
-              onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
-                if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
-                context.isFocusedToastEscapeKeyDownRef.current = false;
-              })}
-            >
-              <Primitive.li
-                role="status"
-                aria-live={type === 'foreground' ? 'assertive' : 'polite'}
-                aria-atomic
-                // Prevent voice over from announcing before the label is rendered
-                aria-hidden={!renderLabel || undefined}
-                tabIndex={0}
-                data-state={open ? 'open' : 'closed'}
-                data-swipe-direction={context.swipeDirection}
-                {...toastProps}
-                ref={composedRefs}
-                style={{ userSelect: 'none', touchAction: 'none', ...props.style }}
-                onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-                  if (event.key !== 'Escape') return;
-                  onEscapeKeyDown?.(event.nativeEvent);
-                  if (!event.nativeEvent.defaultPrevented) {
-                    context.isFocusedToastEscapeKeyDownRef.current = true;
-                    handleClose();
-                  }
-                })}
-                onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-                  if (event.button !== 0) return;
-                  pointerStartRef.current = { x: event.clientX, y: event.clientY };
-                })}
-                onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
-                  if (!pointerStartRef.current) return;
-                  const x = event.clientX - pointerStartRef.current.x;
-                  const y = event.clientY - pointerStartRef.current.y;
-                  const hasSwipeMoveStarted = Boolean(swipeDeltaRef.current);
-                  const isHorizontalSwipe = ['left', 'right'].includes(context.swipeDirection);
-                  const clamp = ['left', 'up'].includes(context.swipeDirection)
-                    ? Math.min
-                    : Math.max;
-                  const clampedX = isHorizontalSwipe ? clamp(0, x) : 0;
-                  const clampedY = !isHorizontalSwipe ? clamp(0, y) : 0;
-                  const moveStartBuffer = event.pointerType === 'touch' ? 10 : 2;
-                  const delta = { x: clampedX, y: clampedY };
-                  const eventDetail = { originalEvent: event, delta };
-                  if (hasSwipeMoveStarted) {
-                    swipeDeltaRef.current = delta;
-                    handleAndDispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
-                      discrete: false,
-                    });
-                  } else if (isDeltaInDirection(delta, context.swipeDirection, moveStartBuffer)) {
-                    swipeDeltaRef.current = delta;
-                    handleAndDispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
-                      discrete: false,
-                    });
-                    (event.target as HTMLElement).setPointerCapture(event.pointerId);
-                  } else if (Math.abs(x) > moveStartBuffer || Math.abs(y) > moveStartBuffer) {
-                    // User is swiping in wrong direction so we disable swipe gesture
-                    // for the current pointer down interaction
-                    pointerStartRef.current = null;
-                  }
-                })}
-                onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
-                  const delta = swipeDeltaRef.current;
-                  (event.target as HTMLElement).releasePointerCapture(event.pointerId);
-                  swipeDeltaRef.current = null;
-                  pointerStartRef.current = null;
-                  if (delta) {
-                    const toast = event.currentTarget;
-                    const eventDetail = { originalEvent: event, delta };
-                    if (isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)) {
-                      handleAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
-                        discrete: true,
-                      });
-                    } else {
-                      handleAndDispatchCustomEvent(TOAST_SWIPE_CANCEL, onSwipeCancel, eventDetail, {
-                        discrete: true,
-                      });
-                    }
-                    // Prevent click event from triggering on items within the toast when
-                    // pointer up is part of a swipe gesture
-                    toast.addEventListener('click', (event) => event.preventDefault(), {
-                      once: true,
-                    });
-                  }
+            <Collection.ItemSlot scope={__scopeToast}>
+              <DismissableLayer.Root
+                asChild
+                onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
+                  if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
+                  context.isFocusedToastEscapeKeyDownRef.current = false;
                 })}
               >
-                <VisuallyHidden>{renderLabel && context.label}</VisuallyHidden>
-                <Slottable>{children}</Slottable>
-              </Primitive.li>
-            </DismissableLayer.Root>,
+                <Primitive.li
+                  role="status"
+                  aria-live={type === 'foreground' ? 'assertive' : 'polite'}
+                  aria-atomic
+                  // Prevent voice over from announcing before the label is rendered
+                  aria-hidden={!renderLabel || undefined}
+                  tabIndex={0}
+                  data-state={open ? 'open' : 'closed'}
+                  data-swipe-direction={context.swipeDirection}
+                  {...toastProps}
+                  ref={composedRefs}
+                  style={{ userSelect: 'none', touchAction: 'none', ...props.style }}
+                  onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+                    if (event.key !== 'Escape') return;
+                    onEscapeKeyDown?.(event.nativeEvent);
+                    if (!event.nativeEvent.defaultPrevented) {
+                      context.isFocusedToastEscapeKeyDownRef.current = true;
+                      handleClose();
+                    }
+                  })}
+                  onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+                    if (event.button !== 0) return;
+                    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+                  })}
+                  onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
+                    if (!pointerStartRef.current) return;
+                    const x = event.clientX - pointerStartRef.current.x;
+                    const y = event.clientY - pointerStartRef.current.y;
+                    const hasSwipeMoveStarted = Boolean(swipeDeltaRef.current);
+                    const isHorizontalSwipe = ['left', 'right'].includes(context.swipeDirection);
+                    const clamp = ['left', 'up'].includes(context.swipeDirection)
+                      ? Math.min
+                      : Math.max;
+                    const clampedX = isHorizontalSwipe ? clamp(0, x) : 0;
+                    const clampedY = !isHorizontalSwipe ? clamp(0, y) : 0;
+                    const moveStartBuffer = event.pointerType === 'touch' ? 10 : 2;
+                    const delta = { x: clampedX, y: clampedY };
+                    const eventDetail = { originalEvent: event, delta };
+                    if (hasSwipeMoveStarted) {
+                      swipeDeltaRef.current = delta;
+                      handleAndDispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
+                        discrete: false,
+                      });
+                    } else if (isDeltaInDirection(delta, context.swipeDirection, moveStartBuffer)) {
+                      swipeDeltaRef.current = delta;
+                      handleAndDispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
+                        discrete: false,
+                      });
+                      (event.target as HTMLElement).setPointerCapture(event.pointerId);
+                    } else if (Math.abs(x) > moveStartBuffer || Math.abs(y) > moveStartBuffer) {
+                      // User is swiping in wrong direction so we disable swipe gesture
+                      // for the current pointer down interaction
+                      pointerStartRef.current = null;
+                    }
+                  })}
+                  onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+                    const delta = swipeDeltaRef.current;
+                    (event.target as HTMLElement).releasePointerCapture(event.pointerId);
+                    swipeDeltaRef.current = null;
+                    pointerStartRef.current = null;
+                    if (delta) {
+                      const toast = event.currentTarget;
+                      const eventDetail = { originalEvent: event, delta };
+                      if (
+                        isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)
+                      ) {
+                        handleAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
+                          discrete: true,
+                        });
+                      } else {
+                        handleAndDispatchCustomEvent(
+                          TOAST_SWIPE_CANCEL,
+                          onSwipeCancel,
+                          eventDetail,
+                          {
+                            discrete: true,
+                          }
+                        );
+                      }
+                      // Prevent click event from triggering on items within the toast when
+                      // pointer up is part of a swipe gesture
+                      toast.addEventListener('click', (event) => event.preventDefault(), {
+                        once: true,
+                      });
+                    }
+                  })}
+                >
+                  <VisuallyHidden>{renderLabel && context.label}</VisuallyHidden>
+                  <Slottable>{children}</Slottable>
+                </Primitive.li>
+              </DismissableLayer.Root>
+            </Collection.ItemSlot>,
             context.viewport
           )}
         </ToastInteractiveProvider>
@@ -695,6 +804,44 @@ function useNextFrame(callback = () => {}) {
       window.cancelAnimationFrame(raf2);
     };
   }, [fn]);
+}
+
+/**
+ * Returns a list of potential tabbable candidates.
+ *
+ * NOTE: This is only a close approximation. For example it doesn't take into account cases like when
+ * elements are not visible. This cannot be worked out easily by just reading a property, but rather
+ * necessitate runtime knowledge (computed styles, etc). We deal with these cases separately.
+ *
+ * See: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
+ * Credit: https://github.com/discord/focus-layers/blob/master/src/util/wrapFocus.tsx#L1
+ */
+function getTabbableCandidates(container: HTMLElement) {
+  const nodes: HTMLElement[] = [];
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+    acceptNode: (node: any) => {
+      const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
+      if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
+      // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
+      // runtime's understanding of tabbability, so this automatically accounts
+      // for any kind of element that could be tabbed to.
+      return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+    },
+  });
+  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
+  // we do not take into account the order of nodes with positive `tabIndex` as it
+  // hinders accessibility to have tab order different from visual order.
+  return nodes;
+}
+
+function focusFirst(candidates: HTMLElement[]) {
+  const previouslyFocusedElement = document.activeElement;
+  return candidates.some((candidate) => {
+    // if focus is already where we want to go, we don't want to keep going through the candidates
+    if (candidate === previouslyFocusedElement) return true;
+    candidate.focus();
+    return document.activeElement !== previouslyFocusedElement;
+  });
 }
 
 const Provider = ToastProvider;
