@@ -3,16 +3,12 @@ describe('Toast', () => {
     cy.visitStory('toast--cypress');
   });
 
-  function actionIsFocused(identifier: number) {
-    cy.findByText(`Toast ${identifier} action`).should('be.focused');
-  }
-
-  function closeIsFocused(identifier: number) {
-    cy.findByText(`Toast ${identifier} close`).should('be.focused');
+  function buttonIsFocused(identifier: number) {
+    cy.findByText(`Toast button ${identifier}`).should('be.focused');
   }
 
   function toastIsFocused(identifier: number) {
-    cy.get(`[data-cy="toast-${identifier}"]`).should('be.focused');
+    cy.findByTestId(`toast-${identifier}`).should('be.focused');
   }
 
   describe('given zero toasts', () => {
@@ -41,19 +37,19 @@ describe('Toast', () => {
 
       // Forward tab
       cy.realPress('Tab');
-      closeIsFocused(2);
+      buttonIsFocused(2.1);
 
       cy.realPress('Tab');
-      actionIsFocused(2);
+      buttonIsFocused(2.2);
 
       cy.realPress('Tab');
       toastIsFocused(1);
 
       cy.realPress('Tab');
-      closeIsFocused(1);
+      buttonIsFocused(1.1);
 
       cy.realPress('Tab');
-      actionIsFocused(1);
+      buttonIsFocused(1.2);
 
       // End of viewport
       cy.realPress('Tab');
@@ -61,19 +57,19 @@ describe('Toast', () => {
 
       // Backwards tab
       cy.realPress(['Shift', 'Tab']);
-      actionIsFocused(1);
+      buttonIsFocused(1.2);
 
       cy.realPress(['Shift', 'Tab']);
-      closeIsFocused(1);
+      buttonIsFocused(1.1);
 
       cy.realPress(['Shift', 'Tab']);
       toastIsFocused(1);
 
       cy.realPress(['Shift', 'Tab']);
-      actionIsFocused(2);
+      buttonIsFocused(2.2);
 
       cy.realPress(['Shift', 'Tab']);
-      closeIsFocused(2);
+      buttonIsFocused(2.1);
 
       cy.realPress(['Shift', 'Tab']);
       toastIsFocused(2);

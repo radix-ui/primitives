@@ -204,15 +204,19 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       }
     }, [context.isClosePausedRef]);
 
-    const getSortedCandidates = React.useCallback(
-      ({ direction }: { direction: 'forwards' | 'backwards' }) => {
-        const items = getItems();
-        const candidateGroups = items.map((item) => {
-          const itemNode = item.ref.current!;
-          const itemGroup = [itemNode, ...getTabbableCandidates(itemNode)];
-          return direction === 'forwards' ? itemGroup.reverse() : itemGroup;
+    const getSortedTabbableCandidates = React.useCallback(
+      ({ tabbingDirection }: { tabbingDirection: 'forwards' | 'backwards' }) => {
+        const toastItems = getItems();
+        const tabbableCandidates = toastItems.map((toastItem) => {
+          const toastNode = toastItem.ref.current!;
+          const toastTabbableCandidates = [toastNode, ...getTabbableCandidates(toastNode)];
+          return tabbingDirection === 'forwards'
+            ? toastTabbableCandidates
+            : toastTabbableCandidates.reverse();
         });
-        return (direction === 'forwards' ? candidateGroups : candidateGroups.reverse()).flat();
+        return (
+          tabbingDirection === 'forwards' ? tabbableCandidates.reverse() : tabbableCandidates
+        ).flat();
       },
       [getItems]
     );
@@ -229,19 +233,18 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
 
           if (isTabKey) {
             const focusedElement = document.activeElement;
-            const isMovingBackwards = event.shiftKey;
+            const isTabbingBackwards = event.shiftKey;
             const targetIsViewport = event.target === viewport;
 
             // If we're back tabbing after jumping to the viewport then we simply
             // proxy focus out to the preceding document
-            if (targetIsViewport && isMovingBackwards) {
+            if (targetIsViewport && isTabbingBackwards) {
               headFocusProxyRef.current?.focus();
               return;
             }
 
-            // Otherwise manually reverse the tab order
-            const direction = isMovingBackwards ? 'forwards' : 'backwards';
-            const sortedCandidates = getSortedCandidates({ direction });
+            const tabbingDirection = isTabbingBackwards ? 'backwards' : 'forwards';
+            const sortedCandidates = getSortedTabbableCandidates({ tabbingDirection });
             const index = sortedCandidates.findIndex((candidate) => candidate === focusedElement);
             if (focusFirst(sortedCandidates.slice(index + 1))) {
               event.preventDefault();
@@ -249,7 +252,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
               // If we can't focus that means we're at the edges so we
               // proxy to the corresponding exit point and let the browser handle
               // tab/shift+tab keypress and implicitly pass focus to the next valid element in the document
-              isMovingBackwards
+              isTabbingBackwards
                 ? headFocusProxyRef.current?.focus()
                 : tailFocusProxyRef.current?.focus();
             }
@@ -260,7 +263,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         viewport.addEventListener('keydown', handleKeyDown);
         return () => viewport.removeEventListener('keydown', handleKeyDown);
       }
-    }, [getItems, getSortedCandidates]);
+    }, [getItems, getSortedTabbableCandidates]);
 
     return (
       <DismissableLayer.Branch
@@ -276,7 +279,12 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         {hasToasts && (
           <FocusProxy
             ref={headFocusProxyRef}
-            onEntranceFocus={() => focusFirst(getSortedCandidates({ direction: 'backwards' }))}
+            onFocusFromOutsideViewport={() => {
+              const tabbleCandidates = getSortedTabbableCandidates({
+                tabbingDirection: 'forwards',
+              });
+              focusFirst(tabbleCandidates);
+            }}
           />
         )}
         {/**
@@ -289,7 +297,12 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         {hasToasts && (
           <FocusProxy
             ref={tailFocusProxyRef}
-            onEntranceFocus={() => focusFirst(getSortedCandidates({ direction: 'forwards' }))}
+            onFocusFromOutsideViewport={() => {
+              const tabbleCandidates = getSortedTabbableCandidates({
+                tabbingDirection: 'backwards',
+              });
+              focusFirst(tabbleCandidates);
+            }}
           />
         )}
       </DismissableLayer.Branch>
@@ -306,12 +319,12 @@ const FOCUS_PROXY_NAME = 'ToastFocusProxy';
 type FocusProxyElement = React.ElementRef<typeof VisuallyHidden>;
 type VisuallyHiddenProps = Radix.ComponentPropsWithoutRef<typeof VisuallyHidden>;
 interface FocusProxyProps extends VisuallyHiddenProps {
-  onEntranceFocus(): void;
+  onFocusFromOutsideViewport(): void;
 }
 
 const FocusProxy = React.forwardRef<FocusProxyElement, ScopedProps<FocusProxyProps>>(
   (props, forwardedRef) => {
-    const { __scopeToast, onEntranceFocus, ...proxyProps } = props;
+    const { __scopeToast, onFocusFromOutsideViewport, ...proxyProps } = props;
     const context = useToastProviderContext(FOCUS_PROXY_NAME, __scopeToast);
 
     return (
@@ -320,10 +333,12 @@ const FocusProxy = React.forwardRef<FocusProxyElement, ScopedProps<FocusProxyPro
         tabIndex={0}
         {...proxyProps}
         ref={forwardedRef}
+        // Avoid page scrolling when focus is on the focus proxy
+        style={{ position: 'fixed' }}
         onFocus={(event) => {
           const prevFocusedElement = event.relatedTarget as HTMLElement | null;
-          const isEntranceFocus = !context.viewport?.contains(prevFocusedElement);
-          if (isEntranceFocus) onEntranceFocus();
+          const isFocusFromOutsideViewport = !context.viewport?.contains(prevFocusedElement);
+          if (isFocusFromOutsideViewport) onFocusFromOutsideViewport();
         }}
       />
     );
