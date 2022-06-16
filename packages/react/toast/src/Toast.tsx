@@ -445,7 +445,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                 aria-live={type === 'foreground' ? 'assertive' : 'polite'}
                 aria-atomic
                 // Prevent voice over from announcing before the label is rendered
-                aria-hidden={!renderLabel}
+                aria-hidden={!renderLabel || undefined}
                 tabIndex={0}
                 data-state={open ? 'open' : 'closed'}
                 data-swipe-direction={context.swipeDirection}
