@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-tooltip",
   "version": "0.1.8-rc.45",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Tooltip.tsx",
+  "main": "dist/Tooltip.js",
+  "module": "dist/Tooltip.module.js",
+  "types": "dist/Tooltip.d.ts",
   "files": [
     "dist",
     "README.md"

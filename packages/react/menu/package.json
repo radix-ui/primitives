@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-menu",
   "version": "0.1.7-rc.43",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Menu.tsx",
+  "main": "dist/Menu.js",
+  "module": "dist/Menu.module.js",
+  "types": "dist/Menu.d.ts",
   "files": [
     "dist",
     "README.md"

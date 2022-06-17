@@ -2,13 +2,13 @@
   "name": "@radix-ui/react-alert-dialog",
   "version": "0.1.8-rc.47",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/AlertDialog.tsx",
+  "main": "dist/AlertDialog.js",
+  "module": "dist/AlertDialog.module.js",
+  "types": "dist/AlertDialog.d.ts",
   "files": [
-    "src",
-    "dist"
+    "dist",
+    "README.md"
   ],
   "sideEffects": false,
   "scripts": {

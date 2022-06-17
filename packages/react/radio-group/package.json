@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-radio-group",
   "version": "0.1.6-rc.43",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/RadioGroup.tsx",
+  "main": "dist/RadioGroup.js",
+  "module": "dist/RadioGroup.module.js",
+  "types": "dist/RadioGroup.d.ts",
   "files": [
     "dist",
     "README.md"

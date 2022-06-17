@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-switch",
   "version": "0.1.6-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Switch.tsx",
+  "main": "dist/Switch.js",
+  "module": "dist/Switch.module.js",
+  "types": "dist/Switch.d.ts",
   "files": [
     "dist",
     "README.md"

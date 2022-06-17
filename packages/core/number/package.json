@@ -2,10 +2,10 @@
   "name": "@radix-ui/number",
   "version": "0.1.0",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/number.ts",
+  "main": "dist/number.js",
+  "module": "dist/number.module.js",
+  "types": "dist/number.d.ts",
   "files": [
     "dist",
     "README.md"

@@ -2,10 +2,10 @@
   "name": "@radix-ui/rect",
   "version": "0.1.1",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/rect.ts",
+  "main": "dist/rect.js",
+  "module": "dist/rect.module.js",
+  "types": "dist/rect.d.ts",
   "files": [
     "dist",
     "README.md"

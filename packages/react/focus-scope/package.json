@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-focus-scope",
   "version": "0.1.5-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/FocusScope.tsx",
+  "main": "dist/FocusScope.js",
+  "module": "dist/FocusScope.module.js",
+  "types": "dist/FocusScope.d.ts",
   "files": [
     "dist",
     "README.md"

@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-direction",
   "version": "0.1.0-rc.43",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Direction.tsx",
+  "main": "dist/Direction.js",
+  "module": "dist/Direction.module.js",
+  "types": "dist/Direction.d.ts",
   "files": [
     "dist",
     "README.md"

@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-arrow",
   "version": "0.1.5-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Arrow.tsx",
+  "main": "dist/Arrow.js",
+  "module": "dist/Arrow.module.js",
+  "types": "dist/Arrow.d.ts",
   "files": [
     "dist",
     "README.md"

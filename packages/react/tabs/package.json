@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-tabs",
   "version": "0.2.0-rc.20",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Tabs.tsx",
+  "main": "dist/Tabs.js",
+  "module": "dist/Tabs.module.js",
+  "types": "dist/Tabs.d.ts",
   "files": [
     "dist",
     "README.md"

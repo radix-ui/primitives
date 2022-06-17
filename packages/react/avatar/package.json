@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-avatar",
   "version": "0.1.5-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Avatar.tsx",
+  "main": "dist/Avatar.js",
+  "module": "dist/Avatar.module.js",
+  "types": "dist/Avatar.d.ts",
   "files": [
     "dist",
     "README.md"

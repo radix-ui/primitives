@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-use-size",
   "version": "0.1.2-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/useSize.tsx",
+  "main": "dist/useSize.js",
+  "module": "dist/useSize.module.js",
+  "types": "dist/useSize.d.ts",
   "files": [
     "dist",
     "README.md"

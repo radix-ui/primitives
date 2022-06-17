@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-context-menu",
   "version": "0.1.7-rc.43",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/ContextMenu.tsx",
+  "main": "dist/ContextMenu.js",
+  "module": "dist/ContextMenu.module.js",
+  "types": "dist/ContextMenu.d.ts",
   "files": [
     "dist",
     "README.md"

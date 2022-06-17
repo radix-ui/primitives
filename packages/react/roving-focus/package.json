@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-roving-focus",
   "version": "0.1.6-rc.43",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/RovingFocusGroup.tsx",
+  "main": "dist/RovingFocusGroup.js",
+  "module": "dist/RovingFocusGroup.module.js",
+  "types": "dist/RovingFocusGroup.d.ts",
   "files": [
     "dist",
     "README.md"

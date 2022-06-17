@@ -2,10 +2,10 @@
   "name": "@radix-ui/primitive",
   "version": "0.1.0",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/primitive.ts",
+  "main": "dist/primitive.js",
+  "module": "dist/primitive.module.js",
+  "types": "dist/primitive.d.ts",
   "files": [
     "dist",
     "README.md"

@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-toggle-group",
   "version": "0.1.6-rc.43",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/ToggleGroup.tsx",
+  "main": "dist/ToggleGroup.js",
+  "module": "dist/ToggleGroup.module.js",
+  "types": "dist/ToggleGroup.d.ts",
   "files": [
     "dist",
     "README.md"

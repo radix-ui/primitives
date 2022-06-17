@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-dropdown-menu",
   "version": "0.1.7-rc.43",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/DropdownMenu.tsx",
+  "main": "dist/DropdownMenu.js",
+  "module": "dist/DropdownMenu.module.js",
+  "types": "dist/DropdownMenu.d.ts",
   "files": [
     "dist",
     "README.md"

@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-toast",
   "version": "0.1.2-rc.50",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Toast.tsx",
+  "main": "dist/Toast.js",
+  "module": "dist/Toast.module.js",
+  "types": "dist/Toast.d.ts",
   "files": [
     "dist",
     "README.md"

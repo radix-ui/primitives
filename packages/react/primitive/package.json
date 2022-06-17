@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-primitive",
   "version": "0.1.5-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Primitive.tsx",
+  "main": "dist/Primitive.js",
+  "module": "dist/Primitive.module.js",
+  "types": "dist/Primitive.d.ts",
   "files": [
     "dist",
     "README.md"
@@ -18,9 +18,6 @@
   "dependencies": {
     "@babel/runtime": "^7.13.10",
     "@radix-ui/react-slot": "workspace:*"
-  },
-  "devDependencies": {
-    "@testing-library/react": "^10.4.8"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0 || ^18.0",

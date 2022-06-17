@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-id",
   "version": "0.1.6-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/id.tsx",
+  "main": "dist/id.js",
+  "module": "dist/id.module.js",
+  "types": "dist/id.d.ts",
   "files": [
     "dist",
     "README.md"

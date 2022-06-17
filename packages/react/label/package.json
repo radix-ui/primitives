@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-label",
   "version": "0.1.6-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Label.tsx",
+  "main": "dist/Label.js",
+  "module": "dist/Label.module.js",
+  "types": "dist/Label.d.ts",
   "files": [
     "dist",
     "README.md"

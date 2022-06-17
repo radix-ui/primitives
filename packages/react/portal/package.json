@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-portal",
   "version": "0.1.5-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/Portal.tsx",
+  "main": "dist/Portal.js",
+  "module": "dist/Portal.module.js",
+  "types": "dist/Portal.d.ts",
   "files": [
     "dist",
     "README.md"

@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-accessible-icon",
   "version": "0.1.5-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/AccessibleIcon.tsx",
+  "main": "dist/AccessibleIcon.js",
+  "module": "dist/AccessibleIcon.module.js",
+  "types": "dist/AccessibleIcon.d.ts",
   "files": [
     "dist",
     "README.md"

@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-use-escape-keydown",
   "version": "0.1.1-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/useEscapeKeydown.tsx",
+  "main": "dist/useEscapeKeydown.js",
+  "module": "dist/useEscapeKeydown.module.js",
+  "types": "dist/useEscapeKeydown.d.ts",
   "files": [
     "dist",
     "README.md"

@@ -2,10 +2,10 @@
   "name": "@radix-ui/react-context",
   "version": "0.1.2-rc.40",
   "license": "MIT",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "source": "src/context.tsx",
+  "main": "dist/context.js",
+  "module": "dist/context.module.js",
+  "types": "dist/context.d.ts",
   "files": [
     "dist",
     "README.md"
