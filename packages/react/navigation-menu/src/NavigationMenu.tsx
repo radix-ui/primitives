@@ -28,6 +28,7 @@ type Direction = 'ltr' | 'rtl';
  * -----------------------------------------------------------------------------------------------*/
 
 const NAVIGATION_MENU_NAME = 'NavigationMenu';
+const DEFAULT_DELAY_DURATION = 700;
 
 const [Collection, useCollection, createCollectionScope] = createCollection<
   NavigationMenuTriggerElement,
@@ -81,6 +82,8 @@ interface NavigationMenuProps
     Omit<PrimitiveNavProps, 'defaultValue'> {
   dir?: Direction;
   orientation?: Orientation;
+  delayDuration?: number;
+  skipDelayDuration?: number;
 }
 
 const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuProps>(
@@ -91,6 +94,8 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
       onValueChange,
       defaultValue,
       orientation = 'horizontal',
+      delayDuration,
+      skipDelayDuration,
       dir,
       ...NavigationMenuProps
     } = props;
@@ -108,6 +113,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         dir={direction}
         orientation={orientation}
         rootNavigationMenu={navigationMenu}
+        delayDuration={delayDuration}
       >
         <Primitive.nav
           aria-label="Main"
@@ -144,6 +150,8 @@ const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationM
       value,
       onValueChange,
       defaultValue,
+      delayDuration,
+      skipDelayDuration,
       orientation = 'horizontal',
       ...subProps
     } = props;
@@ -159,6 +167,8 @@ const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationM
         dir={context.dir}
         orientation={orientation}
         rootNavigationMenu={context.rootNavigationMenu}
+        delayDuration={delayDuration}
+        skipDelayDuration={skipDelayDuration}
       >
         <Primitive.div data-orientation={orientation} {...subProps} ref={forwardedRef} />
       </NavigationMenuProvider>
@@ -183,6 +193,8 @@ interface NavigationMenuProviderProps extends NavigationMenuProviderPrivateProps
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
+  delayDuration?: number;
+  skipDelayDuration?: number;
 }
 
 const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
@@ -197,6 +209,8 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
     defaultValue,
     dir,
     orientation,
+    delayDuration = DEFAULT_DELAY_DURATION,
+    skipDelayDuration = 300,
     children,
   } = props;
   const [viewport, setViewport] = React.useState<NavigationMenuViewportElement | null>(null);
@@ -208,6 +222,8 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
     onChange: onValueChange,
     defaultProp: defaultValue,
   });
+  const [shouldSkipDelay, setShouldSkipDelay] = React.useState(false);
+  const openTimerRef = React.useRef(0);
 
   React.useEffect(() => {
     return () => window.clearTimeout(closeTimerRef.current);
@@ -230,16 +246,27 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
       onItemOver={React.useCallback(
         (itemValue) => {
           if (isRootMenu) window.clearTimeout(closeTimerRef.current);
-          setValue(itemValue);
+          if (openTimerRef.current) window.clearTimeout(openTimerRef.current);
+
+          if (shouldSkipDelay) {
+            setValue(itemValue);
+          } else {
+            openTimerRef.current = window.setTimeout(() => {
+              setValue(itemValue);
+            }, delayDuration);
+          }
         },
-        [setValue, isRootMenu]
+        [setValue, isRootMenu, delayDuration, shouldSkipDelay]
       )}
       onItemLeave={React.useCallback(() => {
         if (isRootMenu) {
           window.clearTimeout(closeTimerRef.current);
+          window.clearTimeout(openTimerRef.current);
+          setShouldSkipDelay(true);
+          window.setTimeout(() => setShouldSkipDelay(false), skipDelayDuration);
           closeTimerRef.current = window.setTimeout(() => setValue(''), 150);
         }
-      }, [setValue, isRootMenu])}
+      }, [setValue, isRootMenu, skipDelayDuration])}
       onItemSelect={React.useCallback(
         (itemValue) => {
           setValue((prevValue) => {

@@ -55,6 +55,56 @@ export const Basic = () => {
   );
 };
 
+export const CustomDurations = () => {
+  return (
+    <StoryFrame>
+      <NavigationMenu.Root delayDuration={1500} skipDelayDuration={1000}>
+        <NavigationMenu.List className={mainListClass()}>
+          <NavigationMenu.Item className={expandableItemClass()}>
+            <TriggerWithIndicator>Products</TriggerWithIndicator>
+            <NavigationMenu.Content className={basicContentClass()}>
+              <LinkGroup
+                bordered={false}
+                items={[
+                  'Fusce pellentesque',
+                  'Aliquam porttitor',
+                  'Pellentesque',
+                  'Fusce pellentesque',
+                  'Aliquam porttitor',
+                  'Pellentesque',
+                ]}
+              />
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+
+          <NavigationMenu.Item className={expandableItemClass()}>
+            <TriggerWithIndicator>Company</TriggerWithIndicator>
+            <NavigationMenu.Content className={basicContentClass()}>
+              <LinkGroup
+                bordered={false}
+                items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+              />
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+
+          <NavigationMenu.Item className={expandableItemClass()}>
+            <TriggerWithIndicator disabled>Developers</TriggerWithIndicator>
+            <NavigationMenu.Content className={basicContentClass()}>
+              <LinkGroup bordered={false} items={['Aliquam porttitor', 'Pellentesque']} />
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+
+          <NavigationMenu.Item>
+            <NavigationMenu.Link href="#example" className={linkClass()}>
+              Link
+            </NavigationMenu.Link>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+      </NavigationMenu.Root>
+    </StoryFrame>
+  );
+};
+
 export const Viewport = () => {
   return (
     <StoryFrame>
