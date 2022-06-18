@@ -114,6 +114,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         orientation={orientation}
         rootNavigationMenu={navigationMenu}
         delayDuration={delayDuration}
+        skipDelayDuration={skipDelayDuration}
       >
         <Primitive.nav
           aria-label="Main"
@@ -223,10 +224,15 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
     defaultProp: defaultValue,
   });
   const [shouldSkipDelay, setShouldSkipDelay] = React.useState(false);
+  const skipDelayTimer = React.useRef(0);
   const openTimerRef = React.useRef(0);
 
   React.useEffect(() => {
-    return () => window.clearTimeout(closeTimerRef.current);
+    return () => {
+      window.clearTimeout(closeTimerRef.current);
+      window.clearTimeout(openTimerRef.current);
+      window.clearTimeout(skipDelayTimer.current);
+    };
   }, [closeTimerRef]);
 
   return (
@@ -262,8 +268,12 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
         if (isRootMenu) {
           window.clearTimeout(closeTimerRef.current);
           window.clearTimeout(openTimerRef.current);
+          window.clearTimeout(skipDelayTimer.current);
           setShouldSkipDelay(true);
-          window.setTimeout(() => setShouldSkipDelay(false), skipDelayDuration);
+          skipDelayTimer.current = window.setTimeout(
+            () => setShouldSkipDelay(false),
+            skipDelayDuration
+          );
           closeTimerRef.current = window.setTimeout(() => setValue(''), 150);
         }
       }, [setValue, isRootMenu, skipDelayDuration])}
