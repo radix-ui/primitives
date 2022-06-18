@@ -37,6 +37,8 @@ type ToastProviderContextValue = {
   onToastRemove(): void;
   isFocusedToastEscapeKeyDownRef: React.MutableRefObject<boolean>;
   isClosePausedRef: React.MutableRefObject<boolean>;
+  onPause?: () => void;
+  onResume?: () => void;
 };
 
 type ScopedProps<P> = P & { __scopeToast?: Scope };
@@ -67,6 +69,8 @@ interface ToastProviderProps {
    * @defaultValue 50
    */
   swipeThreshold?: number;
+  onPause?: () => void;
+  onResume?: () => void;
 }
 
 const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastProviderProps>) => {
@@ -77,6 +81,7 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
     swipeDirection = 'right',
     swipeThreshold = 50,
     children,
+    ...noDefualtProps
   } = props;
   const [viewport, setViewport] = React.useState<ToastViewportElement | null>(null);
   const [toastCount, setToastCount] = React.useState(0);
@@ -97,6 +102,7 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
         onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
         isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
         isClosePausedRef={isClosePausedRef}
+        {...noDefualtProps}
       >
         {children}
       </ToastProviderProvider>
@@ -175,6 +181,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       const viewport = ref.current;
       if (wrapper && viewport) {
         const handlePause = () => {
+          if (context.onPause) context.onPause();
           const pauseEvent = new CustomEvent(VIEWPORT_PAUSE);
           viewport.dispatchEvent(pauseEvent);
           context.isClosePausedRef.current = true;
@@ -183,6 +190,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         const handleResume = () => {
           const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
           viewport.dispatchEvent(resumeEvent);
+          if (context.onResume) context.onResume();
           context.isClosePausedRef.current = false;
         };
 
