@@ -31,6 +31,7 @@ type HoverCardContextValue = {
   onOpen(): void;
   onClose(): void;
   onDismiss(): void;
+  contentRef: React.RefObject<HoverCardContentImplElement>;
 };
 
 const [HoverCardProvider, useHoverCardContext] =
@@ -43,6 +44,7 @@ interface HoverCardProps {
   onOpenChange?: (open: boolean) => void;
   openDelay?: number;
   closeDelay?: number;
+  allowOutsideSelection?: boolean;
 }
 
 const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>) => {
@@ -54,6 +56,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
     onOpenChange,
     openDelay = 700,
     closeDelay = 300,
+    allowOutsideSelection = true,
   } = props;
   const popperScope = usePopperScope(__scopeHoverCard);
   const openTimerRef = React.useRef(0);
@@ -65,17 +68,62 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
     onChange: onOpenChange,
   });
 
+  const contentRef = React.useRef<HoverCardContentImplElement>(null);
+
+  const [isSelectionLocked, setSelectionLockPriv] = React.useState(false);
+
+  const setSelectionLock = React.useCallback(
+    (state: boolean) => {
+      if (!allowOutsideSelection) setSelectionLockPriv(state);
+    },
+    [allowOutsideSelection]
+  );
+
+  const lockSelection = React.useCallback(() => {
+    if (!allowOutsideSelection && contentRef.current) {
+      document.body.style.userSelect = 'none';
+      contentRef.current.style.userSelect = 'text';
+    }
+  }, [allowOutsideSelection]);
+
+  const unlockSelection = React.useCallback(() => {
+    if (!allowOutsideSelection) {
+      document.body.style.userSelect = '';
+    }
+  }, [allowOutsideSelection]);
+
+  const handlePointerMove = React.useCallback(
+    (e: PointerEvent) => {
+      if (!allowOutsideSelection) {
+        const selection = window.getSelection();
+        if (selection && selection.toString() !== '') setSelectionLock(true);
+        else setSelectionLock(false);
+      }
+    },
+    [allowOutsideSelection, setSelectionLock]
+  );
+
   const handleOpen = React.useCallback(() => {
     clearTimeout(closeTimerRef.current);
+    lockSelection();
     openTimerRef.current = window.setTimeout(() => setOpen(true), openDelay);
-  }, [openDelay, setOpen]);
+  }, [openDelay, setOpen, lockSelection]);
 
   const handleClose = React.useCallback(() => {
     clearTimeout(openTimerRef.current);
-    closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay);
-  }, [closeDelay, setOpen]);
 
-  const handleDismiss = React.useCallback(() => setOpen(false), [setOpen]);
+    closeTimerRef.current = window.setTimeout(() => {
+      if (!isSelectionLocked) {
+        unlockSelection();
+        setOpen(false);
+      }
+    }, closeDelay);
+  }, [closeDelay, setOpen, isSelectionLocked, unlockSelection]);
+
+  const handleDismiss = React.useCallback(() => {
+    unlockSelection();
+    setOpen(false);
+  }, [setOpen, unlockSelection]);
 
   // cleanup any queued state updates on unmount
   React.useEffect(() => {
@@ -85,6 +133,11 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
     };
   }, []);
 
+  React.useEffect(() => {
+    window.addEventListener('pointermove', handlePointerMove);
+    return () => window.removeEventListener('pointermove', handlePointerMove);
+  }, [handlePointerMove]);
+
   return (
     <HoverCardProvider
       scope={__scopeHoverCard}
@@ -93,6 +146,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
       onOpen={handleOpen}
       onClose={handleClose}
       onDismiss={handleDismiss}
+      contentRef={contentRef}
     >
       <PopperPrimitive.Root {...popperScope}>{children}</PopperPrimitive.Root>
     </HoverCardProvider>
@@ -254,7 +308,7 @@ const HoverCardContentImpl = React.forwardRef<
   } = props;
   const context = useHoverCardContext(CONTENT_NAME, __scopeHoverCard);
   const popperScope = usePopperScope(__scopeHoverCard);
-  const ref = React.useRef<HoverCardContentImplElement>(null);
+  const ref = context.contentRef;
   const composedRefs = useComposedRefs(forwardedRef, ref);
 
   React.useEffect(() => {

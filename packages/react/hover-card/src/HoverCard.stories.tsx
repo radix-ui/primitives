@@ -24,6 +24,53 @@ export const Basic = () => {
   );
 };
 
+export const LockTextSelection = () => {
+  return (
+    <>
+      <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
+        <HoverCard.Root allowOutsideSelection={false}>
+          <HoverCard.Trigger href="/" className={triggerClass()}>
+            trigger
+          </HoverCard.Trigger>
+          <HoverCard.Portal>
+            <HoverCard.Content className={contentClass()} sideOffset={5}>
+              <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
+              <div>Unable to select outside of hover card</div>
+            </HoverCard.Content>
+          </HoverCard.Portal>
+        </HoverCard.Root>
+      </div>
+      <div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque rem laborum provident fuga
+        omnis, enim distinctio id quod incidunt necessitatibus! Itaque quo quasi fuga, est
+        laboriosam incidunt officia dolorum iste reiciendis deserunt ipsam impedit ipsa, eos
+        blanditiis ex sequi eaque? Consequuntur modi, excepturi in asperiores ullam dolorum
+        voluptatem porro iure!
+      </div>
+      <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
+        <HoverCard.Root>
+          <HoverCard.Trigger href="/" className={triggerClass()}>
+            trigger
+          </HoverCard.Trigger>
+          <HoverCard.Portal>
+            <HoverCard.Content className={contentClass()} sideOffset={5}>
+              <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
+              <div>Able to select outside of hover card</div>
+            </HoverCard.Content>
+          </HoverCard.Portal>
+        </HoverCard.Root>
+      </div>
+      <div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque rem laborum provident fuga
+        omnis, enim distinctio id quod incidunt necessitatibus! Itaque quo quasi fuga, est
+        laboriosam incidunt officia dolorum iste reiciendis deserunt ipsam impedit ipsa, eos
+        blanditiis ex sequi eaque? Consequuntur modi, excepturi in asperiores ullam dolorum
+        voluptatem porro iure!
+      </div>
+    </>
+  );
+};
+
 export const AsyncUpdate = () => {
   const [open, setOpen] = React.useState(false);
   const [contentLoaded, setContentLoaded] = React.useState(false);
