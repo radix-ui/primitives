@@ -1171,7 +1171,6 @@ export {
   Content,
   Viewport,
 };
-
 export type {
   NavigationMenuProps,
   NavigationMenuSubProps,

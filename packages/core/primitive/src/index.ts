@@ -1,1 +1,1 @@
-export * from './primitive';
+export { composeEventHandlers } from './primitive';

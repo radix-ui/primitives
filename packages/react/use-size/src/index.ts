@@ -1,1 +1,1 @@
-export * from './useSize';
+export { useSize } from './useSize';

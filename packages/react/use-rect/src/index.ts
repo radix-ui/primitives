@@ -1,1 +1,1 @@
-export * from './useRect';
+export { useRect } from './useRect';

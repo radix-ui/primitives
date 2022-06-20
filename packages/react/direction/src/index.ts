@@ -1,1 +1,7 @@
-export * from './Direction';
+export {
+  useDirection,
+  //
+  Provider,
+  //
+  DirectionProvider,
+} from './Direction';

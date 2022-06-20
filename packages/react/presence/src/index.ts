@@ -1,1 +1,2 @@
-export * from './Presence';
+export { Presence } from './Presence';
+export type { PresenceProps } from './Presence';

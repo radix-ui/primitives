@@ -1,1 +1,1 @@
-export * from './number';
+export { clamp } from './number';
