@@ -1,1 +1,1 @@
-export * from './usePrevious';
+export { usePrevious } from './usePrevious';

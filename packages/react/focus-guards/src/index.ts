@@ -1,1 +1,7 @@
-export * from './FocusGuards';
+export {
+  FocusGuards,
+  //
+  Root,
+  //
+  useFocusGuards,
+} from './FocusGuards';

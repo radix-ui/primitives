@@ -1,1 +1,2 @@
-export * from './observeElementRect';
+export { observeElementRect } from './observeElementRect';
+export type { Measurable } from './observeElementRect';

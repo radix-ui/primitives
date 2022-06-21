@@ -1,1 +1,1 @@
-export * from './useEscapeKeydown';
+export { useEscapeKeydown } from './useEscapeKeydown';
