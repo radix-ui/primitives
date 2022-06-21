@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-arrow",
-  "version": "0.1.5-rc.40",
+  "version": "0.1.5-rc.41",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
