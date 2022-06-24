@@ -40,40 +40,38 @@ export const Controlled = () => {
 };
 
 export const CustomDurations = () => (
-  <>
+  <Tooltip.Provider>
     <h1>Delay duration</h1>
     <h2>Default (700ms)</h2>
 
     <div style={{ display: 'flex', gap: 50 }}>
-      <Tooltip.Provider>
-        <Tooltip.Root>
-          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content className={contentClass()} sideOffset={5}>
-              Nicely done!
-              <Tooltip.Arrow className={arrowClass()} offset={10} />
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-        <Tooltip.Root>
-          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content className={contentClass()} sideOffset={5}>
-              Nicely done!
-              <Tooltip.Arrow className={arrowClass()} offset={10} />
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-        <Tooltip.Root>
-          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content className={contentClass()} sideOffset={5}>
-              Nicely done!
-              <Tooltip.Arrow className={arrowClass()} offset={10} />
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-      </Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
     </div>
 
     <h2>Custom (0ms = instant open)</h2>
@@ -145,35 +143,33 @@ export const CustomDurations = () => (
     <h1>Skip delay duration</h1>
     <h2>Default (300ms to move from one to another tooltip)</h2>
     <div style={{ display: 'flex', gap: 50 }}>
-      <Tooltip.Provider>
-        <Tooltip.Root>
-          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content className={contentClass()} sideOffset={5}>
-              Nicely done!
-              <Tooltip.Arrow className={arrowClass()} offset={10} />
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-        <Tooltip.Root>
-          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content className={contentClass()} sideOffset={5}>
-              Nicely done!
-              <Tooltip.Arrow className={arrowClass()} offset={10} />
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-        <Tooltip.Root>
-          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content className={contentClass()} sideOffset={5}>
-              Nicely done!
-              <Tooltip.Arrow className={arrowClass()} offset={10} />
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-      </Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
     </div>
 
     <h2>Custom (0ms to move from one to another tooltip = never skip)</h2>
@@ -241,7 +237,7 @@ export const CustomDurations = () => (
         </Tooltip.Root>
       </Tooltip.Provider>
     </div>
-  </>
+  </Tooltip.Provider>
 );
 
 export const CustomContent = () => (
@@ -731,10 +727,10 @@ export const WithinScrollable = () => (
   </Tooltip.Provider>
 );
 
-export const CloseOnLeave = () => (
+export const DisableHoverableContent = () => (
   <>
-    <h1>Pointer accessible (Default)</h1>
-    <p>Content remains open when moving pointer</p>
+    <h1>Hoverable content (Default)</h1>
+    <p>Content remains open while moving pointer to it</p>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip.Provider skipDelayDuration={1000}>
         <Tooltip.Root>
@@ -746,19 +742,10 @@ export const CloseOnLeave = () => (
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-        <Tooltip.Root>
-          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content className={contentClass()} sideOffset={5} side="bottom">
-              Nicely done!
-              <Tooltip.Arrow className={arrowClass()} offset={10} />
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
       </Tooltip.Provider>
     </div>
 
-    <h1>Close on leave</h1>
+    <h1>Disable hoverable content</h1>
     <p>Tooltip closes when pointer leaves the trigger</p>
     <h2>Inherited from provider</h2>
     <div style={{ display: 'flex', gap: 50 }}>
@@ -772,22 +759,13 @@ export const CloseOnLeave = () => (
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-        <Tooltip.Root>
-          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content className={contentClass()} sideOffset={5} side="bottom">
-              Nicely done!
-              <Tooltip.Arrow className={arrowClass()} offset={10} />
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
       </Tooltip.Provider>
     </div>
     <h2>Inherited value overridden by prop on tooltip</h2>
     <div style={{ display: 'flex', gap: 50 }}>
       <Tooltip.Provider delayDuration={0} disableHoverableContent>
         <Tooltip.Root>
-          <Tooltip.Trigger className={triggerClass()}>Close on leave</Tooltip.Trigger>
+          <Tooltip.Trigger className={triggerClass()}>Disabled hoverable content</Tooltip.Trigger>
           <Tooltip.Portal>
             <Tooltip.Content className={contentClass()} sideOffset={5}>
               Nicely done!
@@ -796,7 +774,7 @@ export const CloseOnLeave = () => (
           </Tooltip.Portal>
         </Tooltip.Root>
         <Tooltip.Root disableHoverableContent={false}>
-          <Tooltip.Trigger className={triggerClass()}>Pointer accessible</Tooltip.Trigger>
+          <Tooltip.Trigger className={triggerClass()}>Hoverable content</Tooltip.Trigger>
           <Tooltip.Portal>
             <Tooltip.Content className={contentClass()} sideOffset={5}>
               Nicely done!
@@ -820,28 +798,28 @@ export const Chromatic = () => (
       <Tooltip.Root>
         <Tooltip.Trigger className={triggerClass()}>open</Tooltip.Trigger>
         <Tooltip.Portal>
-          <Tooltip.Content className={contentClass()} side="bottom" sideOffset={5}>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
             Some content
             <Tooltip.Arrow className={arrowClass()} offset={10} />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h2>Open</h2>
+      <h2 style={{ marginBottom: 60 }}>Open</h2>
       <Tooltip.Root defaultOpen>
         <Tooltip.Trigger className={triggerClass()}>open</Tooltip.Trigger>
         <Tooltip.Portal>
-          <Tooltip.Content className={contentClass()} side="bottom" sideOffset={5}>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
             Some content
             <Tooltip.Arrow className={arrowClass()} offset={10} />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
+      <h2 style={{ marginTop: 60, marginBottom: 60 }}>Open with reordered parts</h2>
       <Tooltip.Root defaultOpen>
         <Tooltip.Portal>
-          <Tooltip.Content className={contentClass()} side="bottom" sideOffset={5}>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
             Some content
             <Tooltip.Arrow className={arrowClass()} offset={10} />
           </Tooltip.Content>
@@ -854,28 +832,28 @@ export const Chromatic = () => (
       <Tooltip.Root open={false}>
         <Tooltip.Trigger className={triggerClass()}>open</Tooltip.Trigger>
         <Tooltip.Portal>
-          <Tooltip.Content className={contentClass()} side="bottom" sideOffset={5}>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
             Some content
             <Tooltip.Arrow className={arrowClass()} offset={10} />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h2>Open</h2>
+      <h2 style={{ marginBottom: 60 }}>Open</h2>
       <Tooltip.Root open>
         <Tooltip.Trigger className={triggerClass()}>open</Tooltip.Trigger>
         <Tooltip.Portal>
-          <Tooltip.Content className={contentClass()} side="bottom" sideOffset={5}>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
             Some content
             <Tooltip.Arrow className={arrowClass()} offset={10} />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
+      <h2 style={{ marginTop: 60, marginBottom: 60 }}>Open with reordered parts</h2>
       <Tooltip.Root open>
         <Tooltip.Portal>
-          <Tooltip.Content className={contentClass()} side="bottom" sideOffset={5}>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
             Some content
             <Tooltip.Arrow className={arrowClass()} offset={10} />
           </Tooltip.Content>
@@ -1119,7 +1097,7 @@ export const Chromatic = () => (
         ))
       )}
 
-      <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
+      <h1 style={{ marginTop: 100, marginBottom: 60 }}>With slotted trigger</h1>
       <Tooltip.Root open>
         <Tooltip.Trigger asChild>
           <button className={triggerClass()}>open</button>
@@ -1132,7 +1110,7 @@ export const Chromatic = () => (
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h1 style={{ marginTop: 100 }}>With slotted content</h1>
+      <h1 style={{ marginTop: 100, marginBottom: 60 }}>With slotted content</h1>
       <Tooltip.Root open>
         <Tooltip.Trigger className={triggerClass()}>Hover or Focus me</Tooltip.Trigger>
         <Tooltip.Portal>

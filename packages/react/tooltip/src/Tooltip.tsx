@@ -35,6 +35,7 @@ type TooltipProviderContextValue = {
   delayDuration: number;
   onOpen(): void;
   onClose(): void;
+  onPointerInTransitChange(inTransit: boolean): void;
   isPointerInTransitRef: React.MutableRefObject<boolean>;
   disableHoverableContent: boolean;
 };
@@ -55,7 +56,7 @@ interface TooltipProviderProps {
    */
   skipDelayDuration?: number;
   /**
-   * Whether to close the tooltip immediately when the pointer leaves the trigger.
+   * When `true`, trying to hover the content will result in the tooltip closing as the pointer leaves the trigger.
    * @defaultValue false
    */
   disableHoverableContent?: boolean;
@@ -97,6 +98,9 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
         );
       }, [skipDelayDuration])}
       isPointerInTransitRef={isPointerInTransitRef}
+      onPointerInTransitChange={React.useCallback((inTransit: boolean) => {
+        isPointerInTransitRef.current = inTransit;
+      }, [])}
       disableHoverableContent={disableHoverableContent}
     >
       {children}
@@ -140,14 +144,13 @@ interface TooltipProps {
    */
   delayDuration?: number;
   /**
-   * Whether to close the tooltip immediately when the pointer leaves the trigger.
+   * When `true`, trying to hover the content will result in the tooltip closing as the pointer leaves the trigger.
    * @defaultValue false
    */
   disableHoverableContent?: boolean;
 }
 
 const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
-  const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
   const {
     __scopeTooltip,
     children,
@@ -157,6 +160,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     disableHoverableContent: disableHoverableContentProp,
     delayDuration: delayDurationProp,
   } = props;
+  const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
   const popperScope = usePopperScope(__scopeTooltip);
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
   const contentId = useId();
@@ -264,7 +268,7 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     const ref = React.useRef<TooltipTriggerElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onTriggerChange);
     const isPointerDownRef = React.useRef(false);
-    const wasPointerDown = React.useRef(false);
+    const wasPointerDownDismissedRef = React.useRef(false);
     const handlePointerUp = React.useCallback(() => (isPointerDownRef.current = false), []);
 
     React.useEffect(() => {
@@ -281,16 +285,16 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           {...triggerProps}
           ref={composedRefs}
           onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
-            if (wasPointerDown.current) return;
+            if (wasPointerDownDismissedRef.current) return;
             if (event.pointerType !== 'touch') context.onTriggerEnter();
           })}
           onPointerLeave={composeEventHandlers(props.onPointerLeave, () => {
-            wasPointerDown.current = false;
+            wasPointerDownDismissedRef.current = false;
             context.onTriggerLeave();
           })}
           onPointerDown={composeEventHandlers(props.onPointerDown, () => {
             isPointerDownRef.current = true;
-            wasPointerDown.current = true;
+            wasPointerDownDismissedRef.current = true;
             document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
@@ -398,16 +402,17 @@ const TooltipContentHoverable = React.forwardRef<
   const [pointerGraceArea, setPointerGraceArea] = React.useState<Polygon | null>(null);
   const pointerGraceTimerRef = React.useRef(0);
 
-  const { onClose } = context;
+  const { trigger, onClose } = context;
   const content = ref.current;
-  const trigger = context.trigger;
+
+  const { onPointerInTransitChange } = providerContext;
 
   const handleRemoveGraceArea = React.useCallback(() => {
     setPointerGraceArea(null);
     removeDebugArea();
     window.clearTimeout(pointerGraceTimerRef.current);
-    providerContext.isPointerInTransitRef.current = false;
-  }, [providerContext.isPointerInTransitRef]);
+    onPointerInTransitChange(false);
+  }, [onPointerInTransitChange]);
 
   const handleCreateGraceArea = React.useCallback(
     (event: PointerEvent, target: HTMLElement) => {
@@ -422,9 +427,9 @@ const TooltipContentHoverable = React.forwardRef<
         handleRemoveGraceArea();
       }, 500);
 
-      providerContext.isPointerInTransitRef.current = true;
+      onPointerInTransitChange(true);
     },
-    [onClose, handleRemoveGraceArea, providerContext.isPointerInTransitRef]
+    [onClose, handleRemoveGraceArea, onPointerInTransitChange]
   );
 
   React.useEffect(() => {
@@ -443,18 +448,17 @@ const TooltipContentHoverable = React.forwardRef<
         content.removeEventListener('pointerleave', handleContentLeave);
       };
     }
-  }, [trigger, content, context.trigger, handleCreateGraceArea, handleRemoveGraceArea]);
+  }, [trigger, content, handleCreateGraceArea, handleRemoveGraceArea]);
 
   React.useEffect(() => {
     if (pointerGraceArea) {
       const handleTrackPointerGrace = (event: PointerEvent) => {
         const target = event.target as HTMLElement;
-        const isTargetTrigger = trigger?.contains(target);
-        const isTargetContent = content?.contains(target);
         const pointerPosition = { x: event.clientX, y: event.clientY };
+        const hasEnteredTarget = trigger?.contains(target) || content?.contains(target);
         const isPointerOutsideGraceArea = !isPointInPolygon(pointerPosition, pointerGraceArea);
 
-        if (isTargetTrigger || isTargetContent) {
+        if (hasEnteredTarget) {
           handleRemoveGraceArea();
         } else if (isPointerOutsideGraceArea) {
           handleRemoveGraceArea();
@@ -464,7 +468,7 @@ const TooltipContentHoverable = React.forwardRef<
       document.addEventListener('pointermove', handleTrackPointerGrace);
       return () => document.removeEventListener('pointermove', handleTrackPointerGrace);
     }
-  }, [trigger, content, context.trigger, pointerGraceArea, onClose, handleRemoveGraceArea]);
+  }, [trigger, content, pointerGraceArea, onClose, handleRemoveGraceArea]);
 
   return <TooltipContentImpl {...props} ref={composedRefs} />;
 });
