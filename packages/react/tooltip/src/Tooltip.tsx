@@ -235,6 +235,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
           if (disableHoverableContent) {
             handleClose();
           } else {
+            // Clear the timer in case the pointer leaves the trigger before the tooltip is opened.
             window.clearTimeout(openTimerRef.current);
           }
         }, [handleClose, disableHoverableContent])}
@@ -268,7 +269,6 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     const ref = React.useRef<TooltipTriggerElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onTriggerChange);
     const isPointerDownRef = React.useRef(false);
-    const wasPointerDownDismissedRef = React.useRef(false);
     const handlePointerUp = React.useCallback(() => (isPointerDownRef.current = false), []);
 
     React.useEffect(() => {
@@ -284,17 +284,14 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           data-state={context.stateAttribute}
           {...triggerProps}
           ref={composedRefs}
-          onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
-            if (wasPointerDownDismissedRef.current) return;
+          onPointerEnter={composeEventHandlers(props.onPointerEnter, (event) => {
             if (event.pointerType !== 'touch') context.onTriggerEnter();
           })}
           onPointerLeave={composeEventHandlers(props.onPointerLeave, () => {
-            wasPointerDownDismissedRef.current = false;
             context.onTriggerLeave();
           })}
           onPointerDown={composeEventHandlers(props.onPointerDown, () => {
             isPointerDownRef.current = true;
-            wasPointerDownDismissedRef.current = true;
             document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
@@ -400,7 +397,6 @@ const TooltipContentHoverable = React.forwardRef<
   const ref = React.useRef<TooltipContentHoverableElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const [pointerGraceArea, setPointerGraceArea] = React.useState<Polygon | null>(null);
-  const pointerGraceTimerRef = React.useRef(0);
 
   const { trigger, onClose } = context;
   const content = ref.current;
@@ -410,7 +406,6 @@ const TooltipContentHoverable = React.forwardRef<
   const handleRemoveGraceArea = React.useCallback(() => {
     setPointerGraceArea(null);
     removeDebugArea();
-    window.clearTimeout(pointerGraceTimerRef.current);
     onPointerInTransitChange(false);
   }, [onPointerInTransitChange]);
 
@@ -422,14 +417,9 @@ const TooltipContentHoverable = React.forwardRef<
       setPointerGraceArea(graceArea);
       createDebugArea(graceArea);
 
-      pointerGraceTimerRef.current = window.setTimeout(() => {
-        onClose();
-        handleRemoveGraceArea();
-      }, 500);
-
       onPointerInTransitChange(true);
     },
-    [onClose, handleRemoveGraceArea, onPointerInTransitChange]
+    [onPointerInTransitChange]
   );
 
   React.useEffect(() => {
@@ -669,9 +659,9 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
 function createDebugArea(area: Polygon) {
   const graceArea = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   graceArea.id = 'graceArea';
-  graceArea.setAttribute('viewBox', '0 0 1000 1000');
-  graceArea.setAttribute('width', '1000');
-  graceArea.setAttribute('height', '1000');
+  graceArea.setAttribute('viewBox', '0 0 3000 3000');
+  graceArea.setAttribute('width', '3000');
+  graceArea.setAttribute('height', '3000');
   graceArea.style.position = 'fixed';
   graceArea.style.top = '0px';
   graceArea.style.left = '0px';
