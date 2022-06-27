@@ -222,15 +222,9 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
         trigger={trigger}
         onTriggerChange={setTrigger}
         onTriggerEnter={React.useCallback(() => {
-          if (providerContext.isPointerInTransitRef.current) return;
           if (providerContext.isOpenDelayed) handleDelayedOpen();
           else handleOpen();
-        }, [
-          providerContext.isOpenDelayed,
-          providerContext.isPointerInTransitRef,
-          handleDelayedOpen,
-          handleOpen,
-        ])}
+        }, [providerContext.isOpenDelayed, handleDelayedOpen, handleOpen])}
         onTriggerLeave={React.useCallback(() => {
           if (disableHoverableContent) {
             handleClose();
@@ -265,10 +259,12 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
   (props: ScopedProps<TooltipTriggerProps>, forwardedRef) => {
     const { __scopeTooltip, ...triggerProps } = props;
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
+    const providerContext = useTooltipProviderContext(TRIGGER_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
     const ref = React.useRef<TooltipTriggerElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onTriggerChange);
     const isPointerDownRef = React.useRef(false);
+    const hasTriggerActivated = React.useRef(false);
     const handlePointerUp = React.useCallback(() => (isPointerDownRef.current = false), []);
 
     React.useEffect(() => {
@@ -284,11 +280,16 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           data-state={context.stateAttribute}
           {...triggerProps}
           ref={composedRefs}
-          onPointerEnter={composeEventHandlers(props.onPointerEnter, (event) => {
-            if (event.pointerType !== 'touch') context.onTriggerEnter();
+          onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
+            if (event.pointerType === 'touch') return;
+            if (!hasTriggerActivated.current && !providerContext.isPointerInTransitRef.current) {
+              context.onTriggerEnter();
+              hasTriggerActivated.current = true;
+            }
           })}
           onPointerLeave={composeEventHandlers(props.onPointerLeave, () => {
             context.onTriggerLeave();
+            hasTriggerActivated.current = false;
           })}
           onPointerDown={composeEventHandlers(props.onPointerDown, () => {
             isPointerDownRef.current = true;
@@ -392,8 +393,8 @@ const TooltipContentHoverable = React.forwardRef<
   TooltipContentHoverableElement,
   TooltipContentHoverableProps
 >((props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) => {
-  const context = useTooltipContext(TRIGGER_NAME, props.__scopeTooltip);
-  const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
+  const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
+  const providerContext = useTooltipProviderContext(CONTENT_NAME, props.__scopeTooltip);
   const ref = React.useRef<TooltipContentHoverableElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const [pointerGraceArea, setPointerGraceArea] = React.useState<Polygon | null>(null);
@@ -410,13 +411,21 @@ const TooltipContentHoverable = React.forwardRef<
   }, [onPointerInTransitChange]);
 
   const handleCreateGraceArea = React.useCallback(
-    (event: PointerEvent, target: HTMLElement) => {
-      const pointerExitPosition = { x: event.clientX, y: event.clientY };
-      const targetPoints = getPointsFromRect(target.getBoundingClientRect());
-      const graceArea = getHull([pointerExitPosition, ...targetPoints]);
+    (event: PointerEvent, hoverTarget: HTMLElement) => {
+      const currentTarget = event.currentTarget as HTMLElement;
+      const exitPoint = { x: event.clientX, y: event.clientY };
+      const exitSide = getExitSideFromRect(exitPoint, currentTarget.getBoundingClientRect());
+
+      const bleed = exitSide === 'right' || exitSide === 'bottom' ? -5 : 5;
+      const isXAxis = exitSide === 'right' || exitSide === 'left';
+      const startPoint = isXAxis
+        ? { x: event.clientX + bleed, y: event.clientY }
+        : { x: event.clientX, y: event.clientY + bleed };
+
+      const hoverTargetPoints = getPointsFromRect(hoverTarget.getBoundingClientRect());
+      const graceArea = getHull([startPoint, ...hoverTargetPoints]);
       setPointerGraceArea(graceArea);
       createDebugArea(graceArea);
-
       onPointerInTransitChange(true);
     },
     [onPointerInTransitChange]
@@ -570,6 +579,26 @@ const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
 TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function getExitSideFromRect(point: Point, rect: DOMRect) {
+  const top = Math.abs(rect.top - point.y);
+  const bottom = Math.abs(rect.bottom - point.y);
+  const right = Math.abs(rect.right - point.x);
+  const left = Math.abs(rect.left - point.x);
+
+  switch (Math.min(top, bottom, right, left)) {
+    case left:
+      return 'left';
+    case right:
+      return 'right';
+    case top:
+      return 'top';
+    case bottom:
+      return 'bottom';
+    default:
+      return null;
+  }
+}
 
 function getPointsFromRect(rect: DOMRect) {
   const { top, right, bottom, left } = rect;
