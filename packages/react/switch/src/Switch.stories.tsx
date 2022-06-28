@@ -91,6 +91,19 @@ export const WithinForm = () => {
       <br />
       <br />
 
+      <fieldset>
+        <legend>adjacent selector</legend>
+        <Switch.Root
+          className={adjacentSelector()}
+          name="stopprop"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <Switch.Thumb className={thumbClass()} />
+        </Switch.Root>
+      </fieldset>
+
+      <br />
+      <br />
       <button>Submit</button>
     </form>
   );
@@ -157,8 +170,7 @@ const RECOMMENDED_CSS__SWITCH__ROOT: any = {
   textAlign: 'left',
 };
 
-const rootClass = css({
-  ...RECOMMENDED_CSS__SWITCH__ROOT,
+const DEMO_CSS = {
   outline: 'none',
   border: 'none',
   width: WIDTH,
@@ -172,12 +184,25 @@ const rootClass = css({
     boxShadow: '0 0 0 2px $colors$black',
   },
 
+  '&[data-disabled]': { opacity: 0.5 },
+};
+
+const rootClass = css({
+  ...RECOMMENDED_CSS__SWITCH__ROOT,
+  ...DEMO_CSS,
   '&[data-state="checked"]': {
     backgroundColor: '$red',
     borderColor: '$red',
   },
+});
 
-  '&[data-disabled]': { opacity: 0.5 },
+const adjacentSelector = css({
+  ...RECOMMENDED_CSS__SWITCH__ROOT,
+  ...DEMO_CSS,
+  'input:checked+&': {
+    backgroundColor: '$red',
+    borderColor: '$red',
+  },
 });
 
 const RECOMMENDED_CSS__SWITCH__THUMB = {
