@@ -61,6 +61,21 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
 
     return (
       <SwitchProvider scope={__scopeSwitch} checked={checked} disabled={disabled}>
+        {isFormControl && (
+          <BubbleInput
+            control={button}
+            bubbles={!hasConsumerStoppedPropagationRef.current}
+            name={name}
+            value={value}
+            checked={checked}
+            required={required}
+            disabled={disabled}
+            // We transform because the input is absolutely positioned but we have
+            // rendered it **after** the button. This pulls it back to sit on top
+            // of the button.
+            style={{ transform: 'translateX(-100%)' }}
+          />
+        )}
         <Primitive.button
           type="button"
           role="switch"
@@ -84,21 +99,6 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
             }
           })}
         />
-        {isFormControl && (
-          <BubbleInput
-            control={button}
-            bubbles={!hasConsumerStoppedPropagationRef.current}
-            name={name}
-            value={value}
-            checked={checked}
-            required={required}
-            disabled={disabled}
-            // We transform because the input is absolutely positioned but we have
-            // rendered it **after** the button. This pulls it back to sit on top
-            // of the button.
-            style={{ transform: 'translateX(-100%)' }}
-          />
-        )}
       </SwitchProvider>
     );
   }
