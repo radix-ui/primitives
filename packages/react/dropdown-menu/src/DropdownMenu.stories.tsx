@@ -40,6 +40,54 @@ export const Styled = () => (
   </div>
 );
 
+export const Fixed = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}>
+    <div style={{ position: 'fixed', top: '0', bottom: '0' }}>
+      <DropdownMenu.Root modal={false}>
+        <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content className={contentClass()} sideOffset={5} position="fixed">
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
+              One
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
+              Two
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
+              Three
+            </DropdownMenu.Item>
+            <DropdownMenu.Arrow />
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    </div>
+  </div>
+);
+
+export const Sticky = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300vh' }}>
+    <div style={{ position: 'sticky', top: '0', bottom: '0' }}>
+      <DropdownMenu.Root modal={false}>
+        <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content className={contentClass()} sideOffset={5} position="fixed">
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
+              One
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
+              Two
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
+              Three
+            </DropdownMenu.Item>
+            <DropdownMenu.Arrow />
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    </div>
+  </div>
+);
+
 export const Modality = () => {
   return (
     <div

@@ -8,6 +8,7 @@ type Side = typeof SIDE_OPTIONS[number];
 type Align = typeof ALIGN_OPTIONS[number];
 type Point = { x: number; y: number };
 type Size = { width: number; height: number };
+type Position = 'absolute' | 'fixed';
 
 type GetPlacementDataOptions = {
   /** The rect of the anchor we are placing around */
@@ -32,6 +33,8 @@ type GetPlacementDataOptions = {
   collisionBoundariesRect?: ClientRect;
   /** The tolerance used for collisions, ie. if we want them to trigger a bit earlier (default: 0) */
   collisionTolerance?: number;
+  /** An option to render the popover content fixed relative to the anchor (default: absolute) */
+  position?: Position;
 };
 
 type PlacementData = {
@@ -64,6 +67,7 @@ function getPlacementData({
   shouldAvoidCollisions = true,
   collisionBoundariesRect,
   collisionTolerance = 0,
+  position = 'absolute',
 }: GetPlacementDataOptions): PlacementData {
   // if we're not ready to do all the measurements yet,
   // we return some good default styles
@@ -88,7 +92,7 @@ function getPlacementData({
 
   // if we don't need to avoid collisions, we can stop here
   if (shouldAvoidCollisions === false) {
-    const popperStyles = getPlacementStylesForPoint(popperPoint);
+    const popperStyles = getPlacementStylesForPoint(popperPoint, position);
 
     let arrowStyles = UNMEASURED_ARROW_STYLES;
     if (arrowSize) {
@@ -152,7 +156,7 @@ function getPlacementData({
   const placedPopperPoint = allPlacementPoints[placedSide][placedAlign];
 
   // compute adjusted popper / arrow styles
-  const popperStyles = getPlacementStylesForPoint(placedPopperPoint);
+  const popperStyles = getPlacementStylesForPoint(placedPopperPoint, position);
 
   let arrowStyles = UNMEASURED_ARROW_STYLES;
   if (arrowSize) {
@@ -301,11 +305,13 @@ function getAlignAccountingForCollisions(
   return align;
 }
 
-function getPlacementStylesForPoint(point: Point): CSS.Properties {
-  const x = Math.round(point.x + window.scrollX);
-  const y = Math.round(point.y + window.scrollY);
+function getPlacementStylesForPoint(point: Point, position: Position): CSS.Properties {
+  const isFixed = position === 'fixed';
+  const x = Math.round(point.x + (isFixed ? 0 : window.scrollX));
+  const y = Math.round(point.y + (isFixed ? 0 : window.scrollY));
+
   return {
-    position: 'absolute',
+    position: isFixed ? 'fixed' : 'absolute',
     top: 0,
     left: 0,
     minWidth: 'max-content',
@@ -510,4 +516,4 @@ function getCollisions(
 type Collisions = ReturnType<typeof getCollisions>;
 
 export { getPlacementData, SIDE_OPTIONS, ALIGN_OPTIONS };
-export type { Side, Align };
+export type { Side, Align, Position };

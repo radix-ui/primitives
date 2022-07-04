@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ArrowPrimitive from '@radix-ui/react-arrow';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
-import { getPlacementData } from '@radix-ui/popper';
+import { getPlacementData, Position } from '@radix-ui/popper';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useRect } from '@radix-ui/react-use-rect';
@@ -98,6 +98,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   alignOffset?: number;
   collisionTolerance?: number;
   avoidCollisions?: boolean;
+  position?: Position;
 }
 
 const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
@@ -110,6 +111,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       alignOffset,
       collisionTolerance,
       avoidCollisions = true,
+      position = 'absolute',
       ...contentProps
     } = props;
 
@@ -142,6 +144,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       shouldAvoidCollisions: avoidCollisions,
       collisionBoundariesRect,
       collisionTolerance,
+      position,
     });
     const isPlaced = placedSide !== undefined;
 

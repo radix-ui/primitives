@@ -86,6 +86,48 @@ export const Controlled = () => {
   );
 };
 
+export const Sticky = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300vh' }}
+    >
+      <div style={{ position: 'sticky', top: '0', bottom: '0' }}>
+        <Popover.Root>
+          <Popover.Trigger className={triggerClass()}>open</Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content className={contentClass()} sideOffset={5} position="fixed">
+              <Popover.Close className={closeClass()}>close</Popover.Close>
+              <Popover.Arrow className={arrowClass()} width={20} height={10} />
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
+        <input />
+      </div>
+    </div>
+  );
+};
+
+export const Fixed = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300vh' }}
+    >
+      <div style={{ position: 'fixed', top: '0', bottom: '0' }}>
+        <Popover.Root>
+          <Popover.Trigger className={triggerClass()}>open</Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content className={contentClass()} sideOffset={5} position="fixed">
+              <Popover.Close className={closeClass()}>close</Popover.Close>
+              <Popover.Arrow className={arrowClass()} width={20} height={10} />
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
+        <input />
+      </div>
+    </div>
+  );
+};
+
 export const Animated = () => {
   return (
     <div
