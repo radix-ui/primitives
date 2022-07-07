@@ -36,22 +36,16 @@ type DialogContextValue = {
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   modal: boolean;
-  allowPinchZoom: DialogProps['allowPinchZoom'];
 };
 
 const [DialogProvider, useDialogContext] = createDialogContext<DialogContextValue>(DIALOG_NAME);
 
-type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 interface DialogProps {
   children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
   modal?: boolean;
-  /**
-   * @see https://github.com/theKashey/react-remove-scroll#usage
-   */
-  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
 }
 
 const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
@@ -62,7 +56,6 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     defaultOpen,
     onOpenChange,
     modal = true,
-    allowPinchZoom,
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const contentRef = React.useRef<DialogContentElement>(null);
@@ -84,7 +77,6 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
-      allowPinchZoom={allowPinchZoom}
     >
       {children}
     </DialogProvider>
@@ -205,7 +197,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
     return (
       // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
       // ie. when `Overlay` and `Content` are siblings
-      <RemoveScroll as={Slot} allowPinchZoom={context.allowPinchZoom} shards={[context.contentRef]}>
+      <RemoveScroll as={Slot} allowPinchZoom shards={[context.contentRef]}>
         <Primitive.div
           data-state={getState(context.open)}
           {...overlayProps}

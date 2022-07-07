@@ -223,22 +223,6 @@ export const ForcedMount = () => (
   </Dialog.Root>
 );
 
-export const AllowPinchZoom = () => (
-  <div style={{ display: 'grid', placeItems: 'center', height: '200vh' }}>
-    <Dialog.Root allowPinchZoom>
-      <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className={overlayClass()} />
-        <Dialog.Content className={contentDefaultClass()}>
-          <Dialog.Title>Booking info</Dialog.Title>
-          <Dialog.Description>Please enter the info for your booking below.</Dialog.Description>
-          <Dialog.Close className={closeClass()}>close</Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
-  </div>
-);
-
 export const InnerScrollable = () => (
   <Dialog.Root>
     <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>

@@ -61,7 +61,6 @@ type SelectContextValue = {
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
-  allowPinchZoom: SelectProps['allowPinchZoom'];
 };
 
 const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
@@ -75,7 +74,6 @@ type SelectNativeOptionsContextValue = {
 const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
   createSelectContext<SelectNativeOptionsContextValue>(SELECT_NAME);
 
-type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 interface SelectProps {
   children?: React.ReactNode;
   value?: string;
@@ -87,10 +85,6 @@ interface SelectProps {
   dir?: Direction;
   name?: string;
   autoComplete?: string;
-  /**
-   * @see https://github.com/theKashey/react-remove-scroll#usage
-   */
-  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
 }
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
@@ -106,7 +100,6 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     dir,
     name,
     autoComplete,
-    allowPinchZoom,
   } = props;
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
   const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
@@ -153,7 +146,6 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
       onOpenChange={setOpen}
       dir={direction}
       triggerPointerDownPosRef={triggerPointerDownPosRef}
-      allowPinchZoom={allowPinchZoom}
     >
       <Collection.Provider scope={__scopeSelect}>
         <SelectNativeOptionsProvider
@@ -753,7 +745,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         shouldExpandOnScrollRef={shouldExpandOnScrollRef}
         searchRef={searchRef}
       >
-        <RemoveScroll as={Slot} allowPinchZoom={context.allowPinchZoom}>
+        <RemoveScroll as={Slot} allowPinchZoom>
           <div
             ref={setContentWrapper}
             style={{
