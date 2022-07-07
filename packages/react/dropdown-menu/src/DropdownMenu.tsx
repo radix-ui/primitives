@@ -39,7 +39,6 @@ type DropdownMenuContextValue = {
 const [DropdownMenuProvider, useDropdownMenuContext] =
   createDropdownMenuContext<DropdownMenuContextValue>(DROPDOWN_MENU_NAME);
 
-type MenuRootProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Root>;
 interface DropdownMenuProps {
   children?: React.ReactNode;
   dir?: Direction;
@@ -47,10 +46,6 @@ interface DropdownMenuProps {
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
   modal?: boolean;
-  /**
-   * @see https://github.com/theKashey/react-remove-scroll#usage
-   */
-  allowPinchZoom?: MenuRootProps['allowPinchZoom'];
 }
 
 const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMenuProps>) => {
@@ -62,7 +57,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
     defaultOpen,
     onOpenChange,
     modal = true,
-    allowPinchZoom,
   } = props;
   const menuScope = useMenuScope(__scopeDropdownMenu);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -83,14 +77,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
     >
-      <MenuPrimitive.Root
-        {...menuScope}
-        open={open}
-        onOpenChange={setOpen}
-        dir={dir}
-        modal={modal}
-        allowPinchZoom={allowPinchZoom}
-      >
+      <MenuPrimitive.Root {...menuScope} open={open} onOpenChange={setOpen} dir={dir} modal={modal}>
         {children}
       </MenuPrimitive.Root>
     </DropdownMenuProvider>

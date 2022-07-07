@@ -41,23 +41,17 @@ type PopoverContextValue = {
   onCustomAnchorAdd(): void;
   onCustomAnchorRemove(): void;
   modal: boolean;
-  allowPinchZoom: PopoverProps['allowPinchZoom'];
 };
 
 const [PopoverProvider, usePopoverContext] =
   createPopoverContext<PopoverContextValue>(POPOVER_NAME);
 
-type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 interface PopoverProps {
   children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   modal?: boolean;
-  /**
-   * @see https://github.com/theKashey/react-remove-scroll#usage
-   */
-  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
 }
 
 const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
@@ -68,7 +62,6 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
     defaultOpen,
     onOpenChange,
     modal = false,
-    allowPinchZoom,
   } = props;
   const popperScope = usePopperScope(__scopePopover);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -92,7 +85,6 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
         onCustomAnchorAdd={React.useCallback(() => setHasCustomAnchor(true), [])}
         onCustomAnchorRemove={React.useCallback(() => setHasCustomAnchor(false), [])}
         modal={modal}
-        allowPinchZoom={allowPinchZoom}
       >
         {children}
       </PopoverProvider>
@@ -262,7 +254,7 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
     }, []);
 
     return (
-      <RemoveScroll as={Slot} allowPinchZoom={context.allowPinchZoom}>
+      <RemoveScroll as={Slot} allowPinchZoom>
         <PopoverContentImpl
           {...props}
           ref={composedRefs}

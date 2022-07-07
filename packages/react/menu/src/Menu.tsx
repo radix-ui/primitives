@@ -73,34 +73,20 @@ type MenuRootContextValue = {
   isUsingKeyboardRef: React.RefObject<boolean>;
   dir: Direction;
   modal: boolean;
-  allowPinchZoom: MenuProps['allowPinchZoom'];
 };
 
 const [MenuRootProvider, useMenuRootContext] = createMenuContext<MenuRootContextValue>(MENU_NAME);
 
-type RemoveScrollProps = React.ComponentProps<typeof RemoveScroll>;
 interface MenuProps {
   children?: React.ReactNode;
   open?: boolean;
   onOpenChange?(open: boolean): void;
   dir?: Direction;
   modal?: boolean;
-  /**
-   * @see https://github.com/theKashey/react-remove-scroll#usage
-   */
-  allowPinchZoom?: RemoveScrollProps['allowPinchZoom'];
 }
 
 const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
-  const {
-    __scopeMenu,
-    open = false,
-    children,
-    dir,
-    onOpenChange,
-    modal = true,
-    allowPinchZoom,
-  } = props;
+  const { __scopeMenu, open = false, children, dir, onOpenChange, modal = true } = props;
   const popperScope = usePopperScope(__scopeMenu);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
   const isUsingKeyboardRef = React.useRef(false);
@@ -139,7 +125,6 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
           isUsingKeyboardRef={isUsingKeyboardRef}
           dir={direction}
           modal={modal}
-          allowPinchZoom={allowPinchZoom}
         >
           {children}
         </MenuRootProvider>
@@ -399,7 +384,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
 
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
     const scrollLockWrapperProps = disableOutsideScroll
-      ? { as: Slot, allowPinchZoom: rootContext.allowPinchZoom }
+      ? { as: Slot, allowPinchZoom: true }
       : undefined;
 
     const handleTypeaheadSearch = (key: string) => {
