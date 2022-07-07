@@ -35,15 +35,13 @@ type TooltipProviderContextValue = {
   delayDuration: number;
   onOpen(): void;
   onClose(): void;
+  onPointerInTransitChange(inTransit: boolean): void;
+  isPointerInTransitRef: React.MutableRefObject<boolean>;
+  disableHoverableContent: boolean;
 };
 
 const [TooltipProviderContextProvider, useTooltipProviderContext] =
-  createTooltipContext<TooltipProviderContextValue>(PROVIDER_NAME, {
-    isOpenDelayed: true,
-    delayDuration: DEFAULT_DELAY_DURATION,
-    onOpen: () => {},
-    onClose: () => {},
-  });
+  createTooltipContext<TooltipProviderContextValue>(PROVIDER_NAME);
 
 interface TooltipProviderProps {
   children: React.ReactNode;
@@ -57,6 +55,11 @@ interface TooltipProviderProps {
    * @defaultValue 300
    */
   skipDelayDuration?: number;
+  /**
+   * When `true`, trying to hover the content will result in the tooltip closing as the pointer leaves the trigger.
+   * @defaultValue false
+   */
+  disableHoverableContent?: boolean;
 }
 
 const TooltipProvider: React.FC<TooltipProviderProps> = (
@@ -66,9 +69,11 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
     __scopeTooltip,
     delayDuration = DEFAULT_DELAY_DURATION,
     skipDelayDuration = 300,
+    disableHoverableContent = false,
     children,
   } = props;
   const [isOpenDelayed, setIsOpenDelayed] = React.useState(true);
+  const isPointerInTransitRef = React.useRef(false);
   const skipDelayTimerRef = React.useRef(0);
 
   React.useEffect(() => {
@@ -92,6 +97,11 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
           skipDelayDuration
         );
       }, [skipDelayDuration])}
+      isPointerInTransitRef={isPointerInTransitRef}
+      onPointerInTransitChange={React.useCallback((inTransit: boolean) => {
+        isPointerInTransitRef.current = inTransit;
+      }, [])}
+      disableHoverableContent={disableHoverableContent}
     >
       {children}
     </TooltipProviderContextProvider>
@@ -113,8 +123,10 @@ type TooltipContextValue = {
   trigger: TooltipTriggerElement | null;
   onTriggerChange(trigger: TooltipTriggerElement | null): void;
   onTriggerEnter(): void;
+  onTriggerLeave(): void;
   onOpen(): void;
   onClose(): void;
+  disableHoverableContent: boolean;
 };
 
 const [TooltipContextProvider, useTooltipContext] =
@@ -125,13 +137,17 @@ interface TooltipProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-
   /**
    * The duration from when the pointer enters the trigger until the tooltip gets opened. This will
    * override the prop with the same name passed to Provider.
    * @defaultValue 700
    */
   delayDuration?: number;
+  /**
+   * When `true`, trying to hover the content will result in the tooltip closing as the pointer leaves the trigger.
+   * @defaultValue false
+   */
+  disableHoverableContent?: boolean;
 }
 
 const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
@@ -141,28 +157,30 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     open: openProp,
     defaultOpen = false,
     onOpenChange,
+    disableHoverableContent: disableHoverableContentProp,
     delayDuration: delayDurationProp,
   } = props;
-  const context = useTooltipProviderContext(TOOLTIP_NAME, __scopeTooltip);
+  const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
   const popperScope = usePopperScope(__scopeTooltip);
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
   const contentId = useId();
   const openTimerRef = React.useRef(0);
-  const delayDuration = delayDurationProp ?? context.delayDuration;
+  const disableHoverableContent =
+    disableHoverableContentProp ?? providerContext.disableHoverableContent;
+  const delayDuration = delayDurationProp ?? providerContext.delayDuration;
   const wasOpenDelayedRef = React.useRef(false);
-  const { onOpen, onClose } = context;
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen,
     onChange: (open) => {
       if (open) {
-        // we dispatch here so `TooltipProvider` isn't required to
-        // ensure other tooltips are aware of this one opening.
-        //
+        providerContext.onOpen();
+
         // as `onChange` is called within a lifecycle method we
         // avoid dispatching via `dispatchDiscreteCustomEvent`.
         document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
-        onOpen();
+      } else {
+        providerContext.onClose();
       }
       onOpenChange?.(open);
     },
@@ -175,6 +193,11 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     window.clearTimeout(openTimerRef.current);
     wasOpenDelayedRef.current = false;
     setOpen(true);
+  }, [setOpen]);
+
+  const handleClose = React.useCallback(() => {
+    window.clearTimeout(openTimerRef.current);
+    setOpen(false);
   }, [setOpen]);
 
   const handleDelayedOpen = React.useCallback(() => {
@@ -199,15 +222,20 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
         trigger={trigger}
         onTriggerChange={setTrigger}
         onTriggerEnter={React.useCallback(() => {
-          if (context.isOpenDelayed) handleDelayedOpen();
+          if (providerContext.isOpenDelayed) handleDelayedOpen();
           else handleOpen();
-        }, [context.isOpenDelayed, handleDelayedOpen, handleOpen])}
-        onOpen={React.useCallback(handleOpen, [handleOpen])}
-        onClose={React.useCallback(() => {
-          window.clearTimeout(openTimerRef.current);
-          setOpen(false);
-          onClose();
-        }, [setOpen, onClose])}
+        }, [providerContext.isOpenDelayed, handleDelayedOpen, handleOpen])}
+        onTriggerLeave={React.useCallback(() => {
+          if (disableHoverableContent) {
+            handleClose();
+          } else {
+            // Clear the timer in case the pointer leaves the trigger before the tooltip is opened.
+            window.clearTimeout(openTimerRef.current);
+          }
+        }, [handleClose, disableHoverableContent])}
+        onOpen={handleOpen}
+        onClose={handleClose}
+        disableHoverableContent={disableHoverableContent}
       >
         {children}
       </TooltipContextProvider>
@@ -231,9 +259,12 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
   (props: ScopedProps<TooltipTriggerProps>, forwardedRef) => {
     const { __scopeTooltip, ...triggerProps } = props;
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
+    const providerContext = useTooltipProviderContext(TRIGGER_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
-    const composedTriggerRef = useComposedRefs(forwardedRef, context.onTriggerChange);
+    const ref = React.useRef<TooltipTriggerElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref, context.onTriggerChange);
     const isPointerDownRef = React.useRef(false);
+    const hasPointerMoveOpenedRef = React.useRef(false);
     const handlePointerUp = React.useCallback(() => (isPointerDownRef.current = false), []);
 
     React.useEffect(() => {
@@ -248,11 +279,21 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           aria-describedby={context.open ? context.contentId : undefined}
           data-state={context.stateAttribute}
           {...triggerProps}
-          ref={composedTriggerRef}
-          onPointerEnter={composeEventHandlers(props.onPointerEnter, (event) => {
-            if (event.pointerType !== 'touch') context.onTriggerEnter();
+          ref={composedRefs}
+          onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
+            if (event.pointerType === 'touch') return;
+            if (
+              !hasPointerMoveOpenedRef.current &&
+              !providerContext.isPointerInTransitRef.current
+            ) {
+              context.onTriggerEnter();
+              hasPointerMoveOpenedRef.current = true;
+            }
           })}
-          onPointerLeave={composeEventHandlers(props.onPointerLeave, context.onClose)}
+          onPointerLeave={composeEventHandlers(props.onPointerLeave, () => {
+            context.onTriggerLeave();
+            hasPointerMoveOpenedRef.current = false;
+          })}
           onPointerDown={composeEventHandlers(props.onPointerDown, () => {
             isPointerDownRef.current = true;
             document.addEventListener('pointerup', handlePointerUp, { once: true });
@@ -330,15 +371,107 @@ interface TooltipContentProps extends TooltipContentImplProps {
 const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentProps>(
   (props: ScopedProps<TooltipContentProps>, forwardedRef) => {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeTooltip);
-    const { forceMount = portalContext.forceMount, ...contentProps } = props;
+    const { forceMount = portalContext.forceMount, side = 'top', ...contentProps } = props;
     const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
+
     return (
       <Presence present={forceMount || context.open}>
-        <TooltipContentImpl ref={forwardedRef} {...contentProps} />
+        {context.disableHoverableContent ? (
+          <TooltipContentImpl side={side} {...contentProps} ref={forwardedRef} />
+        ) : (
+          <TooltipContentHoverable side={side} {...contentProps} ref={forwardedRef} />
+        )}
       </Presence>
     );
   }
 );
+
+type Point = { x: number; y: number };
+type Polygon = Point[];
+
+type TooltipContentHoverableElement = TooltipContentImplElement;
+interface TooltipContentHoverableProps extends TooltipContentImplProps {}
+
+const TooltipContentHoverable = React.forwardRef<
+  TooltipContentHoverableElement,
+  TooltipContentHoverableProps
+>((props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) => {
+  const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
+  const providerContext = useTooltipProviderContext(CONTENT_NAME, props.__scopeTooltip);
+  const ref = React.useRef<TooltipContentHoverableElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+  const [pointerGraceArea, setPointerGraceArea] = React.useState<Polygon | null>(null);
+
+  const { trigger, onClose } = context;
+  const content = ref.current;
+
+  const { onPointerInTransitChange } = providerContext;
+
+  const handleRemoveGraceArea = React.useCallback(() => {
+    setPointerGraceArea(null);
+    onPointerInTransitChange(false);
+  }, [onPointerInTransitChange]);
+
+  const handleCreateGraceArea = React.useCallback(
+    (event: PointerEvent, hoverTarget: HTMLElement) => {
+      const currentTarget = event.currentTarget as HTMLElement;
+      const exitPoint = { x: event.clientX, y: event.clientY };
+      const exitSide = getExitSideFromRect(exitPoint, currentTarget.getBoundingClientRect());
+
+      const bleed = exitSide === 'right' || exitSide === 'bottom' ? -5 : 5;
+      const isXAxis = exitSide === 'right' || exitSide === 'left';
+      const startPoint = isXAxis
+        ? { x: event.clientX + bleed, y: event.clientY }
+        : { x: event.clientX, y: event.clientY + bleed };
+
+      const hoverTargetPoints = getPointsFromRect(hoverTarget.getBoundingClientRect());
+      const graceArea = getHull([startPoint, ...hoverTargetPoints]);
+      setPointerGraceArea(graceArea);
+      onPointerInTransitChange(true);
+    },
+    [onPointerInTransitChange]
+  );
+
+  React.useEffect(() => {
+    return () => handleRemoveGraceArea();
+  }, [handleRemoveGraceArea]);
+
+  React.useEffect(() => {
+    if (trigger && content) {
+      const handleTriggerLeave = (event: PointerEvent) => handleCreateGraceArea(event, content);
+      const handleContentLeave = (event: PointerEvent) => handleCreateGraceArea(event, trigger);
+
+      trigger.addEventListener('pointerleave', handleTriggerLeave);
+      content.addEventListener('pointerleave', handleContentLeave);
+      return () => {
+        trigger.removeEventListener('pointerleave', handleTriggerLeave);
+        content.removeEventListener('pointerleave', handleContentLeave);
+      };
+    }
+  }, [trigger, content, handleCreateGraceArea, handleRemoveGraceArea]);
+
+  React.useEffect(() => {
+    if (pointerGraceArea) {
+      const handleTrackPointerGrace = (event: PointerEvent) => {
+        const target = event.target as HTMLElement;
+        const pointerPosition = { x: event.clientX, y: event.clientY };
+        const hasEnteredTarget = trigger?.contains(target) || content?.contains(target);
+        const isPointerOutsideGraceArea = !isPointInPolygon(pointerPosition, pointerGraceArea);
+
+        if (hasEnteredTarget) {
+          handleRemoveGraceArea();
+        } else if (isPointerOutsideGraceArea) {
+          handleRemoveGraceArea();
+          onClose();
+        }
+      };
+      document.addEventListener('pointermove', handleTrackPointerGrace);
+      return () => document.removeEventListener('pointermove', handleTrackPointerGrace);
+    }
+  }, [trigger, content, pointerGraceArea, onClose, handleRemoveGraceArea]);
+
+  return <TooltipContentImpl {...props} ref={composedRefs} />;
+});
 
 type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
@@ -447,6 +580,111 @@ const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
 TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function getExitSideFromRect(point: Point, rect: DOMRect) {
+  const top = Math.abs(rect.top - point.y);
+  const bottom = Math.abs(rect.bottom - point.y);
+  const right = Math.abs(rect.right - point.x);
+  const left = Math.abs(rect.left - point.x);
+
+  switch (Math.min(top, bottom, right, left)) {
+    case left:
+      return 'left';
+    case right:
+      return 'right';
+    case top:
+      return 'top';
+    case bottom:
+      return 'bottom';
+    default:
+      return null;
+  }
+}
+
+function getPointsFromRect(rect: DOMRect) {
+  const { top, right, bottom, left } = rect;
+  return [
+    { x: left, y: top },
+    { x: right, y: top },
+    { x: right, y: bottom },
+    { x: left, y: bottom },
+  ];
+}
+
+// Determine if a point is inside of a polygon.
+// Based on https://github.com/substack/point-in-polygon
+function isPointInPolygon(point: Point, polygon: Polygon) {
+  const { x, y } = point;
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    // prettier-ignore
+    const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
+}
+
+// Returns a new array of points representing the convex hull of the given set of points.
+// https://www.nayuki.io/page/convex-hull-algorithm
+function getHull<P extends Point>(points: Readonly<Array<P>>): Array<P> {
+  const newPoints: Array<P> = points.slice();
+  newPoints.sort((a: Point, b: Point) => {
+    if (a.x < b.x) return -1;
+    else if (a.x > b.x) return +1;
+    else if (a.y < b.y) return -1;
+    else if (a.y > b.y) return +1;
+    else return 0;
+  });
+  return getHullPresorted(newPoints);
+}
+
+// Returns the convex hull, assuming that each points[i] <= points[i + 1]. Runs in O(n) time.
+function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P> {
+  if (points.length <= 1) return points.slice();
+
+  const upperHull: Array<P> = [];
+  for (let i = 0; i < points.length; i++) {
+    const p = points[i];
+    while (upperHull.length >= 2) {
+      const q = upperHull[upperHull.length - 1];
+      const r = upperHull[upperHull.length - 2];
+      if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) upperHull.pop();
+      else break;
+    }
+    upperHull.push(p);
+  }
+  upperHull.pop();
+
+  const lowerHull: Array<P> = [];
+  for (let i = points.length - 1; i >= 0; i--) {
+    const p = points[i];
+    while (lowerHull.length >= 2) {
+      const q = lowerHull[lowerHull.length - 1];
+      const r = lowerHull[lowerHull.length - 2];
+      if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) lowerHull.pop();
+      else break;
+    }
+    lowerHull.push(p);
+  }
+  lowerHull.pop();
+
+  if (
+    upperHull.length === 1 &&
+    lowerHull.length === 1 &&
+    upperHull[0].x === lowerHull[0].x &&
+    upperHull[0].y === lowerHull[0].y
+  ) {
+    return upperHull;
+  } else {
+    return upperHull.concat(lowerHull);
+  }
+}
 
 const Provider = TooltipProvider;
 const Root = Tooltip;

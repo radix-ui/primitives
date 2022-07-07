@@ -39,30 +39,6 @@ export const Controlled = () => {
   );
 };
 
-export const WithoutProvider = () => (
-  <>
-    <p>These will always have an open delay because of the missing provider.</p>
-    <Tooltip.Root>
-      <Tooltip.Trigger className={triggerClass()}>Hover or Focus me</Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Content className={contentClass()} sideOffset={5}>
-          Nicely done!
-          <Tooltip.Arrow className={arrowClass()} offset={10} />
-        </Tooltip.Content>
-      </Tooltip.Portal>
-    </Tooltip.Root>
-    <Tooltip.Root>
-      <Tooltip.Trigger className={triggerClass()}>Hover or Focus me</Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Content className={contentClass()} sideOffset={5}>
-          Nicely done!
-          <Tooltip.Arrow className={arrowClass()} offset={10} />
-        </Tooltip.Content>
-      </Tooltip.Portal>
-    </Tooltip.Root>
-  </>
-);
-
 export const CustomDurations = () => (
   <Tooltip.Provider>
     <h1>Delay duration</h1>
@@ -751,6 +727,66 @@ export const WithinScrollable = () => (
   </Tooltip.Provider>
 );
 
+export const DisableHoverableContent = () => (
+  <>
+    <h1>Hoverable content (Default)</h1>
+    <p>Content remains open while moving pointer to it</p>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip.Provider skipDelayDuration={1000}>
+        <Tooltip.Root>
+          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className={contentClass()} sideOffset={5}>
+              Nicely done!
+              <Tooltip.Arrow className={arrowClass()} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
+    </div>
+
+    <h1>Disable hoverable content</h1>
+    <p>Tooltip closes when pointer leaves the trigger</p>
+    <h2>Inherited from provider</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip.Provider delayDuration={0} disableHoverableContent>
+        <Tooltip.Root>
+          <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className={contentClass()} sideOffset={5}>
+              Nicely done!
+              <Tooltip.Arrow className={arrowClass()} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
+    </div>
+    <h2>Inherited value overridden by prop on tooltip</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip.Provider delayDuration={0} disableHoverableContent>
+        <Tooltip.Root>
+          <Tooltip.Trigger className={triggerClass()}>Disabled hoverable content</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className={contentClass()} sideOffset={5}>
+              Nicely done!
+              <Tooltip.Arrow className={arrowClass()} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+        <Tooltip.Root disableHoverableContent={false}>
+          <Tooltip.Trigger className={triggerClass()}>Hoverable content</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className={contentClass()} sideOffset={5}>
+              Nicely done!
+              <Tooltip.Arrow className={arrowClass()} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
+    </div>
+  </>
+);
+
 // change order slightly for more pleasing visual
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
 
@@ -769,7 +805,7 @@ export const Chromatic = () => (
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h2>Open</h2>
+      <h2 style={{ marginBottom: 60 }}>Open</h2>
       <Tooltip.Root defaultOpen>
         <Tooltip.Trigger className={triggerClass()}>open</Tooltip.Trigger>
         <Tooltip.Portal>
@@ -780,7 +816,7 @@ export const Chromatic = () => (
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
+      <h2 style={{ marginTop: 60, marginBottom: 60 }}>Open with reordered parts</h2>
       <Tooltip.Root defaultOpen>
         <Tooltip.Portal>
           <Tooltip.Content className={contentClass()} sideOffset={5}>
@@ -803,7 +839,7 @@ export const Chromatic = () => (
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h2>Open</h2>
+      <h2 style={{ marginBottom: 60 }}>Open</h2>
       <Tooltip.Root open>
         <Tooltip.Trigger className={triggerClass()}>open</Tooltip.Trigger>
         <Tooltip.Portal>
@@ -814,7 +850,7 @@ export const Chromatic = () => (
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h2 style={{ marginTop: 60 }}>Open with reordered parts</h2>
+      <h2 style={{ marginTop: 60, marginBottom: 60 }}>Open with reordered parts</h2>
       <Tooltip.Root open>
         <Tooltip.Portal>
           <Tooltip.Content className={contentClass()} sideOffset={5}>
@@ -1061,7 +1097,7 @@ export const Chromatic = () => (
         ))
       )}
 
-      <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
+      <h1 style={{ marginTop: 100, marginBottom: 60 }}>With slotted trigger</h1>
       <Tooltip.Root open>
         <Tooltip.Trigger asChild>
           <button className={triggerClass()}>open</button>
@@ -1074,7 +1110,7 @@ export const Chromatic = () => (
         </Tooltip.Portal>
       </Tooltip.Root>
 
-      <h1 style={{ marginTop: 100 }}>With slotted content</h1>
+      <h1 style={{ marginTop: 100, marginBottom: 60 }}>With slotted content</h1>
       <Tooltip.Root open>
         <Tooltip.Trigger className={triggerClass()}>Hover or Focus me</Tooltip.Trigger>
         <Tooltip.Portal>
@@ -1127,10 +1163,9 @@ const triggerClass = css({});
 
 const RECOMMENDED_CSS__TOOLTIP__CONTENT: any = {
   transformOrigin: 'var(--radix-tooltip-content-transform-origin)',
-  // ensures content isn't selectable and cannot receive events
+  // ensures content isn't selectable
   // this is just a detterent to people putting interactive content inside a `Tooltip.Root`
   userSelect: 'none',
-  pointerEvents: 'none',
 };
 
 const contentClass = css({
