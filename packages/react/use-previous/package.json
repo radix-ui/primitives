@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-use-previous",
-  "version": "0.1.2-rc.41",
+  "version": "0.1.2-rc.42",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
