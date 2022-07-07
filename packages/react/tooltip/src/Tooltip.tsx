@@ -264,7 +264,7 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     const ref = React.useRef<TooltipTriggerElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onTriggerChange);
     const isPointerDownRef = React.useRef(false);
-    const hasTriggerActivated = React.useRef(false);
+    const hasPointerMoveOpenedRef = React.useRef(false);
     const handlePointerUp = React.useCallback(() => (isPointerDownRef.current = false), []);
 
     React.useEffect(() => {
@@ -282,14 +282,17 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           ref={composedRefs}
           onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
             if (event.pointerType === 'touch') return;
-            if (!hasTriggerActivated.current && !providerContext.isPointerInTransitRef.current) {
+            if (
+              !hasPointerMoveOpenedRef.current &&
+              !providerContext.isPointerInTransitRef.current
+            ) {
               context.onTriggerEnter();
-              hasTriggerActivated.current = true;
+              hasPointerMoveOpenedRef.current = true;
             }
           })}
           onPointerLeave={composeEventHandlers(props.onPointerLeave, () => {
             context.onTriggerLeave();
-            hasTriggerActivated.current = false;
+            hasPointerMoveOpenedRef.current = false;
           })}
           onPointerDown={composeEventHandlers(props.onPointerDown, () => {
             isPointerDownRef.current = true;
@@ -406,7 +409,6 @@ const TooltipContentHoverable = React.forwardRef<
 
   const handleRemoveGraceArea = React.useCallback(() => {
     setPointerGraceArea(null);
-    removeDebugArea();
     onPointerInTransitChange(false);
   }, [onPointerInTransitChange]);
 
@@ -425,7 +427,6 @@ const TooltipContentHoverable = React.forwardRef<
       const hoverTargetPoints = getPointsFromRect(hoverTarget.getBoundingClientRect());
       const graceArea = getHull([startPoint, ...hoverTargetPoints]);
       setPointerGraceArea(graceArea);
-      createDebugArea(graceArea);
       onPointerInTransitChange(true);
     },
     [onPointerInTransitChange]
@@ -683,30 +684,6 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
   } else {
     return upperHull.concat(lowerHull);
   }
-}
-
-function createDebugArea(area: Polygon) {
-  const graceArea = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  graceArea.id = 'graceArea';
-  graceArea.setAttribute('viewBox', '0 0 3000 3000');
-  graceArea.setAttribute('width', '3000');
-  graceArea.setAttribute('height', '3000');
-  graceArea.style.position = 'fixed';
-  graceArea.style.top = '0px';
-  graceArea.style.left = '0px';
-  graceArea.style.zIndex = '2147483647';
-  graceArea.style.pointerEvents = 'none';
-  const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-  polygon.id = 'polygon';
-  polygon.setAttribute('points', area.map((point) => `${point.x},${point.y}`).join(' '));
-  polygon.setAttribute('fill', 'rgba(0, 255, 0, 0.2)');
-  polygon.setAttribute('stroke', 'green');
-  graceArea.appendChild(polygon);
-  document.body.appendChild(graceArea);
-}
-
-function removeDebugArea() {
-  document.getElementById('graceArea')?.remove();
 }
 
 const Provider = TooltipProvider;
