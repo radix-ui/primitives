@@ -1097,6 +1097,19 @@ export const Chromatic = () => (
         ))
       )}
 
+      <h2 style={{ marginTop: 50, marginBottom: 60 }}>Relative parent (non-portalled)</h2>
+      <div style={{ position: 'relative' }}>
+        <Tooltip.Provider>
+          <Tooltip.Root open>
+            <Tooltip.Trigger className={triggerClass()}>Hover or Focus me</Tooltip.Trigger>
+            <Tooltip.Content className={contentClass()} sideOffset={5}>
+              Nicely done!
+              <Tooltip.Arrow className={arrowClass()} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Root>
+        </Tooltip.Provider>
+      </div>
+
       <h1 style={{ marginTop: 100, marginBottom: 60 }}>With slotted trigger</h1>
       <Tooltip.Root open>
         <Tooltip.Trigger asChild>
