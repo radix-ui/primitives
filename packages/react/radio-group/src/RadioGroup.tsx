@@ -20,7 +20,7 @@ const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 const RADIO_GROUP_NAME = 'RadioGroup';
 
 type ScopedProps<P> = P & { __scopeRadioGroup?: Scope };
-const [createRadioGroupContet, createRadioGroupScope] = createContextScope(RADIO_GROUP_NAME, [
+const [createRadioGroupContext, createRadioGroupScope] = createContextScope(RADIO_GROUP_NAME, [
   createRovingFocusGroupScope,
   createRadioScope,
 ]);
@@ -35,7 +35,7 @@ type RadioGroupContextValue = {
 };
 
 const [RadioGroupProvider, useRadioGroupContext] =
-  createRadioGroupContet<RadioGroupContextValue>(RADIO_GROUP_NAME);
+  createRadioGroupContext<RadioGroupContextValue>(RADIO_GROUP_NAME);
 
 type RadioGroupElement = React.ElementRef<typeof Primitive.div>;
 type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
