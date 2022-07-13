@@ -5,9 +5,9 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createCollection } from '@radix-ui/react-collection';
 import { createContextScope } from '@radix-ui/react-context';
 import * as DismissableLayer from '@radix-ui/react-dismissable-layer';
+import { Portal } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
-import { Slottable } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -451,7 +451,6 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
   (props: ScopedProps<ToastImplProps>, forwardedRef) => {
     const {
       __scopeToast,
-      children,
       type = 'foreground',
       duration: durationProp,
       open,
@@ -472,7 +471,6 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const closeTimerStartTimeRef = React.useRef(0);
     const closeTimerRemainingTimeRef = React.useRef(duration);
     const closeTimerRef = React.useRef(0);
-    const [renderLabel, setRenderLabel] = React.useState(false);
     const { onToastAdd, onToastRemove } = context;
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
@@ -524,13 +522,20 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       return () => onToastRemove();
     }, [onToastAdd, onToastRemove]);
 
-    // render label in the next frame to trigger toast announcement in NVDA
-    useNextFrame(() => setRenderLabel(true));
-
     if (!context.viewport) return null;
 
     return (
       <>
+        <ToastAnnounce
+          __scopeToast={__scopeToast}
+          // Toasts are always role=status to avoid stuttering issues with role=alert in SRs.
+          role="status"
+          aria-live={type === 'foreground' ? 'assertive' : 'polite'}
+          aria-atomic
+        >
+          {props.children}
+        </ToastAnnounce>
+
         <ToastInteractiveProvider scope={__scopeToast} isInteractive onClose={handleClose}>
           {ReactDOM.createPortal(
             <Collection.ItemSlot scope={__scopeToast}>
@@ -543,10 +548,8 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
               >
                 <Primitive.li
                   role="status"
-                  aria-live={type === 'foreground' ? 'assertive' : 'polite'}
+                  aria-live="off"
                   aria-atomic
-                  // Prevent voice over from announcing before the label is rendered
-                  aria-hidden={!renderLabel || undefined}
                   tabIndex={0}
                   data-state={open ? 'open' : 'closed'}
                   data-swipe-direction={context.swipeDirection}
@@ -627,10 +630,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                       });
                     }
                   })}
-                >
-                  <VisuallyHidden>{renderLabel && context.label}</VisuallyHidden>
-                  <Slottable>{children}</Slottable>
-                </Primitive.li>
+                />
               </DismissableLayer.Root>
             </Collection.ItemSlot>,
             context.viewport
@@ -649,6 +649,60 @@ ToastImpl.propTypes = {
     }
     return null;
   },
+};
+
+/* -----------------------------------------------------------------------------------------------*/
+
+interface ToastAnnounceProps
+  extends React.ComponentPropsWithoutRef<'div'>,
+    ScopedProps<{ children?: ToastImplProps['children'] }> {}
+
+const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnnounceProps>) => {
+  const { __scopeToast, children, ...announceProps } = props;
+  const context = useToastProviderContext(TOAST_NAME, __scopeToast);
+  const [renderChildren, setRenderChildren] = React.useState(false);
+  const [isAnnounced, setIsAnnounced] = React.useState(false);
+  const [fragment, setFragment] = React.useState<DocumentFragment>();
+  const [rootFragmentNode, setRootFragmentNode] = React.useState<HTMLDivElement | null>(null);
+
+  // We portal children into a document fragment so that we can extract the bare text nodes
+  // before rendering to the DOM. This avoids issues with duplicate `children`
+  // and animation libraries when composing via `asChild`.
+  const announceTextContent = React.useMemo(() => {
+    return rootFragmentNode ? getAnnounceTextContent(rootFragmentNode) : null;
+  }, [rootFragmentNode]);
+
+  // setting the fragment in `useLayoutEffect` as `DocumentFragment` doesn't exist on the server
+  useLayoutEffect(() => {
+    setFragment(new DocumentFragment());
+  }, []);
+
+  // render children in the next frame to ensure toast is announced in NVDA
+  useNextFrame(() => setRenderChildren(true));
+
+  React.useEffect(() => {
+    const timer = window.setTimeout(() => setIsAnnounced(true), 1000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return isAnnounced ? null : (
+    <>
+      {fragment &&
+        ReactDOM.createPortal(
+          <div ref={setRootFragmentNode}>
+            <div>
+              {context.label} {children}
+            </div>
+          </div>,
+          fragment as any
+        )}
+      <Portal asChild>
+        <VisuallyHidden asChild>
+          <div {...announceProps}>{renderChildren && announceTextContent}</div>
+        </VisuallyHidden>
+      </Portal>
+    </>
+  );
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -804,6 +858,26 @@ function useNextFrame(callback = () => {}) {
       window.cancelAnimationFrame(raf2);
     };
   }, [fn]);
+}
+
+function getAnnounceTextContent(container: HTMLElement) {
+  const textContent = [];
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+    acceptNode: (node: any) => {
+      const isHidden = node.ariaHidden || node.hidden || node.style.display === 'none';
+      return isHidden ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+    },
+  });
+
+  while (walker.nextNode()) {
+    const childNodes = Array.from(walker.currentNode.childNodes);
+    const filteredTextNodes = childNodes
+      .filter((node) => node.nodeType === node.TEXT_NODE)
+      .map((node) => node.textContent);
+    textContent.push(...filteredTextNodes);
+  }
+
+  return textContent;
 }
 
 /**
