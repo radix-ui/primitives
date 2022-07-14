@@ -684,16 +684,16 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
 
   return isAnnounced ? null : (
     <>
-      {fragment &&
-        ReactDOM.createPortal(
-          <div ref={setRootFragmentNode}>
-            {context.label} {children}
-          </div>,
-          fragment as any
-        )}
-      <VisuallyHidden {...announceProps}>
-        {renderAnnounceText && announceTextContent}
-      </VisuallyHidden>
+      {fragment && (
+        <Portal container={fragment as any} ref={setRootFragmentNode}>
+          {context.label} {children}
+        </Portal>
+      )}
+      <Portal asChild>
+        <VisuallyHidden {...announceProps}>
+          {renderAnnounceText && announceTextContent}
+        </VisuallyHidden>
+      </Portal>
     </>
   );
 };
