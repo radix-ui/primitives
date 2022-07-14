@@ -114,12 +114,14 @@ export const EdgeCases = () => {
   const [extra, setExtra] = React.useState(false);
   const [disabled, setDisabled] = React.useState(false);
   const [hidden, setHidden] = React.useState(false);
+  const [disabled3To5, setDisabled3To5] = React.useState(false);
 
   return (
     <>
       <button onClick={() => setExtra((x) => !x)}>Add/remove extra</button>
       <button onClick={() => setDisabled((x) => !x)}>Disable/Enable "One"</button>
       <button onClick={() => setHidden((x) => !x)}>Hide/show "One"</button>
+      <button onClick={() => setDisabled3To5((x) => !x)}>Disable/Enable "Three" to "Five"</button>
       <hr />
 
       <ButtonGroup>
@@ -130,12 +132,19 @@ export const EdgeCases = () => {
         <Button value="two" disabled>
           Two
         </Button>
-        <Button value="three">Three</Button>
-        <Button value="four" style={{ display: 'none' }}>
+        <Button value="three" disabled={disabled3To5}>
+          Three
+        </Button>
+        <Button value="four" disabled={disabled3To5} style={{ display: 'none' }}>
           Four
         </Button>
-        <Button value="five">Five</Button>
+        <Button value="five" disabled={disabled3To5}>
+          Five
+        </Button>
       </ButtonGroup>
+
+      <hr />
+      <button type="button">Focusable outside of group</button>
     </>
   );
 };
@@ -173,7 +182,7 @@ const Button = (props: ButtonProps) => {
     contextValue !== undefined && props.value !== undefined && contextValue === props.value;
 
   return (
-    <RovingFocusGroup.Item asChild active={isSelected}>
+    <RovingFocusGroup.Item asChild active={isSelected} focusable={!props.disabled}>
       <button
         {...props}
         style={{
