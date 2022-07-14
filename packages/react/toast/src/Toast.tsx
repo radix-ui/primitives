@@ -547,9 +547,6 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                 })}
               >
                 <Primitive.li
-                  role="status"
-                  aria-live="off"
-                  aria-atomic
                   tabIndex={0}
                   data-state={open ? 'open' : 'closed'}
                   data-swipe-direction={context.swipeDirection}
@@ -660,7 +657,7 @@ interface ToastAnnounceProps
 const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnnounceProps>) => {
   const { __scopeToast, children, ...announceProps } = props;
   const context = useToastProviderContext(TOAST_NAME, __scopeToast);
-  const [renderChildren, setRenderChildren] = React.useState(false);
+  const [renderAnnounceText, setRenderAnnounceText] = React.useState(false);
   const [isAnnounced, setIsAnnounced] = React.useState(false);
   const [fragment, setFragment] = React.useState<DocumentFragment>();
   const [rootFragmentNode, setRootFragmentNode] = React.useState<HTMLDivElement | null>(null);
@@ -677,8 +674,8 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
     setFragment(new DocumentFragment());
   }, []);
 
-  // render children in the next frame to ensure toast is announced in NVDA
-  useNextFrame(() => setRenderChildren(true));
+  // render text content in the next frame to ensure toast is announced in NVDA
+  useNextFrame(() => setRenderAnnounceText(true));
 
   React.useEffect(() => {
     const timer = window.setTimeout(() => setIsAnnounced(true), 1000);
@@ -690,17 +687,13 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
       {fragment &&
         ReactDOM.createPortal(
           <div ref={setRootFragmentNode}>
-            <div>
-              {context.label} {children}
-            </div>
+            {context.label} {children}
           </div>,
           fragment as any
         )}
-      <Portal asChild>
-        <VisuallyHidden asChild>
-          <div {...announceProps}>{renderChildren && announceTextContent}</div>
-        </VisuallyHidden>
-      </Portal>
+      <VisuallyHidden {...announceProps}>
+        {renderAnnounceText && announceTextContent}
+      </VisuallyHidden>
     </>
   );
 };
@@ -861,22 +854,19 @@ function useNextFrame(callback = () => {}) {
 }
 
 function getAnnounceTextContent(container: HTMLElement) {
-  const textContent = [];
-  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-    acceptNode: (node: any) => {
+  const textContent: string[] = [];
+  const childNodes = Array.from(container.childNodes);
+
+  childNodes.forEach((node: any) => {
+    if (node.nodeType === node.TEXT_NODE) textContent.push(node.textContent);
+    if (node.nodeType === node.ELEMENT_NODE) {
       const isHidden = node.ariaHidden || node.hidden || node.style.display === 'none';
-      return isHidden ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
-    },
+      if (!isHidden) textContent.push(...getAnnounceTextContent(node));
+    }
   });
 
-  while (walker.nextNode()) {
-    const childNodes = Array.from(walker.currentNode.childNodes);
-    const filteredTextNodes = childNodes
-      .filter((node) => node.nodeType === node.TEXT_NODE)
-      .map((node) => node.textContent);
-    textContent.push(...filteredTextNodes);
-  }
-
+  // We return a collection of text rather than a single concatenated string.
+  // This allows SR VO to naturally pause break between nodes while announcing.
   return textContent;
 }
 
