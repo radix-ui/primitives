@@ -439,9 +439,65 @@ export const Chromatic = () => (
 
     <h3>Arrow offset</h3>
     <h4>Positive</h4>
-    <div className={gridClass({ css: { width: 452, height: 422 } })} />
+    <div className={gridClass({ css: { visibility: 'hidden' } })}>
+      {SIDES.map((side) =>
+        ALIGN_OPTIONS.map((align) => (
+          <HoverCard.Root key={`${side}-${align}`} open>
+            <HoverCard.Trigger className={chromaticTriggerClass()} />
+            <HoverCard.Portal>
+              <HoverCard.Content
+                className={chromaticContentClass()}
+                side={side}
+                align={align}
+                avoidCollisions={false}
+              >
+                <p style={{ textAlign: 'center' }}>
+                  {side}
+                  <br />
+                  {align}
+                </p>
+                <HoverCard.Arrow
+                  className={chromaticArrowClass()}
+                  width={20}
+                  height={10}
+                  offset={5}
+                />
+              </HoverCard.Content>
+            </HoverCard.Portal>
+          </HoverCard.Root>
+        ))
+      )}
+    </div>
     <h4>Negative</h4>
-    <div className={gridClass({ css: { width: 452, height: 422 } })} />
+    <div className={gridClass({ css: { visibility: 'hidden' } })}>
+      {SIDES.map((side) =>
+        ALIGN_OPTIONS.map((align) => (
+          <HoverCard.Root key={`${side}-${align}`} open>
+            <HoverCard.Trigger className={chromaticTriggerClass()} />
+            <HoverCard.Portal>
+              <HoverCard.Content
+                className={chromaticContentClass()}
+                side={side}
+                align={align}
+                avoidCollisions={false}
+              >
+                <p style={{ textAlign: 'center' }}>
+                  {side}
+                  <br />
+                  {align}
+                </p>
+                <HoverCard.Arrow
+                  className={chromaticArrowClass()}
+                  width={20}
+                  height={10}
+                  offset={-10}
+                />
+              </HoverCard.Content>
+            </HoverCard.Portal>
+          </HoverCard.Root>
+        ))
+      )}
+    </div>
 
     <h3>Side offset</h3>
     <h4>Positive</h4>

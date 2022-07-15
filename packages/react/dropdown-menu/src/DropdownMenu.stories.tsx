@@ -1208,9 +1208,65 @@ export const Chromatic = () => {
 
       <h3>Arrow offset</h3>
       <h4>Positive</h4>
-      <div className={gridClass({ css: { width: 452, height: 422 } })} />
+      <div className={gridClass({ css: { visibility: 'hidden ' } })}>
+        {SIDES.map((side) =>
+          ALIGN_OPTIONS.map((align) => (
+            <DropdownMenu.Root key={`${side}-${align}`} open modal={false}>
+              <DropdownMenu.Trigger className={chromaticTriggerClass()} />
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className={chromaticContentClass()}
+                  side={side}
+                  align={align}
+                  avoidCollisions={false}
+                >
+                  <p style={{ textAlign: 'center' }}>
+                    {side}
+                    <br />
+                    {align}
+                  </p>
+                  <DropdownMenu.Arrow
+                    className={chromaticArrowClass()}
+                    width={20}
+                    height={10}
+                    offset={5}
+                  />
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          ))
+        )}
+      </div>
       <h4>Negative</h4>
-      <div className={gridClass({ css: { width: 452, height: 422 } })} />
+      <div className={gridClass({ css: { visibility: 'hidden' } })}>
+        {SIDES.map((side) =>
+          ALIGN_OPTIONS.map((align) => (
+            <DropdownMenu.Root key={`${side}-${align}`} open modal={false}>
+              <DropdownMenu.Trigger className={chromaticTriggerClass()} />
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className={chromaticContentClass()}
+                  side={side}
+                  align={align}
+                  avoidCollisions={false}
+                >
+                  <p style={{ textAlign: 'center' }}>
+                    {side}
+                    <br />
+                    {align}
+                  </p>
+                  <DropdownMenu.Arrow
+                    className={chromaticArrowClass()}
+                    width={20}
+                    height={10}
+                    offset={-10}
+                  />
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          ))
+        )}
+      </div>
 
       <h3>Side offset</h3>
       <h4>Positive</h4>
