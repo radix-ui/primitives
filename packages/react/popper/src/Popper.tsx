@@ -1,13 +1,20 @@
 import * as React from 'react';
+import {
+  useFloating,
+  autoUpdate,
+  offset,
+  flip,
+  shift,
+  arrow as arrowMiddleware,
+} from '@floating-ui/react-dom';
 import * as ArrowPrimitive from '@radix-ui/react-arrow';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
-import { getPlacementData } from '@radix-ui/popper';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { useRect } from '@radix-ui/react-use-rect';
 import { useSize } from '@radix-ui/react-use-size';
 
+import type { Placement, Strategy, Middleware } from '@floating-ui/react-dom';
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 import type { Side, Align } from '@radix-ui/popper';
@@ -82,9 +89,12 @@ PopperAnchor.displayName = ANCHOR_NAME;
 const CONTENT_NAME = 'PopperContent';
 
 type PopperContentContextValue = {
-  arrowStyles: React.CSSProperties;
+  strategy: 'absolute' | 'fixed';
+  placedSide: Side;
   onArrowChange(arrow: HTMLSpanElement | null): void;
-  onArrowOffsetChange(offset?: number): void;
+  arrowX: number | undefined;
+  arrowY: number | undefined;
+  shouldHideArrow: boolean;
 };
 
 const [PopperContentProvider, useContentContext] =
@@ -92,6 +102,7 @@ const [PopperContentProvider, useContentContext] =
 
 type PopperContentElement = React.ElementRef<typeof Primitive.div>;
 interface PopperContentProps extends PrimitiveDivProps {
+  strategy?: Strategy;
   side?: Side;
   sideOffset?: number;
   align?: Align;
@@ -104,46 +115,53 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
   (props: ScopedProps<PopperContentProps>, forwardedRef) => {
     const {
       __scopePopper,
+      strategy: strategyProp,
       side = 'bottom',
-      sideOffset,
+      sideOffset = 0,
       align = 'center',
-      alignOffset,
-      collisionTolerance,
+      alignOffset = 0,
+      collisionTolerance = 0,
       avoidCollisions = true,
       ...contentProps
     } = props;
 
     const context = usePopperContext(CONTENT_NAME, __scopePopper);
-    const [arrowOffset, setArrowOffset] = React.useState<number>();
-    const anchorRect = useRect(context.anchor);
-    const [content, setContent] = React.useState<HTMLDivElement | null>(null);
-    const contentSize = useSize(content);
-    const [arrow, setArrow] = React.useState<HTMLSpanElement | null>(null);
-    const arrowSize = useSize(arrow);
 
+    const [content, setContent] = React.useState<HTMLDivElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
 
-    const windowSize = useWindowSize();
-    const collisionBoundariesRect = windowSize
-      ? DOMRect.fromRect({ ...windowSize, x: 0, y: 0 })
-      : undefined;
+    const [arrow, setArrow] = React.useState<HTMLSpanElement | null>(null);
+    const arrowSize = useSize(arrow);
+    const arrowWidth = arrowSize?.width ?? 0;
+    const arrowHeight = arrowSize?.height ?? 0;
 
-    const { popperStyles, arrowStyles, placedSide, placedAlign } = getPlacementData({
-      anchorRect,
-      popperSize: contentSize,
-      arrowSize,
+    const desiredPlacement = (side + (align !== 'center' ? '-' + align : '')) as Placement;
 
-      // config
-      arrowOffset,
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      shouldAvoidCollisions: avoidCollisions,
-      collisionBoundariesRect,
-      collisionTolerance,
+    const { reference, floating, strategy, x, y, placement, middlewareData } = useFloating({
+      strategy: strategyProp,
+      placement: desiredPlacement,
+      whileElementsMounted: autoUpdate,
+
+      middleware: [
+        offset({
+          mainAxis: sideOffset + arrowHeight,
+          crossAxis: alignOffset,
+        }),
+        shift({ mainAxis: true, crossAxis: false }),
+        ...(arrow ? [arrowMiddleware({ element: arrow })] : []),
+        flip(),
+        transformOrigin({ arrowWidth, arrowHeight }),
+      ],
     });
-    const isPlaced = placedSide !== undefined;
+
+    useLayoutEffect(() => {
+      reference(context.anchor);
+    }, [reference, context.anchor]);
+
+    const isPlaced = x !== null && y !== null;
+    const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
+    const { arrow: { x: arrowX, y: arrowY } = {} } = middlewareData;
+    const cannotCenterArrow = middlewareData.arrow?.centerOffset !== 0;
 
     const [contentZIndex, setContentZIndex] = React.useState<string>();
     useLayoutEffect(() => {
@@ -151,12 +169,32 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     }, [content]);
 
     return (
-      <div style={{ ...popperStyles, zIndex: contentZIndex }} data-radix-popper-content-wrapper="">
+      <div
+        ref={floating}
+        style={{
+          position: strategy,
+          left: 0,
+          top: 0,
+          transform: isPlaced
+            ? `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`
+            : 'translate3d(0, -200vh, 0)',
+          minWidth: 'max-content',
+          zIndex: contentZIndex,
+          ['--radix-popper-transform-origin' as any]: [
+            middlewareData.transformOrigin?.x,
+            middlewareData.transformOrigin?.y,
+          ].join(' '),
+        }}
+        data-radix-popper-content-wrapper=""
+      >
         <PopperContentProvider
           scope={__scopePopper}
-          arrowStyles={arrowStyles}
+          strategy={strategy}
+          placedSide={placedSide}
           onArrowChange={setArrow}
-          onArrowOffsetChange={setArrowOffset}
+          arrowX={arrowX}
+          arrowY={arrowY}
+          shouldHideArrow={cannotCenterArrow}
         >
           <Primitive.div
             data-side={placedSide}
@@ -184,6 +222,13 @@ PopperContent.displayName = CONTENT_NAME;
 
 const ARROW_NAME = 'PopperArrow';
 
+const OPPOSITE_SIDE: Record<Side, Side> = {
+  top: 'bottom',
+  right: 'left',
+  bottom: 'top',
+  left: 'right',
+};
+
 type PopperArrowElement = React.ElementRef<typeof ArrowPrimitive.Root>;
 type ArrowProps = Radix.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
 interface PopperArrowProps extends ArrowProps {
@@ -195,35 +240,44 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
   forwardedRef
 ) {
   const { __scopePopper, offset, ...arrowProps } = props;
-  const context = useContentContext(ARROW_NAME, __scopePopper);
-  const { onArrowOffsetChange } = context;
-
-  // send the Arrow's offset up to Popper
-  React.useEffect(() => onArrowOffsetChange(offset), [onArrowOffsetChange, offset]);
+  const contentContext = useContentContext(ARROW_NAME, __scopePopper);
+  const baseSide = OPPOSITE_SIDE[contentContext.placedSide];
 
   return (
-    <span style={{ ...context.arrowStyles, pointerEvents: 'none' }}>
-      <span
-        // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
-        // doesn't report size as we'd expect on SVG elements.
-        // it reports their bounding box which is effectively the largest path inside the SVG.
-        ref={context.onArrowChange}
+    // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
+    // doesn't report size as we'd expect on SVG elements.
+    // it reports their bounding box which is effectively the largest path inside the SVG.
+    <span
+      ref={contentContext.onArrowChange}
+      style={{
+        position: contentContext.strategy,
+        left: contentContext.arrowX,
+        top: contentContext.arrowY,
+        [baseSide]: 0,
+        transformOrigin: {
+          top: '',
+          right: '0 0',
+          bottom: 'center 0',
+          left: '100% 0',
+        }[contentContext.placedSide],
+        transform: {
+          top: 'translateY(100%)',
+          right: 'translateY(50%) rotate(90deg) translateX(-50%)',
+          bottom: `rotate(180deg)`,
+          left: 'translateY(50%) rotate(-90deg) translateX(50%)',
+        }[contentContext.placedSide],
+        // visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
+      }}
+    >
+      <ArrowPrimitive.Root
+        {...arrowProps}
+        ref={forwardedRef}
         style={{
-          display: 'inline-block',
-          verticalAlign: 'top',
-          pointerEvents: 'auto',
+          ...arrowProps.style,
+          // ensures the element can be measured correctly (mostly for if SVG)
+          display: 'block',
         }}
-      >
-        <ArrowPrimitive.Root
-          {...arrowProps}
-          ref={forwardedRef}
-          style={{
-            ...arrowProps.style,
-            // ensures the element can be measured correctly (mostly for if SVG)
-            display: 'block',
-          }}
-        />
-      </span>
+      />
     </span>
   );
 });
@@ -232,31 +286,46 @@ PopperArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const WINDOW_RESIZE_DEBOUNCE_WAIT_IN_MS = 100;
+const transformOrigin = (options: { arrowWidth: number; arrowHeight: number }): Middleware => ({
+  name: 'transformOrigin',
+  options,
+  fn(data) {
+    const { placement, rects, middlewareData } = data;
 
-function useWindowSize() {
-  const [windowSize, setWindowSize] = React.useState<{ width: number; height: number } | undefined>(
-    undefined
-  );
+    const cannotCenterArrow = middlewareData.arrow?.centerOffset !== 0;
+    const isArrowHidden = cannotCenterArrow;
+    const arrowWidth = isArrowHidden ? 0 : options.arrowWidth;
+    const arrowHeight = isArrowHidden ? 0 : options.arrowHeight;
 
-  React.useEffect(() => {
-    let debounceTimerId: number;
+    const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
+    const noArrowAlign = { start: '0%', center: '50%', end: '100%' }[placedAlign];
 
-    function updateWindowSize() {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    const arrowXCenter = (middlewareData.arrow?.x ?? 0) + arrowWidth / 2;
+    const arrowYCenter = (middlewareData.arrow?.y ?? 0) + arrowHeight / 2;
+
+    let x = '';
+    let y = '';
+
+    if (placedSide === 'bottom') {
+      x = isArrowHidden ? noArrowAlign : `${arrowXCenter}px`;
+      y = `${-arrowHeight}px`;
+    } else if (placedSide === 'top') {
+      x = isArrowHidden ? noArrowAlign : `${arrowXCenter}px`;
+      y = `${rects.floating.height + arrowHeight}px`;
+    } else if (placedSide === 'right') {
+      x = `${-arrowHeight}px`;
+      y = isArrowHidden ? noArrowAlign : `${arrowYCenter}px`;
+    } else if (placedSide === 'left') {
+      x = `${rects.floating.width + arrowHeight}px`;
+      y = isArrowHidden ? noArrowAlign : `${arrowYCenter}px`;
     }
+    return { data: { x, y } };
+  },
+});
 
-    function handleResize() {
-      window.clearTimeout(debounceTimerId);
-      debounceTimerId = window.setTimeout(updateWindowSize, WINDOW_RESIZE_DEBOUNCE_WAIT_IN_MS);
-    }
-
-    updateWindowSize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return windowSize;
+function getSideAndAlignFromPlacement(placement: Placement): [Side, Align] {
+  const [side, align = 'center'] = placement.split('-');
+  return [side as Side, align as Align];
 }
 
 const Root = Popper;

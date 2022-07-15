@@ -645,6 +645,19 @@ export const Chromatic = () => (
       ))
     )}
 
+    <h2>Relative parent (non-portalled)</h2>
+    <div style={{ position: 'relative' }}>
+      <HoverCard.Root open>
+        <HoverCard.Trigger href="/" className={triggerClass()}>
+          trigger
+        </HoverCard.Trigger>
+        <HoverCard.Content className={contentClass()} sideOffset={5}>
+          <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
+          Some content
+        </HoverCard.Content>
+      </HoverCard.Root>
+    </div>
+
     <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
     <HoverCard.Root open>
       <HoverCard.Trigger asChild>

@@ -596,6 +596,19 @@ export const Chromatic = () => (
       ))
     )}
 
+    <h2>Relative parent (non-portalled)</h2>
+    <div style={{ position: 'relative' }}>
+      <Popover.Root open>
+        <Popover.Trigger asChild>
+          <button className={triggerClass()}>open</button>
+        </Popover.Trigger>
+        <Popover.Content className={contentClass()} sideOffset={5}>
+          <Popover.Close className={closeClass()}>close</Popover.Close>
+          <Popover.Arrow className={arrowClass()} width={20} height={10} offset={10} />
+        </Popover.Content>
+      </Popover.Root>
+    </div>
+
     <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
     <Popover.Root open>
       <Popover.Trigger asChild>

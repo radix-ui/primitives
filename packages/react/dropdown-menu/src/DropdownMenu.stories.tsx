@@ -1414,7 +1414,23 @@ export const Chromatic = () => {
         ))
       )}
 
-      <h1>With labels</h1>
+      <h2>Relative parent (non-portalled)</h2>
+      <div style={{ position: 'relative' }}>
+        <DropdownMenu.Root open modal={false}>
+          <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Content className={contentClass()} sideOffset={5} avoidCollisions={false}>
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
+              Undo
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
+              Redo
+            </DropdownMenu.Item>
+            <DropdownMenu.Arrow />
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </div>
+
+      <h1 style={{ marginTop: 100 }}>With labels</h1>
       <DropdownMenu.Root open modal={false}>
         <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
         <DropdownMenu.Portal>

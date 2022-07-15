@@ -15,11 +15,15 @@
     "clean": "rm -rf dist",
     "version": "yarn version"
   },
-  "devDependencies": {
-    "@types/resize-observer-browser": "^0.1.4"
+  "dependencies": {
+    "@babel/runtime": "^7.13.10",
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0 || ^18.0"
+  },
+  "devDependencies": {
+    "@types/resize-observer-browser": "^0.1.4"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
@@ -28,9 +32,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.13.10"
   },
   "stableVersion": "0.1.1"
 }

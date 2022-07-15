@@ -1,12 +1,16 @@
 /// <reference types="resize-observer-browser" />
 
 import * as React from 'react';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
-function useSize(element: HTMLElement | SVGElement | null) {
+function useSize(element: HTMLElement | null) {
   const [size, setSize] = React.useState<{ width: number; height: number } | undefined>(undefined);
 
-  React.useEffect(() => {
+  useLayoutEffect(() => {
     if (element) {
+      // provide size as early as possible
+      setSize({ width: element.offsetWidth, height: element.offsetHeight });
+
       const resizeObserver = new ResizeObserver((entries) => {
         if (!Array.isArray(entries)) {
           return;
@@ -30,10 +34,9 @@ function useSize(element: HTMLElement | SVGElement | null) {
           height = borderSize['blockSize'];
         } else {
           // for browsers that don't support `borderBoxSize`
-          // we calculate a rect ourselves to get the correct border box.
-          const rect = element.getBoundingClientRect();
-          width = rect.width;
-          height = rect.height;
+          // we calculate it ourselves to get the correct border box.
+          width = element.offsetWidth;
+          height = element.offsetHeight;
         }
 
         setSize({ width, height });
