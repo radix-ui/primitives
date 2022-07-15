@@ -390,34 +390,11 @@ export const Chromatic = () => (
 
     <h3>Arrow offset</h3>
     <h4>Positive</h4>
-
-    <h3>Arrow offset</h3>
-    <h4>Positive</h4>
     <div className={gridClass({ css: { visibility: 'hidden' } })}>
       {SIDES.map((side) =>
         ALIGN_OPTIONS.map((align) => (
           <Popover.Root key={`${side}-${align}`} open>
             <Popover.Trigger className={chromaticTriggerClass()} />
-            <Popover.Portal>
-              <Popover.Content
-                className={chromaticContentClass()}
-                side={side}
-                align={align}
-                avoidCollisions={false}
-              >
-                <p style={{ textAlign: 'center' }}>
-                  {side}
-                  <br />
-                  {align}
-                </p>
-                <Popover.Arrow
-                  className={chromaticArrowClass()}
-                  width={20}
-                  height={10}
-                  offset={5}
-                />
-              </Popover.Content>
-            </Popover.Portal>
           </Popover.Root>
         ))
       )}
@@ -428,26 +405,6 @@ export const Chromatic = () => (
         ALIGN_OPTIONS.map((align) => (
           <Popover.Root key={`${side}-${align}`} open>
             <Popover.Trigger className={chromaticTriggerClass()} />
-            <Popover.Portal>
-              <Popover.Content
-                className={chromaticContentClass()}
-                side={side}
-                align={align}
-                avoidCollisions={false}
-              >
-                <p style={{ textAlign: 'center' }}>
-                  {side}
-                  <br />
-                  {align}
-                </p>
-                <Popover.Arrow
-                  className={chromaticArrowClass()}
-                  width={20}
-                  height={10}
-                  offset={-10}
-                />
-              </Popover.Content>
-            </Popover.Portal>
           </Popover.Root>
         ))
       )}

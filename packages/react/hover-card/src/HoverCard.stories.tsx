@@ -444,26 +444,6 @@ export const Chromatic = () => (
         ALIGN_OPTIONS.map((align) => (
           <HoverCard.Root key={`${side}-${align}`} open>
             <HoverCard.Trigger className={chromaticTriggerClass()} />
-            <HoverCard.Portal>
-              <HoverCard.Content
-                className={chromaticContentClass()}
-                side={side}
-                align={align}
-                avoidCollisions={false}
-              >
-                <p style={{ textAlign: 'center' }}>
-                  {side}
-                  <br />
-                  {align}
-                </p>
-                <HoverCard.Arrow
-                  className={chromaticArrowClass()}
-                  width={20}
-                  height={10}
-                  offset={5}
-                />
-              </HoverCard.Content>
-            </HoverCard.Portal>
           </HoverCard.Root>
         ))
       )}
@@ -474,26 +454,6 @@ export const Chromatic = () => (
         ALIGN_OPTIONS.map((align) => (
           <HoverCard.Root key={`${side}-${align}`} open>
             <HoverCard.Trigger className={chromaticTriggerClass()} />
-            <HoverCard.Portal>
-              <HoverCard.Content
-                className={chromaticContentClass()}
-                side={side}
-                align={align}
-                avoidCollisions={false}
-              >
-                <p style={{ textAlign: 'center' }}>
-                  {side}
-                  <br />
-                  {align}
-                </p>
-                <HoverCard.Arrow
-                  className={chromaticArrowClass()}
-                  width={20}
-                  height={10}
-                  offset={-10}
-                />
-              </HoverCard.Content>
-            </HoverCard.Portal>
           </HoverCard.Root>
         ))
       )}

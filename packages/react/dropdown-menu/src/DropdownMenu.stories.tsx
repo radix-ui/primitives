@@ -1213,26 +1213,6 @@ export const Chromatic = () => {
           ALIGN_OPTIONS.map((align) => (
             <DropdownMenu.Root key={`${side}-${align}`} open modal={false}>
               <DropdownMenu.Trigger className={chromaticTriggerClass()} />
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content
-                  className={chromaticContentClass()}
-                  side={side}
-                  align={align}
-                  avoidCollisions={false}
-                >
-                  <p style={{ textAlign: 'center' }}>
-                    {side}
-                    <br />
-                    {align}
-                  </p>
-                  <DropdownMenu.Arrow
-                    className={chromaticArrowClass()}
-                    width={20}
-                    height={10}
-                    offset={5}
-                  />
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
             </DropdownMenu.Root>
           ))
         )}
@@ -1243,26 +1223,6 @@ export const Chromatic = () => {
           ALIGN_OPTIONS.map((align) => (
             <DropdownMenu.Root key={`${side}-${align}`} open modal={false}>
               <DropdownMenu.Trigger className={chromaticTriggerClass()} />
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content
-                  className={chromaticContentClass()}
-                  side={side}
-                  align={align}
-                  avoidCollisions={false}
-                >
-                  <p style={{ textAlign: 'center' }}>
-                    {side}
-                    <br />
-                    {align}
-                  </p>
-                  <DropdownMenu.Arrow
-                    className={chromaticArrowClass()}
-                    width={20}
-                    height={10}
-                    offset={-10}
-                  />
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
             </DropdownMenu.Root>
           ))
         )}
@@ -1627,7 +1587,7 @@ export const Chromatic = () => {
     </div>
   );
 };
-Chromatic.parameters = { chromatic: { disable: false } };
+Chromatic.parameters = { chromatic: { disable: false, delay: 100 } };
 
 const triggerClass = css({
   border: '1px solid $black',

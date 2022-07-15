@@ -896,26 +896,6 @@ export const Chromatic = () => (
           ALIGN_OPTIONS.map((align) => (
             <Tooltip.Root key={`${side}-${align}`} open>
               <Tooltip.Trigger className={chromaticTriggerClass()} />
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className={chromaticContentClass()}
-                  side={side}
-                  align={align}
-                  avoidCollisions={false}
-                >
-                  <p style={{ textAlign: 'center' }}>
-                    {side}
-                    <br />
-                    {align}
-                  </p>
-                  <Tooltip.Arrow
-                    className={chromaticArrowClass()}
-                    width={20}
-                    height={10}
-                    offset={5}
-                  />
-                </Tooltip.Content>
-              </Tooltip.Portal>
             </Tooltip.Root>
           ))
         )}
@@ -926,26 +906,6 @@ export const Chromatic = () => (
           ALIGN_OPTIONS.map((align) => (
             <Tooltip.Root key={`${side}-${align}`} open>
               <Tooltip.Trigger className={chromaticTriggerClass()} />
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className={chromaticContentClass()}
-                  side={side}
-                  align={align}
-                  avoidCollisions={false}
-                >
-                  <p style={{ textAlign: 'center' }}>
-                    {side}
-                    <br />
-                    {align}
-                  </p>
-                  <Tooltip.Arrow
-                    className={chromaticArrowClass()}
-                    width={20}
-                    height={10}
-                    offset={-10}
-                  />
-                </Tooltip.Content>
-              </Tooltip.Portal>
             </Tooltip.Root>
           ))
         )}
