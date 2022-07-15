@@ -3,9 +3,10 @@ import {
   useFloating,
   autoUpdate,
   offset,
-  flip,
   shift,
+  limitShift,
   arrow as arrowMiddleware,
+  flip,
 } from '@floating-ui/react-dom';
 import * as ArrowPrimitive from '@radix-ui/react-arrow';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -137,21 +138,26 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
 
     const desiredPlacement = (side + (align !== 'center' ? '-' + align : '')) as Placement;
 
+    const middleware = [
+      offset({ mainAxis: sideOffset + arrowHeight, crossAxis: alignOffset }),
+      avoidCollisions
+        ? shift({
+            mainAxis: true,
+            crossAxis: false,
+            padding: collisionTolerance,
+            limiter: limitShift(),
+          })
+        : undefined,
+      arrow ? arrowMiddleware({ element: arrow }) : undefined,
+      avoidCollisions ? flip({ padding: collisionTolerance }) : undefined,
+      transformOrigin({ arrowWidth, arrowHeight }),
+    ].filter(isDefined);
+
     const { reference, floating, strategy, x, y, placement, middlewareData } = useFloating({
       strategy: strategyProp,
       placement: desiredPlacement,
       whileElementsMounted: autoUpdate,
-
-      middleware: [
-        offset({
-          mainAxis: sideOffset + arrowHeight,
-          crossAxis: alignOffset,
-        }),
-        shift({ mainAxis: true, crossAxis: false }),
-        ...(arrow ? [arrowMiddleware({ element: arrow })] : []),
-        flip(),
-        transformOrigin({ arrowWidth, arrowHeight }),
-      ],
+      middleware,
     });
 
     useLayoutEffect(() => {
@@ -266,7 +272,7 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
           bottom: `rotate(180deg)`,
           left: 'translateY(50%) rotate(-90deg) translateX(50%)',
         }[contentContext.placedSide],
-        // visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
+        visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
       }}
     >
       <ArrowPrimitive.Root
@@ -285,6 +291,10 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
 PopperArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined;
+}
 
 const transformOrigin = (options: { arrowWidth: number; arrowHeight: number }): Middleware => ({
   name: 'transformOrigin',
