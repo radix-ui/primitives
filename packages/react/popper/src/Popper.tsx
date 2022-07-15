@@ -138,8 +138,8 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
 
     const desiredPlacement = (side + (align !== 'center' ? '-' + align : '')) as Placement;
 
-    const middleware = [
-      offset({ mainAxis: sideOffset + arrowHeight, crossAxis: alignOffset }),
+    const middlewares = [
+      offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
       avoidCollisions
         ? shift({
             mainAxis: true,
@@ -157,7 +157,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       strategy: strategyProp,
       placement: desiredPlacement,
       whileElementsMounted: autoUpdate,
-      middleware,
+      middleware: middlewares,
     });
 
     useLayoutEffect(() => {
@@ -272,11 +272,11 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
           bottom: `rotate(180deg)`,
           left: 'translateY(50%) rotate(-90deg) translateX(50%)',
         }[contentContext.placedSide],
-        visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
       }}
     >
       <ArrowPrimitive.Root
         {...arrowProps}
+        data-hidden={contentContext.shouldHideArrow ? true : undefined}
         ref={forwardedRef}
         style={{
           ...arrowProps.style,

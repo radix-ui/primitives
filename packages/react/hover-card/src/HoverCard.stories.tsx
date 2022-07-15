@@ -439,65 +439,9 @@ export const Chromatic = () => (
 
     <h3>Arrow offset</h3>
     <h4>Positive</h4>
-    <div className={gridClass()}>
-      {SIDES.map((side) =>
-        ALIGN_OPTIONS.map((align) => (
-          <HoverCard.Root key={`${side}-${align}`} open>
-            <HoverCard.Trigger className={chromaticTriggerClass()} />
-            <HoverCard.Portal>
-              <HoverCard.Content
-                className={chromaticContentClass()}
-                side={side}
-                align={align}
-                avoidCollisions={false}
-              >
-                <p style={{ textAlign: 'center' }}>
-                  {side}
-                  <br />
-                  {align}
-                </p>
-                <HoverCard.Arrow
-                  className={chromaticArrowClass()}
-                  width={20}
-                  height={10}
-                  offset={5}
-                />
-              </HoverCard.Content>
-            </HoverCard.Portal>
-          </HoverCard.Root>
-        ))
-      )}
-    </div>
+    <div className={gridClass({ css: { width: 452, height: 422 } })} />
     <h4>Negative</h4>
-    <div className={gridClass()}>
-      {SIDES.map((side) =>
-        ALIGN_OPTIONS.map((align) => (
-          <HoverCard.Root key={`${side}-${align}`} open>
-            <HoverCard.Trigger className={chromaticTriggerClass()} />
-            <HoverCard.Portal>
-              <HoverCard.Content
-                className={chromaticContentClass()}
-                side={side}
-                align={align}
-                avoidCollisions={false}
-              >
-                <p style={{ textAlign: 'center' }}>
-                  {side}
-                  <br />
-                  {align}
-                </p>
-                <HoverCard.Arrow
-                  className={chromaticArrowClass()}
-                  width={20}
-                  height={10}
-                  offset={-10}
-                />
-              </HoverCard.Content>
-            </HoverCard.Portal>
-          </HoverCard.Root>
-        ))
-      )}
-    </div>
+    <div className={gridClass({ css: { width: 452, height: 422 } })} />
 
     <h3>Side offset</h3>
     <h4>Positive</h4>
@@ -732,6 +676,7 @@ const contentClass = css({
 
 const arrowClass = css({
   fill: '$gray300',
+  '&[data-hidden]': { visibility: 'hidden' },
 });
 
 const fadeIn = keyframes({
@@ -784,6 +729,7 @@ const chromaticContentClass = css({
 
 const chromaticArrowClass = css({
   fill: 'black',
+  '&[data-hidden]': { visibility: 'hidden' },
 });
 
 const styles = {

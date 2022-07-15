@@ -891,65 +891,9 @@ export const Chromatic = () => (
 
       <h3>Arrow offset</h3>
       <h4>Positive</h4>
-      <div className={gridClass()}>
-        {SIDES.map((side) =>
-          ALIGN_OPTIONS.map((align) => (
-            <Tooltip.Root key={`${side}-${align}`} open>
-              <Tooltip.Trigger className={chromaticTriggerClass()} />
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className={chromaticContentClass()}
-                  side={side}
-                  align={align}
-                  avoidCollisions={false}
-                >
-                  <p style={{ textAlign: 'center' }}>
-                    {side}
-                    <br />
-                    {align}
-                  </p>
-                  <Tooltip.Arrow
-                    className={chromaticArrowClass()}
-                    width={20}
-                    height={10}
-                    offset={5}
-                  />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
-          ))
-        )}
-      </div>
+      <div className={gridClass({ css: { width: 452, height: 422 } })} />
       <h4>Negative</h4>
-      <div className={gridClass()}>
-        {SIDES.map((side) =>
-          ALIGN_OPTIONS.map((align) => (
-            <Tooltip.Root key={`${side}-${align}`} open>
-              <Tooltip.Trigger className={chromaticTriggerClass()} />
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className={chromaticContentClass()}
-                  side={side}
-                  align={align}
-                  avoidCollisions={false}
-                >
-                  <p style={{ textAlign: 'center' }}>
-                    {side}
-                    <br />
-                    {align}
-                  </p>
-                  <Tooltip.Arrow
-                    className={chromaticArrowClass()}
-                    width={20}
-                    height={10}
-                    offset={-10}
-                  />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
-          ))
-        )}
-      </div>
+      <div className={gridClass({ css: { width: 452, height: 422 } })} />
 
       <h3>Side offset</h3>
       <h4>Positive</h4>
@@ -1193,6 +1137,7 @@ const contentClass = css({
 
 const arrowClass = css({
   fill: '$black',
+  '&[data-hidden]': { visibility: 'hidden' },
 });
 
 const scaleIn = keyframes({
@@ -1251,4 +1196,5 @@ const chromaticContentClass = css({
 });
 const chromaticArrowClass = css({
   fill: 'black',
+  '&[data-hidden]': { visibility: 'hidden' },
 });
