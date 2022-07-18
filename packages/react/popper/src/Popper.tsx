@@ -5,7 +5,7 @@ import {
   offset,
   shift,
   limitShift,
-  arrow as arrowMiddleware,
+  arrow as floatingUIarrow,
   flip,
 } from '@floating-ui/react-dom';
 import * as ArrowPrimitive from '@radix-ui/react-arrow';
@@ -147,28 +147,28 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
 
     const desiredPlacement = (side + (align !== 'center' ? '-' + align : '')) as Placement;
 
-    const middlewares = [
-      offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
-      avoidCollisions
-        ? shift({
-            mainAxis: true,
-            crossAxis: false,
-            padding: collisionTolerance,
-            limiter: limitShift(),
-          })
-        : undefined,
-      arrow ? arrowMiddleware({ element: arrow, padding: arrowPadding }) : undefined,
-      avoidCollisions ? flip({ padding: collisionTolerance }) : undefined,
-      transformOrigin({ arrowWidth, arrowHeight }),
-    ].filter(isDefined);
-
     const { reference, floating, strategy, x, y, placement, middlewareData, update } = useFloating({
+      // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
       strategy: 'fixed',
       placement: desiredPlacement,
       whileElementsMounted: autoUpdate,
-      middleware: middlewares,
+      middleware: [
+        offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
+        avoidCollisions
+          ? shift({
+              mainAxis: true,
+              crossAxis: false,
+              padding: collisionTolerance,
+              limiter: limitShift(),
+            })
+          : undefined,
+        arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
+        avoidCollisions ? flip({ padding: collisionTolerance }) : undefined,
+        transformOrigin({ arrowWidth, arrowHeight }),
+      ].filter(isDefined),
     });
 
+    // assign the reference dynamically once `Content` has mounted so we can collocate the logic
     useLayoutEffect(() => {
       reference(context.anchor);
     }, [reference, context.anchor]);
@@ -195,6 +195,8 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       }
     }, [isRoot, positionUpdateFns, update]);
 
+    // when nested contents are rendered in portals, they are appended out of order
+    // we need to re-compute the positioning once the parent has finally been placed.
     React.useLayoutEffect(() => {
       if (isRoot && isPlaced) {
         Array.from(positionUpdateFns)
@@ -219,6 +221,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     return (
       <div
         ref={floating}
+        data-radix-popper-content-wrapper=""
         style={{
           position: strategy,
           left: 0,
@@ -233,7 +236,6 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
             middlewareData.transformOrigin?.y,
           ].join(' '),
         }}
-        data-radix-popper-content-wrapper=""
       >
         <PopperContentProvider
           scope={__scopePopper}
