@@ -857,9 +857,9 @@ function getAnnounceTextContent(container: HTMLElement) {
   const textContent: string[] = [];
   const childNodes = Array.from(container.childNodes);
 
-  childNodes.forEach((node: any) => {
-    if (node.nodeType === node.TEXT_NODE) textContent.push(node.textContent);
-    if (node.nodeType === node.ELEMENT_NODE) {
+  childNodes.forEach((node) => {
+    if (node.nodeType === node.TEXT_NODE && node.textContent) textContent.push(node.textContent);
+    if (isHTMLElement(node)) {
       const isHidden = node.ariaHidden || node.hidden || node.style.display === 'none';
       if (!isHidden) textContent.push(...getAnnounceTextContent(node));
     }
@@ -868,6 +868,10 @@ function getAnnounceTextContent(container: HTMLElement) {
   // We return a collection of text rather than a single concatenated string.
   // This allows SR VO to naturally pause break between nodes while announcing.
   return textContent;
+}
+
+function isHTMLElement(node: any): node is HTMLElement {
+  return node.nodeType === node.ELEMENT_NODE;
 }
 
 /**
