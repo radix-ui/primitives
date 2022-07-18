@@ -14,3 +14,4 @@ releases:
 
 declined:
   - primitives
+  - ssr-testing
