@@ -116,6 +116,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   sideOffset?: number;
   align?: Align;
   alignOffset?: number;
+  arrowPadding?: number;
   collisionTolerance?: number;
   avoidCollisions?: boolean;
 }
@@ -128,6 +129,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       sideOffset = 0,
       align = 'center',
       alignOffset = 0,
+      arrowPadding = 0,
       collisionTolerance = 0,
       avoidCollisions = true,
       ...contentProps
@@ -155,7 +157,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
             limiter: limitShift(),
           })
         : undefined,
-      arrow ? arrowMiddleware({ element: arrow }) : undefined,
+      arrow ? arrowMiddleware({ element: arrow, padding: arrowPadding }) : undefined,
       avoidCollisions ? flip({ padding: collisionTolerance }) : undefined,
       transformOrigin({ arrowWidth, arrowHeight }),
     ].filter(isDefined);
