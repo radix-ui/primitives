@@ -8,7 +8,7 @@ export default function TooltipPage() {
       <Tooltip.Portal>
         <Tooltip.Content sideOffset={5}>
           Nicely done!
-          <Tooltip.Arrow offset={10} />
+          <Tooltip.Arrow />
         </Tooltip.Content>
       </Tooltip.Portal>
     </Tooltip.Root>

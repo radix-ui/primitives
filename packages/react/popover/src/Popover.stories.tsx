@@ -388,28 +388,6 @@ export const Chromatic = () => (
       )}
     </div>
 
-    <h3>Arrow offset</h3>
-    <h4>Positive</h4>
-    <div className={gridClass({ css: { visibility: 'hidden' } })}>
-      {SIDES.map((side) =>
-        ALIGN_OPTIONS.map((align) => (
-          <Popover.Root key={`${side}-${align}`} open>
-            <Popover.Trigger className={chromaticTriggerClass()} />
-          </Popover.Root>
-        ))
-      )}
-    </div>
-    <h4>Negative</h4>
-    <div className={gridClass({ css: { visibility: 'hidden' } })}>
-      {SIDES.map((side) =>
-        ALIGN_OPTIONS.map((align) => (
-          <Popover.Root key={`${side}-${align}`} open>
-            <Popover.Trigger className={chromaticTriggerClass()} />
-          </Popover.Root>
-        ))
-      )}
-    </div>
-
     <h3>Side offset</h3>
     <h4>Positive</h4>
     <div className={gridClass()}>

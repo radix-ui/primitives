@@ -106,7 +106,7 @@ export const Modality = () => (
                           >
                             Three
                           </ContextMenu.Item>
-                          <ContextMenu.Arrow offset={14} />
+                          <ContextMenu.Arrow />
                         </ContextMenu.SubContent>
                       </ContextMenu.Portal>
                     </ContextMenu.Sub>
@@ -114,7 +114,7 @@ export const Modality = () => (
                     <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
                       Three
                     </ContextMenu.Item>
-                    <ContextMenu.Arrow offset={14} />
+                    <ContextMenu.Arrow />
                   </ContextMenu.SubContent>
                 </ContextMenu.Portal>
               </ContextMenu.Sub>
@@ -198,7 +198,7 @@ export const Modality = () => (
                           >
                             Three
                           </ContextMenu.Item>
-                          <ContextMenu.Arrow offset={14} />
+                          <ContextMenu.Arrow />
                         </ContextMenu.SubContent>
                       </ContextMenu.Portal>
                     </ContextMenu.Sub>
@@ -206,7 +206,7 @@ export const Modality = () => (
                     <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
                       Three
                     </ContextMenu.Item>
-                    <ContextMenu.Arrow offset={14} />
+                    <ContextMenu.Arrow />
                   </ContextMenu.SubContent>
                 </ContextMenu.Portal>
               </ContextMenu.Sub>
@@ -317,7 +317,7 @@ export const Submenus = () => {
                           >
                             Radix
                           </ContextMenu.Item>
-                          <ContextMenu.Arrow offset={14} />
+                          <ContextMenu.Arrow />
                         </ContextMenu.SubContent>
                       </ContextMenu.Portal>
                     </ContextMenu.Sub>
@@ -328,7 +328,7 @@ export const Submenus = () => {
                     >
                       Notion
                     </ContextMenu.Item>
-                    <ContextMenu.Arrow offset={14} />
+                    <ContextMenu.Arrow />
                   </ContextMenu.SubContent>
                 </ContextMenu.Portal>
               </ContextMenu.Sub>
@@ -360,7 +360,7 @@ export const Submenus = () => {
                     >
                       Stack Overflow
                     </ContextMenu.Item>
-                    <ContextMenu.Arrow offset={14} />
+                    <ContextMenu.Arrow />
                   </ContextMenu.SubContent>
                 </ContextMenu.Portal>
               </ContextMenu.Sub>
@@ -392,7 +392,7 @@ export const Submenus = () => {
                     >
                       Developer Tools
                     </ContextMenu.Item>
-                    <ContextMenu.Arrow offset={14} />
+                    <ContextMenu.Arrow />
                   </ContextMenu.SubContent>
                 </ContextMenu.Portal>
               </ContextMenu.Sub>
@@ -680,7 +680,7 @@ export const Nested = () => (
                     >
                       Red sub action 2
                     </ContextMenu.Item>
-                    <ContextMenu.Arrow offset={14} />
+                    <ContextMenu.Arrow />
                   </ContextMenu.SubContent>
                 </ContextMenu.Portal>
               </ContextMenu.Sub>
@@ -715,7 +715,7 @@ export const Nested = () => (
                 >
                   Blue sub action 2
                 </ContextMenu.Item>
-                <ContextMenu.Arrow offset={14} />
+                <ContextMenu.Arrow />
               </ContextMenu.SubContent>
             </ContextMenu.Portal>
           </ContextMenu.Sub>

@@ -889,28 +889,6 @@ export const Chromatic = () => (
         )}
       </div>
 
-      <h3>Arrow offset</h3>
-      <h4>Positive</h4>
-      <div className={gridClass({ css: { visibility: 'hidden' } })}>
-        {SIDES.map((side) =>
-          ALIGN_OPTIONS.map((align) => (
-            <Tooltip.Root key={`${side}-${align}`} open>
-              <Tooltip.Trigger className={chromaticTriggerClass()} />
-            </Tooltip.Root>
-          ))
-        )}
-      </div>
-      <h4>Negative</h4>
-      <div className={gridClass({ css: { visibility: 'hidden' } })}>
-        {SIDES.map((side) =>
-          ALIGN_OPTIONS.map((align) => (
-            <Tooltip.Root key={`${side}-${align}`} open>
-              <Tooltip.Trigger className={chromaticTriggerClass()} />
-            </Tooltip.Root>
-          ))
-        )}
-      </div>
-
       <h3>Side offset</h3>
       <h4>Positive</h4>
       <div className={gridClass()}>

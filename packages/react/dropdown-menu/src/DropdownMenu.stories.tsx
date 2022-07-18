@@ -87,7 +87,7 @@ export const Modality = () => {
                       >
                         Three
                       </DropdownMenu.Item>
-                      <DropdownMenu.Arrow offset={14} />
+                      <DropdownMenu.Arrow />
                     </DropdownMenu.SubContent>
                   </DropdownMenu.Portal>
                 </DropdownMenu.Sub>
@@ -155,7 +155,7 @@ export const Modality = () => {
                       >
                         Three
                       </DropdownMenu.Item>
-                      <DropdownMenu.Arrow offset={14} />
+                      <DropdownMenu.Arrow />
                     </DropdownMenu.SubContent>
                   </DropdownMenu.Portal>
                 </DropdownMenu.Sub>
@@ -264,7 +264,7 @@ export const Submenus = () => {
                           >
                             Radix
                           </DropdownMenu.Item>
-                          <DropdownMenu.Arrow offset={14} />
+                          <DropdownMenu.Arrow />
                         </DropdownMenu.SubContent>
                       </DropdownMenu.Portal>
                     </DropdownMenu.Sub>
@@ -275,7 +275,7 @@ export const Submenus = () => {
                     >
                       Notion
                     </DropdownMenu.Item>
-                    <DropdownMenu.Arrow offset={14} />
+                    <DropdownMenu.Arrow />
                   </DropdownMenu.SubContent>
                 </DropdownMenu.Portal>
               </DropdownMenu.Sub>
@@ -307,7 +307,7 @@ export const Submenus = () => {
                     >
                       Stack Overflow
                     </DropdownMenu.Item>
-                    <DropdownMenu.Arrow offset={14} />
+                    <DropdownMenu.Arrow />
                   </DropdownMenu.SubContent>
                 </DropdownMenu.Portal>
               </DropdownMenu.Sub>
@@ -339,7 +339,7 @@ export const Submenus = () => {
                     >
                       Developer Tools
                     </DropdownMenu.Item>
-                    <DropdownMenu.Arrow offset={14} />
+                    <DropdownMenu.Arrow />
                   </DropdownMenu.SubContent>
                 </DropdownMenu.Portal>
               </DropdownMenu.Sub>
@@ -1054,7 +1054,7 @@ export const Chromatic = () => {
                         >
                           Three
                         </DropdownMenu.Item>
-                        <DropdownMenu.Arrow offset={14} />
+                        <DropdownMenu.Arrow />
                       </DropdownMenu.SubContent>
                     </DropdownMenu.Portal>
                   </DropdownMenu.Sub>
@@ -1062,7 +1062,7 @@ export const Chromatic = () => {
                   <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
                     Three
                   </DropdownMenu.Item>
-                  <DropdownMenu.Arrow offset={14} />
+                  <DropdownMenu.Arrow />
                 </DropdownMenu.SubContent>
               </DropdownMenu.Portal>
             </DropdownMenu.Sub>
@@ -1142,7 +1142,7 @@ export const Chromatic = () => {
                           >
                             Three
                           </DropdownMenu.Item>
-                          <DropdownMenu.Arrow offset={14} />
+                          <DropdownMenu.Arrow />
                         </DropdownMenu.SubContent>
                       </DropdownMenu.Portal>
                     </DropdownMenu.Sub>
@@ -1153,7 +1153,7 @@ export const Chromatic = () => {
                     >
                       Three
                     </DropdownMenu.Item>
-                    <DropdownMenu.Arrow offset={14} />
+                    <DropdownMenu.Arrow />
                   </DropdownMenu.SubContent>
                 </DropdownMenu.Portal>
               </DropdownMenu.Sub>
@@ -1201,28 +1201,6 @@ export const Chromatic = () => {
                   <DropdownMenu.Arrow className={chromaticArrowClass()} width={20} height={10} />
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
-            </DropdownMenu.Root>
-          ))
-        )}
-      </div>
-
-      <h3>Arrow offset</h3>
-      <h4>Positive</h4>
-      <div className={gridClass({ css: { visibility: 'hidden ' } })}>
-        {SIDES.map((side) =>
-          ALIGN_OPTIONS.map((align) => (
-            <DropdownMenu.Root key={`${side}-${align}`} open modal={false}>
-              <DropdownMenu.Trigger className={chromaticTriggerClass()} />
-            </DropdownMenu.Root>
-          ))
-        )}
-      </div>
-      <h4>Negative</h4>
-      <div className={gridClass({ css: { visibility: 'hidden' } })}>
-        {SIDES.map((side) =>
-          ALIGN_OPTIONS.map((align) => (
-            <DropdownMenu.Root key={`${side}-${align}`} open modal={false}>
-              <DropdownMenu.Trigger className={chromaticTriggerClass()} />
             </DropdownMenu.Root>
           ))
         )}
