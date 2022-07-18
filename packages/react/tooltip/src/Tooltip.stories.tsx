@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
-import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tooltip from '@radix-ui/react-tooltip';
 

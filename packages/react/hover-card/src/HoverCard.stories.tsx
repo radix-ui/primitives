@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
 import * as Dialog from '@radix-ui/react-dialog';
-import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 import * as HoverCard from '@radix-ui/react-hover-card';
 
 export default { title: 'Components/HoverCard' };

@@ -3055,15 +3055,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/popper@workspace:packages/core/popper":
-  version: 0.0.0-use.local
-  resolution: "@radix-ui/popper@workspace:packages/core/popper"
-  dependencies:
-    "@babel/runtime": ^7.13.10
-    csstype: ^3.0.4
-  languageName: unknown
-  linkType: soft
-
 "@radix-ui/primitive@workspace:*, @radix-ui/primitive@workspace:packages/core/primitive":
   version: 0.0.0-use.local
   resolution: "@radix-ui/primitive@workspace:packages/core/primitive"
@@ -8150,7 +8141,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2, csstype@npm:^3.0.4":
+"csstype@npm:^3.0.2":
   version: 3.0.11
   resolution: "csstype@npm:3.0.11"
   checksum: 95e56abfe9ca219ae065acb4e43f61771a03170eed919127f558dfa168240867aba7629c8d98a201a0dd06d9a5ce82686f0570031c928516c61816adbc7c877f

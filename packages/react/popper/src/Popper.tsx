@@ -18,8 +18,13 @@ import { useSize } from '@radix-ui/react-use-size';
 import type { Placement, Strategy, Middleware } from '@floating-ui/react-dom';
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
-import type { Side, Align } from '@radix-ui/popper';
 import type { Measurable } from '@radix-ui/rect';
+
+const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const;
+const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
+
+type Side = typeof SIDE_OPTIONS[number];
+type Align = typeof ALIGN_OPTIONS[number];
 
 /* -------------------------------------------------------------------------------------------------
  * Popper
@@ -392,5 +397,8 @@ export {
   Anchor,
   Content,
   Arrow,
+  //
+  SIDE_OPTIONS,
+  ALIGN_OPTIONS,
 };
 export type { PopperProps, PopperAnchorProps, PopperContentProps, PopperArrowProps };
