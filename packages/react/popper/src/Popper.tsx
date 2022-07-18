@@ -15,7 +15,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useSize } from '@radix-ui/react-use-size';
 
-import type { Placement, Strategy, Middleware } from '@floating-ui/react-dom';
+import type { Placement, Middleware } from '@floating-ui/react-dom';
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 import type { Measurable } from '@radix-ui/rect';
@@ -95,7 +95,6 @@ PopperAnchor.displayName = ANCHOR_NAME;
 const CONTENT_NAME = 'PopperContent';
 
 type PopperContentContextValue = {
-  strategy: 'absolute' | 'fixed';
   placedSide: Side;
   onArrowChange(arrow: HTMLSpanElement | null): void;
   arrowX: number | undefined;
@@ -113,7 +112,6 @@ const [PositionContextProvider, usePositionContext] = createPopperContext(CONTEN
 
 type PopperContentElement = React.ElementRef<typeof Primitive.div>;
 interface PopperContentProps extends PrimitiveDivProps {
-  strategy?: Strategy;
   side?: Side;
   sideOffset?: number;
   align?: Align;
@@ -126,7 +124,6 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
   (props: ScopedProps<PopperContentProps>, forwardedRef) => {
     const {
       __scopePopper,
-      strategy: strategyProp,
       side = 'bottom',
       sideOffset = 0,
       align = 'center',
@@ -164,7 +161,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     ].filter(isDefined);
 
     const { reference, floating, strategy, x, y, placement, middlewareData, update } = useFloating({
-      strategy: strategyProp,
+      strategy: 'fixed',
       placement: desiredPlacement,
       whileElementsMounted: autoUpdate,
       middleware: middlewares,
@@ -238,7 +235,6 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       >
         <PopperContentProvider
           scope={__scopePopper}
-          strategy={strategy}
           placedSide={placedSide}
           onArrowChange={setArrow}
           arrowX={arrowX}
@@ -298,7 +294,7 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
     <span
       ref={contentContext.onArrowChange}
       style={{
-        position: contentContext.strategy,
+        position: 'absolute',
         left: contentContext.arrowX,
         top: contentContext.arrowY,
         [baseSide]: 0,
