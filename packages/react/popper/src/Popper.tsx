@@ -309,11 +309,11 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
           bottom: `rotate(180deg)`,
           left: 'translateY(50%) rotate(-90deg) translateX(50%)',
         }[contentContext.placedSide],
+        visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
       }}
     >
       <ArrowPrimitive.Root
         {...arrowProps}
-        data-hidden={contentContext.shouldHideArrow ? true : undefined}
         ref={forwardedRef}
         style={{
           ...arrowProps.style,

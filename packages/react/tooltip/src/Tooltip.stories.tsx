@@ -1153,7 +1153,6 @@ const contentClass = css({
 
 const arrowClass = css({
   fill: '$black',
-  '&[data-hidden]': { visibility: 'hidden' },
 });
 
 const scaleIn = keyframes({
@@ -1212,5 +1211,4 @@ const chromaticContentClass = css({
 });
 const chromaticArrowClass = css({
   fill: 'black',
-  '&[data-hidden]': { visibility: 'hidden' },
 });

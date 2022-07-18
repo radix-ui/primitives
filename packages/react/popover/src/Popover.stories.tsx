@@ -625,7 +625,6 @@ const closeClass = css({});
 
 const arrowClass = css({
   fill: '$gray300',
-  '&[data-hidden]': { visibility: 'hidden' },
 });
 
 const fadeIn = keyframes({
@@ -676,7 +675,6 @@ const chromaticContentClass = css({
 });
 const chromaticArrowClass = css({
   fill: 'black',
-  '&[data-hidden]': { visibility: 'hidden' },
 });
 
 const styles = {

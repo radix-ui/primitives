@@ -1642,7 +1642,6 @@ const chromaticContentClass = css({
 });
 const chromaticArrowClass = css({
   fill: 'black',
-  '&[data-hidden]': { visibility: 'hidden' },
 });
 
 const styles = {
