@@ -101,6 +101,11 @@ type PopperContentContextValue = {
 const [PopperContentProvider, useContentContext] =
   createPopperContext<PopperContentContextValue>(CONTENT_NAME);
 
+const [PositionContextProvider, usePositionContext] = createPopperContext(CONTENT_NAME, {
+  hasParent: false,
+  positionUpdateFns: new Set<() => void>(),
+});
+
 type PopperContentElement = React.ElementRef<typeof Primitive.div>;
 interface PopperContentProps extends PrimitiveDivProps {
   strategy?: Strategy;
@@ -153,7 +158,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       transformOrigin({ arrowWidth, arrowHeight }),
     ].filter(isDefined);
 
-    const { reference, floating, strategy, x, y, placement, middlewareData } = useFloating({
+    const { reference, floating, strategy, x, y, placement, middlewareData, update } = useFloating({
       strategy: strategyProp,
       placement: desiredPlacement,
       whileElementsMounted: autoUpdate,
@@ -173,6 +178,39 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     useLayoutEffect(() => {
       if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
     }, [content]);
+
+    const { hasParent, positionUpdateFns } = usePositionContext(CONTENT_NAME, __scopePopper);
+    const isRoot = !hasParent;
+
+    React.useLayoutEffect(() => {
+      if (!isRoot) {
+        positionUpdateFns.add(update);
+        return () => {
+          positionUpdateFns.delete(update);
+        };
+      }
+    }, [isRoot, positionUpdateFns, update]);
+
+    React.useLayoutEffect(() => {
+      if (isRoot && isPlaced) {
+        Array.from(positionUpdateFns)
+          .reverse()
+          .forEach((fn) => requestAnimationFrame(fn));
+      }
+    }, [isRoot, isPlaced, positionUpdateFns]);
+
+    const commonProps = {
+      'data-side': placedSide,
+      'data-align': placedAlign,
+      ...contentProps,
+      ref: composedRefs,
+      style: {
+        ...contentProps.style,
+        // if the PopperContent hasn't been placed yet (not all measurements done)
+        // we prevent animations so that users's animation don't kick in too early referring wrong sides
+        animation: !isPlaced ? 'none' : undefined,
+      },
+    };
 
     return (
       <div
@@ -202,18 +240,17 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           arrowY={arrowY}
           shouldHideArrow={cannotCenterArrow}
         >
-          <Primitive.div
-            data-side={placedSide}
-            data-align={placedAlign}
-            {...contentProps}
-            ref={composedRefs}
-            style={{
-              ...contentProps.style,
-              // if the PopperContent hasn't been placed yet (not all measurements done)
-              // we prevent animations so that users's animation don't kick in too early referring wrong sides
-              animation: !isPlaced ? 'none' : undefined,
-            }}
-          />
+          {isRoot ? (
+            <PositionContextProvider
+              scope={__scopePopper}
+              hasParent
+              positionUpdateFns={positionUpdateFns}
+            >
+              <Primitive.div {...commonProps} />
+            </PositionContextProvider>
+          ) : (
+            <Primitive.div {...commonProps} />
+          )}
         </PopperContentProvider>
       </div>
     );
