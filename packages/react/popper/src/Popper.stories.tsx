@@ -218,7 +218,7 @@ export const Chromatic = () => {
 
         <div style={{ display: 'flex', gap: 100 }}>
           <div>
-            <h1>In srolling container</h1>
+            <h1>In scrolling container</h1>
             <div style={{ width: 400, height: 600, overflow: 'auto', border: '1px solid black' }}>
               <div style={{ height: 2000 }}>
                 {Array.from({ length: 10 }, (_, i) => (
