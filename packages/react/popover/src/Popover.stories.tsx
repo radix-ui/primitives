@@ -244,7 +244,7 @@ export const WithSlottedTrigger = () => {
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
 
 export const Chromatic = () => (
-  <div style={{ padding: 200 }}>
+  <div style={{ padding: 200, paddingBottom: 500 }}>
     <h1>Uncontrolled</h1>
     <h2>Closed</h2>
     <Popover.Root>

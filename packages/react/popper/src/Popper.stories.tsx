@@ -94,7 +94,7 @@ export const WithPortal = () => {
 
 export const Chromatic = () => {
   return (
-    <>
+    <div style={{ paddingBottom: 500 }}>
       <header
         style={{
           display: 'flex',
@@ -318,7 +318,7 @@ export const Chromatic = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 Chromatic.parameters = { chromatic: { disable: false } };
