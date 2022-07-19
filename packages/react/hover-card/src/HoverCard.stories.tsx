@@ -614,7 +614,7 @@ export const Chromatic = () => (
     <HoverCard.Root open={false}>
       <HoverCard.Trigger className={triggerAttrClass()}>open</HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content className={contentAttrClass()} sideOffset={5}>
+        <HoverCard.Content className={contentAttrClass()} sideOffset={5} avoidCollisions={false}>
           <HoverCard.Arrow className={arrowAttrClass()} width={20} height={10} />
           Some content
         </HoverCard.Content>
@@ -625,7 +625,12 @@ export const Chromatic = () => (
     <HoverCard.Root open>
       <HoverCard.Trigger className={triggerAttrClass()}>open</HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content className={contentAttrClass()} side="right" sideOffset={5}>
+        <HoverCard.Content
+          className={contentAttrClass()}
+          side="right"
+          sideOffset={5}
+          avoidCollisions={false}
+        >
           <HoverCard.Arrow className={arrowAttrClass()} width={20} height={10} />
           Some content
         </HoverCard.Content>
@@ -633,7 +638,7 @@ export const Chromatic = () => (
     </HoverCard.Root>
   </div>
 );
-Chromatic.parameters = { chromatic: { disable: false, delay: 100 } };
+Chromatic.parameters = { chromatic: { disable: false } };
 
 const triggerClass = css({});
 

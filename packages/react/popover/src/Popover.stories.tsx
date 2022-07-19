@@ -565,7 +565,7 @@ export const Chromatic = () => (
     <Popover.Root open={false}>
       <Popover.Trigger className={triggerAttrClass()}>open</Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content className={contentAttrClass()} sideOffset={5}>
+        <Popover.Content className={contentAttrClass()} sideOffset={5} avoidCollisions={false}>
           <Popover.Close className={closeAttrClass()}>close</Popover.Close>
           <Popover.Arrow className={arrowAttrClass()} width={20} height={10} />
         </Popover.Content>
@@ -576,7 +576,12 @@ export const Chromatic = () => (
     <Popover.Root open>
       <Popover.Trigger className={triggerAttrClass()}>open</Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content className={contentAttrClass()} side="right" sideOffset={5}>
+        <Popover.Content
+          className={contentAttrClass()}
+          side="right"
+          sideOffset={5}
+          avoidCollisions={false}
+        >
           <Popover.Close className={closeAttrClass()}>close</Popover.Close>
           <Popover.Arrow className={arrowAttrClass()} width={20} height={10} />
         </Popover.Content>
@@ -584,7 +589,7 @@ export const Chromatic = () => (
     </Popover.Root>
   </div>
 );
-Chromatic.parameters = { chromatic: { disable: false, delay: 100 } };
+Chromatic.parameters = { chromatic: { disable: false } };
 
 const triggerClass = css({});
 
