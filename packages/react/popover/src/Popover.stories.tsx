@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
-import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 import * as Popover from '@radix-ui/react-popover';
 
 export default { title: 'Components/Popover' };
@@ -244,7 +244,7 @@ export const WithSlottedTrigger = () => {
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
 
 export const Chromatic = () => (
-  <div style={{ padding: 200 }}>
+  <div style={{ padding: 200, paddingBottom: 500 }}>
     <h1>Uncontrolled</h1>
     <h2>Closed</h2>
     <Popover.Root>
@@ -381,68 +381,6 @@ export const Chromatic = () => (
                   {align}
                 </p>
                 <Popover.Arrow className={chromaticArrowClass()} width={20} height={10} />
-              </Popover.Content>
-            </Popover.Portal>
-          </Popover.Root>
-        ))
-      )}
-    </div>
-
-    <h3>Arrow offset</h3>
-    <h4>Positive</h4>
-    <div className={gridClass()}>
-      {SIDES.map((side) =>
-        ALIGN_OPTIONS.map((align) => (
-          <Popover.Root key={`${side}-${align}`} open>
-            <Popover.Trigger className={chromaticTriggerClass()} />
-            <Popover.Portal>
-              <Popover.Content
-                className={chromaticContentClass()}
-                side={side}
-                align={align}
-                avoidCollisions={false}
-              >
-                <p style={{ textAlign: 'center' }}>
-                  {side}
-                  <br />
-                  {align}
-                </p>
-                <Popover.Arrow
-                  className={chromaticArrowClass()}
-                  width={20}
-                  height={10}
-                  offset={5}
-                />
-              </Popover.Content>
-            </Popover.Portal>
-          </Popover.Root>
-        ))
-      )}
-    </div>
-    <h4>Negative</h4>
-    <div className={gridClass()}>
-      {SIDES.map((side) =>
-        ALIGN_OPTIONS.map((align) => (
-          <Popover.Root key={`${side}-${align}`} open>
-            <Popover.Trigger className={chromaticTriggerClass()} />
-            <Popover.Portal>
-              <Popover.Content
-                className={chromaticContentClass()}
-                side={side}
-                align={align}
-                avoidCollisions={false}
-              >
-                <p style={{ textAlign: 'center' }}>
-                  {side}
-                  <br />
-                  {align}
-                </p>
-                <Popover.Arrow
-                  className={chromaticArrowClass()}
-                  width={20}
-                  height={10}
-                  offset={-10}
-                />
               </Popover.Content>
             </Popover.Portal>
           </Popover.Root>
@@ -596,6 +534,19 @@ export const Chromatic = () => (
       ))
     )}
 
+    <h2>Relative parent (non-portalled)</h2>
+    <div style={{ position: 'relative' }}>
+      <Popover.Root open>
+        <Popover.Trigger asChild>
+          <button className={triggerClass()}>open</button>
+        </Popover.Trigger>
+        <Popover.Content className={contentClass()} sideOffset={5}>
+          <Popover.Close className={closeClass()}>close</Popover.Close>
+          <Popover.Arrow className={arrowClass()} width={20} height={10} offset={10} />
+        </Popover.Content>
+      </Popover.Root>
+    </div>
+
     <h1 style={{ marginTop: 100 }}>With slotted trigger</h1>
     <Popover.Root open>
       <Popover.Trigger asChild>
@@ -614,7 +565,7 @@ export const Chromatic = () => (
     <Popover.Root open={false}>
       <Popover.Trigger className={triggerAttrClass()}>open</Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content className={contentAttrClass()} sideOffset={5}>
+        <Popover.Content className={contentAttrClass()} sideOffset={5} avoidCollisions={false}>
           <Popover.Close className={closeAttrClass()}>close</Popover.Close>
           <Popover.Arrow className={arrowAttrClass()} width={20} height={10} />
         </Popover.Content>
@@ -625,7 +576,12 @@ export const Chromatic = () => (
     <Popover.Root open>
       <Popover.Trigger className={triggerAttrClass()}>open</Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content className={contentAttrClass()} side="right" sideOffset={5}>
+        <Popover.Content
+          className={contentAttrClass()}
+          side="right"
+          sideOffset={5}
+          avoidCollisions={false}
+        >
           <Popover.Close className={closeAttrClass()}>close</Popover.Close>
           <Popover.Arrow className={arrowAttrClass()} width={20} height={10} />
         </Popover.Content>

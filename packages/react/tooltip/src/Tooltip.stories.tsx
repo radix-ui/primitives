@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
-import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/popper';
+import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
@@ -889,68 +889,6 @@ export const Chromatic = () => (
         )}
       </div>
 
-      <h3>Arrow offset</h3>
-      <h4>Positive</h4>
-      <div className={gridClass()}>
-        {SIDES.map((side) =>
-          ALIGN_OPTIONS.map((align) => (
-            <Tooltip.Root key={`${side}-${align}`} open>
-              <Tooltip.Trigger className={chromaticTriggerClass()} />
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className={chromaticContentClass()}
-                  side={side}
-                  align={align}
-                  avoidCollisions={false}
-                >
-                  <p style={{ textAlign: 'center' }}>
-                    {side}
-                    <br />
-                    {align}
-                  </p>
-                  <Tooltip.Arrow
-                    className={chromaticArrowClass()}
-                    width={20}
-                    height={10}
-                    offset={5}
-                  />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
-          ))
-        )}
-      </div>
-      <h4>Negative</h4>
-      <div className={gridClass()}>
-        {SIDES.map((side) =>
-          ALIGN_OPTIONS.map((align) => (
-            <Tooltip.Root key={`${side}-${align}`} open>
-              <Tooltip.Trigger className={chromaticTriggerClass()} />
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className={chromaticContentClass()}
-                  side={side}
-                  align={align}
-                  avoidCollisions={false}
-                >
-                  <p style={{ textAlign: 'center' }}>
-                    {side}
-                    <br />
-                    {align}
-                  </p>
-                  <Tooltip.Arrow
-                    className={chromaticArrowClass()}
-                    width={20}
-                    height={10}
-                    offset={-10}
-                  />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
-          ))
-        )}
-      </div>
-
       <h3>Side offset</h3>
       <h4>Positive</h4>
       <div className={gridClass()}>
@@ -1096,6 +1034,19 @@ export const Chromatic = () => (
           </Tooltip.Root>
         ))
       )}
+
+      <h2 style={{ marginTop: 50, marginBottom: 60 }}>Relative parent (non-portalled)</h2>
+      <div style={{ position: 'relative' }}>
+        <Tooltip.Provider>
+          <Tooltip.Root open>
+            <Tooltip.Trigger className={triggerClass()}>Hover or Focus me</Tooltip.Trigger>
+            <Tooltip.Content className={contentClass()} sideOffset={5}>
+              Nicely done!
+              <Tooltip.Arrow className={arrowClass()} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Root>
+        </Tooltip.Provider>
+      </div>
 
       <h1 style={{ marginTop: 100, marginBottom: 60 }}>With slotted trigger</h1>
       <Tooltip.Root open>

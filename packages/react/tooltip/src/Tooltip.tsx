@@ -473,6 +473,9 @@ const TooltipContentHoverable = React.forwardRef<
   return <TooltipContentImpl {...props} ref={composedRefs} />;
 });
 
+const [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] =
+  createTooltipContext(TOOLTIP_NAME, { isInside: false });
+
 type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
@@ -548,9 +551,11 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
           }}
         >
           <Slottable>{children}</Slottable>
-          <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
-            {ariaLabel || children}
-          </VisuallyHiddenPrimitive.Root>
+          <VisuallyHiddenContentContextProvider scope={__scopeTooltip} isInside={true}>
+            <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
+              {ariaLabel || children}
+            </VisuallyHiddenPrimitive.Root>
+          </VisuallyHiddenContentContextProvider>
         </PopperPrimitive.Content>
       </DismissableLayer>
     );
@@ -573,7 +578,15 @@ const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
   (props: ScopedProps<TooltipArrowProps>, forwardedRef) => {
     const { __scopeTooltip, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeTooltip);
-    return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
+    const visuallyHiddenContentContext = useVisuallyHiddenContentContext(
+      ARROW_NAME,
+      __scopeTooltip
+    );
+    // if the arrow is inside the `VisuallyHidden`, we don't want to render it all to
+    // prevent issues in positioning the arrow due to the duplicate
+    return visuallyHiddenContentContext.isInside ? null : (
+      <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />
+    );
   }
 );
 

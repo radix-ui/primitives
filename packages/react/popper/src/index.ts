@@ -10,6 +10,9 @@ export {
   Anchor,
   Content,
   Arrow,
+  //
+  SIDE_OPTIONS,
+  ALIGN_OPTIONS,
 } from './Popper';
 export type {
   PopperProps,

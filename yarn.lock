@@ -1655,6 +1655,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@floating-ui/core@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "@floating-ui/core@npm:0.7.3"
+  checksum: f48f9fb0d19dcbe7a68c38e8de7fabb11f0c0e6e0ef215ae60b5004900bacb1386e7b89cb377d91a90ff7d147ea1f06c2905136ecf34dea162d9696d8f448d5f
+  languageName: node
+  linkType: hard
+
+"@floating-ui/dom@npm:^0.5.3":
+  version: 0.5.4
+  resolution: "@floating-ui/dom@npm:0.5.4"
+  dependencies:
+    "@floating-ui/core": ^0.7.3
+  checksum: 9f9d8a51a828c6be5f187204aa6d293c6c9ef70d51dcc5891a4d85683745fceebf79ff8826d0f75ae41b45c3b138367d339756f27f41be87a8770742ebc0de42
+  languageName: node
+  linkType: hard
+
+"@floating-ui/react-dom@npm:0.7.2":
+  version: 0.7.2
+  resolution: "@floating-ui/react-dom@npm:0.7.2"
+  dependencies:
+    "@floating-ui/dom": ^0.5.3
+    use-isomorphic-layout-effect: ^1.1.1
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: bc3f2b5557f87f6f4bbccfe3e8d097abafad61a41083d3b79f3499f27590e273bcb3dc7136c2444841ee7a8c0d2a70cc1385458c16103fa8b70eade80c24af52
+  languageName: node
+  linkType: hard
+
 "@gar/promisify@npm:^1.0.1, @gar/promisify@npm:^1.1.3":
   version: 1.1.3
   resolution: "@gar/promisify@npm:1.1.3"
@@ -3026,15 +3055,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/popper@workspace:*, @radix-ui/popper@workspace:packages/core/popper":
-  version: 0.0.0-use.local
-  resolution: "@radix-ui/popper@workspace:packages/core/popper"
-  dependencies:
-    "@babel/runtime": ^7.13.10
-    csstype: ^3.0.4
-  languageName: unknown
-  linkType: soft
-
 "@radix-ui/primitive@workspace:*, @radix-ui/primitive@workspace:packages/core/primitive":
   version: 0.0.0-use.local
   resolution: "@radix-ui/primitive@workspace:packages/core/primitive"
@@ -3460,7 +3480,7 @@ __metadata:
   resolution: "@radix-ui/react-popper@workspace:packages/react/popper"
   dependencies:
     "@babel/runtime": ^7.13.10
-    "@radix-ui/popper": "workspace:*"
+    "@floating-ui/react-dom": 0.7.2
     "@radix-ui/react-arrow": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
@@ -3870,6 +3890,7 @@ __metadata:
   resolution: "@radix-ui/react-use-size@workspace:packages/react/use-size"
   dependencies:
     "@babel/runtime": ^7.13.10
+    "@radix-ui/react-use-layout-effect": "workspace:*"
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
@@ -8120,7 +8141,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2, csstype@npm:^3.0.4":
+"csstype@npm:^3.0.2":
   version: 3.0.11
   resolution: "csstype@npm:3.0.11"
   checksum: 95e56abfe9ca219ae065acb4e43f61771a03170eed919127f558dfa168240867aba7629c8d98a201a0dd06d9a5ce82686f0570031c928516c61816adbc7c877f
@@ -18010,6 +18031,18 @@ typescript@^4.6.3:
     "@types/react":
       optional: true
   checksum: 7913df383a5a6fcb399212eedefaac2e0c6f843555202d4e3010bac3848afe38ecaa3d0d6500ad1d936fbeffd637e6c517e68edb024af5e6beca7f27f3ce7b21
+  languageName: node
+  linkType: hard
+
+"use-isomorphic-layout-effect@npm:^1.1.1":
+  version: 1.1.2
+  resolution: "use-isomorphic-layout-effect@npm:1.1.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: a6532f7fc9ae222c3725ff0308aaf1f1ddbd3c00d685ef9eee6714fd0684de5cb9741b432fbf51e61a784e2955424864f7ea9f99734a02f237b17ad3e18ea5cb
   languageName: node
   linkType: hard
 
