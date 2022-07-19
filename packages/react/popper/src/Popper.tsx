@@ -97,8 +97,8 @@ const CONTENT_NAME = 'PopperContent';
 type PopperContentContextValue = {
   placedSide: Side;
   onArrowChange(arrow: HTMLSpanElement | null): void;
-  arrowX: number | undefined;
-  arrowY: number | undefined;
+  arrowX?: number;
+  arrowY?: number;
   shouldHideArrow: boolean;
 };
 
@@ -175,7 +175,9 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
 
     const isPlaced = x !== null && y !== null;
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
-    const { arrow: { x: arrowX, y: arrowY } = {} } = middlewareData;
+
+    const arrowX = middlewareData.arrow?.x;
+    const arrowY = middlewareData.arrow?.y;
     const cannotCenterArrow = middlewareData.arrow?.centerOffset !== 0;
 
     const [contentZIndex, setContentZIndex] = React.useState<string>();
@@ -195,8 +197,10 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       }
     }, [isRoot, positionUpdateFns, update]);
 
-    // when nested contents are rendered in portals, they are appended out of order
+    // when nested contents are rendered in portals, they are appended out of order causing
+    // children to be positioned incorrectly if initially open.
     // we need to re-compute the positioning once the parent has finally been placed.
+    // https://github.com/floating-ui/floating-ui/issues/1531
     React.useLayoutEffect(() => {
       if (isRoot && isPlaced) {
         Array.from(positionUpdateFns)
@@ -228,7 +232,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           top: 0,
           transform: isPlaced
             ? `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`
-            : 'translate3d(0, -200vh, 0)',
+            : 'translate3d(0, -200%, 0)', // keep off the page when measuring
           minWidth: 'max-content',
           zIndex: contentZIndex,
           ['--radix-popper-transform-origin' as any]: [
@@ -375,9 +379,9 @@ const transformOrigin = (options: { arrowWidth: number; arrowHeight: number }): 
   },
 });
 
-function getSideAndAlignFromPlacement(placement: Placement): [Side, Align] {
+function getSideAndAlignFromPlacement(placement: Placement) {
   const [side, align = 'center'] = placement.split('-');
-  return [side as Side, align as Align];
+  return [side as Side, align as Align] as const;
 }
 
 const Root = Popper;
