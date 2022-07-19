@@ -584,7 +584,7 @@ export const Chromatic = () => (
     </Popover.Root>
   </div>
 );
-Chromatic.parameters = { chromatic: { disable: false } };
+Chromatic.parameters = { chromatic: { disable: false, delay: 100 } };
 
 const triggerClass = css({});
 

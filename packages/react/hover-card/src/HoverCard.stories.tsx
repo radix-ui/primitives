@@ -633,7 +633,7 @@ export const Chromatic = () => (
     </HoverCard.Root>
   </div>
 );
-Chromatic.parameters = { chromatic: { disable: false } };
+Chromatic.parameters = { chromatic: { disable: false, delay: 100 } };
 
 const triggerClass = css({});
 

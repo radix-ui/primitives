@@ -321,7 +321,7 @@ export const Chromatic = () => {
     </div>
   );
 };
-Chromatic.parameters = { chromatic: { disable: false } };
+Chromatic.parameters = { chromatic: { disable: false, delay: 100 } };
 
 const Scrollable = (props: any) => (
   <div
