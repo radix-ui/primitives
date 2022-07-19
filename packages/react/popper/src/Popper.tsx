@@ -5,6 +5,7 @@ import {
   offset,
   shift,
   limitShift,
+  hide,
   arrow as floatingUIarrow,
   flip,
 } from '@floating-ui/react-dom';
@@ -117,7 +118,9 @@ interface PopperContentProps extends PrimitiveDivProps {
   align?: Align;
   alignOffset?: number;
   arrowPadding?: number;
-  collisionTolerance?: number;
+  collisionPadding?: number | Partial<Record<Side, number>>;
+  sticky?: 'partial' | 'always';
+  hideWhenDetached?: boolean;
   avoidCollisions?: boolean;
 }
 
@@ -130,7 +133,9 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       align = 'center',
       alignOffset = 0,
       arrowPadding = 0,
-      collisionTolerance = 0,
+      collisionPadding: collisionPaddingProp = 0,
+      sticky = 'partial',
+      hideWhenDetached = false,
       avoidCollisions = true,
       ...contentProps
     } = props;
@@ -147,6 +152,11 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
 
     const desiredPlacement = (side + (align !== 'center' ? '-' + align : '')) as Placement;
 
+    const collisionPadding =
+      typeof collisionPaddingProp === 'number'
+        ? collisionPaddingProp
+        : { top: 0, right: 0, bottom: 0, left: 0, ...collisionPaddingProp };
+
     const { reference, floating, strategy, x, y, placement, middlewareData, update } = useFloating({
       // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
       strategy: 'fixed',
@@ -158,13 +168,15 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           ? shift({
               mainAxis: true,
               crossAxis: false,
-              padding: collisionTolerance,
-              limiter: limitShift(),
+              padding: collisionPadding,
+              limiter: sticky === 'partial' ? limitShift() : undefined,
+              altBoundary: true,
             })
           : undefined,
         arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
-        avoidCollisions ? flip({ padding: collisionTolerance }) : undefined,
+        avoidCollisions ? flip({ padding: collisionPadding, altBoundary: true }) : undefined,
         transformOrigin({ arrowWidth, arrowHeight }),
+        hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
       ].filter(isDefined),
     });
 
@@ -219,6 +231,8 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         // if the PopperContent hasn't been placed yet (not all measurements done)
         // we prevent animations so that users's animation don't kick in too early referring wrong sides
         animation: !isPlaced ? 'none' : undefined,
+        // hide the content if using the hide middleware and should be hidden
+        opacity: middlewareData.hide?.referenceHidden ? 0 : undefined,
       },
     };
 

@@ -236,7 +236,11 @@ export const Chromatic = () => {
                       <Popper.Anchor className={anchorClass({ size: 'small' })}>
                         9.{i + 1}
                       </Popper.Anchor>
-                      <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
+                      <Popper.Content
+                        className={contentClass({ size: 'small' })}
+                        sideOffset={5}
+                        hideWhenDetached
+                      >
                         <Popper.Arrow className={arrowClass()} width={10} height={5} />
                         9.{i + 1}
                       </Popper.Content>
@@ -247,7 +251,11 @@ export const Chromatic = () => {
                         10.{i + 1}
                       </Popper.Anchor>
                       <Portal asChild>
-                        <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
+                        <Popper.Content
+                          className={contentClass({ size: 'small' })}
+                          sideOffset={5}
+                          hideWhenDetached
+                        >
                           <Popper.Arrow className={arrowClass()} width={10} height={5} />
                           10.{i + 1} (portalled)
                         </Popper.Content>
@@ -280,7 +288,11 @@ export const Chromatic = () => {
                       <Popper.Anchor className={anchorClass({ size: 'small' })}>
                         9.{i + 1}
                       </Popper.Anchor>
-                      <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
+                      <Popper.Content
+                        className={contentClass({ size: 'small' })}
+                        sideOffset={5}
+                        hideWhenDetached
+                      >
                         <Popper.Arrow className={arrowClass()} width={10} height={5} />
                         9.{i + 1}
                       </Popper.Content>
@@ -291,7 +303,11 @@ export const Chromatic = () => {
                         10.{i + 1}
                       </Popper.Anchor>
                       <Portal asChild>
-                        <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
+                        <Popper.Content
+                          className={contentClass({ size: 'small' })}
+                          sideOffset={5}
+                          hideWhenDetached
+                        >
                           <Popper.Arrow className={arrowClass()} width={10} height={5} />
                           10.{i + 1} (portalled)
                         </Popper.Content>
