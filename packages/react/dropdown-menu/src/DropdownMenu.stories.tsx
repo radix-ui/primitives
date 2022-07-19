@@ -745,12 +745,14 @@ export const PreventClosing = () => (
 export const WithTooltip = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}>
     <DropdownMenu.Root>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
-        </Tooltip.Trigger>
-        <Tooltip.Content>Tooltip content</Tooltip.Content>
-      </Tooltip.Root>
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
+          </Tooltip.Trigger>
+          <Tooltip.Content>Tooltip content</Tooltip.Content>
+        </Tooltip.Root>
+      </Tooltip.Provider>
       <DropdownMenu.Portal>
         <DropdownMenu.Content className={contentClass()} sideOffset={5}>
           <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
