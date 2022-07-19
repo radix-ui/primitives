@@ -129,193 +129,191 @@ export const Chromatic = () => {
         </Popper.Root>
       </header>
 
-      <div style={{ height: '200vh' }}>
-        <div
-          style={{
-            marginTop: 100,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 150,
-            border: '1px solid black',
-          }}
-        >
-          <h1>In normal page flow</h1>
-          <Popper.Root>
-            <Popper.Anchor className={anchorClass({ size: 'small' })}>3</Popper.Anchor>
+      <div
+        style={{
+          marginTop: 100,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 150,
+          border: '1px solid black',
+        }}
+      >
+        <h1>In normal page flow</h1>
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>3</Popper.Anchor>
+          <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
+            <Popper.Arrow className={arrowClass()} width={10} height={5} />3
+          </Popper.Content>
+        </Popper.Root>
+
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>4</Popper.Anchor>
+          <Portal asChild>
             <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-              <Popper.Arrow className={arrowClass()} width={10} height={5} />3
+              <Popper.Arrow className={arrowClass()} width={10} height={5} />4 (portalled)
             </Popper.Content>
-          </Popper.Root>
+          </Portal>
+        </Popper.Root>
+      </div>
 
-          <Popper.Root>
-            <Popper.Anchor className={anchorClass({ size: 'small' })}>4</Popper.Anchor>
-            <Portal asChild>
-              <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-                <Popper.Arrow className={arrowClass()} width={10} height={5} />4 (portalled)
-              </Popper.Content>
-            </Portal>
-          </Popper.Root>
-        </div>
+      <div
+        style={{
+          position: 'relative',
+          marginTop: 50,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 150,
+          border: '1px solid black',
+        }}
+      >
+        <h1>In relative parent</h1>
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>5</Popper.Anchor>
+          <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
+            <Popper.Arrow className={arrowClass()} width={10} height={5} />5
+          </Popper.Content>
+        </Popper.Root>
 
-        <div
-          style={{
-            position: 'relative',
-            marginTop: 50,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 150,
-            border: '1px solid black',
-          }}
-        >
-          <h1>In relative parent</h1>
-          <Popper.Root>
-            <Popper.Anchor className={anchorClass({ size: 'small' })}>5</Popper.Anchor>
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>6</Popper.Anchor>
+          <Portal asChild>
             <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-              <Popper.Arrow className={arrowClass()} width={10} height={5} />5
+              <Popper.Arrow className={arrowClass()} width={10} height={5} />6 (portalled)
             </Popper.Content>
-          </Popper.Root>
+          </Portal>
+        </Popper.Root>
+      </div>
 
-          <Popper.Root>
-            <Popper.Anchor className={anchorClass({ size: 'small' })}>6</Popper.Anchor>
-            <Portal asChild>
-              <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-                <Popper.Arrow className={arrowClass()} width={10} height={5} />6 (portalled)
-              </Popper.Content>
-            </Portal>
-          </Popper.Root>
-        </div>
+      <div
+        style={{
+          marginTop: 50,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 150,
+          border: '1px solid black',
+          transform: 'translate3d(100px, 0, 0)',
+        }}
+      >
+        <h1>In translated parent</h1>
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>7</Popper.Anchor>
+          <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
+            <Popper.Arrow className={arrowClass()} width={10} height={5} />7
+          </Popper.Content>
+        </Popper.Root>
 
-        <div
-          style={{
-            marginTop: 50,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 150,
-            border: '1px solid black',
-            transform: 'translate3d(100px, 0, 0)',
-          }}
-        >
-          <h1>In translated parent</h1>
-          <Popper.Root>
-            <Popper.Anchor className={anchorClass({ size: 'small' })}>7</Popper.Anchor>
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>8</Popper.Anchor>
+          <Portal asChild>
             <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-              <Popper.Arrow className={arrowClass()} width={10} height={5} />7
+              <Popper.Arrow className={arrowClass()} width={10} height={5} />8 (portalled)
             </Popper.Content>
-          </Popper.Root>
+          </Portal>
+        </Popper.Root>
+      </div>
 
-          <Popper.Root>
-            <Popper.Anchor className={anchorClass({ size: 'small' })}>8</Popper.Anchor>
-            <Portal asChild>
-              <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-                <Popper.Arrow className={arrowClass()} width={10} height={5} />8 (portalled)
-              </Popper.Content>
-            </Portal>
-          </Popper.Root>
-        </div>
+      <div style={{ display: 'flex', gap: 100 }}>
+        <div>
+          <h1>In scrolling container</h1>
+          <div style={{ width: 400, height: 600, overflow: 'auto', border: '1px solid black' }}>
+            <div style={{ height: 2000 }}>
+              {Array.from({ length: 10 }, (_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 150,
+                    paddingBottom: 100,
+                  }}
+                >
+                  <Popper.Root>
+                    <Popper.Anchor className={anchorClass({ size: 'small' })}>
+                      9.{i + 1}
+                    </Popper.Anchor>
+                    <Popper.Content
+                      className={contentClass({ size: 'small' })}
+                      sideOffset={5}
+                      hideWhenDetached
+                    >
+                      <Popper.Arrow className={arrowClass()} width={10} height={5} />
+                      9.{i + 1}
+                    </Popper.Content>
+                  </Popper.Root>
 
-        <div style={{ display: 'flex', gap: 100 }}>
-          <div>
-            <h1>In scrolling container</h1>
-            <div style={{ width: 400, height: 600, overflow: 'auto', border: '1px solid black' }}>
-              <div style={{ height: 2000 }}>
-                {Array.from({ length: 10 }, (_, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 150,
-                      paddingBottom: 100,
-                    }}
-                  >
-                    <Popper.Root>
-                      <Popper.Anchor className={anchorClass({ size: 'small' })}>
-                        9.{i + 1}
-                      </Popper.Anchor>
+                  <Popper.Root>
+                    <Popper.Anchor className={anchorClass({ size: 'small' })}>
+                      10.{i + 1}
+                    </Popper.Anchor>
+                    <Portal asChild>
                       <Popper.Content
                         className={contentClass({ size: 'small' })}
                         sideOffset={5}
                         hideWhenDetached
                       >
                         <Popper.Arrow className={arrowClass()} width={10} height={5} />
-                        9.{i + 1}
+                        10.{i + 1} (portalled)
                       </Popper.Content>
-                    </Popper.Root>
-
-                    <Popper.Root>
-                      <Popper.Anchor className={anchorClass({ size: 'small' })}>
-                        10.{i + 1}
-                      </Popper.Anchor>
-                      <Portal asChild>
-                        <Popper.Content
-                          className={contentClass({ size: 'small' })}
-                          sideOffset={5}
-                          hideWhenDetached
-                        >
-                          <Popper.Arrow className={arrowClass()} width={10} height={5} />
-                          10.{i + 1} (portalled)
-                        </Popper.Content>
-                      </Portal>
-                    </Popper.Root>
-                  </div>
-                ))}
-              </div>
+                    </Portal>
+                  </Popper.Root>
+                </div>
+              ))}
             </div>
           </div>
+        </div>
 
-          <div>
-            <h1>With position sticky</h1>
-            <div style={{ width: 400, height: 600, overflow: 'auto', border: '1px solid black' }}>
-              <div style={{ height: 2000 }}>
-                {Array.from({ length: 10 }, (_, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 150,
-                      paddingBottom: 100,
-                      position: 'sticky',
-                      top: 0,
-                    }}
-                  >
-                    <Popper.Root>
-                      <Popper.Anchor className={anchorClass({ size: 'small' })}>
-                        9.{i + 1}
-                      </Popper.Anchor>
+        <div>
+          <h1>With position sticky</h1>
+          <div style={{ width: 400, height: 600, overflow: 'auto', border: '1px solid black' }}>
+            <div style={{ height: 2000 }}>
+              {Array.from({ length: 10 }, (_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 150,
+                    paddingBottom: 100,
+                    position: 'sticky',
+                    top: 0,
+                  }}
+                >
+                  <Popper.Root>
+                    <Popper.Anchor className={anchorClass({ size: 'small' })}>
+                      9.{i + 1}
+                    </Popper.Anchor>
+                    <Popper.Content
+                      className={contentClass({ size: 'small' })}
+                      sideOffset={5}
+                      hideWhenDetached
+                    >
+                      <Popper.Arrow className={arrowClass()} width={10} height={5} />
+                      9.{i + 1}
+                    </Popper.Content>
+                  </Popper.Root>
+
+                  <Popper.Root>
+                    <Popper.Anchor className={anchorClass({ size: 'small' })}>
+                      10.{i + 1}
+                    </Popper.Anchor>
+                    <Portal asChild>
                       <Popper.Content
                         className={contentClass({ size: 'small' })}
                         sideOffset={5}
                         hideWhenDetached
                       >
                         <Popper.Arrow className={arrowClass()} width={10} height={5} />
-                        9.{i + 1}
+                        10.{i + 1} (portalled)
                       </Popper.Content>
-                    </Popper.Root>
-
-                    <Popper.Root>
-                      <Popper.Anchor className={anchorClass({ size: 'small' })}>
-                        10.{i + 1}
-                      </Popper.Anchor>
-                      <Portal asChild>
-                        <Popper.Content
-                          className={contentClass({ size: 'small' })}
-                          sideOffset={5}
-                          hideWhenDetached
-                        >
-                          <Popper.Arrow className={arrowClass()} width={10} height={5} />
-                          10.{i + 1} (portalled)
-                        </Popper.Content>
-                      </Portal>
-                    </Popper.Root>
-                  </div>
-                ))}
-              </div>
+                    </Portal>
+                  </Popper.Root>
+                </div>
+              ))}
             </div>
           </div>
         </div>
