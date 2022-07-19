@@ -1,6 +1,5 @@
 releases:
   "@radix-ui/number": patch
-  "@radix-ui/popper": patch
   "@radix-ui/primitive": patch
   "@radix-ui/react-accessible-icon": patch
   "@radix-ui/react-accordion": patch
