@@ -4,7 +4,7 @@ releases:
   "@radix-ui/react-accessible-icon": major
   "@radix-ui/react-accordion": major
   "@radix-ui/react-alert-dialog": major
-  "@radix-ui/react-announce": patch
+  "@radix-ui/react-announce": minor
   "@radix-ui/react-arrow": major
   "@radix-ui/react-aspect-ratio": major
   "@radix-ui/react-avatar": major
@@ -55,5 +55,5 @@ releases:
   "@radix-ui/react-visually-hidden": major
   "@radix-ui/rect": major
 
-undecided:
+declined:
   - primitives
