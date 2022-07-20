@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/number",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -25,6 +25,5 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10"
-  },
-  "stableVersion": "0.1.0"
+  }
 }

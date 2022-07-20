@@ -1,8 +1,0 @@
-releases:
-  "@radix-ui/react-context-menu": patch
-  "@radix-ui/react-dropdown-menu": patch
-  "@radix-ui/react-menu": patch
-  "@radix-ui/react-select": patch
-
-declined:
-  - primitives

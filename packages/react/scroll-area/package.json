@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-scroll-area",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -41,6 +41,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "0.1.4"
+  }
 }
