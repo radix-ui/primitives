@@ -111,6 +111,8 @@ const [PositionContextProvider, usePositionContext] = createPopperContext(CONTEN
   positionUpdateFns: new Set<() => void>(),
 });
 
+type Boundary = Element | null;
+
 type PopperContentElement = React.ElementRef<typeof Primitive.div>;
 interface PopperContentProps extends PrimitiveDivProps {
   side?: Side;
@@ -118,7 +120,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   align?: Align;
   alignOffset?: number;
   arrowPadding?: number;
-  collisionBoundary?: (Element | null) | (Element | null)[];
+  collisionBoundary?: Boundary | Boundary[];
   collisionPadding?: number | Partial<Record<Side, number>>;
   sticky?: 'partial' | 'always';
   hideWhenDetached?: boolean;
@@ -134,7 +136,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       align = 'center',
       alignOffset = 0,
       arrowPadding = 0,
-      collisionBoundary: collisionBoundaryProp = [],
+      collisionBoundary = [],
       collisionPadding: collisionPaddingProp = 0,
       sticky = 'partial',
       hideWhenDetached = false,
@@ -159,8 +161,15 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         ? collisionPaddingProp
         : { top: 0, right: 0, bottom: 0, left: 0, ...collisionPaddingProp };
 
-    const collisionBoundary = wrapArray(collisionBoundaryProp).filter(isNotNull);
-    const hasExplicitBoundaries = collisionBoundary.length > 0;
+    const boundary = Array.isArray(collisionBoundary) ? collisionBoundary : [collisionBoundary];
+    const hasExplicitBoundaries = boundary.length > 0;
+
+    const detectOverflowOptions = {
+      padding: collisionPadding,
+      boundary: boundary.filter(isNotNull),
+      // with `strategy: 'fixed'`, this is the only way to get it to respect boundaries
+      altBoundary: hasExplicitBoundaries,
+    };
 
     const { reference, floating, strategy, x, y, placement, middlewareData, update } = useFloating({
       // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
@@ -173,22 +182,12 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           ? shift({
               mainAxis: true,
               crossAxis: false,
-              padding: collisionPadding,
               limiter: sticky === 'partial' ? limitShift() : undefined,
-              boundary: collisionBoundary,
-              // with `strategy: 'fixed'`, this is the only way to get it to respect boundaries
-              altBoundary: hasExplicitBoundaries,
+              ...detectOverflowOptions,
             })
           : undefined,
         arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
-        avoidCollisions
-          ? flip({
-              padding: collisionPadding,
-              boundary: collisionBoundary,
-              // with `strategy: 'fixed'`, this is the only way to get it to respect boundaries
-              altBoundary: hasExplicitBoundaries,
-            })
-          : undefined,
+        avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
         transformOrigin({ arrowWidth, arrowHeight }),
         hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
       ].filter(isDefined),
@@ -372,10 +371,6 @@ function isDefined<T>(value: T | undefined): value is T {
 
 function isNotNull<T>(value: T | null): value is T {
   return value !== null;
-}
-
-function wrapArray<T>(value: T | T[]) {
-  return Array.isArray(value) ? value : [value];
 }
 
 const transformOrigin = (options: { arrowWidth: number; arrowHeight: number }): Middleware => ({
