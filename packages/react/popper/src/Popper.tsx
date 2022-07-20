@@ -310,15 +310,13 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
 
 type PopperArrowElement = React.ElementRef<typeof ArrowPrimitive.Root>;
 type ArrowProps = Radix.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
-interface PopperArrowProps extends ArrowProps {
-  offset?: number;
-}
+interface PopperArrowProps extends ArrowProps {}
 
 const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
   props: ScopedProps<PopperArrowProps>,
   forwardedRef
 ) {
-  const { __scopePopper, offset, ...arrowProps } = props;
+  const { __scopePopper, ...arrowProps } = props;
   const contentContext = useContentContext(ARROW_NAME, __scopePopper);
   const baseSide = OPPOSITE_SIDE[contentContext.placedSide];
 
