@@ -93,6 +93,9 @@ export const WithPortal = () => {
 };
 
 export const Chromatic = () => {
+  const [scrollContainer1, setScrollContainer1] = React.useState<HTMLDivElement | null>(null);
+  const [scrollContainer2, setScrollContainer2] = React.useState<HTMLDivElement | null>(null);
+
   return (
     <div style={{ paddingBottom: 500 }}>
       <header
@@ -218,7 +221,10 @@ export const Chromatic = () => {
       <div style={{ display: 'flex', gap: 100 }}>
         <div>
           <h1>In scrolling container</h1>
-          <div style={{ width: 400, height: 600, overflow: 'auto', border: '1px solid black' }}>
+          <div
+            ref={setScrollContainer1}
+            style={{ width: 400, height: 600, overflow: 'auto', border: '1px solid black' }}
+          >
             <div style={{ height: 2000 }}>
               {Array.from({ length: 10 }, (_, i) => (
                 <div
@@ -239,6 +245,7 @@ export const Chromatic = () => {
                       className={contentClass({ size: 'small' })}
                       sideOffset={5}
                       hideWhenDetached
+                      collisionBoundary={scrollContainer1}
                     >
                       <Popper.Arrow className={arrowClass()} width={10} height={5} />
                       9.{i + 1}
@@ -254,6 +261,7 @@ export const Chromatic = () => {
                         className={contentClass({ size: 'small' })}
                         sideOffset={5}
                         hideWhenDetached
+                        collisionBoundary={scrollContainer1}
                       >
                         <Popper.Arrow className={arrowClass()} width={10} height={5} />
                         10.{i + 1} (portalled)
@@ -268,7 +276,10 @@ export const Chromatic = () => {
 
         <div>
           <h1>With position sticky</h1>
-          <div style={{ width: 400, height: 600, overflow: 'auto', border: '1px solid black' }}>
+          <div
+            ref={setScrollContainer2}
+            style={{ width: 400, height: 600, overflow: 'auto', border: '1px solid black' }}
+          >
             <div style={{ height: 2000 }}>
               {Array.from({ length: 10 }, (_, i) => (
                 <div
@@ -291,6 +302,7 @@ export const Chromatic = () => {
                       className={contentClass({ size: 'small' })}
                       sideOffset={5}
                       hideWhenDetached
+                      collisionBoundary={scrollContainer2}
                     >
                       <Popper.Arrow className={arrowClass()} width={10} height={5} />
                       9.{i + 1}
@@ -306,6 +318,7 @@ export const Chromatic = () => {
                         className={contentClass({ size: 'small' })}
                         sideOffset={5}
                         hideWhenDetached
+                        collisionBoundary={scrollContainer2}
                       >
                         <Popper.Arrow className={arrowClass()} width={10} height={5} />
                         10.{i + 1} (portalled)
