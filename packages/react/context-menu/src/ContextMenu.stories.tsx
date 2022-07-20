@@ -170,7 +170,7 @@ export const Modality = () => (
                       Two
                     </ContextMenu.Item>
                     <ContextMenu.Separator className={separatorClass()} />
-                    <ContextMenu.Sub defaultOpen>
+                    <ContextMenu.Sub>
                       <ContextMenu.SubTrigger className={subTriggerClass()}>
                         Submenu →
                       </ContextMenu.SubTrigger>
