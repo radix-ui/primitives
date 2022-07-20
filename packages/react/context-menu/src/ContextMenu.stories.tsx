@@ -65,44 +65,58 @@ export const Modality = () => (
                 <ContextMenu.SubTrigger className={subTriggerClass()}>
                   Submenu →
                 </ContextMenu.SubTrigger>
-                <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
-                    One
-                  </ContextMenu.Item>
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
-                    Two
-                  </ContextMenu.Item>
-                  <ContextMenu.Separator className={separatorClass()} />
-                  <ContextMenu.Sub>
-                    <ContextMenu.SubTrigger className={subTriggerClass()}>
-                      Submenu →
-                    </ContextMenu.SubTrigger>
-                    <ContextMenu.SubContent
-                      className={contentClass()}
-                      sideOffset={12}
-                      alignOffset={-6}
-                    >
-                      <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
-                        One
-                      </ContextMenu.Item>
-                      <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
-                        Two
-                      </ContextMenu.Item>
-                      <ContextMenu.Item
-                        className={itemClass()}
-                        onSelect={() => console.log('three')}
-                      >
-                        Three
-                      </ContextMenu.Item>
-                      <ContextMenu.Arrow />
-                    </ContextMenu.SubContent>
-                  </ContextMenu.Sub>
-                  <ContextMenu.Separator className={separatorClass()} />
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
-                    Three
-                  </ContextMenu.Item>
-                  <ContextMenu.Arrow />
-                </ContextMenu.SubContent>
+                <ContextMenu.Portal>
+                  <ContextMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
+                  >
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
+                      One
+                    </ContextMenu.Item>
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
+                      Two
+                    </ContextMenu.Item>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Sub>
+                      <ContextMenu.SubTrigger className={subTriggerClass()}>
+                        Submenu →
+                      </ContextMenu.SubTrigger>
+                      <ContextMenu.Portal>
+                        <ContextMenu.SubContent
+                          className={contentClass()}
+                          sideOffset={12}
+                          alignOffset={-6}
+                        >
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('one')}
+                          >
+                            One
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('two')}
+                          >
+                            Two
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('three')}
+                          >
+                            Three
+                          </ContextMenu.Item>
+                          <ContextMenu.Arrow />
+                        </ContextMenu.SubContent>
+                      </ContextMenu.Portal>
+                    </ContextMenu.Sub>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
+                      Three
+                    </ContextMenu.Item>
+                    <ContextMenu.Arrow />
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
               </ContextMenu.Sub>
               <ContextMenu.Separator className={separatorClass()} />
               <ContextMenu.Item
@@ -143,44 +157,58 @@ export const Modality = () => (
                 <ContextMenu.SubTrigger className={subTriggerClass()}>
                   Submenu →
                 </ContextMenu.SubTrigger>
-                <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
-                    One
-                  </ContextMenu.Item>
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
-                    Two
-                  </ContextMenu.Item>
-                  <ContextMenu.Separator className={separatorClass()} />
-                  <ContextMenu.Sub defaultOpen>
-                    <ContextMenu.SubTrigger className={subTriggerClass()}>
-                      Submenu →
-                    </ContextMenu.SubTrigger>
-                    <ContextMenu.SubContent
-                      className={contentClass()}
-                      sideOffset={12}
-                      alignOffset={-6}
-                    >
-                      <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
-                        One
-                      </ContextMenu.Item>
-                      <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
-                        Two
-                      </ContextMenu.Item>
-                      <ContextMenu.Item
-                        className={itemClass()}
-                        onSelect={() => console.log('three')}
-                      >
-                        Three
-                      </ContextMenu.Item>
-                      <ContextMenu.Arrow />
-                    </ContextMenu.SubContent>
-                  </ContextMenu.Sub>
-                  <ContextMenu.Separator className={separatorClass()} />
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
-                    Three
-                  </ContextMenu.Item>
-                  <ContextMenu.Arrow />
-                </ContextMenu.SubContent>
+                <ContextMenu.Portal>
+                  <ContextMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
+                  >
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('one')}>
+                      One
+                    </ContextMenu.Item>
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('two')}>
+                      Two
+                    </ContextMenu.Item>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Sub>
+                      <ContextMenu.SubTrigger className={subTriggerClass()}>
+                        Submenu →
+                      </ContextMenu.SubTrigger>
+                      <ContextMenu.Portal>
+                        <ContextMenu.SubContent
+                          className={contentClass()}
+                          sideOffset={12}
+                          alignOffset={-6}
+                        >
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('one')}
+                          >
+                            One
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('two')}
+                          >
+                            Two
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('three')}
+                          >
+                            Three
+                          </ContextMenu.Item>
+                          <ContextMenu.Arrow />
+                        </ContextMenu.SubContent>
+                      </ContextMenu.Portal>
+                    </ContextMenu.Sub>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('three')}>
+                      Three
+                    </ContextMenu.Item>
+                    <ContextMenu.Arrow />
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
               </ContextMenu.Sub>
               <ContextMenu.Separator className={separatorClass()} />
               <ContextMenu.Item
@@ -245,99 +273,128 @@ export const Submenus = () => {
                 <ContextMenu.SubTrigger className={subTriggerClass()}>
                   Bookmarks →
                 </ContextMenu.SubTrigger>
-                <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('index')}>
-                    Inbox
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    className={itemClass()}
-                    onSelect={() => console.log('calendar')}
+                <ContextMenu.Portal>
+                  <ContextMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
                   >
-                    Calendar
-                  </ContextMenu.Item>
-                  <ContextMenu.Separator className={separatorClass()} />
-                  <ContextMenu.Sub>
-                    <ContextMenu.SubTrigger className={subTriggerClass()}>
-                      WorkOS →
-                    </ContextMenu.SubTrigger>
-                    <ContextMenu.SubContent
-                      className={contentClass()}
-                      sideOffset={12}
-                      alignOffset={-6}
+                    <ContextMenu.Item className={itemClass()} onSelect={() => console.log('index')}>
+                      Inbox
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('calendar')}
                     >
-                      <ContextMenu.Item
-                        className={itemClass()}
-                        onSelect={() => console.log('stitches')}
-                      >
-                        Stitches
-                      </ContextMenu.Item>
-                      <ContextMenu.Item
-                        className={itemClass()}
-                        onSelect={() => console.log('composer')}
-                      >
-                        Composer
-                      </ContextMenu.Item>
-                      <ContextMenu.Item
-                        className={itemClass()}
-                        onSelect={() => console.log('radix')}
-                      >
-                        Radix
-                      </ContextMenu.Item>
-                      <ContextMenu.Arrow />
-                    </ContextMenu.SubContent>
-                  </ContextMenu.Sub>
-                  <ContextMenu.Separator className={separatorClass()} />
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('notion')}>
-                    Notion
-                  </ContextMenu.Item>
-                  <ContextMenu.Arrow />
-                </ContextMenu.SubContent>
+                      Calendar
+                    </ContextMenu.Item>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Sub>
+                      <ContextMenu.SubTrigger className={subTriggerClass()}>
+                        WorkOS →
+                      </ContextMenu.SubTrigger>
+                      <ContextMenu.Portal>
+                        <ContextMenu.SubContent
+                          className={contentClass()}
+                          sideOffset={12}
+                          alignOffset={-6}
+                        >
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('stitches')}
+                          >
+                            Stitches
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('composer')}
+                          >
+                            Composer
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={itemClass()}
+                            onSelect={() => console.log('radix')}
+                          >
+                            Radix
+                          </ContextMenu.Item>
+                          <ContextMenu.Arrow />
+                        </ContextMenu.SubContent>
+                      </ContextMenu.Portal>
+                    </ContextMenu.Sub>
+                    <ContextMenu.Separator className={separatorClass()} />
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('notion')}
+                    >
+                      Notion
+                    </ContextMenu.Item>
+                    <ContextMenu.Arrow />
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
               </ContextMenu.Sub>
               <ContextMenu.Sub>
                 <ContextMenu.SubTrigger className={subTriggerClass()} disabled>
                   History →
                 </ContextMenu.SubTrigger>
-                <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('github')}>
-                    Github
-                  </ContextMenu.Item>
-                  <ContextMenu.Item className={itemClass()} onSelect={() => console.log('google')}>
-                    Google
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    className={itemClass()}
-                    onSelect={() => console.log('stack-overflow')}
+                <ContextMenu.Portal>
+                  <ContextMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
                   >
-                    Stack Overflow
-                  </ContextMenu.Item>
-                  <ContextMenu.Arrow />
-                </ContextMenu.SubContent>
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('github')}
+                    >
+                      Github
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('google')}
+                    >
+                      Google
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('stack-overflow')}
+                    >
+                      Stack Overflow
+                    </ContextMenu.Item>
+                    <ContextMenu.Arrow />
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
               </ContextMenu.Sub>
               <ContextMenu.Sub>
                 <ContextMenu.SubTrigger className={subTriggerClass()}>
                   Tools →
                 </ContextMenu.SubTrigger>
-                <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
-                  <ContextMenu.Item
-                    className={itemClass()}
-                    onSelect={() => console.log('extensions')}
+                <ContextMenu.Portal>
+                  <ContextMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
                   >
-                    Extensions
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    className={itemClass()}
-                    onSelect={() => console.log('task-manager')}
-                  >
-                    Task Manager
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    className={itemClass()}
-                    onSelect={() => console.log('developer-tools')}
-                  >
-                    Developer Tools
-                  </ContextMenu.Item>
-                  <ContextMenu.Arrow />
-                </ContextMenu.SubContent>
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('extensions')}
+                    >
+                      Extensions
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('task-manager')}
+                    >
+                      Task Manager
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('developer-tools')}
+                    >
+                      Developer Tools
+                    </ContextMenu.Item>
+                    <ContextMenu.Arrow />
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
               </ContextMenu.Sub>
               <ContextMenu.Separator className={separatorClass()} />
               <ContextMenu.Item
@@ -605,21 +662,27 @@ export const Nested = () => (
                 <ContextMenu.SubTrigger className={subTriggerClass()}>
                   Submenu →
                 </ContextMenu.SubTrigger>
-                <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
-                  <ContextMenu.Item
-                    className={itemClass()}
-                    onSelect={() => console.log('red sub action 1')}
+                <ContextMenu.Portal>
+                  <ContextMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
                   >
-                    Red sub action 1
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    className={itemClass()}
-                    onSelect={() => console.log('red sub action 2')}
-                  >
-                    Red sub action 2
-                  </ContextMenu.Item>
-                  <ContextMenu.Arrow />
-                </ContextMenu.SubContent>
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('red sub action 1')}
+                    >
+                      Red sub action 1
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('red sub action 2')}
+                    >
+                      Red sub action 2
+                    </ContextMenu.Item>
+                    <ContextMenu.Arrow />
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
               </ContextMenu.Sub>
             </ContextMenu.Content>
           </ContextMenu.Portal>
@@ -638,21 +701,23 @@ export const Nested = () => (
           <ContextMenu.Separator className={separatorClass()} />
           <ContextMenu.Sub>
             <ContextMenu.SubTrigger className={subTriggerClass()}>Submenu →</ContextMenu.SubTrigger>
-            <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
-              <ContextMenu.Item
-                className={itemClass()}
-                onSelect={() => console.log('blue sub action 1')}
-              >
-                Blue sub action 1
-              </ContextMenu.Item>
-              <ContextMenu.Item
-                className={itemClass()}
-                onSelect={() => console.log('blue sub action 2')}
-              >
-                Blue sub action 2
-              </ContextMenu.Item>
-              <ContextMenu.Arrow />
-            </ContextMenu.SubContent>
+            <ContextMenu.Portal>
+              <ContextMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
+                <ContextMenu.Item
+                  className={itemClass()}
+                  onSelect={() => console.log('blue sub action 1')}
+                >
+                  Blue sub action 1
+                </ContextMenu.Item>
+                <ContextMenu.Item
+                  className={itemClass()}
+                  onSelect={() => console.log('blue sub action 2')}
+                >
+                  Blue sub action 2
+                </ContextMenu.Item>
+                <ContextMenu.Arrow />
+              </ContextMenu.SubContent>
+            </ContextMenu.Portal>
           </ContextMenu.Sub>
         </ContextMenu.Content>
       </ContextMenu.Portal>
