@@ -47,11 +47,6 @@ const Primitive = NODES.reduce((primitive, node) => {
       (window as any)[Symbol.for('radix-ui')] = true;
     }, []);
 
-    // DEPRECATED
-    if (process.env.NODE_ENV === 'development' && (props as any).as) {
-      console.warn(AS_ERROR);
-    }
-
     return <Comp {...primitiveProps} ref={forwardedRef} />;
   });
 
@@ -59,10 +54,6 @@ const Primitive = NODES.reduce((primitive, node) => {
 
   return { ...primitive, [node]: Node };
 }, {} as Primitives);
-
-/* -----------------------------------------------------------------------------------------------*/
-
-const AS_ERROR = `Warning: The \`as\` prop has been removed in favour of \`asChild\`. For details, see https://radix-ui.com/docs/primitives/overview/styling#changing-the-rendered-element`;
 
 /* -------------------------------------------------------------------------------------------------
  * Utils

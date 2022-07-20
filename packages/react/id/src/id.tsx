@@ -14,16 +14,4 @@ function useId(deterministicId?: string): string {
   return deterministicId || (id ? `radix-${id}` : '');
 }
 
-// DEPRECATED
-function IdProvider({ children }: { children: React.ReactNode }) {
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(ID_PROVIDER_DEPRECATED);
-    }
-  }, []);
-  return <>{children}</>;
-}
-
-const ID_PROVIDER_DEPRECATED = `Warning: The \`IdProvider\` has been deprecated. For details, see https://radix-ui.com/docs/primitives/utilities/id-provider`;
-
-export { IdProvider, useId };
+export { useId };
