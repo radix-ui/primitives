@@ -24,7 +24,7 @@
     "@radix-ui/react-use-escape-keydown": "workspace:*"
   },
   "devDependencies": {
-    "react-remove-scroll": "2.5.4"
+    "react-remove-scroll": "2.5.5"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0 || ^18.0",
