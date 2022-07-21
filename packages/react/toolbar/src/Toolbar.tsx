@@ -202,8 +202,10 @@ const ToolbarToggleItem = React.forwardRef<ToolbarToggleItemElement, ToolbarTogg
   (props: ScopedProps<ToolbarToggleItemProps>, forwardedRef) => {
     const { __scopeToolbar, ...toggleItemProps } = props;
     const toggleGroupScope = useToggleGroupScope(__scopeToolbar);
+    const scope = { __scopeToolbar: props.__scopeToolbar };
+
     return (
-      <ToolbarButton asChild {...props}>
+      <ToolbarButton asChild {...scope}>
         <ToggleGroupPrimitive.Item {...toggleGroupScope} {...toggleItemProps} ref={forwardedRef} />
       </ToolbarButton>
     );
