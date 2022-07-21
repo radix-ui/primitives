@@ -3273,7 +3273,7 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     aria-hidden: ^1.1.1
-    react-remove-scroll: 2.5.4
+    react-remove-scroll: 2.5.5
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
@@ -3300,7 +3300,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-escape-keydown": "workspace:*"
-    react-remove-scroll: 2.5.4
+    react-remove-scroll: 2.5.5
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
@@ -3417,7 +3417,7 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     aria-hidden: ^1.1.1
-    react-remove-scroll: 2.5.4
+    react-remove-scroll: 2.5.5
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
@@ -3468,7 +3468,7 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     aria-hidden: ^1.1.1
-    react-remove-scroll: 2.5.4
+    react-remove-scroll: 2.5.5
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
@@ -3634,7 +3634,7 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     aria-hidden: ^1.1.1
-    react-remove-scroll: 2.5.4
+    react-remove-scroll: 2.5.5
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
@@ -15472,9 +15472,9 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"react-remove-scroll@npm:2.5.4":
-  version: 2.5.4
-  resolution: "react-remove-scroll@npm:2.5.4"
+"react-remove-scroll@npm:2.5.5":
+  version: 2.5.5
+  resolution: "react-remove-scroll@npm:2.5.5"
   dependencies:
     react-remove-scroll-bar: ^2.3.3
     react-style-singleton: ^2.2.1
@@ -15487,7 +15487,7 @@ fsevents@~2.1.2:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 01b0f65542a4c8803ee748b4e6cf2adad66d034e15fb72e8455773b0d7b178ec806b3194d74f412db7064670c45552cc666c04e9fb3b5d466dce5fb48e634825
+  checksum: 2c7fe9cbd766f5e54beb4bec2e2efb2de3583037b23fef8fa511ab426ed7f1ae992382db5acd8ab5bfb030a4b93a06a2ebca41377d6eeaf0e6791bb0a59616a4
   languageName: node
   linkType: hard
 
