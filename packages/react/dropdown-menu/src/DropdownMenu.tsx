@@ -44,7 +44,7 @@ interface DropdownMenuProps {
   dir?: Direction;
   open?: boolean;
   defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
+  onOpenChange?: (open: boolean) => void;
   modal?: boolean;
 }
 
