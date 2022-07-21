@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-dialog",
-  "version": "1.0.0",
+  "version": "1.0.1-rc.1",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -43,5 +43,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "1.0.0"
 }
