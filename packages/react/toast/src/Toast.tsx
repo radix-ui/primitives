@@ -547,6 +547,10 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                 })}
               >
                 <Primitive.li
+                  // Ensure toasts are announced as status list or status when focused
+                  role="status"
+                  aria-live="off"
+                  aria-atomic
                   tabIndex={0}
                   data-state={open ? 'open' : 'closed'}
                   data-swipe-direction={context.swipeDirection}
