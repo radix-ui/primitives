@@ -480,7 +480,7 @@ export {
   MenubarSubMenu as Sub,
   MenubarSubMenuTrigger as SubTrigger,
   MenubarContent as Content,
-  MenubarContent as SubContent,
+  MenubarSubContent as SubContent,
   MenubarItem as Item,
   createMenuScope,
 };
