@@ -25,7 +25,7 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
 >(MENUBAR_NAME);
 
 type ScopedProps<P> = P & { __scopeMenubar?: Scope };
-const [createMenubarContext, createMenuScope] = createContextScope(MENUBAR_NAME, [
+const [createMenubarContext, createMenubarScope] = createContextScope(MENUBAR_NAME, [
   createCollectionScope,
   createRovingFocusGroupScope,
 ]);
@@ -208,84 +208,8 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
 MenubarTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * MenubarSubMenu
+ * MenubarPortal
  * -----------------------------------------------------------------------------------------------*/
-
-const MENUBAR_SUBMENU = 'MenubarSubmenu';
-
-type MenubarSubMenuElement = React.ElementRef<typeof DropdownMenuPrimitive.DropdownMenuSub>;
-interface MenubarSubMenuProps
-  extends Radix.PrimitivePropsWithRef<typeof DropdownMenuPrimitive.DropdownMenuSub> {
-  disabled?: boolean;
-}
-
-const MenubarSubMenu = React.forwardRef<MenubarSubMenuElement, MenubarSubMenuProps>(
-  (props: ScopedProps<MenubarSubMenuTriggerProps>, forwardedRef) => {
-    const { __scopeMenubar, disabled, ...subMenuProps } = props;
-    const contentContext = useContentContext(MENU_NAME, __scopeMenubar);
-    const dropdownMenuScope = useDropdownMenuScope(__scopeMenubar);
-
-    return (
-      <MenuProvider isInsideContent={contentContext.isInsideContent} scope={__scopeMenubar}>
-        <DropdownMenuPrimitive.DropdownMenuSub
-          {...dropdownMenuScope}
-          ref={forwardedRef}
-          {...subMenuProps}
-        />
-      </MenuProvider>
-    );
-  }
-);
-
-MenubarSubMenu.displayName = MENUBAR_SUBMENU;
-
-/* -------------------------------------------------------------------------------------------------
- * MenubarSubMenuTrigger
- * -----------------------------------------------------------------------------------------------*/
-
-const MENUBAR_SUBMENU_TRIGGER = 'MenubarSubmenuTrigger';
-
-type MenubarSubMenuTriggerElement = React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>;
-interface MenubarSubMenuTriggerProps
-  extends Radix.PrimitivePropsWithRef<typeof DropdownMenuPrimitive.SubTrigger> {
-  disabled?: boolean;
-}
-
-const MenubarSubMenuTrigger = React.forwardRef<
-  MenubarSubMenuTriggerElement,
-  MenubarSubMenuTriggerProps
->((props: ScopedProps<MenubarSubMenuTriggerProps>, forwardedRef) => {
-  const { __scopeMenubar, disabled, ...subMenuTriggerProps } = props;
-  const dropdownMenuScope = useDropdownMenuScope(__scopeMenubar);
-  const context = useMenubarContext(MENUBAR_ITEM_NAME, __scopeMenubar);
-  const getItems = useCollection(__scopeMenubar);
-
-  return (
-    <DropdownMenuPrimitive.SubTrigger
-      {...dropdownMenuScope}
-      ref={forwardedRef}
-      disabled={disabled}
-      onKeyDown={(event: React.KeyboardEvent) => {
-        const prevMenuNavKey = context.direction === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
-        if (event.key === prevMenuNavKey) {
-          const items = getItems().filter((item) => !item.disabled);
-          const candidateNodes = items.map((item) => item.ref.current!);
-          const currentIndex = candidateNodes.indexOf(
-            candidateNodes.find(
-              (candidate) => candidate.id === context.currentTab?.id
-            ) as HTMLButtonElement
-          );
-          const focusIntent = getFocusIntent(event, 'horizontal', context.direction)!;
-          const candidate = getFocusIndex(currentIndex, candidateNodes.length - 1, focusIntent);
-          return context.setCurrentTab(candidateNodes[candidate!]);
-        }
-      }}
-      {...subMenuTriggerProps}
-    />
-  );
-});
-
-MenubarSubMenuTrigger.displayName = MENUBAR_SUBMENU_TRIGGER;
 
 /* -------------------------------------------------------------------------------------------------
  * MenubarContent
@@ -322,6 +246,165 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
 MenubarContent.displayName = MENUBAR_CONTENT;
 
 /* -------------------------------------------------------------------------------------------------
+ * MenubarGroup
+ * -----------------------------------------------------------------------------------------------*/
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarLabel
+ * -----------------------------------------------------------------------------------------------*/
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarItem
+ * -----------------------------------------------------------------------------------------------*/
+
+const MENUBAR_ITEM_NAME = 'MenubarItem';
+
+type MenubarItemElement = React.ElementRef<typeof DropdownMenuPrimitive.Item>;
+interface MenubarItemProps extends Radix.PrimitivePropsWithRef<typeof DropdownMenuPrimitive.Item> {
+  disabled?: boolean;
+}
+
+const MenubarItem = React.forwardRef<MenubarItemElement, MenubarItemProps>(
+  (props: ScopedProps<MenubarItemProps>, forwardedRef) => {
+    const { __scopeMenubar, disabled = false, ...itemProps } = props;
+    const dropdownMenuScope = useDropdownMenuScope(__scopeMenubar);
+    const ref = React.useRef<HTMLDivElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref);
+    const context = useMenubarContext(MENUBAR_ITEM_NAME, __scopeMenubar);
+    const menuContext = useMenuContext(MENUBAR_ITEM_NAME, __scopeMenubar);
+    const getItems = useCollection(__scopeMenubar);
+
+    return (
+      <DropdownMenuPrimitive.Item
+        {...dropdownMenuScope}
+        ref={composedRefs}
+        onKeyDown={(event: React.KeyboardEvent) => {
+          if (['ArrowRight', 'ArrowLeft'].includes(event.key)) {
+            const items = getItems().filter((item) => !item.disabled);
+            const candidateNodes = items.map((item) => item.ref.current!);
+            const currentIndex = candidateNodes.indexOf(
+              candidateNodes.find(
+                (candidate) => candidate.id === context.currentTab?.id
+              ) as HTMLButtonElement
+            );
+            const focusIntent = getFocusIntent(event, 'horizontal', 'ltr')!;
+            if (focusIntent === 'prev' && menuContext.isInsideContent) return;
+            const candidate = getFocusIndex(currentIndex, candidateNodes.length - 1, focusIntent);
+            return context.setCurrentTab(candidateNodes[candidate!]);
+          }
+        }}
+        {...itemProps}
+      />
+    );
+  }
+);
+
+MenubarItem.displayName = MENUBAR_ITEM_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarCheckboxItem
+ * -----------------------------------------------------------------------------------------------*/
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarRadioGroup
+ * -----------------------------------------------------------------------------------------------*/
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarRadioItem
+ * -----------------------------------------------------------------------------------------------*/
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarItemIndicator
+ * -----------------------------------------------------------------------------------------------*/
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarSeparator
+ * -----------------------------------------------------------------------------------------------*/
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarArrow
+ * -----------------------------------------------------------------------------------------------*/
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarSubMenu
+ * -----------------------------------------------------------------------------------------------*/
+
+const MENUBAR_SUBMENU = 'MenubarSubmenu';
+
+type MenubarSubMenuElement = React.ElementRef<typeof DropdownMenuPrimitive.DropdownMenuSub>;
+interface MenubarSubMenuProps
+  extends Radix.PrimitivePropsWithRef<typeof DropdownMenuPrimitive.DropdownMenuSub> {
+  disabled?: boolean;
+}
+
+const MenubarSubMenu = React.forwardRef<MenubarSubMenuElement, MenubarSubMenuProps>(
+  (props: ScopedProps<MenubarSubTriggerProps>, forwardedRef) => {
+    const { __scopeMenubar, disabled, ...subMenuProps } = props;
+    const contentContext = useContentContext(MENU_NAME, __scopeMenubar);
+    const dropdownMenuScope = useDropdownMenuScope(__scopeMenubar);
+
+    return (
+      <MenuProvider isInsideContent={contentContext.isInsideContent} scope={__scopeMenubar}>
+        <DropdownMenuPrimitive.DropdownMenuSub
+          {...dropdownMenuScope}
+          ref={forwardedRef}
+          {...subMenuProps}
+        />
+      </MenuProvider>
+    );
+  }
+);
+
+MenubarSubMenu.displayName = MENUBAR_SUBMENU;
+
+/* -------------------------------------------------------------------------------------------------
+ * MenubarSubTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const MENUBAR_SUBMENU_TRIGGER = 'MenubarSubTrigger';
+
+type MenubarSubTriggerElement = React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>;
+interface MenubarSubTriggerProps
+  extends Radix.PrimitivePropsWithRef<typeof DropdownMenuPrimitive.SubTrigger> {
+  disabled?: boolean;
+}
+
+const MenubarSubTrigger = React.forwardRef<MenubarSubTriggerElement, MenubarSubTriggerProps>(
+  (props: ScopedProps<MenubarSubTriggerProps>, forwardedRef) => {
+    const { __scopeMenubar, disabled, ...subMenuTriggerProps } = props;
+    const dropdownMenuScope = useDropdownMenuScope(__scopeMenubar);
+    const context = useMenubarContext(MENUBAR_ITEM_NAME, __scopeMenubar);
+    const getItems = useCollection(__scopeMenubar);
+
+    return (
+      <DropdownMenuPrimitive.SubTrigger
+        {...dropdownMenuScope}
+        ref={forwardedRef}
+        disabled={disabled}
+        onKeyDown={(event: React.KeyboardEvent) => {
+          const prevMenuNavKey = context.direction === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+          if (event.key === prevMenuNavKey) {
+            const items = getItems().filter((item) => !item.disabled);
+            const candidateNodes = items.map((item) => item.ref.current!);
+            const currentIndex = candidateNodes.indexOf(
+              candidateNodes.find(
+                (candidate) => candidate.id === context.currentTab?.id
+              ) as HTMLButtonElement
+            );
+            const focusIntent = getFocusIntent(event, 'horizontal', context.direction)!;
+            const candidate = getFocusIndex(currentIndex, candidateNodes.length - 1, focusIntent);
+            return context.setCurrentTab(candidateNodes[candidate!]);
+          }
+        }}
+        {...subMenuTriggerProps}
+      />
+    );
+  }
+);
+
+MenubarSubTrigger.displayName = MENUBAR_SUBMENU_TRIGGER;
+
+/* -------------------------------------------------------------------------------------------------
  * MenubarSubContent
  * -----------------------------------------------------------------------------------------------*/
 
@@ -350,58 +433,6 @@ const MenubarSubContent = React.forwardRef<MenubarSubContentElement, MenubarSubC
 );
 
 MenubarSubContent.displayName = MENUBAR_SUB_CONTENT;
-
-/* -------------------------------------------------------------------------------------------------
- * MenubarItem
- * -----------------------------------------------------------------------------------------------*/
-
-const MENUBAR_ITEM_NAME = 'MenubarItem';
-
-type MenubarItemElement = React.ElementRef<typeof DropdownMenuPrimitive.Item>;
-interface MenubarItemProps extends Radix.PrimitivePropsWithRef<typeof DropdownMenuPrimitive.Item> {
-  disabled?: boolean;
-}
-
-const MenubarItem = React.forwardRef<MenubarItemElement, MenubarItemProps>(
-  (props: ScopedProps<MenubarItemProps>, forwardedRef) => {
-    const { __scopeMenubar, disabled = false, ...itemProps } = props;
-    const dropdownMenuScope = useDropdownMenuScope(__scopeMenubar);
-    const ref = React.useRef<HTMLDivElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref);
-    const context = useMenubarContext(MENUBAR_ITEM_NAME, __scopeMenubar);
-    const menuContext = useMenuContext(MENUBAR_ITEM_NAME, __scopeMenubar);
-    const getItems = useCollection(__scopeMenubar);
-
-    return (
-      /**
-       * TODO some of the main functionality of the Dropdown Item is not working to close
-       * nested menus
-       */
-      <DropdownMenuPrimitive.Item
-        {...dropdownMenuScope}
-        ref={composedRefs}
-        onKeyDown={(event: React.KeyboardEvent) => {
-          if (['ArrowRight', 'ArrowLeft'].includes(event.key)) {
-            const items = getItems().filter((item) => !item.disabled);
-            const candidateNodes = items.map((item) => item.ref.current!);
-            const currentIndex = candidateNodes.indexOf(
-              candidateNodes.find(
-                (candidate) => candidate.id === context.currentTab?.id
-              ) as HTMLButtonElement
-            );
-            const focusIntent = getFocusIntent(event, 'horizontal', 'ltr')!;
-            if (focusIntent === 'prev' && menuContext.isInsideContent) return;
-            const candidate = getFocusIndex(currentIndex, candidateNodes.length - 1, focusIntent);
-            return context.setCurrentTab(candidateNodes[candidate!]);
-          }
-        }}
-        {...itemProps}
-      />
-    );
-  }
-);
-
-MenubarItem.displayName = MENUBAR_ITEM_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -473,14 +504,81 @@ function getNextMatch(values: string[], search: string, currentMatch?: string) {
   return nextMatch !== currentMatch ? nextMatch : undefined;
 }
 
+/* -----------------------------------------------------------------------------------------------*/
+
+const Root = Menubar;
+const Menu = MenubarMenu;
+const Trigger = MenubarTrigger;
+// const Portal = MenubarPortal;
+const Content = MenubarContent;
+// const Group = MenubarGroup;
+// const Label = MenubarLabel;
+const Item = MenubarItem;
+// const CheckboxItem = MenubarCheckboxItem;
+// const RadioGroup = MenubarRadioGroup;
+// const RadioItem = MenubarRadioItem;
+// const ItemIndicator = MenubarItemIndicator;
+// const Separator = MenubarSeparator;
+// const Arrow = MenubarArrow;
+const SubMenu = MenubarSubMenu;
+const SubTrigger = MenubarSubTrigger;
+const SubContent = MenubarSubContent;
+
 export {
-  Menubar as Root,
-  MenubarMenu as Menu,
-  MenubarTrigger as Trigger,
-  MenubarSubMenu as Sub,
-  MenubarSubMenuTrigger as SubTrigger,
-  MenubarContent as Content,
-  MenubarSubContent as SubContent,
-  MenubarItem as Item,
-  createMenuScope,
+  createMenubarScope,
+  //
+  Menubar,
+  MenubarMenu, // TODO maybe this should be called tab ? 🤔
+  MenubarTrigger,
+  // MenubarPortal,
+  MenubarContent,
+  // MenubarGroup,
+  // MenubarLabel,
+  MenubarItem,
+  // MenubarCheckboxItem,
+  // MenubarRadioGroup,
+  // MenubarRadioItem,
+  // MenubarItemIndicator,
+  // MenubarSeparator
+  // MenubarArrow
+  MenubarSubMenu,
+  MenubarSubTrigger,
+  MenubarSubContent,
+  //
+  Root,
+  Menu,
+  Trigger,
+  // Portal,
+  Content,
+  // Group,
+  // Label,
+  Item,
+  // CheckboxItem,
+  // RadioGroup,
+  // RadioItem,
+  // ItemIndicator,
+  // Separator,
+  // Arrow,
+  SubMenu,
+  SubTrigger,
+  SubContent,
+};
+export type {
+  MenubarProps,
+  MenubarMenuProps,
+  MenubarTriggerProps,
+  // MenubarPortalProps,
+  MenubarContentProps,
+  // MenubarGroupProps,
+  // MenubarLabelProps,
+  MenubarItemProps,
+  // MenubarCheckboxItemProps,
+  // MenubarRadioGroupProps,
+  // MenubarRadioItemProps,
+  // MenubarItemIndicatorProps,
+  // MenubarSeparatorProps,
+  // MenubarArrowProps,
+  MenubarSubMenuProps,
+  MenubarSubTriggerProps,
+  MenubarSubContentProps,
 };
