@@ -211,6 +211,18 @@ MenubarTrigger.displayName = TRIGGER_NAME;
  * MenubarPortal
  * -----------------------------------------------------------------------------------------------*/
 
+const PORTAL_NAME = 'MenubarPortal';
+
+type DropdownMenuPortalProps = Radix.PrimitivePropsWithRef<typeof DropdownMenuPrimitive.Portal>;
+interface MenubarPortalProps extends DropdownMenuPortalProps {}
+
+const MenubarPortal: React.FC<MenubarPortalProps> = (props: ScopedProps<MenubarPortalProps>) => {
+  const { __scopeMenubar, ...menubarportalProps } = props;
+  const dropdownMenuScope = useDropdownMenuScope(__scopeMenubar);
+  return <DropdownMenuPrimitive.Portal {...dropdownMenuScope} {...menubarportalProps} />;
+};
+MenubarPortal.displayName = PORTAL_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * MenubarContent
  * -----------------------------------------------------------------------------------------------*/
@@ -249,9 +261,41 @@ MenubarContent.displayName = MENUBAR_CONTENT;
  * MenubarGroup
  * -----------------------------------------------------------------------------------------------*/
 
+const GROUP_NAME = 'MenubarGroup';
+
+type MenubarGroupElement = React.ElementRef<typeof DropdownMenuPrimitive.Group>;
+type DropdownMenuGroupProps = Radix.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Group>;
+interface MenubarGroupProps extends DropdownMenuGroupProps {}
+
+const MenubarGroup = React.forwardRef<MenubarGroupElement, MenubarGroupProps>(
+  (props: ScopedProps<DropdownMenuGroupProps>, forwardedRef) => {
+    const { __scopeMenubar, ...groupProps } = props;
+    const dropdownScope = useDropdownMenuScope(__scopeMenubar);
+    return <DropdownMenuPrimitive.Group {...dropdownScope} {...groupProps} ref={forwardedRef} />;
+  }
+);
+
+MenubarGroup.displayName = GROUP_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * MenubarLabel
  * -----------------------------------------------------------------------------------------------*/
+
+const LABEL_NAME = 'MenubarLabel';
+
+type MenubarLabelElement = React.ElementRef<typeof DropdownMenuPrimitive.Label>;
+type DropdownMenuLabelProps = Radix.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label>;
+interface MenubarLabelProps extends DropdownMenuLabelProps {}
+
+const MenubarLabel = React.forwardRef<MenubarLabelElement, MenubarLabelProps>(
+  (props: ScopedProps<DropdownMenuLabelProps>, forwardedRef) => {
+    const { __scopeMenubar, ...labelProps } = props;
+    const dropdownScope = useDropdownMenuScope(__scopeMenubar);
+    return <DropdownMenuPrimitive.Label {...dropdownScope} {...labelProps} ref={forwardedRef} />;
+  }
+);
+
+MenubarLabel.displayName = LABEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenubarItem
@@ -305,25 +349,154 @@ MenubarItem.displayName = MENUBAR_ITEM_NAME;
  * MenubarCheckboxItem
  * -----------------------------------------------------------------------------------------------*/
 
+const CHECKBOX_ITEM_NAME = 'MenubarCheckboxItem';
+
+type MenubarCheckboxItemElement = React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>;
+type DropdownMenuCheckboxItemProps = Radix.ComponentPropsWithoutRef<
+  typeof DropdownMenuPrimitive.CheckboxItem
+>;
+interface MenubarCheckboxItemProps extends DropdownMenuCheckboxItemProps {}
+
+const MenubarCheckboxItem = React.forwardRef<MenubarCheckboxItemElement, MenubarCheckboxItemProps>(
+  (props: ScopedProps<DropdownMenuCheckboxItemProps>, forwardedRef) => {
+    const { __scopeMenubar, ...checkboxItemProps } = props;
+    const dropdownScope = useDropdownMenuScope(__scopeMenubar);
+    return (
+      <DropdownMenuPrimitive.CheckboxItem
+        {...dropdownScope}
+        {...checkboxItemProps}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
+
+MenubarCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * MenubarRadioGroup
  * -----------------------------------------------------------------------------------------------*/
+
+const RADIO_GROUP_NAME = 'MenubarRadioGroup';
+
+type MenubarRadioGroupElement = React.ElementRef<typeof DropdownMenuPrimitive.RadioGroup>;
+type DropdownMenuRadioGroupProps = Radix.ComponentPropsWithoutRef<
+  typeof DropdownMenuPrimitive.RadioGroup
+>;
+interface MenubarRadioGroupProps extends DropdownMenuRadioGroupProps {}
+
+const MenubarRadioGroup = React.forwardRef<MenubarRadioGroupElement, MenubarRadioGroupProps>(
+  (props: ScopedProps<DropdownMenuRadioGroupProps>, forwardedRef) => {
+    const { __scopeMenubar, ...radioGroupProps } = props;
+    const dropdownScope = useDropdownMenuScope(__scopeMenubar);
+    return (
+      <DropdownMenuPrimitive.RadioGroup
+        {...dropdownScope}
+        {...radioGroupProps}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
+
+MenubarRadioGroup.displayName = RADIO_GROUP_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenubarRadioItem
  * -----------------------------------------------------------------------------------------------*/
 
+const RADIO_ITEM_NAME = 'MenubarRadioItem';
+
+type MenubarRadioItemElement = React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>;
+type DropdownMenuRadioItemProps = Radix.ComponentPropsWithoutRef<
+  typeof DropdownMenuPrimitive.RadioItem
+>;
+interface MenubarRadioItemProps extends DropdownMenuRadioItemProps {}
+
+const MenubarRadioItem = React.forwardRef<MenubarRadioItemElement, MenubarRadioItemProps>(
+  (props: ScopedProps<DropdownMenuRadioItemProps>, forwardedRef) => {
+    const { __scopeMenubar, ...radioItemProps } = props;
+    const dropdownScope = useDropdownMenuScope(__scopeMenubar);
+    return (
+      <DropdownMenuPrimitive.RadioItem {...dropdownScope} {...radioItemProps} ref={forwardedRef} />
+    );
+  }
+);
+
+MenubarRadioItem.displayName = RADIO_ITEM_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * MenubarItemIndicator
  * -----------------------------------------------------------------------------------------------*/
+
+const INDICATOR_NAME = 'MenubarItemIndicator';
+
+type MenubarItemIndicatorElement = React.ElementRef<typeof DropdownMenuPrimitive.ItemIndicator>;
+type DropdownMenuItemIndicatorProps = Radix.ComponentPropsWithoutRef<
+  typeof DropdownMenuPrimitive.ItemIndicator
+>;
+interface MenubarItemIndicatorProps extends DropdownMenuItemIndicatorProps {}
+
+const MenubarItemIndicator = React.forwardRef<
+  MenubarItemIndicatorElement,
+  MenubarItemIndicatorProps
+>((props: ScopedProps<DropdownMenuItemIndicatorProps>, forwardedRef) => {
+  const { __scopeMenubar, ...itemIndicatorProps } = props;
+  const dropdownScope = useDropdownMenuScope(__scopeMenubar);
+  return (
+    <DropdownMenuPrimitive.ItemIndicator
+      {...dropdownScope}
+      {...itemIndicatorProps}
+      ref={forwardedRef}
+    />
+  );
+});
+
+MenubarItemIndicator.displayName = INDICATOR_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenubarSeparator
  * -----------------------------------------------------------------------------------------------*/
 
+const SEPARATOR_NAME = 'MenubarSeparator';
+
+type MenubarSeparatorElement = React.ElementRef<typeof DropdownMenuPrimitive.Separator>;
+type DropdownMenuSeparatorProps = Radix.ComponentPropsWithoutRef<
+  typeof DropdownMenuPrimitive.Separator
+>;
+interface MenubarSeparatorProps extends DropdownMenuSeparatorProps {}
+
+const MenubarSeparator = React.forwardRef<MenubarSeparatorElement, MenubarSeparatorProps>(
+  (props: ScopedProps<DropdownMenuSeparatorProps>, forwardedRef) => {
+    const { __scopeMenubar, ...separatorProps } = props;
+    const dropdownScope = useDropdownMenuScope(__scopeMenubar);
+    return (
+      <DropdownMenuPrimitive.Separator {...dropdownScope} {...separatorProps} ref={forwardedRef} />
+    );
+  }
+);
+
+MenubarSeparator.displayName = SEPARATOR_NAME;
+
 /* -------------------------------------------------------------------------------------------------
  * MenubarArrow
  * -----------------------------------------------------------------------------------------------*/
+
+const ARROW_NAME = 'MenubarArrow';
+
+type MenubarArrowElement = React.ElementRef<typeof DropdownMenuPrimitive.Arrow>;
+type DropdownMenuArrowProps = Radix.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Arrow>;
+interface MenubarArrowProps extends DropdownMenuArrowProps {}
+
+const MenubarArrow = React.forwardRef<MenubarArrowElement, MenubarArrowProps>(
+  (props: ScopedProps<DropdownMenuArrowProps>, forwardedRef) => {
+    const { __scopeMenubar, ...arrowProps } = props;
+    const dropdownScope = useDropdownMenuScope(__scopeMenubar);
+    return <DropdownMenuPrimitive.Arrow {...dropdownScope} {...arrowProps} ref={forwardedRef} />;
+  }
+);
+
+MenubarArrow.displayName = ARROW_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenubarSubMenu
@@ -509,17 +682,17 @@ function getNextMatch(values: string[], search: string, currentMatch?: string) {
 const Root = Menubar;
 const Menu = MenubarMenu;
 const Trigger = MenubarTrigger;
-// const Portal = MenubarPortal;
+const Portal = MenubarPortal;
 const Content = MenubarContent;
-// const Group = MenubarGroup;
-// const Label = MenubarLabel;
+const Group = MenubarGroup;
+const Label = MenubarLabel;
 const Item = MenubarItem;
-// const CheckboxItem = MenubarCheckboxItem;
-// const RadioGroup = MenubarRadioGroup;
-// const RadioItem = MenubarRadioItem;
-// const ItemIndicator = MenubarItemIndicator;
-// const Separator = MenubarSeparator;
-// const Arrow = MenubarArrow;
+const CheckboxItem = MenubarCheckboxItem;
+const RadioGroup = MenubarRadioGroup;
+const RadioItem = MenubarRadioItem;
+const ItemIndicator = MenubarItemIndicator;
+const Separator = MenubarSeparator;
+const Arrow = MenubarArrow;
 const SubMenu = MenubarSubMenu;
 const SubTrigger = MenubarSubTrigger;
 const SubContent = MenubarSubContent;
@@ -530,17 +703,17 @@ export {
   Menubar,
   MenubarMenu, // TODO maybe this should be called tab ? 🤔
   MenubarTrigger,
-  // MenubarPortal,
+  MenubarPortal,
   MenubarContent,
-  // MenubarGroup,
-  // MenubarLabel,
+  MenubarGroup,
+  MenubarLabel,
   MenubarItem,
-  // MenubarCheckboxItem,
-  // MenubarRadioGroup,
-  // MenubarRadioItem,
-  // MenubarItemIndicator,
-  // MenubarSeparator
-  // MenubarArrow
+  MenubarCheckboxItem,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarItemIndicator,
+  MenubarSeparator,
+  MenubarArrow,
   MenubarSubMenu,
   MenubarSubTrigger,
   MenubarSubContent,
@@ -548,17 +721,17 @@ export {
   Root,
   Menu,
   Trigger,
-  // Portal,
+  Portal,
   Content,
-  // Group,
-  // Label,
+  Group,
+  Label,
   Item,
-  // CheckboxItem,
-  // RadioGroup,
-  // RadioItem,
-  // ItemIndicator,
-  // Separator,
-  // Arrow,
+  CheckboxItem,
+  RadioGroup,
+  RadioItem,
+  ItemIndicator,
+  Separator,
+  Arrow,
   SubMenu,
   SubTrigger,
   SubContent,
@@ -567,17 +740,17 @@ export type {
   MenubarProps,
   MenubarMenuProps,
   MenubarTriggerProps,
-  // MenubarPortalProps,
+  MenubarPortalProps,
   MenubarContentProps,
-  // MenubarGroupProps,
-  // MenubarLabelProps,
+  MenubarGroupProps,
+  MenubarLabelProps,
   MenubarItemProps,
-  // MenubarCheckboxItemProps,
-  // MenubarRadioGroupProps,
-  // MenubarRadioItemProps,
-  // MenubarItemIndicatorProps,
-  // MenubarSeparatorProps,
-  // MenubarArrowProps,
+  MenubarCheckboxItemProps,
+  MenubarRadioGroupProps,
+  MenubarRadioItemProps,
+  MenubarItemIndicatorProps,
+  MenubarSeparatorProps,
+  MenubarArrowProps,
   MenubarSubMenuProps,
   MenubarSubTriggerProps,
   MenubarSubContentProps,
