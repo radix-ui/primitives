@@ -23,12 +23,12 @@ export const Submenus = () => {
             <Menubar.Trigger>A - Menu 1</Menubar.Trigger>
             <Menubar.Content>
               <Menubar.Item>Menu 1 - Item 1</Menubar.Item>
-              <Menubar.Sub>
+              <Menubar.SubMenu>
                 <Menubar.SubTrigger>Menu 1 - Nested Menu</Menubar.SubTrigger>
                 <Menubar.SubContent>
                   <Menubar.Item>Menu 1 - Nested Menu Item</Menubar.Item>
                 </Menubar.SubContent>
-              </Menubar.Sub>
+              </Menubar.SubMenu>
               <Menubar.Item>Menu 1 - Item 2</Menubar.Item>
             </Menubar.Content>
           </Menubar.Menu>
@@ -36,12 +36,12 @@ export const Submenus = () => {
             <Menubar.Trigger>B - Menu 2</Menubar.Trigger>
             <Menubar.Content>
               <Menubar.Item>Menu 2 - Item 1</Menubar.Item>
-              <Menubar.Sub>
+              <Menubar.SubMenu>
                 <Menubar.SubTrigger>Menu 2 - Nested Menu</Menubar.SubTrigger>
                 <Menubar.SubContent>
                   <Menubar.Item>Menu 2 - Nested Menu Item</Menubar.Item>
                 </Menubar.SubContent>
-              </Menubar.Sub>
+              </Menubar.SubMenu>
               <Menubar.Item>Menu 2 - Item 2</Menubar.Item>
             </Menubar.Content>
           </Menubar.Menu>
@@ -49,12 +49,12 @@ export const Submenus = () => {
             <Menubar.Trigger>C - Menu 3</Menubar.Trigger>
             <Menubar.Content>
               <Menubar.Item>Menu 3 - Item 1</Menubar.Item>
-              <Menubar.Sub>
+              <Menubar.SubMenu>
                 <Menubar.SubTrigger>Menu 3 - Nested Menu</Menubar.SubTrigger>
                 <Menubar.SubContent>
                   <Menubar.Item>Menu 3 - Nested Menu Item</Menubar.Item>
                 </Menubar.SubContent>
-              </Menubar.Sub>
+              </Menubar.SubMenu>
               <Menubar.Item>Menu 3 - Item 2</Menubar.Item>
             </Menubar.Content>
           </Menubar.Menu>
