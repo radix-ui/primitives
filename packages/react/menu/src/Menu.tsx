@@ -343,6 +343,7 @@ interface MenuContentImplProps
    * @defaultValue false
    */
   loop?: RovingFocusGroupProps['loop'];
+  onEntryFocus?: RovingFocusGroupProps['onEntryFocus'];
 
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
@@ -483,10 +484,10 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                 loop={loop}
                 currentTabStopId={currentItemId}
                 onCurrentTabStopIdChange={setCurrentItemId}
-                onEntryFocus={(event) => {
+                onEntryFocus={composeEventHandlers(props.onEntryFocus, (event) => {
                   // only focus first item when using keyboard
                   if (!rootContext.isUsingKeyboardRef.current) event.preventDefault();
-                }}
+                })}
               >
                 <PopperPrimitive.Content
                   role="menu"
