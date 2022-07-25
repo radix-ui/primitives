@@ -44,10 +44,11 @@ const [MenubarProvider, useMenubarContext] =
 interface MenubarProps {
   direction?: Direction;
   children?: React.ReactNode;
+  loop?: boolean;
 }
 
 const Menubar: React.FC<MenubarProps> = (props: ScopedProps<MenubarProps>) => {
-  const { __scopeMenubar, direction = 'ltr', children, ...MenubarProps } = props;
+  const { __scopeMenubar, direction = 'ltr', loop = true, children, ...MenubarProps } = props;
   const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenubar);
   const [currentTab, setCurrentTab] = React.useState<HTMLElement | null>(null);
 
@@ -67,7 +68,7 @@ const Menubar: React.FC<MenubarProps> = (props: ScopedProps<MenubarProps>) => {
       <Collection.Provider scope={__scopeMenubar}>
         <RovingFocusGroup.Root
           {...rovingFocusGroupScope}
-          loop
+          loop={loop}
           role="menubar"
           orientation="horizontal"
           {...MenubarProps}
@@ -85,7 +86,11 @@ const Menubar: React.FC<MenubarProps> = (props: ScopedProps<MenubarProps>) => {
 
 const MENU_NAME = 'Menu';
 
-interface MenubarMenuProps extends Radix.PrimitivePropsWithRef<typeof DropdownMenuPrimitive.Root> {}
+interface MenubarMenuProps
+  extends Omit<
+    Radix.PrimitivePropsWithRef<typeof DropdownMenuPrimitive.Root>,
+    'open' | 'defaultOpen'
+  > {}
 
 const [MenuProvider, useMenuContext] = createMenubarContext(MENU_NAME, {
   isInsideContent: false,
