@@ -1,3 +1,9 @@
+import { TEXT } from '../../packages/react/menubar/src/Menubar.stories';
+
+const FIRST_TAB = TEXT.FIRST_MENU_LETTER + TEXT.SEPARATOR + TEXT.FIRST_MENU;
+const MIDDLE_TAB = TEXT.MIDDLE_MENU_LETTER + TEXT.SEPARATOR + TEXT.MIDDLE_MENU;
+const LAST_TAB = TEXT.LAST_MENU_LETTER + TEXT.SEPARATOR + TEXT.LAST_MENU;
+
 describe('DropdownMenu', () => {
   beforeEach(() => {
     cy.visitStory('menubar--submenus');
@@ -12,21 +18,21 @@ describe('DropdownMenu', () => {
     });
 
     it('should navigate the triggers on arrow press', () => {
-      cy.findByText('A - Menu 1').trigger('keydown', { key: 'ArrowRight' });
-      cy.findByText('B - Menu 2').should('have.focus');
-      cy.findByText('C - Menu 3').focus().trigger('keydown', { key: 'ArrowRight' });
-      cy.findByText('A - Menu 1').should('have.focus').trigger('keydown', { key: 'ArrowLeft' });
-      cy.findByText('C - Menu 3').should('have.focus');
+      cy.findByText(FIRST_TAB).trigger('keydown', { key: 'ArrowRight' });
+      cy.findByText(MIDDLE_TAB).should('have.focus');
+      cy.findByText(LAST_TAB).focus().trigger('keydown', { key: 'ArrowRight' });
+      cy.findByText(FIRST_TAB).should('have.focus').trigger('keydown', { key: 'ArrowLeft' });
+      cy.findByText(LAST_TAB).should('have.focus');
     });
 
     it('should provide typeahead behaviour on trigger focus', () => {
-      cy.findByText('A - Menu 1').trigger('keydown', { key: 'B' });
-      cy.findByText('B - Menu 2').should('have.focus');
+      cy.findByText(FIRST_TAB).trigger('keydown', { key: TEXT.MIDDLE_MENU_LETTER });
+      cy.findByText(MIDDLE_TAB).should('have.focus');
     });
 
     describe('Given a submenu user', () => {
       beforeEach(() => {
-        cy.findByText('A - Menu 1').focus().trigger('keydown', { key: 'Enter' });
+        cy.findByText(FIRST_TAB).focus().trigger('keydown', { key: 'Enter' });
       });
 
       it('should provide menubar menu navigation on arrow press', () => {
