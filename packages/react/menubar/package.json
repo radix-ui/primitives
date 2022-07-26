@@ -16,7 +16,13 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10"
+    "@babel/runtime": "^7.13.10",
+    "@radix-ui/react-collection": "workspace:packages/react/collection",
+    "@radix-ui/react-compose-refs": "workspace:packages/react/compose-refs",
+    "@radix-ui/react-context": "workspace:packages/react/context",
+    "@radix-ui/react-dropdown-menu": "workspace:packages/react/dropdown-menu",
+    "@radix-ui/react-primitive": "workspace:packages/react/primitive",
+    "@radix-ui/react-roving-focus": "workspace:packages/react/roving-focus"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0",
