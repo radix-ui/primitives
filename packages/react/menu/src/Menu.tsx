@@ -505,7 +505,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                     const isCharacterKey = event.key.length === 1;
                     if (isKeyDownInside) {
                       // menus should not be navigated using tab key so we prevent it
-                      if (event.key === 'Tab') event.preventDefault();
+                      if (event.key === 'Tab') return;
                       if (!isModifierKey && isCharacterKey) handleTypeaheadSearch(event.key);
                     }
                     // focus first/last item based on key pressed
