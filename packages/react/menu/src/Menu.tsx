@@ -313,7 +313,6 @@ type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLa
 type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 type MenuContentImplPrivateProps = {
-  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
   onDismiss?: DismissableLayerProps['onDismiss'];
   disableOutsidePointerEvents?: DismissableLayerProps['disableOutsidePointerEvents'];
 
@@ -337,6 +336,11 @@ interface MenuContentImplProps
    * Can be prevented.
    */
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+  /**
+   * There are certain primitives in which we need to prevent the focus of a content item
+   * and keep it in its trigger
+   */
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
 
   /**
    * Whether keyboard navigation should loop around
