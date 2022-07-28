@@ -400,6 +400,7 @@ const NavigationMenuTrigger = React.forwardRef<
   const triggerId = makeTriggerId(context.baseId, itemContext.value);
   const contentId = makeContentId(context.baseId, itemContext.value);
   const wasClickCloseRef = React.useRef(false);
+  const wasEscapeCloseRef = React.useRef(false);
   const open = itemContext.value === context.value;
 
   return (
@@ -417,11 +418,12 @@ const NavigationMenuTrigger = React.forwardRef<
             ref={composedRefs}
             onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
               wasClickCloseRef.current = false;
+              wasEscapeCloseRef.current = false;
             })}
             onPointerMove={composeEventHandlers(
               props.onPointerMove,
               whenMouse(() => {
-                if (disabled || wasClickCloseRef.current) return;
+                if (disabled || wasClickCloseRef.current || wasEscapeCloseRef.current) return;
                 context.onItemOver(itemContext.value);
               })
             )}
@@ -441,11 +443,16 @@ const NavigationMenuTrigger = React.forwardRef<
               const entryKey = { horizontal: 'ArrowDown', vertical: verticalEntryKey }[
                 context.orientation
               ];
-
-              if (open && event.key === entryKey) {
-                itemContext.onEntryKeyDown();
-                // Prevent FocusGroupItem from handling the event
-                event.preventDefault();
+              const isEscapeKey = event.key === 'Escape' || event.key === 'Esc';
+              if (open) {
+                if (event.key === entryKey) {
+                  itemContext.onEntryKeyDown();
+                  // Prevent FocusGroupItem from handling the event
+                  event.preventDefault();
+                }
+                if (isEscapeKey) {
+                  wasEscapeCloseRef.current = open;
+                }
               }
             })}
           />
