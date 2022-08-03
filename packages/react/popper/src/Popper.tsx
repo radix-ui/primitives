@@ -8,6 +8,7 @@ import {
   hide,
   arrow as floatingUIarrow,
   flip,
+  size,
 } from '@floating-ui/react-dom';
 import * as ArrowPrimitive from '@radix-ui/react-arrow';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -125,6 +126,10 @@ interface PopperContentProps extends PrimitiveDivProps {
   sticky?: 'partial' | 'always';
   hideWhenDetached?: boolean;
   avoidCollisions?: boolean;
+  /**
+   * Limit the height of the content to the available space.
+   */
+  limitHeightToAvailableSpace?: boolean;
 }
 
 const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
@@ -141,12 +146,14 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       sticky = 'partial',
       hideWhenDetached = false,
       avoidCollisions = true,
+      limitHeightToAvailableSpace = false,
       ...contentProps
     } = props;
 
     const context = usePopperContext(CONTENT_NAME, __scopePopper);
 
     const [content, setContent] = React.useState<HTMLDivElement | null>(null);
+    const [limitedHeight, setLimitedHeight] = React.useState<number | undefined>(undefined);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
 
     const [arrow, setArrow] = React.useState<HTMLSpanElement | null>(null);
@@ -190,6 +197,13 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
         transformOrigin({ arrowWidth, arrowHeight }),
         hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
+        limitHeightToAvailableSpace
+          ? size({
+              apply: ({ availableHeight }) => {
+                setLimitedHeight(availableHeight);
+              },
+            })
+          : undefined,
       ].filter(isDefined),
     });
 
@@ -257,6 +271,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           position: strategy,
           left: 0,
           top: 0,
+          height: limitedHeight,
           transform: isPlaced
             ? `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`
             : 'translate3d(0, -200%, 0)', // keep off the page when measuring

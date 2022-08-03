@@ -334,6 +334,54 @@ export const Chromatic = () => {
     </div>
   );
 };
+
+export const LimitHeightToAvailableSpace = () => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <Scrollable>
+      <Popper.Root>
+        <Popper.Anchor className={anchorClass()} onClick={() => setOpen(true)}>
+          open
+        </Popper.Anchor>
+
+        {open && (
+          <Popper.Content
+            limitHeightToAvailableSpace
+            className={contentClass({
+              size: 'auto',
+            })}
+            sideOffset={5}
+          >
+            <button onClick={() => setOpen(false)}>close</button>
+            <p>
+              Lacinia hendrerit auctor nam quisque augue suscipit feugiat, sit at imperdiet vitae
+              lacus. Dolor sit dui posuere faucibus non pharetra laoreet conubia, augue rhoncus cras
+              nisl sodales proin hac ipsum, per hendrerit sed volutpat natoque curae consectetur.
+              Curae blandit neque vehicula vel mauris vulputate per felis sociosqu, sodales integer
+              sollicitudin id litora accumsan viverra pulvinar, mus non adipiscing dolor facilisis
+              habitasse mi leo. Litora faucibus eu pulvinar tempus gravida iaculis consectetur risus
+              euismod fringilla, dui posuere viverra sapien tortor mattis et dolor tempor sem
+              conubia, taciti sociis mus rhoncus cubilia praesent dapibus aliquet quis. Diam
+              hendrerit aliquam metus dolor fusce lorem, non gravida arcu primis posuere ipsum
+              adipiscing, mus sollicitudin eros lacinia mollis.
+            </p>
+            <p>
+              Habitant fames mi massa mollis fusce congue nascetur magna bibendum inceptos accumsan,
+              potenti ipsum ac sollicitudin taciti dis rhoncus lacinia fermentum placerat. Himenaeos
+              taciti egestas lacinia maecenas ornare ultricies, auctor vitae nulla mi posuere leo
+              mollis, eleifend lacus rutrum ante curabitur. Nullam mi quisque nulla enim pretium
+              facilisi interdum morbi, himenaeos velit fames pellentesque eget nascetur laoreet vel
+              rutrum, malesuada risus ad netus dolor et scelerisque.
+            </p>
+
+            <Popper.Arrow className={arrowClass()} width={20} height={10} />
+          </Popper.Content>
+        )}
+      </Popper.Root>
+    </Scrollable>
+  );
+};
+
 Chromatic.parameters = { chromatic: { disable: false } };
 
 const Scrollable = (props: any) => (
@@ -371,6 +419,7 @@ const contentClass = css({
     size: {
       small: { width: 100, height: 50 },
       large: { width: 300, height: 150 },
+      auto: { width: 300, height: 'calc(100% - 20px)', overflow: 'auto' },
     },
   },
   defaultVariants: {
