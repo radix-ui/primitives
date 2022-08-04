@@ -419,7 +419,7 @@ const contentClass = css({
     size: {
       small: { width: 100, height: 50 },
       large: { width: 300, height: 150 },
-      auto: { width: 300, overflow: 'auto' },
+      auto: { width: 300, height: 'calc(100% - 20px)', overflow: 'auto' },
     },
   },
   defaultVariants: {

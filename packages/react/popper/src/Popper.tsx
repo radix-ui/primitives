@@ -262,10 +262,6 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       ref: composedRefs,
       style: {
         ...contentProps.style,
-        height:
-          contentProps.style?.height ?? limitHeightToAvailableSpace
-            ? `calc(100% - ${arrowSize?.height ?? 0}px)`
-            : undefined,
         // if the PopperContent hasn't been placed yet (not all measurements done)
         // we prevent animations so that users's animation don't kick in too early referring wrong sides
         animation: !isPlaced ? 'none' : undefined,
