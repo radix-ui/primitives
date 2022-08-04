@@ -199,8 +199,15 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
         limitHeightToAvailableSpace
           ? size({
-              apply: ({ availableHeight }) => {
-                setLimitedHeight(availableHeight);
+              ...detectOverflowOptions,
+              apply: ({ availableHeight, elements }) => {
+                if (availableHeight <= elements.floating.clientHeight) {
+                  elements.floating.style.height = `${availableHeight}px`;
+                  setLimitedHeight(availableHeight);
+                } else {
+                  elements.floating.style.height = 'auto';
+                  setLimitedHeight(undefined);
+                }
               },
             })
           : undefined,
@@ -255,6 +262,10 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       ref: composedRefs,
       style: {
         ...contentProps.style,
+        height:
+          contentProps.style?.height ?? limitHeightToAvailableSpace
+            ? `calc(100% - ${arrowSize?.height ?? 0}px)`
+            : undefined,
         // if the PopperContent hasn't been placed yet (not all measurements done)
         // we prevent animations so that users's animation don't kick in too early referring wrong sides
         animation: !isPlaced ? 'none' : undefined,
