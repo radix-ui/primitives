@@ -217,6 +217,8 @@ const Indicator = CheckboxIndicator;
 
 export {
   createCheckboxScope,
+  getState,
+  isIndeterminate,
   //
   Checkbox,
   CheckboxIndicator,
@@ -224,4 +226,4 @@ export {
   Root,
   Indicator,
 };
-export type { CheckboxProps, CheckboxIndicatorProps };
+export type { CheckedState, CheckboxProps, CheckboxIndicatorProps };

@@ -6,6 +6,7 @@ import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { foodGroups } from '../../../../test-data/foods';
 import { classes, TickIcon } from '../../menu/src/Menu.stories';
+import type { CheckedState } from '@radix-ui/react-checkbox';
 
 const { contentClass, itemClass, labelClass, separatorClass, subTriggerClass } = classes;
 
@@ -668,12 +669,20 @@ export const MultipleItemsAsDialogTriggers = () => {
 };
 
 export const CheckboxItems = () => {
-  const checkboxItems = [
-    { label: 'Bold', state: React.useState(false) },
-    { label: 'Italic', state: React.useState(true) },
-    { label: 'Underline', state: React.useState(false) },
-    { label: 'Strikethrough', state: React.useState(false), disabled: true },
+  const corvids = [
+    { label: 'Crows' },
+    { label: 'Ravens' },
+    { label: 'Magpies' },
+    { label: 'Jackdaws' },
   ];
+
+  const [selection, setSelection] = React.useState<string[]>([]);
+
+  const handleSelectAll = () => {
+    setSelection((currentSelection) =>
+      currentSelection.length === corvids.length ? [] : corvids.map((corvid) => corvid.label)
+    );
+  };
 
   return (
     <div style={{ textAlign: 'center', padding: 50 }}>
@@ -681,30 +690,46 @@ export const CheckboxItems = () => {
         <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content className={contentClass()} sideOffset={5}>
-            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('show')}>
-              Show fonts
-            </DropdownMenu.Item>
-            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('bigger')}>
-              Bigger
-            </DropdownMenu.Item>
-            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('smaller')}>
-              Smaller
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator className={separatorClass()} />
-            {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+            <DropdownMenu.Group>
               <DropdownMenu.CheckboxItem
-                key={label}
                 className={itemClass()}
-                checked={checked}
-                onCheckedChange={setChecked}
-                disabled={disabled}
+                checked={
+                  selection.length === corvids.length
+                    ? true
+                    : selection.length
+                    ? 'indeterminate'
+                    : false
+                }
+                onSelect={(e) => e.preventDefault()}
+                onCheckedChange={handleSelectAll}
               >
-                {label}
+                Select all
                 <DropdownMenu.ItemIndicator>
-                  <TickIcon />
+                  {selection.length === corvids.length ? <TickIcon /> : '—'}
                 </DropdownMenu.ItemIndicator>
               </DropdownMenu.CheckboxItem>
-            ))}
+              <DropdownMenu.Separator className={separatorClass()} />
+              {corvids.map(({ label }) => (
+                <DropdownMenu.CheckboxItem
+                  key={label}
+                  className={itemClass()}
+                  checked={selection.includes(label)}
+                  onSelect={(e) => e.preventDefault()}
+                  onCheckedChange={() =>
+                    setSelection((current) =>
+                      current.includes(label)
+                        ? current.filter((el) => el !== label)
+                        : current.concat(label)
+                    )
+                  }
+                >
+                  {label}
+                  <DropdownMenu.ItemIndicator>
+                    <TickIcon />
+                  </DropdownMenu.ItemIndicator>
+                </DropdownMenu.CheckboxItem>
+              ))}
+            </DropdownMenu.Group>
             <DropdownMenu.Arrow />
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
@@ -818,10 +843,10 @@ const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']
 
 export const Chromatic = () => {
   const checkboxItems = [
-    { label: 'Bold', state: React.useState(false) },
-    { label: 'Italic', state: React.useState(true) },
-    { label: 'Underline', state: React.useState(false) },
-    { label: 'Strikethrough', state: React.useState(false), disabled: true },
+    { label: 'Bold', state: React.useState<CheckedState>(false) },
+    { label: 'Italic', state: React.useState<CheckedState>(true) },
+    { label: 'Underline', state: React.useState<CheckedState>(false) },
+    { label: 'Strikethrough', state: React.useState<CheckedState>(false), disabled: true },
   ];
   const files = ['README.md', 'index.js', 'page.css'];
   const [file, setFile] = React.useState(files[1]);

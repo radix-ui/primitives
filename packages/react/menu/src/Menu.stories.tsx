@@ -3,6 +3,7 @@ import { css, keyframes } from '../../../../stitches.config';
 import * as Menu from '@radix-ui/react-menu';
 import { foodGroups } from '../../../../test-data/foods';
 import { DirectionProvider } from '@radix-ui/react-direction';
+import type { CheckedState } from '@radix-ui/react-checkbox';
 
 export default {
   title: 'Components/Menu',
@@ -235,32 +236,46 @@ export const Typeahead = () => (
 );
 
 export const CheckboxItems = () => {
-  const checkboxItems = [
-    { label: 'Bold', state: React.useState(false) },
-    { label: 'Italic', state: React.useState(true) },
-    { label: 'Underline', state: React.useState(false) },
-    { label: 'Strikethrough', state: React.useState(false), disabled: true },
+  const options = [
+    { label: 'Crows' },
+    { label: 'Ravens' },
+    { label: 'Magpies' },
+    { label: 'Jackdaws' },
   ];
+
+  const [selection, setSelection] = React.useState<string[]>([]);
+
+  const handleSelectAll = () => {
+    setSelection((currentSelection) =>
+      currentSelection.length === options.length ? [] : options.map((option) => option.label)
+    );
+  };
 
   return (
     <MenuWithAnchor>
-      <Menu.Item className={itemClass()} onSelect={() => window.alert('show')}>
-        Show fonts
-      </Menu.Item>
-      <Menu.Item className={itemClass()} onSelect={() => window.alert('bigger')}>
-        Bigger
-      </Menu.Item>
-      <Menu.Item className={itemClass()} onSelect={() => window.alert('smaller')}>
-        Smaller
-      </Menu.Item>
+      <Menu.CheckboxItem
+        className={itemClass()}
+        checked={
+          selection.length === options.length ? true : selection.length ? 'indeterminate' : false
+        }
+        onCheckedChange={handleSelectAll}
+      >
+        Select all
+        <Menu.ItemIndicator>
+          {selection.length === options.length ? <TickIcon /> : '—'}
+        </Menu.ItemIndicator>
+      </Menu.CheckboxItem>
       <Menu.Separator className={separatorClass()} />
-      {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+      {options.map(({ label }) => (
         <Menu.CheckboxItem
           key={label}
           className={itemClass()}
-          checked={checked}
-          onCheckedChange={setChecked}
-          disabled={disabled}
+          checked={selection.includes(label)}
+          onCheckedChange={() =>
+            setSelection((current) =>
+              current.includes(label) ? current.filter((el) => el !== label) : current.concat(label)
+            )
+          }
         >
           {label}
           <Menu.ItemIndicator>
@@ -307,10 +322,10 @@ export const Animated = () => {
   const [file, setFile] = React.useState(files[1]);
   const [open, setOpen] = React.useState(true);
   const checkboxItems = [
-    { label: 'Bold', state: React.useState(false) },
-    { label: 'Italic', state: React.useState(true) },
-    { label: 'Underline', state: React.useState(false) },
-    { label: 'Strikethrough', state: React.useState(false), disabled: true },
+    { label: 'Bold', state: React.useState<CheckedState>(false) },
+    { label: 'Italic', state: React.useState<CheckedState>(true) },
+    { label: 'Underline', state: React.useState<CheckedState>(false) },
+    { label: 'Strikethrough', state: React.useState<CheckedState>(false), disabled: true },
   ];
 
   return (

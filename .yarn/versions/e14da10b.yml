@@ -1,0 +1,8 @@
+releases:
+  "@radix-ui/react-checkbox": minor
+  "@radix-ui/react-context-menu": minor
+  "@radix-ui/react-dropdown-menu": minor
+  "@radix-ui/react-menu": minor
+
+declined:
+  - primitives

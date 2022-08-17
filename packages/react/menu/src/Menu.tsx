@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { getState as getCheckedState, isIndeterminate } from '@radix-ui/react-checkbox';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -21,6 +22,7 @@ import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type * as Radix from '@radix-ui/react-primitive';
+import type { CheckedState } from '@radix-ui/react-checkbox';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -746,9 +748,10 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
 const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
 type MenuCheckboxItemElement = MenuItemElement;
+
 interface MenuCheckboxItemProps extends MenuItemProps {
-  checked?: boolean;
-  onCheckedChange?: (checked: boolean) => void;
+  checked?: CheckedState;
+  onCheckedChange?: (checked: CheckedState) => void;
 }
 
 const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxItemProps>(
@@ -758,13 +761,13 @@ const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxI
       <ItemIndicatorProvider scope={props.__scopeMenu} checked={checked}>
         <MenuItem
           role="menuitemcheckbox"
-          aria-checked={checked}
+          aria-checked={isIndeterminate(checked) ? 'mixed' : checked}
           {...checkboxItemProps}
           ref={forwardedRef}
           data-state={getCheckedState(checked)}
           onSelect={composeEventHandlers(
             checkboxItemProps.onSelect,
-            () => onCheckedChange?.(!checked),
+            () => onCheckedChange?.(isIndeterminate(checked) || !checked),
             { checkForDefaultPrevented: false }
           )}
         />
@@ -849,9 +852,16 @@ MenuRadioItem.displayName = RADIO_ITEM_NAME;
 
 const ITEM_INDICATOR_NAME = 'MenuItemIndicator';
 
-const [ItemIndicatorProvider, useItemIndicatorContext] = createMenuContext(ITEM_INDICATOR_NAME, {
-  checked: false,
-});
+type CheckboxContextValue = {
+  checked: CheckedState;
+};
+
+const [ItemIndicatorProvider, useItemIndicatorContext] = createMenuContext<CheckboxContextValue>(
+  ITEM_INDICATOR_NAME,
+  {
+    checked: false,
+  }
+);
 
 type MenuItemIndicatorElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
@@ -868,7 +878,13 @@ const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemInd
     const { __scopeMenu, forceMount, ...itemIndicatorProps } = props;
     const indicatorContext = useItemIndicatorContext(ITEM_INDICATOR_NAME, __scopeMenu);
     return (
-      <Presence present={forceMount || indicatorContext.checked}>
+      <Presence
+        present={
+          forceMount ||
+          isIndeterminate(indicatorContext.checked) ||
+          indicatorContext.checked === true
+        }
+      >
         <Primitive.span
           {...itemIndicatorProps}
           ref={forwardedRef}
@@ -1200,10 +1216,6 @@ MenuSubContent.displayName = SUB_CONTENT_NAME;
 
 function getOpenState(open: boolean) {
   return open ? 'open' : 'closed';
-}
-
-function getCheckedState(checked: boolean) {
-  return checked ? 'checked' : 'unchecked';
 }
 
 function focusFirst(candidates: HTMLElement[]) {
