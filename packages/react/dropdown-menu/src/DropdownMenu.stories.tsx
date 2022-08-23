@@ -6,7 +6,6 @@ import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { foodGroups } from '../../../../test-data/foods';
 import { classes, TickIcon } from '../../menu/src/Menu.stories';
-import type { CheckedState } from '@radix-ui/react-checkbox';
 
 const { contentClass, itemClass, labelClass, separatorClass, subTriggerClass } = classes;
 
@@ -843,10 +842,14 @@ const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']
 
 export const Chromatic = () => {
   const checkboxItems = [
-    { label: 'Bold', state: React.useState<CheckedState>(false) },
-    { label: 'Italic', state: React.useState<CheckedState>(true) },
-    { label: 'Underline', state: React.useState<CheckedState>(false) },
-    { label: 'Strikethrough', state: React.useState<CheckedState>(false), disabled: true },
+    { label: 'Bold', state: React.useState<boolean | 'indeterminate'>(false) },
+    { label: 'Italic', state: React.useState<boolean | 'indeterminate'>(true) },
+    { label: 'Underline', state: React.useState<boolean | 'indeterminate'>(false) },
+    {
+      label: 'Strikethrough',
+      state: React.useState<boolean | 'indeterminate'>(false),
+      disabled: true,
+    },
   ];
   const files = ['README.md', 'index.js', 'page.css'];
   const [file, setFile] = React.useState(files[1]);

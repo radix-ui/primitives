@@ -3,7 +3,6 @@ import { css, keyframes } from '../../../../stitches.config';
 import * as ContextMenu from '@radix-ui/react-context-menu';
 import { foodGroups } from '../../../../test-data/foods';
 import { classes, TickIcon } from '../../menu/src/Menu.stories';
-import type { CheckedState } from '@radix-ui/react-checkbox';
 
 const { contentClass, itemClass, labelClass, separatorClass, subTriggerClass } = classes;
 
@@ -455,10 +454,14 @@ export const WithLabels = () => (
 
 export const CheckboxItems = () => {
   const checkboxItems = [
-    { label: 'Bold', state: React.useState<CheckedState>(false) },
-    { label: 'Italic', state: React.useState<CheckedState>(true) },
-    { label: 'Underline', state: React.useState<CheckedState>(false) },
-    { label: 'Strikethrough', state: React.useState<CheckedState>(false), disabled: true },
+    { label: 'Bold', state: React.useState<boolean | 'indeterminate'>(false) },
+    { label: 'Italic', state: React.useState<boolean | 'indeterminate'>(true) },
+    { label: 'Underline', state: React.useState<boolean | 'indeterminate'>(false) },
+    {
+      label: 'Strikethrough',
+      state: React.useState<boolean | 'indeterminate'>(false),
+      disabled: true,
+    },
   ];
 
   return (

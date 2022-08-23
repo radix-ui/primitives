@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { getState as getCheckedState, isIndeterminate } from '@radix-ui/react-checkbox';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -22,7 +21,6 @@ import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type * as Radix from '@radix-ui/react-primitive';
-import type { CheckedState } from '@radix-ui/react-checkbox';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -749,6 +747,12 @@ const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
 type MenuCheckboxItemElement = MenuItemElement;
 
+type CheckedState = boolean | 'indeterminate';
+
+function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
+  return checked === 'indeterminate';
+}
+
 interface MenuCheckboxItemProps extends MenuItemProps {
   checked?: CheckedState;
   onCheckedChange?: (checked: CheckedState) => void;
@@ -1216,6 +1220,10 @@ MenuSubContent.displayName = SUB_CONTENT_NAME;
 
 function getOpenState(open: boolean) {
   return open ? 'open' : 'closed';
+}
+
+function getCheckedState(checked: CheckedState) {
+  return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
 function focusFirst(candidates: HTMLElement[]) {

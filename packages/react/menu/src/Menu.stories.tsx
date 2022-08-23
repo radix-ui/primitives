@@ -3,7 +3,6 @@ import { css, keyframes } from '../../../../stitches.config';
 import * as Menu from '@radix-ui/react-menu';
 import { foodGroups } from '../../../../test-data/foods';
 import { DirectionProvider } from '@radix-ui/react-direction';
-import type { CheckedState } from '@radix-ui/react-checkbox';
 
 export default {
   title: 'Components/Menu',
@@ -322,10 +321,14 @@ export const Animated = () => {
   const [file, setFile] = React.useState(files[1]);
   const [open, setOpen] = React.useState(true);
   const checkboxItems = [
-    { label: 'Bold', state: React.useState<CheckedState>(false) },
-    { label: 'Italic', state: React.useState<CheckedState>(true) },
-    { label: 'Underline', state: React.useState<CheckedState>(false) },
-    { label: 'Strikethrough', state: React.useState<CheckedState>(false), disabled: true },
+    { label: 'Bold', state: React.useState<boolean | 'indeterminate'>(false) },
+    { label: 'Italic', state: React.useState<boolean | 'indeterminate'>(true) },
+    { label: 'Underline', state: React.useState<boolean | 'indeterminate'>(false) },
+    {
+      label: 'Strikethrough',
+      state: React.useState<boolean | 'indeterminate'>(false),
+      disabled: true,
+    },
   ];
 
   return (
