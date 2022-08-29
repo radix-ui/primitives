@@ -58,7 +58,7 @@ export const Basic = () => {
 export const CustomDurations = () => {
   return (
     <StoryFrame>
-      <NavigationMenu.Root delayDuration={1500} skipDelayDuration={1000}>
+      <NavigationMenu.Root delayDuration={1501} skipDelayDuration={1000}>
         <NavigationMenu.List className={mainListClass()}>
           <NavigationMenu.Item className={expandableItemClass()}>
             <TriggerWithIndicator>Products</TriggerWithIndicator>
