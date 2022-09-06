@@ -126,7 +126,11 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             if (disabled) return;
-            if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
+            if (['Enter', ' '].includes(event.key)) {
+              context.onOpenToggle();
+              // prevent passing keydown event to the focused MenuItem element in Firefox
+              if (!context.open) event.preventDefault();
+            }
             if (event.key === 'ArrowDown') context.onOpenChange(true);
             // prevent keypresses from scrolling window
             if ([' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
