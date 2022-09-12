@@ -205,7 +205,11 @@ export const Submenus = () => {
         <DropdownMenu.Root dir={rtl ? 'rtl' : 'ltr'}>
           <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
           <DropdownMenu.Portal>
-            <DropdownMenu.Content className={contentClass()} sideOffset={5}>
+            <DropdownMenu.Content
+              className={contentClass()}
+              sideOffset={5}
+              containHeight={{ padding: 4 }}
+            >
               <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('new-tab')}>
                 New Tab
               </DropdownMenu.Item>

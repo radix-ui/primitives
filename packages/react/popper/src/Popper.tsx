@@ -8,6 +8,8 @@ import {
   hide,
   arrow as floatingUIarrow,
   flip,
+  size,
+  DetectOverflowOptions,
 } from '@floating-ui/react-dom';
 import * as ArrowPrimitive from '@radix-ui/react-arrow';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -125,6 +127,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   sticky?: 'partial' | 'always';
   hideWhenDetached?: boolean;
   avoidCollisions?: boolean;
+  containHeight?: boolean | Partial<DetectOverflowOptions>;
 }
 
 const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
@@ -141,6 +144,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       sticky = 'partial',
       hideWhenDetached = false,
       avoidCollisions = true,
+      containHeight = false,
       ...contentProps
     } = props;
 
@@ -171,6 +175,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       altBoundary: hasExplicitBoundaries,
     };
 
+    const popperRef = React.useRef<HTMLDivElement | null>(null);
     const { reference, floating, strategy, x, y, placement, middlewareData, update } = useFloating({
       // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
       strategy: 'fixed',
@@ -187,11 +192,25 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
             })
           : undefined,
         arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
-        avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
+        avoidCollisions ? flip(detectOverflowOptions) : undefined,
+        containHeight
+          ? size({
+              ...(typeof containHeight === 'boolean' ? {} : containHeight),
+              apply: ({ availableHeight }) => {
+                if (popperRef.current) {
+                  popperRef.current.style.maxHeight = `${availableHeight}px`;
+                }
+              },
+            })
+          : undefined,
         transformOrigin({ arrowWidth, arrowHeight }),
         hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
       ].filter(isDefined),
     });
+    const floatingRef = useComposedRefs(
+      popperRef,
+      floating as (node: HTMLDivElement | null) => void
+    );
 
     // assign the reference dynamically once `Content` has mounted so we can collocate the logic
     useLayoutEffect(() => {
@@ -251,7 +270,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
 
     return (
       <div
-        ref={floating}
+        ref={floatingRef}
         data-radix-popper-content-wrapper=""
         style={{
           position: strategy,

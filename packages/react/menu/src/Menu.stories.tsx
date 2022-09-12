@@ -416,6 +416,8 @@ const contentClass = css({
   boxShadow: '0 5px 10px 0 rgba(0, 0, 0, 0.1)',
   fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
   fontSize: 13,
+  maxHeight: 'inherit',
+  overflow: 'auto',
   '&:focus-within': {
     borderColor: '$black',
   },
