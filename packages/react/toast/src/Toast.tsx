@@ -681,7 +681,11 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
   return isAnnounced ? null : (
     <Portal asChild>
       <VisuallyHidden {...announceProps}>
-        {renderAnnounceText && `${context.label} ${children}`}
+        {renderAnnounceText && (
+          <>
+            {context.label} {children}
+          </>
+        )}
       </VisuallyHidden>
     </Portal>
   );
