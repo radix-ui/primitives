@@ -154,6 +154,22 @@ export const KeyChange = () => {
   );
 };
 
+export const PauseResumeProps = () => {
+  const [toastCount, setToastCount] = React.useState(0);
+
+  return (
+    <Toast.Provider>
+      <button onClick={() => setToastCount((count) => count + 1)}>Add toast</button>
+
+      {[...Array(toastCount)].map((_, index) => (
+        <ToastWithProgress key={index} />
+      ))}
+
+      <Toast.Viewport className={viewportClass()} />
+    </Toast.Provider>
+  );
+};
+
 type Direction = React.ComponentProps<typeof Toast.Provider>['swipeDirection'];
 
 export const Animated = () => {
@@ -445,6 +461,32 @@ const ToastSubscribeSuccess = (props: React.ComponentProps<typeof Toast.Root>) =
   </Toast.Root>
 );
 
+const ToastWithProgress = (props: React.ComponentProps<typeof Toast.Root>) => {
+  const [paused, setPaused] = React.useState(false);
+  const duration = 3000;
+
+  return (
+    <Toast.Root
+      className={rootClass()}
+      duration={duration}
+      onPause={() => setPaused(true)}
+      onResume={() => setPaused(false)}
+      {...props}
+    >
+      <Toast.Description>Successfully saved</Toast.Description>
+      <div className={progressBarClass()}>
+        <div
+          className={progressBarInnerClass()}
+          style={{
+            animationDuration: duration - 100 + 'ms',
+            animationPlayState: paused ? 'paused' : 'running',
+          }}
+        />
+      </div>
+    </Toast.Root>
+  );
+};
+
 const VIEWPORT_PADDING = 10;
 
 const viewportClass = css({
@@ -462,6 +504,8 @@ const viewportClass = css({
 });
 
 const rootClass = css({
+  position: 'relative',
+  overflow: 'hidden',
   listStyle: 'none',
   width: 230,
   borderRadius: 4,
@@ -584,6 +628,28 @@ const animatedRootClass = css(rootClass, {
       animationName: slideDown,
     },
   },
+});
+
+const loading = keyframes({
+  from: { transform: 'translateX(-100%)' },
+  to: { transform: 'translateX(0%)' },
+});
+
+const progressBarClass = css({
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  height: 2,
+  overflow: 'hidden',
+  backgroundColor: '$gray100',
+});
+
+const progressBarInnerClass = css({
+  height: '100%',
+  backgroundColor: '$green',
+  animationName: `${loading}`,
+  animationTimingFunction: 'linear',
 });
 
 const chromaticViewport = css({
