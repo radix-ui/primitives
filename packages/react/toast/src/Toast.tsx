@@ -831,13 +831,14 @@ function getAnnounceTextContent(container: HTMLElement) {
       const isHidden = node.ariaHidden || node.hidden || node.style.display === 'none';
       const isExcluded = node.dataset.radixToastAnnounceExclude === '';
 
-      if (!isHidden && isExcluded) {
-        const altText = node.dataset.radixToastAnnounceAlt;
-        if (altText) textContent.push(altText);
-        return;
+      if (!isHidden) {
+        if (isExcluded) {
+          const altText = node.dataset.radixToastAnnounceAlt;
+          if (altText) textContent.push(altText);
+        } else {
+          textContent.push(...getAnnounceTextContent(node));
+        }
       }
-
-      if (!isHidden) textContent.push(...getAnnounceTextContent(node));
     }
   });
 
