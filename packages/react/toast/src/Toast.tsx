@@ -384,6 +384,8 @@ const Toast = React.forwardRef<ToastElement, ToastProps>(
           {...toastProps}
           ref={forwardedRef}
           onClose={() => setOpen(false)}
+          onPause={useCallbackRef(props.onPause)}
+          onResume={useCallbackRef(props.onResume)}
           onSwipeStart={composeEventHandlers(props.onSwipeStart, (event) => {
             event.currentTarget.setAttribute('data-swipe', 'start');
           })}
@@ -440,6 +442,8 @@ interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
    */
   duration?: number;
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  onPause?(): void;
+  onResume?(): void;
   onSwipeStart?(event: SwipeEvent): void;
   onSwipeMove?(event: SwipeEvent): void;
   onSwipeCancel?(event: SwipeEvent): void;
@@ -455,6 +459,8 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       open,
       onClose,
       onEscapeKeyDown,
+      onPause,
+      onResume,
       onSwipeStart,
       onSwipeMove,
       onSwipeCancel,
@@ -494,11 +500,13 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       if (viewport) {
         const handleResume = () => {
           startTimer(closeTimerRemainingTimeRef.current);
+          onResume?.();
         };
         const handlePause = () => {
           const elapsedTime = new Date().getTime() - closeTimerStartTimeRef.current;
           closeTimerRemainingTimeRef.current = closeTimerRemainingTimeRef.current - elapsedTime;
           window.clearTimeout(closeTimerRef.current);
+          onPause?.();
         };
         viewport.addEventListener(VIEWPORT_PAUSE, handlePause);
         viewport.addEventListener(VIEWPORT_RESUME, handleResume);
@@ -507,7 +515,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
           viewport.removeEventListener(VIEWPORT_RESUME, handleResume);
         };
       }
-    }, [context.viewport, duration, startTimer]);
+    }, [context.viewport, duration, onPause, onResume, startTimer]);
 
     // start timer when toast opens or duration changes.
     // we include `open` in deps because closed !== unmounted when animating
