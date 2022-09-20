@@ -805,17 +805,42 @@ const ToastAnnounceExclude = React.forwardRef<
   ToastAnnounceExcludeElement,
   ToastAnnounceExcludeProps
 >((props: ScopedProps<ToastAnnounceExcludeProps>, forwardedRef) => {
-  const { __scopeToast, altText, ...announceHiddenProps } = props;
+  const { __scopeToast, altText, ...announceExcludeProps } = props;
 
   return (
     <Primitive.div
-      data-radix-toast-announce-exclude={altText ? undefined : ''}
+      data-radix-toast-announce-exclude=""
       data-radix-toast-announce-alt={altText || undefined}
-      {...announceHiddenProps}
+      {...announceExcludeProps}
       ref={forwardedRef}
     />
   );
 });
+
+function getAnnounceTextContent(container: HTMLElement) {
+  const textContent: string[] = [];
+  const childNodes = Array.from(container.childNodes);
+
+  childNodes.forEach((node) => {
+    if (node.nodeType === node.TEXT_NODE && node.textContent) textContent.push(node.textContent);
+    if (isHTMLElement(node)) {
+      const isHidden = node.ariaHidden || node.hidden || node.style.display === 'none';
+      const isExcluded = node.dataset.radixToastAnnounceExclude === '';
+
+      if (!isHidden && isExcluded) {
+        const altText = node.dataset.radixToastAnnounceAlt;
+        if (altText) textContent.push(altText);
+        return;
+      }
+
+      if (!isHidden) textContent.push(...getAnnounceTextContent(node));
+    }
+  });
+
+  // We return a collection of text rather than a single concatenated string.
+  // This allows SR VO to naturally pause break between nodes while announcing.
+  return textContent;
+}
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -865,31 +890,6 @@ function useNextFrame(callback = () => {}) {
       window.cancelAnimationFrame(raf2);
     };
   }, [fn]);
-}
-
-function getAnnounceTextContent(container: HTMLElement) {
-  const textContent: string[] = [];
-  const childNodes = Array.from(container.childNodes);
-
-  childNodes.forEach((node) => {
-    if (node.nodeType === node.TEXT_NODE && node.textContent) textContent.push(node.textContent);
-    if (isHTMLElement(node)) {
-      const isHidden =
-        node.ariaHidden ||
-        node.hidden ||
-        node.style.display === 'none' ||
-        node.dataset.radixToastAnnounceExclude === '';
-
-      const altText = node.dataset.radixToastAnnounceAlt;
-      const textNodes = altText ? [altText] : getAnnounceTextContent(node);
-
-      if (!isHidden) textContent.push(...textNodes);
-    }
-  });
-
-  // We return a collection of text rather than a single concatenated string.
-  // This allows SR VO to naturally pause break between nodes while announcing.
-  return textContent;
 }
 
 function isHTMLElement(node: any): node is HTMLElement {
