@@ -4,7 +4,10 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 /**
  * Listens for when the escape key is down
  */
-function useEscapeKeydown(onEscapeKeyDownProp?: (event: KeyboardEvent) => void) {
+function useEscapeKeydown(
+  onEscapeKeyDownProp?: (event: KeyboardEvent) => void,
+  ownerDocument: Document = document
+) {
   const onEscapeKeyDown = useCallbackRef(onEscapeKeyDownProp);
 
   React.useEffect(() => {
@@ -13,9 +16,9 @@ function useEscapeKeydown(onEscapeKeyDownProp?: (event: KeyboardEvent) => void) 
         onEscapeKeyDown(event);
       }
     };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onEscapeKeyDown]);
+    ownerDocument.addEventListener('keydown', handleKeyDown);
+    return () => ownerDocument.removeEventListener('keydown', handleKeyDown);
+  }, [onEscapeKeyDown, ownerDocument]);
 }
 
 export { useEscapeKeydown };
