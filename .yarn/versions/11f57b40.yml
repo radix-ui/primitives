@@ -1,0 +1,13 @@
+releases:
+  "@radix-ui/react-context-menu": minor
+  "@radix-ui/react-dropdown-menu": minor
+  "@radix-ui/react-hover-card": minor
+  "@radix-ui/react-menu": minor
+  "@radix-ui/react-menubar": minor
+  "@radix-ui/react-popover": minor
+  "@radix-ui/react-popper": minor
+  "@radix-ui/react-select": minor
+  "@radix-ui/react-tooltip": minor
+
+declined:
+  - primitives

@@ -126,7 +126,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   collisionPadding?: number | Partial<Record<Side, number>>;
   sticky?: 'partial' | 'always';
   hideWhenDetached?: boolean;
-  avoidCollisions?: boolean;
+  avoidCollisions?: boolean | 'off' | 'flip' | 'shift' | 'auto';
   onPlaced?: () => void;
 }
 
@@ -143,7 +143,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       collisionPadding: collisionPaddingProp = 0,
       sticky = 'partial',
       hideWhenDetached = false,
-      avoidCollisions = true,
+      avoidCollisions = 'auto',
       onPlaced,
       ...contentProps
     } = props;
@@ -159,6 +159,9 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     const arrowHeight = arrowSize?.height ?? 0;
 
     const desiredPlacement = (side + (align !== 'center' ? '-' + align : '')) as Placement;
+
+    const avoidCollisionsMode =
+      typeof avoidCollisions === 'string' ? avoidCollisions : avoidCollisions ? 'auto' : 'off';
 
     const collisionPadding =
       typeof collisionPaddingProp === 'number'
@@ -183,7 +186,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       middleware: [
         anchorCssProperties(),
         offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
-        avoidCollisions
+        avoidCollisionsMode === 'auto' || avoidCollisionsMode === 'shift'
           ? shift({
               mainAxis: true,
               crossAxis: false,
@@ -192,7 +195,9 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
             })
           : undefined,
         arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
-        avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
+        avoidCollisionsMode === 'auto' || avoidCollisionsMode === 'flip'
+          ? flip({ ...detectOverflowOptions })
+          : undefined,
         size({
           ...detectOverflowOptions,
           apply: ({ elements, availableWidth: width, availableHeight: height }) => {
