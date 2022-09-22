@@ -173,36 +173,76 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
     React.useEffect(() => {
       const wrapper = wrapperRef.current;
       const viewport = ref.current;
-      if (wrapper && viewport) {
+      if (hasToasts && wrapper && viewport) {
         const handlePause = () => {
-          const pauseEvent = new CustomEvent(VIEWPORT_PAUSE);
-          viewport.dispatchEvent(pauseEvent);
-          context.isClosePausedRef.current = true;
+          if (!context.isClosePausedRef.current) {
+            const pauseEvent = new CustomEvent(VIEWPORT_PAUSE);
+            viewport.dispatchEvent(pauseEvent);
+            context.isClosePausedRef.current = true;
+          }
         };
 
         const handleResume = () => {
-          const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
-          viewport.dispatchEvent(resumeEvent);
-          context.isClosePausedRef.current = false;
+          if (context.isClosePausedRef.current) {
+            const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
+            viewport.dispatchEvent(resumeEvent);
+            context.isClosePausedRef.current = false;
+          }
+        };
+
+        const elementIsFocusProxy = (element: HTMLElement | null) => {
+          const tailProxyNode = tailFocusProxyRef.current;
+          const headProxyNode = headFocusProxyRef.current;
+          return element === tailProxyNode || element === headProxyNode;
+        };
+
+        const handleFocusOutResume = (event: FocusEvent) => {
+          const nextFocusedElement = event.relatedTarget as HTMLElement;
+
+          // Only attempt to resume when focus moves out of the wrapper
+          if (!wrapper.contains(nextFocusedElement)) {
+            const prevFocusedElement = event.target as HTMLElement;
+            const prevFocusedElementIsProxy = elementIsFocusProxy(prevFocusedElement);
+
+            // activeElement called within `focusout` will always return `document.body` unless focus
+            // is within the wrapper and the user clicks outside of the window,
+            // we use this to determine the intent by which `focusout` was dispatched
+            const activeElementIsInWrapper = wrapper.contains(document.activeElement);
+            const hasClickedOutOfWindow = activeElementIsInWrapper && nextFocusedElement === null;
+            const hasTabbedOutOfWindow = prevFocusedElementIsProxy && nextFocusedElement === null;
+
+            // If the intent is leaving the window then we prevent dispatching resume
+            // as window.blur will handle this event instead
+            if (hasTabbedOutOfWindow || hasClickedOutOfWindow) return;
+
+            handleResume();
+          }
+        };
+
+        const handleWindowFocusResume = () => {
+          // If focus was within the wrapper prior to leaving the window then we want to
+          // prevent dispatching a duplicate resume event as that will already be
+          // being handled by the `focusin` event
+          if (!wrapper.contains(document.activeElement)) handleResume();
         };
 
         // Toasts are not in the viewport React tree so we need to bind DOM events
         wrapper.addEventListener('focusin', handlePause);
-        wrapper.addEventListener('focusout', handleResume);
-        wrapper.addEventListener('pointerenter', handlePause);
+        wrapper.addEventListener('focusout', handleFocusOutResume);
+        wrapper.addEventListener('pointermove', handlePause);
         wrapper.addEventListener('pointerleave', handleResume);
         window.addEventListener('blur', handlePause);
-        window.addEventListener('focus', handleResume);
+        window.addEventListener('focus', handleWindowFocusResume);
         return () => {
           wrapper.removeEventListener('focusin', handlePause);
-          wrapper.removeEventListener('focusout', handleResume);
-          wrapper.removeEventListener('pointerenter', handlePause);
+          wrapper.removeEventListener('focusout', handleFocusOutResume);
+          wrapper.removeEventListener('pointermove', handlePause);
           wrapper.removeEventListener('pointerleave', handleResume);
           window.removeEventListener('blur', handlePause);
-          window.removeEventListener('focus', handleResume);
+          window.removeEventListener('focus', handleWindowFocusResume);
         };
       }
-    }, [context.isClosePausedRef]);
+    }, [hasToasts, context.isClosePausedRef]);
 
     const getSortedTabbableCandidates = React.useCallback(
       ({ tabbingDirection }: { tabbingDirection: 'forwards' | 'backwards' }) => {
