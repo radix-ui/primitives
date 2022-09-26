@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-context-menu",
-  "version": "1.0.1-rc.7",
+  "version": "1.0.1-rc.8",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
