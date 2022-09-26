@@ -173,36 +173,50 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
     React.useEffect(() => {
       const wrapper = wrapperRef.current;
       const viewport = ref.current;
-      if (wrapper && viewport) {
+      if (hasToasts && wrapper && viewport) {
         const handlePause = () => {
-          const pauseEvent = new CustomEvent(VIEWPORT_PAUSE);
-          viewport.dispatchEvent(pauseEvent);
-          context.isClosePausedRef.current = true;
+          if (!context.isClosePausedRef.current) {
+            const pauseEvent = new CustomEvent(VIEWPORT_PAUSE);
+            viewport.dispatchEvent(pauseEvent);
+            context.isClosePausedRef.current = true;
+          }
         };
 
         const handleResume = () => {
-          const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
-          viewport.dispatchEvent(resumeEvent);
-          context.isClosePausedRef.current = false;
+          if (context.isClosePausedRef.current) {
+            const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
+            viewport.dispatchEvent(resumeEvent);
+            context.isClosePausedRef.current = false;
+          }
+        };
+
+        const handleFocusOutResume = (event: FocusEvent) => {
+          const isFocusMovingOutside = !wrapper.contains(event.relatedTarget as HTMLElement);
+          if (isFocusMovingOutside) handleResume();
+        };
+
+        const handlePointerLeaveResume = () => {
+          const isFocusInside = wrapper.contains(document.activeElement);
+          if (!isFocusInside) handleResume();
         };
 
         // Toasts are not in the viewport React tree so we need to bind DOM events
         wrapper.addEventListener('focusin', handlePause);
-        wrapper.addEventListener('focusout', handleResume);
-        wrapper.addEventListener('pointerenter', handlePause);
-        wrapper.addEventListener('pointerleave', handleResume);
+        wrapper.addEventListener('focusout', handleFocusOutResume);
+        wrapper.addEventListener('pointermove', handlePause);
+        wrapper.addEventListener('pointerleave', handlePointerLeaveResume);
         window.addEventListener('blur', handlePause);
         window.addEventListener('focus', handleResume);
         return () => {
           wrapper.removeEventListener('focusin', handlePause);
-          wrapper.removeEventListener('focusout', handleResume);
-          wrapper.removeEventListener('pointerenter', handlePause);
-          wrapper.removeEventListener('pointerleave', handleResume);
+          wrapper.removeEventListener('focusout', handleFocusOutResume);
+          wrapper.removeEventListener('pointermove', handlePause);
+          wrapper.removeEventListener('pointerleave', handlePointerLeaveResume);
           window.removeEventListener('blur', handlePause);
           window.removeEventListener('focus', handleResume);
         };
       }
-    }, [context.isClosePausedRef]);
+    }, [hasToasts, context.isClosePausedRef]);
 
     const getSortedTabbableCandidates = React.useCallback(
       ({ tabbingDirection }: { tabbingDirection: 'forwards' | 'backwards' }) => {
