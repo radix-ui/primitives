@@ -5,7 +5,6 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
-import { useLabelContext } from '@radix-ui/react-label';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 
@@ -44,7 +43,6 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
   (props: ScopedProps<CheckboxProps>, forwardedRef) => {
     const {
       __scopeCheckbox,
-      'aria-labelledby': ariaLabelledby,
       name,
       checked: checkedProp,
       defaultChecked,
@@ -56,8 +54,6 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
     } = props;
     const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
-    const labelId = useLabelContext(button);
-    const labelledBy = ariaLabelledby || labelId;
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
     const isFormControl = button ? Boolean(button.closest('form')) : true;
@@ -73,7 +69,6 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
           type="button"
           role="checkbox"
           aria-checked={isIndeterminate(checked) ? 'mixed' : checked}
-          aria-labelledby={labelledBy}
           aria-required={required}
           data-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
