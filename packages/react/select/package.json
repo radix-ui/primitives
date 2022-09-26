@@ -27,7 +27,6 @@
     "@radix-ui/react-focus-guards": "workspace:*",
     "@radix-ui/react-focus-scope": "workspace:*",
     "@radix-ui/react-id": "workspace:*",
-    "@radix-ui/react-label": "workspace:*",
     "@radix-ui/react-portal": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",

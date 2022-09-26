@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { useLabelContext } from '@radix-ui/react-label';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -57,7 +56,6 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
     const {
       __scopeRadioGroup,
       name,
-      'aria-labelledby': ariaLabelledby,
       defaultValue,
       value: valueProp,
       required = false,
@@ -67,8 +65,6 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
       onValueChange,
       ...groupProps
     } = props;
-    const labelId = useLabelContext();
-    const labelledBy = ariaLabelledby || labelId;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
     const direction = useDirection(dir);
     const [value, setValue] = useControllableState({
@@ -96,7 +92,6 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
             role="radiogroup"
             aria-required={required}
             aria-orientation={orientation}
-            aria-labelledby={labelledBy}
             dir={direction}
             {...groupProps}
             ref={forwardedRef}

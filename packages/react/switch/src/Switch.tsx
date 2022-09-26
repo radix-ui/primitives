@@ -6,7 +6,6 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
-import { useLabelContext } from '@radix-ui/react-label';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -36,7 +35,6 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
   (props: ScopedProps<SwitchProps>, forwardedRef) => {
     const {
       __scopeSwitch,
-      'aria-labelledby': ariaLabelledby,
       name,
       checked: checkedProp,
       defaultChecked,
@@ -48,8 +46,6 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
     } = props;
     const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
-    const labelId = useLabelContext(button);
-    const labelledBy = ariaLabelledby || labelId;
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
     const isFormControl = button ? Boolean(button.closest('form')) : true;
@@ -65,7 +61,6 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
           type="button"
           role="switch"
           aria-checked={checked}
-          aria-labelledby={labelledBy}
           aria-required={required}
           data-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}

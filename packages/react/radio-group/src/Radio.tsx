@@ -6,7 +6,6 @@ import { useSize } from '@radix-ui/react-use-size';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
-import { useLabelContext } from '@radix-ui/react-label';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -35,7 +34,6 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
   (props: ScopedProps<RadioProps>, forwardedRef) => {
     const {
       __scopeRadio,
-      'aria-labelledby': ariaLabelledby,
       name,
       checked = false,
       required,
@@ -46,8 +44,6 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
     } = props;
     const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
-    const labelId = useLabelContext(button);
-    const labelledBy = ariaLabelledby || labelId;
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
     const isFormControl = button ? Boolean(button.closest('form')) : true;
@@ -58,7 +54,6 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
           type="button"
           role="radio"
           aria-checked={checked}
-          aria-labelledby={labelledBy}
           data-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
