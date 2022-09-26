@@ -190,40 +190,11 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           }
         };
 
-        const elementIsFocusProxy = (element: HTMLElement | null) => {
-          const tailProxyNode = tailFocusProxyRef.current;
-          const headProxyNode = headFocusProxyRef.current;
-          return element === tailProxyNode || element === headProxyNode;
-        };
-
         const handleFocusOutResume = (event: FocusEvent) => {
-          const nextFocusedElement = event.relatedTarget as HTMLElement;
-
-          // Only attempt to resume when focus moves out of the wrapper
-          if (!wrapper.contains(nextFocusedElement)) {
-            const prevFocusedElement = event.target as HTMLElement;
-            const prevFocusedElementIsProxy = elementIsFocusProxy(prevFocusedElement);
-
-            // activeElement called within `focusout` will always return `document.body` unless focus
-            // is within the wrapper and the user clicks outside of the window,
-            // we use this to determine the intent by which `focusout` was dispatched
-            const activeElementIsInWrapper = wrapper.contains(document.activeElement);
-            const hasClickedOutOfWindow = activeElementIsInWrapper && nextFocusedElement === null;
-            const hasTabbedOutOfWindow = prevFocusedElementIsProxy && nextFocusedElement === null;
-
-            // If the intent is leaving the window then we prevent dispatching resume
-            // as window.blur will handle this event instead
-            if (hasTabbedOutOfWindow || hasClickedOutOfWindow) return;
-
+          // Only resume when focus moves out of the wrapper
+          if (!wrapper.contains(event.relatedTarget as HTMLElement)) {
             handleResume();
           }
-        };
-
-        const handleWindowFocusResume = () => {
-          // If focus was within the wrapper prior to leaving the window then we want to
-          // prevent dispatching a duplicate resume event as that will already be
-          // being handled by the `focusin` event
-          if (!wrapper.contains(document.activeElement)) handleResume();
         };
 
         // Toasts are not in the viewport React tree so we need to bind DOM events
@@ -232,14 +203,14 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         wrapper.addEventListener('pointermove', handlePause);
         wrapper.addEventListener('pointerleave', handleResume);
         window.addEventListener('blur', handlePause);
-        window.addEventListener('focus', handleWindowFocusResume);
+        window.addEventListener('focus', handleResume);
         return () => {
           wrapper.removeEventListener('focusin', handlePause);
           wrapper.removeEventListener('focusout', handleFocusOutResume);
           wrapper.removeEventListener('pointermove', handlePause);
           wrapper.removeEventListener('pointerleave', handleResume);
           window.removeEventListener('blur', handlePause);
-          window.removeEventListener('focus', handleWindowFocusResume);
+          window.removeEventListener('focus', handleResume);
         };
       }
     }, [hasToasts, context.isClosePausedRef]);
