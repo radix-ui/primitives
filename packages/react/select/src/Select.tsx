@@ -232,10 +232,13 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         data-placeholder={context.value === undefined ? '' : undefined}
         {...triggerProps}
         ref={composedRefs}
+        // Enable compatibility with native label or custom `Label` "click" for Safari:
         onClick={composeEventHandlers(triggerProps.onClick, (event) => {
-          // enable compatibility with native label or custom `Label` "click"
-          // this doesn't create any other side-effect because we are preventing default
-          // in `onPointerDown` so effectively this only runs for a label "click"
+          // Whilst browsers generally have no issue focusing the trigger when clicking
+          // on a label, Safari seems to struggle with the fact that there's no `onClick`.
+          // We force `focus` in this case. Note: this doesn't create any other side-effect
+          // because we are preventing default in `onPointerDown` so effectively
+          // this only runs for a label "click"
           event.currentTarget.focus();
         })}
         onPointerDown={composeEventHandlers(triggerProps.onPointerDown, (event) => {
