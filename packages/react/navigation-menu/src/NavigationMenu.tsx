@@ -443,15 +443,14 @@ const NavigationMenuTrigger = React.forwardRef<
               const entryKey = { horizontal: 'ArrowDown', vertical: verticalEntryKey }[
                 context.orientation
               ];
-              const isEscapeKey = event.key === 'Escape' || event.key === 'Esc';
               if (open) {
                 if (event.key === entryKey) {
                   itemContext.onEntryKeyDown();
                   // Prevent FocusGroupItem from handling the event
                   event.preventDefault();
                 }
-                if (isEscapeKey) {
-                  wasEscapeCloseRef.current = open;
+                if (event.key === 'Escape') {
+                  wasEscapeCloseRef.current = true;
                 }
               }
             })}
