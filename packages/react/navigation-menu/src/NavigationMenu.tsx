@@ -448,8 +448,7 @@ const NavigationMenuTrigger = React.forwardRef<
                   itemContext.onEntryKeyDown();
                   // Prevent FocusGroupItem from handling the event
                   event.preventDefault();
-                }
-                if (event.key === 'Escape') {
+                } else if (event.key === 'Escape') {
                   wasEscapeCloseRef.current = true;
                 }
               }
