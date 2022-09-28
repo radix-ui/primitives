@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-select",
-  "version": "1.0.1-rc.2",
+  "version": "1.0.1-rc.8",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -27,7 +27,6 @@
     "@radix-ui/react-focus-guards": "workspace:*",
     "@radix-ui/react-focus-scope": "workspace:*",
     "@radix-ui/react-id": "workspace:*",
-    "@radix-ui/react-label": "workspace:*",
     "@radix-ui/react-portal": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",

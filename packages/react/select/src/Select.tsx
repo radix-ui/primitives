@@ -10,7 +10,6 @@ import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
-import { useLabelContext } from '@radix-ui/react-label';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Slot } from '@radix-ui/react-slot';
@@ -197,17 +196,10 @@ interface SelectTriggerProps extends PrimitiveButtonProps {}
 
 const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>(
   (props: ScopedProps<SelectTriggerProps>, forwardedRef) => {
-    const {
-      __scopeSelect,
-      disabled = false,
-      'aria-labelledby': ariaLabelledby,
-      ...triggerProps
-    } = props;
+    const { __scopeSelect, disabled = false, ...triggerProps } = props;
     const context = useSelectContext(TRIGGER_NAME, __scopeSelect);
     const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
     const getItems = useCollection(__scopeSelect);
-    const labelId = useLabelContext(context.trigger);
-    const labelledBy = ariaLabelledby || labelId;
 
     const [searchRef, handleTypeaheadSearch, resetTypeahead] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
@@ -233,7 +225,6 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         aria-controls={context.contentId}
         aria-expanded={context.open}
         aria-autocomplete="none"
-        aria-labelledby={labelledBy}
         dir={context.dir}
         data-state={context.open ? 'open' : 'closed'}
         disabled={disabled}
@@ -241,6 +232,15 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         data-placeholder={context.value === undefined ? '' : undefined}
         {...triggerProps}
         ref={composedRefs}
+        // Enable compatibility with native label or custom `Label` "click" for Safari:
+        onClick={composeEventHandlers(triggerProps.onClick, (event) => {
+          // Whilst browsers generally have no issue focusing the trigger when clicking
+          // on a label, Safari seems to struggle with the fact that there's no `onClick`.
+          // We force `focus` in this case. Note: this doesn't create any other side-effect
+          // because we are preventing default in `onPointerDown` so effectively
+          // this only runs for a label "click"
+          event.currentTarget.focus();
+        })}
         onPointerDown={composeEventHandlers(triggerProps.onPointerDown, (event) => {
           // prevent implicit pointer capture
           // https://www.w3.org/TR/pointerevents3/#implicit-pointer-capture

@@ -173,36 +173,50 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
     React.useEffect(() => {
       const wrapper = wrapperRef.current;
       const viewport = ref.current;
-      if (wrapper && viewport) {
+      if (hasToasts && wrapper && viewport) {
         const handlePause = () => {
-          const pauseEvent = new CustomEvent(VIEWPORT_PAUSE);
-          viewport.dispatchEvent(pauseEvent);
-          context.isClosePausedRef.current = true;
+          if (!context.isClosePausedRef.current) {
+            const pauseEvent = new CustomEvent(VIEWPORT_PAUSE);
+            viewport.dispatchEvent(pauseEvent);
+            context.isClosePausedRef.current = true;
+          }
         };
 
         const handleResume = () => {
-          const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
-          viewport.dispatchEvent(resumeEvent);
-          context.isClosePausedRef.current = false;
+          if (context.isClosePausedRef.current) {
+            const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
+            viewport.dispatchEvent(resumeEvent);
+            context.isClosePausedRef.current = false;
+          }
+        };
+
+        const handleFocusOutResume = (event: FocusEvent) => {
+          const isFocusMovingOutside = !wrapper.contains(event.relatedTarget as HTMLElement);
+          if (isFocusMovingOutside) handleResume();
+        };
+
+        const handlePointerLeaveResume = () => {
+          const isFocusInside = wrapper.contains(document.activeElement);
+          if (!isFocusInside) handleResume();
         };
 
         // Toasts are not in the viewport React tree so we need to bind DOM events
         wrapper.addEventListener('focusin', handlePause);
-        wrapper.addEventListener('focusout', handleResume);
-        wrapper.addEventListener('pointerenter', handlePause);
-        wrapper.addEventListener('pointerleave', handleResume);
+        wrapper.addEventListener('focusout', handleFocusOutResume);
+        wrapper.addEventListener('pointermove', handlePause);
+        wrapper.addEventListener('pointerleave', handlePointerLeaveResume);
         window.addEventListener('blur', handlePause);
         window.addEventListener('focus', handleResume);
         return () => {
           wrapper.removeEventListener('focusin', handlePause);
-          wrapper.removeEventListener('focusout', handleResume);
-          wrapper.removeEventListener('pointerenter', handlePause);
-          wrapper.removeEventListener('pointerleave', handleResume);
+          wrapper.removeEventListener('focusout', handleFocusOutResume);
+          wrapper.removeEventListener('pointermove', handlePause);
+          wrapper.removeEventListener('pointerleave', handlePointerLeaveResume);
           window.removeEventListener('blur', handlePause);
           window.removeEventListener('focus', handleResume);
         };
       }
-    }, [context.isClosePausedRef]);
+    }, [hasToasts, context.isClosePausedRef]);
 
     const getSortedTabbableCandidates = React.useCallback(
       ({ tabbingDirection }: { tabbingDirection: 'forwards' | 'backwards' }) => {
@@ -384,6 +398,8 @@ const Toast = React.forwardRef<ToastElement, ToastProps>(
           {...toastProps}
           ref={forwardedRef}
           onClose={() => setOpen(false)}
+          onPause={useCallbackRef(props.onPause)}
+          onResume={useCallbackRef(props.onResume)}
           onSwipeStart={composeEventHandlers(props.onSwipeStart, (event) => {
             event.currentTarget.setAttribute('data-swipe', 'start');
           })}
@@ -425,7 +441,6 @@ type SwipeEvent = { currentTarget: EventTarget & ToastElement } & Omit<
 >;
 
 const [ToastInteractiveProvider, useToastInteractiveContext] = createToastContext(TOAST_NAME, {
-  isInteractive: false,
   onClose() {},
 });
 
@@ -441,6 +456,8 @@ interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
    */
   duration?: number;
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  onPause?(): void;
+  onResume?(): void;
   onSwipeStart?(event: SwipeEvent): void;
   onSwipeMove?(event: SwipeEvent): void;
   onSwipeCancel?(event: SwipeEvent): void;
@@ -456,6 +473,8 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       open,
       onClose,
       onEscapeKeyDown,
+      onPause,
+      onResume,
       onSwipeStart,
       onSwipeMove,
       onSwipeCancel,
@@ -463,8 +482,8 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       ...toastProps
     } = props;
     const context = useToastProviderContext(TOAST_NAME, __scopeToast);
-    const ref = React.useRef<ToastImplElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref);
+    const [node, setNode] = React.useState<ToastImplElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => setNode(node));
     const pointerStartRef = React.useRef<{ x: number; y: number } | null>(null);
     const swipeDeltaRef = React.useRef<{ x: number; y: number } | null>(null);
     const duration = durationProp || context.duration;
@@ -475,7 +494,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
       // count to SR users and ensure focus isn't lost
-      const isFocusInToast = ref.current?.contains(document.activeElement);
+      const isFocusInToast = node?.contains(document.activeElement);
       if (isFocusInToast) context.viewport?.focus();
       onClose();
     });
@@ -495,11 +514,13 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       if (viewport) {
         const handleResume = () => {
           startTimer(closeTimerRemainingTimeRef.current);
+          onResume?.();
         };
         const handlePause = () => {
           const elapsedTime = new Date().getTime() - closeTimerStartTimeRef.current;
           closeTimerRemainingTimeRef.current = closeTimerRemainingTimeRef.current - elapsedTime;
           window.clearTimeout(closeTimerRef.current);
+          onPause?.();
         };
         viewport.addEventListener(VIEWPORT_PAUSE, handlePause);
         viewport.addEventListener(VIEWPORT_RESUME, handleResume);
@@ -508,7 +529,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
           viewport.removeEventListener(VIEWPORT_RESUME, handleResume);
         };
       }
-    }, [context.viewport, duration, startTimer]);
+    }, [context.viewport, duration, onPause, onResume, startTimer]);
 
     // start timer when toast opens or duration changes.
     // we include `open` in deps because closed !== unmounted when animating
@@ -522,21 +543,27 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       return () => onToastRemove();
     }, [onToastAdd, onToastRemove]);
 
+    const announceTextContent = React.useMemo(() => {
+      return node ? getAnnounceTextContent(node) : null;
+    }, [node]);
+
     if (!context.viewport) return null;
 
     return (
       <>
-        <ToastAnnounce
-          __scopeToast={__scopeToast}
-          // Toasts are always role=status to avoid stuttering issues with role=alert in SRs.
-          role="status"
-          aria-live={type === 'foreground' ? 'assertive' : 'polite'}
-          aria-atomic
-        >
-          {props.children}
-        </ToastAnnounce>
+        {announceTextContent && (
+          <ToastAnnounce
+            __scopeToast={__scopeToast}
+            // Toasts are always role=status to avoid stuttering issues with role=alert in SRs.
+            role="status"
+            aria-live={type === 'foreground' ? 'assertive' : 'polite'}
+            aria-atomic
+          >
+            {announceTextContent}
+          </ToastAnnounce>
+        )}
 
-        <ToastInteractiveProvider scope={__scopeToast} isInteractive onClose={handleClose}>
+        <ToastInteractiveProvider scope={__scopeToast} onClose={handleClose}>
           {ReactDOM.createPortal(
             <Collection.ItemSlot scope={__scopeToast}>
               <DismissableLayer.Root
@@ -655,50 +682,34 @@ ToastImpl.propTypes = {
 /* -----------------------------------------------------------------------------------------------*/
 
 interface ToastAnnounceProps
-  extends React.ComponentPropsWithoutRef<'div'>,
-    ScopedProps<{ children?: ToastImplProps['children'] }> {}
+  extends Omit<React.ComponentPropsWithoutRef<'div'>, 'children'>,
+    ScopedProps<{ children: string[] }> {}
 
 const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnnounceProps>) => {
   const { __scopeToast, children, ...announceProps } = props;
   const context = useToastProviderContext(TOAST_NAME, __scopeToast);
   const [renderAnnounceText, setRenderAnnounceText] = React.useState(false);
   const [isAnnounced, setIsAnnounced] = React.useState(false);
-  const [fragment, setFragment] = React.useState<DocumentFragment>();
-  const [rootFragmentNode, setRootFragmentNode] = React.useState<HTMLDivElement | null>(null);
-
-  // We portal children into a document fragment so that we can extract the bare text nodes
-  // before rendering to the DOM. This avoids issues with duplicate `children`
-  // and animation libraries when composing via `asChild`.
-  const announceTextContent = React.useMemo(() => {
-    return rootFragmentNode ? getAnnounceTextContent(rootFragmentNode) : null;
-  }, [rootFragmentNode]);
-
-  // setting the fragment in `useLayoutEffect` as `DocumentFragment` doesn't exist on the server
-  useLayoutEffect(() => {
-    setFragment(new DocumentFragment());
-  }, []);
 
   // render text content in the next frame to ensure toast is announced in NVDA
   useNextFrame(() => setRenderAnnounceText(true));
 
+  // cleanup after announcing
   React.useEffect(() => {
     const timer = window.setTimeout(() => setIsAnnounced(true), 1000);
     return () => window.clearTimeout(timer);
   }, []);
 
   return isAnnounced ? null : (
-    <>
-      {fragment && (
-        <Portal container={fragment as any} ref={setRootFragmentNode}>
-          {context.label} {children}
-        </Portal>
-      )}
-      <Portal asChild>
-        <VisuallyHidden {...announceProps}>
-          {renderAnnounceText && announceTextContent}
-        </VisuallyHidden>
-      </Portal>
-    </>
+    <Portal asChild>
+      <VisuallyHidden {...announceProps}>
+        {renderAnnounceText && (
+          <>
+            {context.label} {children}
+          </>
+        )}
+      </VisuallyHidden>
+    </Portal>
   );
 };
 
@@ -759,12 +770,11 @@ interface ToastActionProps extends ToastCloseProps {
 const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
   (props: ScopedProps<ToastActionProps>, forwardedRef) => {
     const { altText, ...actionProps } = props;
-    const context = useToastInteractiveContext(ACTION_NAME, props.__scopeToast);
     if (!altText) return null;
-    return context.isInteractive ? (
-      <ToastClose {...actionProps} ref={forwardedRef} />
-    ) : (
-      <span>{altText}</span>
+    return (
+      <ToastAnnounceExclude altText={altText} asChild>
+        <ToastClose {...actionProps} ref={forwardedRef} />
+      </ToastAnnounceExclude>
     );
   }
 );
@@ -794,18 +804,70 @@ const ToastClose = React.forwardRef<ToastCloseElement, ToastCloseProps>(
   (props: ScopedProps<ToastCloseProps>, forwardedRef) => {
     const { __scopeToast, ...closeProps } = props;
     const interactiveContext = useToastInteractiveContext(CLOSE_NAME, __scopeToast);
-    return interactiveContext.isInteractive ? (
-      <Primitive.button
-        type="button"
-        {...closeProps}
-        ref={forwardedRef}
-        onClick={composeEventHandlers(props.onClick, interactiveContext.onClose)}
-      />
-    ) : null;
+
+    return (
+      <ToastAnnounceExclude asChild>
+        <Primitive.button
+          type="button"
+          {...closeProps}
+          ref={forwardedRef}
+          onClick={composeEventHandlers(props.onClick, interactiveContext.onClose)}
+        />
+      </ToastAnnounceExclude>
+    );
   }
 );
 
 ToastClose.displayName = CLOSE_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
+
+type ToastAnnounceExcludeElement = React.ElementRef<typeof Primitive.div>;
+interface ToastAnnounceExcludeProps extends PrimitiveDivProps {
+  altText?: string;
+}
+
+const ToastAnnounceExclude = React.forwardRef<
+  ToastAnnounceExcludeElement,
+  ToastAnnounceExcludeProps
+>((props: ScopedProps<ToastAnnounceExcludeProps>, forwardedRef) => {
+  const { __scopeToast, altText, ...announceExcludeProps } = props;
+
+  return (
+    <Primitive.div
+      data-radix-toast-announce-exclude=""
+      data-radix-toast-announce-alt={altText || undefined}
+      {...announceExcludeProps}
+      ref={forwardedRef}
+    />
+  );
+});
+
+function getAnnounceTextContent(container: HTMLElement) {
+  const textContent: string[] = [];
+  const childNodes = Array.from(container.childNodes);
+
+  childNodes.forEach((node) => {
+    if (node.nodeType === node.TEXT_NODE && node.textContent) textContent.push(node.textContent);
+    if (isHTMLElement(node)) {
+      const isHidden = node.ariaHidden || node.hidden || node.style.display === 'none';
+      const isExcluded = node.dataset.radixToastAnnounceExclude === '';
+
+      if (!isHidden) {
+        if (isExcluded) {
+          const altText = node.dataset.radixToastAnnounceAlt;
+          if (altText) textContent.push(altText);
+        } else {
+          textContent.push(...getAnnounceTextContent(node));
+        }
+      }
+    }
+  });
+
+  // We return a collection of text rather than a single concatenated string.
+  // This allows SR VO to naturally pause break between nodes while announcing.
+  return textContent;
+}
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -855,23 +917,6 @@ function useNextFrame(callback = () => {}) {
       window.cancelAnimationFrame(raf2);
     };
   }, [fn]);
-}
-
-function getAnnounceTextContent(container: HTMLElement) {
-  const textContent: string[] = [];
-  const childNodes = Array.from(container.childNodes);
-
-  childNodes.forEach((node) => {
-    if (node.nodeType === node.TEXT_NODE && node.textContent) textContent.push(node.textContent);
-    if (isHTMLElement(node)) {
-      const isHidden = node.ariaHidden || node.hidden || node.style.display === 'none';
-      if (!isHidden) textContent.push(...getAnnounceTextContent(node));
-    }
-  });
-
-  // We return a collection of text rather than a single concatenated string.
-  // This allows SR VO to naturally pause break between nodes while announcing.
-  return textContent;
 }
 
 function isHTMLElement(node: any): node is HTMLElement {

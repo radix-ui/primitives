@@ -107,7 +107,7 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           type="button"
           id={context.triggerId}
           aria-haspopup="menu"
-          aria-expanded={context.open ? true : undefined}
+          aria-expanded={context.open}
           aria-controls={context.open ? context.contentId : undefined}
           data-state={context.open ? 'open' : 'closed'}
           data-disabled={disabled ? '' : undefined}
@@ -128,8 +128,9 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
             if (disabled) return;
             if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
             if (event.key === 'ArrowDown') context.onOpenChange(true);
-            // prevent keypresses from scrolling window
-            if ([' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
+            // prevent keydown from scrolling window / first focused item to execute
+            // that keydown (inadvertently closing the menu)
+            if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
           })}
         />
       </MenuPrimitive.Anchor>
