@@ -25,7 +25,7 @@ export const RightToLeft = () => (
 );
 
 export const Horizontal = () => (
-  <>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 50 }}>
     <Slider.Root
       className={rootClass()}
       defaultValue={[10, 30]}
@@ -39,19 +39,17 @@ export const Horizontal = () => (
       <Slider.Thumb className={thumbClass()} />
     </Slider.Root>
 
-    <br />
-
     <Slider.Root className={rootClass()} defaultValue={[10]}>
       <Slider.Track className={trackClass()}>
         <Slider.Range className={rangeClass()} />
       </Slider.Track>
       <Slider.Thumb className={thumbClass()} />
     </Slider.Root>
-  </>
+  </div>
 );
 
 export const Vertical = () => (
-  <>
+  <div style={{ display: 'flex', gap: 50 }}>
     <Slider.Root className={rootClass()} defaultValue={[10, 30]} orientation="vertical">
       <Slider.Track className={trackClass()}>
         <Slider.Range className={rangeClass()} />
@@ -60,69 +58,128 @@ export const Vertical = () => (
       <Slider.Thumb className={thumbClass()} />
     </Slider.Root>
 
-    <br />
-
     <Slider.Root className={rootClass()} defaultValue={[10]} orientation="vertical">
       <Slider.Track className={trackClass()}>
         <Slider.Range className={rangeClass()} />
       </Slider.Track>
       <Slider.Thumb className={thumbClass()} />
     </Slider.Root>
-  </>
+  </div>
 );
 
 export const Inversions = () => (
-  <div style={{ padding: 50 }}>
-    <h1>Horizontal</h1>
-    <h2>LTR (default)</h2>
-    <Slider.Root className={rootClass()} defaultValue={[20]}>
-      <Slider.Track className={trackClass()}>
-        <Slider.Range className={rangeClass()} />
-      </Slider.Track>
-      <Slider.Thumb className={thumbWithValueClass()} />
-    </Slider.Root>
+  <>
+    <h1>Inversions</h1>
+    <h2>Horizontal</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <div style={{ flex: 1 }}>
+        <h3>LTR</h3>
+        <h4>default</h4>
+        <Slider.Root className={rootClass()} defaultValue={[20]}>
+          <Slider.Track className={trackClass()}>
+            <Slider.Range className={rangeClass()} />
+          </Slider.Track>
+          <Slider.Thumb className={thumbClass()} />
+        </Slider.Root>
 
-    <h2>LTR inverted</h2>
-    <Slider.Root className={rootClass()} defaultValue={[20]} inverted>
-      <Slider.Track className={trackClass()}>
-        <Slider.Range className={rangeClass()} />
-      </Slider.Track>
-      <Slider.Thumb className={thumbWithValueClass()} />
-    </Slider.Root>
+        <h4>Inverted</h4>
+        <Slider.Root className={rootClass()} defaultValue={[20]} inverted>
+          <Slider.Track className={trackClass()}>
+            <Slider.Range className={rangeClass()} />
+          </Slider.Track>
+          <Slider.Thumb className={thumbClass()} />
+        </Slider.Root>
+      </div>
 
-    <h2>RTL</h2>
-    <Slider.Root className={rootClass()} defaultValue={[20]} dir="rtl">
-      <Slider.Track className={trackClass()}>
-        <Slider.Range className={rangeClass()} />
-      </Slider.Track>
-      <Slider.Thumb className={thumbWithValueClass()} />
-    </Slider.Root>
+      <div style={{ flex: 1 }}>
+        <h3>RTL</h3>
+        <h4>Default</h4>
+        <Slider.Root className={rootClass()} defaultValue={[20]} dir="rtl">
+          <Slider.Track className={trackClass()}>
+            <Slider.Range className={rangeClass()} />
+          </Slider.Track>
+          <Slider.Thumb className={thumbClass()} />
+        </Slider.Root>
 
-    <h2>RTL inverted</h2>
-    <Slider.Root className={rootClass()} defaultValue={[20]} dir="rtl" inverted>
-      <Slider.Track className={trackClass()}>
-        <Slider.Range className={rangeClass()} />
-      </Slider.Track>
-      <Slider.Thumb className={thumbWithValueClass()} />
-    </Slider.Root>
+        <h4>Inverted</h4>
+        <Slider.Root className={rootClass()} defaultValue={[20]} dir="rtl" inverted>
+          <Slider.Track className={trackClass()}>
+            <Slider.Range className={rangeClass()} />
+          </Slider.Track>
+          <Slider.Thumb className={thumbClass()} />
+        </Slider.Root>
+      </div>
+    </div>
 
-    <h1>Vertical</h1>
-    <h2>Default</h2>
-    <Slider.Root className={rootClass()} defaultValue={[20]} orientation="vertical">
-      <Slider.Track className={trackClass()}>
-        <Slider.Range className={rangeClass()} />
-      </Slider.Track>
-      <Slider.Thumb className={thumbWithValueClass()} />
-    </Slider.Root>
+    <h2>Vertical</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <div style={{ flex: 1 }}>
+        <h3>LTR</h3>
+        <div style={{ display: 'flex', gap: 50 }}>
+          <div>
+            <h4>Default</h4>
+            <Slider.Root className={rootClass()} defaultValue={[20]} orientation="vertical">
+              <Slider.Track className={trackClass()}>
+                <Slider.Range className={rangeClass()} />
+              </Slider.Track>
+              <Slider.Thumb className={thumbClass()} />
+            </Slider.Root>
+          </div>
 
-    <h2>Inverted</h2>
-    <Slider.Root className={rootClass()} defaultValue={[20]} orientation="vertical" inverted>
-      <Slider.Track className={trackClass()}>
-        <Slider.Range className={rangeClass()} />
-      </Slider.Track>
-      <Slider.Thumb className={thumbWithValueClass()} />
-    </Slider.Root>
-  </div>
+          <div>
+            <h4>Inverted</h4>
+            <Slider.Root
+              className={rootClass()}
+              defaultValue={[20]}
+              orientation="vertical"
+              inverted
+            >
+              <Slider.Track className={trackClass()}>
+                <Slider.Range className={rangeClass()} />
+              </Slider.Track>
+              <Slider.Thumb className={thumbClass()} />
+            </Slider.Root>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1 }}>
+        <h3>RTL</h3>
+        <div style={{ display: 'flex', gap: 50 }}>
+          <div>
+            <h4>Default</h4>
+            <Slider.Root
+              className={rootClass()}
+              defaultValue={[20]}
+              dir="rtl"
+              orientation="vertical"
+            >
+              <Slider.Track className={trackClass()}>
+                <Slider.Range className={rangeClass()} />
+              </Slider.Track>
+              <Slider.Thumb className={thumbClass()} />
+            </Slider.Root>
+          </div>
+
+          <div>
+            <h4>Inverted</h4>
+            <Slider.Root
+              className={rootClass()}
+              defaultValue={[20]}
+              dir="rtl"
+              orientation="vertical"
+              inverted
+            >
+              <Slider.Track className={trackClass()}>
+                <Slider.Range className={rangeClass()} />
+              </Slider.Track>
+              <Slider.Thumb className={thumbClass()} />
+            </Slider.Root>
+          </div>
+        </div>
+      </div>
+    </div>
+  </>
 );
 
 export const WithMinimumStepsBetweenThumbs = () => (
@@ -398,6 +455,8 @@ export const Chromatic = () => (
       <Slider.Thumb className={thumbClass()} />
     </Slider.Root>
 
+    <Inversions />
+
     <h1>State attributes</h1>
     <h2>Default</h2>
     <Slider.Root className={rootAttrClass()} defaultValue={[20]}>
@@ -432,11 +491,11 @@ const RECOMMENDED_CSS__SLIDER__ROOT: any = {
 const rootClass = css({
   ...RECOMMENDED_CSS__SLIDER__ROOT,
   '&[data-orientation="horizontal"]': {
-    height: 15,
+    height: 25,
   },
   '&[data-orientation="vertical"]': {
     flexDirection: 'column',
-    width: 15,
+    width: 25,
   },
   '&[data-disabled]': { opacity: 0.5 },
 });
@@ -496,23 +555,17 @@ const RECOMMENDED_CSS__SLIDER__THUMB = {
 
 const thumbClass = css({
   ...RECOMMENDED_CSS__SLIDER__THUMB,
-  borderRadius: 15,
-  width: 15,
-  height: 15,
+  borderRadius: 25,
+  width: 25,
+  height: 25,
   backgroundColor: '$black',
   '&:focus': {
     outline: 'none',
     boxShadow: '0 0 0 2px $colors$red',
   },
-});
 
-const thumbWithValueClass = css(thumbClass, {
   display: 'inline-grid',
   placeItems: 'center',
-  borderRadius: 25,
-  width: 25,
-  height: 25,
-
   '&:after': {
     content: 'attr(aria-valuenow)',
     position: 'relative',
