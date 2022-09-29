@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { css } from '../../../../stitches.config';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -812,6 +813,43 @@ export const WithTooltip = () => (
     </DropdownMenu.Root>
   </div>
 );
+
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popupWindow = window.open(undefined, undefined, 'width=300,height=300,top=100,left=100');
+    if (!popupWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popupWindow.document.createElement('div');
+    popupWindow.document.body.append(containerNode);
+
+    ReactDOM.render(
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Portal container={containerNode}>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
+              Undo
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
+              Redo
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+      containerNode
+    );
+  }, []);
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
+    >
+      <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
+  );
+};
 
 // change order slightly for more pleasing visual
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
