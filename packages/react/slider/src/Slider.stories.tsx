@@ -71,6 +71,60 @@ export const Vertical = () => (
   </>
 );
 
+export const Inversions = () => (
+  <div style={{ padding: 50 }}>
+    <h1>Horizontal</h1>
+    <h2>LTR (default)</h2>
+    <Slider.Root className={rootClass()} defaultValue={[20]}>
+      <Slider.Track className={trackClass()}>
+        <Slider.Range className={rangeClass()} />
+      </Slider.Track>
+      <Slider.Thumb className={thumbWithValueClass()} />
+    </Slider.Root>
+
+    <h2>LTR inverted</h2>
+    <Slider.Root className={rootClass()} defaultValue={[20]} inverted>
+      <Slider.Track className={trackClass()}>
+        <Slider.Range className={rangeClass()} />
+      </Slider.Track>
+      <Slider.Thumb className={thumbWithValueClass()} />
+    </Slider.Root>
+
+    <h2>RTL</h2>
+    <Slider.Root className={rootClass()} defaultValue={[20]} dir="rtl">
+      <Slider.Track className={trackClass()}>
+        <Slider.Range className={rangeClass()} />
+      </Slider.Track>
+      <Slider.Thumb className={thumbWithValueClass()} />
+    </Slider.Root>
+
+    <h2>RTL inverted</h2>
+    <Slider.Root className={rootClass()} defaultValue={[20]} dir="rtl" inverted>
+      <Slider.Track className={trackClass()}>
+        <Slider.Range className={rangeClass()} />
+      </Slider.Track>
+      <Slider.Thumb className={thumbWithValueClass()} />
+    </Slider.Root>
+
+    <h1>Vertical</h1>
+    <h2>Default</h2>
+    <Slider.Root className={rootClass()} defaultValue={[20]} orientation="vertical">
+      <Slider.Track className={trackClass()}>
+        <Slider.Range className={rangeClass()} />
+      </Slider.Track>
+      <Slider.Thumb className={thumbWithValueClass()} />
+    </Slider.Root>
+
+    <h2>Inverted</h2>
+    <Slider.Root className={rootClass()} defaultValue={[20]} orientation="vertical" inverted>
+      <Slider.Track className={trackClass()}>
+        <Slider.Range className={rangeClass()} />
+      </Slider.Track>
+      <Slider.Thumb className={thumbWithValueClass()} />
+    </Slider.Root>
+  </div>
+);
+
 export const WithMinimumStepsBetweenThumbs = () => (
   <Slider.Root className={rootClass()} defaultValue={[10, 30]} minStepsBetweenThumbs={3}>
     <Slider.Track className={trackClass()}>
@@ -449,6 +503,21 @@ const thumbClass = css({
   '&:focus': {
     outline: 'none',
     boxShadow: '0 0 0 2px $colors$red',
+  },
+});
+
+const thumbWithValueClass = css(thumbClass, {
+  display: 'inline-grid',
+  placeItems: 'center',
+  borderRadius: 25,
+  width: 25,
+  height: 25,
+
+  '&:after': {
+    content: 'attr(aria-valuenow)',
+    position: 'relative',
+    fontSize: 10,
+    color: 'white',
   },
 });
 
