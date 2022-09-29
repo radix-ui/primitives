@@ -20,10 +20,10 @@ const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
 type SlideDirection = 'from-left' | 'from-right' | 'from-bottom' | 'from-top';
 const BACK_KEYS: Record<SlideDirection, string[]> = {
-  'from-left': ['ArrowDown', 'Home', 'ArrowLeft', 'PageDown'],
-  'from-right': ['ArrowDown', 'Home', 'ArrowRight', 'PageDown'],
-  'from-bottom': ['ArrowDown', 'Home', 'ArrowLeft', 'PageDown'],
-  'from-top': ['ArrowUp', 'Home', 'ArrowLeft', 'PageDown'],
+  'from-left': ['Home', 'PageDown', 'ArrowDown', 'ArrowLeft'],
+  'from-right': ['Home', 'PageDown', 'ArrowDown', 'ArrowRight'],
+  'from-bottom': ['Home', 'PageDown', 'ArrowDown', 'ArrowLeft'],
+  'from-top': ['Home', 'PageDown', 'ArrowUp', 'ArrowLeft'],
 };
 
 /* -------------------------------------------------------------------------------------------------
