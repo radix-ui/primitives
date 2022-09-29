@@ -316,6 +316,7 @@ type NavigationMenuItemContextValue = {
   triggerRef: React.RefObject<NavigationMenuTriggerElement>;
   contentRef: React.RefObject<NavigationMenuContentElement>;
   focusProxyRef: React.RefObject<FocusProxyElement>;
+  wasEscapeCloseRef: React.MutableRefObject<boolean>;
   onEntryKeyDown(): void;
   onFocusProxyEnter(side: 'start' | 'end'): void;
   onRootContentClose(): void;
@@ -342,6 +343,7 @@ const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, Navigatio
     const triggerRef = React.useRef<NavigationMenuTriggerElement>(null);
     const focusProxyRef = React.useRef<FocusProxyElement>(null);
     const restoreContentTabOrderRef = React.useRef(() => {});
+    const wasEscapeCloseRef = React.useRef(false);
 
     const handleContentEntry = React.useCallback((side = 'start') => {
       if (contentRef.current) {
@@ -365,6 +367,7 @@ const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, Navigatio
         triggerRef={triggerRef}
         contentRef={contentRef}
         focusProxyRef={focusProxyRef}
+        wasEscapeCloseRef={wasEscapeCloseRef}
         onEntryKeyDown={handleContentEntry}
         onFocusProxyEnter={handleContentEntry}
         onRootContentClose={handleContentExit}
@@ -400,7 +403,6 @@ const NavigationMenuTrigger = React.forwardRef<
   const triggerId = makeTriggerId(context.baseId, itemContext.value);
   const contentId = makeContentId(context.baseId, itemContext.value);
   const wasClickCloseRef = React.useRef(false);
-  const wasEscapeCloseRef = React.useRef(false);
   const open = itemContext.value === context.value;
 
   return (
@@ -418,12 +420,13 @@ const NavigationMenuTrigger = React.forwardRef<
             ref={composedRefs}
             onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
               wasClickCloseRef.current = false;
-              wasEscapeCloseRef.current = false;
+              itemContext.wasEscapeCloseRef.current = false;
             })}
             onPointerMove={composeEventHandlers(
               props.onPointerMove,
               whenMouse(() => {
-                if (disabled || wasClickCloseRef.current || wasEscapeCloseRef.current) return;
+                if (disabled || wasClickCloseRef.current || itemContext.wasEscapeCloseRef.current)
+                  return;
                 context.onItemOver(itemContext.value);
               })
             )}
@@ -443,14 +446,10 @@ const NavigationMenuTrigger = React.forwardRef<
               const entryKey = { horizontal: 'ArrowDown', vertical: verticalEntryKey }[
                 context.orientation
               ];
-              if (open) {
-                if (event.key === entryKey) {
-                  itemContext.onEntryKeyDown();
-                  // Prevent FocusGroupItem from handling the event
-                  event.preventDefault();
-                } else if (event.key === 'Escape') {
-                  wasEscapeCloseRef.current = true;
-                }
+              if (open && event.key === entryKey) {
+                itemContext.onEntryKeyDown();
+                // Prevent FocusGroupItem from handling the event
+                event.preventDefault();
               }
             })}
           />
@@ -670,6 +669,7 @@ const NavigationMenuContent = React.forwardRef<
     value: itemContext.value,
     triggerRef: itemContext.triggerRef,
     focusProxyRef: itemContext.focusProxyRef,
+    wasEscapeCloseRef: itemContext.wasEscapeCloseRef,
     onContentFocusOutside: itemContext.onContentFocusOutside,
     onRootContentClose: itemContext.onRootContentClose,
     ...contentProps,
@@ -744,6 +744,7 @@ interface NavigationMenuContentImplPrivateProps {
   value: string;
   triggerRef: React.RefObject<NavigationMenuTriggerElement>;
   focusProxyRef: React.RefObject<FocusProxyElement>;
+  wasEscapeCloseRef: React.MutableRefObject<boolean>;
   onContentFocusOutside(): void;
   onRootContentClose(): void;
 }
@@ -760,6 +761,7 @@ const NavigationMenuContentImpl = React.forwardRef<
     value,
     triggerRef,
     focusProxyRef,
+    wasEscapeCloseRef,
     onRootContentClose,
     onContentFocusOutside,
     ...contentProps
@@ -869,6 +871,12 @@ const NavigationMenuContentImpl = React.forwardRef<
               focusProxyRef.current?.focus();
             }
           }
+        })}
+        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, (event) => {
+          console.log(wasEscapeCloseRef.current, event);
+          // prevent the dropdown from reopening
+          // after the escape key has been pressed
+          wasEscapeCloseRef.current = true;
         })}
       />
     </FocusGroup>
