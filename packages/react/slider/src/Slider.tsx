@@ -18,10 +18,14 @@ type Direction = 'ltr' | 'rtl';
 const PAGE_KEYS = ['PageUp', 'PageDown'];
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-const BACK_KEYS: Record<Direction, string[]> = {
+const BACK_KEYS: Record<Direction | 'ttb' | 'btt', string[]> = {
   ltr: ['ArrowDown', 'Home', 'ArrowLeft', 'PageDown'],
   rtl: ['ArrowDown', 'Home', 'ArrowRight', 'PageDown'],
+  btt: ['ArrowDown', 'Home', 'ArrowLeft', 'PageDown'],
+  ttb: ['ArrowUp', 'Home', 'ArrowLeft', 'PageDown'],
 };
+
+const VERTICAL_INVERT = false;
 
 /* -------------------------------------------------------------------------------------------------
  * Slider
@@ -184,9 +188,11 @@ Slider.displayName = SLIDER_NAME;
  * SliderHorizontal
  * -----------------------------------------------------------------------------------------------*/
 
+type Side = 'top' | 'right' | 'bottom' | 'left';
+
 const [SliderOrientationProvider, useSliderOrientationContext] = createSliderContext<{
-  startEdge: 'bottom' | 'left' | 'right';
-  endEdge: 'top' | 'right' | 'left';
+  startEdge: Side;
+  endEdge: Side;
   size: keyof NonNullable<ReturnType<typeof useSize>>;
   direction: number;
 }>(SLIDER_NAME, {
@@ -286,7 +292,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
     function getValueFromPointer(pointerPosition: number) {
       const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
       const input: [number, number] = [0, rect.height];
-      const output: [number, number] = [max, min];
+      const output: [number, number] = VERTICAL_INVERT ? [min, max] : [max, min];
       const value = linearScale(input, output);
 
       rectRef.current = rect;
@@ -296,10 +302,10 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
     return (
       <SliderOrientationProvider
         scope={props.__scopeSlider}
-        startEdge="bottom"
-        endEdge="top"
+        startEdge={VERTICAL_INVERT ? 'top' : 'bottom'}
+        endEdge={VERTICAL_INVERT ? 'bottom' : 'top'}
         size="height"
-        direction={1}
+        direction={VERTICAL_INVERT ? -1 : 1}
       >
         <SliderImpl
           data-orientation="vertical"
@@ -319,7 +325,8 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
           }}
           onSlideEnd={() => (rectRef.current = undefined)}
           onStepKeyDown={(event) => {
-            const isBackKey = BACK_KEYS.ltr.includes(event.key);
+            const direction = VERTICAL_INVERT ? 'ttb' : 'btt';
+            const isBackKey = BACK_KEYS[direction].includes(event.key);
             onStepKeyDown?.({ event, direction: isBackKey ? -1 : 1 });
           }}
         />
