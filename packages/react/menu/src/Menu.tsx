@@ -749,10 +749,6 @@ type MenuCheckboxItemElement = MenuItemElement;
 
 type CheckedState = boolean | 'indeterminate';
 
-function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
-  return checked === 'indeterminate';
-}
-
 interface MenuCheckboxItemProps extends MenuItemProps {
   checked?: CheckedState;
   onCheckedChange?: (checked: CheckedState) => void;
@@ -771,7 +767,7 @@ const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxI
           data-state={getCheckedState(checked)}
           onSelect={composeEventHandlers(
             checkboxItemProps.onSelect,
-            () => onCheckedChange?.(isIndeterminate(checked) || !checked),
+            () => onCheckedChange?.(isIndeterminate(checked) ? true : !checked),
             { checkForDefaultPrevented: false }
           )}
         />
@@ -856,15 +852,11 @@ MenuRadioItem.displayName = RADIO_ITEM_NAME;
 
 const ITEM_INDICATOR_NAME = 'MenuItemIndicator';
 
-type CheckboxContextValue = {
-  checked: CheckedState;
-};
+type CheckboxContextValue = { checked: CheckedState };
 
 const [ItemIndicatorProvider, useItemIndicatorContext] = createMenuContext<CheckboxContextValue>(
   ITEM_INDICATOR_NAME,
-  {
-    checked: false,
-  }
+  { checked: false }
 );
 
 type MenuItemIndicatorElement = React.ElementRef<typeof Primitive.span>;
@@ -1220,6 +1212,10 @@ MenuSubContent.displayName = SUB_CONTENT_NAME;
 
 function getOpenState(open: boolean) {
   return open ? 'open' : 'closed';
+}
+
+function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
+  return checked === 'indeterminate';
 }
 
 function getCheckedState(checked: CheckedState) {
