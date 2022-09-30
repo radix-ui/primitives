@@ -248,7 +248,7 @@ export const Chromatic = () => {
         </RadioGroup.Item>
       </RadioGroup.Root>
 
-      <h1>Disabled</h1>
+      <h1>Disabled item</h1>
       <RadioGroup.Root className={rootClass()}>
         <RadioGroup.Item className={itemClass()} value="1">
           <RadioGroup.Indicator className={indicatorClass()} />
@@ -257,6 +257,34 @@ export const Chromatic = () => {
           <RadioGroup.Indicator className={indicatorClass()} />
         </RadioGroup.Item>
         <RadioGroup.Item className={itemClass()} value="3">
+          <RadioGroup.Indicator className={indicatorClass()} />
+        </RadioGroup.Item>
+      </RadioGroup.Root>
+
+      <h1>Disabled root</h1>
+      <RadioGroup.Root className={rootClass()} disabled>
+        <RadioGroup.Item className={itemClass()} value="1">
+          <RadioGroup.Indicator className={indicatorClass()} />
+        </RadioGroup.Item>
+        {/* Not possible to set `disabled` back to `false` since it's set on the root (this item
+            should still be disabled). */}
+        <RadioGroup.Item className={itemClass()} value="2" disabled={false}>
+          <RadioGroup.Indicator className={indicatorClass()} />
+        </RadioGroup.Item>
+        <RadioGroup.Item className={itemClass()} value="3">
+          <RadioGroup.Indicator className={indicatorClass()} />
+        </RadioGroup.Item>
+      </RadioGroup.Root>
+
+      <h1>All items disabled</h1>
+      <RadioGroup.Root className={rootClass()}>
+        <RadioGroup.Item className={itemClass()} value="1" disabled>
+          <RadioGroup.Indicator className={indicatorClass()} />
+        </RadioGroup.Item>
+        <RadioGroup.Item className={itemClass()} value="2" disabled>
+          <RadioGroup.Indicator className={indicatorClass()} />
+        </RadioGroup.Item>
+        <RadioGroup.Item className={itemClass()} value="3" disabled>
           <RadioGroup.Indicator className={indicatorClass()} />
         </RadioGroup.Item>
       </RadioGroup.Root>
@@ -330,7 +358,7 @@ export const Chromatic = () => {
         </RadioGroup.Item>
       </RadioGroup.Root>
 
-      <h2>Disabled</h2>
+      <h2>Disabled item</h2>
       <RadioGroup.Root className={rootAttrClass()} defaultValue="3">
         <RadioGroup.Item className={itemAttrClass()} value="1">
           <RadioGroup.Indicator className={indicatorAttrClass()} />
@@ -351,6 +379,32 @@ export const Chromatic = () => {
           <RadioGroup.Indicator className={indicatorAttrClass()} />
         </RadioGroup.Item>
         <RadioGroup.Item className={itemAttrClass()} value="3">
+          <RadioGroup.Indicator className={indicatorAttrClass()} />
+        </RadioGroup.Item>
+      </RadioGroup.Root>
+
+      <h2>Disabled root</h2>
+      <RadioGroup.Root className={rootAttrClass()} defaultValue="3" disabled>
+        <RadioGroup.Item className={itemAttrClass()} value="1">
+          <RadioGroup.Indicator className={indicatorAttrClass()} />
+        </RadioGroup.Item>
+        <RadioGroup.Item className={itemAttrClass()} value="2">
+          <RadioGroup.Indicator className={indicatorAttrClass()} />
+        </RadioGroup.Item>
+        <RadioGroup.Item className={itemAttrClass()} value="3">
+          <RadioGroup.Indicator className={indicatorAttrClass()} />
+        </RadioGroup.Item>
+      </RadioGroup.Root>
+
+      <h2>All items disabled</h2>
+      <RadioGroup.Root className={rootAttrClass()} defaultValue="3">
+        <RadioGroup.Item className={itemAttrClass()} value="1" disabled>
+          <RadioGroup.Indicator className={indicatorAttrClass()} />
+        </RadioGroup.Item>
+        <RadioGroup.Item className={itemAttrClass()} value="2" disabled>
+          <RadioGroup.Indicator className={indicatorAttrClass()} />
+        </RadioGroup.Item>
+        <RadioGroup.Item className={itemAttrClass()} value="3" disabled>
           <RadioGroup.Indicator className={indicatorAttrClass()} />
         </RadioGroup.Item>
       </RadioGroup.Root>
@@ -422,6 +476,8 @@ const styles = {
   backgroundColor: 'rgba(0, 0, 255, 0.3)',
   border: '2px solid blue',
   padding: 10,
+
+  '&[tabindex="0"]': { boxShadow: 'inset 0 0 0 2px yellow' },
 
   '&:disabled': { opacity: 0.5 },
   '&[data-disabled]': { borderStyle: 'dashed' },

@@ -30,6 +30,7 @@ const useRadioScope = createRadioScope();
 type RadioGroupContextValue = {
   name?: string;
   required: boolean;
+  disabled: boolean;
   value?: string;
   onValueChange(value: string): void;
 };
@@ -43,6 +44,7 @@ type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface RadioGroupProps extends PrimitiveDivProps {
   name?: RadioGroupContextValue['name'];
   required?: Radix.ComponentPropsWithoutRef<typeof Radio>['required'];
+  disabled?: Radix.ComponentPropsWithoutRef<typeof Radio>['disabled'];
   dir?: RovingFocusGroupProps['dir'];
   orientation?: RovingFocusGroupProps['orientation'];
   loop?: RovingFocusGroupProps['loop'];
@@ -59,6 +61,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
       defaultValue,
       value: valueProp,
       required = false,
+      disabled = false,
       orientation,
       dir,
       loop = true,
@@ -78,6 +81,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
         scope={__scopeRadioGroup}
         name={name}
         required={required}
+        disabled={disabled}
         value={value}
         onValueChange={setValue}
       >
@@ -92,6 +96,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
             role="radiogroup"
             aria-required={required}
             aria-orientation={orientation}
+            data-disabled={disabled ? '' : undefined}
             dir={direction}
             {...groupProps}
             ref={forwardedRef}
@@ -120,6 +125,7 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
   (props: ScopedProps<RadioGroupItemProps>, forwardedRef) => {
     const { __scopeRadioGroup, disabled, ...itemProps } = props;
     const context = useRadioGroupContext(ITEM_NAME, __scopeRadioGroup);
+    const isDisabled = context.disabled || disabled;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
     const radioScope = useRadioScope(__scopeRadioGroup);
     const ref = React.useRef<React.ElementRef<typeof Radio>>(null);
@@ -146,11 +152,11 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
       <RovingFocusGroup.Item
         asChild
         {...rovingFocusGroupScope}
-        focusable={!disabled}
+        focusable={!isDisabled}
         active={checked}
       >
         <Radio
-          disabled={disabled}
+          disabled={isDisabled}
           required={context.required}
           checked={checked}
           {...radioScope}
