@@ -24,6 +24,126 @@ export const Basic = () => {
   );
 };
 
+export const ContainTextSelection = () => {
+  return (
+    <div
+      style={{
+        padding: 50,
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      <div style={{ display: 'flex', gap: 30 }}>
+        <HoverCard.Root>
+          <HoverCard.Trigger href="/" className={triggerClass()}>
+            single
+          </HoverCard.Trigger>
+          <HoverCard.Portal>
+            <HoverCard.Content className={animatedContentClass()} sideOffset={5}>
+              <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
+              <div style={{ maxWidth: 400 }}>
+                Text selections will be contained within the content. While a selection is active
+                the content will not dismiss unless the selection is cleared or an outside
+                interaction is performed.
+              </div>
+            </HoverCard.Content>
+          </HoverCard.Portal>
+        </HoverCard.Root>
+
+        <HoverCard.Root>
+          <HoverCard.Trigger href="/" className={triggerClass()}>
+            nested
+          </HoverCard.Trigger>
+          <HoverCard.Portal>
+            <HoverCard.Content className={animatedContentClass()} sideOffset={5}>
+              <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
+              <div style={{ maxWidth: 400 }}>
+                Text selections will be contained within the content. While a selection is active
+                the content will not dismiss unless the selection is cleared or an outside
+                interaction is performed.
+              </div>
+
+              <HoverCard.Root>
+                <HoverCard.Trigger href="/" className={triggerClass()}>
+                  nested trigger
+                </HoverCard.Trigger>
+                <HoverCard.Portal>
+                  <HoverCard.Content
+                    className={animatedContentClass()}
+                    sideOffset={5}
+                    style={{ backgroundColor: 'crimson' }}
+                  >
+                    <HoverCard.Arrow
+                      className={arrowClass()}
+                      width={20}
+                      height={10}
+                      style={{ fill: 'crimson' }}
+                    />
+                    <div style={{ maxWidth: 400 }}>
+                      Text selections will be contained within the content. While a selection is
+                      active the content will not dismiss unless the selection is cleared or an
+                      outside interaction is performed.
+                    </div>
+
+                    <HoverCard.Root>
+                      <HoverCard.Trigger href="/" className={triggerClass()}>
+                        nested trigger
+                      </HoverCard.Trigger>
+                      <HoverCard.Portal>
+                        <HoverCard.Content
+                          className={animatedContentClass()}
+                          sideOffset={5}
+                          style={{ backgroundColor: 'green' }}
+                        >
+                          <HoverCard.Arrow
+                            className={arrowClass()}
+                            width={20}
+                            height={10}
+                            style={{ fill: 'green' }}
+                          />
+                          <div style={{ maxWidth: 400 }}>
+                            Text selections will be contained within the content. While a selection
+                            is active the content will not dismiss unless the selection is cleared
+                            or an outside interaction is performed.
+                          </div>
+                        </HoverCard.Content>
+                      </HoverCard.Portal>
+                    </HoverCard.Root>
+                  </HoverCard.Content>
+                </HoverCard.Portal>
+              </HoverCard.Root>
+            </HoverCard.Content>
+          </HoverCard.Portal>
+        </HoverCard.Root>
+      </div>
+      <div style={{ maxWidth: 800 }}>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer feugiat mattis malesuada.
+          Fusce elementum vulputate aliquet. Integer fringilla porta eros. Ut ultricies mattis nisi.
+          Sed et tempor massa. Sed non arcu ut velit scelerisque bibendum tempor sed mi. In non
+          consequat sapien. Donec sollicitudin eget tellus ut venenatis. Donec posuere sem ante, nec
+          iaculis arcu varius sit amet. Praesent non tortor quam. Curabitur dapibus justo a commodo
+          ornare.
+        </p>
+        <p>
+          Suspendisse eleifend consequat iaculis. Nunc bibendum velit felis, nec vulputate purus
+          egestas quis. Integer mauris dui, pulvinar non metus id, tristique dignissim elit. Vivamus
+          massa tellus, porttitor id lorem non, molestie aliquam dolor. Pellentesque erat quam,
+          pellentesque non metus id, tempus sagittis massa.
+        </p>
+        <p>
+          Sed at elementum sem, non venenatis leo. Ut vulputate consectetur finibus. Sed nunc
+          lectus, accumsan in nisl et, vehicula pretium nisi. Vivamus vestibulum ante quis urna
+          consequat, ultrices condimentum sem commodo. Pellentesque eget orci laoreet, feugiat purus
+          sed, maximus nisi. Suspendisse commodo venenatis facilisis.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 export const AsyncUpdate = () => {
   const [open, setOpen] = React.useState(false);
   const [contentLoaded, setContentLoaded] = React.useState(false);
@@ -689,10 +809,10 @@ const fadeOut = keyframes({
 
 const animatedContentClass = css(contentClass, {
   '&[data-state="open"]': {
-    animation: `${fadeIn} 300ms ease`,
+    animation: `${fadeIn} 250ms ease`,
   },
   '&[data-state="closed"]': {
-    animation: `${fadeOut} 300ms ease`,
+    animation: `${fadeOut} 250ms ease`,
   },
 });
 
