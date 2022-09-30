@@ -1,7 +1,0 @@
-releases:
-  "@radix-ui/react-context-menu": minor
-  "@radix-ui/react-dropdown-menu": minor
-  "@radix-ui/react-menu": minor
-
-declined:
-  - primitives
