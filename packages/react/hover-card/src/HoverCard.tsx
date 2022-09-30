@@ -33,7 +33,8 @@ type HoverCardContextValue = {
   onOpen(): void;
   onClose(): void;
   onDismiss(): void;
-  isSelectingRef: React.MutableRefObject<boolean>;
+  hasSelectionRef: React.MutableRefObject<boolean>;
+  isPointerDownOnContentRef: React.MutableRefObject<boolean>;
 };
 
 const [HoverCardProvider, useHoverCardContext] =
@@ -61,7 +62,8 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
   const popperScope = usePopperScope(__scopeHoverCard);
   const openTimerRef = React.useRef(0);
   const closeTimerRef = React.useRef(0);
-  const isSelectingRef = React.useRef(false);
+  const hasSelectionRef = React.useRef(false);
+  const isPointerDownOnContentRef = React.useRef(false);
 
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -76,7 +78,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
 
   const handleClose = React.useCallback(() => {
     clearTimeout(openTimerRef.current);
-    if (!isSelectingRef.current) {
+    if (!hasSelectionRef.current && !isPointerDownOnContentRef.current) {
       closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay);
     }
   }, [closeDelay, setOpen]);
@@ -99,7 +101,8 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
       onOpen={handleOpen}
       onClose={handleClose}
       onDismiss={handleDismiss}
-      isSelectingRef={isSelectingRef}
+      hasSelectionRef={hasSelectionRef}
+      isPointerDownOnContentRef={isPointerDownOnContentRef}
     >
       <PopperPrimitive.Root {...popperScope}>{children}</PopperPrimitive.Root>
     </HoverCardProvider>
@@ -264,7 +267,6 @@ const HoverCardContentImpl = React.forwardRef<
   const ref = React.useRef<HoverCardContentImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const [containSelection, setContainSelection] = React.useState(false);
-  const isPointerInsideReactTreeRef = React.useRef(false);
 
   React.useEffect(() => {
     if (containSelection) {
@@ -282,31 +284,27 @@ const HoverCardContentImpl = React.forwardRef<
     }
   }, [containSelection]);
 
-  const { onDismiss } = context;
-
   React.useEffect(() => {
     if (ref.current) {
       const handlePointerUp = () => {
         setContainSelection(false);
+        context.isPointerDownOnContentRef.current = false;
 
         // Delay a frame to ensure we always access the latest selection
         setTimeout(() => {
-          const isEmptySelection = document.getSelection()?.toString() === '';
-          if (isEmptySelection) {
-            if (!isPointerInsideReactTreeRef.current) onDismiss();
-            context.isSelectingRef.current = false;
-          }
-          isPointerInsideReactTreeRef.current = false;
+          const hasSelection = document.getSelection()?.toString() !== '';
+          if (hasSelection) context.hasSelectionRef.current = true;
         });
       };
 
       document.addEventListener('pointerup', handlePointerUp);
       return () => {
         document.removeEventListener('pointerup', handlePointerUp);
-        context.isSelectingRef.current = false;
+        context.hasSelectionRef.current = false;
+        context.isPointerDownOnContentRef.current = false;
       };
     }
-  }, [context.isSelectingRef, onDismiss]);
+  }, [context.isPointerDownOnContentRef, context.hasSelectionRef]);
 
   React.useEffect(() => {
     if (ref.current) {
@@ -335,10 +333,8 @@ const HoverCardContentImpl = React.forwardRef<
           if (event.currentTarget.contains(event.target as HTMLElement)) {
             setContainSelection(true);
           }
-          context.isSelectingRef.current = true;
-        })}
-        onPointerUpCapture={composeEventHandlers(contentProps.onPointerUpCapture, () => {
-          isPointerInsideReactTreeRef.current = true;
+          context.hasSelectionRef.current = false;
+          context.isPointerDownOnContentRef.current = true;
         })}
         ref={composedRefs}
         style={{
