@@ -33,7 +33,7 @@ type HoverCardContextValue = {
   onOpen(): void;
   onClose(): void;
   onDismiss(): void;
-  isTextSelectingRef: React.MutableRefObject<boolean>;
+  isSelectingRef: React.MutableRefObject<boolean>;
 };
 
 const [HoverCardProvider, useHoverCardContext] =
@@ -61,7 +61,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
   const popperScope = usePopperScope(__scopeHoverCard);
   const openTimerRef = React.useRef(0);
   const closeTimerRef = React.useRef(0);
-  const isTextSelectingRef = React.useRef(false);
+  const isSelectingRef = React.useRef(false);
 
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -76,7 +76,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
 
   const handleClose = React.useCallback(() => {
     clearTimeout(openTimerRef.current);
-    if (!isTextSelectingRef.current) {
+    if (!isSelectingRef.current) {
       closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay);
     }
   }, [closeDelay, setOpen]);
@@ -99,7 +99,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
       onOpen={handleOpen}
       onClose={handleClose}
       onDismiss={handleDismiss}
-      isTextSelectingRef={isTextSelectingRef}
+      isSelectingRef={isSelectingRef}
     >
       <PopperPrimitive.Root {...popperScope}>{children}</PopperPrimitive.Root>
     </HoverCardProvider>
@@ -263,10 +263,11 @@ const HoverCardContentImpl = React.forwardRef<
   const popperScope = usePopperScope(__scopeHoverCard);
   const ref = React.useRef<HoverCardContentImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
-  const [containTextSelection, setContainTextSelection] = React.useState(false);
+  const [containSelection, setContainSelection] = React.useState(false);
+  const isPointerInsideReactTreeRef = React.useRef(false);
 
   React.useEffect(() => {
-    if (containTextSelection) {
+    if (containSelection) {
       const body = document.body;
 
       // Safari requires prefix
@@ -279,34 +280,33 @@ const HoverCardContentImpl = React.forwardRef<
         body.style.webkitUserSelect = originalBodyUserSelect;
       };
     }
-  }, [containTextSelection]);
+  }, [containSelection]);
 
   const { onDismiss } = context;
 
   React.useEffect(() => {
     if (ref.current) {
-      const handlePointerUp = (event: PointerEvent) => {
+      const handlePointerUp = () => {
+        setContainSelection(false);
+
         // Delay a frame to ensure we always access the latest selection
         setTimeout(() => {
-          const hasEmptySelection = document.getSelection()?.toString() === '';
-          setContainTextSelection(false);
-
-          if (hasEmptySelection) {
-            const isPointerUpOutsideContent = !ref.current?.contains(event.target as HTMLElement);
-            context.isTextSelectingRef.current = false;
-            if (isPointerUpOutsideContent) onDismiss();
+          const isEmptySelection = document.getSelection()?.toString() === '';
+          if (isEmptySelection) {
+            if (!isPointerInsideReactTreeRef.current) onDismiss();
+            context.isSelectingRef.current = false;
           }
+          isPointerInsideReactTreeRef.current = false;
         });
       };
 
       document.addEventListener('pointerup', handlePointerUp);
-
       return () => {
         document.removeEventListener('pointerup', handlePointerUp);
-        context.isTextSelectingRef.current = false;
+        context.isSelectingRef.current = false;
       };
     }
-  }, [context.isTextSelectingRef, onDismiss]);
+  }, [context.isSelectingRef, onDismiss]);
 
   React.useEffect(() => {
     if (ref.current) {
@@ -322,15 +322,23 @@ const HoverCardContentImpl = React.forwardRef<
       onInteractOutside={onInteractOutside}
       onEscapeKeyDown={onEscapeKeyDown}
       onPointerDownOutside={onPointerDownOutside}
-      onFocusOutside={onFocusOutside}
+      onFocusOutside={composeEventHandlers(onFocusOutside, (event) => {
+        event.preventDefault();
+      })}
       onDismiss={context.onDismiss}
     >
       <PopperPrimitive.Content
         {...popperScope}
         {...contentProps}
-        onPointerDown={composeEventHandlers(contentProps.onPointerDown, () => {
-          setContainTextSelection(true);
-          context.isTextSelectingRef.current = true;
+        onPointerDown={composeEventHandlers(contentProps.onPointerDown, (event) => {
+          // Contain selection to current layer
+          if (event.currentTarget.contains(event.target as HTMLElement)) {
+            setContainSelection(true);
+          }
+          context.isSelectingRef.current = true;
+        })}
+        onPointerUpCapture={composeEventHandlers(contentProps.onPointerUpCapture, () => {
+          isPointerInsideReactTreeRef.current = true;
         })}
         ref={composedRefs}
         style={{
@@ -338,9 +346,9 @@ const HoverCardContentImpl = React.forwardRef<
           // re-namespace exposed content custom property
           ['--radix-hover-card-content-transform-origin' as any]:
             'var(--radix-popper-transform-origin)',
-          userSelect: containTextSelection ? 'text' : undefined,
+          userSelect: containSelection ? 'text' : undefined,
           // Safari requires prefix
-          WebkitUserSelect: containTextSelection ? 'text' : undefined,
+          WebkitUserSelect: containSelection ? 'text' : undefined,
         }}
       />
     </DismissableLayer>
