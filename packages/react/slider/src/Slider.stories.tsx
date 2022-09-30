@@ -15,6 +15,18 @@ export const Styled = () => (
   </Slider.Root>
 );
 
+export const onValueCommit = () => (
+  <>
+    <Slider.Root className={rootClass()} defaultValue={[20]} onValueCommit={console.log}>
+      <Slider.Track className={trackClass()}>
+        <Slider.Range className={rangeClass()} />
+      </Slider.Track>
+      <Slider.Thumb className={thumbClass()} />
+    </Slider.Root>
+    <p>Check the console for the `onValueCommit` log</p>
+  </>
+);
+
 export const RightToLeft = () => (
   <Slider.Root className={rootClass()} dir="rtl">
     <Slider.Track className={trackClass()}>
