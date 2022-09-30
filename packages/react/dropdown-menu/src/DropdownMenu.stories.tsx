@@ -668,19 +668,12 @@ export const MultipleItemsAsDialogTriggers = () => {
 };
 
 export const CheckboxItems = () => {
-  const corvids = [
-    { label: 'Crows' },
-    { label: 'Ravens' },
-    { label: 'Magpies' },
-    { label: 'Jackdaws' },
-  ];
+  const options = ['Crows', 'Ravens', 'Magpies', 'Jackdaws'];
 
   const [selection, setSelection] = React.useState<string[]>([]);
 
   const handleSelectAll = () => {
-    setSelection((currentSelection) =>
-      currentSelection.length === corvids.length ? [] : corvids.map((corvid) => corvid.label)
-    );
+    setSelection((currentSelection) => (currentSelection.length === options.length ? [] : options));
   };
 
   return (
@@ -693,7 +686,7 @@ export const CheckboxItems = () => {
               <DropdownMenu.CheckboxItem
                 className={itemClass()}
                 checked={
-                  selection.length === corvids.length
+                  selection.length === options.length
                     ? true
                     : selection.length
                     ? 'indeterminate'
@@ -704,25 +697,25 @@ export const CheckboxItems = () => {
               >
                 Select all
                 <DropdownMenu.ItemIndicator>
-                  {selection.length === corvids.length ? <TickIcon /> : '—'}
+                  {selection.length === options.length ? <TickIcon /> : '—'}
                 </DropdownMenu.ItemIndicator>
               </DropdownMenu.CheckboxItem>
               <DropdownMenu.Separator className={separatorClass()} />
-              {corvids.map(({ label }) => (
+              {options.map((option) => (
                 <DropdownMenu.CheckboxItem
-                  key={label}
+                  key={option}
                   className={itemClass()}
-                  checked={selection.includes(label)}
+                  checked={selection.includes(option)}
                   onSelect={(e) => e.preventDefault()}
                   onCheckedChange={() =>
                     setSelection((current) =>
-                      current.includes(label)
-                        ? current.filter((el) => el !== label)
-                        : current.concat(label)
+                      current.includes(option)
+                        ? current.filter((el) => el !== option)
+                        : current.concat(option)
                     )
                   }
                 >
-                  {label}
+                  {option}
                   <DropdownMenu.ItemIndicator>
                     <TickIcon />
                   </DropdownMenu.ItemIndicator>

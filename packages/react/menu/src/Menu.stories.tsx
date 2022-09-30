@@ -235,19 +235,12 @@ export const Typeahead = () => (
 );
 
 export const CheckboxItems = () => {
-  const options = [
-    { label: 'Crows' },
-    { label: 'Ravens' },
-    { label: 'Magpies' },
-    { label: 'Jackdaws' },
-  ];
+  const options = ['Crows', 'Ravens', 'Magpies', 'Jackdaws'];
 
   const [selection, setSelection] = React.useState<string[]>([]);
 
   const handleSelectAll = () => {
-    setSelection((currentSelection) =>
-      currentSelection.length === options.length ? [] : options.map((option) => option.label)
-    );
+    setSelection((currentSelection) => (currentSelection.length === options.length ? [] : options));
   };
 
   return (
@@ -265,18 +258,20 @@ export const CheckboxItems = () => {
         </Menu.ItemIndicator>
       </Menu.CheckboxItem>
       <Menu.Separator className={separatorClass()} />
-      {options.map(({ label }) => (
+      {options.map((option) => (
         <Menu.CheckboxItem
-          key={label}
+          key={option}
           className={itemClass()}
-          checked={selection.includes(label)}
+          checked={selection.includes(option)}
           onCheckedChange={() =>
             setSelection((current) =>
-              current.includes(label) ? current.filter((el) => el !== label) : current.concat(label)
+              current.includes(option)
+                ? current.filter((el) => el !== option)
+                : current.concat(option)
             )
           }
         >
-          {label}
+          {option}
           <Menu.ItemIndicator>
             <TickIcon />
           </Menu.ItemIndicator>
