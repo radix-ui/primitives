@@ -124,7 +124,6 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       const nextValue = values[valueIndexToChangeRef.current];
       const hasChanged = nextValue !== prevValue;
       if (hasChanged) onValueCommit(values);
-      valuesBeforeSlideStartRef.current = values;
     }
 
     function updateValues(value: number, atIndex: number, { commit } = { commit: false }) {
