@@ -873,7 +873,6 @@ const NavigationMenuContentImpl = React.forwardRef<
           }
         })}
         onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, (event) => {
-          console.log(wasEscapeCloseRef.current, event);
           // prevent the dropdown from reopening
           // after the escape key has been pressed
           wasEscapeCloseRef.current = true;
