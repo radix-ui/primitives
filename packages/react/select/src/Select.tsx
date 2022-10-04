@@ -60,6 +60,7 @@ type SelectContextValue = {
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
+  disabled?: boolean;
 };
 
 const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
@@ -84,6 +85,7 @@ interface SelectProps {
   dir?: Direction;
   name?: string;
   autoComplete?: string;
+  disabled?: boolean;
 }
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
@@ -99,6 +101,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     dir,
     name,
     autoComplete,
+    disabled,
   } = props;
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
   const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
@@ -145,6 +148,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
       onOpenChange={setOpen}
       dir={direction}
       triggerPointerDownPosRef={triggerPointerDownPosRef}
+      disabled={disabled}
     >
       <Collection.Provider scope={__scopeSelect}>
         <SelectNativeOptionsProvider
@@ -174,6 +178,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
           value={value}
           // enable form autofill
           onChange={(event) => setValue(event.target.value)}
+          disabled={disabled}
         >
           {Array.from(nativeOptionsSet)}
         </BubbleSelect>
@@ -196,8 +201,9 @@ interface SelectTriggerProps extends PrimitiveButtonProps {}
 
 const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>(
   (props: ScopedProps<SelectTriggerProps>, forwardedRef) => {
-    const { __scopeSelect, disabled = false, ...triggerProps } = props;
+    const { __scopeSelect, ...triggerProps } = props;
     const context = useSelectContext(TRIGGER_NAME, __scopeSelect);
+    const disabled = props.disabled || context.disabled;
     const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
     const getItems = useCollection(__scopeSelect);
 
