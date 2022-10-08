@@ -57,6 +57,7 @@ type SelectContextValue = {
   value?: string;
   onValueChange(value: string): void;
   open: boolean;
+  required?: boolean;
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
@@ -86,6 +87,7 @@ interface SelectProps {
   name?: string;
   autoComplete?: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
@@ -102,6 +104,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     name,
     autoComplete,
     disabled,
+    required,
   } = props;
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
   const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
@@ -134,6 +137,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
 
   return (
     <SelectProvider
+      required={required}
       scope={__scopeSelect}
       trigger={trigger}
       onTriggerChange={setTrigger}
@@ -172,6 +176,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
         <BubbleSelect
           key={nativeSelectKey}
           aria-hidden
+          required={required}
           tabIndex={-1}
           name={name}
           autoComplete={autoComplete}
@@ -230,6 +235,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         role="combobox"
         aria-controls={context.contentId}
         aria-expanded={context.open}
+        aria-required={context.required}
         aria-autocomplete="none"
         dir={context.dir}
         data-state={context.open ? 'open' : 'closed'}
