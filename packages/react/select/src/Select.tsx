@@ -201,9 +201,9 @@ interface SelectTriggerProps extends PrimitiveButtonProps {}
 
 const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>(
   (props: ScopedProps<SelectTriggerProps>, forwardedRef) => {
-    const { __scopeSelect, ...triggerProps } = props;
+    const { __scopeSelect, disabled: disabledProp = false, ...triggerProps } = props;
     const context = useSelectContext(TRIGGER_NAME, __scopeSelect);
-    const disabled = props.disabled || context.disabled;
+    const disabled = disabledProp || context.disabled;
     const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
     const getItems = useCollection(__scopeSelect);
 
