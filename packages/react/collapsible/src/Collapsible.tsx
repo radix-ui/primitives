@@ -176,11 +176,13 @@ const CollapsibleContentImpl = React.forwardRef<
     if (node) {
       originalStylesRef.current = originalStylesRef.current || {
         transitionDuration: node.style.transitionDuration,
+        animationName: node.style.animationName,
         animationDuration: node.style.animationDuration,
         animationFillMode: node.style.animationFillMode,
       };
       // block any animations/transitions so the element renders at its full dimensions
       node.style.transitionDuration = '0s';
+      node.style.animationName = 'none';
       node.style.animationDuration = '0s';
       node.style.animationFillMode = 'none';
 
@@ -192,6 +194,7 @@ const CollapsibleContentImpl = React.forwardRef<
       // kick off any animations/transitions that were originally set up if it isn't the initial mount
       if (!isMountAnimationPreventedRef.current) {
         node.style.transitionDuration = originalStylesRef.current.transitionDuration;
+        node.style.animationName = originalStylesRef.current.animationName;
         node.style.animationDuration = originalStylesRef.current.animationDuration;
         node.style.animationFillMode = originalStylesRef.current.animationFillMode;
       }
