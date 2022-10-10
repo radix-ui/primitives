@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-collapsible",
-  "version": "1.0.1-rc.9",
+  "version": "1.0.1-rc.10",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
