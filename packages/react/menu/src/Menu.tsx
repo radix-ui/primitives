@@ -746,9 +746,12 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
 const CHECKBOX_ITEM_NAME = 'MenuCheckboxItem';
 
 type MenuCheckboxItemElement = MenuItemElement;
+
+type CheckedState = boolean | 'indeterminate';
+
 interface MenuCheckboxItemProps extends MenuItemProps {
-  checked?: boolean;
-  onCheckedChange?: (checked: boolean) => void;
+  checked?: CheckedState;
+  onCheckedChange?: (checked: CheckedState) => void;
 }
 
 const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxItemProps>(
@@ -758,13 +761,13 @@ const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxI
       <ItemIndicatorProvider scope={props.__scopeMenu} checked={checked}>
         <MenuItem
           role="menuitemcheckbox"
-          aria-checked={checked}
+          aria-checked={isIndeterminate(checked) ? 'mixed' : checked}
           {...checkboxItemProps}
           ref={forwardedRef}
           data-state={getCheckedState(checked)}
           onSelect={composeEventHandlers(
             checkboxItemProps.onSelect,
-            () => onCheckedChange?.(!checked),
+            () => onCheckedChange?.(isIndeterminate(checked) ? true : !checked),
             { checkForDefaultPrevented: false }
           )}
         />
@@ -849,9 +852,12 @@ MenuRadioItem.displayName = RADIO_ITEM_NAME;
 
 const ITEM_INDICATOR_NAME = 'MenuItemIndicator';
 
-const [ItemIndicatorProvider, useItemIndicatorContext] = createMenuContext(ITEM_INDICATOR_NAME, {
-  checked: false,
-});
+type CheckboxContextValue = { checked: CheckedState };
+
+const [ItemIndicatorProvider, useItemIndicatorContext] = createMenuContext<CheckboxContextValue>(
+  ITEM_INDICATOR_NAME,
+  { checked: false }
+);
 
 type MenuItemIndicatorElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
@@ -868,7 +874,13 @@ const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemInd
     const { __scopeMenu, forceMount, ...itemIndicatorProps } = props;
     const indicatorContext = useItemIndicatorContext(ITEM_INDICATOR_NAME, __scopeMenu);
     return (
-      <Presence present={forceMount || indicatorContext.checked}>
+      <Presence
+        present={
+          forceMount ||
+          isIndeterminate(indicatorContext.checked) ||
+          indicatorContext.checked === true
+        }
+      >
         <Primitive.span
           {...itemIndicatorProps}
           ref={forwardedRef}
@@ -1202,8 +1214,12 @@ function getOpenState(open: boolean) {
   return open ? 'open' : 'closed';
 }
 
-function getCheckedState(checked: boolean) {
-  return checked ? 'checked' : 'unchecked';
+function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
+  return checked === 'indeterminate';
+}
+
+function getCheckedState(checked: CheckedState) {
+  return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
 function focusFirst(candidates: HTMLElement[]) {

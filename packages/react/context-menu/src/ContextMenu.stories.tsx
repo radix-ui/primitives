@@ -453,12 +453,8 @@ export const WithLabels = () => (
 );
 
 export const CheckboxItems = () => {
-  const checkboxItems = [
-    { label: 'Bold', state: React.useState(false) },
-    { label: 'Italic', state: React.useState(true) },
-    { label: 'Underline', state: React.useState(false) },
-    { label: 'Strikethrough', state: React.useState(false), disabled: true },
-  ];
+  const checkboxItems = ['Bold', 'Italic', 'Underline'];
+  const [selection, setSelection] = React.useState<string[]>([]);
 
   return (
     <div style={{ textAlign: 'center', padding: 50 }}>
@@ -476,20 +472,32 @@ export const CheckboxItems = () => {
               Smaller
             </ContextMenu.Item>
             <ContextMenu.Separator className={separatorClass()} />
-            {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+            {checkboxItems.map((item) => (
               <ContextMenu.CheckboxItem
-                key={label}
+                key={item}
                 className={itemClass()}
-                checked={checked}
-                onCheckedChange={setChecked}
-                disabled={disabled}
+                checked={selection.includes(item)}
+                onCheckedChange={() =>
+                  setSelection((current) =>
+                    current.includes(item)
+                      ? current.filter((el) => el !== item)
+                      : current.concat(item)
+                  )
+                }
               >
-                {label}
+                {item}
                 <ContextMenu.ItemIndicator>
                   <TickIcon />
                 </ContextMenu.ItemIndicator>
               </ContextMenu.CheckboxItem>
             ))}
+            <ContextMenu.Separator />
+            <ContextMenu.CheckboxItem className={itemClass()} disabled>
+              Strikethrough
+              <ContextMenu.ItemIndicator>
+                <TickIcon />
+              </ContextMenu.ItemIndicator>
+            </ContextMenu.CheckboxItem>
           </ContextMenu.Content>
         </ContextMenu.Portal>
       </ContextMenu.Root>

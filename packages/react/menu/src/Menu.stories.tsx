@@ -235,34 +235,43 @@ export const Typeahead = () => (
 );
 
 export const CheckboxItems = () => {
-  const checkboxItems = [
-    { label: 'Bold', state: React.useState(false) },
-    { label: 'Italic', state: React.useState(true) },
-    { label: 'Underline', state: React.useState(false) },
-    { label: 'Strikethrough', state: React.useState(false), disabled: true },
-  ];
+  const options = ['Crows', 'Ravens', 'Magpies', 'Jackdaws'];
+
+  const [selection, setSelection] = React.useState<string[]>([]);
+
+  const handleSelectAll = () => {
+    setSelection((currentSelection) => (currentSelection.length === options.length ? [] : options));
+  };
 
   return (
     <MenuWithAnchor>
-      <Menu.Item className={itemClass()} onSelect={() => window.alert('show')}>
-        Show fonts
-      </Menu.Item>
-      <Menu.Item className={itemClass()} onSelect={() => window.alert('bigger')}>
-        Bigger
-      </Menu.Item>
-      <Menu.Item className={itemClass()} onSelect={() => window.alert('smaller')}>
-        Smaller
-      </Menu.Item>
+      <Menu.CheckboxItem
+        className={itemClass()}
+        checked={
+          selection.length === options.length ? true : selection.length ? 'indeterminate' : false
+        }
+        onCheckedChange={handleSelectAll}
+      >
+        Select all
+        <Menu.ItemIndicator>
+          {selection.length === options.length ? <TickIcon /> : '—'}
+        </Menu.ItemIndicator>
+      </Menu.CheckboxItem>
       <Menu.Separator className={separatorClass()} />
-      {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+      {options.map((option) => (
         <Menu.CheckboxItem
-          key={label}
+          key={option}
           className={itemClass()}
-          checked={checked}
-          onCheckedChange={setChecked}
-          disabled={disabled}
+          checked={selection.includes(option)}
+          onCheckedChange={() =>
+            setSelection((current) =>
+              current.includes(option)
+                ? current.filter((el) => el !== option)
+                : current.concat(option)
+            )
+          }
         >
-          {label}
+          {option}
           <Menu.ItemIndicator>
             <TickIcon />
           </Menu.ItemIndicator>
@@ -307,10 +316,14 @@ export const Animated = () => {
   const [file, setFile] = React.useState(files[1]);
   const [open, setOpen] = React.useState(true);
   const checkboxItems = [
-    { label: 'Bold', state: React.useState(false) },
-    { label: 'Italic', state: React.useState(true) },
-    { label: 'Underline', state: React.useState(false) },
-    { label: 'Strikethrough', state: React.useState(false), disabled: true },
+    { label: 'Bold', state: React.useState<boolean | 'indeterminate'>(false) },
+    { label: 'Italic', state: React.useState<boolean | 'indeterminate'>(true) },
+    { label: 'Underline', state: React.useState<boolean | 'indeterminate'>(false) },
+    {
+      label: 'Strikethrough',
+      state: React.useState<boolean | 'indeterminate'>(false),
+      disabled: true,
+    },
   ];
 
   return (

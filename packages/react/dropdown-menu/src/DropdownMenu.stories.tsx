@@ -669,12 +669,13 @@ export const MultipleItemsAsDialogTriggers = () => {
 };
 
 export const CheckboxItems = () => {
-  const checkboxItems = [
-    { label: 'Bold', state: React.useState(false) },
-    { label: 'Italic', state: React.useState(true) },
-    { label: 'Underline', state: React.useState(false) },
-    { label: 'Strikethrough', state: React.useState(false), disabled: true },
-  ];
+  const options = ['Crows', 'Ravens', 'Magpies', 'Jackdaws'];
+
+  const [selection, setSelection] = React.useState<string[]>([]);
+
+  const handleSelectAll = () => {
+    setSelection((currentSelection) => (currentSelection.length === options.length ? [] : options));
+  };
 
   return (
     <div style={{ textAlign: 'center', padding: 50 }}>
@@ -682,30 +683,46 @@ export const CheckboxItems = () => {
         <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content className={contentClass()} sideOffset={5}>
-            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('show')}>
-              Show fonts
-            </DropdownMenu.Item>
-            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('bigger')}>
-              Bigger
-            </DropdownMenu.Item>
-            <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('smaller')}>
-              Smaller
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator className={separatorClass()} />
-            {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
+            <DropdownMenu.Group>
               <DropdownMenu.CheckboxItem
-                key={label}
                 className={itemClass()}
-                checked={checked}
-                onCheckedChange={setChecked}
-                disabled={disabled}
+                checked={
+                  selection.length === options.length
+                    ? true
+                    : selection.length
+                    ? 'indeterminate'
+                    : false
+                }
+                onSelect={(e) => e.preventDefault()}
+                onCheckedChange={handleSelectAll}
               >
-                {label}
+                Select all
                 <DropdownMenu.ItemIndicator>
-                  <TickIcon />
+                  {selection.length === options.length ? <TickIcon /> : '—'}
                 </DropdownMenu.ItemIndicator>
               </DropdownMenu.CheckboxItem>
-            ))}
+              <DropdownMenu.Separator className={separatorClass()} />
+              {options.map((option) => (
+                <DropdownMenu.CheckboxItem
+                  key={option}
+                  className={itemClass()}
+                  checked={selection.includes(option)}
+                  onSelect={(e) => e.preventDefault()}
+                  onCheckedChange={() =>
+                    setSelection((current) =>
+                      current.includes(option)
+                        ? current.filter((el) => el !== option)
+                        : current.concat(option)
+                    )
+                  }
+                >
+                  {option}
+                  <DropdownMenu.ItemIndicator>
+                    <TickIcon />
+                  </DropdownMenu.ItemIndicator>
+                </DropdownMenu.CheckboxItem>
+              ))}
+            </DropdownMenu.Group>
             <DropdownMenu.Arrow />
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
@@ -856,10 +873,14 @@ const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']
 
 export const Chromatic = () => {
   const checkboxItems = [
-    { label: 'Bold', state: React.useState(false) },
-    { label: 'Italic', state: React.useState(true) },
-    { label: 'Underline', state: React.useState(false) },
-    { label: 'Strikethrough', state: React.useState(false), disabled: true },
+    { label: 'Bold', state: React.useState<boolean | 'indeterminate'>(false) },
+    { label: 'Italic', state: React.useState<boolean | 'indeterminate'>(true) },
+    { label: 'Underline', state: React.useState<boolean | 'indeterminate'>(false) },
+    {
+      label: 'Strikethrough',
+      state: React.useState<boolean | 'indeterminate'>(false),
+      disabled: true,
+    },
   ];
   const files = ['README.md', 'index.js', 'page.css'];
   const [file, setFile] = React.useState(files[1]);
