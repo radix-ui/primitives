@@ -69,6 +69,7 @@ interface SliderProps
   value?: number[];
   defaultValue?: number[];
   onValueChange?(value: number[]): void;
+  onValueCommit?(value: number[]): void;
   inverted?: boolean;
 }
 
@@ -85,6 +86,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       defaultValue = [min],
       value,
       onValueChange = () => {},
+      onValueCommit = () => {},
       inverted = false,
       ...sliderProps
     } = props;
@@ -106,6 +108,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
         onValueChange(value);
       },
     });
+    const valuesBeforeSlideStartRef = React.useRef(values);
 
     function handleSlideStart(value: number) {
       const closestIndex = getClosestValueIndex(values, value);
@@ -116,7 +119,14 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       updateValues(value, valueIndexToChangeRef.current);
     }
 
-    function updateValues(value: number, atIndex: number) {
+    function handleSlideEnd() {
+      const prevValue = valuesBeforeSlideStartRef.current[valueIndexToChangeRef.current];
+      const nextValue = values[valueIndexToChangeRef.current];
+      const hasChanged = nextValue !== prevValue;
+      if (hasChanged) onValueCommit(values);
+    }
+
+    function updateValues(value: number, atIndex: number, { commit } = { commit: false }) {
       const decimalCount = getDecimalCount(step);
       const snapToStep = roundValue(Math.round((value - min) / step) * step + min, decimalCount);
       const nextValue = clamp(snapToStep, [min, max]);
@@ -125,7 +135,9 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
         const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
         if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
           valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
-          return String(nextValues) === String(prevValues) ? prevValues : nextValues;
+          const hasChanged = String(nextValues) !== String(prevValues);
+          if (hasChanged && commit) onValueCommit(nextValues);
+          return hasChanged ? nextValues : prevValues;
         } else {
           return prevValues;
         }
@@ -150,13 +162,19 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               data-disabled={disabled ? '' : undefined}
               {...sliderProps}
               ref={composedRefs}
+              onPointerDown={composeEventHandlers(sliderProps.onPointerDown, () => {
+                if (!disabled) valuesBeforeSlideStartRef.current = values;
+              })}
               min={min}
               max={max}
               inverted={inverted}
               onSlideStart={disabled ? undefined : handleSlideStart}
               onSlideMove={disabled ? undefined : handleSlideMove}
-              onHomeKeyDown={() => !disabled && updateValues(min, 0)}
-              onEndKeyDown={() => !disabled && updateValues(max, values.length - 1)}
+              onSlideEnd={disabled ? undefined : handleSlideEnd}
+              onHomeKeyDown={() => !disabled && updateValues(min, 0, { commit: true })}
+              onEndKeyDown={() =>
+                !disabled && updateValues(max, values.length - 1, { commit: true })
+              }
               onStepKeyDown={({ event, direction: stepDirection }) => {
                 if (!disabled) {
                   const isPageKey = PAGE_KEYS.includes(event.key);
@@ -165,7 +183,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
                   const atIndex = valueIndexToChangeRef.current;
                   const value = values[atIndex];
                   const stepInDirection = step * multiplier * stepDirection;
-                  updateValues(value + stepInDirection, atIndex);
+                  updateValues(value + stepInDirection, atIndex, { commit: true });
                 }
               }}
             />
@@ -210,6 +228,7 @@ type SliderOrientationPrivateProps = {
   inverted: boolean;
   onSlideStart?(value: number): void;
   onSlideMove?(value: number): void;
+  onSlideEnd?(): void;
   onHomeKeyDown(event: React.KeyboardEvent): void;
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
@@ -225,8 +244,17 @@ interface SliderHorizontalProps extends SliderOrientationProps {
 
 const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizontalProps>(
   (props: ScopedProps<SliderHorizontalProps>, forwardedRef) => {
-    const { min, max, dir, inverted, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } =
-      props;
+    const {
+      min,
+      max,
+      dir,
+      inverted,
+      onSlideStart,
+      onSlideMove,
+      onSlideEnd,
+      onStepKeyDown,
+      ...sliderProps
+    } = props;
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
     const rectRef = React.useRef<ClientRect>();
@@ -269,7 +297,10 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
             const value = getValueFromPointer(event.clientX);
             onSlideMove?.(value);
           }}
-          onSlideEnd={() => (rectRef.current = undefined)}
+          onSlideEnd={() => {
+            rectRef.current = undefined;
+            onSlideEnd?.();
+          }}
           onStepKeyDown={(event) => {
             const slideDirection = isSlidingFromLeft ? 'from-left' : 'from-right';
             const isBackKey = BACK_KEYS[slideDirection].includes(event.key);
@@ -290,7 +321,16 @@ interface SliderVerticalProps extends SliderOrientationProps {}
 
 const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
   (props: ScopedProps<SliderVerticalProps>, forwardedRef) => {
-    const { min, max, inverted, onSlideStart, onSlideMove, onStepKeyDown, ...sliderProps } = props;
+    const {
+      min,
+      max,
+      inverted,
+      onSlideStart,
+      onSlideMove,
+      onSlideEnd,
+      onStepKeyDown,
+      ...sliderProps
+    } = props;
     const sliderRef = React.useRef<SliderImplElement>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
     const rectRef = React.useRef<ClientRect>();
@@ -330,7 +370,10 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
             const value = getValueFromPointer(event.clientY);
             onSlideMove?.(value);
           }}
-          onSlideEnd={() => (rectRef.current = undefined)}
+          onSlideEnd={() => {
+            rectRef.current = undefined;
+            onSlideEnd?.();
+          }}
           onStepKeyDown={(event) => {
             const slideDirection = isSlidingFromBottom ? 'from-bottom' : 'from-top';
             const isBackKey = BACK_KEYS[slideDirection].includes(event.key);
