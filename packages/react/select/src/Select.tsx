@@ -201,9 +201,9 @@ interface SelectTriggerProps extends PrimitiveButtonProps {}
 
 const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>(
   (props: ScopedProps<SelectTriggerProps>, forwardedRef) => {
-    const { __scopeSelect, disabled: disabledProp = false, ...triggerProps } = props;
+    const { __scopeSelect, disabled = false, ...triggerProps } = props;
     const context = useSelectContext(TRIGGER_NAME, __scopeSelect);
-    const disabled = disabledProp || context.disabled;
+    const isDisabled = context.disabled || disabled;
     const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
     const getItems = useCollection(__scopeSelect);
 
@@ -217,7 +217,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
     });
 
     const handleOpen = () => {
-      if (!disabled) {
+      if (!isDisabled) {
         context.onOpenChange(true);
         // reset typeahead when we open
         resetTypeahead();
@@ -233,8 +233,8 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         aria-autocomplete="none"
         dir={context.dir}
         data-state={context.open ? 'open' : 'closed'}
-        disabled={disabled}
-        data-disabled={disabled ? '' : undefined}
+        disabled={isDisabled}
+        data-disabled={isDisabled ? '' : undefined}
         data-placeholder={context.value === undefined ? '' : undefined}
         {...triggerProps}
         ref={composedRefs}
