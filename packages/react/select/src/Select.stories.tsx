@@ -457,6 +457,69 @@ export const WithinForm = () => {
   );
 };
 
+export const DisabledWithinForm = () => {
+  const [data, setData] = React.useState({});
+
+  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    setData(Object.fromEntries((formData as any).entries()));
+  }
+
+  return (
+    <form
+      style={{ padding: 50 }}
+      onSubmit={(event) => {
+        handleChange(event);
+        event.preventDefault();
+      }}
+      onChange={handleChange}
+    >
+      <Label style={{ display: 'block' }}>
+        Name
+        <input name="name" autoComplete="name" style={{ display: 'block' }} />
+      </Label>
+      <br />
+      <Label style={{ display: 'block' }}>
+        Country
+        <Select.Root name="country" autoComplete="country" defaultValue="fr" disabled>
+          <Select.Trigger className={triggerClass()}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={contentClass()}>
+              <Select.Viewport className={viewportClass()}>
+                <Select.Item className={itemClass()} value="fr">
+                  <Select.ItemText>France</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="uk">
+                  <Select.ItemText>United Kingdom</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="es">
+                  <Select.ItemText>Spain</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+      <br />
+      <button type="submit">Submit</button>
+      <br />
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </form>
+  );
+};
+
 export const WithinDialog = () => (
   <Dialog.Root>
     <Dialog.Trigger>Open Dialog</Dialog.Trigger>

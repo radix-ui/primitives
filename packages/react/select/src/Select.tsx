@@ -60,6 +60,7 @@ type SelectContextValue = {
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
+  disabled?: boolean;
 };
 
 const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
@@ -84,6 +85,7 @@ interface SelectProps {
   dir?: Direction;
   name?: string;
   autoComplete?: string;
+  disabled?: boolean;
 }
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
@@ -99,6 +101,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     dir,
     name,
     autoComplete,
+    disabled,
   } = props;
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
   const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
@@ -145,6 +148,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
       onOpenChange={setOpen}
       dir={direction}
       triggerPointerDownPosRef={triggerPointerDownPosRef}
+      disabled={disabled}
     >
       <Collection.Provider scope={__scopeSelect}>
         <SelectNativeOptionsProvider
@@ -174,6 +178,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
           value={value}
           // enable form autofill
           onChange={(event) => setValue(event.target.value)}
+          disabled={disabled}
         >
           {Array.from(nativeOptionsSet)}
         </BubbleSelect>
@@ -198,6 +203,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
   (props: ScopedProps<SelectTriggerProps>, forwardedRef) => {
     const { __scopeSelect, disabled = false, ...triggerProps } = props;
     const context = useSelectContext(TRIGGER_NAME, __scopeSelect);
+    const isDisabled = context.disabled || disabled;
     const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
     const getItems = useCollection(__scopeSelect);
 
@@ -211,7 +217,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
     });
 
     const handleOpen = () => {
-      if (!disabled) {
+      if (!isDisabled) {
         context.onOpenChange(true);
         // reset typeahead when we open
         resetTypeahead();
@@ -227,8 +233,8 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         aria-autocomplete="none"
         dir={context.dir}
         data-state={context.open ? 'open' : 'closed'}
-        disabled={disabled}
-        data-disabled={disabled ? '' : undefined}
+        disabled={isDisabled}
+        data-disabled={isDisabled ? '' : undefined}
         data-placeholder={context.value === undefined ? '' : undefined}
         {...triggerProps}
         ref={composedRefs}
