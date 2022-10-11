@@ -185,6 +185,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
           onChange={(event) => setValue(event.target.value)}
           disabled={disabled}
         >
+          {value === undefined ? <option value="" /> : null}
           {Array.from(nativeOptionsSet)}
         </BubbleSelect>
       ) : null}
