@@ -225,6 +225,23 @@ export const Chromatic = () => (
         Button <em>text</em>
       </a>
     </Button>
+
+    <h1>With callback-dependent rendering</h1>
+    <h2>Component not passing callback</h2>
+    <p>Should NOT have delete button next to component</p>
+    <Slot>
+      <MockTag>Component</MockTag>
+    </Slot>
+    <h2>Component passing `undefined` callback</h2>
+    <p>Should NOT have delete button next to component</p>
+    <Slot>
+      <MockTag onDelete={undefined}>Component</MockTag>
+    </Slot>
+    <h2>Component passing callback</h2>
+    <p>Should have delete button next to component</p>
+    <Slot>
+      <MockTag onDelete={() => alert('Delete')}>Component</MockTag>
+    </Slot>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -340,3 +357,11 @@ const MockIcon = React.forwardRef<React.ElementRef<'span'>, React.ComponentProps
     />
   )
 );
+
+const MockTag = React.forwardRef(({ onDelete, ...props }: any, ref) => {
+  return (
+    <div {...props} ref={ref}>
+      {props.children} {onDelete ? <button onClick={onDelete}>delete</button> : null}
+    </div>
+  );
+});
