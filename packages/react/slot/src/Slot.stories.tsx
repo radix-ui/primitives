@@ -226,15 +226,21 @@ export const Chromatic = () => (
       </a>
     </Button>
 
-    <h1>With callback dependent rendering</h1>
+    <h1>With callback-dependent rendering</h1>
+    <h2>Component not passing callback</h2>
+    <p>Should NOT have delete button next to component</p>
     <Slot>
-      <Tag>Tag with no `onDelete`</Tag>
+      <MockTag>Component</MockTag>
     </Slot>
+    <h2>Component passing `undefined` callback</h2>
+    <p>Should NOT have delete button next to component</p>
     <Slot>
-      <Tag onDelete={undefined}>Tag with `undefined` `onDelete`</Tag>
+      <MockTag onDelete={undefined}>Component</MockTag>
     </Slot>
+    <h2>Component passing callback</h2>
+    <p>Should have delete button next to component</p>
     <Slot>
-      <Tag onDelete={() => alert('Clicked')}>Tag with defined `onDelete`</Tag>
+      <MockTag onDelete={() => alert('Delete')}>Component</MockTag>
     </Slot>
   </>
 );
@@ -352,9 +358,9 @@ const MockIcon = React.forwardRef<React.ElementRef<'span'>, React.ComponentProps
   )
 );
 
-const Tag = React.forwardRef(({ onDelete, ...props }: any, ref) => {
+const MockTag = React.forwardRef(({ onDelete, ...props }: any, ref) => {
   return (
-    <div {...props} className="tag" ref={ref}>
+    <div {...props} ref={ref}>
       {props.children} {onDelete ? <button onClick={onDelete}>delete</button> : null}
     </div>
   );
