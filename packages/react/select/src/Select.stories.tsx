@@ -546,18 +546,12 @@ export const RequiredWithinForm = () => {
         Country
         <Select.Root required name="country" autoComplete="country">
           <Select.Trigger className={triggerClass()}>
-            <Select.Value />
+            <Select.Value placeholder="Pick an option" />
             <Select.Icon />
           </Select.Trigger>
           <Select.Portal>
             <Select.Content className={contentClass()}>
               <Select.Viewport className={viewportClass()}>
-                <Select.Item className={itemClass()} value="">
-                  <Select.ItemText>None</Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
                 <Select.Item className={itemClass()} value="fr">
                   <Select.ItemText>France</Select.ItemText>
                   <Select.ItemIndicator className={indicatorClass()}>
