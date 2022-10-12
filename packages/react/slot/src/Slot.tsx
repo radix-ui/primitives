@@ -97,9 +97,8 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
     const childPropValue = childProps[propName];
 
     const isHandler = /^on[A-Z]/.test(propName);
-    // if it's a handler
     if (isHandler) {
-      // and it exists on both, we compose them
+      // if the handler exists on both, we compose them
       if (slotPropValue && childPropValue) {
         overrideProps[propName] = (...args: unknown[]) => {
           childPropValue(...args);
