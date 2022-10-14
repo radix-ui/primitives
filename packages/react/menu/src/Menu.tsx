@@ -492,6 +492,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                   role="menu"
                   aria-orientation="vertical"
                   data-state={getOpenState(context.open)}
+                  data-radix-menu-content=""
                   dir={rootContext.dir}
                   {...popperScope}
                   {...contentProps}
@@ -500,7 +501,8 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                   onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
                     // submenu key events bubble through portals. We only care about keys in this menu.
                     const target = event.target as HTMLElement;
-                    const isKeyDownInside = target.closest('[role="menu"]') === event.currentTarget;
+                    const isKeyDownInside =
+                      target.closest('[data-radix-menu-content]') === event.currentTarget;
                     const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
                     const isCharacterKey = event.key.length === 1;
                     if (isKeyDownInside) {
