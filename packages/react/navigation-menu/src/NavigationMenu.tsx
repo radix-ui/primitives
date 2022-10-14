@@ -155,12 +155,19 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
 
     const handleDelayedOpen = React.useCallback(
       (itemValue: string) => {
-        openTimerRef.current = window.setTimeout(() => {
+        const isOpenItem = value === itemValue;
+        if (isOpenItem) {
+          // If the item is already open (e.g. we're transitioning from the content to the trigger)
+          // then we want to clear the close timer immediately.
           window.clearTimeout(closeTimerRef.current);
-          setValue(itemValue);
-        }, delayDuration);
+        } else {
+          openTimerRef.current = window.setTimeout(() => {
+            window.clearTimeout(closeTimerRef.current);
+            setValue(itemValue);
+          }, delayDuration);
+        }
       },
-      [setValue, delayDuration]
+      [value, setValue, delayDuration]
     );
 
     React.useEffect(() => {
