@@ -55,6 +55,41 @@ export const Basic = () => {
   );
 };
 
+export const CustomDurations = () => {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#e5e8eb',
+        paddingBottom: 150,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      <h1>Delay duration</h1>
+      <h2>Default (200ms)</h2>
+      <DurationNavigation />
+
+      <h2>Custom (0ms = instant open)</h2>
+      <DurationNavigation delayDuration={0} />
+
+      <h2>Custom (700ms)</h2>
+      <DurationNavigation delayDuration={700} />
+
+      <h1 style={{ marginTop: 50 }}>Skip delay duration</h1>
+      <h2>Default (300ms to move from one trigger to another)</h2>
+      <DurationNavigation />
+
+      <h2>Custom (0ms to move from one trigger to another = never skip)</h2>
+      <DurationNavigation skipDelayDuration={0} />
+
+      <h2>Custom (2000ms to move from one trigger to another)</h2>
+      <DurationNavigation delayDuration={500} skipDelayDuration={2000} />
+    </div>
+  );
+};
+
 export const Viewport = () => {
   return (
     <StoryFrame>
@@ -390,6 +425,61 @@ const StoryFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
+const DurationNavigation = React.forwardRef<
+  React.ElementRef<typeof NavigationMenu.Root>,
+  React.ComponentProps<typeof NavigationMenu.Root>
+>((props, forwardedRef) => {
+  return (
+    <NavigationMenu.Root
+      {...props}
+      style={{ backgroundColor: 'white', borderRadius: 500, padding: '2px 12px', ...props.style }}
+      ref={forwardedRef}
+    >
+      <NavigationMenu.List className={mainListClass()}>
+        <NavigationMenu.Item className={expandableItemClass()}>
+          <TriggerWithIndicator>Products</TriggerWithIndicator>
+          <NavigationMenu.Content className={basicContentClass()}>
+            <LinkGroup
+              bordered={false}
+              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+            />
+          </NavigationMenu.Content>
+        </NavigationMenu.Item>
+
+        <NavigationMenu.Item className={expandableItemClass()}>
+          <TriggerWithIndicator>Company</TriggerWithIndicator>
+          <NavigationMenu.Content className={basicContentClass()}>
+            <LinkGroup
+              bordered={false}
+              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+            />
+          </NavigationMenu.Content>
+        </NavigationMenu.Item>
+
+        <NavigationMenu.Item className={expandableItemClass()}>
+          <TriggerWithIndicator>Developers</TriggerWithIndicator>
+          <NavigationMenu.Content className={basicContentClass()}>
+            <LinkGroup
+              bordered={false}
+              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+            />
+          </NavigationMenu.Content>
+        </NavigationMenu.Item>
+
+        <NavigationMenu.Item className={expandableItemClass()}>
+          <TriggerWithIndicator>About</TriggerWithIndicator>
+          <NavigationMenu.Content className={basicContentClass()}>
+            <LinkGroup
+              bordered={false}
+              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+            />
+          </NavigationMenu.Content>
+        </NavigationMenu.Item>
+      </NavigationMenu.List>
+    </NavigationMenu.Root>
+  );
+});
+
 const TriggerWithIndicator: React.FC<{ children?: React.ReactNode; disabled?: boolean }> = ({
   children,
   disabled,
@@ -573,6 +663,7 @@ const basicContentClass = css({
   padding: 20,
   transformOrigin: 'top left',
   boxShadow: '0 10px 100px -20px rgba(50,50,93,0.25),0 30px 60px -30px rgba(0,0,0,0.3);',
+  zIndex: 1,
 
   '[dir="rtl"] &': {
     left: 'unset',
