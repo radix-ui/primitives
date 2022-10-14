@@ -59,27 +59,30 @@ export const CustomDurations = () => {
   return (
     <div
       style={{
-        height: '100vh',
+        minHeight: '100vh',
         backgroundColor: '#e5e8eb',
-        paddingBottom: 200,
+        paddingBottom: 150,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
       }}
     >
       <h1>Delay duration</h1>
-      <h2>Default (0ms)</h2>
+      <h2>Default (200ms)</h2>
       <DurationNavigation />
 
-      <h2>Custom (500ms)</h2>
-      <DurationNavigation delayDuration={500} />
+      <h2>Custom (0ms = instant open)</h2>
+      <DurationNavigation delayDuration={0} />
+
+      <h2>Custom (700ms)</h2>
+      <DurationNavigation delayDuration={700} />
 
       <h1 style={{ marginTop: 50 }}>Skip delay duration</h1>
-      <h2>Default (0ms to move from one trigger to another = never skip)</h2>
-      <DurationNavigation delayDuration={500} />
+      <h2>Default (300ms to move from one trigger to another)</h2>
+      <DurationNavigation />
 
-      <h2>Custom (1000ms to move from one trigger to another)</h2>
-      <DurationNavigation delayDuration={500} skipDelayDuration={1000} />
+      <h2>Custom (0ms to move from one trigger to another = never skip)</h2>
+      <DurationNavigation skipDelayDuration={0} />
 
       <h2>Custom (2000ms to move from one trigger to another)</h2>
       <DurationNavigation delayDuration={500} skipDelayDuration={2000} />

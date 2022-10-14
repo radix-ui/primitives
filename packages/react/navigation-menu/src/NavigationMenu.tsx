@@ -80,7 +80,7 @@ type NavigationMenuElement = React.ElementRef<typeof Primitive.nav>;
 type PrimitiveNavProps = Radix.ComponentPropsWithoutRef<typeof Primitive.nav>;
 interface NavigationMenuProps
   extends Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
-    Omit<PrimitiveNavProps, 'defaultValue'> {
+    PrimitiveNavProps {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
@@ -88,12 +88,12 @@ interface NavigationMenuProps
   orientation?: Orientation;
   /**
    * The duration from when the pointer enters the trigger until the tooltip gets opened.
-   * @defaultValue 0
+   * @defaultValue 200
    */
   delayDuration?: number;
   /**
    * How much time a user has to enter another trigger without incurring a delay again.
-   * @defaultValue 0
+   * @defaultValue 300
    */
   skipDelayDuration?: number;
 }
@@ -105,8 +105,8 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
       value: valueProp,
       onValueChange,
       defaultValue,
-      delayDuration = 0,
-      skipDelayDuration = 0,
+      delayDuration = 200,
+      skipDelayDuration = 300,
       orientation = 'horizontal',
       dir,
       ...NavigationMenuProps
@@ -219,7 +219,7 @@ type NavigationMenuSubElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface NavigationMenuSubProps
   extends Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
-    Omit<PrimitiveDivProps, 'defaultValue'> {
+    PrimitiveDivProps {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
