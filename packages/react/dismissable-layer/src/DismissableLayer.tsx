@@ -73,7 +73,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     } = props;
     const context = React.useContext(DismissableLayerContext);
     const [node, setNode] = React.useState<DismissableLayerElement | null>(null);
-    const ownerDocument = node?.ownerDocument ?? document;
+    const ownerDocument = node?.ownerDocument ?? globalThis?.document;
     const [, force] = React.useState({});
     const composedRefs = useComposedRefs(forwardedRef, (node) => setNode(node));
     const layers = Array.from(context.layers);
@@ -222,7 +222,7 @@ type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
  */
 function usePointerDownOutside(
   onPointerDownOutside?: (event: PointerDownOutsideEvent) => void,
-  ownerDocument: Document = document
+  ownerDocument: Document = globalThis?.document
 ) {
   const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
@@ -299,7 +299,7 @@ function usePointerDownOutside(
  */
 function useFocusOutside(
   onFocusOutside?: (event: FocusOutsideEvent) => void,
-  ownerDocument: Document = document
+  ownerDocument: Document = globalThis?.document
 ) {
   const handleFocusOutside = useCallbackRef(onFocusOutside) as EventListener;
   const isFocusInsideReactTreeRef = React.useRef(false);

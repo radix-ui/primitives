@@ -12,7 +12,7 @@ import {
 
 export default function DialogPage() {
   return (
-    <Dialog>
+    <Dialog defaultOpen>
       <DialogTrigger>open</DialogTrigger>
       <DialogPortal>
         <DialogOverlay />
