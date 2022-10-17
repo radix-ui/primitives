@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-hover-card",
-  "version": "1.0.1-rc.23",
+  "version": "1.0.1",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -38,6 +38,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.0.0"
+  }
 }

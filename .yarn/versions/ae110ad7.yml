@@ -1,5 +1,0 @@
-releases:
-  "@radix-ui/react-navigation-menu": minor
-
-declined:
-  - primitives
