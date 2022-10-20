@@ -57,11 +57,25 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
     const isFormControl = button ? Boolean(button.closest('form')) : true;
+
+    const initialCheckState = React.useRef(defaultChecked ? true : checkedProp);
+
     const [checked = false, setChecked] = useControllableState({
       prop: checkedProp,
       defaultProp: defaultChecked,
       onChange: onCheckedChange,
     });
+
+    const resetCheck = React.useCallback(() => {
+      setChecked(initialCheckState.current);
+    }, [setChecked]);
+
+    React.useEffect(() => {
+      if (!button) return;
+      const form = button.closest('form');
+      form?.addEventListener('reset', resetCheck);
+      return () => form?.removeEventListener('reset', resetCheck);
+    }, [button, resetCheck]);
 
     return (
       <CheckboxProvider scope={__scopeCheckbox} state={checked} disabled={disabled}>
