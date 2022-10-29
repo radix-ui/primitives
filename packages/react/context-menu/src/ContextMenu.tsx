@@ -104,7 +104,6 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
       []
     );
     const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
-      if (disabled) return;
       pointRef.current = { x: event.clientX, y: event.clientY };
       context.onOpenChange(true);
     };
@@ -122,6 +121,10 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
           // prevent iOS context menu from appearing
           style={{ WebkitTouchCallout: 'none', ...props.style }}
           onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
+            if (disabled) {
+              // if disabled allow the native context menu to pop up
+              return;
+            }
             // clearing the long press here because some platforms already support
             // long press to trigger a `contextmenu` event
             clearLongPress();
@@ -133,6 +136,9 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
             whenTouchOrPen((event) => {
               // clear the long press here in case there's multiple touch points
               clearLongPress();
+              if (disabled) {
+                return;
+              }
               longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
             })
           )}
