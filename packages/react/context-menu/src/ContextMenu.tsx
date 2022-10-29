@@ -85,11 +85,13 @@ const TRIGGER_NAME = 'ContextMenuTrigger';
 
 type ContextMenuTriggerElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
-interface ContextMenuTriggerProps extends PrimitiveSpanProps {}
+interface ContextMenuTriggerProps extends PrimitiveSpanProps {
+  disabled?: boolean;
+}
 
 const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMenuTriggerProps>(
   (props: ScopedProps<ContextMenuTriggerProps>, forwardedRef) => {
-    const { __scopeContextMenu, ...triggerProps } = props;
+    const { __scopeContextMenu, disabled = false, ...triggerProps } = props;
     const context = useContextMenuContext(TRIGGER_NAME, __scopeContextMenu);
     const menuScope = useMenuScope(__scopeContextMenu);
     const pointRef = React.useRef<Point>({ x: 0, y: 0 });
@@ -102,6 +104,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
       []
     );
     const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
+      if (disabled) return;
       pointRef.current = { x: event.clientX, y: event.clientY };
       context.onOpenChange(true);
     };
@@ -113,6 +116,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
         <MenuPrimitive.Anchor {...menuScope} virtualRef={virtualRef} />
         <Primitive.span
           data-state={context.open ? 'open' : 'closed'}
+          data-disabled={disabled ? '' : undefined}
           {...triggerProps}
           ref={forwardedRef}
           // prevent iOS context menu from appearing
