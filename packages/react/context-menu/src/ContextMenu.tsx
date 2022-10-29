@@ -134,8 +134,8 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
             whenTouchOrPen((event) => {
               // clear the long press here in case there's multiple touch points
               clearLongPress();
-            // if trigger is disabled, enable the native Context Menu
-            if (disabled) return;
+              // if trigger is disabled, enable the native Context Menu
+              if (disabled) return;
               longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
             })
           )}
