@@ -133,22 +133,33 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
                   event.preventDefault();
                 })
           }
-          onPointerDown={composeEventHandlers(
-            props.onPointerDown,
-            whenTouchOrPen((event) => {
-              // clear the long press here in case there's multiple touch points
-              clearLongPress();
-              // if trigger is disabled, enable the native Context Menu
-              if (disabled) return;
-              longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
-            })
-          )}
-          onPointerMove={composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))}
-          onPointerCancel={composeEventHandlers(
-            props.onPointerCancel,
-            whenTouchOrPen(clearLongPress)
-          )}
-          onPointerUp={composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))}
+          onPointerDown={
+            disabled
+              ? props.onPointerDown
+              : composeEventHandlers(
+                  props.onPointerDown,
+                  whenTouchOrPen((event) => {
+                    // clear the long press here in case there's multiple touch points
+                    clearLongPress();
+                    longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
+                  })
+                )
+          }
+          onPointerMove={
+            disabled
+              ? props.onPointerMove
+              : composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))
+          }
+          onPointerCancel={
+            disabled
+              ? props.onPointerCancel
+              : composeEventHandlers(props.onPointerCancel, whenTouchOrPen(clearLongPress))
+          }
+          onPointerUp={
+            disabled
+              ? props.onPointerUp
+              : composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))
+          }
         />
       </>
     );
