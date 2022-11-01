@@ -121,15 +121,18 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
           ref={forwardedRef}
           // prevent iOS context menu from appearing
           style={{ WebkitTouchCallout: 'none', ...props.style }}
-          onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
-            // if trigger is disabled, enable the native Context Menu
-            if (disabled) return;
-            // clearing the long press here because some platforms already support
-            // long press to trigger a `contextmenu` event
-            clearLongPress();
-            handleOpen(event);
-            event.preventDefault();
-          })}
+          // if trigger is disabled, enable the native Context Menu
+          onContextMenu={
+            disabled
+              ? props.onContextMenu
+              : composeEventHandlers(props.onContextMenu, (event) => {
+                  // clearing the long press here because some platforms already support
+                  // long press to trigger a `contextmenu` event
+                  clearLongPress();
+                  handleOpen(event);
+                  event.preventDefault();
+                })
+          }
           onPointerDown={composeEventHandlers(
             props.onPointerDown,
             whenTouchOrPen((event) => {
