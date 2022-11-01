@@ -109,6 +109,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
     };
 
     React.useEffect(() => clearLongPress, [clearLongPress]);
+    React.useEffect(() => void (disabled && clearLongPress()), [disabled, clearLongPress]);
 
     return (
       <>
