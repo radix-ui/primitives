@@ -257,7 +257,10 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         onPointerDown={composeEventHandlers(triggerProps.onPointerDown, (event) => {
           // prevent implicit pointer capture
           // https://www.w3.org/TR/pointerevents3/#implicit-pointer-capture
-          (event.target as HTMLElement).releasePointerCapture(event.pointerId);
+          const target = event.target as HTMLElement;
+          if (target.hasPointerCapture(event.pointerId)) {
+            target.releasePointerCapture(event.pointerId);
+          }
 
           // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
           // but not when the control key is pressed (avoiding MacOS right click)
