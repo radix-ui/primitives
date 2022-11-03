@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-scroll-area": patch
+  "@radix-ui/react-toast": patch
+
+declined:
+  - primitives
