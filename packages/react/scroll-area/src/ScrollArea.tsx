@@ -721,7 +721,9 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
         onPointerMove={composeEventHandlers(props.onPointerMove, handleDragScroll)}
         onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
           const element = event.target as HTMLElement;
-          element.releasePointerCapture(event.pointerId);
+          if (element.hasPointerCapture(event.pointerId)) {
+            element.releasePointerCapture(event.pointerId);
+          }
           document.body.style.webkitUserSelect = prevWebkitUserSelectRef.current;
           rectRef.current = null;
         })}

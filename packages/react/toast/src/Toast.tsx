@@ -629,7 +629,10 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                   })}
                   onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
                     const delta = swipeDeltaRef.current;
-                    (event.target as HTMLElement).releasePointerCapture(event.pointerId);
+                    const target = event.target as HTMLElement;
+                    if (target.hasPointerCapture(event.pointerId)) {
+                      target.releasePointerCapture(event.pointerId);
+                    }
                     swipeDeltaRef.current = null;
                     pointerStartRef.current = null;
                     if (delta) {
