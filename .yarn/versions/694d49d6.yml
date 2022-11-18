@@ -1,0 +1,10 @@
+releases:
+  "@radix-ui/react-dialog": minor
+  "@radix-ui/react-focus-scope": minor
+  primitives: minor
+
+declined:
+  - "@radix-ui/react-alert-dialog"
+  - "@radix-ui/react-menu"
+  - "@radix-ui/react-popover"
+  - "@radix-ui/react-select"
