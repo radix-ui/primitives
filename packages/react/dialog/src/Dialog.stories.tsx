@@ -92,6 +92,25 @@ export const FocusTrap = () => (
   </>
 );
 
+export const AutoFocusOnAnchor = () => (
+  <>
+    <Dialog.Root>
+      <Dialog.Trigger>open</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className={overlayClass()} />
+        <Dialog.Content className={contentDefaultClass()}>
+          <Dialog.Title>Title</Dialog.Title>
+          <Dialog.Description>Description</Dialog.Description>
+          <div>
+            <a href="https://google.com">Some link somewhere</a>
+          </div>
+          <Dialog.Close>close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  </>
+);
+
 export const CustomFocus = () => {
   const firstNameRef = React.useRef<HTMLInputElement>(null);
   const searchFieldRef = React.useRef<HTMLInputElement>(null);

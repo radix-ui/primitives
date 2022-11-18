@@ -45,6 +45,11 @@ interface FocusScopeProps extends PrimitiveDivProps {
    * Can be prevented.
    */
   onUnmountAutoFocus?: (event: Event) => void;
+
+  /**
+   * Allow anchors to be focused first.
+   */
+  allowAnchorAsFirstFocus?: boolean;
 }
 
 const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, forwardedRef) => {
@@ -53,6 +58,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
     trapped = false,
     onMountAutoFocus: onMountAutoFocusProp,
     onUnmountAutoFocus: onUnmountAutoFocusProp,
+    allowAnchorAsFirstFocus = false,
     ...scopeProps
   } = props;
   const [container, setContainer] = React.useState<HTMLElement | null>(null);
@@ -111,7 +117,12 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
         container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
         container.dispatchEvent(mountEvent);
         if (!mountEvent.defaultPrevented) {
-          focusFirst(removeLinks(getTabbableCandidates(container)), { select: true });
+          focusFirst(
+            allowAnchorAsFirstFocus
+              ? getTabbableCandidates(container)
+              : removeLinks(getTabbableCandidates(container)),
+            { select: true }
+          );
           if (document.activeElement === previouslyFocusedElement) {
             focus(container);
           }
@@ -138,7 +149,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
         }, 0);
       };
     }
-  }, [container, onMountAutoFocus, onUnmountAutoFocus, focusScope]);
+  }, [container, onMountAutoFocus, onUnmountAutoFocus, focusScope, allowAnchorAsFirstFocus]);
 
   // Takes care of looping focus (when tabbing whilst at the edges)
   const handleKeyDown = React.useCallback(

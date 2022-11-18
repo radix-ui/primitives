@@ -115,6 +115,49 @@ describe('FocusScope', () => {
       waitFor(() => expect(handleLastFocusableElementBlur).toHaveBeenCalledTimes(1));
     });
   });
+
+  describe('given a FocusScope where the first focusable element is an anchor', () => {
+    let rendered: RenderResult;
+    let tabbableFirst: HTMLInputElement;
+    beforeEach(() => {
+      rendered = render(
+        <div>
+          <FocusScope asChild loop trapped>
+            <form>
+              <a href="https://www.radix-ui.com">Radix</a>
+              <button>{INNER_SUBMIT_LABEL}</button>
+            </form>
+          </FocusScope>
+        </div>
+      );
+      tabbableFirst = rendered.getByText(INNER_SUBMIT_LABEL) as HTMLInputElement;
+    });
+
+    it('should skip the first anchor', () => {
+      waitFor(() => expect(tabbableFirst).toHaveFocus());
+    });
+  });
+
+  describe('given a FocusScope and we allow anchor to be focused where the first focusable element is an anchor', () => {
+    let rendered: RenderResult;
+    let tabbableFirst: HTMLInputElement;
+    beforeEach(() => {
+      rendered = render(
+        <div>
+          <FocusScope asChild loop trapped allowAnchorAsFirstFocus>
+            <form>
+              <a href="https://www.radix-ui.com">Radix</a>
+              <button>{INNER_SUBMIT_LABEL}</button>
+            </form>
+          </FocusScope>
+        </div>
+      );
+      tabbableFirst = rendered.getByText('Radix') as HTMLInputElement;
+    });
+    it('should focus on the first anchor', () => {
+      waitFor(() => expect(tabbableFirst).toHaveFocus());
+    });
+  });
 });
 
 function TestField({ label, ...props }: { label: string } & React.ComponentProps<'input'>) {

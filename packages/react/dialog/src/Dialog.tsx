@@ -361,11 +361,23 @@ interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'
    * Can be prevented.
    */
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+
+  /**
+   * Allow anchors to be focused first.
+   */
+  allowAnchorAsFirstFocus?: FocusScopeProps['allowAnchorAsFirstFocus'];
 }
 
 const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(
   (props: ScopedProps<DialogContentImplProps>, forwardedRef) => {
-    const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
+    const {
+      __scopeDialog,
+      trapFocus,
+      onOpenAutoFocus,
+      onCloseAutoFocus,
+      allowAnchorAsFirstFocus,
+      ...contentProps
+    } = props;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
@@ -382,6 +394,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
           trapped={trapFocus}
           onMountAutoFocus={onOpenAutoFocus}
           onUnmountAutoFocus={onCloseAutoFocus}
+          allowAnchorAsFirstFocus={allowAnchorAsFirstFocus}
         >
           <DismissableLayer
             role="dialog"
