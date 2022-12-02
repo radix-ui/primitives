@@ -62,6 +62,7 @@ type SelectContextValue = {
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
   disabled?: boolean;
+  invalid?: boolean;
 };
 
 const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
@@ -109,6 +110,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
   const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
   const [valueNodeHasChildren, setValueNodeHasChildren] = React.useState(false);
+  const [invalid, setInvalid] = React.useState(false);
   const direction = useDirection(dir);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -153,6 +155,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
       dir={direction}
       triggerPointerDownPosRef={triggerPointerDownPosRef}
       disabled={disabled}
+      invalid={invalid}
     >
       <Collection.Provider scope={__scopeSelect}>
         <SelectNativeOptionsProvider
@@ -182,7 +185,11 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
           autoComplete={autoComplete}
           value={value}
           // enable form autofill
-          onChange={(event) => setValue(event.target.value)}
+          onChange={(event) => {
+            setValue(event.target.value);
+            setInvalid(false);
+          }}
+          onInvalid={() => setInvalid(true)}
           disabled={disabled}
         >
           {value === undefined ? <option value="" /> : null}
@@ -238,6 +245,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         aria-expanded={context.open}
         aria-required={context.required}
         aria-autocomplete="none"
+        aria-invalid={context.invalid}
         dir={context.dir}
         data-state={context.open ? 'open' : 'closed'}
         disabled={isDisabled}
