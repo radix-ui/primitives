@@ -85,11 +85,13 @@ const TRIGGER_NAME = 'ContextMenuTrigger';
 
 type ContextMenuTriggerElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
-interface ContextMenuTriggerProps extends PrimitiveSpanProps {}
+interface ContextMenuTriggerProps extends PrimitiveSpanProps {
+  disabled?: boolean;
+}
 
 const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMenuTriggerProps>(
   (props: ScopedProps<ContextMenuTriggerProps>, forwardedRef) => {
-    const { __scopeContextMenu, ...triggerProps } = props;
+    const { __scopeContextMenu, disabled = false, ...triggerProps } = props;
     const context = useContextMenuContext(TRIGGER_NAME, __scopeContextMenu);
     const menuScope = useMenuScope(__scopeContextMenu);
     const pointRef = React.useRef<Point>({ x: 0, y: 0 });
@@ -107,37 +109,57 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
     };
 
     React.useEffect(() => clearLongPress, [clearLongPress]);
+    React.useEffect(() => void (disabled && clearLongPress()), [disabled, clearLongPress]);
 
     return (
       <>
         <MenuPrimitive.Anchor {...menuScope} virtualRef={virtualRef} />
         <Primitive.span
           data-state={context.open ? 'open' : 'closed'}
+          data-disabled={disabled ? '' : undefined}
           {...triggerProps}
           ref={forwardedRef}
           // prevent iOS context menu from appearing
           style={{ WebkitTouchCallout: 'none', ...props.style }}
-          onContextMenu={composeEventHandlers(props.onContextMenu, (event) => {
-            // clearing the long press here because some platforms already support
-            // long press to trigger a `contextmenu` event
-            clearLongPress();
-            handleOpen(event);
-            event.preventDefault();
-          })}
-          onPointerDown={composeEventHandlers(
-            props.onPointerDown,
-            whenTouchOrPen((event) => {
-              // clear the long press here in case there's multiple touch points
-              clearLongPress();
-              longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
-            })
-          )}
-          onPointerMove={composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))}
-          onPointerCancel={composeEventHandlers(
-            props.onPointerCancel,
-            whenTouchOrPen(clearLongPress)
-          )}
-          onPointerUp={composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))}
+          // if trigger is disabled, enable the native Context Menu
+          onContextMenu={
+            disabled
+              ? props.onContextMenu
+              : composeEventHandlers(props.onContextMenu, (event) => {
+                  // clearing the long press here because some platforms already support
+                  // long press to trigger a `contextmenu` event
+                  clearLongPress();
+                  handleOpen(event);
+                  event.preventDefault();
+                })
+          }
+          onPointerDown={
+            disabled
+              ? props.onPointerDown
+              : composeEventHandlers(
+                  props.onPointerDown,
+                  whenTouchOrPen((event) => {
+                    // clear the long press here in case there's multiple touch points
+                    clearLongPress();
+                    longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
+                  })
+                )
+          }
+          onPointerMove={
+            disabled
+              ? props.onPointerMove
+              : composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))
+          }
+          onPointerCancel={
+            disabled
+              ? props.onPointerCancel
+              : composeEventHandlers(props.onPointerCancel, whenTouchOrPen(clearLongPress))
+          }
+          onPointerUp={
+            disabled
+              ? props.onPointerUp
+              : composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))
+          }
         />
       </>
     );
