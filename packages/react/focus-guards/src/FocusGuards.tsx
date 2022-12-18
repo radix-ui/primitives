@@ -25,7 +25,7 @@ function useFocusGuards(ownerDocument = document) {
       }
       count--;
     };
-  }, []);
+  }, [ownerDocument]);
 }
 
 function createFocusGuard(ownerDocument = document) {
