@@ -3,17 +3,18 @@ import { css, keyframes } from '../../../../stitches.config';
 import * as Dialog from '@radix-ui/react-dialog';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 import * as HoverCard from '@radix-ui/react-hover-card';
+import ReactDOM from 'react-dom';
 
 export default { title: 'Components/HoverCard' };
 
-export const Basic = () => {
+export const Basic = ({ container }: { container?: HTMLElement }) => {
   return (
     <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
       <HoverCard.Root>
         <HoverCard.Trigger href="/" className={triggerClass()}>
           trigger
         </HoverCard.Trigger>
-        <HoverCard.Portal>
+        <HoverCard.Portal container={container}>
           <HoverCard.Content className={contentClass()} sideOffset={5}>
             <HoverCard.Arrow className={arrowClass()} width={20} height={10} />
             <CardContentPlaceholder />
@@ -444,6 +445,30 @@ export const WithSlottedContent = () => (
     </HoverCard.Portal>
   </HoverCard.Root>
 );
+
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popoverWindow = window.open(
+      undefined,
+      undefined,
+      'width=300,height=300,top=100,left=100'
+    );
+    if (!popoverWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popoverWindow.document.createElement('div');
+    popoverWindow.document.body.append(containerNode);
+
+    ReactDOM.render(<Basic container={popoverWindow.document.body} />, containerNode);
+  }, []);
+  return (
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
+  );
+};
 
 // change order slightly for more pleasing visual
 const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);

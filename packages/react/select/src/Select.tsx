@@ -469,6 +469,9 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const shouldExpandOnScrollRef = React.useRef(false);
     const firstValidItemFoundRef = React.useRef(false);
 
+    const ownerDocument = content?.ownerDocument ?? document;
+    const ownerWindow = ownerDocument.defaultView ?? window;
+
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
       if (content) return hideOthers(content);
@@ -480,15 +483,15 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     const [contentZIndex, setContentZIndex] = React.useState<string>();
     useLayoutEffect(() => {
-      if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
-    }, [content]);
+      if (content) setContentZIndex(ownerWindow.getComputedStyle(content).zIndex);
+    }, [content, ownerWindow]);
 
     const focusFirst = React.useCallback(
       (candidates: Array<HTMLElement | null>) => {
         const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
         const [lastItem] = restItems.slice(-1);
 
-        const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+        const PREVIOUSLY_FOCUSED_ELEMENT = ownerDocument.activeElement;
         for (const candidate of candidates) {
           // if focus is already where we want to go, we don't want to keep going through the candidates
           if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
@@ -497,10 +500,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
           if (candidate === firstItem && viewport) viewport.scrollTop = 0;
           if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
           candidate?.focus();
-          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+          if (ownerDocument.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
         }
       },
-      [getItems, viewport]
+      [getItems, viewport, ownerDocument]
     );
 
     const position = React.useCallback(() => {
@@ -528,18 +531,18 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
           const leftDelta = triggerRect.left - left;
           const minContentWidth = triggerRect.width + leftDelta;
           const contentWidth = Math.max(minContentWidth, contentRect.width);
-          const rightEdge = window.innerWidth - CONTENT_MARGIN;
+          const rightEdge = ownerWindow.innerWidth - CONTENT_MARGIN;
           const clampedLeft = clamp(left, [CONTENT_MARGIN, rightEdge - contentWidth]);
 
           contentWrapper.style.minWidth = minContentWidth + 'px';
           contentWrapper.style.left = clampedLeft + 'px';
         } else {
           const itemTextOffset = contentRect.right - itemTextRect.right;
-          const right = window.innerWidth - valueNodeRect.right - itemTextOffset;
-          const rightDelta = window.innerWidth - triggerRect.right - right;
+          const right = ownerWindow.innerWidth - valueNodeRect.right - itemTextOffset;
+          const rightDelta = ownerWindow.innerWidth - triggerRect.right - right;
           const minContentWidth = triggerRect.width + rightDelta;
           const contentWidth = Math.max(minContentWidth, contentRect.width);
-          const leftEdge = window.innerWidth - CONTENT_MARGIN;
+          const leftEdge = ownerWindow.innerWidth - CONTENT_MARGIN;
           const clampedRight = clamp(right, [CONTENT_MARGIN, leftEdge - contentWidth]);
 
           contentWrapper.style.minWidth = minContentWidth + 'px';
@@ -550,10 +553,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         // Vertical positioning
         // -----------------------------------------------------------------------------------------
         const items = getItems();
-        const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+        const availableHeight = ownerWindow.innerHeight - CONTENT_MARGIN * 2;
         const itemsHeight = viewport.scrollHeight;
 
-        const contentStyles = window.getComputedStyle(content);
+        const contentStyles = ownerWindow.getComputedStyle(content);
         const contentBorderTopWidth = parseInt(contentStyles.borderTopWidth, 10);
         const contentPaddingTop = parseInt(contentStyles.paddingTop, 10);
         const contentBorderBottomWidth = parseInt(contentStyles.borderBottomWidth, 10);
@@ -561,7 +564,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         const fullContentHeight = contentBorderTopWidth + contentPaddingTop + itemsHeight + contentPaddingBottom + contentBorderBottomWidth; // prettier-ignore
         const minContentHeight = Math.min(selectedItem.offsetHeight * 5, fullContentHeight);
 
-        const viewportStyles = window.getComputedStyle(viewport);
+        const viewportStyles = ownerWindow.getComputedStyle(viewport);
         const viewportPaddingTop = parseInt(viewportStyles.paddingTop, 10);
         const viewportPaddingBottom = parseInt(viewportStyles.paddingBottom, 10);
 
@@ -627,6 +630,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       selectedItem,
       selectedItemText,
       context.dir,
+      ownerWindow,
     ]);
 
     useLayoutEffect(() => position(), [position]);
@@ -682,35 +686,40 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
               onOpenChange(false);
             }
           }
-          document.removeEventListener('pointermove', handlePointerMove);
+          ownerDocument.removeEventListener('pointermove', handlePointerMove);
           triggerPointerDownPosRef.current = null;
         };
 
         if (triggerPointerDownPosRef.current !== null) {
-          document.addEventListener('pointermove', handlePointerMove);
-          document.addEventListener('pointerup', handlePointerUp, { capture: true, once: true });
+          ownerDocument.addEventListener('pointermove', handlePointerMove);
+          ownerDocument.addEventListener('pointerup', handlePointerUp, {
+            capture: true,
+            once: true,
+          });
         }
 
         return () => {
-          document.removeEventListener('pointermove', handlePointerMove);
-          document.removeEventListener('pointerup', handlePointerUp, { capture: true });
+          ownerDocument.removeEventListener('pointermove', handlePointerMove);
+          ownerDocument.removeEventListener('pointerup', handlePointerUp, { capture: true });
         };
       }
-    }, [content, onOpenChange, triggerPointerDownPosRef]);
+    }, [content, onOpenChange, triggerPointerDownPosRef, ownerDocument]);
 
     React.useEffect(() => {
       const close = () => onOpenChange(false);
-      window.addEventListener('blur', close);
-      window.addEventListener('resize', close);
+      ownerWindow.addEventListener('blur', close);
+      ownerWindow.addEventListener('resize', close);
       return () => {
-        window.removeEventListener('blur', close);
-        window.removeEventListener('resize', close);
+        ownerWindow.removeEventListener('blur', close);
+        ownerWindow.removeEventListener('resize', close);
       };
-    }, [onOpenChange]);
+    }, [onOpenChange, ownerWindow]);
 
     const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
-      const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
+      const currentItem = enabledItems.find(
+        (item) => item.ref.current === ownerDocument.activeElement
+      );
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem) {
         /**
@@ -888,11 +897,12 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
             }}
             onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
               const viewport = event.currentTarget;
+              const ownerWindow = viewport.ownerDocument.defaultView ?? window;
               const { contentWrapper, shouldExpandOnScrollRef } = contentContext;
               if (shouldExpandOnScrollRef?.current && contentWrapper) {
                 const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
                 if (scrolledBy > 0) {
-                  const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+                  const availableHeight = ownerWindow.innerHeight - CONTENT_MARGIN * 2;
                   const cssMinHeight = parseFloat(contentWrapper.style.minHeight);
                   const cssHeight = parseFloat(contentWrapper.style.height);
                   const prevHeight = Math.max(cssMinHeight, cssHeight);
@@ -1007,9 +1017,11 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const isSelected = context.value === value;
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
-    const composedRefs = useComposedRefs(forwardedRef, (node) =>
-      contentContext.itemRefCallback?.(node, value, disabled)
-    );
+    const [ownerDocument, setOwnerDocument] = React.useState<Document>(document);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => {
+      contentContext.itemRefCallback?.(node, value, disabled);
+      setOwnerDocument(node?.ownerDocument ?? document);
+    });
     const textId = useId();
 
     const handleSelect = () => {
@@ -1061,7 +1073,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
               }
             })}
             onPointerLeave={composeEventHandlers(itemProps.onPointerLeave, (event) => {
-              if (event.currentTarget === document.activeElement) {
+              if (event.currentTarget === ownerDocument.activeElement) {
                 contentContext.onItemLeave?.();
               }
             })}
@@ -1266,6 +1278,10 @@ const SelectScrollButtonImpl = React.forwardRef<
   const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
   const autoScrollTimerRef = React.useRef<number | null>(null);
   const getItems = useCollection(__scopeSelect);
+  const [ownerDocument, setOwnerDocument] = React.useState<Document>(document);
+  const ref = useComposedRefs(forwardedRef, (node) =>
+    setOwnerDocument(node?.ownerDocument ?? document)
+  );
 
   const clearAutoScrollTimer = React.useCallback(() => {
     if (autoScrollTimerRef.current !== null) {
@@ -1283,15 +1299,15 @@ const SelectScrollButtonImpl = React.forwardRef<
   // the viewport, potentially causing the active item to now be partially out of view.
   // We re-run the `scrollIntoView` logic to make sure it stays within the viewport.
   useLayoutEffect(() => {
-    const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
+    const activeItem = getItems().find((item) => item.ref.current === ownerDocument.activeElement);
     activeItem?.ref.current?.scrollIntoView({ block: 'nearest' });
-  }, [getItems]);
+  }, [getItems, ownerDocument]);
 
   return (
     <Primitive.div
       aria-hidden
       {...scrollIndicatorProps}
-      ref={forwardedRef}
+      ref={ref}
       style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
       onPointerMove={composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
         contentContext.onItemLeave?.();
@@ -1336,7 +1352,8 @@ const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWit
     // Bubble value change to parents (e.g form change event)
     React.useEffect(() => {
       const select = ref.current!;
-      const selectProto = window.HTMLSelectElement.prototype;
+      const ownerWindow = select.ownerDocument.defaultView ?? window;
+      const selectProto = ownerWindow.HTMLSelectElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(
         selectProto,
         'value'

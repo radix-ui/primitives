@@ -268,9 +268,11 @@ const HoverCardContentImpl = React.forwardRef<
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const [containSelection, setContainSelection] = React.useState(false);
 
+  const ownerDocument = ref.current?.ownerDocument ?? document;
+
   React.useEffect(() => {
     if (containSelection) {
-      const body = document.body;
+      const body = ownerDocument.body;
 
       // Safari requires prefix
       originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
@@ -282,7 +284,7 @@ const HoverCardContentImpl = React.forwardRef<
         body.style.webkitUserSelect = originalBodyUserSelect;
       };
     }
-  }, [containSelection]);
+  }, [containSelection, ownerDocument]);
 
   React.useEffect(() => {
     if (ref.current) {
@@ -292,23 +294,23 @@ const HoverCardContentImpl = React.forwardRef<
 
         // Delay a frame to ensure we always access the latest selection
         setTimeout(() => {
-          const hasSelection = document.getSelection()?.toString() !== '';
+          const hasSelection = ownerDocument.getSelection()?.toString() !== '';
           if (hasSelection) context.hasSelectionRef.current = true;
         });
       };
 
-      document.addEventListener('pointerup', handlePointerUp);
+      ownerDocument.addEventListener('pointerup', handlePointerUp);
       return () => {
-        document.removeEventListener('pointerup', handlePointerUp);
+        ownerDocument.removeEventListener('pointerup', handlePointerUp);
         context.hasSelectionRef.current = false;
         context.isPointerDownOnContentRef.current = false;
       };
     }
-  }, [context.isPointerDownOnContentRef, context.hasSelectionRef]);
+  }, [context.isPointerDownOnContentRef, context.hasSelectionRef, ownerDocument]);
 
   React.useEffect(() => {
     if (ref.current) {
-      const tabbables = getTabbableNodes(ref.current);
+      const tabbables = getTabbableNodes(ref.current, ownerDocument);
       tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));
     }
   });
@@ -382,9 +384,9 @@ function excludeTouch<E>(eventHandler: () => void) {
  * Returns a list of nodes that can be in the tab sequence.
  * @see: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  */
-function getTabbableNodes(container: HTMLElement) {
+function getTabbableNodes(container: HTMLElement, ownerDocument = document) {
   const nodes: HTMLElement[] = [];
-  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+  const walker = ownerDocument.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
       // runtime's understanding of tabbability, so this automatically accounts

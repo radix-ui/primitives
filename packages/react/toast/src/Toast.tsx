@@ -158,6 +158,12 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
     const hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
     const hasToasts = context.toastCount > 0;
+    const [ownerDocument, setOwnerDocument] = React.useState<Document>(document);
+    const composedWrapperRef = useComposedRefs(wrapperRef, (node) =>
+      setOwnerDocument(node?.ownerDocument ?? document)
+    );
+
+    const ownerWindow = ownerDocument.defaultView ?? window;
 
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
@@ -166,9 +172,9 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         const isHotkeyPressed = hotkey.every((key) => (event as any)[key] || event.code === key);
         if (isHotkeyPressed) ref.current?.focus();
       };
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [hotkey]);
+      ownerDocument.addEventListener('keydown', handleKeyDown);
+      return () => ownerDocument.removeEventListener('keydown', handleKeyDown);
+    }, [hotkey, ownerDocument]);
 
     React.useEffect(() => {
       const wrapper = wrapperRef.current;
@@ -196,7 +202,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         };
 
         const handlePointerLeaveResume = () => {
-          const isFocusInside = wrapper.contains(document.activeElement);
+          const isFocusInside = wrapper.contains(ownerDocument.activeElement);
           if (!isFocusInside) handleResume();
         };
 
@@ -205,25 +211,28 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         wrapper.addEventListener('focusout', handleFocusOutResume);
         wrapper.addEventListener('pointermove', handlePause);
         wrapper.addEventListener('pointerleave', handlePointerLeaveResume);
-        window.addEventListener('blur', handlePause);
-        window.addEventListener('focus', handleResume);
+        ownerWindow.addEventListener('blur', handlePause);
+        ownerWindow.addEventListener('focus', handleResume);
         return () => {
           wrapper.removeEventListener('focusin', handlePause);
           wrapper.removeEventListener('focusout', handleFocusOutResume);
           wrapper.removeEventListener('pointermove', handlePause);
           wrapper.removeEventListener('pointerleave', handlePointerLeaveResume);
-          window.removeEventListener('blur', handlePause);
-          window.removeEventListener('focus', handleResume);
+          ownerWindow.removeEventListener('blur', handlePause);
+          ownerWindow.removeEventListener('focus', handleResume);
         };
       }
-    }, [hasToasts, context.isClosePausedRef]);
+    }, [hasToasts, context.isClosePausedRef, ownerDocument, ownerWindow]);
 
     const getSortedTabbableCandidates = React.useCallback(
       ({ tabbingDirection }: { tabbingDirection: 'forwards' | 'backwards' }) => {
         const toastItems = getItems();
         const tabbableCandidates = toastItems.map((toastItem) => {
           const toastNode = toastItem.ref.current!;
-          const toastTabbableCandidates = [toastNode, ...getTabbableCandidates(toastNode)];
+          const toastTabbableCandidates = [
+            toastNode,
+            ...getTabbableCandidates(toastNode, ownerDocument),
+          ];
           return tabbingDirection === 'forwards'
             ? toastTabbableCandidates
             : toastTabbableCandidates.reverse();
@@ -232,7 +241,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           tabbingDirection === 'forwards' ? tabbableCandidates.reverse() : tabbableCandidates
         ).flat();
       },
-      [getItems]
+      [getItems, ownerDocument]
     );
 
     React.useEffect(() => {
@@ -246,7 +255,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           const isTabKey = event.key === 'Tab' && !isMetaKey;
 
           if (isTabKey) {
-            const focusedElement = document.activeElement;
+            const focusedElement = ownerDocument.activeElement;
             const isTabbingBackwards = event.shiftKey;
             const targetIsViewport = event.target === viewport;
 
@@ -260,7 +269,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
             const tabbingDirection = isTabbingBackwards ? 'backwards' : 'forwards';
             const sortedCandidates = getSortedTabbableCandidates({ tabbingDirection });
             const index = sortedCandidates.findIndex((candidate) => candidate === focusedElement);
-            if (focusFirst(sortedCandidates.slice(index + 1))) {
+            if ((focusFirst(sortedCandidates.slice(index + 1)), ownerDocument)) {
               event.preventDefault();
             } else {
               // If we can't focus that means we're at the edges so we
@@ -277,11 +286,11 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         viewport.addEventListener('keydown', handleKeyDown);
         return () => viewport.removeEventListener('keydown', handleKeyDown);
       }
-    }, [getItems, getSortedTabbableCandidates]);
+    }, [getItems, getSortedTabbableCandidates, ownerDocument]);
 
     return (
       <DismissableLayer.Branch
-        ref={wrapperRef}
+        ref={composedWrapperRef}
         role="region"
         aria-label={label.replace('{hotkey}', hotkeyLabel)}
         // Ensure virtual cursor from landmarks menus triggers focus/blur for pause/resume
@@ -297,7 +306,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
               const tabbableCandidates = getSortedTabbableCandidates({
                 tabbingDirection: 'forwards',
               });
-              focusFirst(tabbableCandidates);
+              focusFirst(tabbableCandidates, ownerDocument);
             }}
           />
         )}
@@ -315,7 +324,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
               const tabbableCandidates = getSortedTabbableCandidates({
                 tabbingDirection: 'backwards',
               });
-              focusFirst(tabbableCandidates);
+              focusFirst(tabbableCandidates, ownerDocument);
             }}
           />
         )}
@@ -491,10 +500,13 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const closeTimerRemainingTimeRef = React.useRef(duration);
     const closeTimerRef = React.useRef(0);
     const { onToastAdd, onToastRemove } = context;
+
+    const ownerDocument = node?.ownerDocument ?? document;
+
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
       // count to SR users and ensure focus isn't lost
-      const isFocusInToast = node?.contains(document.activeElement);
+      const isFocusInToast = node?.contains(ownerDocument.activeElement);
       if (isFocusInToast) context.viewport?.focus();
       onClose();
     });
@@ -936,9 +948,9 @@ function isHTMLElement(node: any): node is HTMLElement {
  * See: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  * Credit: https://github.com/discord/focus-layers/blob/master/src/util/wrapFocus.tsx#L1
  */
-function getTabbableCandidates(container: HTMLElement) {
+function getTabbableCandidates(container: HTMLElement, ownerDocument = document) {
   const nodes: HTMLElement[] = [];
-  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+  const walker = ownerDocument.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
       if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
@@ -954,13 +966,13 @@ function getTabbableCandidates(container: HTMLElement) {
   return nodes;
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const previouslyFocusedElement = document.activeElement;
+function focusFirst(candidates: HTMLElement[], ownerDocument = document) {
+  const previouslyFocusedElement = ownerDocument.activeElement;
   return candidates.some((candidate) => {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === previouslyFocusedElement) return true;
     candidate.focus();
-    return document.activeElement !== previouslyFocusedElement;
+    return ownerDocument.activeElement !== previouslyFocusedElement;
   });
 }
 

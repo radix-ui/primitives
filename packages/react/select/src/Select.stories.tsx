@@ -4,10 +4,11 @@ import * as Select from '@radix-ui/react-select';
 import { Label } from '@radix-ui/react-label';
 import * as Dialog from '@radix-ui/react-dialog';
 import { foodGroups } from '../../../../test-data/foods';
+import ReactDOM from 'react-dom';
 
 export default { title: 'Components/Select' };
 
-export const Styled = () => (
+export const Styled = ({ container }: { container?: HTMLElement }) => (
   <div style={{ padding: 50 }}>
     <Label>
       Choose a number:
@@ -16,7 +17,7 @@ export const Styled = () => (
           <Select.Value />
           <Select.Icon />
         </Select.Trigger>
-        <Select.Portal>
+        <Select.Portal container={container}>
           <Select.Content className={contentClass()}>
             <Select.Viewport className={viewportClass()}>
               <Select.Item className={itemClass()} value="one">
@@ -619,6 +620,30 @@ export const WithinDialog = () => (
     </Dialog.Content>
   </Dialog.Root>
 );
+
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popoverWindow = window.open(
+      undefined,
+      undefined,
+      'width=300,height=300,top=100,left=100'
+    );
+    if (!popoverWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popoverWindow.document.createElement('div');
+    popoverWindow.document.body.append(containerNode);
+
+    ReactDOM.render(<Styled container={popoverWindow.document.body} />, containerNode);
+  }, []);
+  return (
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
+  );
+};
 
 export const ChromaticShortOptionsPaddedContent = () => (
   <ChromaticStoryShortOptions paddedElement="content" />

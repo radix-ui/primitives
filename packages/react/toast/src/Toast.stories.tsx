@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { css, keyframes } from '../../../../stitches.config';
 import * as Toast from '@radix-ui/react-toast';
+import ReactDOM from 'react-dom';
 
 export default { title: 'Components/Toast' };
 
@@ -254,6 +255,30 @@ export const Cypress = () => {
         <button>Focusable after viewport</button>
       </div>
     </Toast.Provider>
+  );
+};
+
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popoverWindow = window.open(
+      undefined,
+      undefined,
+      'width=300,height=300,top=100,left=100'
+    );
+    if (!popoverWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popoverWindow.document.createElement('div');
+    popoverWindow.document.body.append(containerNode);
+
+    ReactDOM.render(<Controlled />, containerNode);
+  }, []);
+  return (
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
   );
 };
 
