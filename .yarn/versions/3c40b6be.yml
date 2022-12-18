@@ -18,5 +18,5 @@ releases:
   "@radix-ui/react-toolbar": patch
   "@radix-ui/react-tooltip": patch
 
-undecided:
+declined:
   - primitives
