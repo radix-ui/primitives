@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
+import ReactDOM from 'react-dom';
 
 type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup.Root>;
 
@@ -146,6 +147,26 @@ export const EdgeCases = () => {
       <hr />
       <button type="button">Focusable outside of group</button>
     </>
+  );
+};
+
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popperWindow = window.open(undefined, undefined, 'width=300,height=300,top=100,left=100');
+    if (!popperWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popperWindow.document.createElement('div');
+    popperWindow.document.body.append(containerNode);
+
+    ReactDOM.render(<Basic />, containerNode);
+  }, []);
+  return (
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
   );
 };
 

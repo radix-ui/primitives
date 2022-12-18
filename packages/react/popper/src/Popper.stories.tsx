@@ -2,6 +2,7 @@ import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
 import { Portal } from '@radix-ui/react-portal';
 import * as Popper from '@radix-ui/react-popper';
+import ReactDOM from 'react-dom';
 
 export default { title: 'Components/Popper' };
 
@@ -89,6 +90,26 @@ export const WithPortal = () => {
         )}
       </Popper.Root>
     </Scrollable>
+  );
+};
+
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popperWindow = window.open(undefined, undefined, 'width=300,height=300,top=100,left=100');
+    if (!popperWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popperWindow.document.createElement('div');
+    popperWindow.document.body.append(containerNode);
+
+    ReactDOM.render(<Styled />, containerNode);
+  }, []);
+  return (
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
   );
 };
 

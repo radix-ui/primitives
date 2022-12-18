@@ -93,22 +93,24 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const handleOpenChange = useCallbackRef(onOpenChange);
   const direction = useDirection(dir);
 
+  const ownerDocument = content?.ownerDocument ?? document;
+
   React.useEffect(() => {
     // Capture phase ensures we set the boolean before any side effects execute
     // in response to the key or pointer event as they might depend on this value.
     const handleKeyDown = () => {
       isUsingKeyboardRef.current = true;
-      document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-      document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+      ownerDocument.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
+      ownerDocument.addEventListener('pointermove', handlePointer, { capture: true, once: true });
     };
     const handlePointer = () => (isUsingKeyboardRef.current = false);
-    document.addEventListener('keydown', handleKeyDown, { capture: true });
+    ownerDocument.addEventListener('keydown', handleKeyDown, { capture: true });
     return () => {
-      document.removeEventListener('keydown', handleKeyDown, { capture: true });
-      document.removeEventListener('pointerdown', handlePointer, { capture: true });
-      document.removeEventListener('pointermove', handlePointer, { capture: true });
+      ownerDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
+      ownerDocument.removeEventListener('pointerdown', handlePointer, { capture: true });
+      ownerDocument.removeEventListener('pointermove', handlePointer, { capture: true });
     };
-  }, []);
+  }, [ownerDocument]);
 
   return (
     <PopperPrimitive.Root {...popperScope}>
@@ -382,6 +384,8 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const pointerDirRef = React.useRef<Side>('right');
     const lastPointerXRef = React.useRef(0);
 
+    const ownerDocument = contentRef.current?.ownerDocument ?? document;
+
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
     const scrollLockWrapperProps = disableOutsideScroll
       ? { as: Slot, allowPinchZoom: true }
@@ -390,7 +394,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const handleTypeaheadSearch = (key: string) => {
       const search = searchRef.current + key;
       const items = getItems().filter((item) => !item.disabled);
-      const currentItem = document.activeElement;
+      const currentItem = ownerDocument.activeElement;
       const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
       const values = items.map((item) => item.textValue);
       const nextMatch = getNextMatch(values, search, currentMatch);
@@ -399,8 +403,10 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       // Reset `searchRef` 1 second after it was last updated
       (function updateSearch(value: string) {
         searchRef.current = value;
-        window.clearTimeout(timerRef.current);
-        if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
+
+        const win = ownerDocument.defaultView ?? window;
+        win.clearTimeout(timerRef.current);
+        if (value !== '') timerRef.current = win.setTimeout(() => updateSearch(''), 1000);
       })(search);
 
       if (newItem) {
@@ -413,8 +419,8 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     };
 
     React.useEffect(() => {
-      return () => window.clearTimeout(timerRef.current);
-    }, []);
+      return () => ownerDocument.defaultView?.clearTimeout(timerRef.current);
+    }, [ownerDocument]);
 
     // Make sure the whole tree has focus guards as our `MenuContent` may be
     // the last element in the DOM (beacuse of the `Portal`)
@@ -518,12 +524,12 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                     const items = getItems().filter((item) => !item.disabled);
                     const candidateNodes = items.map((item) => item.ref.current!);
                     if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
-                    focusFirst(candidateNodes);
+                    focusFirst(candidateNodes, ownerDocument);
                   })}
                   onBlur={composeEventHandlers(props.onBlur, (event) => {
                     // clear search buffer when leaving the menu
                     if (!event.currentTarget.contains(event.target)) {
-                      window.clearTimeout(timerRef.current);
+                      (ownerDocument.defaultView ?? window).clearTimeout(timerRef.current);
                       searchRef.current = '';
                     }
                   })}
@@ -1224,13 +1230,13 @@ function getCheckedState(checked: CheckedState) {
   return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+function focusFirst(candidates: HTMLElement[], ownerDocument = document) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = ownerDocument.activeElement;
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus();
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (ownerDocument.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 
