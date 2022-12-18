@@ -376,10 +376,14 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
     } = props;
     const context = usePopoverContext(CONTENT_NAME, __scopePopover);
     const popperScope = usePopperScope(__scopePopover);
+    const [ownerDocument, setOwnerDocument] = React.useState(document);
+    const composedRefs = useComposedRefs(forwardedRef, (node) =>
+      setOwnerDocument(node?.ownerDocument ?? document)
+    );
 
     // Make sure the whole tree has focus guards as our `Popover` may be
     // the last element in the DOM (beacuse of the `Portal`)
-    useFocusGuards();
+    useFocusGuards(ownerDocument);
 
     return (
       <FocusScope
@@ -404,7 +408,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
             id={context.contentId}
             {...popperScope}
             {...contentProps}
-            ref={forwardedRef}
+            ref={composedRefs}
             style={{
               ...contentProps.style,
               // re-namespace exposed content custom property

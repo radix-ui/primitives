@@ -424,7 +424,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
 
     // Make sure the whole tree has focus guards as our `MenuContent` may be
     // the last element in the DOM (beacuse of the `Portal`)
-    useFocusGuards();
+    useFocusGuards(ownerDocument);
 
     const isPointerMovingToSubmenu = React.useCallback((event: React.PointerEvent) => {
       const isMovingTowards = pointerDirRef.current === pointerGraceIntentRef.current?.side;

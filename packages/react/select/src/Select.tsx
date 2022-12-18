@@ -479,7 +479,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     // Make sure the whole tree has focus guards as our `Select` may be
     // the last element in the DOM (because of the `Portal`)
-    useFocusGuards();
+    useFocusGuards(ownerDocument);
 
     const [contentZIndex, setContentZIndex] = React.useState<string>();
     useLayoutEffect(() => {
