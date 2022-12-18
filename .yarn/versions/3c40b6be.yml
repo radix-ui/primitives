@@ -3,6 +3,7 @@ releases:
   "@radix-ui/react-context-menu": patch
   "@radix-ui/react-dialog": patch
   "@radix-ui/react-dropdown-menu": patch
+  "@radix-ui/react-focus-guards": patch
   "@radix-ui/react-focus-scope": patch
   "@radix-ui/react-hover-card": patch
   "@radix-ui/react-menu": patch
