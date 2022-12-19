@@ -3,14 +3,15 @@ import { css, keyframes } from '../../../../stitches.config';
 import * as Menu from '@radix-ui/react-menu';
 import { foodGroups } from '../../../../test-data/foods';
 import { DirectionProvider } from '@radix-ui/react-direction';
+import ReactDOM from 'react-dom';
 
 export default {
   title: 'Components/Menu',
   excludeStories: ['TickIcon', 'classes'],
 };
 
-export const Styled = () => (
-  <MenuWithAnchor>
+export const Styled = ({ container }: { container?: HTMLElement }) => (
+  <MenuWithAnchor container={container}>
     <Menu.Item className={itemClass()} onSelect={() => window.alert('undo')}>
       Undo
     </Menu.Item>
@@ -364,18 +365,44 @@ export const Animated = () => {
   );
 };
 
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popoverWindow = window.open(
+      undefined,
+      undefined,
+      'width=300,height=300,top=100,left=100'
+    );
+    if (!popoverWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popoverWindow.document.createElement('div');
+    popoverWindow.document.body.append(containerNode);
+
+    ReactDOM.render(<Styled container={popoverWindow.document.body} />, containerNode);
+  }, []);
+  return (
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
+  );
+};
+
 type MenuProps = Omit<
   React.ComponentProps<typeof Menu.Root> & React.ComponentProps<typeof Menu.Content>,
   'trapFocus' | 'onCloseAutoFocus' | 'disableOutsidePointerEvents' | 'disableOutsideScroll'
->;
+> & {
+  container?: HTMLElement;
+};
 
 const MenuWithAnchor: React.FC<MenuProps> = (props) => {
-  const { open = true, children, ...contentProps } = props;
+  const { open = true, children, container, ...contentProps } = props;
   return (
     <Menu.Root open={open} onOpenChange={() => {}} modal={false}>
       {/* inline-block allows anchor to move when rtl changes on document */}
       <Menu.Anchor style={{ display: 'inline-block' }} />
-      <Menu.Portal>
+      <Menu.Portal container={container}>
         <Menu.Content
           className={contentClass()}
           onCloseAutoFocus={(event) => event.preventDefault()}

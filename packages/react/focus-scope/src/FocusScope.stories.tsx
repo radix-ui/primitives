@@ -1,5 +1,6 @@
 import React from 'react';
 import { FocusScope } from '@radix-ui/react-focus-scope';
+import ReactDOM from 'react-dom';
 
 export default { title: 'Components/FocusScope' };
 
@@ -107,6 +108,26 @@ export const Multiple = () => {
       <div>
         <input />
       </div>
+    </div>
+  );
+};
+
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popuoWindow = window.open(undefined, undefined, 'width=300,height=300,top=100,left=100');
+    if (!popuoWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popuoWindow.document.createElement('div');
+    popuoWindow.document.body.append(containerNode);
+
+    ReactDOM.render(<Basic />, containerNode);
+  }, []);
+  return (
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <button onClick={handlePopupClick}>Open Popup</button>
     </div>
   );
 };

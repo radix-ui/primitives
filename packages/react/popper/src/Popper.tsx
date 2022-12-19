@@ -207,7 +207,10 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
 
     const [contentZIndex, setContentZIndex] = React.useState<string>();
     useLayoutEffect(() => {
-      if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
+      if (content) {
+        const win = content.ownerDocument.defaultView ?? window;
+        setContentZIndex(win.getComputedStyle(content).zIndex);
+      }
     }, [content]);
 
     const { hasParent, positionUpdateFns } = usePositionContext(CONTENT_NAME, __scopePopper);

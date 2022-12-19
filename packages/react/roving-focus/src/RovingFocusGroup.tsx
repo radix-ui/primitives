@@ -122,10 +122,12 @@ const RovingFocusGroupImpl = React.forwardRef<
   const getItems = useCollection(__scopeRovingFocusGroup);
   const isClickFocusRef = React.useRef(false);
   const [focusableItemsCount, setFocusableItemsCount] = React.useState(0);
+  const [ownerDocument, setOwnerDocument] = React.useState<Document>(document);
 
   React.useEffect(() => {
     const node = ref.current;
     if (node) {
+      setOwnerDocument(node.ownerDocument);
       node.addEventListener(ENTRY_FOCUS, handleEntryFocus);
       return () => node.removeEventListener(ENTRY_FOCUS, handleEntryFocus);
     }
@@ -180,7 +182,7 @@ const RovingFocusGroupImpl = React.forwardRef<
                 Boolean
               ) as typeof items;
               const candidateNodes = candidateItems.map((item) => item.ref.current!);
-              focusFirst(candidateNodes);
+              focusFirst(candidateNodes, ownerDocument);
             }
           }
 
@@ -212,6 +214,11 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
     const context = useRovingFocusContext(ITEM_NAME, __scopeRovingFocusGroup);
     const isCurrentTabStop = context.currentTabStopId === id;
     const getItems = useCollection(__scopeRovingFocusGroup);
+    const [ownerDocument, setOwnerDocument] = React.useState<Document>(document);
+
+    const ref = useComposedRefs(forwardedRef, (node) =>
+      setOwnerDocument(node?.ownerDocument ?? document)
+    );
 
     const { onFocusableItemAdd, onFocusableItemRemove } = context;
 
@@ -233,7 +240,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
           tabIndex={isCurrentTabStop ? 0 : -1}
           data-orientation={context.orientation}
           {...itemProps}
-          ref={forwardedRef}
+          ref={ref}
           onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
             // We prevent focusing non-focusable items on `mousedown`.
             // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
@@ -270,7 +277,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
                * Imperative focus during keydown is risky so we prevent React's batching updates
                * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
                */
-              setTimeout(() => focusFirst(candidateNodes));
+              setTimeout(() => focusFirst(candidateNodes, ownerDocument));
             }
           })}
         />
@@ -305,13 +312,13 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+function focusFirst(candidates: HTMLElement[], ownerDocument = document) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = ownerDocument.activeElement;
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus();
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (ownerDocument.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 

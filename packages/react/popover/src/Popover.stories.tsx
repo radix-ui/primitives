@@ -2,17 +2,18 @@ import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 import * as Popover from '@radix-ui/react-popover';
+import ReactDOM from 'react-dom';
 
 export default { title: 'Components/Popover' };
 
-export const Styled = () => {
+export const Styled = ({ container = document.body }) => {
   return (
     <div
       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
     >
       <Popover.Root>
         <Popover.Trigger className={triggerClass()}>open</Popover.Trigger>
-        <Popover.Portal>
+        <Popover.Portal container={container}>
           <Popover.Content className={contentClass()} sideOffset={5}>
             <Popover.Close className={closeClass()}>close</Popover.Close>
             <Popover.Arrow className={arrowClass()} width={20} height={10} />
@@ -237,6 +238,30 @@ export const WithSlottedTrigger = () => {
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
+  );
+};
+
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popoverWindow = window.open(
+      undefined,
+      undefined,
+      'width=300,height=300,top=100,left=100'
+    );
+    if (!popoverWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popoverWindow.document.createElement('div');
+    popoverWindow.document.body.append(containerNode);
+
+    ReactDOM.render(<Styled container={popoverWindow.document.body} />, containerNode);
+  }, []);
+  return (
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
   );
 };
 

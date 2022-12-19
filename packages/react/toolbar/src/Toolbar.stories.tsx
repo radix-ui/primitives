@@ -5,6 +5,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { classes } from '../../menu/src/Menu.stories';
 import { Toggle } from '@radix-ui/react-toggle';
 import * as Toolbar from '@radix-ui/react-toolbar';
+import ReactDOM from 'react-dom';
 
 const { contentClass: dropdownMenuContentClass, itemClass: dropdownMenuItemClass } = classes;
 
@@ -16,6 +17,26 @@ export const Styled = () => (
     <ToolbarExample title="Vertical" orientation="vertical"></ToolbarExample>
   </>
 );
+
+export const InPopupWindow = () => {
+  const handlePopupClick = React.useCallback(() => {
+    const popperWindow = window.open(undefined, undefined, 'width=300,height=300,top=100,left=100');
+    if (!popperWindow) {
+      console.error('Failed to open popup window, check your popup blocker settings');
+      return;
+    }
+
+    const containerNode = popperWindow.document.createElement('div');
+    popperWindow.document.body.append(containerNode);
+
+    ReactDOM.render(<Styled />, containerNode);
+  }, []);
+  return (
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
+  );
+};
 
 export const Chromatic = () => (
   <div style={{ padding: 50 }}>
