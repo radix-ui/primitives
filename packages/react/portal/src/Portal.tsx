@@ -18,7 +18,6 @@ interface PortalProps extends PrimitiveDivProps {
 
 const Portal = React.forwardRef<PortalElement, PortalProps>((props, forwardedRef) => {
   const { container = globalThis?.document?.body, ...portalProps } = props;
-
   return container
     ? ReactDOM.createPortal(<Primitive.div {...portalProps} ref={forwardedRef} />, container)
     : null;
