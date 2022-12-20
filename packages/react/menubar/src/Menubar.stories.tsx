@@ -242,9 +242,9 @@ const triggerClass = css({
   fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
   fontSize: 13,
   borderRadius: 4,
-  '&[data-state="open"]': { backgroundColor: '$gray100' },
-  '&:focus': {
-    outline: 'none',
-    boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.5)',
+  outline: 'none',
+  '&[data-highlighted]': {
+    backgroundColor: '$gray100',
   },
+  '&[data-state="open"]': { backgroundColor: '$black', color: 'white' },
 });

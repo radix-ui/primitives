@@ -1,10 +1,13 @@
 import * as React from 'react';
+import { createCollection } from '@radix-ui/react-collection';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { composeRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { createMenuScope } from '@radix-ui/react-menu';
+import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
+import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
@@ -17,10 +20,20 @@ import type * as Radix from '@radix-ui/react-primitive';
 
 const MENUBAR_NAME = 'Menubar';
 
+type ItemData = { disabled: boolean };
+const [Collection, useCollection, createCollectionScope] = createCollection<
+  MenubarTriggerElement,
+  ItemData
+>(MENUBAR_NAME);
+
 type ScopedProps<P> = P & { __scopeMenubar?: Scope };
-const [createMenubarContext, createMenubarScope] = createContextScope(MENUBAR_NAME);
+const [createMenubarContext, createMenubarScope] = createContextScope(MENUBAR_NAME, [
+  createCollectionScope,
+  createRovingFocusGroupScope,
+]);
 
 const useMenuScope = createMenuScope();
+const useRovingFocusGroupScope = createRovingFocusGroupScope();
 
 type MenubarContextValue = {
   value: string;
@@ -32,12 +45,13 @@ type MenubarContextValue = {
 const [MenubarContextProvider, useMenubarContext] =
   createMenubarContext<MenubarContextValue>(MENUBAR_NAME);
 
-type MenubarElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
-interface MenubarProps extends PrimitiveDivProps {
+type MenubarElement = React.ElementRef<typeof RovingFocusGroup.Root>;
+type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
+interface MenubarProps extends RovingFocusGroupProps {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
+  loop?: boolean;
 }
 
 const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
@@ -47,8 +61,10 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
       value: valueProp,
       onValueChange,
       defaultValue,
+      loop = true,
       ...menubarProps
     } = props;
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenubar);
     const [value = '', setValue] = useControllableState({
       prop: valueProp,
       onChange: onValueChange,
@@ -66,7 +82,16 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
           [setValue]
         )}
       >
-        <Primitive.div role="menubar" {...menubarProps} ref={forwardedRef} />
+        <Collection.Provider scope={__scopeMenubar}>
+          <RovingFocusGroup.Root
+            {...rovingFocusGroupScope}
+            loop={loop}
+            role="menubar"
+            orientation="horizontal"
+            {...menubarProps}
+            ref={forwardedRef}
+          />
+        </Collection.Provider>
       </MenubarContextProvider>
     );
   }
@@ -82,8 +107,9 @@ const MENU_NAME = 'MenubarMenu';
 
 type MenubarMenuContextValue = {
   triggerId: string;
-  triggerRef: React.RefObject<HTMLButtonElement>;
+  triggerRef: React.RefObject<MenubarTriggerElement>;
   contentId: string;
+  contentRef: React.RefObject<MenubarContentElement>;
   value: string;
 };
 
@@ -103,7 +129,8 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
   const value = valueProp || autoValue || 'LEGACY_REACT_AUTO_VALUE';
   const context = useMenubarContext(MENU_NAME, __scopeMenubar);
   const menuScope = useMenuScope(__scopeMenubar);
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const triggerRef = React.useRef<MenubarTriggerElement>(null);
+  const contentRef = React.useRef<MenubarContentElement>(null);
   const open = context.value === value;
 
   return (
@@ -112,6 +139,7 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
       triggerId={useId()}
       triggerRef={triggerRef}
       contentId={useId()}
+      contentRef={contentRef}
       value={value}
     >
       <MenuPrimitive.Root
@@ -142,48 +170,68 @@ interface MenubarTriggerProps extends PrimitiveButtonProps {}
 const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerProps>(
   (props: ScopedProps<MenubarTriggerProps>, forwardedRef) => {
     const { __scopeMenubar, disabled = false, ...triggerProps } = props;
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenubar);
     const menuScope = useMenuScope(__scopeMenubar);
     const context = useMenubarContext(TRIGGER_NAME, __scopeMenubar);
     const menuContext = useMenubarMenuContext(TRIGGER_NAME, __scopeMenubar);
+    const ref = React.useRef<HTMLButtonElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref, menuContext.triggerRef);
+    const [isFocused, setIsFocused] = React.useState(false);
     const open = context.value === menuContext.value;
 
     return (
-      <MenuPrimitive.Anchor asChild {...menuScope}>
-        <Primitive.button
-          type="button"
-          id={menuContext.triggerId}
-          aria-haspopup="menu"
-          aria-expanded={open}
-          aria-controls={open ? menuContext.contentId : undefined}
-          data-state={open ? 'open' : 'closed'}
-          data-disabled={disabled ? '' : undefined}
-          disabled={disabled}
-          {...triggerProps}
-          onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-            // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-            // but not when the control key is pressed (avoiding MacOS right click)
-            if (!disabled && event.button === 0 && event.ctrlKey === false) {
-              context.onMenuOpen(menuContext.value);
-              // prevent trigger focusing when opening
-              // this allows the content to be given focus without competition
-              if (!open) event.preventDefault();
-            }
-          })}
-          onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
-            const menubarOpen = Boolean(context.value);
-            if (menubarOpen) context.onMenuOpen(menuContext.value);
-          })}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if (disabled) return;
-            if (['Enter', ' '].includes(event.key)) context.onMenuToggle(menuContext.value);
-            if (event.key === 'ArrowDown') context.onMenuOpen(menuContext.value);
-            // prevent keydown from scrolling window / first focused item to execute
-            // that keydown (inadvertently closing the menu)
-            if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
-          })}
-          ref={composeRefs(forwardedRef, menuContext.triggerRef)}
-        />
-      </MenuPrimitive.Anchor>
+      <Collection.ItemSlot scope={__scopeMenubar} disabled={disabled}>
+        <Collection.Slot scope={__scopeMenubar}>
+          <RovingFocusGroup.Item asChild {...rovingFocusGroupScope} focusable={!disabled}>
+            <MenuPrimitive.Anchor asChild {...menuScope}>
+              <Primitive.button
+                type="button"
+                role="menuitem"
+                id={menuContext.triggerId}
+                aria-haspopup="menu"
+                aria-expanded={open}
+                aria-controls={open ? menuContext.contentId : undefined}
+                data-highlighted={isFocused ? '' : undefined}
+                data-state={open ? 'open' : 'closed'}
+                data-disabled={disabled ? '' : undefined}
+                disabled={disabled}
+                {...triggerProps}
+                ref={composedRefs}
+                onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+                  // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
+                  // but not when the control key is pressed (avoiding MacOS right click)
+                  if (!disabled && event.button === 0 && event.ctrlKey === false) {
+                    context.onMenuOpen(menuContext.value);
+                    // prevent trigger focusing when opening
+                    // this allows the content to be given focus without competition
+                    if (!open) event.preventDefault();
+                  }
+                })}
+                onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
+                  const menubarOpen = Boolean(context.value);
+                  if (menubarOpen && !open) {
+                    context.onMenuOpen(menuContext.value);
+                    ref.current?.focus();
+                  }
+                })}
+                onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+                  if (disabled) return;
+                  if (['Enter', ' '].includes(event.key)) context.onMenuToggle(menuContext.value);
+                  if (event.key === 'ArrowDown') {
+                    context.onMenuOpen(menuContext.value);
+                    if (isFocused) menuContext.contentRef.current?.focus();
+                  }
+                  // prevent keydown from scrolling window / first focused item to execute
+                  // that keydown (inadvertently closing the menu)
+                  if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
+                })}
+                onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
+                onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
+              />
+            </MenuPrimitive.Anchor>
+          </RovingFocusGroup.Item>
+        </Collection.Slot>
+      </Collection.ItemSlot>
     );
   }
 );
@@ -220,9 +268,11 @@ interface MenubarContentProps extends MenuContentProps {}
 const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentProps>(
   (props: ScopedProps<MenubarContentProps>, forwardedRef) => {
     const { __scopeMenubar, ...contentProps } = props;
-    const context = useMenubarContext(CONTENT_NAME, __scopeMenubar);
     const menuScope = useMenuScope(__scopeMenubar);
+    const context = useMenubarContext(CONTENT_NAME, __scopeMenubar);
     const menuContext = useMenubarMenuContext(CONTENT_NAME, __scopeMenubar);
+    const composedRefs = useComposedRefs(forwardedRef, menuContext.contentRef);
+    const getItems = useCollection(__scopeMenubar);
     const hasInteractedOutsideRef = React.useRef(false);
 
     return (
@@ -231,7 +281,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         aria-labelledby={menuContext.triggerId}
         {...menuScope}
         {...contentProps}
-        ref={forwardedRef}
+        ref={composedRefs}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           const menubarOpen = Boolean(context.value);
           if (!menubarOpen && !hasInteractedOutsideRef.current) {
@@ -241,6 +291,11 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
           hasInteractedOutsideRef.current = false;
           // Always prevent auto focus because we either focus manually or want user agent focus
           event.preventDefault();
+        })}
+        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
+          const target = event.target as HTMLElement;
+          const isMenubarTrigger = getItems().some((item) => item.ref.current?.contains(target));
+          if (isMenubarTrigger) event.preventDefault();
         })}
         onInteractOutside={composeEventHandlers(props.onInteractOutside, () => {
           hasInteractedOutsideRef.current = true;
