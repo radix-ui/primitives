@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import * as MenuPrimitive from '@radix-ui/react-menu';
@@ -17,19 +18,57 @@ import type * as Radix from '@radix-ui/react-primitive';
 const MENUBAR_NAME = 'Menubar';
 
 type ScopedProps<P> = P & { __scopeMenubar?: Scope };
-const [createMenubarContext, createMenubarScope] = createContextScope(MENUBAR_NAME, []);
+const [createMenubarContext, createMenubarScope] = createContextScope(MENUBAR_NAME);
 
 const useMenuScope = createMenuScope();
 
+type MenubarContextValue = {
+  value: string;
+  onMenuOpen(value: string): void;
+  onMenuClose(): void;
+  onMenuToggle(value: string): void;
+};
+
+const [MenubarContextProvider, useMenubarContext] =
+  createMenubarContext<MenubarContextValue>(MENUBAR_NAME);
+
 type MenubarElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
-interface MenubarProps extends PrimitiveDivProps {}
+interface MenubarProps extends PrimitiveDivProps {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+}
 
 const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
   (props: ScopedProps<MenubarProps>, forwardedRef) => {
-    const { __scopeMenubar, ...menubarProps } = props;
+    const {
+      __scopeMenubar,
+      value: valueProp,
+      onValueChange,
+      defaultValue,
+      ...menubarProps
+    } = props;
+    const [value = '', setValue] = useControllableState({
+      prop: valueProp,
+      onChange: onValueChange,
+      defaultProp: defaultValue,
+    });
 
-    return <Primitive.div role="menubar" {...menubarProps} ref={forwardedRef} />;
+    return (
+      <MenubarContextProvider
+        scope={__scopeMenubar}
+        value={value}
+        onMenuOpen={React.useCallback((value) => setValue(value), [setValue])}
+        onMenuClose={React.useCallback(() => setValue(''), [setValue])}
+        onMenuToggle={React.useCallback(
+          (value) => setValue((prevValue) => (Boolean(prevValue) ? '' : value)),
+          [setValue]
+        )}
+      >
+        <Primitive.div role="menubar" {...menubarProps} ref={forwardedRef} />
+      </MenubarContextProvider>
+    );
   }
 );
 
@@ -39,45 +78,51 @@ Menubar.displayName = MENUBAR_NAME;
  * MenubarMenu
  * -----------------------------------------------------------------------------------------------*/
 
+const MENU_NAME = 'MenubarMenu';
+
 type MenubarMenuContextValue = {
   triggerId: string;
+  triggerRef: React.RefObject<HTMLButtonElement>;
   contentId: string;
-  open: boolean;
-  onOpenChange(open: boolean): void;
-  onOpenToggle(): void;
+  value: string;
 };
-
-const MENU_NAME = 'MenubarMenu';
 
 const [MenubarMenuProvider, useMenubarMenuContext] =
   createMenubarContext<MenubarMenuContextValue>(MENU_NAME);
 
 interface MenubarMenuProps {
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
+  value?: string;
   children?: React.ReactNode;
 }
 
 const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
-  const { __scopeMenubar, open: openProp, defaultOpen, onOpenChange, ...menuProps } = props;
+  const { __scopeMenubar, value: valueProp, ...menuProps } = props;
+  const autoValue = useId();
+  // We need to provide an initial deterministic value as `useId` will return
+  // empty string on the first render and we don't want to match our internal "closed" value.
+  const value = valueProp || autoValue || 'LEGACY_REACT_AUTO_VALUE';
+  const context = useMenubarContext(MENU_NAME, __scopeMenubar);
   const menuScope = useMenuScope(__scopeMenubar);
-  const [open = false, setOpen] = useControllableState({
-    prop: openProp,
-    defaultProp: defaultOpen,
-    onChange: onOpenChange,
-  });
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const open = context.value === value;
 
   return (
     <MenubarMenuProvider
       scope={__scopeMenubar}
       triggerId={useId()}
+      triggerRef={triggerRef}
       contentId={useId()}
-      open={open}
-      onOpenChange={setOpen}
-      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+      value={value}
     >
-      <MenuPrimitive.Root {...menuScope} open={open} onOpenChange={setOpen} {...menuProps} />
+      <MenuPrimitive.Root
+        {...menuScope}
+        open={open}
+        onOpenChange={(open) => {
+          if (!open) context.onMenuClose();
+        }}
+        modal={false}
+        {...menuProps}
+      />
     </MenubarMenuProvider>
   );
 };
@@ -98,7 +143,9 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
   (props: ScopedProps<MenubarTriggerProps>, forwardedRef) => {
     const { __scopeMenubar, disabled = false, ...triggerProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
+    const context = useMenubarContext(TRIGGER_NAME, __scopeMenubar);
     const menuContext = useMenubarMenuContext(TRIGGER_NAME, __scopeMenubar);
+    const open = context.value === menuContext.value;
 
     return (
       <MenuPrimitive.Anchor asChild {...menuScope}>
@@ -106,9 +153,9 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
           type="button"
           id={menuContext.triggerId}
           aria-haspopup="menu"
-          aria-expanded={menuContext.open}
-          aria-controls={menuContext.open ? menuContext.contentId : undefined}
-          data-state={menuContext.open ? 'open' : 'closed'}
+          aria-expanded={open}
+          aria-controls={open ? menuContext.contentId : undefined}
+          data-state={open ? 'open' : 'closed'}
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
           {...triggerProps}
@@ -116,21 +163,25 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
-              menuContext.onOpenToggle();
+              context.onMenuOpen(menuContext.value);
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
-              if (!menuContext.open) event.preventDefault();
+              if (!open) event.preventDefault();
             }
+          })}
+          onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
+            const menubarOpen = Boolean(context.value);
+            if (menubarOpen) context.onMenuOpen(menuContext.value);
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             if (disabled) return;
-            if (['Enter', ' '].includes(event.key)) menuContext.onOpenToggle();
-            if (event.key === 'ArrowDown') menuContext.onOpenChange(true);
+            if (['Enter', ' '].includes(event.key)) context.onMenuToggle(menuContext.value);
+            if (event.key === 'ArrowDown') context.onMenuOpen(menuContext.value);
             // prevent keydown from scrolling window / first focused item to execute
             // that keydown (inadvertently closing the menu)
             if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
           })}
-          ref={forwardedRef}
+          ref={composeRefs(forwardedRef, menuContext.triggerRef)}
         />
       </MenuPrimitive.Anchor>
     );
@@ -169,8 +220,10 @@ interface MenubarContentProps extends MenuContentProps {}
 const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentProps>(
   (props: ScopedProps<MenubarContentProps>, forwardedRef) => {
     const { __scopeMenubar, ...contentProps } = props;
+    const context = useMenubarContext(CONTENT_NAME, __scopeMenubar);
     const menuScope = useMenuScope(__scopeMenubar);
     const menuContext = useMenubarMenuContext(CONTENT_NAME, __scopeMenubar);
+    const hasInteractedOutsideRef = React.useRef(false);
 
     return (
       <MenuPrimitive.Content
@@ -179,6 +232,25 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         {...menuScope}
         {...contentProps}
         ref={forwardedRef}
+        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+          const menubarOpen = Boolean(context.value);
+          if (!menubarOpen && !hasInteractedOutsideRef.current) {
+            menuContext.triggerRef.current?.focus();
+          }
+
+          hasInteractedOutsideRef.current = false;
+          // Always prevent auto focus because we either focus manually or want user agent focus
+          event.preventDefault();
+        })}
+        onInteractOutside={composeEventHandlers(props.onInteractOutside, () => {
+          hasInteractedOutsideRef.current = true;
+        })}
+        style={{
+          ...props.style,
+          // re-namespace exposed content custom property
+          ['--radix-menubar-content-transform-origin' as any]:
+            'var(--radix-popper-transform-origin)',
+        }}
       />
     );
   }
