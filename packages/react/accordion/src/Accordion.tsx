@@ -11,6 +11,9 @@ import { useId } from '@radix-ui/react-id';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
+import { useDirection } from '@radix-ui/react-direction';
+
+type Direction = 'ltr' | 'rtl';
 
 /* -------------------------------------------------------------------------------------------------
  * Accordion
@@ -212,6 +215,7 @@ const AccordionImplMultiple = React.forwardRef<
 
 type AccordionImplContextValue = {
   disabled?: boolean;
+  direction: AccordionImplProps['dir'];
   orientation: AccordionImplProps['orientation'];
 };
 
@@ -228,18 +232,30 @@ interface AccordionImplProps extends PrimitiveDivProps {
    */
   disabled?: boolean;
   /**
-   * The functional direction in which the Accordion operates.
+   * The layout in which the Accordion operates.
    * @default vertical
    */
   orientation?: React.AriaAttributes['aria-orientation'];
+  /**
+   * The language read direction. Defaults to RTL.
+   */
+  dir?: Direction;
 }
 
 const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>(
   (props: ScopedProps<AccordionImplProps>, forwardedRef) => {
-    const { __scopeAccordion, disabled, orientation = 'vertical', ...accordionProps } = props;
+    const {
+      __scopeAccordion,
+      disabled,
+      dir = 'ltr',
+      orientation = 'vertical',
+      ...accordionProps
+    } = props;
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
     const getItems = useCollection(__scopeAccordion);
+    const direction = useDirection(dir);
+    const isDirectionLTR = direction === 'ltr';
 
     const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
       if (!ACCORDION_KEYS.includes(event.key)) return;
@@ -254,37 +270,56 @@ const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>
       event.preventDefault();
 
       let nextIndex = triggerIndex;
+      const homeIndex = 0;
+      const endIndex = triggerCount - 1;
+
+      const moveNext = () => {
+        nextIndex = triggerIndex + 1;
+        if (nextIndex > endIndex) {
+          nextIndex = homeIndex;
+        }
+      };
+
+      const movePrev = () => {
+        nextIndex = triggerIndex - 1;
+        if (nextIndex < homeIndex) {
+          nextIndex = endIndex;
+        }
+      };
+
       switch (event.key) {
         case 'Home':
-          nextIndex = 0;
+          nextIndex = homeIndex;
           break;
         case 'End':
-          nextIndex = triggerCount - 1;
+          nextIndex = endIndex;
           break;
         case 'ArrowRight':
           if (orientation === 'horizontal') {
-            nextIndex = triggerIndex + 1;
+            if (isDirectionLTR) {
+              moveNext();
+            } else {
+              movePrev();
+            }
           }
           break;
         case 'ArrowDown':
           if (orientation === 'vertical') {
-            nextIndex = triggerIndex + 1;
+            moveNext();
           }
           break;
         case 'ArrowLeft':
           if (orientation === 'horizontal') {
-            nextIndex = triggerIndex - 1;
-            if (nextIndex < 0) {
-              nextIndex = triggerCount - 1;
+            if (isDirectionLTR) {
+              movePrev();
+            } else {
+              moveNext();
             }
           }
           break;
         case 'ArrowUp':
           if (orientation === 'vertical') {
-            nextIndex = triggerIndex - 1;
-            if (nextIndex < 0) {
-              nextIndex = triggerCount - 1;
-            }
+            movePrev();
           }
           break;
       }
@@ -294,10 +329,16 @@ const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>
     });
 
     return (
-      <AccordionImplProvider scope={__scopeAccordion} disabled={disabled} orientation={orientation}>
+      <AccordionImplProvider
+        scope={__scopeAccordion}
+        disabled={disabled}
+        direction={dir}
+        orientation={orientation}
+      >
         <Collection.Slot scope={__scopeAccordion}>
           <Primitive.div
             {...accordionProps}
+            // aria-orientation={orientation}
             data-orientation={orientation}
             ref={composedRefs}
             onKeyDown={disabled ? undefined : handleKeyDown}
