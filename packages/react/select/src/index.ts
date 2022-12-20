@@ -16,6 +16,7 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
   SelectSeparator,
+  SelectArrow,
   //
   Root,
   Trigger,
@@ -32,6 +33,7 @@ export {
   ScrollUpButton,
   ScrollDownButton,
   Separator,
+  Arrow,
 } from './Select';
 export type {
   SelectProps,
@@ -49,4 +51,5 @@ export type {
   SelectScrollUpButtonProps,
   SelectScrollDownButtonProps,
   SelectSeparatorProps,
+  SelectArrowProps,
 } from './Select';
